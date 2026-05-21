@@ -30,7 +30,8 @@ export const isMarkdownBlock = (
 };
 
 export const makeMarkdownBlock = (
-  id: string
+  id: string,
+  isAiInput?: boolean
 ): Y.XmlElement<MarkdownBlock> => {
   const yBlock = new Y.XmlElement<MarkdownBlock>("block");
 
@@ -39,7 +40,7 @@ export const makeMarkdownBlock = (
     index: null,
     title: "",
     type: BlockType.Markdown,
-    isAiInput: false,
+    isAiInput: isAiInput ?? false,
     source: new Y.Text(""),
     editWithAIPrompt: new Y.Text(""),
     isEditWithAIPromptOpen: false,

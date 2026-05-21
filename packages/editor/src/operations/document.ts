@@ -23,6 +23,7 @@ import { makeRichTextBlock } from "../blocks/richText.js";
 import { makeMarkdownBlock } from "../blocks/markdown.js";
 import { makeDateInputBlock } from "../blocks/dateInput.js";
 import {
+  PowerToolboxInputs,
   YDashboardItem,
   getBlocks,
   getDashboard,
@@ -44,82 +45,89 @@ export type AddBlockGroupBlock =
         | BlockType.DropdownInput
         | BlockType.DateInput
         | BlockType.FileUpload
-        | BlockType.PowerToolbox;
     }
   | {
-      type: BlockType.Python;
-      source?: string;
+      type: BlockType.PowerToolbox
+      toolId: string
+      inputs: PowerToolboxInputs
     }
   | {
-      type: BlockType.SQL;
-      dataSourceId: string | null;
-      isFileDataSource: boolean;
-      source?: string;
+      type: BlockType.Python
+      source?: string
+    }
+  | {
+      type: BlockType.SQL
+      dataSourceId: string | null
+      isFileDataSource: boolean
+      source?: string
     }
   | {
       type:
         | BlockType.Visualization
         | BlockType.VisualizationV2
-        | BlockType.PivotTable;
-      dataframeName: string | null;
+        | BlockType.PivotTable
+      dataframeName: string | null
     }
-  | { type: BlockType.DashboardHeader; content: string };
+  | {
+      type: BlockType.DashboardHeader
+      content: string
+    }
 
-const createBlock = (block: AddBlockGroupBlock, yBlockDefs: Y.Map<YBlock>) => {
+const createBlock = (block: AddBlockGroupBlock, yBlockDefs: Y.Map<YBlock>, isAiInput?: boolean) => {
   const blockId = uuidv4();
   let yBlock: YBlock;
 
   switch (block.type) {
     case BlockType.RichText:
-      yBlock = makeRichTextBlock(blockId);
+      yBlock = makeRichTextBlock(blockId, isAiInput);
       break;
     case BlockType.Markdown:
-      yBlock = makeMarkdownBlock(blockId);
+      yBlock = makeMarkdownBlock(blockId, isAiInput);
       break;
     case BlockType.Python:
       yBlock = makePythonBlock(blockId, {
         source: block.source,
-      });
+      }, isAiInput);
       break;
     case BlockType.SQL:
       yBlock = makeSQLBlock(blockId, yBlockDefs, {
         dataSourceId: block.dataSourceId,
         isFileDataSource: block.isFileDataSource,
         source: block.source,
-      });
+      }, isAiInput);
       break;
     case BlockType.Visualization:
       yBlock = makeVisualizationV2Block(blockId, {
         dataframeName: block.dataframeName,
-      });
+      }, isAiInput);
       break;
     case BlockType.VisualizationV2:
       yBlock = makeVisualizationV2Block(blockId, {
         dataframeName: block.dataframeName,
-      });
+      }, isAiInput);
       break;
     case BlockType.Input:
-      yBlock = makeInputBlock(blockId, yBlockDefs);
+      yBlock = makeInputBlock(blockId, yBlockDefs, isAiInput);
       break;
     case BlockType.DropdownInput:
-      yBlock = makeDropdownInputBlock(blockId, yBlockDefs);
+      yBlock = makeDropdownInputBlock(blockId, yBlockDefs, isAiInput);
       break;
     case BlockType.DateInput:
-      yBlock = makeDateInputBlock(blockId, yBlockDefs);
+      yBlock = makeDateInputBlock(blockId, yBlockDefs, isAiInput);
       break;
     case BlockType.FileUpload:
-      yBlock = makeFileUploadBlock(blockId);
+      yBlock = makeFileUploadBlock(blockId, isAiInput);
       break;
     case BlockType.DashboardHeader:
       yBlock = makeDashboardHeaderBlock(blockId, {
         content: block.content,
-      });
+      }, isAiInput);
       break;
     case BlockType.PivotTable:
-      yBlock = makePivotTableBlock(blockId, yBlockDefs, block.dataframeName);
+      yBlock = makePivotTableBlock(blockId, yBlockDefs, block.dataframeName, isAiInput);
       break;
     case BlockType.PowerToolbox:
-      yBlock = makePowerToolboxBlock(blockId);
+      yBlock = makePowerToolboxBlock(blockId, block.toolId, block.inputs, isAiInput);
       break;
   }
 
@@ -174,7 +182,8 @@ export const addBlockGroup = (
   yLayout: Y.Array<YBlockGroup>,
   yBlockDefs: Y.Map<YBlock>,
   block: AddBlockGroupBlock,
-  index: number
+  index: number,
+  isAiInput?: boolean
 ) => {
   const blockId = createBlock(block, yBlockDefs);
 

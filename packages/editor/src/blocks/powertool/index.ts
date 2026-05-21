@@ -51,6 +51,8 @@ export const isPowerToolboxBlock = (
 
 export const makePowerToolboxBlock = (
   id: string,
+  toolId: string | null = null,
+  inputs: PowerToolboxInputs = {},
   isAiInput?: boolean
 ): Y.XmlElement<PowerToolboxBlock> => {
   const yBlock = new Y.XmlElement<PowerToolboxBlock>("block");
@@ -60,10 +62,10 @@ export const makePowerToolboxBlock = (
     index: null,
     title: "",
     type: BlockType.PowerToolbox,
-    toolId: null,
+    toolId: toolId ,
     toolLabel: null,
     toolCategory: null,
-    inputs: {},
+    inputs: inputs,
     lastExecutedInputs: null,
     generatedSource: "",
     result: [],
