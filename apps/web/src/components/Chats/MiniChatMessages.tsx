@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import type { LocalMessage } from "../Editor/hooks/useMiniChat";
 
@@ -16,7 +17,10 @@ import type { PartPayload, FollowUpPart } from "./parts.types";
 
 const LoadingBubble: React.FC = () => (
   <div className="flex justify-start">
-    <div className="bg-[#F1F3F4] dark:bg-[#121417] text-ink-500 dark:text-ink-400 px-4 py-3 rounded-2xl text-sm flex gap-1 items-center">
+    <div
+      className="bg-[#F1F3F4] dark:bg-[#121417] text-ink-500 dark:text-ink-400
+        px-4 py-3 rounded-2xl text-sm flex gap-1 items-center"
+    >
       <div className="dot-loader" />
     </div>
   </div>
@@ -55,7 +59,7 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
             | FollowUpPart
             | undefined;
 
-          // ─── Pure loading — no parts yet ──────────────────────
+          // ─── Pure loading — no parts have arrived yet ───────
           if (msg.isLoading && !msg.text && !hasParts) {
             return <LoadingBubble key={msg.id} />;
           }
@@ -63,21 +67,37 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
           return (
             <div
               key={msg.id}
-              className={`flex flex-col gap-1.5 w-full ${msg.isUser ? "items-end" : "items-start"}`}
+              className={`flex flex-col gap-1.5 w-full ${
+                msg.isUser ? "items-end" : "items-start"
+              }`}
             >
-              {/* ─── Stream parts (render as they arrive) ─────── */}
+              {/* ─── Stream parts (render incrementally) ─── */}
               {!msg.isUser && hasParts && (
                 <div className="w-full">
-                  <MessageParts parts={streamParts} />
+                  <MessageParts
+                    parts={streamParts}
+                    isLoading={!!msg.isLoading}
+                  />
                 </div>
               )}
 
-              {/* ─── Inline loader while parts stream, pre-text ── */}
-              {!msg.isUser && msg.isLoading && !msg.text && hasParts && (
-                <LoadingBubble />
-              )}
+              {/* ─── Inline loader — parts streaming, text not yet started ─── */}
+              <AnimatePresence>
+                {!msg.isUser && msg.isLoading && !msg.text && hasParts && (
+                  <motion.div
+                    key="inline-loader"
+                    initial={{ opacity: 1 }}
+                    exit={{
+                      opacity: 0,
+                      transition: { duration: 0.2, ease: "easeOut" },
+                    }}
+                  >
+                    <LoadingBubble />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-              {/* ─── Final text bubble ─────────────────────────── */}
+              {/* ─── Final text bubble ─── */}
               {(msg.text || (msg.isLoading && !hasParts)) && (
                 <ChatBubble
                   text={msg.text}
@@ -92,7 +112,7 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
                 />
               )}
 
-              {/* ─── Follow-up card ────────────────────────────── */}
+              {/* ─── Follow-up card ─── */}
               {!msg.isUser && followUp && (
                 <div className="w-full">
                   <FollowUpCard part={followUp} onSubmit={onFollowUpSubmit} />
@@ -101,6 +121,7 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
             </div>
           );
         })}
+
         <div ref={bottomRef} />
       </div>
     )}

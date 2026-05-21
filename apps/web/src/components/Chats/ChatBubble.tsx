@@ -102,8 +102,9 @@ export function ChatBubble({
 
   return (
     <div
-      className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"}`}
+      className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start w-full"}`}
     >
+      {/* ─── Attachments (user only) ─── */}
       {hasAttachments && (
         <div className="flex flex-wrap gap-1 max-w-[78%] justify-end mb-0.5">
           {references.map(ref => (
@@ -116,20 +117,31 @@ export function ChatBubble({
         </div>
       )}
 
-      <div
-        className={`
-    ${isUser ? "bg-[#DEFCFE] dark:bg-[#121417] rounded-br-sm" : "bg-[#F1F3F4] dark:bg-[#121417] rounded-bl-sm"}
-    text-ink-500 dark:text-ink-400
-    px-4 py-2.5 rounded-2xl max-w-[78%] text-sm leading-relaxed
-    [overflow-wrap:anywhere]
-    ${isUser ? "whitespace-pre-wrap" : "whitespace-pre-line"}
-  `}
-      >
-        {text}
-      </div>
+      {/* ─── Bubble ─── */}
+      {isUser ? (
+        // User bubble — pill with background
+        <div
+          className="bg-[#DEFCFE] dark:bg-[#121417] rounded-2xl rounded-br-sm
+            text-ink-500 dark:text-ink-400
+            px-4 py-2.5 max-w-[78%] text-sm leading-relaxed
+            [overflow-wrap:anywhere] whitespace-pre-wrap"
+        >
+          {text}
+        </div>
+      ) : (
+        // Agent — transparent, flush, full-width
+        <div
+          className="w-full text-sm leading-relaxed
+            text-ink-500 dark:text-ink-400
+            [overflow-wrap:anywhere] whitespace-pre-line"
+        >
+          {text}
+        </div>
+      )}
 
+      {/* ─── Rating (agent only) ─── */}
       {!isUser && (
-        <div className="flex items-center gap-0.5 pl-1">
+        <div className="flex items-center gap-0.5 mt-0.5">
           <RatingButton
             type="up"
             active={rating === "up"}
