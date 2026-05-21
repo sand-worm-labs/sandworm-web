@@ -23,6 +23,7 @@ import { makeRichTextBlock } from "../blocks/richText.js";
 import { makeMarkdownBlock } from "../blocks/markdown.js";
 import { makeDateInputBlock } from "../blocks/dateInput.js";
 import {
+  PowerToolboxInputs,
   YDashboardItem,
   getBlocks,
   getDashboard,
@@ -44,26 +45,33 @@ export type AddBlockGroupBlock =
         | BlockType.DropdownInput
         | BlockType.DateInput
         | BlockType.FileUpload
-        | BlockType.PowerToolbox;
     }
   | {
-      type: BlockType.Python;
-      source?: string;
+      type: BlockType.PowerToolbox
+      toolId: string
+      inputs: PowerToolboxInputs
     }
   | {
-      type: BlockType.SQL;
-      dataSourceId: string | null;
-      isFileDataSource: boolean;
-      source?: string;
+      type: BlockType.Python
+      source?: string
+    }
+  | {
+      type: BlockType.SQL
+      dataSourceId: string | null
+      isFileDataSource: boolean
+      source?: string
     }
   | {
       type:
         | BlockType.Visualization
         | BlockType.VisualizationV2
-        | BlockType.PivotTable;
-      dataframeName: string | null;
+        | BlockType.PivotTable
+      dataframeName: string | null
     }
-  | { type: BlockType.DashboardHeader; content: string };
+  | {
+      type: BlockType.DashboardHeader
+      content: string
+    }
 
 const createBlock = (block: AddBlockGroupBlock, yBlockDefs: Y.Map<YBlock>) => {
   const blockId = uuidv4();

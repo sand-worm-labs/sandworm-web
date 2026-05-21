@@ -100,14 +100,14 @@ export class YjsDocumentController {
       }
       
       addBlocks(sharedDoc.ydoc, [
-        { type: BlockType.Python, source: 'print("Hello, world!")' },
-        { type: BlockType.SQL, source: 'SELECT * FROM users;' },
-        { type: BlockType.Markdown },
-        { type: BlockType.RichText },
-        { type: BlockType.VisualizationV2, dataframeName: 'sales_data' },
-        { type: BlockType.Input },
-        { type: BlockType.DropdownInput },
-        { type: BlockType.DateInput },
+        { type: BlockType.PowerToolbox,    
+          toolId: 'wallet.pnl', 
+          inputs: {
+            chain: 'ethereum',
+            wallet: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+            days: '30',
+          }
+      }
       ]);
       return res.send({
         success: true,
