@@ -4,7 +4,7 @@ import {
   getBlocks,
   getLayout,
 } from '@sandworm/editor'
-import type { YBlock, YBlockGroup } from '@sandworm/editor'
+import type { PowerToolboxInputs, YBlock, YBlockGroup } from '@sandworm/editor'
 import * as Y from 'yjs'
 
 function add(
@@ -125,10 +125,16 @@ export function addPivotTableBlock(doc: Y.Doc, dataframeName: string | null = nu
   )
 }
 
-export function addPowerToolboxBlock(doc: Y.Doc) {
+export function addPowerToolboxBlock(doc: Y.Doc, toolId: string = 'wallet.pnl', inputs: PowerToolboxInputs = {
+  chain: 'ethereum',
+  wallet: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+  days: '30',
+}) {
   add(doc, (layout, blocks, idx) =>
     addBlockGroup(layout, blocks, {
       type: BlockType.PowerToolbox,
+      toolId,
+      inputs,
     }, idx)
   )
 }
@@ -148,7 +154,10 @@ export type BlockSpec =
   | { type: BlockType.FileUpload }
   | { type: BlockType.DashboardHeader; content?: string }
   | { type: BlockType.PivotTable;      dataframeName?: string | null }
-  | { type: BlockType.PowerToolbox }
+  | { type: BlockType.PowerToolbox,       
+     toolId?: string
+     inputs?: PowerToolboxInputs
+ }
 
 export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): void {
   const blocks = getBlocks(doc)
@@ -221,7 +230,11 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): void {
           break
 
         case BlockType.PowerToolbox:
-          addBlockGroup(layout, blocks, { type: BlockType.PowerToolbox }, idx)
+          addBlockGroup(layout, blocks, { 
+            type: BlockType.PowerToolbox,    
+            toolId: spec.toolId ??  "",
+            inputs: spec.inputs ?? null
+           }, idx)
           break
       }
 
