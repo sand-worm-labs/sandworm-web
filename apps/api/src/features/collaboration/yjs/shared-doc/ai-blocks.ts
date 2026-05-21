@@ -23,14 +23,13 @@ function add(
   })
 }
 
-// ─── Individual adders ────────────────────────────────────────────────────────
 
 export function addPythonBlock(doc: Y.Doc, source = '') {
   add(doc, (layout, blocks, idx) =>
     addBlockGroup(layout, blocks, {
       type: BlockType.Python,
       source,
-    }, idx)
+    }, idx, true)
   )
 }
 
@@ -46,7 +45,7 @@ export function addSQLBlock(
       dataSourceId,
       isFileDataSource,
       source,
-    }, idx)
+    }, idx, true)
   )
 }
 
@@ -54,7 +53,7 @@ export function addRichTextBlock(doc: Y.Doc) {
   add(doc, (layout, blocks, idx) =>
     addBlockGroup(layout, blocks, {
       type: BlockType.RichText,
-    }, idx)
+    }, idx, true)
   )
 }
 
@@ -62,7 +61,7 @@ export function addMarkdownBlock(doc: Y.Doc) {
   add(doc, (layout, blocks, idx) =>
     addBlockGroup(layout, blocks, {
       type: BlockType.Markdown,
-    }, idx)
+    }, idx, true)
   )
 }
 
@@ -71,7 +70,7 @@ export function addVisualizationBlock(doc: Y.Doc, dataframeName: string | null =
     addBlockGroup(layout, blocks, {
       type: BlockType.VisualizationV2,
       dataframeName,
-    }, idx)
+    }, idx, true)
   )
 }
 
@@ -79,7 +78,7 @@ export function addInputBlock(doc: Y.Doc) {
   add(doc, (layout, blocks, idx) =>
     addBlockGroup(layout, blocks, {
       type: BlockType.Input,
-    }, idx)
+    }, idx, true)
   )
 }
 
@@ -87,7 +86,7 @@ export function addDropdownInputBlock(doc: Y.Doc) {
   add(doc, (layout, blocks, idx) =>
     addBlockGroup(layout, blocks, {
       type: BlockType.DropdownInput,
-    }, idx)
+    }, idx, true)
   )
 }
 
@@ -95,7 +94,7 @@ export function addDateInputBlock(doc: Y.Doc) {
   add(doc, (layout, blocks, idx) =>
     addBlockGroup(layout, blocks, {
       type: BlockType.DateInput,
-    }, idx)
+    }, idx, true)
   )
 }
 
@@ -103,7 +102,7 @@ export function addFileUploadBlock(doc: Y.Doc) {
   add(doc, (layout, blocks, idx) =>
     addBlockGroup(layout, blocks, {
       type: BlockType.FileUpload,
-    }, idx)
+    }, idx, true)
   )
 }
 
@@ -112,30 +111,26 @@ export function addDashboardHeaderBlock(doc: Y.Doc, content = '') {
     addBlockGroup(layout, blocks, {
       type: BlockType.DashboardHeader,
       content,
-    }, idx)
+    }, idx, true)
   )
 }
 
-export function addPivotTableBlock(doc: Y.Doc, dataframeName: string | null = null) {
+export function addPivotTableBlock(doc: Y.Doc, dataframeName: string | null = null,) {
   add(doc, (layout, blocks, idx) =>
     addBlockGroup(layout, blocks, {
       type: BlockType.PivotTable,
       dataframeName,
-    }, idx)
+    }, idx, true)
   )
 }
 
-export function addPowerToolboxBlock(doc: Y.Doc, toolId: string = 'wallet.pnl', inputs: PowerToolboxInputs = {
-  chain: 'ethereum',
-  wallet: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
-  days: '30',
-}) {
+export function addPowerToolboxBlock(doc: Y.Doc, toolId: string, inputs: PowerToolboxInputs) {
   add(doc, (layout, blocks, idx) =>
     addBlockGroup(layout, blocks, {
       type: BlockType.PowerToolbox,
       toolId,
       inputs,
-    }, idx)
+    }, idx, true)
   )
 }
 
@@ -172,7 +167,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): void {
           addBlockGroup(layout, blocks, {
             type: BlockType.Python,
             source: spec.source ?? '',
-          }, idx)
+          }, idx, true)
           break
 
         case BlockType.SQL:
@@ -181,38 +176,38 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): void {
             dataSourceId: spec.dataSourceId ?? null,
             isFileDataSource: spec.isFileDataSource ?? false,
             source: spec.source ?? '',
-          }, idx)
+          }, idx, true)
           break
 
         case BlockType.RichText:
-          addBlockGroup(layout, blocks, { type: BlockType.RichText }, idx)
+          addBlockGroup(layout, blocks, { type: BlockType.RichText }, idx, true)
           break
 
         case BlockType.Markdown:
-          addBlockGroup(layout, blocks, { type: BlockType.Markdown }, idx)
+          addBlockGroup(layout, blocks, { type: BlockType.Markdown }, idx, true)
           break
 
         case BlockType.VisualizationV2:
           addBlockGroup(layout, blocks, {
             type: BlockType.VisualizationV2,
             dataframeName: spec.dataframeName ?? null,
-          }, idx)
+          }, idx, true)
           break
 
         case BlockType.Input:
-          addBlockGroup(layout, blocks, { type: BlockType.Input }, idx)
+          addBlockGroup(layout, blocks, { type: BlockType.Input }, idx, true)
           break
 
         case BlockType.DropdownInput:
-          addBlockGroup(layout, blocks, { type: BlockType.DropdownInput }, idx)
+          addBlockGroup(layout, blocks, { type: BlockType.DropdownInput }, idx, true)
           break
 
         case BlockType.DateInput:
-          addBlockGroup(layout, blocks, { type: BlockType.DateInput }, idx)
+          addBlockGroup(layout, blocks, { type: BlockType.DateInput }, idx, true)
           break
 
         case BlockType.FileUpload:
-          addBlockGroup(layout, blocks, { type: BlockType.FileUpload }, idx)
+          addBlockGroup(layout, blocks, { type: BlockType.FileUpload }, idx, true)
           break
 
         case BlockType.DashboardHeader:
@@ -226,7 +221,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): void {
           addBlockGroup(layout, blocks, {
             type: BlockType.PivotTable,
             dataframeName: spec.dataframeName ?? null,
-          }, idx)
+          }, idx,true)
           break
 
         case BlockType.PowerToolbox:
@@ -234,7 +229,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): void {
             type: BlockType.PowerToolbox,    
             toolId: spec.toolId ??  "",
             inputs: spec.inputs ?? null
-           }, idx)
+           }, idx,true)
           break
       }
 
