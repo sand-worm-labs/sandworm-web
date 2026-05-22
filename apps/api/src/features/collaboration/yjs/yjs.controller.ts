@@ -15,6 +15,7 @@ import { PersistorFactory } from './persistors/persistor.factory';
 import { addBlockGroupAfterBlock, BlockType, docToMarkdown } from '@sandworm/editor';
 import type { FastifyReply } from 'fastify/types/reply';
 import { addBlocks } from './shared-doc/ai-blocks';
+import { addBlocks } from './shared-doc/ai-blocks';
 
 @ApiTags('YjsDocuments')
 @Controller({
