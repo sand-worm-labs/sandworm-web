@@ -186,8 +186,9 @@ const ToggleFormattingButton = (props: {
       <div className="font-body pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 w-max opacity-0 transition-opacity group-hover/toggle-button:opacity-100 bg-black text-white text-xs p-2 rounded-md flex flex-col gap-y-1 shadow-lg z-[9999]">
         <span>{props.name}</span>
         <span className="text-xs text-ink-400 flex gap-x-0.5 justify-center items-center">
-          {props.shortcut.split("").map(key => (
-            <span key={key}>{key}</span>
+          {props.shortcut.split("").map((key, i) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <span key={`${key}-${i}`}>{key}</span>
           ))}
         </span>
       </div>

@@ -165,7 +165,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
   onUploadFile,
   placeholder = "Create a bar chart with tokens above $1m market cap on Base.",
   maxHeight = 200,
-  acceptedFileTypes = ".csv,.pdf,.doc,.docx,.txt,.xls,.xlsx",
+  acceptedFileTypes = ".csv,.pdf,.doc,.docx,.txt,.xls,.xlsx,.md",
   disabled,
   referenceSources = DEFAULT_SOURCES,
   pendingReview,
