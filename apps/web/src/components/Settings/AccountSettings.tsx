@@ -92,7 +92,7 @@ function WorkspaceRow({
 
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-medium text-ink-100 dark:text-white truncate">
+            <span className=" capitalize text-sm font-medium  text-ink-100 dark:text-white truncate">
               {workspace.name}
             </span>
             {isCurrentWorkspace && (

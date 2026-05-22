@@ -65,7 +65,7 @@ export default function RunAllV2(props: Props) {
           "bg-[#F1F3F4] dark:bg-[#2A2A28] text-ink-300 dark:text-ink-600 cursor-not-allowed":
             props.disabled || isAborting,
 
-          "bg-white dark:bg-[#1C1C1A] text-ink-100 dark:text-ink-200 border border-border-tertiary dark:border-[#3A3A38] hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]":
+          "bg-white dark:bg-[#1C1C1A] text-ink-300 dark:text-ink-200 border border-border-tertiary dark:border-[#3A3A38] hover:text-white hover:bg-[#000] dark:hover:bg-[#2A2A28]":
             !props.disabled && !loading && !isAborting,
 
           "bg-[#FEE2E2] dark:bg-[#2A0A0A] text-[#DC2626] dark:text-[#F87171] hover:bg-[#FECACA] dark:hover:bg-[#3A0F0F] border border-[#FECACA] dark:border-[#7F1D1D]":

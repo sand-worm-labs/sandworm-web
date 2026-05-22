@@ -684,7 +684,7 @@ export default function WorkspaceSettingsModal({
         </Transition.Child>
 
         {/* ✦ Panel ✦ */}
-        <div className="flex min-h-full items-center justify-center p-4 lg:min-w-[1000px] w-auto">
+        <div className="flex min-h-full items-center justify-center p-4 lg:min-w-[1100px] w-auto">
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-200"
@@ -694,7 +694,7 @@ export default function WorkspaceSettingsModal({
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <div className="relative w-full max-w-[1000px] xl:max-w-[1300px] transform rounded-2xl bg-white dark:bg-base-400 dark:border dark:border-border-tertiary shadow-none transition-all px-12">
+            <div className="relative w-full max-w-[1100px] xl:max-w-[1300px] transform rounded-2xl bg-white dark:bg-base-400 dark:border dark:border-border-tertiary shadow-none transition-all px-12">
               <SettingsHeader
                 workspace={workspace}
                 isMembersLoading={isMembersLoading}

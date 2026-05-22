@@ -216,7 +216,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
             leaveFrom="opacity-100 scale-100 translate-y-0"
             leaveTo="opacity-0 scale-95 translate-y-1"
           >
-            <Dialog.Panel className="w-full max-w-lg bg-white dark:bg-base-100 rounded-2xl overflow-hidden border border-border-secondary dark:border-[#2A2A28] ">
+            <Dialog.Panel className="w-full max-w-lg bg-white dark:bg-base-100 rounded-3xl overflow-hidden border border-border-secondary dark:border-[#2A2A28] ">
               {submitted ? (
                 <SuccessState />
               ) : (
