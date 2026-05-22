@@ -117,19 +117,16 @@ export function ChatBubble({
         </div>
       )}
 
-      {/* ─── Bubble ─── */}
       {isUser ? (
-        // User bubble — pill with background
         <div
           className="bg-[#DEFCFE] dark:bg-[#121417] rounded-2xl rounded-br-sm
             text-ink-500 dark:text-ink-400
             px-4 py-2.5 max-w-[78%] text-sm leading-relaxed
-            [overflow-wrap:anywhere] whitespace-pre-wrap"
+           break-words whitespace-pre-wrap min-w-[80px]"
         >
           {text}
         </div>
       ) : (
-        // Agent — transparent, flush, full-width
         <div
           className="w-full text-sm leading-relaxed
             text-ink-500 dark:text-ink-400
@@ -139,7 +136,6 @@ export function ChatBubble({
         </div>
       )}
 
-      {/* ─── Rating (agent only) ─── */}
       {!isUser && (
         <div className="flex items-center gap-0.5 mt-0.5">
           <RatingButton
