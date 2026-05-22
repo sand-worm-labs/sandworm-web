@@ -8,6 +8,7 @@ import {
 
 import { BubbleReferencePill } from "./ReferencePill";
 import type { AttachedReference } from "./types";
+import type { UploadedFileRef } from "./MiniChatInput";
 
 // =====================================
 // ⬢ Types
@@ -19,7 +20,7 @@ interface ChatBubbleProps {
   text: string;
   isUser: boolean;
   references?: AttachedReference[];
-  files?: File[];
+  fileRefs?: UploadedFileRef[];
   onRate?: (rating: Rating) => void;
 }
 
@@ -27,8 +28,9 @@ interface ChatBubbleProps {
 // ⬢ File Chip
 // =====================================
 
-function FileBubbleChip({ file }: { file: File }) {
-  const isCsv = file.type.includes("csv") || file.type.includes("spreadsheet");
+function FileBubbleChip({ fileRef }: { fileRef: UploadedFileRef }) {
+  const isCsv =
+    fileRef.type.includes("csv") || fileRef.type.includes("spreadsheet");
   const Icon = isCsv ? PiFileCsv : PiFileText;
 
   return (
@@ -40,7 +42,7 @@ function FileBubbleChip({ file }: { file: File }) {
         text-ink-500 dark:text-ink-300"
     >
       <Icon size={11} className="flex-shrink-0 opacity-60" />
-      <span className="max-w-[120px] truncate">{file.name}</span>
+      <span className="max-w-[120px] truncate">{fileRef.name}</span>
     </span>
   );
 }
@@ -87,7 +89,7 @@ export function ChatBubble({
   text,
   isUser,
   references = [],
-  files = [],
+  fileRefs = [],
   onRate,
 }: ChatBubbleProps) {
   const [rating, setRating] = useState<Rating>(null);
@@ -98,19 +100,19 @@ export function ChatBubble({
     onRate?.(next);
   }
 
-  const hasAttachments = isUser && (references.length > 0 || files.length > 0);
+  const hasAttachments =
+    isUser && (references.length > 0 || (fileRefs?.length ?? 0) > 0);
 
   return (
     <div
       className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start w-full"}`}
     >
-      {/* ─── Attachments (user only) ─── */}
       {hasAttachments && (
         <div className="flex flex-wrap gap-1 max-w-[78%] justify-end mb-0.5">
           {references.map(ref => (
             <BubbleReferencePill key={ref.id} reference={ref} />
           ))}
-          {files.map((file, i) => (
+          {fileRefs.map((file, i) => (
             // eslint-disable-next-line react/no-array-index-key
             <FileBubbleChip key={`${file.name}-${i}`} file={file} />
           ))}

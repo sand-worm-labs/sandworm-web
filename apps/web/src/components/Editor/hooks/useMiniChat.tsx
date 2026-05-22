@@ -6,6 +6,7 @@ import type * as Y from "yjs";
 
 import type { PartPayload } from "../../Chats/parts.types";
 import type { AttachedReference, BlockKind } from "../../Chats/types";
+import type { UploadedFileRef } from "../../Chats/MiniChatInput";
 
 import { useChat } from "./useChat";
 import { useChatStream } from "./useChatStream";
@@ -31,7 +32,7 @@ export interface LocalMessage {
   usage?: unknown;
   focusedBlocks?: Array<{ id: string; title: string; type: string }>;
   references?: AttachedReference[];
-  files?: File[];
+  fileRefs: UploadedFileRef[];
   streamParts?: PartPayload[];
 }
 
@@ -43,7 +44,7 @@ interface UseMiniChatParams {
 }
 
 // =====================================
-// ⬢ Mock Parts — TEMP remove when backend sends real parts
+// ⬢ Mock Parts
 // =====================================
 
 const MOCK_PARTS: PartPayload[] = [
@@ -313,7 +314,7 @@ export function useMiniChat({
         onToken: chunk => appendToMessage(loadingId, chunk),
         onPart: part => appendPartToMessage(loadingId, part),
         onComplete: () => {
-          // injectMockParts(loadingId); // ⬢ TEMP — re-enable if backend parts break
+          // injectMockParts(loadingId);
           setIsLoading(false);
         },
         onError: err => {
@@ -327,21 +328,20 @@ export function useMiniChat({
       });
     },
     [startStream, appendToMessage, appendPartToMessage, replaceMessage]
-    //           ↑ injectMockParts dropped from deps too
   );
-
-  // ─── Send ───────────────────────────────────────────────────
 
   const handleSend = useCallback(
     async (
       text: string,
       references: AttachedReference[] = [],
-      files: File[] = [],
+      fileRefs: UploadedFileRef[] = [],
       updateDocumentTitle = false
     ) => {
       if (!text.trim() || isLoading) return;
 
-      addMessage({ text, isUser: true, references, files });
+      console.log("[MiniChat] sending fileRefs:", fileRefs);
+
+      addMessage({ text, isUser: true, references, fileRefs });
       setIsLoading(true);
 
       const loadingId = addMessage({
@@ -361,7 +361,6 @@ export function useMiniChat({
 
         let chatId = activeChatId;
 
-        // ─── First message — create chat ───────────────────
         if (!chatId) {
           const chat = await chatApi.createChat({
             workspaceId,
@@ -421,10 +420,10 @@ export function useMiniChat({
     (
       text: string,
       references?: AttachedReference[],
-      files?: File[],
+      fileRefs?: UploadedFileRef[],
       updateDocumentTitle = false
     ) => {
-      handleSend(text, references, files, updateDocumentTitle).catch(
+      handleSend(text, references, fileRefs, updateDocumentTitle).catch(
         console.error
       );
     },
@@ -434,10 +433,10 @@ export function useMiniChat({
   const handleInputSend = useCallback(
     (data: {
       message: string;
-      files: File[];
+      fileRefs?: UploadedFileRef[];
       references: AttachedReference[];
     }) => {
-      handleSendSafe(data.message, data.references, data.files);
+      handleSendSafe(data.message, data.references, data.fileRefs);
     },
     [handleSendSafe]
   );
