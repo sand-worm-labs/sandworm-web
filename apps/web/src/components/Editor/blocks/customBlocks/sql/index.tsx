@@ -873,16 +873,18 @@ function SQLBlock(props: Props) {
     >
       <div
         className={clsx(
-          "rounded-2xl border",
-          props.isBlockHiddenInPublished && "border-dashed",
+          "rounded-2xl border transition-colors duration-150",
           props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-2xl",
-          {
-            "border-border-focus shadow-sm":
-              isEditorFocused && editorState.mode === "insert",
-            "border-border-focus shadow-none":
-              isEditorFocused && editorState.mode === "normal",
-            "border-border-focus dark:border-border-tertiary": !isEditorFocused,
-          }
+          diffButtonsVisible
+            ? "border-dashed border-primary shadow-[0_0_0_3px_theme(colors.primary/0.12)]"
+            : isEditorFocused && editorState.mode === "insert"
+              ? "border-primary shadow-sm"
+              : isEditorFocused && editorState.mode === "normal"
+                ? "border-primary shadow-none"
+                : clsx(
+                    "border-border-focus",
+                    props.isBlockHiddenInPublished && "border-dashed"
+                  )
         )}
       >
         <div

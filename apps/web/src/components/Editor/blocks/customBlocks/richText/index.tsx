@@ -89,9 +89,6 @@ const useBlockEditor = ({
 
         MathExtension.configure({ evaluation: false }),
 
-        // ── Markdown paste/copy ────────────────────────────────────────────
-        //   Must come AFTER all content extensions so the serializer/parser
-        //   can see every registered node type. Order matters here.
         MarkdownExtension,
 
         Placeholder.configure({
