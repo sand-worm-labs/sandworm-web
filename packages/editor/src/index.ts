@@ -72,6 +72,19 @@ export function getBlocks(doc: Y.Doc) {
   // }
 }
 
+export function getAiBlocks(doc: Y.Doc): Array<{ id: string; block: YBlock }> {
+  const blocks = doc.getMap<YBlock>("blocks");
+  const result: Array<{ id: string; block: YBlock }> = [];
+
+  blocks.forEach((block, id) => {
+    if (block.getAttribute("isAiInput")) {
+      result.push({ id, block });
+    }
+  });
+
+  return result;
+}
+
 export function getLayout(doc: Y.Doc) {
   return doc.getArray<YBlockGroup>("layout");
 }

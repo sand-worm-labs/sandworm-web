@@ -80,7 +80,7 @@ export function WorkspaceDropdownMenu({
       )}
     >
       {/* ✦ Current Workspace Header ✦ */}
-      <div className="flex items-center gap-3 px-3 py-2.5 bg-[#F8F9FA] dark:bg-base-400">
+      <div className="flex items-center gap-3 px-3 py-2.5 bg-white dark:bg-base-400">
         <div className="flex-shrink-0">
           <WorkspaceIcon icon={current.icon} size={28} className="rounded-lg" />
         </div>

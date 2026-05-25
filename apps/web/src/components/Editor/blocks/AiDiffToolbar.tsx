@@ -1,9 +1,11 @@
-import {
-  CheckIcon,
-  XMarkIcon,
-  ArrowUturnLeftIcon,
-} from "@heroicons/react/20/solid";
+"use client";
+
+import { PiCaretUp, PiCaretDown, PiX, PiCheck } from "react-icons/pi";
 import clsx from "clsx";
+
+// =====================================
+// ⬢ Types
+// =====================================
 
 interface AiDiffToolbarProps {
   visible: boolean;
@@ -11,122 +13,175 @@ interface AiDiffToolbarProps {
   totalAi: number;
   accepted: number;
   rejected: number;
+  currentIndex?: number;
+  currentLabel?: string;
+  currentDescription?: string;
   onAcceptAll: () => void;
   onRejectAll: () => void;
-  onUndoAll: () => void;
+  onPrev?: () => void;
+  onNext?: () => void;
+  onAcceptCurrent?: () => void;
+  onRejectCurrent?: () => void;
 }
+
+// =====================================
+// ⬢ AiDiffToolbar
+// =====================================
 
 function AiDiffToolbar({
   visible,
   pendingCount,
   totalAi,
   accepted,
-  rejected,
+  currentIndex,
+  currentLabel,
+  currentDescription,
   onAcceptAll,
   onRejectAll,
-  onUndoAll,
+  onPrev,
+  onNext,
+  onAcceptCurrent,
+  onRejectCurrent,
 }: AiDiffToolbarProps) {
-  const allReviewed = pendingCount === 0;
-  const hasReviewed = accepted + rejected > 0;
-
   if (!visible) return null;
 
+  const allReviewed = pendingCount === 0;
+  const hasCurrent = currentLabel !== undefined;
+
   return (
-    <>
-      <style>{`
-        @keyframes ai-spin {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
-        }
-        @keyframes ai-pulse-ring {
-          0%   { box-shadow: 0 0 0 0 rgba(139,92,246,0.25); }
-          70%  { box-shadow: 0 0 0 6px rgba(139,92,246,0); }
-          100% { box-shadow: 0 0 0 0 rgba(139,92,246,0); }
-        }
-        .ai-spinner {
-          width: 14px; height: 14px;
-          border: 1.5px solid #e5e7eb;
-          border-top-color: #8b5cf6;
-          border-radius: 50%;
-          animation: ai-spin 0.9s linear infinite;
-          flex-shrink: 0;
-        }
-        .ai-toolbar-wrap {
-          animation: ai-pulse-ring 2s ease-out infinite;
-        }
-      `}</style>
+    <div className="print:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-stretch w-[500px] max-w-[calc(100vw-48px)]">
+      {hasCurrent && (
+        <div
+          className="flex items-center gap-4 px-5 py-2.5
+          bg-white dark:bg-[#1C1C1A]
+          border border-b-0 border-border-secondary dark:border-[#2A2A28]
+          rounded-t-2xl"
+        >
+          {currentIndex !== undefined && (
+            <span className="text-[11px] text-ink-300 dark:text-ink-600 tabular-nums flex-shrink-0">
+              {currentIndex + 1} / {totalAi}
+            </span>
+          )}
+
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] font-medium text-ink-500 dark:text-ink-200 truncate">
+              {currentLabel}
+            </p>
+            {currentDescription && (
+              <p className="text-[10.5px] text-ink-300 dark:text-ink-600 truncate">
+                {currentDescription}
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <button
+              type="button"
+              onClick={onRejectCurrent}
+              className="flex items-center justify-center w-7 h-7 rounded-lg
+                border border-border-secondary dark:border-[#2A2A28]
+                text-ink-400 dark:text-ink-500
+                hover:border-[#D85A30]/50 hover:text-[#D85A30]
+                transition-colors"
+            >
+              <PiX size={13} />
+            </button>
+            <button
+              type="button"
+              onClick={onAcceptCurrent}
+              className="flex items-center justify-center w-7 h-7 rounded-lg
+                bg-[#A308F0] hover:bg-[#8A06CC] text-white
+                transition-colors"
+            >
+              <PiCheck size={13} />
+            </button>
+          </div>
+        </div>
+      )}
 
       <div
         className={clsx(
-          "ai-toolbar-wrap print:hidden max-w-[700px] mx-auto",
-          "flex items-center justify-between gap-x-3",
-          "px-4 py-2.5 mb-3",
-          "rounded-full border border-gray-200 bg-white shadow-sm",
-          "text-sm text-gray-500"
+          "flex items-center justify-between gap-4 px-5 py-2",
+          "bg-white dark:bg-[#1C1C1A]",
+          "border border-border-tertiary dark:border-[#2A2A28]",
+          " dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)]",
+          hasCurrent ? "rounded-b-2xl" : "rounded-2xl"
         )}
       >
-        {/* Left */}
-        <div className="flex items-center gap-x-2.5">
-          {!allReviewed ? (
-            <span className="ai-spinner" />
+        <div className="flex items-center gap-3">
+          {allReviewed ? (
+            <PiCheck size={14} className="text-[#A308F0] flex-shrink-0" />
           ) : (
-            <CheckIcon className="h-3.5 w-3.5 text-green-500" />
+            <span className="w-3.5 h-3.5 rounded-full border-[1.5px] border-[#F1F3F4] border-t-[#A308F0] animate-spin flex-shrink-0" />
           )}
 
-          <span className="text-ink-400 font-medium">
+          <span className="text-[13px] font-medium text-ink-500 dark:text-ink-200">
             {allReviewed
-              ? "All blocks reviewed"
-              : `${pendingCount} of ${totalAi} block${totalAi !== 1 ? "s" : ""} pending`}
+              ? "All reviewed"
+              : `${accepted} of ${totalAi} reviewed`}
           </span>
 
-          {accepted > 0 && (
-            <>
-              <span className="text-gray-200">·</span>
-              <span className="text-green-600 text-xs">
-                {accepted} accepted
-              </span>
-            </>
-          )}
-          {rejected > 0 && (
-            <>
-              <span className="text-gray-200">·</span>
-              <span className="text-red-500 text-xs">{rejected} rejected</span>
-            </>
-          )}
-        </div>
+          <div className="w-px h-4 bg-border-secondary dark:bg-[#2A2A28]" />
 
-        {/* Right */}
-        <div className="flex items-center gap-x-2">
-          {hasReviewed && (
+          <div className="flex items-center gap-0.5">
             <button
               type="button"
-              onClick={onUndoAll}
-              className="flex items-center gap-x-1 px-3 py-1 rounded-full border border-gray-200 bg-gray-50 text-gray-500 hover:bg-gray-100 text-xs transition-colors"
+              onClick={onPrev}
+              disabled={!onPrev || (currentIndex ?? 0) === 0}
+              aria-label="Previous change"
+              className="flex items-center justify-center w-7 h-7 rounded-lg
+                text-ink-400 dark:text-ink-500
+                hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+                disabled:opacity-90 disabled:cursor-not-allowed
+                transition-colors"
             >
-              <ArrowUturnLeftIcon className="h-3 w-3" /> Undo all
+              <PiCaretUp size={13} />
+            </button>
+            <button
+              type="button"
+              onClick={onNext}
+              disabled={!onNext || (currentIndex ?? 0) >= totalAi - 1}
+              aria-label="Next change"
+              className="flex items-center justify-center w-7 h-7 rounded-lg
+                text-ink-400 dark:text-ink-500
+                hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+                disabled:opacity-90 disabled:cursor-not-allowed
+                transition-colors"
+            >
+              <PiCaretDown size={13} />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {pendingCount > 0 && (
+            <button
+              type="button"
+              onClick={onRejectAll}
+              className="px-3.5 py-1.5 rounded-lg text-[12px] font-medium
+                text-ink-400 dark:text-ink-500
+                border border-border-secondary dark:border-[#2A2A28]
+                hover:border-error hover:text-error
+                transition-colors"
+            >
+              Decline all
             </button>
           )}
+
           {pendingCount > 0 && (
-            <>
-              <button
-                type="button"
-                onClick={onRejectAll}
-                className="flex items-center gap-x-1 px-3 py-1 rounded-full border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 text-xs transition-colors"
-              >
-                <XMarkIcon className="h-3 w-3" /> Reject all
-              </button>
-              <button
-                type="button"
-                onClick={onAcceptAll}
-                className="flex items-center gap-x-1 px-3 py-1 rounded-full border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 text-xs transition-colors"
-              >
-                <CheckIcon className="h-3 w-3" /> Accept all
-              </button>
-            </>
+            <button
+              type="button"
+              onClick={onAcceptAll}
+              className="px-3.5 py-1.5 rounded-lg text-[12px] font-medium
+                bg-[#0F0F0F] hover:bg-[#1A1A1A] text-white
+                transition-colors"
+            >
+              Accept all
+            </button>
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

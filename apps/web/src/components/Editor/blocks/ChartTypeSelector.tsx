@@ -144,7 +144,7 @@ export default function ChartTypeSelector({
               >
                 <Listbox.Options
                   as="div"
-                  className="w-[30rem] z-20 mt-2 divide-y divide-border-secondary overflow-hidden rounded-md bg-white  dark:bg-base-200 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none px-5 py-4 dark:border-border-tertiary dark:border "
+                  className="w-[30rem] z-20 mt-2 divide-y divide-border-secondary overflow-hidden rounded-lg bg-white  dark:bg-base-200  ring-1 ring-border-secondary focus:outline-none px-5 py-4 dark:border-border-tertiary dark:border font-body "
                 >
                   <div className="grid grid-cols-3 gap-x-4 gap-y-6 items-stretch">
                     {charts.map(option => (
@@ -186,7 +186,7 @@ export default function ChartTypeSelector({
                                 active
                                   ? "text-gray-600 dark:text-white"
                                   : "text-ink-400 dark:text-white",
-                                "text-center px-1.5 text-[10px] absolute bottom-0 translate-y-1/2 bg-white dark:bg-base-100 "
+                                "text-center px-1.5 text-[11.5px] absolute bottom-0 translate-y-1/2 bg-white dark:bg-base-100 "
                               )}
                             >
                               {option.label}

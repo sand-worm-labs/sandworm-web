@@ -57,7 +57,7 @@ function AxisModifierSelector({
       value={value ?? "None"}
       onChange={handleOnChange}
       as="div"
-      className={clsx(className, "flex items-center justify-between")}
+      className={clsx(className, "flex items-center justify-between font-body")}
       disabled={disabled}
     >
       {({ open }) => (
@@ -67,7 +67,7 @@ function AxisModifierSelector({
           </Listbox.Label>
           <div className="relative">
             <Listbox.Button
-              className="w-full cursor-pointer text-ink-400  text-xs leading-6 flex items-center justify-end gap-x-1 "
+              className="w-full cursor-pointer text-ink-400  text-xs leading-6 flex items-center justify-end gap-x-1 font-body "
               ref={buttonRef}
               onClick={onClickButton}
             >

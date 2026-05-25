@@ -49,7 +49,7 @@ export default function HeaderSelect(props: Props) {
               "h-full relative w-full rounded-tr-2xl pl-3 pr-10 text-left sm:text-xs flex items-center cursor-pointer",
               hasValue
                 ? "text-ink-400 dark:text-white bg-gray-50 dark:bg-base-100  hover:bg-gray-100"
-                : "text-red-400 bg-red-50 dark:bg-base-100  hover:bg-red-100"
+                : "text-error bg-base-100 dark:bg-base-100  hover:bg-red-100"
             )}
           >
             <div className="flex gap-x-3 items-center font-body  overflow-hidden">

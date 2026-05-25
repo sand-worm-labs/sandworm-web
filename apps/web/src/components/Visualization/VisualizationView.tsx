@@ -5,7 +5,6 @@ import { format as d3Format } from "d3-format";
 import {
   ChevronDoubleRightIcon,
   ChevronDoubleLeftIcon,
-  CubeTransparentIcon,
 } from "@heroicons/react/24/solid";
 import {
   ArrowLongDownIcon,
@@ -34,6 +33,7 @@ import type {
   XAxis,
 } from "@sandworm/editor";
 import { head, uniq } from "ramda";
+import { PiEmpty } from "react-icons/pi";
 
 import useResettableState from "../Editor/hooks/useResettableState";
 import useSideBar from "../Editor/hooks/useSideBar";
@@ -169,15 +169,12 @@ function VisualizationViewV2(props: Props) {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center space-y-2">
-              <CubeTransparentIcon
-                strokeWidth={1.2}
-                className="h-12 w-12 text-ink-400"
-              />
-              <span className="text-lg text-ink-400">No data</span>
+              <PiEmpty strokeWidth={1.2} className="h-12 w-12 text-ink-400" />
+              <span className="text-base text-ink-400">No data</span>
               {!props.dataframe && (
                 <button
                   type="button"
-                  className="text-xs text-ink-400 hover:underline"
+                  className="text-[0.8rem] font-normal  text-ink-300 font-body hover:underline"
                   onClick={props.onNewSQL}
                 >
                   Add a SQL block to fetch data to visualize.

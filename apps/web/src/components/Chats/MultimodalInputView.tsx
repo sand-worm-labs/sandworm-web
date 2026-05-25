@@ -86,8 +86,7 @@ export const MultimodalInputView = forwardRef<
     border-[1.5px] border-[#E6E0F1]
     bg-base-100 dark:border-border-tertiary dark:bg-[#30302E]
     shadow-[0_3.5px_24px_rgba(120,147,208,0.09)] dark:shadow-none
-    focus-within:ring-4 focus-within:ring-[rgba(163,8,240,0.2)]
-    dark:focus-within:ring-[rgba(163,8,240,0.3)]
+
     transition-all duration-300 ease-in-out font-tertiary text-[13px] 
   "
           >
@@ -112,7 +111,7 @@ export const MultimodalInputView = forwardRef<
         border-none
         focus:ring-0
         resize-none
-        pt-4 px-5 pb-2 /* Small bottom padding for text */
+        pt-4 px-5 pb-2 
         text-sm text-black dark:text-white
         placeholder:text-ink-300 dark:placeholder:text-ink-400
         scrollbar-thin
@@ -165,7 +164,7 @@ export const MultimodalInputView = forwardRef<
                     className={`rounded-full p-2.5 h-fit font-light transition-colors ${
                       input.trim()
                         ? "text-white bg-primary"
-                        : "text-white bg-primary/30 cursor-not-allowed"
+                        : "text-white bg-[#868E96] cursor-not-allowed"
                     }`}
                     onClick={() => input.trim() && onSubmit?.()}
                   >

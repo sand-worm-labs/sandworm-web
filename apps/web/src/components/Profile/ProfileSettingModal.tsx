@@ -45,7 +45,7 @@ interface ProfileSettingsModalProps {
 // ⬢ Constants
 // =====================================
 const inputClassName =
-  "w-full px-3 md:py-2.5 py-1.5 rounded-xl bg-white dark:bg-base-400 border border-[#DEE2E6] dark:border-border-tertiary text-[#868E96] dark:text-white placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition md:text-sm text-[13px] ";
+  "w-full px-3 md:py-2.5 py-1.5 rounded-xl bg-white dark:bg-base-400 border border-[#DEE2E6] dark:border-border-tertiary text-ink-100 dark:text-white placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition md:text-sm text-[13px] disabled:bg-[#DEE2E6] disabled:border-[#DEE2E6] disabled:text-[#868E96] ";
 
 const labelClassName =
   "block text-xs font-bold text-[#6C757D] dark:text-gray-300 mb-2 uppercase font-bold";
@@ -112,13 +112,13 @@ export function ProfileSettingsModal({
                   <div className="w-9 h-[4px] rounded-full bg-gray-200 dark:bg-gray-700" />
                 </div>
                 <form onSubmit={handleSubmit}>
-                  <div className="flex items-center justify-between md:px-10 px-5 py-6">
+                  <div className="flex items-center justify-between md:px-10 px-5 py-4">
                     <div className="flex justify-between w-full">
                       <div>
                         <ProfileCardIcon />
                         <DialogTitle
                           as="h2"
-                          className="text-base font-semibold text-ink-100 dark:text-white mt-3"
+                          className="text-[0.9rem] font-semibold text-ink-100 dark:text-white mt-3"
                         >
                           Edit Profile
                         </DialogTitle>
@@ -129,26 +129,31 @@ export function ProfileSettingsModal({
                       </div>
 
                       <div className="flex flex-col items-center md:items-start shrink-0">
-                        <div className="relative group">
-                          <button
-                            type="button"
-                            disabled
-                            className="hidden  mt-3 md:flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-ink-400 dark:text-ink-400 border-none dark:border-border-tertiary rounded-lg dark:bg-base-100 cursor-not-allowed opacity-50 absolute top-[50%] translate-y-[-70%]"
+                        <div className="relative cursor-pointer w-[52px] h-[52px] lg:w-[80px] lg:h-[80px]">
+                          <div
+                            className="
+    absolute inset-0 z-20 rounded-full
+    bg-black/50
+    flex items-center justify-center
+    pointer-events-none
+  "
                           >
-                            Click to Change Image
-                          </button>
+                            <span className="text-white text-[9px] lg:text-[11px] font-medium text-center leading-tight px-1">
+                              Click to Change <br /> Image
+                            </span>
+                          </div>
+
                           {user?.avater ? (
                             <Image
                               src={user.avater}
-                              width={60}
-                              height={60}
+                              fill
                               alt={
                                 user.fullName || user.username || "User avatar"
                               }
-                              className="rounded-full border-2 border-border-secondary dark:border-border-tertiary"
+                              className="rounded-full border-2 border-border-secondary dark:border-border-tertiary object-cover"
                             />
                           ) : (
-                            <div className="lg:w-[88px] lg:h-[88px] w-[52px] h-[52px] rounded-full border-2 border-border-secondary dark:border-border-tertiary bg-gray-100 dark:bg-base-400 flex items-center justify-center">
+                            <div className="w-full h-full rounded-full border-2 border-border-secondary dark:border-border-tertiary bg-gray-100 dark:bg-base-400 flex items-center justify-center relative overflow-hidden">
                               <Image
                                 src="/img/avatar/avatar6.svg"
                                 alt=""
@@ -191,17 +196,36 @@ export function ProfileSettingsModal({
                       <div className="flex flex-col-reverse md:flex-row gap-8">
                         <div className="flex-1 space-y-6">
                           <section className="space-y-4">
-                            <div>
-                              <label className={labelClassName}>Email</label>
-                              <input
-                                type="email"
-                                value={user?.email || ""}
-                                disabled
-                                className={`${inputClassName} bg-gray-50 dark:bg-[#0D0F11] cursor-not-allowed opacity-60`}
-                              />
-                              <p className="text-xs text-ink-400  dark:text-ink-400 mt-1">
-                                Email cannot be changed
-                              </p>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className={labelClassName}>Email</label>
+                                <input
+                                  type="email"
+                                  value={user?.email || ""}
+                                  disabled
+                                  className={`${inputClassName} bg-gray-50 dark:bg-[#0D0F11] cursor-not-allowed opacity-60`}
+                                />
+                                <p className="text-xs text-ink-400  dark:text-ink-400 mt-1">
+                                  Email cannot be changed
+                                </p>
+                              </div>
+
+                              <div>
+                                <label className={labelClassName}>
+                                  Username
+                                </label>
+                                <input
+                                  type="text"
+                                  name="username"
+                                  placeholder="Username"
+                                  className={inputClassName}
+                                  value={formData.username}
+                                  onChange={handleChange}
+                                />
+                                <p className="text-xs text-ink-400  dark:text-ink-400 mt-1">
+                                  Your public name on Sandworm
+                                </p>
+                              </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -232,21 +256,6 @@ export function ProfileSettingsModal({
                                 />
                               </div>
                             </div>
-
-                            <div>
-                              <label className={labelClassName}>Username</label>
-                              <input
-                                type="text"
-                                name="username"
-                                placeholder="Username"
-                                className={inputClassName}
-                                value={formData.username}
-                                onChange={handleChange}
-                              />
-                              <p className="text-xs text-ink-400  dark:text-ink-400 mt-1">
-                                Your public name on Sandworm
-                              </p>
-                            </div>
                           </section>
 
                           <section className="space-y-4">
@@ -263,7 +272,7 @@ export function ProfileSettingsModal({
                             </div>
                           </section>
 
-                          <section className="space-y-4 pt-4 dark:border-gray-700">
+                          <section className="space-y-4 pt-1.5 dark:border-gray-700">
                             <h3 className="text-xs font-bold text-ink-100 dark:text-white">
                               Social Media
                             </h3>

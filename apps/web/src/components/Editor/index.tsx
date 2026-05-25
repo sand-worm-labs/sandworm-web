@@ -45,6 +45,7 @@ import {
   getClosestDataframe,
   getBlockFlatPosition,
   getBlocks,
+  getAiBlocks,
 } from "@sandworm/editor";
 import type { DataFrame } from "@sandworm/types";
 import {
@@ -111,6 +112,7 @@ import PlusButton from "./PlusButton";
 import DragHandle from "./DragHandle";
 import Title from "./Title";
 import MarkdownBlock from "./blocks/customBlocks/markdown";
+import AiDiffToolbar from "./blocks/AiDiffToolbar";
 
 // The react-dnd package does not export this...
 type Identifier = string | symbol;
@@ -1254,6 +1256,14 @@ const Editor = (props: Props) => {
     dataframesGetter
   );
 
+  const aiBlockCount = useMemo(() => {
+    let count = 0;
+    blocks.value.forEach(block => {
+      if (block.getAttribute("isAiInput")) count++;
+    });
+    return count;
+  }, [blocks]);
+
   const editorWrapperRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!props.isSyncing) {
@@ -1587,13 +1597,6 @@ const Editor = (props: Props) => {
       targetId: string,
       type: Identifier | null
     ) => {
-      console.log("[onGroup] called —", {
-        blockGroupId,
-        blockId,
-        targetId,
-        type,
-      });
-
       props.yDoc.transact(() => {
         if (type === ElementType.Block) {
           groupBlocks(layout.value, blockGroupId, blockId, targetId);
@@ -1714,29 +1717,6 @@ const Editor = (props: Props) => {
 
   console.log("hi", !props.isSyncing, domBlocks, domBlocks.length === 0);
 
-  console.log(
-    "🔴 raw layout",
-    layout.value.toArray().map(bg => ({
-      id: bg.getAttribute("id"),
-      tabs: bg
-        .getAttribute("tabs")
-        ?.toArray()
-        .map(t => ({
-          id: t.getAttribute("id"),
-        })),
-      current: bg.getAttribute("current")?.getAttribute("id"),
-    }))
-  );
-
-  console.log(
-    "🔴 raw blocks",
-    Array.from(blocks.value.entries()).map(([id, b]) => ({
-      id,
-      type: b.getAttribute("type"),
-      title: b.getAttribute("title"),
-    }))
-  );
-
   return (
     <div className="editor-v2 flex flex-col flex-grow justify-center font-body  subpixel-antialiased h-full w-full relative flex-1 min-w-0">
       {props.isDeleted && (
@@ -1842,16 +1822,17 @@ const Editor = (props: Props) => {
         </div>
       </OverlayScrollbarsComponent>
 
-      {/*    <AiDiffToolbar
-        visible
-        totalAi={3}
-        pendingCount={3}
-        accepted={2}
-        rejected={0}
-        onAcceptAll={() => {}}
-        onRejectAll={() => {}}
-        onUndoAll={() => {}}
-      /> */}
+      {aiBlockCount > 0 && (
+        <AiDiffToolbar
+          visible
+          totalAi={aiBlockCount}
+          pendingCount={aiBlockCount}
+          accepted={0}
+          rejected={0}
+          onAcceptAll={() => {}}
+          onRejectAll={() => {}}
+        />
+      )}
 
       <RemoveBlockDashboardConflictDialog
         yDoc={props.yDoc}

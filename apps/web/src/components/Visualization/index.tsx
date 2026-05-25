@@ -37,7 +37,7 @@ import {
 } from "@sandworm/types";
 import type { ConnectDragPreview } from "react-dnd";
 import { equals, head, omit } from "ramda";
-import { ChartPie } from "lucide-react";
+import { PiChartBar } from "react-icons/pi";
 
 import type { ApiDocument } from "@/types";
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
@@ -812,8 +812,8 @@ function VisualizationBlockV2(props: Props) {
             }}
           >
             <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body h-12 divide-x divide-border-secondary dark:divide-border-tertiary">
-              <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-0.5 px-4">
-                <ChartPie className="h-5 w-5 text-ink-400" />
+              <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-0.5 px-1">
+                <PiChartBar className="h-5 w-5 text-ink-400" />
                 <input
                   type="text"
                   className={clsx(
