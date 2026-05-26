@@ -443,7 +443,6 @@ function PrivateDocumentPageInner(
             >
               <PiFloppyDisk
                 size={16}
-                weight="regular"
                 className="rotate-0 group-hover:-rotate-12 transition-transform duration-300"
               />
               <span>Save</span>

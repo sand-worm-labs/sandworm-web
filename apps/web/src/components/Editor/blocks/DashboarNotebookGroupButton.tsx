@@ -2,9 +2,7 @@ import React from "react";
 import Link from "next/link";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
-
-import { FourSquare } from "@/components/Assets/FourSquare";
-import { Notebook } from "@/components/Assets/Notebook";
+import { PiNotebook, PiSquaresFour } from "react-icons/pi";
 
 import { Tooltip } from "./ToolTips";
 
@@ -30,16 +28,14 @@ function DashboardNotebookGroupButton(props: Props) {
     <div className="flex items-center px-2 relative">
       <Link
         className={clsx(
-          "flex gap-x-1.5 items-center rounded-l-sm px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50 ring-1 ring-inset ring-gray-300 dark:ring-border-tertiary hover:bg-ceramic-50",
+          "flex gap-x-1.5 items-center rounded-l-sm px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50 ring-1 ring-inset ring-gray-300 dark:ring-border-tertiary hover:bg-[#F5F3FF]",
           props.current === "notebook"
-            ? "bg-white dark:bg-base-600 dark:text-white text-ink-400  -mr-px"
-            : "bg-ceramic-50 text-ink-100 dark:text-ink-400"
+            ? "bg-accent/10 dark:bg-base-600 dark:text-[#9D8FF0] text-accent -mr-px"
+            : "bg-white text-ink-400 dark:bg-transparent dark:text-ink-400"
         )}
-        href={`/workspace/${props.workspaceId}/documents/${
-          props.documentId
-        }/notebook${props.isEditing ? "/edit" : ""}`}
+        href={`/workspace/${props.workspaceId}/documents/${props.documentId}/notebook${props.isEditing ? "/edit" : ""}`}
       >
-        <Notebook className="w-4 h-4 shrink-0" />
+        <PiNotebook className="w-4 h-4 shrink-0" />
         <span>Notebook</span>
       </Link>
       <Tooltip
@@ -54,21 +50,19 @@ function DashboardNotebookGroupButton(props: Props) {
           type="button"
           id="dashboard-view-button"
           className={clsx(
-            "flex gap-x-1.5 items-center rounded-r-sm px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50 ring-1 ring-inset ring-gray-300 hover:bg-ceramic-50 dark:ring-border-tertiary",
+            "flex gap-x-1.5 items-center rounded-r-sm px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50 ring-1 ring-inset ring-gray-300 hover:bg-[#F5F3FF] dark:ring-border-tertiary",
             props.current === "dashboard"
-              ? "bg-white dark:bg-base-600 dark:text-white text-ink-400 -ml-px"
-              : "bg-ceramic-50 text-ink-100 dark:text-ink-400"
+              ? "bg-accent/10 dark:bg-base-600 dark:text-[#9D8FF0] text-accent -ml-px"
+              : "bg-white text-ink-400 dark:bg-transparent dark:text-ink-400"
           )}
           disabled={isDashboardButtonDisabled}
           onClick={() => {
             router.push(
-              `/workspace/${props.workspaceId}/documents/${
-                props.documentId
-              }/dashboard${props.isEditing ? "/edit" : ""}`
+              `/workspace/${props.workspaceId}/documents/${props.documentId}/dashboard${props.isEditing ? "/edit" : ""}`
             );
           }}
         >
-          <FourSquare className="w-4 h-4 shrink-0" />
+          <PiSquaresFour className="w-4 h-4 shrink-0" />
           <span>Dashboard</span>
         </button>
       </Tooltip>

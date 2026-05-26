@@ -47,7 +47,7 @@ function ApproveDiffButtons({
 
     return (
       <div
-        className="print:hidden mx-auto mb-3 px-4 py-2.5 flex w-[95%] justify-start items-center gap-x-2.5
+        className="print:hidden mx-auto mb-3 px-3 py-2 flex w-[96%] justify-start items-center gap-x-2.5
         rounded-xl border border-border-secondary dark:border-[#2A2A28]
         bg-white dark:bg-[#1C1C1A]"
       >
@@ -80,7 +80,7 @@ function ApproveDiffButtons({
   // ── Pending state ──
   return (
     <div
-      className="print:hidden mx-auto mb-3 px-4 py-2.5 flex w-[95%] justify-between items-center
+      className="print:hidden mx-auto mb-3 px-3 py-2 flex w-[96%] justify-between items-center
       rounded-xl border border-border-secondary dark:border-[#2A2A28]
       bg-white dark:bg-[#1C1C1A]"
     >
