@@ -43,7 +43,7 @@ export class TitleGeneratorService {
 
     const { data } = await firstValueFrom(
       this.httpService.post<GenerateTitleResponse>(
-        `${url}/generate-title`,
+        `${url}/document/generate-title`,
         { openrouter_api_key, message:changeTitleMessage, context: request } satisfies GenerateTitleRequest,
         { headers: { 'Content-Type': 'application/json', 'x-handshake-token': handshakeToken } },
       ),
