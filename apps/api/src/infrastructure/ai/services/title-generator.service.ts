@@ -12,6 +12,7 @@ export interface TitleGeneratorContext {
 }
 
 interface GenerateTitleRequest {
+  message: string;
   openrouter_api_key: string;
   context: TitleGeneratorContext;
 }
@@ -19,6 +20,8 @@ interface GenerateTitleRequest {
 export interface GenerateTitleResponse {
   title: string;
 }
+
+const changeTitleMessage = "Change the title of the document"
 
 @Injectable()
 export class TitleGeneratorService {
@@ -41,11 +44,10 @@ export class TitleGeneratorService {
     const { data } = await firstValueFrom(
       this.httpService.post<GenerateTitleResponse>(
         `${url}/generate-title`,
-        { openrouter_api_key, context: request } satisfies GenerateTitleRequest,
+        { openrouter_api_key, message:changeTitleMessage, context: request } satisfies GenerateTitleRequest,
         { headers: { 'Content-Type': 'application/json', 'x-handshake-token': handshakeToken } },
       ),
     );
-
-    return data;
-  }
+    return data
+  };
 }
