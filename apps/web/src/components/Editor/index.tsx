@@ -1271,8 +1271,6 @@ const Editor = (props: Props) => {
     }
   }, [editorWrapperRef, props.isSyncing]);
 
-  console.log("dataSources:", props.dataSources.toArray());
-
   const [newSQLDatasourceId, newSQLDatasourceIsDemo] = useMemo(() => {
     const dataSource =
       head(

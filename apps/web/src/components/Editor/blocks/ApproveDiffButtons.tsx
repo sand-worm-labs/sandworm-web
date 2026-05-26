@@ -1,14 +1,17 @@
+import clsx from "clsx";
 import {
-  CheckIcon,
-  CommandLineIcon,
-  XMarkIcon,
-  ArrowUturnLeftIcon,
-} from "@heroicons/react/20/solid";
+  PiCheck,
+  PiX,
+  PiArrowCounterClockwise,
+  PiTerminal,
+} from "react-icons/pi";
 
 import type { AiBlockStatus } from "../hooks/useAiDiff";
 
-// 🎨 Interface / Props Definition
 // =====================================
+// ⬢ Types
+// =====================================
+
 interface Props {
   visible: boolean;
   status?: AiBlockStatus;
@@ -17,13 +20,14 @@ interface Props {
   onUndo?: () => void;
   canTry: boolean;
   onTry: () => void;
+  currentIndex?: number;
+  totalAi?: number;
 }
 
-// ApproveDiffButtons Component
 // =====================================
-// Shows buttons to accept, reject, try, or undo an AI-generated suggestion.
-// Switches to a confirmation state after accept/reject with an undo affordance.
+// ⬢ ApproveDiffButtons
 // =====================================
+
 function ApproveDiffButtons({
   visible,
   status,
@@ -32,67 +36,108 @@ function ApproveDiffButtons({
   onUndo,
   canTry,
   onTry,
+  currentIndex,
+  totalAi,
 }: Props) {
   if (!visible) return null;
 
-  if (status === "accepted") {
+  // ── Post-action state ──
+  if (status === "accepted" || status === "rejected") {
+    const isAccepted = status === "accepted";
+
     return (
-      <div className="print:hidden px-2 pb-3 flex w-full justify-end items-center gap-x-2">
-        <span className="flex items-center gap-x-1 text-xs text-green-700 font-medium">
-          <CheckIcon className="h-3.5 w-3.5" /> Accepted
+      <div
+        className="print:hidden mx-auto mb-3 px-4 py-2.5 flex w-[95%] justify-start items-center gap-x-2.5
+        rounded-xl border border-border-secondary dark:border-[#2A2A28]
+        bg-white dark:bg-[#1C1C1A]"
+      >
+        <span
+          className={clsx(
+            "inline-flex items-center gap-x-1 px-2 py-0.5 rounded-md text-[12px] font-medium",
+            isAccepted
+              ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400"
+              : "bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400"
+          )}
+        >
+          {isAccepted ? <PiCheck size={12} /> : <PiX size={12} />}
+          {isAccepted ? "Accepted" : "Rejected"}
         </span>
+
         <button
           type="button"
           onClick={onUndo}
-          className="flex items-center gap-x-1 px-2 py-1 rounded border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 text-xs transition-colors"
+          className="flex items-center gap-x-1 px-2 py-0.5 rounded-md
+            text-[12px] text-ink-300 dark:text-ink-600
+            hover:text-ink-500 dark:hover:text-ink-400
+            transition-colors"
         >
-          <ArrowUturnLeftIcon className="h-3 w-3" /> Undo
+          <PiArrowCounterClockwise size={12} /> Undo
         </button>
       </div>
     );
   }
 
-  if (status === "rejected") {
-    return (
-      <div className="print:hidden px-2 pb-3 flex w-full justify-end items-center gap-x-2">
-        <span className="flex items-center gap-x-1 text-xs text-red-600 font-medium">
-          <XMarkIcon className="h-3.5 w-3.5" /> Rejected
-        </span>
-        <button
-          type="button"
-          onClick={onUndo}
-          className="flex items-center gap-x-1 px-2 py-1 rounded border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 text-xs transition-colors"
-        >
-          <ArrowUturnLeftIcon className="h-3 w-3" /> Undo
-        </button>
-      </div>
-    );
-  }
-
+  // ── Pending state ──
   return (
-    <div className="print:hidden px-2 pb-3 flex w-full justify-end items-center gap-x-2">
-      <button
-        type="button"
-        className="border border-gray-300 bg-white rounded-sm px-2 py-1 flex items-center justify-center gap-x-1 shadow-sm text-gray-700 hover:bg-gray-100 text-xs disabled:bg-gray-200 disabled:cursor-not-allowed"
-        onClick={onTry}
-        disabled={!canTry}
+    <div
+      className="print:hidden mx-auto mb-3 px-4 py-2.5 flex w-[95%] justify-between items-center
+      rounded-xl border border-border-secondary dark:border-[#2A2A28]
+      bg-white dark:bg-[#1C1C1A]"
+    >
+      {/* ── Pending pill ── */}
+      <span
+        className="inline-flex items-center gap-x-1.5 px-2.5 py-1 rounded-md
+        bg-[#ECEAF8] dark:bg-[#2A2440]
+        text-[#6B5ED6] dark:text-[#9D8FF0]
+        text-[12px] font-medium select-none"
       >
-        <CommandLineIcon className="h-3 w-3" /> Try suggestion
-      </button>
-      <button
-        type="button"
-        className="border border-red-300 bg-red-50 rounded-sm px-2 py-1 flex items-center justify-center gap-x-1 shadow-sm text-red-700 hover:bg-red-100 text-xs"
-        onClick={onReject}
-      >
-        <XMarkIcon className="h-3 w-3" /> Reject
-      </button>
-      <button
-        type="button"
-        className="border border-primary-400 bg-primary-100 rounded-sm px-2 py-1 flex items-center justify-center gap-x-1 shadow-sm text-primary-700 hover:bg-primary-200 text-xs"
-        onClick={onAccept}
-      >
-        <CheckIcon className="h-3 w-3" /> Accept
-      </button>
+        {currentIndex !== undefined && totalAi !== undefined
+          ? `${currentIndex + 1}/${totalAi} pending`
+          : "pending"}
+      </span>
+
+      {/* ── Action buttons ── */}
+      <div className="flex items-center gap-x-2">
+        <button
+          type="button"
+          onClick={onTry}
+          disabled={!canTry}
+          className="flex items-center gap-x-1.5 px-3 py-1 rounded-lg
+            border border-border-secondary dark:border-[#2A2A28]
+            bg-white dark:bg-[#1C1C1A]
+            text-ink-400 dark:text-ink-500
+            hover:border-ink-300 hover:text-ink-500
+            disabled:opacity-40 disabled:cursor-not-allowed
+            text-[12px] transition-colors"
+        >
+          <PiTerminal size={12} /> Try
+        </button>
+
+        <button
+          type="button"
+          onClick={onReject}
+          className="flex items-center gap-x-1.5 px-3 py-1 rounded-lg
+            border border-border-secondary dark:border-[#2A2A28]
+            bg-white dark:bg-[#1C1C1A]
+            text-ink-400 dark:text-ink-500
+            hover:border-red-400/50 hover:text-red-500
+            text-[12px] transition-colors"
+        >
+          <PiX size={12} /> Reject
+        </button>
+
+        <button
+          type="button"
+          onClick={onAccept}
+          className="flex items-center gap-x-1.5 px-3 py-1 rounded-lg
+            bg-[#0F0F0F] hover:bg-[#1A1A1A]
+            dark:bg-white dark:hover:bg-gray-100
+            text-white dark:text-[#0F0F0F]
+            text-[12px] transition-colors"
+        >
+          <PiCheck size={12} /> Accept
+        </button>
+      </div>
     </div>
   );
 }
