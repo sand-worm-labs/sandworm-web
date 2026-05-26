@@ -14,6 +14,7 @@ import {
   PiTerminal,
   PiSquaresFour,
   PiTrash,
+  PiToolbox,
 } from "react-icons/pi";
 
 import { AccountDropdown } from "@/components/AccountDropdown";
@@ -28,7 +29,6 @@ import { useIsMobile } from "@/hooks/useMobile";
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
-import { PiToolbox } from "react-icons/pi";
 
 // =====================================
 // ⬢ Types
@@ -197,7 +197,11 @@ export const WorkspaceSidebar = () => {
     if (!pathname.includes("/documents/")) sideBarApi.close();
   }, [pathname, sideBarApi]);
 
-  const isEditor = user?.role?.[0]?.[workspaceId] !== "viewer";
+  const userRole = user?.role?.find(r => r[workspaceId])?.[workspaceId] ?? "viewer";
+
+  const isEditor = userRole !== "viewer";
+
+  console.log("editor?", user?.role?.[0]?.[workspaceId], user?.role);
 
   return (
     <>
@@ -384,7 +388,7 @@ export const WorkspaceSidebar = () => {
                     onDelete={onDeleteDocument}
                     onFavorite={onFavoriteDocument}
                     onUnfavorite={onUnfavoriteDocument}
-                    role={user?.role?.[0]?.[workspaceId] ?? "viewer"}
+                    role={userRole}
                     onCreate={onCreateDocument}
                     onUpdateParent={onUpdateDocumentParent}
                     onBeforeNavigate={onBeforeNavigate}
