@@ -4,6 +4,7 @@ import { usePublicDocuments } from "@/components/Editor/hooks/usePublicDocuments
 import type { ApiDocument } from "@/types";
 
 import { FeaturedExploreCard } from "./FeaturedExploreCard";
+import { FeaturedExploreSectionSkeleton } from "./ExploreSkeletons";
 
 // =====================================
 // ⬢ Constants
@@ -76,16 +77,7 @@ export function FeaturedExploreSection() {
   console.log(queries);
 
   if (featuredLoading && queries.length === 0) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-        {Array.from({ length: 2 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-40 rounded-lg bg-neutral-100 dark:bg-neutral-800 animate-pulse"
-          />
-        ))}
-      </div>
-    );
+    return <FeaturedExploreSectionSkeleton />;
   }
 
   if (featuredError && queries.length === 0) {

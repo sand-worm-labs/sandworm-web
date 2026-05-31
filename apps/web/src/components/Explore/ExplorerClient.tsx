@@ -14,6 +14,7 @@ import { QueryList } from "@/components/Queries/QueryList";
 import { EmptyQueryState } from "@/components/EmptyState/EmptyQueryState";
 import { SortControl, type SortOption } from "@/components/Explore/SortControl";
 import { FeaturedExploreSection } from "@/components/Explore/FeaturedExploreSection";
+import { ExploreListSkeleton } from "@/components/Explore/ExploreSkeletons";
 import type { ApiDocument } from "@/types";
 
 // =====================================
@@ -53,21 +54,6 @@ function sortToFilter(
   }
 }
 
-const Spinner = () => (
-  <div className="h-6 w-6 border-2 border-ink-300 border-t-transparent rounded-full animate-spin" />
-);
-
-const ListSkeleton = () => (
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    {Array.from({ length: 6 }).map((_, i) => (
-      <div
-        key={i}
-        className="h-40 rounded-lg bg-neutral-100 dark:bg-neutral-800 animate-pulse"
-      />
-    ))}
-  </div>
-);
-
 // =====================================
 // ⬢ Main Explorer Client
 // =====================================
@@ -106,8 +92,6 @@ export function ExploreClient({
     error,
     hasMore,
     loadMore,
-    featured,
-    featuredLoading,
   } = usePublicDocuments({
     filter,
     initialDocuments: isDefault ? initialDocuments : [],
@@ -149,7 +133,7 @@ export function ExploreClient({
       </div>
 
       <div className="w-full container mx-auto">
-        <FeaturedExploreSection featured={featured} loading={featuredLoading} />
+        <FeaturedExploreSection />
       </div>
 
       <div className="flex justify-between items-center mt-6 mb-4 container mx-auto">
@@ -162,20 +146,14 @@ export function ExploreClient({
 
       <div className="container mx-auto">
         {documents.length === 0 && loading ? (
-          <ListSkeleton />
+          <ExploreListSkeleton />
         ) : documents.length === 0 ? (
           <EmptyQueryState message="No queries available." />
         ) : (
           <>
-            <QueryList documents={documents} />
+            <QueryList documents={documents} loadingMore={loadingMore} />
 
             <div ref={sentinelRef} aria-hidden="true" className="h-1" />
-
-            {loadingMore && (
-              <div className="flex justify-center py-6">
-                <Spinner />
-              </div>
-            )}
 
             {!hasMore && documents.length > 0 && (
               <div className="text-center text-ink-300 text-sm py-6">
