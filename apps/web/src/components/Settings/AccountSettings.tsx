@@ -19,11 +19,19 @@ import {
   useWorkspaces,
 } from "../Editor/hooks/useWorkspaces";
 import { useSession } from "../Editor/hooks/useAuth";
+import ScrollBar from "../Editor/blocks/ScrollBar";
 import { WorkspaceIcon } from "../Assets/WorkspaceIcon";
 
 import { WorkspaceIcon as WorkspaceIconAvatar } from "./WorkspaceIcon";
 import CreateTeamModal from "./CreateTeam";
 import WorkspaceSettingsModal from "./WorkspaceSettings";
+
+// =====================================
+// ⬢ Constants
+// =====================================
+const WORKSPACE_SCROLL_THRESHOLD = 5;
+const WORKSPACE_ROW_HEIGHT = "3.25rem";
+const WORKSPACE_TABLE_BODY_MAX_HEIGHT = `calc(${WORKSPACE_SCROLL_THRESHOLD} * ${WORKSPACE_ROW_HEIGHT})`;
 
 // =====================================
 // ⬢ Utils
@@ -50,11 +58,70 @@ type WorkspaceRowProps = {
 // =====================================
 function WorkspaceTableHeader() {
   return (
-    <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] dark:text-ink-400 uppercase tracking-wider border-border-secondary  dark:border-border-tertiary border-b">
+    <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] dark:text-ink-400 uppercase tracking-wider border-border-secondary dark:border-border-tertiary border-b shrink-0">
       <div className="flex-1">Workspace</div>
       <div className="hidden sm:block w-32 text-center">Members</div>
       <div className="hidden sm:block w-24 text-center">Plan</div>
       <div className="w-10" />
+    </div>
+  );
+}
+
+// =====================================
+// ⬢ Workspace Table Skeleton
+// =====================================
+function WorkspaceTableSkeleton() {
+  return (
+    <div className="w-full" aria-busy="true" aria-label="Loading workspaces">
+      <WorkspaceTableHeader />
+      <div className="space-y-0">
+        {(["a", "b", "c"] as const).map(key => (
+          <div
+            key={key}
+            className="flex items-center px-5 py-4 border-b border-border-secondary dark:border-border-tertiary animate-pulse"
+          >
+            <div className="flex-1 flex items-center gap-4 min-w-0">
+              <div className="h-10 w-10 rounded-full bg-[#F8F9FA] dark:bg-base-100 shrink-0" />
+              <div className="flex-1 min-w-0 space-y-2">
+                <div className="h-4 w-36 max-w-full rounded bg-[#F8F9FA] dark:bg-base-100" />
+                <div className="h-3 w-24 rounded bg-[#F8F9FA] dark:bg-base-100 sm:hidden" />
+              </div>
+            </div>
+            <div className="hidden sm:block w-32">
+              <div className="mx-auto h-4 w-20 rounded bg-[#F8F9FA] dark:bg-base-100" />
+            </div>
+            <div className="hidden sm:block w-24">
+              <div className="mx-auto h-4 w-12 rounded bg-[#F8F9FA] dark:bg-base-100" />
+            </div>
+            <div className="w-10 flex justify-center">
+              <div className="h-5 w-5 rounded bg-[#F8F9FA] dark:bg-base-100" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// =====================================
+// ⬢ Workspace Empty State
+// =====================================
+function WorkspaceEmptyState({
+  message,
+  className,
+}: {
+  message: string;
+  className?: string;
+}) {
+  return (
+    <div
+      className={clsx(
+        "flex flex-col items-center justify-center text-center",
+        className
+      )}
+    >
+      <WorkspaceIcon />
+      <p className="text-sm font-medium text-[#868E96] mt-3">{message}</p>
     </div>
   );
 }
@@ -170,23 +237,36 @@ function WorkspaceTable({
   onSwitch: (id: string) => void;
   onOpenSettings: (id: string) => void;
 }) {
+  const rows = (
+    <>
+      {workspaces.map(ws => (
+        <WorkspaceRow
+          key={ws.id}
+          workspace={ws}
+          isCurrentWorkspace={ws.id === currentWorkspaceId}
+          isAdmin={isAdminOf(ws.id)}
+          allowSettings={allowSettings}
+          isSwitching={isSwitching}
+          onSwitch={onSwitch}
+          onOpenSettings={onOpenSettings}
+        />
+      ))}
+    </>
+  );
+
   return (
     <div className="w-full">
       <WorkspaceTableHeader />
-      <div className="space-y-0">
-        {workspaces.map(ws => (
-          <WorkspaceRow
-            key={ws.id}
-            workspace={ws}
-            isCurrentWorkspace={ws.id === currentWorkspaceId}
-            isAdmin={isAdminOf(ws.id)}
-            allowSettings={allowSettings}
-            isSwitching={isSwitching}
-            onSwitch={onSwitch}
-            onOpenSettings={onOpenSettings}
-          />
-        ))}
-      </div>
+      {workspaces.length > WORKSPACE_SCROLL_THRESHOLD ? (
+        <ScrollBar
+          className="overflow-auto"
+          style={{ maxHeight: WORKSPACE_TABLE_BODY_MAX_HEIGHT }}
+        >
+          <div className="space-y-0">{rows}</div>
+        </ScrollBar>
+      ) : (
+        <div className="space-y-0">{rows}</div>
+      )}
     </div>
   );
 }
@@ -199,7 +279,8 @@ export default function WorkspaceSettings() {
 
   const session = useSession({ redirectToLogin: true });
   const { workspaceInfo } = useCurrentWorkspaceInfo();
-  const [{ data: allWorkspaces }] = useWorkspaces();
+  const [{ data: allWorkspaces, isLoading: isWorkspacesLoading }] =
+    useWorkspaces();
   const { updateWorkspace, loading: isUpdating } = useUpdateWorkspace();
   const { switchWorkspace, loading: isSwitching } = useSwitchWorkspace();
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -217,6 +298,9 @@ export default function WorkspaceSettings() {
       invitedWorkspaces: allWorkspaces.filter(w => w.ownerId !== userId),
     };
   }, [allWorkspaces, session?.user?.id]);
+
+  const isWorkspacesInitialLoading =
+    session.loading || (isWorkspacesLoading && allWorkspaces.length === 0);
 
   // ⬢ Handlers
   // =====================================
@@ -292,19 +376,19 @@ export default function WorkspaceSettings() {
               depending on your permission level within the organization.
             </p>
           </div>
-          {ownedWorkspaces.length > 0 ? (
+          {isWorkspacesInitialLoading ? (
+            <WorkspaceTableSkeleton />
+          ) : ownedWorkspaces.length > 0 ? (
             <WorkspaceTable
               workspaces={ownedWorkspaces}
               allowSettings
               {...sharedTableProps}
             />
           ) : (
-            <div className="flex flex-col items-center justify-center h-[8rem] text-center">
-              <WorkspaceIcon />
-              <p className="text-sm font-medium text-[#868E96] mt-3">
-                No workspace Found
-              </p>
-            </div>
+            <WorkspaceEmptyState
+              message="No workspace Found"
+              className="h-[8rem]"
+            />
           )}
         </div>
 
@@ -319,19 +403,19 @@ export default function WorkspaceSettings() {
               by the workspace owner.
             </p>
           </div>
-          {invitedWorkspaces.length > 0 ? (
+          {isWorkspacesInitialLoading ? (
+            <WorkspaceTableSkeleton />
+          ) : invitedWorkspaces.length > 0 ? (
             <WorkspaceTable
               workspaces={invitedWorkspaces}
               allowSettings={false}
               {...sharedTableProps}
             />
           ) : (
-            <div className="flex flex-col items-center justify-center h-[15rem] text-center">
-              <WorkspaceIcon />
-              <p className="text-sm font-medium text-[#868E96] mt-3">
-                No workspace invites
-              </p>
-            </div>
+            <WorkspaceEmptyState
+              message="No workspace invites"
+              className="h-[15rem]"
+            />
           )}
         </div>
       </div>
