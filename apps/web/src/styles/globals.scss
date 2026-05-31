@@ -205,6 +205,10 @@
   outline: none;
 }
 
+code, kbd, samp, pre{
+  font-family: 'Moderat Mono', monospace;
+}
+
 .sandworm-prose h1 {
   font-size: 2rem; 
   font-weight: 500;
@@ -393,6 +397,34 @@
   margin: 0.75rem 0;
   color: #6b7280;
 }
+
+/* =====================================
+   ⬢ ANSI → Light Modern Token Map
+   ===================================== */
+
+   .ansi-black-fg         { color: #1f1f1f; }
+   .ansi-red-fg            { color: #A31515; }   /* strings / errors  */
+   .ansi-green-fg          { color: #008000; }   /* comments          */
+   .ansi-yellow-fg         { color: #795E26; }   /* builtins          */
+   .ansi-blue-fg           { color: #0000FF; }   /* keywords          */
+   .ansi-magenta-fg        { color: #AF00DB; }   /* control keywords  */
+   .ansi-cyan-fg           { color: #267F99; }   /* types             */
+   .ansi-white-fg          { color: #1f1f1f; }
+   
+   /* bright variants */
+   .ansi-bright-black  { color: #8B8FA8; }   /* comments / muted  */
+   .ansi-bright-red    { color: #CD3131; }   /* error emphasis     */
+   .ansi-bright-green  { color: #008000; }
+   .ansi-bright-yellow { color: #795E26; }
+   .ansi-bright-blue   { color: #0070C1; }   /* constants         */
+   .ansi-bright-magenta{ color: #AF00DB; }
+   .ansi-bright-cyan   { color: #267F99; }
+   .ansi-bright-white  { color: #1f1f1f; }
+   
+   /* styles */
+   .ansi-bold          { font-weight: 600; }
+   .ansi-italic        { font-style: italic; }
+   .ansi-underline     { text-decoration: underline; }
 
 /* ╔════════════════════════════════════════════╗
    ║                Common + Layouts            ║

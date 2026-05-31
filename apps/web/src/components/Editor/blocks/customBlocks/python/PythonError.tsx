@@ -1,5 +1,5 @@
 import Ansi from "@cocalc/ansi-to-react";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import clsx from "clsx";
 import { useCallback } from "react";
 import { SparklesIcon } from "@heroicons/react/20/solid";
@@ -44,8 +44,8 @@ interface PythonErrorUIProps {
 export function PythonErrorUI(props: PythonErrorUIProps) {
   return (
     <div className="text-xs font-body">
-      <div className="flex border border-red-300 p-2 gap-x-3 text-xs overflow-hidden">
-        <ExclamationTriangleIcon className="text-red-500 h-6 w-6" />
+      <div className="flex border border-error p-2 gap-x-3 text-xs overflow-hidden">
+        <HiOutlineExclamationTriangle className="text-error h-5 w-5" />
         <div>
           <h4 className="font-semibold mb-2">
             Your code could not be executed
@@ -56,12 +56,12 @@ export function PythonErrorUI(props: PythonErrorUIProps) {
           </pre>
           {props.traceback.map(line => (
             <pre key={line} className="whitespace-pre-wrap">
-              <Ansi>{line}</Ansi>
+              <Ansi useClasses>{line}</Ansi>
             </pre>
           ))}
           {props.onFixWithAI && (
             <Tooltip
-              title="Missing OpenAI API key"
+              title="Missing AI key"
               message="Admins can add an OpenAI key in settings."
               className="inline-block"
               tooltipClassname="w-40 text-center"

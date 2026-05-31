@@ -635,7 +635,7 @@ function PythonBlock(props: Props) {
 
               {results.some(r => r.type === "error") && (
                 <div className="print:hidden flex items-center gap-x-1 text-[10px] text-ink-400 whitespace-nowrap">
-                  <code className="bg-red-50 text-error px-1.5 py-0.5 font-mono rounded-md relative">
+                  <code className="bg-error/10 text-error px-1.5 py-0.5 font-body font-medium rounded-md relative">
                     contains errors
                   </code>
                 </div>

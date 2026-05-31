@@ -206,7 +206,6 @@ function useCodeMirror({
   useEffect(() => {
     if (!containerRef.current) return () => {};
 
-    // ─── Destroy whatever is currently mounted ──────────────
     viewRef.current?.destroy();
     viewRef.current = null;
     mergeRef.current?.destroy();

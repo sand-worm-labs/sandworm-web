@@ -456,10 +456,10 @@ export default function ShareModal({
                     <button
                       type="button"
                       onClick={closeModal}
-                      className="text-sm font-medium px-4 py-1.5 rounded-lg
+                      className="text-sm font-medium px-6 py-1.5 rounded-xl
                         text-ink-400 dark:text-ink-500
-                        border border-[#DEE2E6] dark:border-[#3A3A38]
-                        hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+                        border border-[#DEE2E6] dark:border-[#3A3A38] 
+                        hover:bg-[#F1F3F4] bg-[#F8F9FA] dark:hover:bg-[#2A2A28]
                         hover:text-ink-500 dark:hover:text-ink-300
                         transition-colors duration-100"
                     >
@@ -470,7 +470,7 @@ export default function ShareModal({
                       onClick={handleSave}
                       disabled={isUpdating}
                       className={cn(
-                        "flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-100",
+                        "flex items-center gap-1.5 px-6 py-1.5 rounded-xl text-sm font-medium transition-all duration-100",
                         isUpdating
                           ? "bg-[#F1F3F4] dark:bg-[#2A2A28] text-ink-300 dark:text-ink-600 cursor-not-allowed"
                           : "bg-[#A308F0] hover:bg-[#8A06CC] text-white active:scale-[0.98]"

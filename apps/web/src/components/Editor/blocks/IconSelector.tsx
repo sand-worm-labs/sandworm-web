@@ -45,7 +45,7 @@ function IconSelector(props: Props) {
       >
         <Icon
           aria-hidden="true"
-          size={18}
+          size={15}
           className="text-[#616A79] dark:text-ink-400"
         />
       </Menu.Button>

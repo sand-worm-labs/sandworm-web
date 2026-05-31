@@ -229,10 +229,10 @@ function DropDown(props: DropDownProps) {
       </button>
 
       <Menu as="div" className="relative inline-flex text-left font-body">
-        <Menu.Button className="pr-0.5" ref={buttonRef} onClick={onOpen}>
+        <Menu.Button className="pr-0.5 focus-visible:outline-none" ref={buttonRef} onClick={onOpen}>
           <PiDotsThree
             size={18}
-            className="invisible group-hover:visible hover:bg-ceramic-200/50 rounded-md shrink-0"
+            className="invisible group-hover:visible focus-visible:outline-none hover:bg-ceramic-200/50 rounded-md shrink-0"
           />
         </Menu.Button>
 
@@ -546,7 +546,7 @@ function NodeComponent(props: NodeComponentProps) {
               isDropping &&
                 dropHoverState === "center" &&
                 "bg-ceramic-200 border-ceramic-200",
-              "group text-sm font-medium leading-6 w-full flex py-1 rounded-sm hover:text-ceramic-600"
+              "group text-[13.5px] font-normal leading-6 w-full flex py-1 rounded-sm hover:text-ceramic-600"
             )}
             style={{
               paddingLeft: `${props.level}rem`,
