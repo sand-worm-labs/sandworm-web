@@ -50,7 +50,7 @@ const SANDWORM_TABLE_CSS = `
   body {
     margin: 0;
     padding: 12px;
-    font-family: "Geist Mono", ui-monospace, monospace;
+    font-family: "Moderat Mono", ui-monospace, monospace;
     font-size: 12px;
     background: transparent;
     color: #455768;
