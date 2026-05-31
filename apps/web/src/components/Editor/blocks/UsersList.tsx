@@ -229,11 +229,12 @@ function UsersList(props: Props) {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {users.map(user => {
+              {users.map((user, index) => {
                 const isCurrentUser = user.email === props.currentUserEmail;
                 return (
                   <UserItem
-                    key={user.email}
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={`${user.email}-${index}`}
                     user={user}
                     isCurrentUser={isCurrentUser}
                     isSelected={selectedIds.has(user.id)}

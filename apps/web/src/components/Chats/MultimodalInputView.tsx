@@ -11,7 +11,7 @@ import { ModelQuickSelect } from "../Editor/blocks/ModelQuickSelect";
 import { useOpenRouterModels } from "../Editor/hooks/useOpenRouterModel";
 import { ModelPickerModal } from "../Editor/blocks/ModelPicker";
 
-import { StopIcon } from "./icons";
+import { StopIcon, LoaderIcon } from "./icons";
 import { PreviewAttachment } from "./preview-attachment";
 
 export interface Attachment {
@@ -27,6 +27,7 @@ interface MultimodalInputUIProps {
   currentModel?: string;
   onInputChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   isLoading?: boolean;
+  isCreatingNotebook?: boolean;
   onStop?: () => void;
   attachments?: Array<Attachment>;
   disabled?: boolean;
@@ -50,6 +51,7 @@ export const MultimodalInputView = forwardRef<
       input,
       onInputChange,
       isLoading = false,
+      isCreatingNotebook = false,
       onStop,
       attachments = [],
       uploadQueue = [],
@@ -75,6 +77,8 @@ export const MultimodalInputView = forwardRef<
       selectModel,
     } = useOpenRouterModels(workspaceId, currentModel);
 
+    const isInputLocked = disabled || isCreatingNotebook;
+
     return (
       <>
         <div className="relative w-full flex flex-col gap-4">
@@ -90,15 +94,28 @@ export const MultimodalInputView = forwardRef<
     transition-all duration-300 ease-in-out font-tertiary text-[13px] 
   "
           >
+            {isCreatingNotebook && (
+              <div
+                className="absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-base-100/85 dark:bg-[#30302E]/85 backdrop-blur-[1px]"
+                aria-busy="true"
+                aria-label="Creating notebook"
+              >
+                <span className="animate-spin text-primary">
+                  <LoaderIcon size={28} />
+                </span>
+              </div>
+            )}
+
             <TextareaAutosize
               ref={ref}
               placeholder="Start a query..."
               value={input}
               onChange={onInputChange}
+              disabled={isInputLocked}
               onKeyDown={e => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  if (input.trim() && !isLoading && !disabled) {
+                  if (input.trim() && !isLoading && !isInputLocked) {
                     onSubmit?.();
                   }
                 }
@@ -132,7 +149,8 @@ export const MultimodalInputView = forwardRef<
                       ref={ref}
                       type="button"
                       onClick={onFileClick}
-                      className="rounded-full p-2.5 h-fit bg-transparent dark:bg-transparent text-black dark:text-ink-400 border-[#B5C8DB] border hover:bg-[rgba(207,211,222,0.15)] dark:hover:bg-[rgba(255,255,255,0.05)] dark:border-border-tertiary"
+                      disabled={isInputLocked}
+                      className="rounded-full p-2.5 h-fit bg-transparent dark:bg-transparent text-black dark:text-ink-400 border-[#B5C8DB] border hover:bg-[rgba(207,211,222,0.15)] dark:hover:bg-[rgba(255,255,255,0.05)] dark:border-border-tertiary disabled:opacity-50 disabled:pointer-events-none"
                       title="Attach files"
                     >
                       <PiPlus size={18} />
@@ -154,7 +172,7 @@ export const MultimodalInputView = forwardRef<
                     type="button"
                     className="rounded-full p-2.5 h-fit text-white bg-primary"
                     onClick={onStop}
-                    disabled={disabled}
+                    disabled={isInputLocked}
                   >
                     <StopIcon size={18} />
                   </Button>
@@ -162,11 +180,12 @@ export const MultimodalInputView = forwardRef<
                   <Button
                     type="button"
                     className={`rounded-full p-2.5 h-fit font-light transition-colors ${
-                      input.trim()
+                      input.trim() && !isInputLocked
                         ? "text-white bg-primary"
                         : "text-white bg-[#868E96] cursor-not-allowed"
                     }`}
-                    onClick={() => input.trim() && onSubmit?.()}
+                    onClick={() => input.trim() && !isInputLocked && onSubmit?.()}
+                    disabled={isInputLocked}
                   >
                     <PiPaperPlaneTilt size={18} strokeWidth={0.5} />
                   </Button>

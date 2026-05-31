@@ -22,6 +22,7 @@ export function MultimodalInput({
   input,
   setInput,
   isLoading,
+  isCreatingNotebook = false,
   stop,
   attachments,
   setAttachments,
@@ -33,6 +34,7 @@ export function MultimodalInput({
   input: string;
   setInput: (value: string) => void;
   isLoading: boolean;
+  isCreatingNotebook?: boolean;
   stop: () => void;
   attachments: Array<Attachment>;
   setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
@@ -136,6 +138,7 @@ export function MultimodalInput({
 
   const submitForm = useCallback(() => {
     if (!input.trim() && attachments.length === 0) return;
+    if (isCreatingNotebook) return;
 
     handleSubmit(undefined, {
       experimental_attachments: attachments,
@@ -146,7 +149,15 @@ export function MultimodalInput({
     if (width && width > 768) {
       setTimeout(() => textareaRef.current?.focus(), 100);
     }
-  }, [input, attachments, handleSubmit, setAttachments, setInput, width]);
+  }, [
+    input,
+    attachments,
+    handleSubmit,
+    setAttachments,
+    setInput,
+    width,
+    isCreatingNotebook,
+  ]);
 
   const handleFileChange = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
@@ -251,6 +262,7 @@ export function MultimodalInput({
         input={input}
         onInputChange={handleInput}
         isLoading={isLoading}
+        isCreatingNotebook={isCreatingNotebook}
         onSubmit={submitForm}
         onStop={stop}
         attachments={attachments}

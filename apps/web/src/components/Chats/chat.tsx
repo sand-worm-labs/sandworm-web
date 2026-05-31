@@ -24,6 +24,14 @@ type Message = {
   content: string;
 };
 
+// Demo only: set to 0 when done previewing the create-notebook loading overlay.
+const NOTEBOOK_CREATE_DEMO_DELAY_MS =
+  process.env.NODE_ENV === "development" ? 2500 : 0;
+
+function demoDelay(ms: number) {
+  return ms > 0 ? new Promise<void>(resolve => setTimeout(resolve, ms)) : null;
+}
+
 // =====================================
 // ⬢ Chat Main
 // =====================================
@@ -38,6 +46,7 @@ export function Chat({
   const [messages] = useState<Array<Message>>(initialMessages || []);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreatingNotebook, setIsCreatingNotebook] = useState(false);
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
   // ⬢ Handle Chat submission and create new Project
@@ -47,36 +56,49 @@ export function Chat({
       event?.preventDefault?.();
       const text = input.trim();
       if (!text) return;
-      if (documentsState.loading) return;
+      if (documentsState.loading || isCreatingNotebook) return;
 
+      setIsCreatingNotebook(true);
       try {
         const doc = await createDocument({ parentId: null, version: 2 });
+        await demoDelay(NOTEBOOK_CREATE_DEMO_DELAY_MS);
         router.push(
           `/workspace/${workspaceId}/documents/${doc.id}/notebook/edit?prompt=${encodeURIComponent(text)}&panel=ai&updateTitle=true`
         );
       } catch (err) {
         console.error(err);
+        setIsCreatingNotebook(false);
       }
     },
-    [input, documentsState, createDocument, router, workspaceId]
+    [
+      input,
+      documentsState,
+      createDocument,
+      router,
+      workspaceId,
+      isCreatingNotebook,
+    ]
   );
 
   // ⬢ Handle Prompt click and create new Project
   // =====================================
   const handlePromptSelect = useCallback(
     async (prompt: string, parentId: string | null = null) => {
-      if (documentsState.loading) return;
+      if (documentsState.loading || isCreatingNotebook) return;
 
+      setIsCreatingNotebook(true);
       try {
         const doc = await createDocument({ parentId, version: 2 });
+        await demoDelay(NOTEBOOK_CREATE_DEMO_DELAY_MS);
         router.push(
           `/workspace/${workspaceId}/documents/${doc.id}/notebook/edit?prompt=${encodeURIComponent(prompt)}&panel=ai&updateTitle=true`
         );
       } catch (err) {
         console.error(err);
+        setIsCreatingNotebook(false);
       }
     },
-    [documentsState, createDocument, router, workspaceId]
+    [documentsState, createDocument, router, workspaceId, isCreatingNotebook]
   );
 
   const append = async () => {
@@ -102,6 +124,7 @@ export function Chat({
             setInput={setInput}
             handleSubmit={handleSubmit}
             isLoading={isLoading}
+            isCreatingNotebook={isCreatingNotebook}
             stop={stop}
             attachments={attachments}
             setAttachments={setAttachments}
@@ -112,7 +135,10 @@ export function Chat({
         </form>
 
         <div className="mt-6 hidden lg:block">
-          <ExamplePrompts onPromptSelect={handlePromptSelect} />
+          <ExamplePrompts
+            onPromptSelect={handlePromptSelect}
+            disabled={isCreatingNotebook}
+          />
         </div>
       </div>
     </div>

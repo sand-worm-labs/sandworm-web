@@ -27,18 +27,23 @@ const examplePrompts = [
 
 interface ExamplePromptsProps {
   onPromptSelect: (prompt: string) => void;
+  disabled?: boolean;
 }
 
 // =====================================
 // ⬢ Example Prompts
 // =====================================
-export function ExamplePrompts({ onPromptSelect }: ExamplePromptsProps) {
+export function ExamplePrompts({
+  onPromptSelect,
+  disabled = false,
+}: ExamplePromptsProps) {
   return (
     <div className="w-full max-w-[800px] flex flex-wrap items-center justify-center gap-2 md:gap-4 font-body">
       {examplePrompts.map(({ id, prompt }) => (
         <button
           type="button"
           key={id}
+          disabled={disabled}
           className={clsx([
             "!shrink-0 !rounded-full !px-3 !py-1 !text-xs !flex !items-center !gap-2 hover:cursor-pointer text-ink-400",
             "relative isolate inline-flex items-center justify-center gap-x-2 rounded-md border text-sm font-base",
