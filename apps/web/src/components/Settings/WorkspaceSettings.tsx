@@ -300,10 +300,12 @@ function CreditArc({ pct }: { pct: number }) {
 function TeamPlanSection({
   workspaceId,
   credits,
+  creditsLoading,
   onClose,
 }: {
   workspaceId: string;
   credits: ReturnType<typeof useOpenRouterModels>["credits"];
+  creditsLoading: boolean;
   onClose: () => void;
 }) {
   const router = useRouter();
@@ -341,22 +343,34 @@ function TeamPlanSection({
           <span className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
             AI Credits
           </span>
-          <div className="flex items-center gap-2">
-            <CreditArc
-              pct={credits ? credits.usedCredits / credits.totalCredits : 0}
-            />
-            <div className="flex flex-col leading-tight">
-              <span className="text-sm font-semibold text-ink-900 dark:text-ink-100">
-                ${credits ? formatCredit(credits.availableCredits) : "—"}
-                <span className="text-xs font-normal text-[#6C757D] dark:text-ink-400">
-                  {" "}
-                  / ${credits ? formatCredit(credits.totalCredits) : "—"}
-                </span>
-              </span>
-              <span className="text-[11px] text-[#6C757D] dark:text-ink-400">
-                available (USD)
-              </span>
-            </div>
+          <div className="flex items-center gap-2 min-h-[2.25rem]">
+            {creditsLoading ? (
+              <div className="flex items-center gap-2 w-full">
+                <div className="h-9 w-9 rounded-full bg-[#F8F9FA] dark:bg-base-100 animate-pulse shrink-0" />
+                <div className="flex flex-col gap-1.5 flex-1">
+                  <div className="h-3.5 w-24 rounded bg-[#F8F9FA] dark:bg-base-100 animate-pulse" />
+                  <div className="h-2.5 w-20 rounded bg-[#F8F9FA] dark:bg-base-100 animate-pulse" />
+                </div>
+              </div>
+            ) : (
+              <>
+                <CreditArc
+                  pct={credits ? credits.usedCredits / credits.totalCredits : 0}
+                />
+                <div className="flex flex-col leading-tight">
+                  <span className="text-sm font-semibold text-ink-900 dark:text-ink-100">
+                    ${credits ? formatCredit(credits.availableCredits) : "—"}
+                    <span className="text-xs font-normal text-[#6C757D] dark:text-ink-400">
+                      {" "}
+                      / ${credits ? formatCredit(credits.totalCredits) : "—"}
+                    </span>
+                  </span>
+                  <span className="text-[11px] text-[#6C757D] dark:text-ink-400">
+                    available (USD)
+                  </span>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -416,12 +430,14 @@ function AIConfigSection({
 function MembersSection({
   members,
   currentUserRole,
+  isMembersLoading,
   onChangeRole,
   onRemoveUser,
   onInvite,
 }: {
   members: ReturnType<typeof useWorkspaceSettings>["members"];
   currentUserRole: string | undefined;
+  isMembersLoading: boolean;
   onChangeRole: (id: string, role: UserWorkspaceRole) => Promise<void>;
   onRemoveUser: (id: string) => Promise<void>;
   onInvite: () => void;
@@ -432,15 +448,27 @@ function MembersSection({
       description="Manage access levels for users within this workspace"
       align="start"
     >
-      <MiniUsersList
-        currentUserEmail={
-          members.find(m => m.role === currentUserRole)?.email ?? ""
-        }
-        users={members}
-        onRemoveUser={onRemoveUser}
-        onChangeRole={onChangeRole}
-        onInvite={onInvite}
-      />
+      {isMembersLoading ? (
+        <div
+          className="w-full rounded-xl border border-[#DEE2E6] dark:border-border-tertiary overflow-hidden min-h-[11.5rem]"
+          aria-busy="true"
+          aria-label="Loading members"
+        >
+          <div className="h-10 border-b border-[#CED4DA] dark:border-border-tertiary bg-[#F8F9FA]/60 dark:bg-base-100/60 animate-pulse" />
+          <div className="h-[4.5rem] border-b border-[#DEE2E6] dark:border-border-tertiary bg-[#F8F9FA]/40 dark:bg-base-100/40 animate-pulse" />
+          <div className="h-[4.5rem] bg-[#F8F9FA]/40 dark:bg-base-100/40 animate-pulse" />
+        </div>
+      ) : (
+        <MiniUsersList
+          currentUserEmail={
+            members.find(m => m.role === currentUserRole)?.email ?? ""
+          }
+          users={members}
+          onRemoveUser={onRemoveUser}
+          onChangeRole={onChangeRole}
+          onInvite={onInvite}
+        />
+      )}
     </SettingsRow>
   );
 }
@@ -571,16 +599,26 @@ export default function WorkspaceSettingsModal({
   updateWorkspace,
   isUpdating,
   _isAdmin,
-  isCurrentWorkspace,
-  disableCustomAiModelKey,
+  isCurrentWorkspace: _isCurrentWorkspace,
+  disableCustomAiModelKey: _disableCustomAiModelKey,
 }: WorkspaceSettingsModalProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isManageOpen, setIsManageOpen] = useState(false);
+  const [cachedWorkspace, setCachedWorkspace] =
+    useState<WorkspaceSettingsModalProps["workspace"]>(null);
 
-  const settings = useWorkspaceSettings(workspace?.id, isOpen);
-  console.log(isCurrentWorkspace, disableCustomAiModelKey);
+  useEffect(() => {
+    if (workspace) {
+      setCachedWorkspace(workspace);
+    }
+  }, [workspace]);
+
+  const activeWorkspace = workspace ?? cachedWorkspace;
+  const showModal = isOpen && !!activeWorkspace;
+
+  const settings = useWorkspaceSettings(activeWorkspace?.id, !!activeWorkspace);
   const {
     members,
     currentUserRole,
@@ -607,6 +645,7 @@ export default function WorkspaceSettingsModal({
     closePicker,
     selectModel,
     credits,
+    creditsLoading,
   } = settings;
 
   useEffect(() => {
@@ -618,7 +657,7 @@ export default function WorkspaceSettingsModal({
     }
   }, [isOpen]);
 
-  if (!isOpen || !workspace) return null;
+  if (!activeWorkspace) return null;
 
   const handleSave = async ({
     name,
@@ -633,7 +672,7 @@ export default function WorkspaceSettingsModal({
     }
     try {
       await updateWorkspace(
-        workspace.id,
+        activeWorkspace.id,
         name.trim(),
         selectedIcon ?? undefined
       );
@@ -646,7 +685,7 @@ export default function WorkspaceSettingsModal({
 
   const handleDelete = async () => {
     try {
-      await deleteWorkspace(workspace.id);
+      await deleteWorkspace(activeWorkspace.id);
       setIsDeleteModalOpen(false);
       onClose();
     } catch (err) {
@@ -656,15 +695,20 @@ export default function WorkspaceSettingsModal({
   };
 
   return (
-    <Transition show={isOpen} as={Fragment}>
+    <Transition
+      appear
+      show={showModal}
+      as={Fragment}
+      afterLeave={() => setCachedWorkspace(null)}
+    >
       <div className="fixed inset-0 z-50 overflow-y-auto">
         {/* ✦ Backdrop ✦ */}
         <Transition.Child
           as={Fragment}
-          enter="ease-out duration-200"
+          enter="ease-out duration-300"
           enterFrom="opacity-0"
           enterTo="opacity-100"
-          leave="ease-in duration-150"
+          leave="ease-in duration-200"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
@@ -687,16 +731,16 @@ export default function WorkspaceSettingsModal({
         <div className="flex min-h-full items-center justify-center p-4 lg:min-w-[1000px] w-auto">
           <Transition.Child
             as={Fragment}
-            enter="ease-out duration-200"
+            enter="ease-out duration-300"
             enterFrom="opacity-0 scale-95"
             enterTo="opacity-100 scale-100"
-            leave="ease-in duration-150"
+            leave="ease-in duration-200"
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <div className="relative w-full max-w-[1000px] xl:max-w-[1300px] transform rounded-2xl bg-white dark:bg-base-400 dark:border dark:border-border-tertiary shadow-none transition-all px-12">
+            <div className="relative w-full max-w-[1000px] xl:max-w-[1300px] transform rounded-2xl bg-white dark:bg-base-400 dark:border dark:border-border-tertiary shadow-none px-12">
               <SettingsHeader
-                workspace={workspace}
+                workspace={activeWorkspace}
                 isMembersLoading={isMembersLoading}
                 memberCount={members.length}
                 pendingRequestsCount={mappedPendingRequests.length}
@@ -708,18 +752,20 @@ export default function WorkspaceSettingsModal({
 
               <div className="px-6 py-4 space-y-0">
                 <TeamPlanSection
-                  workspaceId={workspace.id}
+                  workspaceId={activeWorkspace.id}
                   credits={credits}
+                  creditsLoading={creditsLoading}
                   onClose={onClose}
                 />
                 <AIConfigSection
                   selectedModelId={selectedModelId}
-                  assistantModel={workspace.assistantModel}
+                  assistantModel={activeWorkspace.assistantModel}
                   onOpenPicker={openPicker}
                 />
                 <MembersSection
                   members={members}
                   currentUserRole={currentUserRole ?? undefined}
+                  isMembersLoading={isMembersLoading}
                   onChangeRole={onChangeRole}
                   onRemoveUser={onRemoveUser}
                   onInvite={() => setIsInviteModalOpen(true)}
@@ -738,7 +784,7 @@ export default function WorkspaceSettingsModal({
         {/* ✦ SubModals ✦ */}
         <ManageInviteModal
           isOpen={isManageOpen}
-          workspaceId={workspace.id}
+          workspaceId={activeWorkspace.id}
           onClose={() => setIsManageOpen(false)}
           pendingInvites={mappedPendingInvites}
           onCancelInvite={handleCancelInvite}
@@ -752,22 +798,22 @@ export default function WorkspaceSettingsModal({
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
           onDelete={handleDelete}
-          workspaceName={workspace.name}
+          workspaceName={activeWorkspace.name}
           isDeleting={isDeleting}
         />
 
         <InviteUserModal
           isOpen={isInviteModalOpen}
           onClose={() => setIsInviteModalOpen(false)}
-          workspaceName={workspace.name}
-          workspaceId={workspace.id}
+          workspaceName={activeWorkspace.name}
+          workspaceId={activeWorkspace.id}
           onInvite={handleSendInvite}
         />
 
         <EditWorkspaceProfileModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
-          currentName={workspace.name}
+          currentName={activeWorkspace.name}
           onSave={handleSave}
           isLoading={isUpdating}
         />
