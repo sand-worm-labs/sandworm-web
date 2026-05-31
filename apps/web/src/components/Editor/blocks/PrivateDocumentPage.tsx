@@ -44,9 +44,21 @@ import { Tooltip, TooltipV2 } from "./ToolTips";
 import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
 import ShareModal from "./ShareModal";
 
+function EditorColumnPlaceholder() {
+  return (
+    <div className="h-full w-full overflow-hidden flex justify-center">
+      <div className={clsx(widthClasses, "py-20 w-full")}>
+        <TitleSkeleton visible />
+        <ContentSkeleton visible />
+      </div>
+    </div>
+  );
+}
+
 // this is needed because this component only works with the browser
 const V2Editor = dynamic(() => import("@/components/Editor"), {
   ssr: false,
+  loading: EditorColumnPlaceholder,
 });
 
 interface Props {
@@ -465,28 +477,29 @@ function PrivateDocumentPageInner(
       isViewer={props.isApp || isViewer}
     >
       <div className="flex-1 min-w-0 flex overflow-hidden">
-        <V2Editor
-          key={selectedSidebar?._tag}
-          document={props.document}
-          dataSources={dataSources}
-          isPublicViewer={false}
-          isDeleted={isDeleted}
-          onRestoreDocument={onRestoreDocument}
-          isEditable={!props.isApp && !isViewer}
-          isPDF={false}
-          isApp={props.isApp}
-          userId={props.user.id}
-          role={role}
-          isFullScreen={isFullScreen}
-          yDoc={yDoc}
-          executionQueue={executionQueue}
-          aiTasks={aiTasks}
-          provider={provider}
-          isSyncing={syncing}
-          onOpenFiles={onToggleFiles}
-          onSchemaExplorer={onToggleSchemaExplorerSQLBlock}
-          workspaceId={props.workspaceId}
-        />
+        <div className="flex-1 min-w-0 h-full overflow-hidden">
+          <V2Editor
+            document={props.document}
+            dataSources={dataSources}
+            isPublicViewer={false}
+            isDeleted={isDeleted}
+            onRestoreDocument={onRestoreDocument}
+            isEditable={!props.isApp && !isViewer}
+            isPDF={false}
+            isApp={props.isApp}
+            userId={props.user.id}
+            role={role}
+            isFullScreen={isFullScreen}
+            yDoc={yDoc}
+            executionQueue={executionQueue}
+            aiTasks={aiTasks}
+            provider={provider}
+            isSyncing={syncing}
+            onOpenFiles={onToggleFiles}
+            onSchemaExplorer={onToggleSchemaExplorerSQLBlock}
+            workspaceId={props.workspaceId}
+          />
+        </div>
 
         <RightSidebarPanel visible={selectedSidebar !== null}>
           <Comments
@@ -563,15 +576,11 @@ export default function PrivateDocumentPage(props: Props) {
     props.documentId
   );
 
-  useEffect(() => {
-    console.log(document, "doc");
-  }, [document]);
-
   if (!document) {
     return (
       <Layout>
-        <div className="w-full flex justify-center">
-          <div className={clsx(widthClasses, "py-20")}>
+        <div className="flex-1 min-w-0 h-full overflow-hidden flex justify-center">
+          <div className={clsx(widthClasses, "py-20 w-full")}>
             <TitleSkeleton visible />
             <ContentSkeleton visible />
           </div>
