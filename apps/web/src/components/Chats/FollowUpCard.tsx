@@ -20,12 +20,13 @@ interface FollowUpCardProps {
 // =====================================
 
 export function FollowUpCard({ part, onSubmit, disabled }: FollowUpCardProps) {
-  const [answers, setAnswers] = useState<Record<string, string>>(() =>
-    Object.fromEntries(
-      part.questions
-        .filter(q => q.inputType === "radio" && q.options?.[0])
-        .map(q => [q.id, q.options![0].value])
-    )
+  const [answers, setAnswers] = useState<Record<string, string>>(
+    () =>
+      Object.fromEntries(
+        part.questions
+          .filter(q => q.inputType === "radio" && q.options?.[0])
+          .map(q => [q.id, q.options?.[0]?.value])
+      ) as Record<string, string>
   );
 
   const allAnswered = part.questions
@@ -66,9 +67,10 @@ export function FollowUpCard({ part, onSubmit, disabled }: FollowUpCardProps) {
                     key={opt.value}
                     className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg
                       border cursor-pointer transition-all duration-100
-                      ${answers[q.id] === opt.value
-                        ? "border-[#A308F0] bg-[#F9F0FF] dark:bg-[#1F0A2E] dark:border-[#7A06B8]"
-                        : "border-border-secondary dark:border-[#2A2A28] hover:border-[#C97FF5] dark:hover:border-[#5A059A]"
+                      ${
+                        answers[q.id] === opt.value
+                          ? "border-[#A308F0] bg-[#F9F0FF] dark:bg-[#1F0A2E] dark:border-[#7A06B8]"
+                          : "border-border-secondary dark:border-[#2A2A28] hover:border-[#C97FF5] dark:hover:border-[#5A059A]"
                       }`}
                   >
                     <input

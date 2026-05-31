@@ -75,7 +75,7 @@ export function WorkspaceDropdownMenu({
       className={clsx(
         "z-50 bg-white dark:bg-base-400 min-w-[12rem]",
         "border border-border-secondary  dark:border-border-tertiary",
-        "rounded-xl shadow-lg overflow-hidden",
+        "rounded-xl shadow-lg overflow-hidden relative",
         containerClassName
       )}
     >

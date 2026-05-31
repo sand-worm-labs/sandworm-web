@@ -44,152 +44,6 @@ interface UseMiniChatParams {
 }
 
 // =====================================
-// ⬢ Mock Parts
-// =====================================
-
-const MOCK_PARTS: PartPayload[] = [
-  {
-    type: "thinking",
-    thinking:
-      "The user wants a DAO treasury analysis. I need to fetch balances using the DAO Treasury PowerToolbox, then flatten with SQL, cluster with Python, visualise, and write a markdown summary.",
-    duration_ms: 5800,
-    contextUsed: [
-      { blockId: "b1", blockTitle: "SQL Block #1", blockType: "SQL" },
-      { blockId: "b2", blockTitle: "Python Block #2", blockType: "PYTHON" },
-    ],
-  },
-  {
-    type: "tool_call",
-    toolName: "DAO Treasury Balances",
-    category: "defi",
-    params: { daos: "top-8", chain: "Ethereum" },
-  },
-  {
-    type: "block_action",
-    action: "created",
-    blockType: "PowerToolbox",
-    blockTitle: "DAO treasury balances",
-    blockId: "ptb-001",
-  },
-  {
-    type: "block_action",
-    action: "ran",
-    blockType: "PowerToolbox",
-    blockTitle: "DAO treasury balances",
-    blockId: "ptb-001",
-    previewResult: { rowCount: 8, hasError: false },
-  },
-  {
-    type: "tool_result",
-    summary: "Fetched 8 DAOs · $1.08B nominal value",
-    rowCount: 8,
-  },
-  {
-    type: "block_action",
-    action: "created",
-    blockType: "SQL",
-    blockTitle: "Flatten token holdings",
-    blockId: "sql-001",
-  },
-  {
-    type: "block_action",
-    action: "ran",
-    blockType: "SQL",
-    blockTitle: "Flatten token holdings",
-    blockId: "sql-001",
-    previewResult: { rowCount: 214, hasError: false },
-  },
-  {
-    type: "block_action",
-    action: "created",
-    blockType: "Python",
-    blockTitle: "Cluster by asset type",
-    blockId: "py-001",
-  },
-  {
-    type: "block_action",
-    action: "ran",
-    blockType: "Python",
-    blockTitle: "Cluster by asset type",
-    blockId: "py-001",
-    previewResult: { rowCount: 214, hasError: false },
-  },
-  {
-    type: "block_action",
-    action: "created",
-    blockType: "Visualization",
-    blockTitle: "Treasury breakdown chart",
-    blockId: "viz-001",
-  },
-  {
-    type: "block_action",
-    action: "ran",
-    blockType: "Visualization",
-    blockTitle: "Treasury breakdown chart",
-    blockId: "viz-001",
-  },
-  {
-    type: "block_action",
-    action: "created",
-    blockType: "Markdown",
-    blockTitle: "Analysis summary",
-    blockId: "md-001",
-  },
-  {
-    type: "block_action",
-    action: "edited",
-    blockType: "Markdown",
-    blockTitle: "Analysis summary",
-    blockId: "md-001",
-  },
-  {
-    type: "pending_review",
-    blocks: [
-      {
-        blockId: "sql-001",
-        blockType: "SQL",
-        blockTitle: "Flatten token holdings",
-        action: "created",
-      },
-      {
-        blockId: "py-001",
-        blockType: "Python",
-        blockTitle: "Cluster by asset type",
-        action: "created",
-      },
-      {
-        blockId: "md-001",
-        blockType: "Markdown",
-        blockTitle: "Analysis summary",
-        action: "edited",
-      },
-    ],
-  },
-  {
-    type: "follow_up",
-    message: "Before I proceed, a couple of questions:",
-    questions: [
-      {
-        id: "scope",
-        text: "Should I replace the entire notebook or keep existing cells?",
-        inputType: "radio",
-        options: [
-          { value: "all", label: "Replace entire notebook" },
-          { value: "append", label: "Append below existing cells" },
-        ],
-      },
-      {
-        id: "notes",
-        text: "Anything else to note?",
-        inputType: "text",
-        placeholder: "Optional...",
-        required: false,
-      },
-    ],
-  },
-];
-
-// =====================================
 // ⬢ useMiniChat
 // =====================================
 
@@ -204,8 +58,6 @@ export function useMiniChat({
   const { state: sidebarState } = useSideBar();
   const currentModel = workspace?.assistantModel ?? "";
 
-  // ─── State ─────────────────────────────────────────────────
-
   const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [view, setView] = useState<"chat" | "threads">("chat");
@@ -217,8 +69,6 @@ export function useMiniChat({
   const bottomRef = useRef<HTMLDivElement>(null);
   const promptFiredRef = useRef(false);
 
-  // ─── Derived ───────────────────────────────────────────────
-
   const notebookBlocks = useNotebookBlocks(yDoc);
 
   const referenceSources = useMemo(
@@ -228,8 +78,6 @@ export function useMiniChat({
 
   const { api: chatApi } = useChat(workspaceId, documentId);
   const { startStream, stopStream } = useChatStream();
-
-  // ─── Message helpers ───────────────────────────────────────
 
   const addMessage = useCallback((msg: Omit<LocalMessage, "id">) => {
     const id = crypto.randomUUID();
@@ -266,13 +114,6 @@ export function useMiniChat({
     );
   }, []);
 
-  const injectMockParts = useCallback(
-    (id: string) => {
-      MOCK_PARTS.forEach(part => appendPartToMessage(id, part));
-    },
-    [appendPartToMessage]
-  );
-
   // ─── Load thread ───────────────────────────────────────────
 
   const loadThread = useCallback(
@@ -281,7 +122,7 @@ export function useMiniChat({
       setActiveChatId(chat.id);
       setActiveThreadTitle(chat.title);
       setMessages(
-        (chat.messages ?? []).map(m => ({
+        (chat.messages ?? []).map((m: any) => ({
           id: crypto.randomUUID(),
           messageId: m.id,
           text: m.content,
@@ -292,19 +133,20 @@ export function useMiniChat({
           parts: m.parts ?? null,
           attachments: m.attachments ?? null,
           usage: m.usage ?? null,
-          references: (m.focusedBlocks ?? []).map(b => ({
-            id: b.id,
-            label: b.title,
-            sourceKind: "block" as const,
-            blockKind: b.type as BlockKind,
-          })),
+          fileRefs: (m.fileRefs ?? []) satisfies UploadedFileRef[],
+          references: (m.focusedBlocks ?? []).map(
+            (b: { id: string; title: string; type: string }) => ({
+              id: b.id,
+              label: b.title,
+              sourceKind: "block" as const,
+              blockKind: b.type as BlockKind,
+            })
+          ),
         }))
       );
     },
     [chatApi]
   );
-
-  // ─── Stream helper ─────────────────────────────────────────
 
   const streamMessage = useCallback(
     async (chatId: string, msgId: string, loadingId: string) => {
@@ -314,7 +156,6 @@ export function useMiniChat({
         onToken: chunk => appendToMessage(loadingId, chunk),
         onPart: part => appendPartToMessage(loadingId, part),
         onComplete: () => {
-          // injectMockParts(loadingId);
           setIsLoading(false);
         },
         onError: err => {
@@ -348,6 +189,7 @@ export function useMiniChat({
         text: "",
         isUser: false,
         isLoading: true,
+        fileRefs: [],
       });
 
       try {
@@ -441,8 +283,6 @@ export function useMiniChat({
     [handleSendSafe]
   );
 
-  // ─── Vote ──────────────────────────────────────────────────
-
   const handleVote = useCallback(
     async (messageId: string, isUpvoted: boolean) => {
       await chatApi.voteMessage({ messageId, isUpvoted });
@@ -456,8 +296,6 @@ export function useMiniChat({
     },
     [chatApi]
   );
-
-  // ─── Follow-up / review ────────────────────────────────────
 
   const handleFollowUpSubmit = useCallback(
     (answers: Record<string, string>) => {
@@ -476,8 +314,6 @@ export function useMiniChat({
   const handleRejectAll = useCallback((_messageId: string) => {
     console.log("[MiniChat] reject all blocks for message:", _messageId);
   }, []);
-
-  // ─── Thread management ─────────────────────────────────────
 
   const handleNewThread = useCallback(() => {
     stopStream();
@@ -499,8 +335,6 @@ export function useMiniChat({
     },
     [loadThread, stopStream]
   );
-
-  // ─── Scroll ─────────────────────────────────────────────────
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -525,8 +359,6 @@ export function useMiniChat({
   useEffect(() => {
     return () => stopStream();
   }, [stopStream]);
-
-  // ─── Return ────────────────────────────────────────────────
 
   return {
     state: {

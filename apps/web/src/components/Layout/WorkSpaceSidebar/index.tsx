@@ -197,7 +197,8 @@ export const WorkspaceSidebar = () => {
     if (!pathname.includes("/documents/")) sideBarApi.close();
   }, [pathname, sideBarApi]);
 
-  const userRole = user?.role?.find(r => r[workspaceId])?.[workspaceId] ?? "viewer";
+  const userRole =
+    user?.role?.find(r => r[workspaceId])?.[workspaceId] ?? "viewer";
 
   const isEditor = userRole !== "viewer";
 

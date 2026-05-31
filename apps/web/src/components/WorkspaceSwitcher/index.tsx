@@ -109,7 +109,7 @@ function CollapsedSwitcher({
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
-        className="w-7 h-7 rounded-lg flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-transform hover:scale-105"
+        className="w-7 h-7 rounded-lg flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-transform hover:scale-105 "
       >
         <WorkspaceIcon
           icon={workspaceInfo.icon}
@@ -178,7 +178,7 @@ function ExpandedSwitcher({
       <button
         type="button"
         onClick={() => setTreeOpen(o => !o)}
-        className="flex items-center gap-1 px-2 mb-2 w-full group"
+        className="flex items-center gap-1 px-2 mb-2 w-full group "
       >
         <svg
           className={clsx(
@@ -201,15 +201,15 @@ function ExpandedSwitcher({
           type="button"
           onClick={() => setOpen(o => !o)}
           className={clsx(
-            "w-full flex items-center gap-3 px-3 py-1.5 rounded-xl border transition-all",
+            "w-full flex items-center gap-3 px-3 py-2 rounded-xl border-none transition-all bg-[#FFFFFF]",
             "dark:bg-base-100 border-none dark:border-border-tertiary",
-            "hover:border-[#DEE2E6] dark:hover:border-border-tertiary shadow-none"
+            "hover:border-[#DEE2E6] dark:hover:border-border-tertiary shadow-[0_1px_5.5px_6px_#A9A9D41A]"
           )}
         >
           <div className="flex-shrink-0">
             <WorkspaceIcon
               icon={workspaceInfo.icon}
-              size={28}
+              size={22}
               className="rounded-lg"
             />
           </div>

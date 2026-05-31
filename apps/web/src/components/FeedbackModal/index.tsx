@@ -192,7 +192,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
 
   return (
     <Transition show={isOpen} as={Fragment}>
-      <Dialog onClose={handleClose} className="relative z-50">
+      <Dialog onClose={handleClose} className="relative z-[99]">
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-200"
@@ -202,7 +202,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/10 dark:bg-black/30" />
+          <div className="fixed inset-0 bg-[#0000001A] dark:bg-black/30" />
         </Transition.Child>
 
         {/* ── Panel ── */}
@@ -221,7 +221,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                 <SuccessState />
               ) : (
                 <div className="flex flex-col max-h-[90vh]">
-                  <div className="flex items-start justify-between px-6 pt-6 pb-4 border-b border-[#F1F3F4] dark:border-[#2A2A28]">
+                  <div className="flex items-start justify-between px-6 pt-6 pb-2">
                     <div>
                       <Dialog.Title className="text-lg font-medium text-ink-100 dark:text-white flex gap-x-2">
                         <PowerToolBoxIcon />
@@ -485,10 +485,10 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                       className="text-sm font-medium
                         text-ink-400 dark:text-ink-500
                         border border-[#DEE2E6] dark:border-[#3A3A38]
-                        px-4 py-1.5 rounded-lg
+                        px-6 py-1.5 rounded-xl
                         hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
                         hover:text-ink-500 dark:hover:text-ink-300
-                        transition-colors duration-100"
+                        transition-colors duration-100 bg-[#F8F9FA]"
                     >
                       Cancel
                     </button>
@@ -497,7 +497,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                       type="button"
                       onClick={handleSubmit}
                       disabled={!canSubmit || isSubmitting}
-                      className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium
+                      className={`flex items-center gap-2 px-6 py-1.5 rounded-xl text-sm font-medium
                         transition-all duration-100 active:scale-[0.98]
                         ${
                           canSubmit && !isSubmitting
