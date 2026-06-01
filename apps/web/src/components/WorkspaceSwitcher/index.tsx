@@ -27,22 +27,23 @@ interface WorkspaceSwitcherProps {
 // =====================================
 // ⬢ Constants
 // =====================================
+// Transform-only — opacity fade lets sidebar nav show through the panel
 const TRANSITION_DROPDOWN = {
   enter: "transition ease-out duration-150",
-  enterFrom: "opacity-0 scale-95 -translate-y-1",
-  enterTo: "opacity-100 scale-100 translate-y-0",
+  enterFrom: "scale-95 -translate-y-1",
+  enterTo: "scale-100 translate-y-0",
   leave: "transition ease-in duration-100",
-  leaveFrom: "opacity-100 scale-100 translate-y-0",
-  leaveTo: "opacity-0 scale-95 -translate-y-1",
+  leaveFrom: "scale-100 translate-y-0",
+  leaveTo: "scale-95 -translate-y-1",
 } as const;
 
 const TRANSITION_COLLAPSE = {
   enter: "transition ease-out duration-150",
-  enterFrom: "opacity-0 -translate-y-1",
-  enterTo: "opacity-100 translate-y-0",
+  enterFrom: "scale-y-95 -translate-y-0.5 origin-top",
+  enterTo: "scale-y-100 translate-y-0",
   leave: "transition ease-in duration-100",
-  leaveFrom: "opacity-100 translate-y-0",
-  leaveTo: "opacity-0 -translate-y-1",
+  leaveFrom: "scale-y-100 translate-y-0",
+  leaveTo: "scale-y-95 -translate-y-0.5 origin-top",
 } as const;
 
 // =====================================
@@ -50,8 +51,15 @@ const TRANSITION_COLLAPSE = {
 // =====================================
 function useWorkspaceSwitcher() {
   const router = useRouter();
-  const { workspaceInfo, refetch: refetchCurrent } = useCurrentWorkspaceInfo();
-  const [{ data: allWorkspaces }, { refetch: refetchAll }] = useWorkspaces();
+  const {
+    workspaceInfo,
+    refetch: refetchCurrent,
+    isLoading: isLoadingCurrent,
+  } = useCurrentWorkspaceInfo();
+  const [
+    { data: allWorkspaces, isLoading: isLoadingAll },
+    { refetch: refetchAll },
+  ] = useWorkspaces();
   const { switchWorkspace, loading: isSwitching } = useSwitchWorkspace();
 
   const refetchBoth = () => {
@@ -67,7 +75,45 @@ function useWorkspaceSwitcher() {
 
   const others = (allWorkspaces ?? []).filter(w => w.id !== workspaceInfo?.id);
 
-  return { workspaceInfo, others, isSwitching, refetchBoth, handleSwitch };
+  return {
+    workspaceInfo,
+    others,
+    isSwitching,
+    isLoading: isLoadingCurrent || isLoadingAll,
+    refetchBoth,
+    handleSwitch,
+  };
+}
+
+// =====================================
+// ⬢ Loading Skeleton
+// =====================================
+function WorkspaceSwitcherSkeleton({ collapsed }: { collapsed: boolean }) {
+  const pulse = "bg-[#F1F3F4] dark:bg-[#2A2A28] animate-pulse";
+
+  if (collapsed) {
+    return (
+      <div className="flex justify-center px-2 mt-6 mb-2" aria-hidden>
+        <div className={`w-7 h-7 rounded-lg ${pulse}`} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-2 mt-2 mb-2" aria-hidden>
+      <div className="flex items-center gap-1 px-2 mb-2">
+        <div className={`w-3 h-3 rounded-sm ${pulse}`} />
+        <div className={`h-3 w-[4.5rem] rounded-md ${pulse}`} />
+      </div>
+      <div
+        className={`flex items-center gap-3 px-3 py-2 rounded-xl border border-transparent ${pulse}`}
+      >
+        <div className="w-[22px] h-[22px] rounded-lg bg-[#E4E6E8] dark:bg-[#353533] flex-shrink-0" />
+        <div className="flex-1 h-3.5 rounded-md bg-[#E4E6E8] dark:bg-[#353533]" />
+        <div className="w-3.5 h-3.5 rounded bg-[#E4E6E8] dark:bg-[#353533] flex-shrink-0" />
+      </div>
+    </div>
+  );
 }
 
 // =====================================
@@ -105,11 +151,20 @@ function CollapsedSwitcher({
   if (!workspaceInfo) return null;
 
   return (
-    <div ref={ref} className="relative flex justify-center px-2 mt-6 mb-2">
+    <div
+      ref={ref}
+      className="relative z-10 flex justify-center px-2 mt-6 mb-2 isolate"
+    >
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
-        className="w-7 h-7 rounded-lg flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-transform hover:scale-105 "
+        className={clsx(
+          "w-7 h-7 rounded-lg flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-primary/40",
+          "transition-colors duration-100",
+          open
+            ? "bg-[#F9F5FF] dark:bg-[#1A0D26]"
+            : "hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26]"
+        )}
       >
         <WorkspaceIcon
           icon={workspaceInfo.icon}
@@ -121,13 +176,13 @@ function CollapsedSwitcher({
       <Transition
         show={open}
         enter="transition ease-out duration-150"
-        enterFrom="opacity-0 scale-95 -translate-x-1"
-        enterTo="opacity-100 scale-100 translate-x-0"
+        enterFrom="scale-95 -translate-x-1"
+        enterTo="scale-100 translate-x-0"
         leave="transition ease-in duration-100"
-        leaveFrom="opacity-100 scale-100 translate-x-0"
-        leaveTo="opacity-0 scale-95 -translate-x-1"
+        leaveFrom="scale-100 translate-x-0"
+        leaveTo="scale-95 -translate-x-1"
       >
-        <div className="absolute left-full ml-2 top-0">
+        <div className="absolute left-full ml-2 top-0 z-50">
           <WorkspaceDropdownMenu
             current={workspaceInfo}
             others={others}
@@ -173,12 +228,13 @@ function ExpandedSwitcher({
   if (!workspaceInfo) return null;
 
   return (
-    <div ref={ref} className="relative px-2 mt-2 mb-2">
+    <div ref={ref} className="relative z-10 px-2 mt-2 mb-2 isolate">
       {/* ✦ Tree toggle ✦ */}
       <button
         type="button"
         onClick={() => setTreeOpen(o => !o)}
-        className="flex items-center gap-1 px-2 mb-2 w-full group "
+        className="flex items-center gap-1 px-2 mb-2 w-full rounded-lg
+          hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28] transition-colors duration-100"
       >
         <svg
           className={clsx(
@@ -201,9 +257,10 @@ function ExpandedSwitcher({
           type="button"
           onClick={() => setOpen(o => !o)}
           className={clsx(
-            "w-full flex items-center gap-3 px-3 py-2 rounded-xl border-none transition-all bg-[#FFFFFF]",
-            "dark:bg-base-100 border-none dark:border-border-tertiary",
-            "hover:border-[#DEE2E6] dark:hover:border-border-tertiary shadow-[0_1px_5.5px_6px_#A9A9D41A]"
+            "w-full flex items-center gap-3 px-3 py-2 rounded-xl border-none transition-all",
+            "bg-[#FFFFFF] dark:bg-base-100 dark:border-border-tertiary",
+            "hover:border-[#DEE2E6] dark:hover:border-border-tertiary",
+            "shadow-[0_1px_5.5px_6px_#A9A9D41A]"
           )}
         >
           <div className="flex-shrink-0">
@@ -224,7 +281,7 @@ function ExpandedSwitcher({
 
       {/* ✦ Dropdown ✦ */}
       <Transition show={open && treeOpen} {...TRANSITION_DROPDOWN}>
-        <div className="absolute left-2 right-2 top-full mt-1.5">
+        <div className="absolute left-2 right-2 top-full mt-1.5 z-50">
           <WorkspaceDropdownMenu
             current={workspaceInfo}
             others={others}
@@ -258,6 +315,10 @@ export default function WorkspaceSwitcher({
   collapsed,
 }: WorkspaceSwitcherProps) {
   const switcherState = useWorkspaceSwitcher();
+
+  if (switcherState.isLoading && !switcherState.workspaceInfo) {
+    return <WorkspaceSwitcherSkeleton collapsed={collapsed} />;
+  }
 
   if (!switcherState.workspaceInfo) return null;
 

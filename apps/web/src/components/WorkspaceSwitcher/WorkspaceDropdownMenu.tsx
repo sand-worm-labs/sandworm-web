@@ -2,6 +2,7 @@
 
 import React from "react";
 import clsx from "clsx";
+import { PiGear, PiPlus, PiCheck } from "react-icons/pi";
 
 import type { ApiWorkspace } from "@/types";
 
@@ -17,47 +18,96 @@ interface WorkspaceDropdownMenuProps {
   containerClassName?: string;
   onSwitch: (id: string) => void;
   onCreateTeam: () => void;
+  onWorkspaceSettings?: (id: string) => void;
+}
+
+// =====================================
+// ⬢ Shared row styles
+// =====================================
+const ROW_OUTER =
+  "flex w-[calc(100%-0.75rem)] mx-1.5 items-center gap-1.5 px-2 py-1.5 rounded-xl transition-colors duration-100";
+const ROW_HOVER = "hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26]";
+const ROW_MAIN =
+  "flex flex-1 min-w-0 items-center gap-2.5 text-left disabled:opacity-50 disabled:cursor-not-allowed";
+
+// =====================================
+// ⬢ Settings Button
+// =====================================
+function SettingsButton({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={e => {
+        e.stopPropagation();
+        onClick?.();
+      }}
+      aria-label={label}
+      title={label}
+      className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-md
+        text-ink-300 hover:text-ink-500 dark:hover:text-ink-200
+        hover:bg-[#E8E8E6] dark:hover:bg-[#2A2A28] transition-all duration-100"
+    >
+      <PiGear size={14} />
+    </button>
+  );
 }
 
 // =====================================
 // ⬢ Workspace Row
 // =====================================
-const WorkspaceRow = ({
+function WorkspaceMenuRow({
   icon,
   name,
+  isActive,
   disabled,
-  onClick,
-  badge,
+  onSelect,
+  onSettings,
 }: {
   icon?: string;
   name: string;
+  isActive?: boolean;
   disabled?: boolean;
-  onClick?: () => void;
-  badge?: React.ReactNode;
-}) => (
-  <button
-    type="button"
-    onClick={onClick}
-    disabled={disabled}
-    className={clsx(
-      "w-full flex items-center gap-3 px-3 py-2 text-left transition-colors",
-      "hover:bg-[#F8F9FA] dark:hover:bg-[#181C21] ",
-      disabled && "opacity-50 cursor-not-allowed"
-    )}
-  >
-    <div className="flex-shrink-0">
-      <WorkspaceIcon icon={icon} size={28} className="rounded-lg" />
-    </div>
-    <span className="flex-1 xl:text-sm text-[13px] font-medium text-ink-100 truncate capitalize">
-      {name}
-    </span>
-    {badge}
-  </button>
-);
+  onSelect?: () => void;
+  onSettings?: () => void;
+}) {
+  const MainTag = onSelect ? "button" : "div";
 
-const Divider = () => (
-  <div className="h-px bg-[#E9ECEF] dark:bg-border-tertiary" />
-);
+  return (
+    <div className={clsx(ROW_OUTER, ROW_HOVER)}>
+      <MainTag
+        type={onSelect ? "button" : undefined}
+        onClick={onSelect}
+        disabled={disabled}
+        className={clsx(ROW_MAIN, onSelect && "cursor-pointer")}
+      >
+        <div className="flex-shrink-0">
+          <WorkspaceIcon icon={icon} size={24} className="rounded-lg" />
+        </div>
+        <span className="flex-1 min-w-0 text-[13px] font-medium text-ink-100 truncate capitalize">
+          {name}
+        </span>
+      </MainTag>
+
+      {isActive && (
+        <span
+          className="flex-shrink-0 w-5 h-5 rounded-full border border-[#7F56D9]
+            flex items-center justify-center"
+          aria-hidden
+        >
+          <PiCheck size={12} className="text-[#7F56D9]" />
+        </span>
+      )}
+
+      <SettingsButton label={`${name} settings`} onClick={onSettings} />
+    </div>
+  );
+}
 
 // =====================================
 // ⬢ Main Component
@@ -69,74 +119,61 @@ export function WorkspaceDropdownMenu({
   containerClassName,
   onSwitch,
   onCreateTeam,
+  onWorkspaceSettings,
 }: WorkspaceDropdownMenuProps) {
   return (
     <div
       className={clsx(
         "z-50 bg-white dark:bg-base-400 min-w-[12rem]",
-        "border border-border-[#E9ECEF]  dark:border-border-tertiary",
+        "border border-[#E9ECEF] dark:border-border-tertiary",
         "rounded-xl shadow-lg overflow-hidden relative",
         containerClassName
       )}
     >
-      {/* ✦ Current Workspace Header ✦ */}
-      <div className="flex items-center gap-3 px-3 py-2.5 bg-white dark:bg-base-400">
-        <div className="flex-shrink-0">
-          <WorkspaceIcon icon={current.icon} size={28} className="rounded-lg" />
-        </div>
-        <span className="flex-1 text-sm font-medium text-ink-100 truncate capitalize">
-          {current.name}
-        </span>
-        <span className="w-5 h-5 rounded-full border border-[#7F56D9] flex items-center justify-center">
-          <svg
-            className="w-3 h-3 text-[#7F56D9]"
-            viewBox="0 0 12 12"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <polyline points="2,6 5,9 10,3" />
-          </svg>
-        </span>
+      <div className="flex flex-col gap-0.5 py-1.5">
+        <WorkspaceMenuRow
+          icon={current.icon}
+          name={current.name}
+          isActive
+          onSettings={() => onWorkspaceSettings?.(current.id)}
+        />
+
+        {others.map(workspace => (
+          <WorkspaceMenuRow
+            key={workspace.id}
+            icon={workspace.icon}
+            name={workspace.name}
+            disabled={isSwitching}
+            onSelect={() => onSwitch(workspace.id)}
+            onSettings={() => onWorkspaceSettings?.(workspace.id)}
+          />
+        ))}
       </div>
 
-      {/* ✦ Other Workspaces ✦ */}
-      {others.length > 0 && (
-        <>
-          <Divider />
-          {others.map(workspace => (
-            <WorkspaceRow
-              key={workspace.id}
-              icon={workspace.icon}
-              name={workspace.name}
-              disabled={isSwitching}
-              onClick={() => onSwitch(workspace.id)}
-            />
-          ))}
-        </>
-      )}
+      <div className="h-px mx-2 bg-[#E9ECEF] dark:bg-border-tertiary" />
 
-      {/* ✦ Create Team ✦ */}
-      <button
-        type="button"
-        onClick={onCreateTeam}
-        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-ink-100 hover:bg-[#A308F0]/5 transition-colors font-medium"
-      >
-        <svg
-          className="w-4 h-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
+      <div className="py-1.5">
+        <button
+          type="button"
+          onClick={onCreateTeam}
+          className={clsx(
+            ROW_OUTER,
+            ROW_HOVER,
+            "w-[calc(100%-0.75rem)] cursor-pointer"
+          )}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 4v16m8-8H4"
-          />
-        </svg>
-        Create new workspace
-      </button>
+          <span className="flex-1 text-[13px] font-medium text-ink-100 text-left">
+            Create new workspace
+          </span>
+          <span
+            className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-md
+              text-ink-300"
+            aria-hidden
+          >
+            <PiPlus size={14} />
+          </span>
+        </button>
+      </div>
     </div>
   );
 }
