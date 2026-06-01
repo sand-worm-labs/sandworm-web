@@ -41,14 +41,14 @@ const WorkspaceRow = ({
     disabled={disabled}
     className={clsx(
       "w-full flex items-center gap-3 px-3 py-2 text-left transition-colors",
-      "hover:bg-[#F8F9FA] dark:hover:bg-[#181C21]",
+      "hover:bg-[#F8F9FA] dark:hover:bg-[#181C21] ",
       disabled && "opacity-50 cursor-not-allowed"
     )}
   >
     <div className="flex-shrink-0">
       <WorkspaceIcon icon={icon} size={28} className="rounded-lg" />
     </div>
-    <span className="flex-1 xl:text-sm text-[13px] font-medium text-ink-100 truncate">
+    <span className="flex-1 xl:text-sm text-[13px] font-medium text-ink-100 truncate capitalize">
       {name}
     </span>
     {badge}
@@ -74,7 +74,7 @@ export function WorkspaceDropdownMenu({
     <div
       className={clsx(
         "z-50 bg-white dark:bg-base-400 min-w-[12rem]",
-        "border border-border-secondary  dark:border-border-tertiary",
+        "border border-border-[#E9ECEF]  dark:border-border-tertiary",
         "rounded-xl shadow-lg overflow-hidden relative",
         containerClassName
       )}
@@ -84,7 +84,7 @@ export function WorkspaceDropdownMenu({
         <div className="flex-shrink-0">
           <WorkspaceIcon icon={current.icon} size={28} className="rounded-lg" />
         </div>
-        <span className="flex-1 text-sm font-medium text-ink-100 truncate">
+        <span className="flex-1 text-sm font-medium text-ink-100 truncate capitalize">
           {current.name}
         </span>
         <span className="w-5 h-5 rounded-full border border-[#7F56D9] flex items-center justify-center">
@@ -116,8 +116,6 @@ export function WorkspaceDropdownMenu({
         </>
       )}
 
-      <Divider />
-
       {/* ✦ Create Team ✦ */}
       <button
         type="button"
@@ -137,7 +135,7 @@ export function WorkspaceDropdownMenu({
             d="M12 4v16m8-8H4"
           />
         </svg>
-        Create new team
+        Create new workspace
       </button>
     </div>
   );

@@ -100,7 +100,7 @@ function UploadPlaceholder({
             compact ? "flex items-center gap-x-2" : "flex flex-col items-center"
           )}
         >
-          <UploadIcon className={compact ? "w-4 h-4" : ""} />
+          <UploadIcon className={compact ? "w-8 h-8" : ""} />
           <span className={compact ? "whitespace-nowrap" : "mt-2"}>
             Click or drag and drop files here
           </span>

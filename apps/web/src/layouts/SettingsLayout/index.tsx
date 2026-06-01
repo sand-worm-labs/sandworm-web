@@ -44,58 +44,58 @@ export default function SettingsLayout({
   ];
 
   return (
-    <div className=" w-full min-h-screen  bg-[#FEFFFF] ">
-      <div className="flex items-center gap-2 py-3 border-b border-[#F1F3F4] dark:border-border-tertiary px-10 text-[1.1rem] dark:bg-base-500 bg-[#FBFBFB]">
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-[#FEFFFF]">
+      <header className="flex shrink-0 items-center gap-2 border-b border-[#F1F3F4] bg-[#FBFBFB] px-10 py-3 text-[1.1rem] dark:border-border-tertiary dark:bg-base-500">
         <Link
           href="/workspace"
-          className="text-ink-400  hover:text-ink-100 dark:text-ink-400 dark:hover:text-white transition "
+          className="text-ink-400 transition hover:text-ink-100 dark:text-ink-400 dark:hover:text-white"
         >
           <ChevronLeft size={16} />
         </Link>
 
         <span>Settings</span>
-      </div>
+      </header>
 
-      <div className="flex flex-1 min-h-0 md:flex-row flex-col h-full">
-        <div
-          className="p-6 px-3 border-r dark:border-borderLight my-12 border-border-secondary  dark:border-border-tertiary bg-[#FEFFFF] dark:bg-base-500 flex-col justify-between flex self-stretch h-screen"
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
+        <aside
+          className="flex shrink-0 flex-col justify-between border-r border-border-secondary bg-[#FEFFFF] p-6 px-3 dark:border-borderLight dark:border-border-tertiary dark:bg-base-500 md:h-full md:overflow-hidden"
           style={{ minWidth: 250 }}
         >
-          <ul className="mt-4 flex  flex-col w-full">
+          <ul className="mt-4 flex w-full flex-col">
             {tabs.map(tab => (
               <li key={tab.href}>
                 <Link
                   href={tab.href}
-                  className={`border-l-4  px-4 py-1.5 text-sm font-medium mb-1.5 flex space-x-2  items-center rounded-xl  ${
+                  className={`mb-1.5 flex items-center space-x-2 rounded-xl border-l-4 px-4 py-1.5 text-sm font-medium ${
                     pathname === tab.href
-                      ? " bg-[#EBF7F7] dark:bg-[#181C21]  text-primary"
+                      ? "bg-[#EBF7F7] text-primary dark:bg-[#181C21]"
                       : "text-text-gray hover:bg-dark-translucent"
                   }`}
                 >
-                  <span className="flex-shrink-0 hidden md:block">
+                  <span className="hidden flex-shrink-0 md:block">
                     {tab.icon}
                   </span>
-                  <span> {tab.name}</span>
+                  <span>{tab.name}</span>
                 </Link>
               </li>
             ))}
           </ul>
 
-          <div className="lg:block hidden">
+          <div className="hidden lg:block">
             <Button
               variant="destructive"
               onClick={signout}
-              className="w-full text-[0.8rem] py-2 bg-[#FF0000] dark:bg-[#FF4444] font-body "
+              className="w-full py-2 font-body text-[0.8rem] bg-[#FF0000] dark:bg-[#FF4444]"
             >
               <span>Sign Out</span>
             </Button>
           </div>
-        </div>
+        </aside>
 
         <hr className="md:hidden" />
 
-        <main className="flex-1 p-6  px-2 md:px-6 dark:bg-base-100 bg-[#FEFFFF]   ">
-          <div className=" border-t-8 border-l-8 h-20 ml-4">{children}</div>
+        <main className="min-h-0 flex-1 overflow-y-auto bg-[#FEFFFF] p-6 px-2 dark:bg-base-100 md:px-6">
+          <div className="ml-4 border-l-8 border-t-8">{children}</div>
         </main>
       </div>
     </div>
