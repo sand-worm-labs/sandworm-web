@@ -2,19 +2,20 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import {
-  Star,
-  MoreHorizontal,
-  User,
-  Save,
-  ExternalLink,
-  Copy,
-  Trash2,
-} from "lucide-react";
-import { PiPlus } from "react-icons/pi";
-import { PlusSmallIcon } from "@heroicons/react/24/outline";
+  PiPlus,
+  PiStarLight,
+  PiStarFill,
+  PiDotsThreeLight,
+  PiUserLight,
+  PiFloppyDiskLight,
+  PiArrowSquareOutLight,
+  PiCopyLight,
+  PiTrashLight,
+} from "react-icons/pi";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+import { iconButtonSmClassName } from "@/styles/interactive";
 import { useFavorites } from "@/components/Editor/hooks/useFavorites";
 
 import { UploadIcon } from "../Assets/UploadIcon";
@@ -171,7 +172,7 @@ export const Projects: React.FC = () => {
             onClick={onCreateDocumentHandler}
             className="p-2  bg-base-200 dark:bg-base-200  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF] dark:border-primary  text-primary mb-3 font-body font-medium "
           >
-            <PlusSmallIcon className="h-4 w-4 mr-1 " aria-hidden="true" />
+            <PiPlus size={16} className="mr-1" />
             Create Project
           </button>
         </div>
@@ -208,7 +209,7 @@ export const Projects: React.FC = () => {
             {projects.map(project => (
               <div
                 key={project.id}
-                className="bg-base-100  rounded-3xl border border-border-tertiary  transition-all duration-200 p-4 py-3 relative group"
+                className="bg-base-100 rounded-3xl border border-border-tertiary transition-all duration-200 p-4 py-3 relative group flex flex-col"
               >
                 <div className="flex items-start justify-between mb-4">
                   <Link
@@ -226,13 +227,11 @@ export const Projects: React.FC = () => {
                         project.isFavorite ? "opacity-100" : ""
                       }`}
                     >
-                      <Star
-                        className={`w-4 h-4 ${
-                          project.isFavorite
-                            ? "fill-[#A308F0] text-primary"
-                            : "text-ink-400 hover:text-primary"
-                        }`}
-                      />
+                      {project.isFavorite ? (
+                        <PiStarFill className="w-4 h-4 text-primary" />
+                      ) : (
+                        <PiStarLight className="w-4 h-4 text-ink-400 hover:text-primary" />
+                      )}
                     </button>
 
                     <div className="relative">
@@ -245,7 +244,7 @@ export const Projects: React.FC = () => {
                         }
                         className="p-1 rounded transition-colors"
                       >
-                        <MoreHorizontal className="w-4 h-4 text-ink-200" />
+                        <PiDotsThreeLight className="w-4 h-4 text-ink-200" />
                       </button>
 
                       {openMenuId === project.id && (
@@ -257,7 +256,7 @@ export const Projects: React.FC = () => {
                             }
                             className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20"
                           >
-                            <Copy className="w-3.5 h-.5" strokeWidth={1.4} />
+                            <PiCopyLight className="w-3.5 h-3.5" />
                             Duplicate
                           </button>
                           <button
@@ -267,10 +266,7 @@ export const Projects: React.FC = () => {
                             }
                             className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20"
                           >
-                            <ExternalLink
-                              className="w-3.5 h-3.5"
-                              strokeWidth={1.4}
-                            />
+                            <PiArrowSquareOutLight className="w-3.5 h-3.5" />
                             Open in new tab
                           </button>
                           <button
@@ -280,7 +276,7 @@ export const Projects: React.FC = () => {
                             }
                             className="w-full px-4 py-2 text-left text-sm  hover:bg-primary/20 flex items-center gap-2"
                           >
-                            <Trash2 className="w-3.5 h-3.5" strokeWidth={1.4} />
+                            <PiTrashLight className="w-3.5 h-3.5" />
                             Move to trash
                           </button>
                         </div>
@@ -291,15 +287,15 @@ export const Projects: React.FC = () => {
 
                 <div className="bg-base-100 rounded-lg h-10 mb-4 flex items-center justify-center" />
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mt-auto">
                   <div className="relative">
                     <button
                       type="button"
                       onMouseEnter={() => setHoveredUser(project.id)}
                       onMouseLeave={() => setHoveredUser(null)}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors  dark:hover:bg-[#181C21]"
+                      className={iconButtonSmClassName}
                     >
-                      <User className="w-4 h-4 text-ink-200" />
+                      <PiUserLight className="w-4 h-4" />
                     </button>
 
                     {hoveredUser === project.id && (
@@ -314,9 +310,9 @@ export const Projects: React.FC = () => {
                       type="button"
                       onMouseEnter={() => setHoveredSave(project.id)}
                       onMouseLeave={() => setHoveredSave(null)}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors dark:hover:bg-[#181C21]"
+                      className={iconButtonSmClassName}
                     >
-                      <Save className="w-4 h-4 text-ink-200" />
+                      <PiFloppyDiskLight className="w-4 h-4" />
                     </button>
 
                     {hoveredSave === project.id && (
