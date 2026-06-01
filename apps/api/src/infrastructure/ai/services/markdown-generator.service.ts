@@ -26,13 +26,14 @@ export class MarkdownGeneratorService {
     const { url, handshakeToken } = this.configService.getOrThrow('ai', { infer: true });
 
     const workspace = await this.workspaceService.getWorkspaceById(context.workspace_id);
+    const openrouter_api_key = await this.workspaceService.getWorkspaceAiKey(workspace.id);
     this.logger.log(`Editing markdown for document: ${context.document_id}`);
 
     const { data } = await firstValueFrom(
       this.httpService.post<MarkdownGeneratorResponse>(
         `${url}/markdown/edit`,
         {
-          openrouter_api_key: 'OPENROUTER_KEY_PLACEHOLDER',
+          openrouter_api_key,
           prompt,
           model: workspace.assistantModel,
           context,

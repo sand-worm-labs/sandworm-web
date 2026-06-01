@@ -26,7 +26,7 @@ import { WorkspaceInfo } from '../model/workspace-info.model';
 import { getRandomIconColor } from '@/common/utils/color';
 import { EnvironmentService } from '@/features/environment/environment.service';
 import { OpenRouterService } from '@/infrastructure/openrouter/openrouter.service';
-import { AI_ENV_KEYS, AIProvider } from '@/core/constants/app.constant';
+import { AI_ENV_HASH_KEYS, AI_ENV_KEYS, AIProvider } from '@/core/constants/app.constant';
 
 @Injectable()
 export class WorkspaceService {
@@ -130,15 +130,19 @@ export class WorkspaceService {
   }
  
   async setupAIKey(workspaceId: string, provider: AIProvider) {
-    const envKey = AI_ENV_KEYS[provider];
+  const envKey = AI_ENV_KEYS[provider];
+  const envHashKey = AI_ENV_HASH_KEYS[provider];
 
-    const key = await this.openRouterService.provisionKey(workspaceId);
+  const { key, data} = await this.openRouterService.provisionKey(workspaceId);
 
-    await this.environmentService.setEnvironmentVariables(workspaceId, {
-      add: [{ name: envKey, value: key.data.hash }],
-      remove: [],
-    });
-  }
+  await this.environmentService.setEnvironmentVariables(workspaceId, {
+    add: [
+      { name: envKey,     value: key },
+      { name: envHashKey, value: data.hash },
+    ],
+    remove: [],
+  });
+}
 
   async deleteWorkspace(workspaceId: string, ownerId: string): Promise<void> {
     validateUUID(workspaceId, 'Workspace ID');
@@ -362,7 +366,7 @@ export class WorkspaceService {
     return true;
   }
 
-  async getWorkspaceAiHash(workspaceId: string): Promise<string | null> {
+  async getWorkspaceAiKey(workspaceId: string): Promise<string | null> {
     validateUUID(workspaceId, 'Workspace ID');
 
     const workspace = await this.workspaceRepository.findOne({

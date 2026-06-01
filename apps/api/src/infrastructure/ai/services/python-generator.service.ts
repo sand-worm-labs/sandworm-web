@@ -26,13 +26,14 @@ export class PythonGeneratorService {
     const { url, handshakeToken } = this.configService.getOrThrow('ai', { infer: true });
 
     const workspace = await this.workspaceService.getWorkspaceById(context.workspace_id);
+    const openrouter_api_key = await this.workspaceService.getWorkspaceAiKey(workspace.id);
     this.logger.log(`Editing Python code for document: ${context.document_id}`);
 
     const { data } = await firstValueFrom(
       this.httpService.post<PythonGeneratorResponse>(
         `${url}/code/edit`,
         {
-          openrouter_api_key: 'OPENROUTER_KEY_PLACEHOLDER',
+          openrouter_api_key,
           prompt,
           model: workspace.assistantModel,
           context,
@@ -47,13 +48,14 @@ export class PythonGeneratorService {
     const { url, handshakeToken } = this.configService.getOrThrow('ai', { infer: true });
 
     const workspace = await this.workspaceService.getWorkspaceById(context.workspace_id);
+    const openrouter_api_key = await this.workspaceService.getWorkspaceAiKey(workspace.id);
     this.logger.log(`Fixing Python code for document: ${context.document_id}`);
 
     const { data } = await firstValueFrom(
       this.httpService.post<PythonGeneratorResponse>(
         `${url}/code/fix`,
         {
-          openrouter_api_key: 'OPENROUTER_KEY_PLACEHOLDER',
+          openrouter_api_key,
           error_message,
           model: workspace.assistantModel,
           context,
