@@ -32,7 +32,7 @@
     "sql-formatter": "^15.4.11",
     "uuid": "^9.0.1",
     "yjs": "^13.6.14",
-    "zod": "^3.23.8"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
