@@ -185,7 +185,7 @@ export const addBlockGroup = (
   index: number,
   isAiInput?: boolean
 ) => {
-  const blockId = createBlock(block, yBlockDefs);
+  const blockId = createBlock(block, yBlockDefs, isAiInput);
 
   const blockGroupId = uuidv4();
   const yBlockGroup: YBlockGroup = new Y.XmlElement("block-group");
