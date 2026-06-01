@@ -94,7 +94,7 @@ export default function SettingsLayout({
 
         <hr className="md:hidden" />
 
-        <main className="min-h-0 flex-1 overflow-y-auto bg-[#FEFFFF] p-6 px-2 dark:bg-base-100 md:px-6">
+        <main className="min-h-0 flex-1 overflow-y-auto bg-[#FEFFFF] p-6 px-2 dark:bg-base-100 md:px-6  ">
           <div className="ml-4 border-l-8 border-t-8">{children}</div>
         </main>
       </div>

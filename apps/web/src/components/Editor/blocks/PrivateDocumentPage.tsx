@@ -8,14 +8,17 @@ import clsx from "clsx";
 import { AITasks, ExecutionQueue } from "@sandworm/editor";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
-import { PiPencilSimple, PiFloppyDisk } from "react-icons/pi";
+import {
+  PiPencilSimple,
+  PiFloppyDisk,
+  PiClockCountdown,
+  PiChatCenteredText,
+} from "react-icons/pi";
 
 import type { ApiDocument } from "@/types";
 import { widthClasses } from "@/components/Editor/constants";
 import { DataExplorerContent } from "@/components/ExplorerPanels/DataExplorerContent";
 import { MiniChat } from "@/components/Chats/MiniChat";
-import { ClockCountdown } from "@/components/Assets/ClockCountdown";
-import { ChatIcon } from "@/components/Assets/ChatIcon";
 import { PencilSimple } from "@/components/Assets/PencilSimple";
 import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
@@ -286,9 +289,9 @@ function PrivateDocumentPageInner(
                 ref={ref as React.RefObject<HTMLButtonElement>}
                 type="button"
                 onClick={onToggleComments}
-                className="w-full flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm hover:bg-[#F1F2F4] dark:bg-base-500 dark:hover:bg-base-200 dark:text-ink-100 h-full bg-white mb-1.5"
+                className="w-full flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm hover:bg-base-600 dark:bg-base-500 dark:hover:bg-base-200 dark:text-ink-100 h-full bg-white mb-1.5 text-[#1C3B5A] "
               >
-                <ChatIcon size={22} />
+                <PiChatCenteredText size={18} />
               </button>
             )}
           </TooltipV2>
@@ -301,9 +304,9 @@ function PrivateDocumentPageInner(
                   ref={ref as React.RefObject<HTMLButtonElement>}
                   type="button"
                   onClick={onToggleSchedules}
-                  className="w-full flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm hover:bg-[#F1F2F4] dark:bg-base-500 h-full bg-white mb-1.5 dark:text-ink-100"
+                  className="text-[#1C3B5A] w-full flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm hover:bg-base-600 dark:bg-base-500 h-full bg-white mb-1.5 dark:text-ink-100"
                 >
-                  <ClockCountdown size={22} />
+                  <PiClockCountdown size={18} />
                 </button>
               )}
             </TooltipV2>
@@ -323,7 +326,7 @@ function PrivateDocumentPageInner(
                   ref={ref as React.RefObject<HTMLButtonElement>}
                   type="button"
                   onClick={onToggleFullScreen}
-                  className="flex items-center justify-center rounded-none px-3 py-3 text-sm text-ink-400 dark:text-ink-100 hover:bg-gray-100 dark:bg-base-500 h-full bg-white w-full items-center"
+                  className="hover:bg-base-600 flex items-center justify-center rounded-none px-3 py-3 text-sm text-[#1C3B5A]  dark:text-ink-100 rounded-lg dark:bg-base-500 h-full bg-white w-full items-center"
                 >
                   <div className="flex items-center">
                     {isFullScreen ? (

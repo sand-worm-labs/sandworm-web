@@ -1,15 +1,16 @@
 import {
-  BookOpenIcon,
-  ClockIcon,
-  CodeBracketSquareIcon,
-  Cog6ToothIcon,
-  MapIcon,
-  EllipsisHorizontalIcon,
-  InboxArrowDownIcon,
-  FolderIcon,
-  ChatBubbleBottomCenterTextIcon,
-} from "@heroicons/react/24/outline";
-import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
+  PiBookOpen,
+  PiClock,
+  PiCodeBlock,
+  PiGear,
+  PiMapTrifold,
+  PiDotsThree,
+  PiTray,
+  PiFolder,
+  PiChatText,
+  PiArrowLeft,
+  PiArrowRight,
+} from "react-icons/pi";
 import { Menu, Transition } from "@headlessui/react";
 
 interface MenuButtonProps {
@@ -17,13 +18,14 @@ interface MenuButtonProps {
   text: string;
   onClick: () => void;
 }
+
 function MenuButton(props: MenuButtonProps) {
   return (
     <Menu.Item
       as="button"
       onClick={props.onClick}
       type="button"
-      className="w-full flex items-center rounded-sm px-4 py-2 text-ink-400 dark:text-white text-sm gap-x-2  dark:hover:bg-[#181C21] hover:bg-primary/20"
+      className="w-full flex items-center rounded-sm px-4 py-2 text-ink-400 dark:text-white text-sm gap-x-2 dark:hover:bg-[#181C21] hover:bg-[#F9F5FF]"
     >
       <div className="flex justify-center w-6">{props.icon}</div>
       <span>{props.text}</span>
@@ -45,11 +47,12 @@ interface Props {
   isDeleted: boolean;
   isFullScreen: boolean;
 }
+
 function EllipsisDropdown(props: Props) {
   return (
     <Menu as="div" className="relative h-full w-full">
-      <Menu.Button className="flex items-center rounded-none px-3 py-3.5 text-sm text-ink-400 hover:bg-gray-100 dark:bg-base-500 border-t border-b dark:border-border-tertiary   h-full bg-white w-full dark:text-ink-100 focus:ring-border-tertiary">
-        <EllipsisHorizontalIcon className="w-5 h-4 shrink-0" />
+      <Menu.Button className="flex items-center rounded-none px-3 py-3.5 text-sm text-ink-400 hover:bg-gray-100 dark:bg-base-500 border-t border-b dark:border-border-tertiary h-full bg-white w-full dark:text-ink-100 focus:ring-border-primary/50 focus-visible:outline-none focus:outline-none">
+        <PiDotsThree className="w-5 h-4 shrink-0" />
       </Menu.Button>
       <Transition
         as="div"
@@ -63,11 +66,11 @@ function EllipsisDropdown(props: Props) {
       >
         <Menu.Items
           as="div"
-          className="mt-1 rounded-xl bg-white dark:bg-base-100  shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-body  divide-y divide-border-secondary dark:divide-border-tertiary w-56 border dark:border-border-tertiary "
+          className="mt-1 rounded-xl bg-white dark:bg-base-100 shadow-sm border border-border-secondary dark:border-border-tertiary focus:outline-none font-body divide-y divide-border-secondary dark:divide-border-tertiary w-56  focus-visible:outline-none overflow-hidden"
         >
           {!props.isViewer && props.onToggleFiles && (
             <MenuButton
-              icon={<FolderIcon className="h-4 w-4" />}
+              icon={<PiFolder className="h-4 w-4" />}
               text="Files"
               onClick={props.onToggleFiles}
             />
@@ -75,12 +78,12 @@ function EllipsisDropdown(props: Props) {
           {!props.isViewer && !props.isDeleted && (
             <>
               <MenuButton
-                icon={<ClockIcon className="h-4 w-4" />}
+                icon={<PiClock className="h-4 w-4" />}
                 text="Schedules"
                 onClick={props.onToggleSchedules}
               />
               <MenuButton
-                icon={<InboxArrowDownIcon className="h-4 w-4" />}
+                icon={<PiTray className="h-4 w-4" />}
                 text="Snapshots"
                 onClick={props.onToggleSnapshots}
               />
@@ -88,14 +91,14 @@ function EllipsisDropdown(props: Props) {
           )}
 
           <MenuButton
-            icon={<ChatBubbleBottomCenterTextIcon className="h-4 w-4" />}
+            icon={<PiChatText className="h-4 w-4" />}
             text="Comments"
             onClick={props.onToggleComments}
           />
 
           {props.onToggleSchemaExplorer && (
             <MenuButton
-              icon={<BookOpenIcon className="h-4 w-4" />}
+              icon={<PiBookOpen className="h-4 w-4" />}
               text="Schema explorer"
               onClick={props.onToggleSchemaExplorer}
             />
@@ -107,13 +110,13 @@ function EllipsisDropdown(props: Props) {
                 <div className="flex items-center">
                   {props.isFullScreen ? (
                     <>
-                      <ArrowRightIcon className="h-3 w-3" />
-                      <ArrowLeftIcon className="h-3 w-3" />
+                      <PiArrowRight className="h-3 w-3" />
+                      <PiArrowLeft className="h-3 w-3" />
                     </>
                   ) : (
                     <>
-                      <ArrowLeftIcon className="h-3 w-3" />
-                      <ArrowRightIcon className="h-3 w-3" />
+                      <PiArrowLeft className="h-3 w-3" />
+                      <PiArrowRight className="h-3 w-3" />
                     </>
                   )}
                 </div>
@@ -129,7 +132,7 @@ function EllipsisDropdown(props: Props) {
 
           {!props.isViewer && props.onToggleReusableComponents && (
             <MenuButton
-              icon={<CodeBracketSquareIcon className="h-4 w-4" />}
+              icon={<PiCodeBlock className="h-4 w-4" />}
               text="Reusable components"
               onClick={props.onToggleReusableComponents}
             />
@@ -137,7 +140,7 @@ function EllipsisDropdown(props: Props) {
 
           {props.onToggleShortcuts && (
             <MenuButton
-              icon={<MapIcon className="h-4 w-4" />}
+              icon={<PiMapTrifold className="h-4 w-4" />}
               text="Keyboard shortcuts"
               onClick={props.onToggleShortcuts}
             />
@@ -145,7 +148,7 @@ function EllipsisDropdown(props: Props) {
 
           {props.onTogglePageSettings && (
             <MenuButton
-              icon={<Cog6ToothIcon className="h-4 w-4" />}
+              icon={<PiGear className="h-4 w-4" />}
               text="Page settings"
               onClick={props.onTogglePageSettings}
             />

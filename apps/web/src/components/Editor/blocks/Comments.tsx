@@ -1,18 +1,21 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import type { ChangeEventHandler, FormEvent } from "react";
 import { useCallback, useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
+import { PiPaperPlaneRight, PiChatCenteredTextLight } from "react-icons/pi";
 
 import { timeAgo } from "@/lib";
 import { Trash } from "@/components/Assets/Trash";
 import { CommentIcon } from "@/components/Assets/CommentIcon";
-import { PaperPlaneTilt } from "@/components/Assets/PaperPlaneTilt";
 
 import { useComments } from "../hooks/useComments";
 import { useSession } from "../hooks/useAuth";
 
 import ScrollBar from "./ScrollBar";
+
+// =====================================
+// ⬢ Types
+// =====================================
 
 interface Props {
   workspaceId: string;
@@ -20,6 +23,11 @@ interface Props {
   visible: boolean;
   onHide: () => void;
 }
+
+// =====================================
+// ⬢ Main
+// =====================================
+
 export default function Comments({
   workspaceId,
   documentId,
@@ -29,35 +37,25 @@ export default function Comments({
   const session = useSession({ redirectToLogin: true });
   const [comments, { createComment, deleteComment }] = useComments(documentId);
   const [content, setContent] = useState("");
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (ref.current) {
-      ref.current.scrollTop = ref.current.scrollHeight;
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [comments.length, visible]);
 
-  const onComment = useCallback(
-    async (e?: FormEvent<HTMLFormElement>) => {
-      e?.preventDefault();
-      createComment(workspaceId, documentId, content);
-      setContent("");
-    },
-    [createComment, content, documentId]
-  );
+  const onComment = useCallback(async () => {
+    if (!content.trim()) return;
+    createComment(workspaceId, documentId, content);
+    setContent("");
+  }, [createComment, content, documentId, workspaceId]);
 
   const onDeleteComment = useCallback(
     (commentId: string) => {
       deleteComment(workspaceId, documentId, commentId);
     },
     [deleteComment, workspaceId, documentId]
-  );
-
-  const onChangeContent: ChangeEventHandler<HTMLTextAreaElement> = useCallback(
-    e => {
-      setContent(e.target.value);
-    },
-    [setContent]
   );
 
   const onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> =
@@ -71,119 +69,119 @@ export default function Comments({
       [onComment]
     );
 
+  if (!visible) return null;
+
   return (
-    <>
-      {visible && (
-        <ScrollBar
-          className="relative w-full flex flex-col overflow-y-auto  h-full bg-white dark:bg-base-100 dark:border-t"
-          ref={ref}
-        >
-          <h3 className="text-lg font-medium leading-6 dark:text-white text-ink-100 px-4 pt-6 xl:px-6">
-            Comments
-            <span className="ml-3 text-ink-400">{comments?.length}</span>
-          </h3>
-          <p className="text-sm text-ink-400 px-4 mb-4 xl:px-6">
-            Make comments to teammates
-          </p>
+    <div className="flex flex-col h-full bg-white dark:bg-base-100">
+      <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="flex items-center gap-x-1.5 text-base font-medium leading-6 dark:text-white text-ink-100">
+              <PiChatCenteredTextLight size={18} className="flex-shrink-0" />
+              Comments
+              <span className="ml-1 text-ink-400 font-normal text-sm">
+                {comments?.length}
+              </span>
+            </h3>
+            <p className="text-[12px] text-ink-400 mt-0.5">
+              Make comments to teammates
+            </p>
+          </div>
           <button
             type="button"
-            className="absolute z-10 top-7 transform rounded-full text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary"
+            className="rounded-full text-ink-400 hover:bg-gray-100 dark:hover:bg-base-300 w-6 h-6 flex items-center justify-center transition-colors"
             onClick={onHide}
+            aria-label="Close comments"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
-          <div className="border-t border-dashed border-border-secondary dark:border-border-tertiary" />
+        </div>
+      </div>
 
-          <ul className="flex-1 space-y-6 pb-6 pt-4 px-2 xl:px-6">
-            {comments.map(comment => (
-              <li key={comment.id} className="relative flex gap-x-4">
-                <div className="flex-auto rounded-xl p-3 border border-border dark:border-border-tertiary bg-base-500">
-                  <div className="flex justify-between gap-x-4">
-                    <div className="flex gap-x-1 py-0.5 leading-5 text-ink-400">
-                      {comment.user.picture ? (
-                        <Image
-                          src={comment.user.picture}
-                          alt=""
-                          width={20}
-                          height={20}
-                          className="relative h-5 w-5 flex-none rounded-full bg-gray-50"
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : (
-                        <Image
-                          src="/img/avatar/avatar2.svg"
-                          alt=""
-                          width={20}
-                          height={20}
-                          className="relative h-5 w-5 flex-none rounded-full bg-gray-50"
-                          referrerPolicy="no-referrer"
-                        />
-                      )}
-                      <span className="text-xs font-medium text-ink-100">
-                        {comment.user.name}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-x-2">
-                      <time
-                        dateTime={new Date(comment.createdAt).toISOString()}
-                        className="flex-none py-0.5 text-xs leading-5 text-ink-400"
-                      >
-                        {timeAgo(new Date(comment.createdAt))}
-                      </time>
-                      {session?.user?.id === comment.userId && (
-                        <button
-                          type="button"
-                          onClick={() => onDeleteComment(comment.id)}
-                          className="text-ink-400 hover:text-red-600 transition-colors"
-                          aria-label="Delete comment"
-                        >
-                          <Trash />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  <p className="text-sm leading-6 text-ink-400 dark:text-ink-100 pt-2">
-                    {comment.content}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-
-          <form className="sticky bottom-0" onSubmit={onComment}>
-            <div className="px-2 xl:px-4">
-              <div className="py-6 flex gap-x-3">
-                <CommentIcon />
-                <div className="relative flex-auto">
-                  <div className="rounded-xl dark:ring-border-tertiary focus-within:ring-2 dark:bg-base-400 dark:border-border-tertiary border-[#E6E0F1] border-[2px] ring-primary">
-                    <label htmlFor="comment" className="sr-only">
-                      Add your comment
-                    </label>
-                    <textarea
-                      rows={2}
-                      name="comment"
-                      id="comment"
-                      className="w-full px-3 py-1.5 pt-2 pb-12 rounded-xl dark:bg-base-400 dark:text-white placeholder:dark:text-ink-400 placeholder-[#455768] border-0 focus:outline-none transition text-xs md:text-sm min-h-[4rem] resize-none"
-                      placeholder="Add your comment..."
-                      value={content}
-                      onKeyDown={onKeyDown}
-                      onChange={onChangeContent}
+      <ScrollBar
+        ref={scrollRef}
+        className="flex-1 min-h-0 overflow-y-auto px-2 xl:px-4"
+      >
+        <ul className="space-y-3 py-3">
+          {comments.map(comment => (
+            <li key={comment.id}>
+              <div className="rounded-xl p-3 border border-border dark:border-border-tertiary bg-transparent">
+                <div className="flex justify-between items-center gap-x-4 mb-2">
+                  <div className="flex items-center gap-x-2">
+                    <Image
+                      src={comment.user.picture ?? "/img/avatar/avatar2.svg"}
+                      alt=""
+                      width={24}
+                      height={24}
+                      className="h-6 w-6 flex-none rounded-full bg-gray-50"
+                      referrerPolicy="no-referrer"
                     />
-                    <div className="absolute inset-x-0 bottom-0 flex justify-end py-2 pl-3 pr-2">
+                    <span className="text-sm font-medium text-ink-100">
+                      {comment.user.name}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-x-2">
+                    <time
+                      dateTime={new Date(comment.createdAt).toISOString()}
+                      className="text-xs leading-5 text-ink-400"
+                    >
+                      {timeAgo(new Date(comment.createdAt))}
+                    </time>
+                    {session?.user?.id === comment.userId && (
                       <button
-                        type="submit"
-                        className="gap-x-2 rounded-full bg-[#A308F0] p-2.5 text-sm hover:bg-primary-300"
+                        type="button"
+                        onClick={() => onDeleteComment(comment.id)}
+                        className="text-ink-400 hover:text-red-600 transition-colors"
+                        aria-label="Delete comment"
                       >
-                        <PaperPlaneTilt />
+                        <Trash />
                       </button>
-                    </div>
+                    )}
                   </div>
                 </div>
+
+                <p className="text-[13px] leading-5 text-[#6C757D] dark:text-ink-100">
+                  {comment.content}
+                </p>
               </div>
-            </div>
-          </form>
-        </ScrollBar>
-      )}
-    </>
+            </li>
+          ))}
+        </ul>
+      </ScrollBar>
+
+      <div className="flex-shrink-0 px-3 xl:px-4 py-3  dark:border-border-tertiary">
+        <div className="flex items-center gap-x-2">
+          <div className="flex-shrink-0">
+            <CommentIcon />
+          </div>
+
+          <div className="flex flex-1 items-center rounded-xl border-[1.5px] border-[#E6E0F1] dark:border-border-tertiary bg-white dark:bg-base-400 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-shadow px-3 py-1.5 gap-x-2">
+            <label htmlFor="comment" className="sr-only">
+              Add your comment
+            </label>
+            <textarea
+              id="comment"
+              name="comment"
+              rows={1}
+              className="flex-1 bg-transparent dark:text-white placeholder:text-[#9CA3AF] placeholder:dark:text-ink-400 border-0 focus:outline-none text-sm leading-5 resize-none"
+              placeholder="Add a comment..."
+              value={content}
+              onKeyDown={onKeyDown}
+              onChange={e => setContent(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={onComment}
+              disabled={!content.trim()}
+              className="flex-shrink-0 rounded-lg bg-[#A308F0] p-2 text-white hover:bg-primary-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all border border-[#7104A8]"
+              aria-label="Send comment"
+            >
+              <PiPaperPlaneRight size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

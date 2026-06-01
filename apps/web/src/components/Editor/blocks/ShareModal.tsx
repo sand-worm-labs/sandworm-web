@@ -9,10 +9,9 @@ import {
   PiLockSimple,
   PiGlobe,
   PiCheckCircle,
+  PiShareNetwork,
 } from "react-icons/pi";
 import { cn } from "@sandworm/ui/lib/utils";
-
-import { Share } from "@/components/Assets/Share";
 
 import { TooltipV2 } from "./ToolTips";
 
@@ -195,10 +194,10 @@ export default function ShareModal({
             onClick={openModal}
             aria-label="Share"
             className="p-2 mb-2 rounded-lg transition-colors flex items-center justify-center
-              text-ink-400 hover:text-ink-100 dark:text-ink-100 dark:hover:text-white
-              hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]"
+              text-[#1C3B5A] hover:text-ink-100 dark:text-ink-100 dark:hover:text-white
+             hover:bg-base-600 dark:hover:bg-[#2A2A28]"
           >
-            <Share size={22} />
+            <PiShareNetwork size={18} />
           </button>
         )}
       </TooltipV2>
