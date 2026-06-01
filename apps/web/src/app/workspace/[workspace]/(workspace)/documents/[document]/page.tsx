@@ -55,8 +55,10 @@ function PrivateDocumentPage(props: PrivateDocumentPageProps) {
 
   return (
     <div className="w-full flex justify-center">
-      <div className=" px-12 py-20 w-full">
-        <TitleSkeleton visible />
+      <div className=" px-12 py-12 w-full">
+        <div className="px-5">
+          <TitleSkeleton visible />
+        </div>
         <ContentSkeleton visible />
       </div>
     </div>

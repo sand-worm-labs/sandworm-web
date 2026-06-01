@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { PiX, PiArrowRight } from "react-icons/pi";
 import { updateYText } from "@sandworm/editor";
 
-import { AIChatIcon } from "@/components/Assets/AIChatIcon";
+import { SparkleAI } from "@/components/Assets/SparkleAI";
 
 import Spin from "./Spin";
 
@@ -102,7 +102,7 @@ function EditWithAIForm(props: Props) {
         )}
       >
         <div className="flex-shrink-0 text-ink-400 dark:text-ink-500">
-          <AIChatIcon size={36} />
+          <SparkleAI size={32} />
         </div>
 
         <input

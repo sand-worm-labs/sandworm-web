@@ -14,7 +14,7 @@ import { useEffect, useCallback } from "react";
 
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 
-import { TitleSkeleton } from "./blocks/ContentSkeleton";
+import { TitleSkeleton } from "./ContentSkeleton";
 import { useAITaskActions } from "./hooks/useAITasks";
 
 // =====================================

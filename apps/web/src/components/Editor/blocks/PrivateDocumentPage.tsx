@@ -31,6 +31,7 @@ import Layout from "../../Visualization/Layout";
 import { useYDoc } from "../hooks/useYDocs";
 import useDocument from "../hooks/useDocument";
 import { RightSidebarPanel } from "../RightSidebarPanel";
+import { ContentSkeleton, TitleSkeleton } from "../ContentSkeleton";
 
 import Comments from "./Comments";
 import Schedules from "./Schedules";
@@ -44,14 +45,16 @@ import ShortcutsModal from "./ShortcutsModal";
 import ReusableComponents from "./ReusableComponents";
 import PageSettingsPanel from "./PageSettingsPanel";
 import { Tooltip, TooltipV2 } from "./ToolTips";
-import { ContentSkeleton, TitleSkeleton } from "./ContentSkeleton";
 import ShareModal from "./ShareModal";
 
 function EditorColumnPlaceholder() {
   return (
-    <div className="h-full w-full overflow-hidden flex justify-center">
-      <div className={clsx(widthClasses, "py-20 w-full")}>
-        <TitleSkeleton visible />
+    <div className="flex-1 min-w-0 h-full overflow-hidden flex justify-center">
+      <div className=" px-12 py-12 w-full">
+        <div className="px-5">
+          <TitleSkeleton visible />
+        </div>
+
         <ContentSkeleton visible />
       </div>
     </div>
@@ -583,8 +586,11 @@ export default function PrivateDocumentPage(props: Props) {
     return (
       <Layout>
         <div className="flex-1 min-w-0 h-full overflow-hidden flex justify-center">
-          <div className={clsx(widthClasses, "py-20 w-full")}>
-            <TitleSkeleton visible />
+          <div className=" px-12 py-12 w-full">
+            <div className="px-5">
+              <TitleSkeleton visible />
+            </div>
+
             <ContentSkeleton visible />
           </div>
         </div>

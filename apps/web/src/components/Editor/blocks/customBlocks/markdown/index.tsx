@@ -27,7 +27,6 @@ import {
   toggleMarkdownEditWithAIPromptOpen,
   closeMarkdownEditWithAIPrompt,
   getMarkdownAISuggestions,
-  updateMarkdownAISuggestions,
 } from "@sandworm/editor";
 import { SparklesIcon } from "@heroicons/react/20/solid";
 import { tags as t } from "@lezer/highlight";
@@ -412,12 +411,7 @@ const MarkdownBlock = (props: Props) => {
       documentId: props.document.id,
       blockId: id,
     });
-  }, [
-    editTextWithAi,
-    props.workspaceId,
-    props.document.id,
-    id,
-  ]);
+  }, [editTextWithAi, props.workspaceId, props.document.id, id]);
 
   const tooltipContent = useCallback(
     (ref: React.RefObject<HTMLDivElement>) => (
@@ -538,20 +532,6 @@ const MarkdownBlock = (props: Props) => {
           </div>
 
           <div className="inline-flex items-center gap-1.5">
-            {props.isEditable && !props.dashboardMode && (
-              <button
-                type="button"
-                onClick={() => {
-                  updateMarkdownAISuggestions(
-                    props.block,
-                    `# AI Suggestion\n\nThis is the **suggested** markdown.\n\n- item one\n- item two`
-                  );
-                }}
-                className="text-[10px] text-ink-300 hover:text-primary border border-dashed border-ink-200 px-1.5 py-0.5 rounded"
-              >
-                test diff
-              </button>
-            )}
             {props.isEditable && !props.dashboardMode && (
               <TooltipV2<HTMLButtonElement> content={tooltipContent} active>
                 {ref => (
