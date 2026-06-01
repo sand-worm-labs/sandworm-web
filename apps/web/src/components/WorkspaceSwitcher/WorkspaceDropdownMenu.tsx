@@ -6,6 +6,11 @@ import { PiGear, PiPlus, PiCheck } from "react-icons/pi";
 
 import type { ApiWorkspace } from "@/types";
 
+import {
+  iconButtonSmClassName,
+  surfaceHoverClassName,
+} from "@/styles/interactive";
+
 import { WorkspaceIcon } from "../Settings/WorkspaceIcon";
 
 // =====================================
@@ -25,8 +30,8 @@ interface WorkspaceDropdownMenuProps {
 // ⬢ Shared row styles
 // =====================================
 const ROW_OUTER =
-  "flex w-[calc(100%-0.75rem)] mx-1.5 items-center gap-1.5 px-2 py-1.5 rounded-xl transition-colors duration-100";
-const ROW_HOVER = "hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26]";
+  "flex w-[calc(100%-0.75rem)] mx-1.5 items-center gap-1.5 px-2 py-1.5 rounded-xl";
+const ROW_HOVER = surfaceHoverClassName;
 const ROW_MAIN =
   "flex flex-1 min-w-0 items-center gap-2.5 text-left disabled:opacity-50 disabled:cursor-not-allowed";
 
@@ -49,9 +54,7 @@ function SettingsButton({
       }}
       aria-label={label}
       title={label}
-      className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-md
-        text-ink-300 hover:text-ink-500 dark:hover:text-ink-200
-        hover:bg-[#E8E8E6] dark:hover:bg-[#2A2A28] transition-all duration-100"
+      className={iconButtonSmClassName}
     >
       <PiGear size={14} />
     </button>

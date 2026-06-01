@@ -6,6 +6,8 @@ import { Dialog, Transition } from "@headlessui/react";
 
 import type { UserWorkspaceRole } from "@/types";
 
+import { iconButtonMdClassName } from "@/styles/interactive";
+
 import { User } from "./Assets/Avatar/User";
 import { useInviteUserToWorkspace } from "./Editor/hooks/useWorkspaces";
 
@@ -509,9 +511,10 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
                       <button
                         type="button"
                         onClick={onClose}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        aria-label="Close"
+                        className={iconButtonMdClassName}
                       >
-                        <X className="w-5 h-5 text-[#1C3B5A]" />
+                        <X className="w-5 h-5" />
                       </button>
                     </div>
 

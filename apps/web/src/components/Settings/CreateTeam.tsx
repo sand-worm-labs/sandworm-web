@@ -5,6 +5,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 import { useCreateWorkspaceMutation } from "@/generated/graphql";
+import { iconButtonMdClassName } from "@/styles/interactive";
 
 interface CreateTeamModalProps {
   isOpen: boolean;
@@ -95,7 +96,8 @@ export default function CreateTeamModal({
                     type="button"
                     onClick={handleClose}
                     disabled={loading}
-                    className="rounded-lg p-1 text-ink-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-50"
+                    aria-label="Close"
+                    className={`${iconButtonMdClassName} disabled:opacity-50 disabled:pointer-events-none`}
                   >
                     <XMarkIcon className="h-5 w-5" />
                   </button>

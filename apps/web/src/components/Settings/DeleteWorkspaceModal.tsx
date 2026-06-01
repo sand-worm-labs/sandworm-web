@@ -2,6 +2,11 @@ import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 
+import {
+  iconButtonMdClassName,
+  surfaceHoverClassName,
+} from "@/styles/interactive";
+
 interface DeleteWorkspaceModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -53,7 +58,8 @@ export function DeleteWorkspaceModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="absolute top-4 right-4 text-ink-400 hover:text-gray-600"
+                aria-label="Close"
+                className={`absolute top-4 right-4 ${iconButtonMdClassName}`}
               >
                 <XMarkIcon className="h-5 w-5" />
               </button>
@@ -76,7 +82,7 @@ export function DeleteWorkspaceModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-xl border border-[#DEE2E6] bg-[#F8F9FA] dark:bg-base-400 px-6 py-2 text-sm font-medium text-ink-400 hover:bg-gray-50 dark:border-border-tertiary"
+                  className={`rounded-xl border border-[#DEE2E6] bg-[#F8F9FA] dark:bg-base-400 px-6 py-2 text-sm font-medium text-ink-400 dark:border-border-tertiary ${surfaceHoverClassName}`}
                 >
                   Cancel
                 </button>

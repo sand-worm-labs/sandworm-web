@@ -2,6 +2,8 @@ import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { useState, Fragment } from "react";
 
+import { iconButtonMdClassName } from "@/styles/interactive";
+
 import { WorkspaceIcon } from "./WorkspaceIcon";
 
 // =====================================
@@ -86,9 +88,10 @@ export default function EditWorkspaceProfileModal({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    aria-label="Close"
+                    className={iconButtonMdClassName}
                   >
-                    <XMarkIcon className="h-5 w-5 text-ink-400" />
+                    <XMarkIcon className="h-5 w-5" />
                   </button>
                 </div>
 

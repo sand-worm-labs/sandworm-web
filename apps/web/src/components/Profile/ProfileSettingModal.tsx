@@ -12,6 +12,8 @@ import {
 
 import { useProfileForm } from "@/hooks/useProfileSettings";
 
+import { surfaceHoverClassName } from "@/styles/interactive";
+
 import { ProfileCardIcon } from "../Assets/ProfileCardIcon";
 import ScrollBar from "../Editor/blocks/ScrollBar";
 
@@ -34,6 +36,8 @@ interface ProfileSettingsModalProps {
       github?: string | null;
       discord?: string | null;
       telegram?: string | null;
+      email?: string | null;
+      warpcast?: string | null;
     };
     statusText?: string;
   }) => Promise<void>;
@@ -314,6 +318,30 @@ export function ProfileSettingsModal({
                                   onChange={handleChange}
                                 />
                               </div>
+                              <div>
+                                <label className={labelClassName}>
+                                  farcaster
+                                </label>
+                                <input
+                                  type="text"
+                                  name="farcaster"
+                                  placeholder="Farcaster Profile URL"
+                                  className={inputClassName}
+                                  value={formData.farcaster}
+                                  onChange={handleChange}
+                                />
+                              </div>
+                              <div>
+                                <label className={labelClassName}>email</label>
+                                <input
+                                  type="email"
+                                  name="email"
+                                  placeholder="Contact Email"
+                                  className={inputClassName}
+                                  value={formData.email}
+                                  onChange={handleChange}
+                                />
+                              </div>
                             </div>
                           </section>
                         </div>
@@ -331,7 +359,7 @@ export function ProfileSettingsModal({
                       <button
                         type="button"
                         onClick={handleClose}
-                        className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-ink-100 dark:hover:text-white bg-[#F8F9FA] dark:bg-transparent border border-[#DEE2E6] rounded-xl hover:bg-gray-50 transition-colors dark:border-border-tertiary"
+                        className={`px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-[#F8F9FA] dark:bg-transparent border border-[#DEE2E6] rounded-xl dark:border-border-tertiary ${surfaceHoverClassName}`}
                       >
                         Cancel
                       </button>

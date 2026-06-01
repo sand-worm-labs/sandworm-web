@@ -13,6 +13,11 @@ import { Transition } from "@headlessui/react";
 import { toast } from "sonner";
 
 import type { UserWorkspaceRole } from "@/types";
+import {
+  iconButtonMdClassName,
+  iconButtonSmClassName,
+  surfaceHoverClassName,
+} from "@/styles/interactive";
 
 import {
   useApproveRoleRequest,
@@ -489,7 +494,7 @@ function DangerZoneSection({ onDelete }: { onDelete: () => void }) {
         <button
           type="button"
           onClick={onDelete}
-          className="bg-[#F8F9FA] dark:bg-base-400 text-[12px] py-1 px-2 rounded-lg border border-[#DEE2E6] dark:border-border-tertiary text-[#ff0000] dark:text-[#ff6b6b] font-medium inline-block"
+          className={`bg-[#F8F9FA] dark:bg-base-400 text-[12px] py-1 px-2 rounded-lg border border-[#DEE2E6] dark:border-border-tertiary text-[#ff0000] dark:text-[#ff6b6b] font-medium inline-block ${surfaceHoverClassName}`}
         >
           Delete Workspace
         </button>
@@ -531,7 +536,8 @@ function SettingsHeader({
             <button
               type="button"
               onClick={onEdit}
-              className="p-1 rounded transition-colors"
+              aria-label="Edit workspace"
+              className={iconButtonSmClassName}
             >
               <PencilSimple className="h-4 w-4 dark:text-ink-400" />
             </button>
@@ -560,17 +566,25 @@ function SettingsHeader({
           <button
             type="button"
             onClick={onManageInvites}
-            className="flex items-center gap-2 px-2.5 py-0.5 border bg-[#F8F9FA] border-[#DEE2E6] dark:text-black dark:border-border-tertiary rounded-lg text-xs font-medium hover:bg-gray-50 transition-colors"
+            className={`flex items-center gap-2 px-2.5 py-0.5 border bg-[#F8F9FA] border-[#DEE2E6] dark:text-black dark:border-border-tertiary rounded-lg text-xs font-medium ${surfaceHoverClassName}`}
           >
             Manage Invites
           </button>
 
-          <span className="text-primary text-[13px] font-medium">
+          <button
+            type="button"
+            onClick={onManageInvites}
+            className={`text-primary text-[13px] font-medium rounded-md px-2 py-0.5 ${surfaceHoverClassName}`}
+          >
             {pendingRequestsCount} Pending Requests
-          </span>
-          <span className="text-primary text-[13px] font-medium">
+          </button>
+          <button
+            type="button"
+            onClick={onManageInvites}
+            className={`text-primary text-[13px] font-medium rounded-md px-2 py-0.5 ${surfaceHoverClassName}`}
+          >
             {pendingInvitesCount} Pending Invites
-          </span>
+          </button>
         </div>
 
         <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
@@ -581,7 +595,8 @@ function SettingsHeader({
       <button
         type="button"
         onClick={onClose}
-        className="rounded-lg p-1 text-ink-400 hover:bg-gray-100 hover:text-ink-400 dark:hover:bg-gray-800"
+        aria-label="Close"
+        className={iconButtonMdClassName}
       >
         <XMarkIcon className="h-5 w-5" />
       </button>

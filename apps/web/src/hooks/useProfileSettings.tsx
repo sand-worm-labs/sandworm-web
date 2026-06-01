@@ -12,6 +12,8 @@ interface ProfileFormData {
   github: string;
   discord: string;
   telegram: string;
+  email: string;
+  farcaster: string;
   firstName: string;
   lastName: string;
 }
@@ -29,6 +31,7 @@ interface SessionUser {
       github?: string | null;
       discord?: string | null;
       telegram?: string | null;
+      email?: string | null;
       twitter?: string | null;
       warpcast?: string | null;
     };
@@ -43,6 +46,8 @@ interface UseProfileFormProps {
       github?: string | null;
       discord?: string | null;
       telegram?: string | null;
+      email?: string | null;
+      warpcast?: string | null;
     };
     statusText?: string;
   }) => Promise<void>;
@@ -56,6 +61,8 @@ const initialFormData: ProfileFormData = {
   github: "",
   discord: "",
   telegram: "",
+  email: "",
+  farcaster: "",
   firstName: "",
   lastName: "",
 };
@@ -83,6 +90,8 @@ export function useProfileForm({
         github: user.settings?.socialLinks?.github || "",
         discord: user.settings?.socialLinks?.discord || "",
         telegram: user.settings?.socialLinks?.telegram || "",
+        email: user.settings?.socialLinks?.email || "",
+        farcaster: user.settings?.socialLinks?.warpcast || "",
       });
     }
   }, [
@@ -93,6 +102,8 @@ export function useProfileForm({
     user?.settings?.socialLinks?.github,
     user?.settings?.socialLinks?.discord,
     user?.settings?.socialLinks?.telegram,
+    user?.settings?.socialLinks?.email,
+    user?.settings?.socialLinks?.warpcast,
   ]);
 
   const handleChange = useCallback(
@@ -122,6 +133,8 @@ export function useProfileForm({
             github: formData.github || null,
             discord: formData.discord || null,
             telegram: formData.telegram || null,
+            email: formData.email || null,
+            warpcast: formData.farcaster || null,
           },
           statusText: formData.bio || undefined,
         });
@@ -147,6 +160,8 @@ export function useProfileForm({
         github: "",
         discord: "",
         telegram: "",
+        email: "",
+        farcaster: "",
       });
     }
     setUpdateSuccess(false);

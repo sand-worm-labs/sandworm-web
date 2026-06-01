@@ -3,16 +3,18 @@
 "use client";
 
 import { useState } from "react";
+import { UserPlus, UserMinus, Check } from "lucide-react";
 import {
-  Link as LinkIcon,
-  Github,
-  Twitter,
-  Globe,
-  UserPlus,
-  UserMinus,
-  Check,
-} from "lucide-react";
-import { PiCalendarDots } from "react-icons/pi";
+  PiCalendarDots,
+  PiDiscordLogo,
+  PiEnvelope,
+  PiGithubLogo,
+  PiGlobe,
+  PiLink,
+  PiTelegramLogo,
+  PiXLogo,
+} from "react-icons/pi";
+import { SiFarcaster } from "react-icons/si";
 import Image from "next/image";
 import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
 
@@ -107,21 +109,35 @@ const ProfileComponent = ({
     setTimeout(() => setCopiedWallet(null), 2000);
   };
 
+  const socialIconClass = "w-4 h-4 text-[#1C3B5A] dark:text-ink-400";
+
   const getSocialIcon = (platform: string) => {
     switch (platform) {
       case "twitter":
-        return <Twitter className="w-4 h-4 text-[#1C3B5A]" />;
+        return <PiXLogo className={socialIconClass} />;
       case "github":
-        return <Github className="w-4 h-4 text-[#1C3B5A]" />;
+        return <PiGithubLogo className={socialIconClass} />;
       case "website":
-        return <Globe className="w-4 h-4 text-[#1C3B5A]" />;
+        return <PiGlobe className={socialIconClass} />;
       case "telegram":
-        return <LinkIcon className="w-4 h-4 text-[#1C3B5A]" />;
+        return <PiTelegramLogo className={socialIconClass} />;
       case "discord":
-        return <LinkIcon className="w-4 h-4 text-[#1C3B5A]" />;
+        return <PiDiscordLogo className={socialIconClass} />;
+      case "email":
+        return <PiEnvelope className={socialIconClass} />;
+      case "farcaster":
+      case "warpcast":
+        return <SiFarcaster className={socialIconClass} />;
       default:
-        return <LinkIcon className="w-4 h-4 text-[#1C3B5A]" />;
+        return <PiLink className={socialIconClass} />;
     }
+  };
+
+  const getSocialHref = (platform: string, url: string) => {
+    if (platform === "email" && url && !url.startsWith("mailto:")) {
+      return `mailto:${url}`;
+    }
+    return url;
   };
 
   const userForModal =
@@ -310,9 +326,15 @@ const ProfileComponent = ({
                               .map(([platform, url]) => (
                                 <a
                                   key={platform}
-                                  href={url as string}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                  href={getSocialHref(platform, url as string)}
+                                  target={
+                                    platform === "email" ? undefined : "_blank"
+                                  }
+                                  rel={
+                                    platform === "email"
+                                      ? undefined
+                                      : "noopener noreferrer"
+                                  }
                                   className="p-2.5 rounded-xl border border-[#DEE2E6] dark:border-border-tertiary hover:bg-primary/20 hover:border-primary/20 hover:text-white transition-colors text-[#868E96] dark:text-ink-400 bg-[#F8F9FA] dark:bg-transparent"
                                 >
                                   {getSocialIcon(platform)}

@@ -4,13 +4,10 @@ import React, { useState, useMemo, useCallback } from "react";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import {
-  CheckCircleIcon,
-  UsersIcon,
-  Cog6ToothIcon,
-} from "@heroicons/react/24/outline";
+import { PiCheckCircle, PiGear, PiUsers } from "react-icons/pi";
 
 import type { ApiWorkspace } from "@/types";
+import { iconButtonSmClassName } from "@/styles/interactive";
 
 import {
   useCurrentWorkspaceInfo,
@@ -163,7 +160,7 @@ function WorkspaceRow({
               {workspace.name}
             </span>
             {isCurrentWorkspace && (
-              <CheckCircleIcon className="w-5 h-5 text-[#7F56D9]" />
+              <PiCheckCircle className="w-5 h-5 text-[#7F56D9]" />
             )}
           </div>
 
@@ -182,7 +179,7 @@ function WorkspaceRow({
 
       {/* ✦ Member Count ✦ */}
       <div className="hidden sm:flex w-32 items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400">
-        <UsersIcon className="w-5 h-5" />
+        <PiUsers className="w-5 h-5" />
         <span>{memberLabel(memberCount)}</span>
       </div>
 
@@ -205,13 +202,12 @@ function WorkspaceRow({
             : "Workspace settings"
         }
         className={clsx(
-          "w-10 flex justify-center transition-colors",
           canManage
-            ? "text-ink-400 hover:text-gray-600 dark:hover:text-ink-300 cursor-pointer"
-            : "text-ink-300 dark:text-ink-400 cursor-not-allowed opacity-40"
+            ? iconButtonSmClassName
+            : "flex items-center justify-center w-6 h-6 text-ink-300 dark:text-ink-400 cursor-not-allowed opacity-40"
         )}
       >
-        <Cog6ToothIcon className="w-5 h-5" />
+        <PiGear className="w-5 h-5" />
       </button>
     </div>
   );
@@ -359,7 +355,7 @@ export default function WorkspaceSettings() {
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
-            className="mt-4 md:mt-0 text-white px-5 py-1.5 rounded-xl text-sm bg-[#A308F0] transition-colors"
+            className="mt-4 md:mt-0 text-white px-5 py-1.5 rounded-xl text-sm bg-[#A308F0] hover:bg-[#8a07c9] transition-colors duration-100"
           >
             Create New Team
           </button>

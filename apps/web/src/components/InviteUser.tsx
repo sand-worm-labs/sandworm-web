@@ -6,6 +6,8 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 
 import type { UserWorkspaceRole } from "@/types";
 
+import { iconButtonMdClassName } from "@/styles/interactive";
+
 // =====================================
 // ⬢ Types
 // =====================================
@@ -147,7 +149,8 @@ export default function InviteUserModal({
                     type="button"
                     onClick={handleClose}
                     disabled={isSubmitting}
-                    className="rounded-lg p-1 text-ink-400 hover:text-ink-400  dark:text-ink-400  dark:hover:text-ink-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                    aria-label="Close"
+                    className={`${iconButtonMdClassName} disabled:opacity-50 disabled:pointer-events-none`}
                   >
                     <XMarkIcon className="h-5 w-5" />
                   </button>
