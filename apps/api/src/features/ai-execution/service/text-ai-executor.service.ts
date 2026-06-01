@@ -12,6 +12,9 @@ import {
 } from '@sandworm/editor'
 import type { MarkdownBlock, MarkdownEditIntent } from '@sandworm/editor'
 import { BaseAiExecutorService } from './base-ai-executor.service'
+import { GeneratorContext } from "@/infrastructure/ai/types/generator.types"
+import { MarkdownGeneratorService } from '@/infrastructure/ai/services/markdown-generator.service'
+
 
 const INTENT_INSTRUCTIONS: Record<MarkdownEditIntent, string> = {
   fix:     'Fix grammar, spelling, and clarity. Preserve structure and all code blocks exactly.',
@@ -21,23 +24,6 @@ const INTENT_INSTRUCTIONS: Record<MarkdownEditIntent, string> = {
   custom:  '',
 } as const
 
-const RANDOM_MARKDOWN_SAMPLES: string[] = [
-  `## Wallet Concentration Analysis\n\nTop 10 holders control **62.4%** of circulating supply.\n\n- Whale wallets: 3 addresses > 5% each\n- Exchange cold wallets excluded from concentration calc\n- 30-day trend: +2.1% consolidation\n\n> Watch for large transfer events near resistance levels.`,
-
-  `## Protocol Revenue — Last 7 Days\n\n| Source       | Revenue (USD) | Δ vs Prior Week |\n|--------------|---------------|------------------|\n| Swap Fees    | $1,204,330    | +8.4%            |\n| Flash Loans  | $88,210       | -3.1%            |\n| Liquidations | $340,900      | +41.2%           |\n\n**Total:** $1,633,440 — driven largely by liquidation volume spike on day 4.`,
-
-  `## MEV Extraction Summary\n\nSandwich attacks accounted for **~18%** of gas spent on this contract in the past epoch.\n\n\`\`\`\nAttacker bundles identified : 1,204\nAvg profit per bundle       : $42.30\nLargest single extraction   : $8,910\n\`\`\`\n\nMitigation: consider integrating a private mempool or commit-reveal scheme.`,
-
-  `## Liquidity Depth Snapshot\n\nCurrent pool depth within ±2% of spot:\n\n- **Bid side:** $4.2M\n- **Ask side:** $3.8M\n- **Imbalance ratio:** 1.10 (mild buy pressure)\n\nSlippage estimate for $500K market buy: **~1.3%** based on current curve.`,
-]
-
-interface TextEditStreamedOptions {
-  content:      string
-  instructions: string
-  modelId:      string
-  onContent:    (accumulated: string) => void
-}
-
 @Injectable()
 export class TextAiExecutorService extends BaseAiExecutorService {
   protected readonly logger = new Logger(TextAiExecutorService.name)
@@ -45,6 +31,7 @@ export class TextAiExecutorService extends BaseAiExecutorService {
   constructor(
     yjsDocumentService: YjsDocumentService,
     persistorFactory:   PersistorFactory,
+    private readonly markdownGeneratorService: MarkdownGeneratorService,
   ) {
     super(yjsDocumentService, persistorFactory)
   }
@@ -54,7 +41,6 @@ export class TextAiExecutorService extends BaseAiExecutorService {
     workspaceId: string,
     blockId:     string,
     userId:      string,
-    modelId:     string,
   ): Promise<string> {
     try {
       const sharedDoc = await this.getSharedDoc(documentId, workspaceId)
@@ -67,7 +53,8 @@ export class TextAiExecutorService extends BaseAiExecutorService {
       if (!taskItem) throw new Error('Failed to dequeue edit-text task')
 
       const { intent } = getMarkdownAttributes(block)
-      return await this.runEdit(taskItem, block, modelId, intent)
+      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId }
+      return await this.runEdit(taskItem, block, intent, ctx)
     } catch (err) {
       this.logger.error('editText failed', err)
       throw err
@@ -77,64 +64,44 @@ export class TextAiExecutorService extends BaseAiExecutorService {
   private async runEdit(
     taskItem: AITaskItem,
     block:    Y.XmlElement<MarkdownBlock>,
-    modelId:  string,
     intent:   MarkdownEditIntent,
+    ctx:      GeneratorContext,
   ): Promise<string> {
     let cleanup: () => void = () => {}
     let aborted = false
-    let result  = ''
 
     try {
       cleanup = taskItem.observeStatus((s) => {
         if (s._tag === 'aborting') aborted = true
       })
 
-      const { source, editWithAIPrompt } = getMarkdownAttributes(block);
-      const content      = source?.toJSON()           ?? '';
-      const instructions = editWithAIPrompt?.toJSON() ?? '';
+      const { source, editWithAIPrompt } = getMarkdownAttributes(block)
+      const content      = source?.toJSON()           ?? ''
+      const instructions = editWithAIPrompt?.toJSON() ?? ''
       if (!instructions) {
-        taskItem.setCompleted('error');
-        return result;
+        taskItem.setCompleted('error')
+        return ''
       }
 
+      const prompt = `${this.buildInstructions(intent, instructions)}\n\n${content}`
 
-      await this.simulate({
-        content,
-        instructions: this.buildInstructions(intent, instructions),
-        modelId,
-        onContent: (accumulated) => {
-          if (aborted) return
-          result = accumulated
-          updateMarkdownAISuggestions(block, accumulated)
-        },
-      })
+      const { content: generated } = await this.markdownGeneratorService.edit(ctx, prompt)
 
       if (aborted) {
         taskItem.setCompleted('aborted')
-        return result
+        return generated
       }
 
+      updateMarkdownAISuggestions(block, generated)
       closeMarkdownEditWithAIPrompt(block, true)
       taskItem.setCompleted('success')
-      return result
+      return generated
     } catch (err) {
       taskItem.setCompleted('error')
       throw err
     } finally {
       cleanup()
     }
-  }
-
-  private async simulate(opts: TextEditStreamedOptions): Promise<void> {
-    await new Promise((r) => setTimeout(r, 800))
-
-    const generated = this.randomMarkdown()
-    opts.onContent(generated)
-  }
-
-  private randomMarkdown(): string {
-    const idx = Math.floor(Math.random() * RANDOM_MARKDOWN_SAMPLES.length)
-    return RANDOM_MARKDOWN_SAMPLES[idx]
   }
 
   private buildInstructions(intent: MarkdownEditIntent, custom?: string): string {
