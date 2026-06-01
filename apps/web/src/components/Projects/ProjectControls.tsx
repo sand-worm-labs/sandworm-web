@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { X, Check } from "lucide-react";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,12 +32,16 @@ type FilterOption =
   | "Created by me";
 
 interface ProjectControlProps {
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
   onViewChange?: (view: ViewType) => void;
   onFilterChange?: (filters: FilterOption[]) => void;
   onSortChange?: (sort: SortOption) => void;
 }
 
 const ProjectControl: React.FC<ProjectControlProps> = ({
+  searchValue,
+  onSearchChange,
   onViewChange,
   onFilterChange,
   onSortChange,
@@ -92,6 +97,18 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
       <div className="mx-auto py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
+            {/* ✦ Search Input ✦ */}
+            <div className="relative">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400 dark:text-ink-400" />
+              <input
+                type="text"
+                placeholder="Search projects..."
+                value={searchValue ?? ""}
+                onChange={e => onSearchChange?.(e.target.value)}
+                className="w-52 pl-10 pr-4 py-1 h-8 rounded-lg dark:bg-base-400 dark:text-white placeholder:dark:text-ink-300 placeholder-[#868E96] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#EBF7F7] placeholder:text-[#868E96]"
+              />
+            </div>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

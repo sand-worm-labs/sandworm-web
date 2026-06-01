@@ -43,7 +43,11 @@ type MenuAction = "duplicate" | "newTab" | "trash";
 export const Projects: React.FC = () => {
   const workspaceId = useStringQuery("workspace");
   const router = useRouter();
-  const [activeView, setActiveView] = useState<"grid" | "table">("grid");
+  const [activeView, setActiveView] = useState<"grid" | "table">(() => {
+    if (typeof window === "undefined") return "grid";
+    const saved = localStorage.getItem("sandworm:projects:view");
+    return saved === "table" ? "table" : "grid";
+  });
 
   const [
     documentsState,
@@ -53,6 +57,7 @@ export const Projects: React.FC = () => {
   const [favorites, { favoriteDocument, unfavoriteDocument }] =
     useFavorites(workspaceId);
 
+  const [searchValue, setSearchValue] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [hoveredUser, setHoveredUser] = useState<string | null>(null);
   const [hoveredSave, setHoveredSave] = useState<string | null>(null);
@@ -123,6 +128,16 @@ export const Projects: React.FC = () => {
       isFavorite: favorites.has(doc.id),
     }));
   }, [documents, favorites]);
+
+  const filteredProjects = useMemo(() => {
+    if (!searchValue.trim()) return projects;
+    const q = searchValue.toLowerCase();
+    return projects.filter(
+      p =>
+        p.title.toLowerCase().includes(q) ||
+        p.creator.toLowerCase().includes(q)
+    );
+  }, [projects, searchValue]);
 
   const toggleFavorite = (id: string): void => {
     const isFavorite = favorites.has(id);
@@ -202,11 +217,18 @@ export const Projects: React.FC = () => {
       </div>
 
       <div className=" mx-auto container">
-        <ProjectControl onViewChange={setActiveView} />
+        <ProjectControl
+          onViewChange={view => {
+            setActiveView(view);
+            localStorage.setItem("sandworm:projects:view", view);
+          }}
+          searchValue={searchValue}
+          onSearchChange={setSearchValue}
+        />
 
         {activeView === "grid" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map(project => (
+            {filteredProjects.map(project => (
               <div
                 key={project.id}
                 className="bg-base-100 rounded-3xl border border-border-tertiary transition-all duration-200 p-4 py-3 relative group flex flex-col"
@@ -346,7 +368,7 @@ export const Projects: React.FC = () => {
           </div>
         ) : (
           <ProjectsTable
-            projects={projects}
+            projects={filteredProjects}
             workspaceId={workspaceId}
             onToggleFavorite={toggleFavorite}
             onMenuAction={handleMenuAction}

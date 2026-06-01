@@ -44,7 +44,7 @@ const ExamplePrompts: React.FC<ExamplePromptsProps> = ({ onSelect }) => (
         className="group flex items-start gap-3 w-full text-left px-4 py-2.5 rounded-xl border border-border-secondary dark:border-border-tertiary bg-white dark:bg-base-200 hover:border-primary/40 dark:hover:border-primary/40 hover:bg-primary/[0.03] dark:hover:bg-primary/[0.06] transition-all duration-150"
       >
         <span className="flex flex-col min-w-0">
-          <span className="text-[11px] font-semibold text-ink-100 mb-0.5">
+          <span className="text-[12px] font-medium text-ink-100 mb-0.5">
             {item.label}
           </span>
           <span className="text-[12.5px] text-ink-400 dark:text-ink-400 leading-snug line-clamp-2 group-hover:text-ink-200 dark:group-hover:text-ink-300 transition-colors duration-150">
