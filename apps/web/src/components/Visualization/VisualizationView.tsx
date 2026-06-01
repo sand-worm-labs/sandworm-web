@@ -153,9 +153,9 @@ function VisualizationViewV2(props: Props) {
             <div className="flex flex-col items-center justify-center space-y-2">
               <ExclamationTriangleIcon
                 strokeWidth={1.2}
-                className="h-12 w-12 text-ink-400"
+                className="h-10 w-10 text-ink-400"
               />
-              <span className="text-lg text-ink-400">Something went wrong</span>
+              <span className="text-base text-ink-400">Something went wrong</span>
             </div>
           ) : props.error === "invalid-params" ? (
             <div className="flex flex-col items-center justify-center space-y-2">

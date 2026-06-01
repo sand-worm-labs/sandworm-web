@@ -150,8 +150,6 @@ export function WorkspaceDropdownMenu({
         ))}
       </div>
 
-      <div className="h-px mx-2 bg-[#E9ECEF] dark:bg-border-tertiary" />
-
       <div className="py-1.5">
         <button
           type="button"

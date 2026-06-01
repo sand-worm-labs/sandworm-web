@@ -1,14 +1,5 @@
 /* eslint-disable import/no-cycle */
 import type * as Y from "yjs";
-import {
-  Bars3CenterLeftIcon,
-  ChartPieIcon,
-  CircleStackIcon,
-  CommandLineIcon,
-  PencilSquareIcon,
-  QuestionMarkCircleIcon,
-  TableCellsIcon,
-} from "@heroicons/react/24/solid";
 import type {
   AITasks,
   ExecutionQueue,
@@ -33,11 +24,22 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import type { DataFrame } from "@sandworm/types";
 import { exhaustiveCheck } from "@sandworm/types";
 import {
-  ChevronDoubleRightIcon,
-  ChevronDoubleLeftIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
-import { Heading1Icon } from "lucide-react";
+  PiCaretDoubleLeft,
+  PiCaretDoubleRight,
+  PiChartPie,
+  PiTerminal,
+  PiDatabase,
+  PiTable,
+  PiTextbox,
+  PiTextAlignLeft,
+  PiMagnifyingGlass,
+  PiTextHOne,
+  PiX,
+  PiListBullets,
+  PiCalendar,
+  PiDotsSixVertical,
+  PiArticle,
+} from "react-icons/pi";
 import { v4 as uuidv4 } from "uuid";
 import clsx from "clsx";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
@@ -54,6 +56,9 @@ import { getDefaults } from "./DashboardView";
 
 import type { DraggingBlock } from ".";
 
+// =====================================
+// ⬢ Block type labels & icons
+// =====================================
 function getTypeLabel(t: BlockType) {
   switch (t) {
     case BlockType.VisualizationV2:
@@ -80,27 +85,30 @@ function getTypeLabel(t: BlockType) {
   }
 }
 
-function getTypeIcon(t: BlockType): JSX.Element {
+function getTypeIcon(t: BlockType, size = 14) {
+  const className = "text-ink-300 dark:text-ink-500";
   switch (t) {
     case BlockType.VisualizationV2:
     case BlockType.Visualization:
-      return <ChartPieIcon className="w-4 h-4 text-ink-400 " />;
+      return <PiChartPie size={size} className={className} />;
     case BlockType.Python:
-      return <CommandLineIcon className="w-4 h-4 text-ink-400 " />;
+      return <PiTerminal size={size} className={className} />;
     case BlockType.SQL:
-      return <CircleStackIcon className="w-4 h-4 text-ink-400 " />;
+      return <PiDatabase size={size} className={className} />;
     case BlockType.PivotTable:
-      return <TableCellsIcon className="w-4 h-4 text-ink-400 " />;
+      return <PiTable size={size} className={className} />;
     case BlockType.Input:
-    case BlockType.DateInput:
+      return <PiTextbox size={size} className={className} />;
     case BlockType.DropdownInput:
-      return <PencilSquareIcon className="w-4 h-4 text-ink-400 " />;
+      return <PiListBullets size={size} className={className} />;
+    case BlockType.DateInput:
+      return <PiCalendar size={size} className={className} />;
     case BlockType.RichText:
-      return <Bars3CenterLeftIcon className="w-4 h-4 text-ink-400 " />;
-    case BlockType.FileUpload:
-    case BlockType.DashboardHeader:
+      return <PiTextAlignLeft size={size} className={className} />;
+    case BlockType.Markdown:
+      return <PiArticle size={size} className={className} />;
     default:
-      return <QuestionMarkCircleIcon className="w-4 h-4 text-ink-400 " />;
+      return <PiTextbox size={size} className={className} />;
   }
 }
 
@@ -112,6 +120,107 @@ const typeOptions = [
   BlockType.Input,
 ];
 
+// =====================================
+// ⬢ Placeholder visuals (until real previews)
+// =====================================
+function PlaceholderBars({ rows, cols = 4 }: { rows: number; cols?: number }) {
+  return (
+    <div
+      className="grid gap-1 w-full max-w-[148px]"
+      style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+    >
+      {Array.from({ length: rows * cols }, (_, i) => (
+        <div
+          key={`cell-${rows}-${cols}-${i}`}
+          className="h-1.5 rounded-sm bg-[#DEE2E6] dark:bg-[#3A3A38]"
+        />
+      ))}
+    </div>
+  );
+}
+
+function BlockPlaceholderVisual({ type }: { type: BlockType }) {
+  switch (type) {
+    case BlockType.SQL:
+    case BlockType.PivotTable:
+      return (
+        <PlaceholderBars
+          rows={3}
+          cols={type === BlockType.PivotTable ? 3 : 4}
+        />
+      );
+    case BlockType.Python:
+      return (
+        <div className="flex flex-col gap-1 w-full max-w-[148px]">
+          {[100, 72, 88].map(w => (
+            <div
+              key={w}
+              className="h-1.5 rounded-sm bg-[#DEE2E6] dark:bg-[#3A3A38]"
+              style={{ width: `${w}%` }}
+            />
+          ))}
+        </div>
+      );
+    case BlockType.Input:
+      return (
+        <div className="w-full max-w-[148px] h-7 rounded-md border border-[#DEE2E6] dark:border-[#3A3A38] bg-white dark:bg-[#252523] px-2 flex items-center">
+          <div className="h-1.5 w-16 rounded-sm bg-[#E9ECEF] dark:bg-[#3A3A38]" />
+        </div>
+      );
+    case BlockType.DropdownInput:
+      return (
+        <div className="w-full max-w-[148px] h-7 rounded-md border border-[#DEE2E6] dark:border-[#3A3A38] bg-white dark:bg-[#252523] px-2 flex items-center justify-between">
+          <div className="h-1.5 w-12 rounded-sm bg-[#E9ECEF] dark:bg-[#3A3A38]" />
+          <div className="w-0 h-0 border-l-[3px] border-r-[3px] border-t-[4px] border-l-transparent border-r-transparent border-t-ink-300" />
+        </div>
+      );
+    case BlockType.DateInput:
+      return (
+        <div className="w-full max-w-[148px] h-7 rounded-md border border-[#DEE2E6] dark:border-[#3A3A38] bg-white dark:bg-[#252523] px-2 flex items-center gap-1.5">
+          <PiCalendar
+            size={12}
+            className="text-ink-300 dark:text-ink-500 flex-shrink-0"
+          />
+          <div className="h-1.5 flex-1 rounded-sm bg-[#E9ECEF] dark:bg-[#3A3A38]" />
+        </div>
+      );
+    case BlockType.RichText:
+      return (
+        <div className="flex flex-col gap-1.5 w-full max-w-[148px]">
+          <div className="h-2 w-20 rounded-sm bg-[#CED4DA] dark:bg-[#4A4A48]" />
+          <div className="h-1.5 w-full rounded-sm bg-[#E9ECEF] dark:bg-[#3A3A38]" />
+          <div className="h-1.5 w-[85%] rounded-sm bg-[#E9ECEF] dark:bg-[#3A3A38]" />
+        </div>
+      );
+    default:
+      return <PlaceholderBars rows={2} cols={3} />;
+  }
+}
+
+function BlockTypePlaceholder({ type }: { type: BlockType }) {
+  return (
+    <div
+      className="flex flex-col items-center justify-center w-full h-32 gap-2 rounded-lg
+        bg-[#F8F9FA] dark:bg-[#1E1E1C]
+        border border-dashed border-[#DEE2E6] dark:border-[#3A3A38] p-3"
+    >
+      <div
+        className="flex-shrink-0 w-8 h-8 rounded-lg border border-[#DEE2E6] dark:border-[#3A3A38]
+          bg-white dark:bg-[#252523] flex items-center justify-center"
+      >
+        {getTypeIcon(type, 16)}
+      </div>
+      <BlockPlaceholderVisual type={type} />
+      <span className="text-[10px] font-semibold uppercase tracking-wider text-ink-300 dark:text-ink-600">
+        {getTypeLabel(type)}
+      </span>
+    </div>
+  );
+}
+
+// =====================================
+// ⬢ Block preview
+// =====================================
 interface BlockPreviewProps {
   document: ApiDocument;
   dataframes: Y.Map<DataFrame>;
@@ -121,76 +230,56 @@ interface BlockPreviewProps {
   executionQueue: ExecutionQueue;
 }
 
+const vizPreviewProps = (props: BlockPreviewProps) => ({
+  document: props.document,
+  dataframes: props.dataframes,
+  blocks: props.blocks,
+  dragPreview: null,
+  isEditable: false as const,
+  onAddGroupedBlock: () => {},
+  dashboardMode: { _tag: "editing" as const, position: "sidebar" as const },
+  isPublicMode: false,
+  hasMultipleTabs: false,
+  isBlockHiddenInPublished: false,
+  onToggleIsBlockHiddenInPublished: () => {},
+  isCursorWithin: false,
+  isCursorInserting: false,
+  userId: props.userId,
+  executionQueue: props.executionQueue,
+  isFullScreen: true,
+});
+
 function BlockPreview(props: BlockPreviewProps) {
   return switchBlockType(props.block, {
-    onRichText: () => <div className="w-full h-96" />,
-    onSQL: () => (
-      <div className="w-full h-64">
-        <div className="w-full h-96" />
-      </div>
-    ),
-    onPython: () => <div className="w-full h-96" />,
+    onRichText: () => <BlockTypePlaceholder type={BlockType.RichText} />,
+    onSQL: () => <BlockTypePlaceholder type={BlockType.SQL} />,
+    onPython: () => <BlockTypePlaceholder type={BlockType.Python} />,
     onVisualization: block => (
-      <div className="w-full h-96">
-        <VisualizationV2Block
-          document={props.document}
-          dataframes={props.dataframes}
-          block={block}
-          blocks={props.blocks}
-          dragPreview={null}
-          isEditable={false}
-          onAddGroupedBlock={() => {}}
-          dashboardMode={{ _tag: "editing", position: "sidebar" }}
-          isPublicMode={false}
-          hasMultipleTabs={false}
-          isBlockHiddenInPublished={false}
-          onToggleIsBlockHiddenInPublished={() => {}}
-          isCursorWithin={false}
-          isCursorInserting={false}
-          userId={props.userId}
-          executionQueue={props.executionQueue}
-          isFullScreen
-        />
+      <div className="w-full h-48 overflow-hidden rounded-lg border border-[#E9ECEF] dark:border-[#3A3A38]">
+        <VisualizationV2Block block={block} {...vizPreviewProps(props)} />
       </div>
     ),
     onVisualizationV2: block => (
-      <div className="w-full h-96">
-        <VisualizationV2Block
-          document={props.document}
-          dataframes={props.dataframes}
-          block={block}
-          blocks={props.blocks}
-          dragPreview={null}
-          isEditable={false}
-          onAddGroupedBlock={() => {}}
-          dashboardMode={{ _tag: "editing", position: "sidebar" }}
-          isPublicMode={false}
-          hasMultipleTabs={false}
-          isBlockHiddenInPublished={false}
-          onToggleIsBlockHiddenInPublished={() => {}}
-          isCursorWithin={false}
-          isCursorInserting={false}
-          userId={props.userId}
-          executionQueue={props.executionQueue}
-          isFullScreen
-        />
+      <div className="w-full h-48 overflow-hidden rounded-lg border border-[#E9ECEF] dark:border-[#3A3A38]">
+        <VisualizationV2Block block={block} {...vizPreviewProps(props)} />
       </div>
     ),
-    onInput: () => <div className="w-full h-96" />,
-    onDropdownInput: () => <div className="w-full h-96" />,
+    onInput: () => <BlockTypePlaceholder type={BlockType.Input} />,
+    onDropdownInput: () => (
+      <BlockTypePlaceholder type={BlockType.DropdownInput} />
+    ),
     onFileUpload: () => null,
-    onDateInput: () => <div className="w-full h-96" />,
-    onPivotTable: () => (
-      <div className="w-full h-96">
-        <div className="w-full h-96" />
-      </div>
-    ),
-    onWriteback: () => null,
+    onDateInput: () => <BlockTypePlaceholder type={BlockType.DateInput} />,
+    onPivotTable: () => <BlockTypePlaceholder type={BlockType.PivotTable} />,
+    onMarkdown: () => <BlockTypePlaceholder type={BlockType.RichText} />,
     onDashboardHeader: () => null,
     onPowerToolbox: () => null,
   });
 }
 
+// =====================================
+// ⬢ Block list item
+// =====================================
 interface BlockListItemProps {
   document: ApiDocument;
   dataframes: Y.Map<DataFrame>;
@@ -202,9 +291,11 @@ interface BlockListItemProps {
   onExpand: (block: YBlock) => void;
   className?: string;
 }
+
 function BlockListItem(props: BlockListItemProps) {
   const { id, type } = getBaseAttributes(props.block);
   const blockRef = useRef<HTMLDivElement>(null);
+  const blockTitle = props.block.getAttribute("title");
 
   const onDragStart = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
@@ -215,7 +306,8 @@ function BlockListItem(props: BlockListItemProps) {
       props.onDragStart({ id, type, width, height });
 
       const dragImage = document.createElement("div");
-      dragImage.className = "shadow-md bg-base-100 rounded-md overflow-hidden";
+      dragImage.className =
+        "shadow-lg bg-white dark:bg-[#252523] rounded-xl overflow-hidden border border-[#E9ECEF]";
       dragImage.style.position = "absolute";
       dragImage.style.top = "-1000px";
       dragImage.style.left = "-1000px";
@@ -231,10 +323,8 @@ function BlockListItem(props: BlockListItemProps) {
         document.body.removeChild(dragImage);
       }, 0);
     },
-    [id, type, props.onDragStart, blockRef.current]
+    [id, type, props.onDragStart]
   );
-
-  const blockTitle = props.block.getAttribute("title");
 
   const onPointerUp = useCallback(() => {
     switch (type) {
@@ -249,58 +339,72 @@ function BlockListItem(props: BlockListItemProps) {
       case BlockType.RichText:
       case BlockType.FileUpload:
       case BlockType.DashboardHeader:
-      case BlockType.Writeback:
+      case BlockType.Markdown:
       case BlockType.PowerToolbox:
         return;
       default:
         exhaustiveCheck(type);
     }
-  }, [props.onExpand, props.block, type]);
+  }, [type]);
 
   return (
     <div
       key={id}
       className={clsx(
-        "border border-border-secondary hover:border-ceramic-200 rounded-md bg-base-100 relative p-2 overflow-x-hidden select-none",
+        "group relative rounded-xl border border-[#E9ECEF] dark:border-[#2A2A28]",
+        "bg-white dark:bg-[#252523] p-3 overflow-hidden select-none",
+        "transition-colors duration-100 hover:border-[#D9A8F8] dark:hover:border-[#7A06B8]",
         props.className
       )}
       draggable
       onDragStart={onDragStart}
       onPointerUp={onPointerUp}
     >
-      <div className="flex flex-col gap-y-6">
-        <span className="text-ink-400 text-md font-medium">
+      <div className="flex items-center gap-2.5 mb-2.5">
+        <div
+          className="flex-shrink-0 flex items-center justify-center w-7 h-7
+            rounded-lg border border-[#DEE2E6] dark:border-[#3A3A38]
+            bg-[#F8F9FA] dark:bg-[#1E1E1C]"
+        >
+          {getTypeIcon(type)}
+        </div>
+        <span className="flex-1 min-w-0 text-[12.5px] font-medium text-ink-500 dark:text-ink-200 truncate">
           {blockTitle || "Untitled"}
         </span>
-        <ScaleChild
-          width={768}
-          disableScale={
-            props.block.getAttribute("type") === BlockType.VisualizationV2
-          }
-        >
-          <div className="overflow-hidden" ref={blockRef}>
-            <BlockPreview
-              document={props.document}
-              dataframes={props.dataframes}
-              block={props.block}
-              blocks={props.blocks}
-              userId={props.userId}
-              executionQueue={props.executionQueue}
-            />
-          </div>
-        </ScaleChild>
       </div>
 
-      {/* add a transparent div to prevent any interaction with the block */}
-      <div className="absolute top-0 bottom-0 left-0 right-0 z-10 group hover:bg-ceramic-100/50 hover:cursor-grab">
-        <div className="flex items-center justify-center text-center text-ceramic-600 w-full h-full text-md invisible group-hover:visible font-medium">
-          drag to dashboard or click to expand
+      <ScaleChild width={768} disableScale={type === BlockType.VisualizationV2}>
+        <div className="overflow-hidden" ref={blockRef}>
+          <BlockPreview
+            document={props.document}
+            dataframes={props.dataframes}
+            block={props.block}
+            blocks={props.blocks}
+            userId={props.userId}
+            executionQueue={props.executionQueue}
+          />
+        </div>
+      </ScaleChild>
+
+      <div
+        className="absolute inset-0 z-10 rounded-xl flex items-center justify-center
+          bg-white/60 dark:bg-[#252523]/70 opacity-0 group-hover:opacity-100
+          transition-opacity duration-150 cursor-grab active:cursor-grabbing"
+      >
+        <div className="flex flex-col items-center gap-1.5 px-3 text-center">
+          <PiDotsSixVertical size={18} className="text-[#A308F0]" />
+          <span className="text-[11px] font-medium text-ink-500 dark:text-ink-300">
+            Drag to dashboard
+          </span>
         </div>
       </div>
     </div>
   );
 }
 
+// =====================================
+// ⬢ Blocks list
+// =====================================
 interface BlocksListProps {
   document: ApiDocument;
   dataSources: APIDataSources;
@@ -314,13 +418,25 @@ interface BlocksListProps {
   aiTasks: AITasks;
   onExpand: (block: YBlock) => void;
 }
+
 function BlocksList(props: BlocksListProps) {
+  if (props.list.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 gap-2 px-4">
+        <PiDatabase size={20} className="text-ink-200 dark:text-ink-600" />
+        <p className="text-[12px] text-ink-300 dark:text-ink-500 text-center">
+          No blocks match your filters
+        </p>
+      </div>
+    );
+  }
+
   return props.list.map((block, i) => {
     const { id } = getBaseAttributes(block);
 
     return (
       <BlockListItem
-        className={clsx("mt-6", i === props.list.length - 1 && "mb-6")}
+        className={clsx(i > 0 && "mt-3", i === props.list.length - 1 && "mb-4")}
         key={id}
         document={props.document}
         dataframes={props.dataframes}
@@ -335,6 +451,9 @@ function BlocksList(props: BlocksListProps) {
   });
 }
 
+// =====================================
+// ⬢ Dashboard controls
+// =====================================
 interface Props {
   document: ApiDocument;
   dataSources: APIDataSources;
@@ -349,6 +468,7 @@ interface Props {
   onOpen: () => void;
   onClose: () => void;
 }
+
 function DashboardControls(props: Props) {
   const { state: dataframes } = useYDocState(props.yDoc, getDataframes);
   const { state: blocks } = useYDocState(props.yDoc, getBlocks);
@@ -356,18 +476,14 @@ function DashboardControls(props: Props) {
   const { state: dashboard } = useYDocState(props.yDoc, getDashboard);
   const [search, setSearch] = useState("");
   const [types, setTypes] = useState<BlockType[]>([]);
-  const onToggleType = useCallback(
-    (t: BlockType) => {
-      setTypes(currentTypes => {
-        if (currentTypes.includes(t)) {
-          return currentTypes.filter(type => type !== t);
-        }
 
-        return [...currentTypes, t];
-      });
-    },
-    [types]
-  );
+  const onToggleType = useCallback((t: BlockType) => {
+    setTypes(currentTypes =>
+      currentTypes.includes(t)
+        ? currentTypes.filter(type => type !== t)
+        : [...currentTypes, t]
+    );
+  }, []);
 
   const blocksInDashboard = useMemo(
     () =>
@@ -451,7 +567,7 @@ function DashboardControls(props: Props) {
                 onPivotTable: () => block,
                 onFileUpload: () => null,
                 onDashboardHeader: () => null,
-                onWriteback: () => null,
+                onMarkdown: () => null,
                 onPowerToolbox: () => null,
               });
             }) ?? [];
@@ -466,7 +582,10 @@ function DashboardControls(props: Props) {
               switch (attrs.type) {
                 case BlockType.Visualization:
                 case BlockType.VisualizationV2:
-                  if (!types.includes(BlockType.Visualization)) {
+                  if (
+                    !types.includes(BlockType.VisualizationV2) &&
+                    !types.includes(BlockType.Visualization)
+                  ) {
                     return false;
                   }
                   break;
@@ -495,9 +614,8 @@ function DashboardControls(props: Props) {
                 case BlockType.RichText:
                 case BlockType.FileUpload:
                 case BlockType.DashboardHeader:
+                case BlockType.Markdown:
                 case BlockType.PowerToolbox:
-                case BlockType.Writeback:
-                  // these do not show up in the list in the first place
                   break;
                 default:
                   exhaustiveCheck(attrs.type);
@@ -519,14 +637,17 @@ function DashboardControls(props: Props) {
 
   if (!props.isOpen) {
     return (
-      <div className="pt-3 fixed right-0">
+      <div className="pt-3 fixed right-0 z-20">
         <button
           type="button"
           onClick={props.onOpen}
-          className="bg-white dark:bg-base-100  flex items-center rounded-l-sm px-3 py-1 text-sm text-ink-400  hover:bg-gray-100 border border-r-0 border-border-secondary group max-w-11 hover:max-w-32 overflow-hidden transition-mw group duration-500"
+          className="bg-white dark:bg-[#252523] flex items-center rounded-l-xl px-3 py-1.5
+            text-[12.5px] text-ink-400 hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26]
+            border border-r-0 border-[#E9ECEF] dark:border-[#3A3A38]
+            group max-w-11 hover:max-w-32 overflow-hidden transition-[max-width] duration-300"
         >
-          <ChevronDoubleLeftIcon className="min-w-3 min-h-3" />
-          <span className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 whitespace-nowrap">
+          <PiCaretDoubleLeft size={14} className="flex-shrink-0" />
+          <span className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
             Show Blocks
           </span>
         </button>
@@ -535,42 +656,72 @@ function DashboardControls(props: Props) {
   }
 
   return (
-    <div className="relative w-[400px] font-body  h-full">
+    <div className="relative w-[400px] font-body h-full">
       <button
         type="button"
-        className="absolute z-10 top-12 transform rounded-full border border-gray-300 text-ink-400 bg-white dark:bg-base-100  hover:bg-ceramic-200 hover:border-ceramic-200 hover:text-ceramic-400 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2 dark:border-border-tertiary"
+        className="absolute z-10 top-12 rounded-full border border-[#E9ECEF] dark:border-[#3A3A38]
+          text-ink-400 bg-white dark:bg-[#252523]
+          hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26] hover:text-[#A308F0]
+          w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2
+          transition-colors duration-100"
         onClick={props.onClose}
+        aria-label="Close blocks panel"
       >
-        <ChevronDoubleRightIcon className="w-3 h-3" />
+        <PiCaretDoubleRight size={14} />
       </button>
 
-      <div className="bg-white dark:bg-base-100  border-l border-border-secondary dark:border-border-tertiary overflow-y-auto relative h-full flex flex-col justify-between">
-        <div className="bg-gray-50  dark:bg-base-100  border-b dark:border-border-tertiary  border-border-secondary py-6 px-4 shadow-sm">
-          <h2 className=" text-lg font-medium text-ink-100 dark:text-white pb-4">
+      <div
+        className="bg-white dark:bg-[#252523] border-l border-[#E9ECEF] dark:border-[#2A2A28]
+          overflow-hidden relative h-full flex flex-col"
+      >
+        <div className="flex-shrink-0 px-4 pt-4 pb-3 border-b border-[#F1F3F4] dark:border-[#2A2A28]">
+          <h2 className="text-[13px] font-medium text-ink-100 dark:text-white mb-3">
             Blocks
           </h2>
-          <div className="flex flex-col space-y-3">
-            <div className="relative">
+          <div className="flex flex-col gap-2.5">
+            <div
+              className="flex items-center gap-2 px-2.5 py-1.5
+                bg-[#F1F3F4] dark:bg-[#2A2A28]
+                border border-transparent
+                focus-within:border-[#D9A8F8] dark:focus-within:border-[#7A06B8]
+                rounded-xl transition-colors duration-150"
+            >
+              <PiMagnifyingGlass
+                size={13}
+                className="text-ink-300 dark:text-ink-600 flex-shrink-0"
+              />
               <input
                 type="text"
-                placeholder="Find block by title"
-                className="block w-full rounded-md border-0 pl-7 py-2 text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-ink-400 focus:ring-2 focus:ring-inset outline-none  focus:ring-primary text-xs h-[38px]"
+                placeholder="Find block by title…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
+                className="flex-1 bg-transparent outline-none text-[12.5px]
+                  text-ink-500 dark:text-ink-200
+                  placeholder:text-ink-300 dark:placeholder:text-ink-600"
               />
-              <MagnifyingGlassIcon className="absolute top-1 left-2 w-4 h-4 text-ink-400 translate-y-1/2" />
+              {search ? (
+                <button
+                  type="button"
+                  onClick={() => setSearch("")}
+                  className="text-ink-300 hover:text-ink-500 transition-colors"
+                  aria-label="Clear search"
+                >
+                  <PiX size={12} />
+                </button>
+              ) : null}
             </div>
             <MultiSelect<BlockType>
               value={types}
               getLabel={getTypeLabel}
-              getIcon={getTypeIcon}
+              getIcon={t => getTypeIcon(t, 13)}
               placeholder="Filter by type"
               options={typeOptions}
               onToggle={onToggleType}
             />
           </div>
         </div>
-        <OverlayScrollbarsComponent className="px-3 h-full overflow-y-auto no-scroll">
+
+        <OverlayScrollbarsComponent className="flex-1 min-h-0 px-3 pt-2 overflow-y-auto">
           <BlocksList
             document={props.document}
             list={blocksList}
@@ -585,13 +736,19 @@ function DashboardControls(props: Props) {
             onExpand={props.onExpand}
           />
         </OverlayScrollbarsComponent>
-        <div className="bg-gray-50 dark:bg-base-100  dark:border-border-tertiary p-4 border-t border-border-secondary">
+
+        <div className="flex-shrink-0 p-3 border-t border-[#F1F3F4] dark:border-[#2A2A28]">
           <button
             type="button"
-            className="flex items-center rounded-md px-3 py-2 text-sm text-ink-400 hover:bg-gray-100 border dark:border-border-tertiary border-border-secondary disabled:cursor-not-allowed disabled:opacity-50 gap-x-2 w-full dark:bg-base-100   bg-base-100 shadow-sm justify-center"
+            className="flex items-center justify-center gap-2 w-full rounded-xl px-3 py-2
+              text-[12.5px] font-medium text-ink-500 dark:text-ink-200
+              border border-[#E9ECEF] dark:border-[#3A3A38]
+              bg-white dark:bg-[#1E1E1C]
+              hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26]
+              transition-colors duration-100"
             onClick={addHeading}
           >
-            <Heading1Icon strokeWidth={1} className="w-4 h-4" />
+            <PiTextHOne size={15} className="text-ink-300 dark:text-ink-500" />
             <span>Add heading</span>
           </button>
         </div>

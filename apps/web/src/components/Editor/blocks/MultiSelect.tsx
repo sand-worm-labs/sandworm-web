@@ -1,9 +1,8 @@
 import { Menu, Transition } from "@headlessui/react";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useRef } from "react";
 import { createPortal } from "react-dom";
+import { PiCaretDown, PiCheck, PiX } from "react-icons/pi";
 
 import { computeMenuPosition } from "@/utils/dom";
 
@@ -15,6 +14,7 @@ interface Props<T> {
   onToggle: (value: T) => void;
   placeholder: string;
 }
+
 export default function MultiSelect<T>(props: Props<T>) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuContainerRef = useRef<HTMLDivElement>(null);
@@ -35,18 +35,28 @@ export default function MultiSelect<T>(props: Props<T>) {
             <Menu.Button
               ref={buttonRef}
               className={clsx(
-                "flex items-center justify-between w-full rounded-md border-0 px-3 text-ink-100 shadow-sm text-xs text-left bg-white dark:bg-base-100  dark:text-white py-2 dark:border-border-tertiary ",
+                "flex items-center justify-between w-full min-h-[36px] gap-2",
+                "px-2.5 py-1.5 rounded-xl text-left transition-colors duration-150",
+                "bg-[#F1F3F4] dark:bg-[#2A2A28]",
+                "border border-transparent",
                 open
-                  ? "ring-2 ring-inset ring-ceramic-200/70"
-                  : "ring-1 ring-inset ring-gray-300 dark:ring-[#262A30]",
-                props.value.length === 0 && "h-[38px]"
+                  ? "border-[#D9A8F8] dark:border-[#7A06B8]"
+                  : "hover:border-[#E4E6E8] dark:hover:border-[#3A3A38]"
               )}
             >
               {props.value.length > 0 ? (
-                <div className="flex flex-wrap gap-x-1 gap-y-1">
+                <div className="flex flex-wrap flex-1 gap-1 min-w-0">
                   {props.value.map(value => (
-                    <div className="bg-gray-50 dark:bg-base-100  border border-border-secondary px-1.5 py-0.5 rounded-sm flex items-center gap-x-1 text-xs text-gray-600 dark:text-ink-300 ">
-                      <span>{props.getLabel(value)}</span>
+                    <span
+                      key={String(value)}
+                      className="inline-flex items-center gap-1 max-w-full
+                        bg-white dark:bg-[#252523]
+                        border border-[#E9ECEF] dark:border-[#3A3A38]
+                        px-1.5 py-0.5 rounded-md text-[11px] font-medium
+                        text-ink-500 dark:text-ink-200"
+                    >
+                      {props.getIcon?.(value)}
+                      <span className="truncate">{props.getLabel(value)}</span>
                       <button
                         type="button"
                         onClick={e => {
@@ -54,58 +64,98 @@ export default function MultiSelect<T>(props: Props<T>) {
                           e.preventDefault();
                           props.onToggle(value);
                         }}
-                        className="p-0.5 rounded-full hover:bg-red-100 hover:text-red-700 disabled:cursor-not-allowed disabled:hover:bg-gray-50 disabled:hover:text-gray-800"
+                        className="flex-shrink-0 p-0.5 rounded-md
+                          text-ink-300 hover:text-ink-500 hover:bg-[#F1F3F4]
+                          dark:hover:bg-[#2A2A28] transition-colors"
+                        aria-label={`Remove ${props.getLabel(value)}`}
                       >
-                        <XMarkIcon className="w-3 h-3" />
+                        <PiX size={11} />
                       </button>
-                    </div>
+                    </span>
                   ))}
                 </div>
               ) : (
-                <span className="text-ink-400">{props.placeholder}</span>
+                <span className="flex-1 text-[12.5px] text-ink-300 dark:text-ink-600">
+                  {props.placeholder}
+                </span>
               )}
-              <ChevronDownIcon className="w-4 h-4 text-ink-400" />
+              <PiCaretDown
+                size={13}
+                className={clsx(
+                  "flex-shrink-0 text-ink-300 dark:text-ink-600 transition-transform duration-150",
+                  open && "rotate-180"
+                )}
+              />
             </Menu.Button>
             {createPortal(
               <Transition
                 as="div"
                 className="absolute z-30"
-                enter="transition-opacity duration-300"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
-                leave="transition-opacity duration-300"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
+                enter="transition ease-out duration-150"
+                enterFrom="scale-95 -translate-y-0.5"
+                enterTo="scale-100 translate-y-0"
+                leave="transition ease-in duration-100"
+                leaveFrom="scale-100 translate-y-0"
+                leaveTo="scale-95 -translate-y-0.5"
                 style={portalStyle}
                 show={open}
               >
                 <Menu.Items
                   as="div"
                   ref={menuContainerRef}
-                  className="w-full rounded-xl bg-white dark:bg-base-100  shadow-md ring-1 ring-gray-100 dark:text-ink-300  focus:outline-none font-body  flex flex-col text-xs text-ink-300 py-1.5 dark:ring-[#262A30]"
+                  className="w-full rounded-xl bg-white dark:bg-[#252523]
+                    shadow-lg border border-[#E9ECEF] dark:border-[#3A3A38]
+                    focus:outline-none font-body flex flex-col py-1.5 overflow-hidden"
                 >
-                  {props.options.map(option => (
-                    <Menu.Item
-                      as="button"
-                      onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        props.onToggle(option);
-                      }}
-                      className={clsx(
-                        "hover:bg-primary/20  w-full pl-3 pr-4 py-1.5 text-left flex gap-x-2 items-center justify-between whitespace-nowrap",
-                        props.value.includes(option) ? "font-medium" : ""
-                      )}
-                    >
-                      <div className="flex items-center gap-x-1.5">
-                        {props.getIcon?.(option)}
-                        <span>{props.getLabel(option)}</span>
-                      </div>
-                      {props.value.includes(option) ? (
-                        <CheckIcon className="w-4 h-4" aria-hidden="true" />
-                      ) : null}
-                    </Menu.Item>
-                  ))}
+                  {props.options.map(option => {
+                    const selected = props.value.includes(option);
+                    return (
+                      <Menu.Item
+                        key={String(option)}
+                        as="button"
+                        type="button"
+                        onClick={e => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          props.onToggle(option);
+                        }}
+                        className={clsx(
+                          "w-full px-3 py-2 text-left flex items-center justify-between gap-2",
+                          "transition-colors duration-100",
+                          selected
+                            ? "bg-[#F9F5FF] dark:bg-[#1A0D26]"
+                            : "hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26]"
+                        )}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          {props.getIcon?.(option) && (
+                            <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-md
+                              border border-[#DEE2E6] dark:border-[#3A3A38]
+                              bg-white dark:bg-[#1E1E1C]">
+                              {props.getIcon(option)}
+                            </span>
+                          )}
+                          <span
+                            className={clsx(
+                              "text-[12.5px] truncate",
+                              selected
+                                ? "font-medium text-ink-500 dark:text-ink-200"
+                                : "text-ink-400 dark:text-ink-300"
+                            )}
+                          >
+                            {props.getLabel(option)}
+                          </span>
+                        </div>
+                        {selected ? (
+                          <PiCheck
+                            size={14}
+                            className="flex-shrink-0 text-[#A308F0]"
+                            aria-hidden
+                          />
+                        ) : null}
+                      </Menu.Item>
+                    );
+                  })}
                 </Menu.Items>
               </Transition>,
               document.body
