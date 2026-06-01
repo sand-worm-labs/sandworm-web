@@ -32,7 +32,7 @@ export class PythonGeneratorService {
       this.httpService.post<PythonGeneratorResponse>(
         `${url}/code/edit`,
         {
-          openrouter_api_key: `OPENROUTER_KEY_PLACEHOLDER`,
+          openrouter_api_key: 'OPENROUTER_KEY_PLACEHOLDER',
           prompt,
           model: workspace.assistantModel,
           context,
@@ -53,7 +53,7 @@ export class PythonGeneratorService {
       this.httpService.post<PythonGeneratorResponse>(
         `${url}/code/fix`,
         {
-          openrouter_api_key: `OPENROUTER_KEY_PLACEHOLDER`,
+          openrouter_api_key: 'OPENROUTER_KEY_PLACEHOLDER',
           error_message,
           model: workspace.assistantModel,
           context,

@@ -32,7 +32,7 @@ export class SqlGeneratorService {
       this.httpService.post<SqlGeneratorResponse>(
         `${url}/sql/edit`,
         {
-          openrouter_api_key: `OPENROUTER_KEY_PLACEHOLDER`,
+          openrouter_api_key: 'OPENROUTER_KEY_PLACEHOLDER',
           prompt,
           model: workspace.assistantModel,
           context,
@@ -53,7 +53,7 @@ export class SqlGeneratorService {
       this.httpService.post<SqlGeneratorResponse>(
         `${url}/sql/fix`,
         {
-          openrouter_api_key: `OPENROUTER_KEY_PLACEHOLDER`,
+          openrouter_api_key: 'OPENROUTER_KEY_PLACEHOLDER',
           error_message,
           model: workspace.assistantModel,
           context,

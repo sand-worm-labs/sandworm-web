@@ -47,7 +47,7 @@ export class TitleGeneratorService {
       this.httpService.post<GenerateTitleResponse>(
           `${url}/document/generate-title`,
           {
-            openrouter_api_key:`OPENROUTER_KEY_PLACEHOLDER`,
+            openrouter_api_key: 'OPENROUTER_KEY_PLACEHOLDER',
             message: `${changeTitleMessage}: ${oldTitle}`,
             model: workspace_model,
             context: request,

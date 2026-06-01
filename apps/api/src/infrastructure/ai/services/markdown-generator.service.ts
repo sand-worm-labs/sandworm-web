@@ -32,7 +32,7 @@ export class MarkdownGeneratorService {
       this.httpService.post<MarkdownGeneratorResponse>(
         `${url}/markdown/edit`,
         {
-          openrouter_api_key: `OPENROUTER_KEY_PLACEHOLDER`,
+          openrouter_api_key: 'OPENROUTER_KEY_PLACEHOLDER',
           prompt,
           model: workspace.assistantModel,
           context,
