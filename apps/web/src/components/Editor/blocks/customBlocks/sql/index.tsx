@@ -483,7 +483,6 @@ function SQLBlock(props: Props) {
       workspaceId: props.document?.workspaceId,
       documentId: props.document.id,
       blockId,
-      modelId: "gpt-40",
     });
   }, [editSqlWithAi, props.document?.workspaceId, props.document.id, blockId]);
 
@@ -506,7 +505,6 @@ function SQLBlock(props: Props) {
       workspaceId: props.document?.workspaceId,
       documentId: props.document?.id,
       blockId,
-      modelId: "gpt-4",
     });
 
     if (fixResult?.chatId) {

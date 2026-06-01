@@ -2000,7 +2000,6 @@ function TabRef(props: TabRefProps) {
         aiTasks={props.aiTasks}
         isFullScreen={props.isFullScreen}
         workspaceId={props.workspaceId}
-        modelId="gpt-40"
       />
     ),
     onVisualization: block => (

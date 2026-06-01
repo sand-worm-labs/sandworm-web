@@ -511,11 +511,11 @@ type Mutation {
   """Delete a component instance"""
   deleteComponentInstance(componentId: String!, blockId: String!, workspaceId: String!): Boolean!
   editTitleWithAi(documentId: String!, workspaceId: String!): String!
-  editSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): String!
-  fixSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): FixAiResult!
-  editPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): String!
-  fixPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): FixAiResult!
-  editTextWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): String!
+  editSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!): String!
+  fixSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!): FixAiResult!
+  editPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!): String!
+  fixPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!): FixAiResult!
+  editTextWithAi(documentId: String!, workspaceId: String!, blockId: String!): String!
 
   """Create a new workspace"""
   createWorkspace(name: String!): Workspace!

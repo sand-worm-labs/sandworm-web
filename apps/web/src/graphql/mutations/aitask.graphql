@@ -6,13 +6,11 @@ mutation EditSqlWithAi(
   $documentId: String!
   $workspaceId: String!
   $blockId: String!
-  $modelId: String!
 ) {
   editSqlWithAi(
     documentId: $documentId
     workspaceId: $workspaceId
     blockId: $blockId
-    modelId: $modelId
   )
 }
 
@@ -20,13 +18,11 @@ mutation EditPythonWithAi(
   $documentId: String!
   $workspaceId: String!
   $blockId: String!
-  $modelId: String!
 ) {
   editPythonWithAi(
     documentId: $documentId
     workspaceId: $workspaceId
     blockId: $blockId
-    modelId: $modelId
   )
 }
 
@@ -34,14 +30,12 @@ mutation FixSqlWithAi(
   $documentId: String!
   $workspaceId: String!
   $blockId: String!
-  $modelId: String!
 ) {
   fixSqlWithAi(
     documentId: $documentId
     workspaceId: $workspaceId
     blockId: $blockId
-    modelId: $modelId
-  ){
+  ) {
     chatId
   }
 }
@@ -50,14 +44,12 @@ mutation FixPythonWithAi(
   $documentId: String!
   $workspaceId: String!
   $blockId: String!
-  $modelId: String!
 ) {
   fixPythonWithAi(
     documentId: $documentId
     workspaceId: $workspaceId
     blockId: $blockId
-    modelId: $modelId
-  ){
+  ) {
     chatId
   }
 }
@@ -66,12 +58,10 @@ mutation EditTextWithAi(
   $documentId: String!
   $workspaceId: String!
   $blockId: String!
-  $modelId: String!
 ) {
   editTextWithAi(
     documentId: $documentId
     workspaceId: $workspaceId
     blockId: $blockId
-    modelId: $modelId
   )
 }

@@ -411,14 +411,12 @@ const MarkdownBlock = (props: Props) => {
       workspaceId: props.workspaceId,
       documentId: props.document.id,
       blockId: id,
-      modelId: workspace?.assistantModel ?? "",
     });
   }, [
     editTextWithAi,
     props.workspaceId,
     props.document.id,
     id,
-    workspace?.assistantModel,
   ]);
 
   const tooltipContent = useCallback(

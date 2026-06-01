@@ -12,8 +12,9 @@ import { ChatModule } from '../chat/chat.module';
 import { TextAiExecutorResolver } from './resolver/text-ai-executor.resolver';
 import { TextAiExecutorService } from './service/text-ai-executor.service';
 import { AiModule } from '@/infrastructure/ai/ai.module';
- 
- 
+import { WorkspaceModule } from '@/features/workspace/workspace.module';
+
+
 const EXECUTORS = [
   TitleAiExecutorService,
   SqlAiExecutorService,
@@ -32,8 +33,9 @@ const RESOLVERS = [
   imports: [
     ConfigModule,
     HttpModule,
-    YjsModule, 
+    YjsModule,
     AiModule,
+    WorkspaceModule,
     forwardRef(() => ChatModule)
   ],
   providers: [...EXECUTORS, ...RESOLVERS],

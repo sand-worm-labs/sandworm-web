@@ -80,7 +80,6 @@ interface Props {
   userId: string | null;
   isFullScreen: boolean;
   workspaceId: string;
-  modelId: string;
 }
 
 // =====================================
@@ -293,14 +292,12 @@ function PythonBlock(props: Props) {
       workspaceId: props.workspaceId,
       documentId: props.document.id,
       blockId,
-      modelId: props.modelId,
     });
   }, [
     editPythonWithAi,
     props.workspaceId,
     props.document.id,
     blockId,
-    props.modelId,
   ]);
 
   const onAcceptAISuggestion = useCallback(() => {
@@ -321,7 +318,6 @@ function PythonBlock(props: Props) {
       workspaceId: props.workspaceId,
       documentId: props.document.id,
       blockId,
-      modelId: props.modelId,
     });
 
     if (fixResult?.chatId) {
@@ -334,7 +330,6 @@ function PythonBlock(props: Props) {
     props.workspaceId,
     props.document.id,
     blockId,
-    props.modelId,
     hasOaiKey,
   ]);
 
