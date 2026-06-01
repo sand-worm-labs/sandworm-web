@@ -6,7 +6,7 @@ import { Dialog, Transition } from "@headlessui/react";
 
 import type { UserWorkspaceRole } from "@/types";
 
-import { iconButtonMdClassName } from "@/styles/interactive";
+import { CloseIconButton } from "@/components/CloseIconButton";
 
 import { User } from "./Assets/Avatar/User";
 import { useInviteUserToWorkspace } from "./Editor/hooks/useWorkspaces";
@@ -508,14 +508,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
                       <h2 className="text-xl font-medium text-ink-100">
                         Manage Invite
                       </h2>
-                      <button
-                        type="button"
-                        onClick={onClose}
-                        aria-label="Close"
-                        className={iconButtonMdClassName}
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
+                      <CloseIconButton onClick={onClose} />
                     </div>
 
                     <InviteForm onSendInvite={handleSendInvite} />

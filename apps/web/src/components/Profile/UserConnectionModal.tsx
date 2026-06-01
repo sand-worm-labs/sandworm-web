@@ -9,6 +9,7 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 
+import { CloseIconButton } from "@/components/CloseIconButton";
 import type { FollowUser } from "@/components/Editor/hooks/useUser";
 import {
   useUserFollowers,
@@ -154,27 +155,7 @@ export const UserConnectionsModal = ({
                   <DialogTitle className="text-sm font-semibold mt-3">
                     {title ?? defaultTitle}
                   </DialogTitle>
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    aria-label="Close"
-                    className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18 18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
+                  <CloseIconButton onClick={onClose} />
                 </div>
                 <UserConnectionsList
                   type={type}

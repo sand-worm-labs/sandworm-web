@@ -13,6 +13,8 @@ import {
 } from "react-icons/pi";
 import { cn } from "@sandworm/ui/lib/utils";
 
+import { CloseIconButton } from "@/components/CloseIconButton";
+
 import { TooltipV2 } from "./ToolTips";
 
 // =====================================
@@ -248,17 +250,7 @@ export default function ShareModal({
                         Choose who can access this notebook
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={closeModal}
-                      aria-label="Close"
-                      className="flex items-center justify-center w-7 h-7 rounded-lg
-                        text-ink-400 hover:text-ink-500
-                        hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
-                        transition-colors"
-                    >
-                      <PiX size={15} />
-                    </button>
+                    <CloseIconButton onClick={closeModal} />
                   </div>
 
                   {/* ── Visibility options ── */}

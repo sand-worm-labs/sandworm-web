@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { CloseIconButton } from "@/components/CloseIconButton";
 
 interface BannerAlertProps {
   id: string;
@@ -38,14 +38,12 @@ export const BannerAlert: React.FC<BannerAlertProps> = ({
   return (
     <div className="w-full bg-yellow-900 text-yellow-200 px-4 py-1.5 flex items-center justify-between text-sm border-b border-yellow-800  shadow-md">
       <p className="text-sm font-medium ">{message}</p>
-      <button
-        type="button"
+      <CloseIconButton
+        size="sm"
         onClick={handleClose}
-        className="ml-4 hover:text-yellow-300 transition"
         aria-label="Dismiss alert"
-      >
-        <X className="h-4 w-4" />
-      </button>
+        className="ml-4 text-yellow-200 hover:text-yellow-100 hover:bg-yellow-800/40 dark:hover:bg-yellow-800/40"
+      />
     </div>
   );
 };

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useRef, Fragment } from "react";
-import { X, Check } from "lucide-react";
+import { Check } from "lucide-react";
+
+import { CloseIconButton } from "@/components/CloseIconButton";
 import { Dialog, Transition } from "@headlessui/react";
 
 import { Copy } from "../Assets/Copy";
@@ -101,13 +103,7 @@ export const AddWalletModal = ({
               <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
                 Add Wallet
               </Dialog.Title>
-              <button
-                type="button"
-                onClick={handleClose}
-                className="p-1.5 rounded-lg hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] dark:text-ink-100 transition-colors text-[#1C3B5A]"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <CloseIconButton size="sm" onClick={handleClose} />
             </div>
 
             {/* ✦ Fields ✦ */}
@@ -245,13 +241,7 @@ export const ManageWalletsModal = ({
                 <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
                   Manage Wallets
                 </Dialog.Title>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="p-1.5 rounded-lg hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] transition-colors text-[#1C3B5A] dark:text-ink-100"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <CloseIconButton size="sm" onClick={onClose} />
               </div>
 
               {/* ✦ Wallet List ✦ */}

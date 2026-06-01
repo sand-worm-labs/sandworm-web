@@ -11,6 +11,7 @@ import {
   PiFile,
 } from "react-icons/pi";
 
+import { CloseIconButton } from "@/components/CloseIconButton";
 import Spin from "@/components/Editor/blocks/Spin";
 import { BoltIcon as PowerToolBoxIcon } from "@/components/Assets/BoltIcon";
 
@@ -231,17 +232,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                         We'd love to hear your thoughts.
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleClose}
-                      aria-label="Close"
-                      className="flex items-center justify-center w-7 h-7 rounded-lg
-                        text-ink-400 hover:text-ink-500
-                        hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
-                        transition-colors"
-                    >
-                      <PiX size={15} />
-                    </button>
+                    <CloseIconButton onClick={handleClose} />
                   </div>
 
                   <div className="overflow-y-auto px-6 py-5 flex-1 space-y-5">

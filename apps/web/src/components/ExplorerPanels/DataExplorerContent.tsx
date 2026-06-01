@@ -3,7 +3,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { GripHorizontal, X, ChevronRightIcon } from "lucide-react";
+import { GripHorizontal, ChevronRightIcon } from "lucide-react";
+
+import { CloseIconButton } from "@/components/CloseIconButton";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Card,
@@ -186,14 +188,12 @@ export function DataExplorerContent({
             </div>
 
             {onHide && (
-              <Button
-                variant="ghost"
+              <CloseIconButton
+                size="sm"
                 aria-label="Close data explorer"
                 onClick={onHide}
                 className="no-drag"
-              >
-                <X className="w-5 h-5 text-base-100" strokeWidth={1.4} />
-              </Button>
+              />
             )}
           </div>
         </div>

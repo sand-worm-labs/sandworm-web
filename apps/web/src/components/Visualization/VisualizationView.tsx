@@ -9,8 +9,8 @@ import {
 import {
   ArrowLongDownIcon,
   ArrowLongUpIcon,
-  XMarkIcon,
 } from "@heroicons/react/20/solid";
+import { CloseIconButton } from "@/components/CloseIconButton";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import type {
   DataFrame,
@@ -114,13 +114,12 @@ function VisualizationViewV2(props: Props) {
                   Too many data points. Consider filtering or aggregating the
                   data.{" "}
                 </span>
-                <button
-                  type="button"
+                <CloseIconButton
+                  size="sm"
                   className="absolute right-2.5"
                   onClick={props.onHideTooManyDataPointsWarning}
-                >
-                  <XMarkIcon className="h-4 w-4 text-gray-300 hover:text-ink-400" />
-                </button>
+                  aria-label="Dismiss warning"
+                />
               </div>
             </div>
           )}

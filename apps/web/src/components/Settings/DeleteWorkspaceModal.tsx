@@ -1,11 +1,8 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 
-import {
-  iconButtonMdClassName,
-  surfaceHoverClassName,
-} from "@/styles/interactive";
+import { CloseIconButton } from "@/components/CloseIconButton";
+import { surfaceHoverClassName } from "@/styles/interactive";
 
 interface DeleteWorkspaceModalProps {
   isOpen: boolean;
@@ -55,14 +52,10 @@ export function DeleteWorkspaceModal({
                 Delete Workspace
               </Dialog.Title>
 
-              <button
-                type="button"
+              <CloseIconButton
                 onClick={onClose}
-                aria-label="Close"
-                className={`absolute top-4 right-4 ${iconButtonMdClassName}`}
-              >
-                <XMarkIcon className="h-5 w-5" />
-              </button>
+                className="absolute top-4 right-4"
+              />
 
               <p className="mt-3 text-sm text-ink-100">
                 You are about to delete workspace{" "}

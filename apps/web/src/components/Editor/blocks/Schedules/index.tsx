@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import cronstrue from "cronstrue";
-import { X } from "lucide-react";
+import { CloseIconButton } from "@/components/CloseIconButton";
 
 import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 import type {
@@ -224,13 +224,13 @@ function ScheduleList(props: ScheduleListProps) {
               Schedule your notebook to run automatically
             </p>
           </div>
-          <button
-            type="button"
-            className="absolute z-10 top-7 transform rounded-full   text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary "
+          <CloseIconButton
+            size="sm"
+            round
+            iconSize={18}
             onClick={props.onHide}
-          >
-            <X className="w-5 h-5" />
-          </button>
+            className="absolute z-10 top-7 right-3 -translate-x-1/2 bg-base-100 dark:border-border-tertiary"
+          />
         </div>
       </div>
 

@@ -5,7 +5,9 @@
 // =====================================
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState, useEffect, useMemo } from "react";
-import { X, Check } from "lucide-react";
+import { Check } from "lucide-react";
+
+import { CloseIconButton } from "@/components/CloseIconButton";
 
 import type { ApiWorkspace } from "@/types";
 
@@ -205,14 +207,12 @@ export function ForkToWorkspaceModal({
                     {document.title}
                   </p>
                 </div>
-                <button
-                  type="button"
+                <CloseIconButton
                   onClick={handleClose}
                   disabled={status === "loading"}
-                  className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100 disabled:opacity-40 -mt-0.5 -mr-1"
-                >
-                  <X className="w-[18px] h-[18px]" />
-                </button>
+                  iconSize={18}
+                  className="-mr-1 -mt-0.5 disabled:opacity-40 disabled:pointer-events-none"
+                />
               </div>
 
               {/* ✦  Workspace selector ✦ */}

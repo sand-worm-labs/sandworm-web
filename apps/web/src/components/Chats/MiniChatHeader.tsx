@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
-import { PiX, PiPlus, PiClockCounterClockwise } from "react-icons/pi";
+import { PiPlus, PiClockCounterClockwise } from "react-icons/pi";
+
+import { CloseIconButton } from "@/components/CloseIconButton";
 
 import { AIChatIcon } from "../Assets/AIChatIcon";
 
@@ -69,16 +71,7 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
       >
         <PiClockCounterClockwise size={15} />
       </button>
-      <button
-        type="button"
-        aria-label="Close"
-        onClick={onCancel}
-        className="flex items-center justify-center w-7 h-7 rounded-lg
-          text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
-          transition-colors"
-      >
-        <PiX size={15} />
-      </button>
+      <CloseIconButton onClick={onCancel} size="sm" />
     </div>
   </header>
 );

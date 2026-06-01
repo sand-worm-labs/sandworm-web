@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import { useCallback, useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { X } from "lucide-react";
+import { CloseIconButton } from "@/components/CloseIconButton";
 import { PiPaperPlaneRight, PiChatCenteredTextLight } from "react-icons/pi";
 
 import { timeAgo } from "@/lib";
@@ -87,14 +87,12 @@ export default function Comments({
               Make comments to teammates
             </p>
           </div>
-          <button
-            type="button"
-            className="rounded-full text-ink-400 hover:bg-gray-100 dark:hover:bg-base-300 w-6 h-6 flex items-center justify-center transition-colors"
+          <CloseIconButton
+            size="sm"
+            round
             onClick={onHide}
             aria-label="Close comments"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          />
         </div>
       </div>
 

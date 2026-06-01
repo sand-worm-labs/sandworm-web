@@ -1,5 +1,5 @@
 import tzList from "timezones-list";
-import { XMarkIcon } from "@heroicons/react/24/solid";
+import { CloseIconButton } from "@/components/CloseIconButton";
 import type { SubmitHandler, UseFormReturn } from "react-hook-form";
 import { useWatch } from "react-hook-form";
 
@@ -43,13 +43,7 @@ function ScheduleConfigForm({
         <h3 className="text-lg font-medium leading-6 text-ink-100 pt-1">
           Add scheduled run
         </h3>
-        <button
-          type="button"
-          className="text-ink-400  hover:bg-gray-100 hover:text-gray-700 flex items-center justify-center gap-x-2 text-sm p-1 rounded-sm"
-          onClick={onClose}
-        >
-          <XMarkIcon className="h-4 w-4" />
-        </button>
+        <CloseIconButton size="sm" onClick={onClose} />
       </div>
 
       <ScrollBar className="sm:px-4 xl:px-6 py-6 flex-1 flex flex-col overflow-y-auto">

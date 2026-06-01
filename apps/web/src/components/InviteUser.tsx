@@ -2,11 +2,9 @@
 
 import React, { useState, useCallback, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-
 import type { UserWorkspaceRole } from "@/types";
 
-import { iconButtonMdClassName } from "@/styles/interactive";
+import { CloseIconButton } from "@/components/CloseIconButton";
 
 // =====================================
 // ⬢ Types
@@ -145,15 +143,11 @@ export default function InviteUserModal({
                       ? "Invite to workspace"
                       : `Invite to ${workspaceName}`}
                   </Dialog.Title>
-                  <button
-                    type="button"
+                  <CloseIconButton
                     onClick={handleClose}
                     disabled={isSubmitting}
-                    aria-label="Close"
-                    className={`${iconButtonMdClassName} disabled:opacity-50 disabled:pointer-events-none`}
-                  >
-                    <XMarkIcon className="h-5 w-5" />
-                  </button>
+                    className="disabled:opacity-50 disabled:pointer-events-none"
+                  />
                 </div>
 
                 <form onSubmit={handleSubmit} className="mt-4">

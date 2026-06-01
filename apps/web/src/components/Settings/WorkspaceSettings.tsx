@@ -7,17 +7,16 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import { Transition } from "@headlessui/react";
 import { toast } from "sonner";
 
 import type { UserWorkspaceRole } from "@/types";
 import {
-  iconButtonMdClassName,
   iconButtonSmClassName,
   surfaceHoverClassName,
 } from "@/styles/interactive";
+import { CloseIconButton } from "@/components/CloseIconButton";
 
 import {
   useApproveRoleRequest,
@@ -592,14 +591,7 @@ function SettingsHeader({
         </p>
       </div>
 
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label="Close"
-        className={iconButtonMdClassName}
-      >
-        <XMarkIcon className="h-5 w-5" />
-      </button>
+      <CloseIconButton onClick={onClose} />
     </div>
   );
 }

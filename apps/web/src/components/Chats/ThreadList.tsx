@@ -15,9 +15,9 @@ import {
   PiArrowLeft,
   PiClock,
   PiCheck,
-  PiX,
 } from "react-icons/pi";
 
+import { CloseIconButton } from "@/components/CloseIconButton";
 import { useChat } from "@/components/Editor/hooks/useChat";
 import type { Chat } from "@/generated/graphql";
 
@@ -72,14 +72,12 @@ function RenameInput({ initialValue, onConfirm, onCancel }: RenameInputProps) {
       >
         <PiCheck size={13} />
       </button>
-      <button
-        type="button"
+      <CloseIconButton
+        size="sm"
         onClick={onCancel}
         aria-label="Cancel"
-        className="flex-shrink-0 text-ink-300 hover:text-ink-500 transition-colors"
-      >
-        <PiX size={13} />
-      </button>
+        className="flex-shrink-0"
+      />
     </div>
   );
 }
@@ -430,13 +428,13 @@ export function ThreadList({
               placeholder:text-ink-300 dark:placeholder:text-ink-600"
           />
           {query && (
-            <button
-              type="button"
+            <CloseIconButton
+              size="sm"
+              iconSize={12}
               onClick={() => setQuery("")}
-              className="text-ink-300 hover:text-ink-500 transition-colors"
-            >
-              <PiX size={12} />
-            </button>
+              aria-label="Clear search"
+              className="flex-shrink-0"
+            />
           )}
         </div>
       </div>

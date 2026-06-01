@@ -2,10 +2,8 @@
 
 import { useState, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-
 import { useCreateWorkspaceMutation } from "@/generated/graphql";
-import { iconButtonMdClassName } from "@/styles/interactive";
+import { CloseIconButton } from "@/components/CloseIconButton";
 
 interface CreateTeamModalProps {
   isOpen: boolean;
@@ -92,15 +90,11 @@ export default function CreateTeamModal({
                   <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
                     Create New Team
                   </Dialog.Title>
-                  <button
-                    type="button"
+                  <CloseIconButton
                     onClick={handleClose}
                     disabled={loading}
-                    aria-label="Close"
-                    className={`${iconButtonMdClassName} disabled:opacity-50 disabled:pointer-events-none`}
-                  >
-                    <XMarkIcon className="h-5 w-5" />
-                  </button>
+                    className="disabled:opacity-50 disabled:pointer-events-none"
+                  />
                 </div>
 
                 {/* ✦ Form ✦ */}
