@@ -14,8 +14,10 @@ export interface TitleGeneratorContext {
 interface GenerateTitleRequest {
   message: string;
   openrouter_api_key: string;
+  model: string;
   context: TitleGeneratorContext;
 }
+
 
 export interface GenerateTitleResponse {
   title: string;
@@ -33,21 +35,26 @@ export class TitleGeneratorService {
     private readonly workspaceService: WorkspaceService,
   ) {}
 
-  async generateTitle(request: TitleGeneratorContext): Promise<GenerateTitleResponse> {
+  async generateTitle(request: TitleGeneratorContext, oldTitle: string): Promise<GenerateTitleResponse> {
     const { url, handshakeToken } = this.configService.getOrThrow('ai', { infer: true });
 
     const workspace = await this.workspaceService.getWorkspaceById(request.workspace_id);
+    const workspace_model = workspace.assistantModel;
     const openrouter_api_key = await this.workspaceService.getWorkspaceAiHash(workspace.id);
-
     this.logger.log(`Generating title for document: ${request.document_id}`);
 
     const { data } = await firstValueFrom(
       this.httpService.post<GenerateTitleResponse>(
-        `${url}/document/generate-title`,
-        { openrouter_api_key, message:changeTitleMessage, context: request } satisfies GenerateTitleRequest,
-        { headers: { 'Content-Type': 'application/json', 'x-handshake-token': handshakeToken } },
-      ),
+          `${url}/document/generate-title`,
+          {
+            openrouter_api_key:`OPENROUTER_KEY_PLACEHOLDER`,
+            message: `${changeTitleMessage}: ${oldTitle}`,
+            model: workspace_model,
+            context: request,
+          } satisfies GenerateTitleRequest,
+          { headers: { 'Content-Type': 'application/json', 'x-handshake-token': handshakeToken } },
+        ),
     );
-    return data
+    return  data;
   };
 }

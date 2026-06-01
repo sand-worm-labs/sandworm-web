@@ -16,11 +16,12 @@ export class TitleAiExecutorResolver {
         @Args('documentId') documentId: string,
         @Args('workspaceId') workspaceId: string,
     ): Promise<string> {
+        const existingTitle = await this.titleAiExecutorService.getTitle(documentId, workspaceId);
         const { title } = await this.titleGeneratorService.generateTitle({
             user_id: userId,
             workspace_id: workspaceId,
             document_id: documentId,
-        });
+        }, existingTitle);
         await this.titleAiExecutorService.updateTitle(documentId, workspaceId,title);
         return title;
     }
