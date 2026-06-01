@@ -38,7 +38,7 @@ import {
   PiListBullets,
   PiCalendar,
   PiDotsSixVertical,
-  PiArticle,
+  PiMarkdownLogo,
 } from "react-icons/pi";
 import { v4 as uuidv4 } from "uuid";
 import clsx from "clsx";
@@ -47,6 +47,7 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import type { ApiDocument } from "@/types";
 import VisualizationV2Block from "@/components/Visualization/index";
 
+import MarkdownBlock from "../customBlocks/markdown";
 import { useYDocState } from "../../hooks/useYDocs";
 import type { APIDataSources } from "../../hooks/useDataSources";
 import MultiSelect from "../MultiSelect";
@@ -76,6 +77,8 @@ function getTypeLabel(t: BlockType) {
       return "Input";
     case BlockType.RichText:
       return "Rich Text";
+    case BlockType.Markdown:
+      return "Markdown";
     case BlockType.FileUpload:
       return "File Upload";
     case BlockType.DashboardHeader:
@@ -106,7 +109,7 @@ function getTypeIcon(t: BlockType, size = 14) {
     case BlockType.RichText:
       return <PiTextAlignLeft size={size} className={className} />;
     case BlockType.Markdown:
-      return <PiArticle size={size} className={className} />;
+      return <PiMarkdownLogo size={size} className={className} />;
     default:
       return <PiTextbox size={size} className={className} />;
   }
@@ -118,6 +121,7 @@ const typeOptions = [
   BlockType.SQL,
   BlockType.PivotTable,
   BlockType.Input,
+  BlockType.Markdown,
 ];
 
 // =====================================
@@ -192,6 +196,14 @@ function BlockPlaceholderVisual({ type }: { type: BlockType }) {
           <div className="h-1.5 w-[85%] rounded-sm bg-[#E9ECEF] dark:bg-[#3A3A38]" />
         </div>
       );
+    case BlockType.Markdown:
+      return (
+        <div className="flex flex-col gap-1 w-full max-w-[148px] font-mono text-[9px] text-ink-300">
+          <div className="h-1.5 w-14 rounded-sm bg-[#7B2FBE]/30" />
+          <div className="h-1.5 w-full rounded-sm bg-[#E9ECEF] dark:bg-[#3A3A38]" />
+          <div className="h-1.5 w-[70%] rounded-sm bg-[#2E9E5B]/25" />
+        </div>
+      );
     default:
       return <PlaceholderBars rows={2} cols={3} />;
   }
@@ -249,6 +261,17 @@ const vizPreviewProps = (props: BlockPreviewProps) => ({
   isFullScreen: true,
 });
 
+const markdownPreviewProps = (props: BlockPreviewProps) => ({
+  document: props.document,
+  belongsToMultiTabGroup: false,
+  isEditable: false as const,
+  dragPreview: null,
+  dashboardMode: { _tag: "editing" as const, position: "sidebar" as const },
+  isCursorWithin: false,
+  isCursorInserting: false,
+  workspaceId: props.document.workspaceId,
+});
+
 function BlockPreview(props: BlockPreviewProps) {
   return switchBlockType(props.block, {
     onRichText: () => <BlockTypePlaceholder type={BlockType.RichText} />,
@@ -271,7 +294,11 @@ function BlockPreview(props: BlockPreviewProps) {
     onFileUpload: () => null,
     onDateInput: () => <BlockTypePlaceholder type={BlockType.DateInput} />,
     onPivotTable: () => <BlockTypePlaceholder type={BlockType.PivotTable} />,
-    onMarkdown: () => <BlockTypePlaceholder type={BlockType.RichText} />,
+    onMarkdown: block => (
+      <div className="w-full h-48 overflow-hidden rounded-lg border border-[#E9ECEF] dark:border-[#3A3A38]">
+        <MarkdownBlock block={block} {...markdownPreviewProps(props)} />
+      </div>
+    ),
     onDashboardHeader: () => null,
     onPowerToolbox: () => null,
   });
@@ -567,7 +594,7 @@ function DashboardControls(props: Props) {
                 onPivotTable: () => block,
                 onFileUpload: () => null,
                 onDashboardHeader: () => null,
-                onMarkdown: () => null,
+                onMarkdown: () => block,
                 onPowerToolbox: () => null,
               });
             }) ?? [];
@@ -611,10 +638,14 @@ function DashboardControls(props: Props) {
                     return false;
                   }
                   break;
+                case BlockType.Markdown:
+                  if (!types.includes(BlockType.Markdown)) {
+                    return false;
+                  }
+                  break;
                 case BlockType.RichText:
                 case BlockType.FileUpload:
                 case BlockType.DashboardHeader:
-                case BlockType.Markdown:
                 case BlockType.PowerToolbox:
                   break;
                 default:

@@ -15,7 +15,6 @@ import {
   BlockType,
   removeDashboardBlock,
 } from "@sandworm/editor";
-import SimpleBar from "simplebar-react";
 import { useResizeDetector } from "react-resize-detector";
 
 import type { ApiDocument } from "@/types";
@@ -88,6 +87,7 @@ export function getMins(t: BlockType): { minW: number; minH: number } {
     case BlockType.DateInput:
       return { minW: 3, minH: 2 };
     case BlockType.RichText:
+    case BlockType.Markdown:
       return { minW: 2, minH: 2 };
     case BlockType.DashboardHeader:
       return { minW: 2, minH: 1 };
@@ -111,6 +111,7 @@ export function getDefaults(t: BlockType): { minW: number; minH: number } {
     case BlockType.DateInput:
       return { minW: 3, minH: 2 };
     case BlockType.RichText:
+    case BlockType.Markdown:
       return { minW: 2, minH: 2 };
     case BlockType.DashboardHeader:
       return { minW: 4, minH: 1 };
@@ -344,10 +345,13 @@ export default function DashboardView(props: Props) {
   const { width, ref } = useResizeDetector();
 
   return (
-    <SimpleBar
+    <div
       id="dashboard-wrapper"
       data-dashboard-ready="true"
-      className={clsx("px-8 py-6 font-body ", props.className)}
+      className={clsx(
+        "h-full min-h-0 overflow-y-auto overflow-x-hidden px-8 py-6 font-body",
+        props.className
+      )}
     >
       <div className="pb-8 px-1">
         <Title
@@ -361,6 +365,6 @@ export default function DashboardView(props: Props) {
           {width ? <DashboardViewInner {...props} width={width} /> : <div />}
         </div>
       </div>
-    </SimpleBar>
+    </div>
   );
 }

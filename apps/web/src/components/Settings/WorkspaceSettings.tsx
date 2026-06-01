@@ -701,7 +701,7 @@ export default function WorkspaceSettingsModal({
       as={Fragment}
       afterLeave={() => setCachedWorkspace(null)}
     >
-      <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="fixed inset-0 z-50 flex flex-col overflow-hidden p-4 sm:p-6">
         {/* ✦ Backdrop ✦ */}
         <Transition.Child
           as={Fragment}
@@ -728,17 +728,18 @@ export default function WorkspaceSettingsModal({
         </Transition.Child>
 
         {/* ✦ Panel ✦ */}
-        <div className="flex min-h-full items-center justify-center p-4 lg:min-w-[1000px] w-auto">
+        <div className="relative z-10 mx-auto flex h-full w-full min-h-0 max-w-[1500px]">
           <Transition.Child
-            as={Fragment}
+            as="div"
             enter="ease-out duration-300"
             enterFrom="opacity-0 scale-95"
             enterTo="opacity-100 scale-100"
             leave="ease-in duration-200"
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
+            className="flex h-full w-full min-h-0"
           >
-            <div className="relative w-full max-w-[1000px] xl:max-w-[1300px] transform rounded-2xl bg-white dark:bg-base-400 dark:border dark:border-border-tertiary shadow-none px-12">
+            <div className="relative flex h-full w-full min-h-0 flex-col overflow-hidden rounded-2xl bg-white  px-20 shadow-none dark:border dark:border-border-tertiary dark:bg-base-400">
               <SettingsHeader
                 workspace={activeWorkspace}
                 isMembersLoading={isMembersLoading}
@@ -750,32 +751,34 @@ export default function WorkspaceSettingsModal({
                 onManageInvites={() => setIsManageOpen(true)}
               />
 
-              <div className="px-6 py-4 space-y-0">
-                <TeamPlanSection
-                  workspaceId={activeWorkspace.id}
-                  credits={credits}
-                  creditsLoading={creditsLoading}
-                  onClose={onClose}
-                />
-                <AIConfigSection
-                  selectedModelId={selectedModelId}
-                  assistantModel={activeWorkspace.assistantModel}
-                  onOpenPicker={openPicker}
-                />
-                <MembersSection
-                  members={members}
-                  currentUserRole={currentUserRole ?? undefined}
-                  isMembersLoading={isMembersLoading}
-                  onChangeRole={onChangeRole}
-                  onRemoveUser={onRemoveUser}
-                  onInvite={() => setIsInviteModalOpen(true)}
-                />
-              </div>
+              <div className="min-h-0 flex-1 overflow-y-auto">
+                <div className="space-y-0 px-6 py-4">
+                  <TeamPlanSection
+                    workspaceId={activeWorkspace.id}
+                    credits={credits}
+                    creditsLoading={creditsLoading}
+                    onClose={onClose}
+                  />
+                  <AIConfigSection
+                    selectedModelId={selectedModelId}
+                    assistantModel={activeWorkspace.assistantModel}
+                    onOpenPicker={openPicker}
+                  />
+                  <MembersSection
+                    members={members}
+                    currentUserRole={currentUserRole ?? undefined}
+                    isMembersLoading={isMembersLoading}
+                    onChangeRole={onChangeRole}
+                    onRemoveUser={onRemoveUser}
+                    onInvite={() => setIsInviteModalOpen(true)}
+                  />
+                </div>
 
-              <div className="px-6 py-4 mb-20">
-                <DangerZoneSection
-                  onDelete={() => setIsDeleteModalOpen(true)}
-                />
+                <div className="mb-20 px-6 py-4">
+                  <DangerZoneSection
+                    onDelete={() => setIsDeleteModalOpen(true)}
+                  />
+                </div>
               </div>
             </div>
           </Transition.Child>

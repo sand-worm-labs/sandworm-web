@@ -51,6 +51,7 @@ import InputBlock from "../customBlocks/input";
 import DateInputBlock from "../customBlocks/dateInput";
 import PivotTableBlock from "../customBlocks/pivotTable";
 import DropdownInputBlock from "../customBlocks/dropdownInput";
+import MarkdownBlock from "../customBlocks/markdown";
 import type { SessionUser } from "../../hooks/useAuth";
 
 import DashboardSkeleton from "./DashboardSkeleton";
@@ -145,6 +146,19 @@ function ExpandedBlockView(props: ExpandedBlockViewProps) {
         isCursorInserting={false}
       />
     ),
+    onMarkdown: block => (
+      <MarkdownBlock
+        block={block}
+        document={props.document}
+        belongsToMultiTabGroup={false}
+        isEditable
+        dragPreview={null}
+        dashboardMode={{ _tag: "editing", position: "expanded" }}
+        isCursorWithin={false}
+        isCursorInserting={false}
+        workspaceId={props.document.workspaceId}
+      />
+    ),
     onSQL: block => (
       <SQLBlock
         block={block}
@@ -237,7 +251,6 @@ function ExpandedBlockView(props: ExpandedBlockViewProps) {
     ),
     onFileUpload: () => null,
     onDashboardHeader: () => null,
-    onWriteback: () => null,
     onPivotTable: block => (
       <PivotTableBlock
         workspaceId={props.document.workspaceId}
@@ -325,10 +338,10 @@ function DashboardContent(
 
   return (
     <>
-      <div className="flex h-[calc(100%-47px)]">
+      <div className="flex h-[calc(100%-47px)] min-h-0 overflow-hidden">
         <DashboardView
           className={clsx(
-            "flex-grow h-full",
+            "flex-1 min-h-0 h-full",
             props.isEditing && isControlsOpen && "w-[calc(100%-400px)]"
           )}
           document={props.document}
@@ -363,7 +376,7 @@ function DashboardContent(
       {createPortal(
         <Transition
           as="div"
-          className="fixed inset-0 z-20 flex items-center justify-center py-8"
+          className="fixed inset-0 z-[99] flex items-center justify-center py-8"
           enter="transition ease-out duration-100"
           enterFrom="transform opacity-0 scale-95"
           enterTo="transform opacity-100 scale-100"
@@ -541,7 +554,7 @@ export default function Dashboard(props: Props) {
 
   const onGoToApp = useCallback(() => {
     router.push(
-      `/workspaces/${props.document.workspaceId}/documents/${props.document.id}/dashboard`
+      `/workspace/${props.document.workspaceId}/documents/${props.document.id}/dashboard`
     );
   }, [router]);
 

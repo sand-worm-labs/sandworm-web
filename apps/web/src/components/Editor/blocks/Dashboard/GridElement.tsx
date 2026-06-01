@@ -32,6 +32,7 @@ import DropdownInputBlock from "../customBlocks/dropdownInput";
 import DashboardHeader from "../customBlocks/dashboardHeader";
 import DateInputBlock from "../customBlocks/dateInput";
 import PivotTableBlock from "../customBlocks/pivotTable";
+import MarkdownBlock from "../customBlocks/markdown";
 
 interface Props {
   item: GridLayout.Layout;
@@ -53,6 +54,7 @@ const NO_TITLE_BLOCKS = [
   BlockType.DropdownInput,
   BlockType.FileUpload,
   BlockType.RichText,
+  BlockType.Markdown,
   BlockType.DashboardHeader,
 ];
 
@@ -88,6 +90,23 @@ function GridBlockRenderer(props: GridBlockRendererProps) {
         }
         isCursorWithin={false}
         isCursorInserting={false}
+      />
+    ),
+    onMarkdown: block => (
+      <MarkdownBlock
+        block={block}
+        document={props.document}
+        belongsToMultiTabGroup={false}
+        isEditable={false}
+        dragPreview={null}
+        dashboardMode={
+          props.isEditingDashboard
+            ? { _tag: "editing", position: "dashboard" }
+            : { _tag: "live" }
+        }
+        isCursorWithin={false}
+        isCursorInserting={false}
+        workspaceId={props.document.workspaceId}
       />
     ),
     onSQL: block => (
@@ -261,7 +280,6 @@ function GridBlockRenderer(props: GridBlockRendererProps) {
       />
     ),
     onFileUpload: () => null,
-    onWriteback: () => null,
     onPowerToolbox: () => null,
   });
 }
