@@ -11,14 +11,12 @@ import {
 import { ExecutionStatus } from "../execution/item.js";
 import { updateYText } from "../index.js";
 
-export type MarkdownEditIntent = 'fix' | 'shorten' | 'expand' | 'rewrite' | 'custom'
 
 export type MarkdownBlock = BaseBlock<BlockType.Markdown> & {
   source: Y.Text;
   editWithAIPrompt: Y.Text;
   isEditWithAIPromptOpen: boolean;
   aiSuggestions: Y.Text | null;
-  intent: MarkdownEditIntent;
 };
 
 
@@ -45,7 +43,6 @@ export const makeMarkdownBlock = (
     editWithAIPrompt: new Y.Text(""),
     isEditWithAIPromptOpen: false,
     aiSuggestions: null,
-    intent: 'fix',
   };
 
   for (const [key, value] of Object.entries(attrs)) {
@@ -67,7 +64,6 @@ export function getMarkdownAttributes(
     editWithAIPrompt: getMarkdownBlockEditWithAIPrompt(block),
     isEditWithAIPromptOpen: isMarkdownBlockEditWithAIPromptOpen(block),
     aiSuggestions: getMarkdownAISuggestions(block),
-    intent: getAttributeOr(block, "intent", 'fix'),
   };
 }
 
@@ -86,7 +82,6 @@ export function duplicateMarkdownBlock(
       prevAttrs.aiSuggestions
         ? duplicateYText(prevAttrs.aiSuggestions)
         : null,
-    intent: prevAttrs.intent,
   };
 
   const yBlock = new Y.XmlElement<MarkdownBlock>("block");

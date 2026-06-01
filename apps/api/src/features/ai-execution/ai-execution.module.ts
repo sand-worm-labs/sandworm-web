@@ -1,6 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from "@nestjs/axios";
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SqlAiExecutorService } from './service/sql-ai-executor.service';
 import { TitleAiExecutorService } from './service/title-ai-executor.service';
 import { TitleAiExecutorResolver } from './resolver/title-ai-executor.resolver';
@@ -36,6 +37,7 @@ const RESOLVERS = [
     YjsModule,
     AiModule,
     WorkspaceModule,
+    EventEmitterModule,
     forwardRef(() => ChatModule)
   ],
   providers: [...EXECUTORS, ...RESOLVERS],
