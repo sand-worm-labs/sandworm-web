@@ -13,9 +13,8 @@ export class SqlAiExecutorResolver {
     @Args('documentId') documentId: string,
     @Args('workspaceId') workspaceId: string,
     @Args('blockId') blockId: string,
-    @Args('modelId') modelId: string,
   ): Promise<string> {
-    return this.sqlAiExecutorService.editSql(documentId, workspaceId, blockId, userId, modelId);
+    return this.sqlAiExecutorService.editSql(documentId, workspaceId, blockId, userId);
   }
 
   @Mutation(() => FixAiResult)
@@ -24,8 +23,7 @@ export class SqlAiExecutorResolver {
     @Args('documentId') documentId: string,
     @Args('workspaceId') workspaceId: string,
     @Args('blockId') blockId: string,
-    @Args('modelId') modelId: string,
   ): Promise<FixAiResult> {
-    return this.sqlAiExecutorService.fixSql(documentId, workspaceId, blockId, userId, modelId);
+    return this.sqlAiExecutorService.fixSql(documentId, workspaceId, blockId, userId);
   }
 }

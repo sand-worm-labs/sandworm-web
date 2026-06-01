@@ -483,7 +483,6 @@ function SQLBlock(props: Props) {
       workspaceId: props.document?.workspaceId,
       documentId: props.document.id,
       blockId,
-      modelId: "gpt-40",
     });
   }, [editSqlWithAi, props.document?.workspaceId, props.document.id, blockId]);
 
@@ -506,7 +505,6 @@ function SQLBlock(props: Props) {
       workspaceId: props.document?.workspaceId,
       documentId: props.document?.id,
       blockId,
-      modelId: "gpt-4",
     });
 
     if (fixResult?.chatId) {
@@ -873,18 +871,16 @@ function SQLBlock(props: Props) {
     >
       <div
         className={clsx(
-          "rounded-2xl border transition-colors duration-150",
+          "rounded-2xl border",
+          props.isBlockHiddenInPublished && "border-dashed",
           props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-2xl",
-          diffButtonsVisible
-            ? "border-dashed border-primary shadow-[0_0_0_3px_theme(colors.primary/0.12)]"
-            : isEditorFocused && editorState.mode === "insert"
-              ? "border-primary shadow-sm"
-              : isEditorFocused && editorState.mode === "normal"
-                ? "border-primary shadow-none"
-                : clsx(
-                    "border-border-focus",
-                    props.isBlockHiddenInPublished && "border-dashed"
-                  )
+          {
+            "border-border-focus shadow-sm":
+              isEditorFocused && editorState.mode === "insert",
+            "border-border-focus shadow-none":
+              isEditorFocused && editorState.mode === "normal",
+            "border-border-focus dark:border-border-tertiary": !isEditorFocused,
+          }
         )}
       >
         <div

@@ -515,7 +515,6 @@ export type MutationDuplicateDocumentArgs = {
 export type MutationEditPythonWithAiArgs = {
   blockId: Scalars['String']['input'];
   documentId: Scalars['String']['input'];
-  modelId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
 
@@ -523,7 +522,6 @@ export type MutationEditPythonWithAiArgs = {
 export type MutationEditSqlWithAiArgs = {
   blockId: Scalars['String']['input'];
   documentId: Scalars['String']['input'];
-  modelId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
 
@@ -531,7 +529,6 @@ export type MutationEditSqlWithAiArgs = {
 export type MutationEditTextWithAiArgs = {
   blockId: Scalars['String']['input'];
   documentId: Scalars['String']['input'];
-  modelId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
 
@@ -545,7 +542,6 @@ export type MutationEditTitleWithAiArgs = {
 export type MutationFixPythonWithAiArgs = {
   blockId: Scalars['String']['input'];
   documentId: Scalars['String']['input'];
-  modelId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
 
@@ -553,7 +549,6 @@ export type MutationFixPythonWithAiArgs = {
 export type MutationFixSqlWithAiArgs = {
   blockId: Scalars['String']['input'];
   documentId: Scalars['String']['input'];
-  modelId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
 
@@ -1287,7 +1282,6 @@ export type EditSqlWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
   blockId: Scalars['String']['input'];
-  modelId: Scalars['String']['input'];
 }>;
 
 
@@ -1297,7 +1291,6 @@ export type EditPythonWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
   blockId: Scalars['String']['input'];
-  modelId: Scalars['String']['input'];
 }>;
 
 
@@ -1307,7 +1300,6 @@ export type FixSqlWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
   blockId: Scalars['String']['input'];
-  modelId: Scalars['String']['input'];
 }>;
 
 
@@ -1317,7 +1309,6 @@ export type FixPythonWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
   blockId: Scalars['String']['input'];
-  modelId: Scalars['String']['input'];
 }>;
 
 
@@ -1327,7 +1318,6 @@ export type EditTextWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
   blockId: Scalars['String']['input'];
-  modelId: Scalars['String']['input'];
 }>;
 
 
@@ -2120,12 +2110,11 @@ export type EditTitleWithAiMutationHookResult = ReturnType<typeof useEditTitleWi
 export type EditTitleWithAiMutationResult = Apollo.MutationResult<EditTitleWithAiMutation>;
 export type EditTitleWithAiMutationOptions = Apollo.BaseMutationOptions<EditTitleWithAiMutation, EditTitleWithAiMutationVariables>;
 export const EditSqlWithAiDocument = gql`
-    mutation EditSqlWithAi($documentId: String!, $workspaceId: String!, $blockId: String!, $modelId: String!) {
+    mutation EditSqlWithAi($documentId: String!, $workspaceId: String!, $blockId: String!) {
   editSqlWithAi(
     documentId: $documentId
     workspaceId: $workspaceId
     blockId: $blockId
-    modelId: $modelId
   )
 }
     `;
@@ -2147,7 +2136,6 @@ export type EditSqlWithAiMutationFn = Apollo.MutationFunction<EditSqlWithAiMutat
  *      documentId: // value for 'documentId'
  *      workspaceId: // value for 'workspaceId'
  *      blockId: // value for 'blockId'
- *      modelId: // value for 'modelId'
  *   },
  * });
  */
@@ -2159,12 +2147,11 @@ export type EditSqlWithAiMutationHookResult = ReturnType<typeof useEditSqlWithAi
 export type EditSqlWithAiMutationResult = Apollo.MutationResult<EditSqlWithAiMutation>;
 export type EditSqlWithAiMutationOptions = Apollo.BaseMutationOptions<EditSqlWithAiMutation, EditSqlWithAiMutationVariables>;
 export const EditPythonWithAiDocument = gql`
-    mutation EditPythonWithAi($documentId: String!, $workspaceId: String!, $blockId: String!, $modelId: String!) {
+    mutation EditPythonWithAi($documentId: String!, $workspaceId: String!, $blockId: String!) {
   editPythonWithAi(
     documentId: $documentId
     workspaceId: $workspaceId
     blockId: $blockId
-    modelId: $modelId
   )
 }
     `;
@@ -2186,7 +2173,6 @@ export type EditPythonWithAiMutationFn = Apollo.MutationFunction<EditPythonWithA
  *      documentId: // value for 'documentId'
  *      workspaceId: // value for 'workspaceId'
  *      blockId: // value for 'blockId'
- *      modelId: // value for 'modelId'
  *   },
  * });
  */
@@ -2198,12 +2184,11 @@ export type EditPythonWithAiMutationHookResult = ReturnType<typeof useEditPython
 export type EditPythonWithAiMutationResult = Apollo.MutationResult<EditPythonWithAiMutation>;
 export type EditPythonWithAiMutationOptions = Apollo.BaseMutationOptions<EditPythonWithAiMutation, EditPythonWithAiMutationVariables>;
 export const FixSqlWithAiDocument = gql`
-    mutation FixSqlWithAi($documentId: String!, $workspaceId: String!, $blockId: String!, $modelId: String!) {
+    mutation FixSqlWithAi($documentId: String!, $workspaceId: String!, $blockId: String!) {
   fixSqlWithAi(
     documentId: $documentId
     workspaceId: $workspaceId
     blockId: $blockId
-    modelId: $modelId
   ) {
     chatId
   }
@@ -2227,7 +2212,6 @@ export type FixSqlWithAiMutationFn = Apollo.MutationFunction<FixSqlWithAiMutatio
  *      documentId: // value for 'documentId'
  *      workspaceId: // value for 'workspaceId'
  *      blockId: // value for 'blockId'
- *      modelId: // value for 'modelId'
  *   },
  * });
  */
@@ -2239,12 +2223,11 @@ export type FixSqlWithAiMutationHookResult = ReturnType<typeof useFixSqlWithAiMu
 export type FixSqlWithAiMutationResult = Apollo.MutationResult<FixSqlWithAiMutation>;
 export type FixSqlWithAiMutationOptions = Apollo.BaseMutationOptions<FixSqlWithAiMutation, FixSqlWithAiMutationVariables>;
 export const FixPythonWithAiDocument = gql`
-    mutation FixPythonWithAi($documentId: String!, $workspaceId: String!, $blockId: String!, $modelId: String!) {
+    mutation FixPythonWithAi($documentId: String!, $workspaceId: String!, $blockId: String!) {
   fixPythonWithAi(
     documentId: $documentId
     workspaceId: $workspaceId
     blockId: $blockId
-    modelId: $modelId
   ) {
     chatId
   }
@@ -2268,7 +2251,6 @@ export type FixPythonWithAiMutationFn = Apollo.MutationFunction<FixPythonWithAiM
  *      documentId: // value for 'documentId'
  *      workspaceId: // value for 'workspaceId'
  *      blockId: // value for 'blockId'
- *      modelId: // value for 'modelId'
  *   },
  * });
  */
@@ -2280,12 +2262,11 @@ export type FixPythonWithAiMutationHookResult = ReturnType<typeof useFixPythonWi
 export type FixPythonWithAiMutationResult = Apollo.MutationResult<FixPythonWithAiMutation>;
 export type FixPythonWithAiMutationOptions = Apollo.BaseMutationOptions<FixPythonWithAiMutation, FixPythonWithAiMutationVariables>;
 export const EditTextWithAiDocument = gql`
-    mutation EditTextWithAi($documentId: String!, $workspaceId: String!, $blockId: String!, $modelId: String!) {
+    mutation EditTextWithAi($documentId: String!, $workspaceId: String!, $blockId: String!) {
   editTextWithAi(
     documentId: $documentId
     workspaceId: $workspaceId
     blockId: $blockId
-    modelId: $modelId
   )
 }
     `;
@@ -2307,7 +2288,6 @@ export type EditTextWithAiMutationFn = Apollo.MutationFunction<EditTextWithAiMut
  *      documentId: // value for 'documentId'
  *      workspaceId: // value for 'workspaceId'
  *      blockId: // value for 'blockId'
- *      modelId: // value for 'modelId'
  *   },
  * });
  */

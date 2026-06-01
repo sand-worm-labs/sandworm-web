@@ -354,16 +354,6 @@ type Query {
   """Get all reusable components in a workspace"""
   getWorkspaceComponents(workspaceId: String!): [ReusableComponent!]!
 
-  """List chats for workspace/document"""
-  chats(workspaceId: String!, documentId: String!): [Chat!]!
-
-  """Get a chat with its messages"""
-  chat(chatId: String!): Chat!
-
-  """Get messages for a chat"""
-  chatMessages(chatId: String!): [Message!]!
-  messageVote(messageId: String!): Boolean
-
   """Get workspace by ID"""
   getWorkspace(workspaceId: String!): Workspace!
 
@@ -396,6 +386,16 @@ type Query {
 
   """Get OpenRouter account credit usage"""
   openRouterAccountCredits(workspaceId: String!): OpenRouterAccountCredits!
+
+  """List chats for workspace/document"""
+  chats(workspaceId: String!, documentId: String!): [Chat!]!
+
+  """Get a chat with its messages"""
+  chat(chatId: String!): Chat!
+
+  """Get messages for a chat"""
+  chatMessages(chatId: String!): [Message!]!
+  messageVote(messageId: String!): Boolean
 
   """Get Profile"""
   profile(
@@ -511,32 +511,11 @@ type Mutation {
   """Delete a component instance"""
   deleteComponentInstance(componentId: String!, blockId: String!, workspaceId: String!): Boolean!
   editTitleWithAi(documentId: String!, workspaceId: String!): String!
-  editSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): String!
-  fixSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): FixAiResult!
-  editPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): String!
-  fixPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): FixAiResult!
-  editTextWithAi(documentId: String!, workspaceId: String!, blockId: String!, modelId: String!): String!
-
-  """Create a new chat"""
-  createChat(input: CreateChatInput!): Chat!
-
-  """Update chat title or visibility"""
-  updateChat(input: UpdateChatInput!): Chat!
-
-  """Delete a chat and its messages"""
-  deleteChat(chatId: String!): Boolean!
-
-  """Pin or unpin a chat"""
-  pinChat(chatId: String!): Chat!
-
-  """Send a user message"""
-  sendMessage(input: SendMessageInput!): Message!
-
-  """Upvote or downvote a message"""
-  voteMessage(input: VoteMessageInput!): Vote!
-
-  """Retract a vote on a message"""
-  removeVote(messageId: String!): Boolean!
+  editSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!): String!
+  fixSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!): FixAiResult!
+  editPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!): String!
+  fixPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!): FixAiResult!
+  editTextWithAi(documentId: String!, workspaceId: String!, blockId: String!): String!
 
   """Create a new workspace"""
   createWorkspace(name: String!): Workspace!
@@ -574,6 +553,27 @@ type Mutation {
   """Update a user role in a workspace"""
   updateWorkspaceMemberRole(workspaceId: String!, userId: String!, role: String!): Boolean!
   setWorkspaceDefaultAiModel(workspaceId: String!, model: String!): Boolean!
+
+  """Create a new chat"""
+  createChat(input: CreateChatInput!): Chat!
+
+  """Update chat title or visibility"""
+  updateChat(input: UpdateChatInput!): Chat!
+
+  """Delete a chat and its messages"""
+  deleteChat(chatId: String!): Boolean!
+
+  """Pin or unpin a chat"""
+  pinChat(chatId: String!): Chat!
+
+  """Send a user message"""
+  sendMessage(input: SendMessageInput!): Message!
+
+  """Upvote or downvote a message"""
+  voteMessage(input: VoteMessageInput!): Vote!
+
+  """Retract a vote on a message"""
+  removeVote(messageId: String!): Boolean!
 
   """Follow User"""
   followUser(
@@ -722,6 +722,11 @@ input CreateComponentInstanceInput {
   blockId: String!
 }
 
+input RemoveUserFromWorkspaceInput {
+  userId: String!
+  workspaceId: String!
+}
+
 input CreateChatInput {
   workspaceId: String!
   documentId: String!
@@ -759,11 +764,6 @@ input SendMessageInput {
 input VoteMessageInput {
   messageId: String!
   isUpvoted: Boolean!
-}
-
-input RemoveUserFromWorkspaceInput {
-  userId: String!
-  workspaceId: String!
 }
 
 input CreateCommentInput {

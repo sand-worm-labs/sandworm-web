@@ -46,11 +46,9 @@ type BlockAIParams = {
   workspaceId: string;
   documentId: string;
   blockId: string;
-  modelId: string;
 };
 
 type FixAiResult = {
-  result: string;
   chatId: string;
 };
 

@@ -13,14 +13,9 @@ import {
 } from '@sandworm/editor';
 import type { SQLBlock } from '@sandworm/editor';
 import { BaseAiExecutorService } from './base-ai-executor.service';
-
-export interface SqlEditStreamedOptions {
-  query: string;
-  dialect: string;
-  instructions: string;
-  modelId: string;
-  onSQL: (sql: string) => void;
-}
+import { SqlGeneratorService } from '@/infrastructure/ai/services/sql-generator.service';
+import { GeneratorContext } from '@/infrastructure/ai/types/generator.types';
+import { WorkspaceService } from '@/features/workspace/service/workspace.service';
 
 @Injectable()
 export class SqlAiExecutorService extends BaseAiExecutorService {
@@ -31,6 +26,8 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     persistorFactory: PersistorFactory,
     @Inject(forwardRef(() => ChatService))
     private readonly chatService: ChatService,
+    private readonly sqlGeneratorService: SqlGeneratorService,
+    private readonly workspaceService: WorkspaceService,
   ) {
     super(yjsDocumentService, persistorFactory);
   }
@@ -40,7 +37,6 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     workspaceId: string,
     blockId: string,
     userId: string | null,
-    modelId: string,
   ): Promise<string> {
     try {
       const sharedDoc = await this.getSharedDoc(documentId, workspaceId);
@@ -52,7 +48,8 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
       const taskItem = aiTasks.next();
       if (!taskItem) throw new Error('Failed to dequeue edit-sql task');
 
-      return await this.runEdit(taskItem, block, sharedDoc.ydoc, modelId);
+      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId };
+      return await this.runEdit(taskItem, block, sharedDoc.ydoc, ctx);
     } catch (err) {
       this.logger.error('editSql failed', err);
       throw err;
@@ -64,7 +61,6 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     workspaceId: string,
     blockId: string,
     userId: string,
-    modelId: string,
   ): Promise<{ result: string; chatId: string }> {
     try {
       const sharedDoc = await this.getSharedDoc(documentId, workspaceId);
@@ -76,16 +72,19 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
       const taskItem = aiTasks.next();
       if (!taskItem) throw new Error('Failed to dequeue fix-sql task');
 
+      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId };
+      const workspace = await this.workspaceService.getWorkspaceById(workspaceId);
+
       const chat = await this.chatService.createChat(userId, {
         workspaceId,
         documentId,
         message: `Fixed SQL block — here's what changed:\n\`\`\`sql\n\n\`\`\``,
-        model: modelId,
+        model: workspace.assistantModel,
         title: 'SQL Fix',
         updateDocumentTitle: false,
       });
 
-      const result = await this.runFix(taskItem, block, sharedDoc.ydoc, modelId);
+      const result = await this.runFix(taskItem, block, sharedDoc.ydoc, ctx);
 
       return { result, chatId: chat.id };
     } catch (err) {
@@ -98,31 +97,28 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     taskItem: AITaskItem,
     block: Y.XmlElement<SQLBlock>,
     ydoc: Y.Doc,
-    modelId: string,
+    ctx: GeneratorContext,
   ): Promise<string> {
     let cleanup: () => void = () => {};
     let aborted = false;
-    let result = '';
     try {
       cleanup = taskItem.observeStatus(s => { if (s._tag === 'aborting') aborted = true; });
 
       const { source, dataSourceId, editWithAIPrompt } = getSQLAttributes(block, getBlocks(ydoc));
       const instructions = editWithAIPrompt?.toJSON() ?? '';
-      if (!instructions) { taskItem.setCompleted('error'); return result; }
+      if (!instructions) { taskItem.setCompleted('error'); return ''; }
 
       const query = source?.toJSON() ?? '';
       const dialect = dataSourceId ? 'sql' : 'duckdb';
+      const prompt = `Dialect: ${dialect}\n\nQuery:\n${query}\n\nInstructions: ${instructions}`;
 
-      await this.simulate({ query, dialect, instructions, modelId, onSQL: (sql) => {
-        if (aborted) return;
-        result = sql;
-        updateSQLAISuggestions(block, sql);
-      }});
+      const { code } = await this.sqlGeneratorService.edit(ctx, prompt);
 
-      if (aborted) { taskItem.setCompleted('aborted'); return result; }
+      if (aborted) { taskItem.setCompleted('aborted'); return code; }
+      updateSQLAISuggestions(block, code);
       closeSQLEditWithAIPrompt(block, true);
       taskItem.setCompleted('success');
-      return result;
+      return code;
     } catch (err) {
       taskItem.setCompleted('error');
       throw err;
@@ -135,45 +131,34 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     taskItem: AITaskItem,
     block: Y.XmlElement<SQLBlock>,
     ydoc: Y.Doc,
-    modelId: string,
+    ctx: GeneratorContext,
   ): Promise<string> {
     let cleanup: () => void = () => {};
     let aborted = false;
-    let result = '';
     try {
       cleanup = taskItem.observeStatus(s => { if (s._tag === 'aborting') aborted = true; });
 
       const { source, dataSourceId, result: blockResult } = getSQLAttributes(block, getBlocks(ydoc));
       if (!blockResult || blockResult.type !== 'syntax-error') {
         taskItem.setCompleted('error');
-        return result;
+        return '';
       }
 
-      const instructions = `Fix the SQL query, this is the error: ${blockResult.message}`;
       const query = source?.toJSON() ?? '';
       const dialect = dataSourceId ? 'sql' : 'duckdb';
+      const error_message = `Dialect: ${dialect}\n\nQuery:\n${query}\n\nError: ${blockResult.message}`;
 
-      await this.simulate({ query, dialect, instructions, modelId, onSQL: (sql) => {
-        if (aborted) return;
-        result = sql;
-        updateSQLAISuggestions(block, sql);
-      }});
+      const { code } = await this.sqlGeneratorService.fix(ctx, error_message);
 
-      if (aborted) { taskItem.setCompleted('aborted'); return result; }
+      if (aborted) { taskItem.setCompleted('aborted'); return code; }
+      updateSQLAISuggestions(block, code);
       taskItem.setCompleted('success');
-      return result;
+      return code;
     } catch (err) {
       taskItem.setCompleted('error');
       throw err;
     } finally {
       cleanup();
     }
-  }
-
-  private async simulate(options: SqlEditStreamedOptions): Promise<string> {
-    await new Promise(r => setTimeout(r, 800));
-    const generated = `-- AI suggestion (${options.dialect})\n-- Instructions: ${options.instructions}\n`;
-    options.onSQL(generated);
-    return generated;
   }
 }

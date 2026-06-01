@@ -9,10 +9,10 @@ import {
   Res,
 } from '@nestjs/common';
 import { ApiTags, ApiQuery } from '@nestjs/swagger';
-import { ApiAuth, ApiPublic } from '@sandworm/api/decorators/http.decorators';
+import { ApiAuth } from '@sandworm/api/decorators/http.decorators';
 import { YjsDocumentService } from './yjs-document.service';
 import { PersistorFactory } from './persistors/persistor.factory';
-import { addBlockGroupAfterBlock, BlockType, docToMarkdown } from '@sandworm/editor';
+import { BlockType, docToMarkdown } from '@sandworm/editor';
 import type { FastifyReply } from 'fastify/types/reply';
 import { addBlocks } from './shared-doc/ai-blocks';
 
