@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import cronstrue from "cronstrue";
+import { PiTimerLight } from "react-icons/pi";
 import { CloseIconButton } from "@/components/CloseIconButton";
 
 import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
@@ -213,28 +214,25 @@ interface ScheduleListProps {
 function ScheduleList(props: ScheduleListProps) {
   return (
     <div className="relative w-full h-full flex flex-col overflow-y-auto font-body dark:bg-base-100 ">
-      <div className="px-4 xl:px-6 pt-6 pb-5">
-        <div className="flex justify-between">
+      <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
+        <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white">
+            <h3 className="flex items-center gap-x-1.5 text-base font-medium leading-6 dark:text-white text-ink-100">
+              <PiTimerLight size={18} className="flex-shrink-0" />
               Schedule
             </h3>
-
-            <p className="text-ink-300 dark:text-ink-400 text-sm pt-1">
+            <p className="text-[12.5px] text-ink-400 mt-0.5">
               Schedule your notebook to run automatically
             </p>
           </div>
           <CloseIconButton
             size="sm"
             round
-            iconSize={18}
             onClick={props.onHide}
-            className="absolute z-10 top-7 right-3 -translate-x-1/2 bg-base-100 dark:border-border-tertiary"
+            aria-label="Close schedules"
           />
         </div>
       </div>
-
-      <div className="border-t border-dashed border-border-secondary dark:border-border-tertiary" />
 
       {props.isPublished ? (
         <div className="flex-1 flex flex-col">

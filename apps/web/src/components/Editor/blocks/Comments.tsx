@@ -83,7 +83,7 @@ export default function Comments({
                 {comments?.length}
               </span>
             </h3>
-            <p className="text-[12px] text-ink-400 mt-0.5">
+            <p className="text-[12.5px] text-ink-400 mt-0.5">
               Make comments to teammates
             </p>
           </div>

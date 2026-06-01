@@ -2,7 +2,8 @@
 import { v4 as uuidv4 } from "uuid";
 import type * as Y from "yjs";
 import React, { useCallback, useState } from "react";
-import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import { PiStackLight } from "react-icons/pi";
+import { CloseIconButton } from "@/components/CloseIconButton";
 import { Transition, Dialog } from "@headlessui/react";
 import { format } from "date-fns";
 import clsx from "clsx";
@@ -253,22 +254,24 @@ export default function ReusableComponents(props: Props) {
     <>
       {props.visible && (
         <div className="relative w-full flex flex-col  h-full bg-white dark:bg-base-100 font-body dark:border-border-tertiary">
-          <div className="flex justify-between border-b p-6 space-x-3 border-border-secondary dark:border-border-tertiary">
-            <div>
-              <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white pr-1.5">
-                Reusable Components
-              </h3>
-              <p className="text-ink-400 text-sm pt-1">
-                Click a component to add it to the current page.
-              </p>
+          <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="flex items-center gap-x-1.5 text-base font-medium leading-6 dark:text-white text-ink-100">
+                  <PiStackLight size={18} className="flex-shrink-0" />
+                  Reusable Components
+                </h3>
+                <p className="text-[12.5px] text-ink-400 mt-0.5">
+                  Click a component to add it to the current page.
+                </p>
+              </div>
+              <CloseIconButton
+                size="sm"
+                round
+                onClick={props.onHide}
+                aria-label="Close reusable components"
+              />
             </div>
-            <button
-              type="button"
-              className="absolute z-10 top-7 transform rounded-full border border-gray-300 text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary"
-              onClick={props.onHide}
-            >
-              <ChevronDoubleRightIcon className="w-3 h-3" />
-            </button>
           </div>
           {data.size > 0 || isLoading ? (
             <>

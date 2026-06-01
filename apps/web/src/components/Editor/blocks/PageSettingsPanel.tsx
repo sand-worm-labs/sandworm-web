@@ -1,6 +1,7 @@
 import { Switch, Transition } from "@headlessui/react";
-import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { PiGearSixLight } from "react-icons/pi";
+import { CloseIconButton } from "@/components/CloseIconButton";
 
 import useDocument from "../hooks/useDocument";
 
@@ -72,21 +73,23 @@ export default function PageSettingsPanel(props: Props) {
       leaveTo="w-0"
     >
       <div className="w-[324px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white font-body dark:bg-base-100 ">
-        <div className="flex justify-between border-b dark:border-border-tertiary p-6 space-x-3">
-          <div>
-            <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white pr-1.5">
-              Page settings
-            </h3>
-            <p className="text-sm text-ink-400 pt-1 ">
-              Configure this page's behavior and default visualization mode.
-            </p>
-            <button
-              type="button"
-              className="absolute z-10 top-7 transform rounded-full border border-gray-300  text-ink-400 bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center right-3 -translate-x-1/2 dark:border-border-tertiary "
+        <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="flex items-center gap-x-1.5 text-base font-medium leading-6 dark:text-white text-ink-100">
+                <PiGearSixLight size={18} className="flex-shrink-0" />
+                Page settings
+              </h3>
+              <p className="text-[12.5px] text-ink-400 mt-0.5">
+                Configure this page's behavior and default visualization mode.
+              </p>
+            </div>
+            <CloseIconButton
+              size="sm"
+              round
               onClick={props.onHide}
-            >
-              <ChevronDoubleRightIcon className="w-3 h-3" />
-            </button>
+              aria-label="Close page settings"
+            />
           </div>
         </div>
         <div className="w-full divide-y divide-border-secondary border-b dark:border-border-tertiary border-border-secondary border dark:divide-border-tertiary">

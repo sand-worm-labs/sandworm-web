@@ -3,7 +3,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { GripHorizontal, ChevronRightIcon } from "lucide-react";
+import { GripHorizontal } from "lucide-react";
+import { PiDatabaseLight } from "react-icons/pi";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -15,7 +16,6 @@ import {
 } from "@sandworm/ui/components/card";
 import { Input } from "@sandworm/ui/components/input";
 import { Button } from "@sandworm/ui/components/button";
-import { ChevronDoubleRightIcon } from "@heroicons/react/20/solid";
 
 import { useChainStore } from "@/store/chains";
 import {
@@ -100,34 +100,30 @@ export function DataExplorerContent({
     return (
       <>
         {visible && (
-          <div className="relative h-full">
-            {onHide && (
-              <button
-                type="button"
-                className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-ink-400 bg-white dark:bg-base-100 hover:bg-gray-100 dark:hover:bg-gray-900 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
-                onClick={onHide}
-                aria-label="Close data explorer"
-              >
-                <ChevronDoubleRightIcon className="w-3 h-3" />
-              </button>
-            )}
-
-            <Card className="h-full overflow-hidden rounded-none w-full bg-white dark:bg-base-100 gap-y-0 pt-0">
+          <Card className="h-full overflow-hidden rounded-none w-full bg-white dark:bg-base-100 gap-y-0 pt-0">
               {loading && (
                 <div className="flex items-center justify-center h-full" />
               )}
 
-              <div className="px-4 xl:px-6 pt-6 pb-5 border-b border-border-secondary dark:border-border-tertiary">
-                <div className="flex justify-between">
+              <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
+                <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white">
+                    <h3 className="flex items-center gap-x-1.5 text-base font-medium leading-6 dark:text-white text-ink-100">
+                      <PiDatabaseLight size={18} className="flex-shrink-0" />
                       Data Explorer
                     </h3>
-                    <p className="text-ink-300 text-sm pt-1">
+                    <p className="text-[12.5px] text-ink-400 mt-0.5">
                       Browse and explore your blockchain data
                     </p>
                   </div>
-                  <ChevronRightIcon className="h-5 w-5 text-ink-400" />
+                  {onHide && (
+                    <CloseIconButton
+                      size="sm"
+                      round
+                      onClick={onHide}
+                      aria-label="Close data explorer"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -153,8 +149,7 @@ export function DataExplorerContent({
                   </div>
                 ) : null}
               </CardContent>
-            </Card>
-          </div>
+          </Card>
         )}
       </>
     );

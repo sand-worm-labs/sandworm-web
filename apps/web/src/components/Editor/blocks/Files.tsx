@@ -21,9 +21,9 @@ import {
   ChevronRightIcon,
   EyeIcon,
 } from "@heroicons/react/20/solid";
-import { PiFolders } from "react-icons/pi";
-import { CloseIconButton } from "@/components/CloseIconButton";
+import { PiFolders, PiFolderOpenLight } from "react-icons/pi";
 
+import { CloseIconButton } from "@/components/CloseIconButton";
 import { Cautious } from "@/components/Assets/Cautious";
 import { UploadIcon } from "@/components/Assets/UploadIcon";
 import { Trash } from "@/components/Assets/Trash";
@@ -697,22 +697,24 @@ file`;
           className="relative w-full flex flex-col  h-full bg-white dark:bg-base-100"
           {...getRootProps()}
         >
-          <div className="flex justify-between border-b p-6 space-x-3 border-border-secondary dark:border-border-tertiary">
-            <div>
-              <h3 className="text-lg font-medium leading-6 text-ink-100 pr-1.5">
-                Files
-              </h3>
-              <p className="text-ink-400 text-sm pt-1">
-                Upload files to your notebook for analysis
-              </p>
+          <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="flex items-center gap-x-1.5 text-base font-medium leading-6 dark:text-white text-ink-100">
+                  <PiFolderOpenLight size={18} className="flex-shrink-0" />
+                  Files
+                </h3>
+                <p className="text-[12.5px] text-ink-400 mt-0.5">
+                  Upload files to your notebook for analysis
+                </p>
+              </div>
+              <CloseIconButton
+                size="sm"
+                round
+                onClick={props.onHide}
+                aria-label="Close files"
+              />
             </div>
-            <CloseIconButton
-              size="sm"
-              round
-              iconSize={18}
-              onClick={props.onHide}
-              className="absolute z-10 top-7 right-3 -translate-x-1/2 bg-base-100 dark:border-border-tertiary"
-            />
           </div>
 
           {(upload._tag === "uploading" || results.length > 0) && (

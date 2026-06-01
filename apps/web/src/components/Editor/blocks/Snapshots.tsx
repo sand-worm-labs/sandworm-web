@@ -1,7 +1,8 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import * as dfns from "date-fns";
 import React from "react";
-import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import { PiCameraLight } from "react-icons/pi";
+import { CloseIconButton } from "@/components/CloseIconButton";
 
 import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 
@@ -21,22 +22,23 @@ export default function Snapshots(props: Props) {
     <>
       {props.visible && (
         <div className="w-full flex flex-col  h-full bg-white dark:bg-base-100 relative">
-          <button
-            type="button"
-            className="absolute z-10 top-7 transform rounded-full border border-gray-300 dark:border-border-tertiary text-ink-400 bg-white dark:bg-base-100 hover:bg-gray-100 w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2"
-            onClick={props.onHide}
-          >
-            <ChevronDoubleRightIcon className="w-3 h-3" />
-          </button>
-
-          <div className="flex items-center justify-between border-b dark:border-border-tertiary p-6">
-            <div>
-              <h3 className="text-lg font-medium leading-6 text-ink-100 dark:text-white pr-1.5">
-                Snapshots
-              </h3>
-              <p className="text-ink-400 text-sm pt-1">
-                Each Scheduled Run generates a snapshot
-              </p>
+          <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="flex items-center gap-x-1.5 text-base font-medium leading-6 dark:text-white text-ink-100">
+                  <PiCameraLight size={18} className="flex-shrink-0" />
+                  Snapshots
+                </h3>
+                <p className="text-[12.5px] text-ink-400 mt-0.5">
+                  Each Scheduled Run generates a snapshot
+                </p>
+              </div>
+              <CloseIconButton
+                size="sm"
+                round
+                onClick={props.onHide}
+                aria-label="Close snapshots"
+              />
             </div>
           </div>
 

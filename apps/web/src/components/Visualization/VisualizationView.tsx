@@ -6,11 +6,7 @@ import {
   ChevronDoubleRightIcon,
   ChevronDoubleLeftIcon,
 } from "@heroicons/react/24/solid";
-import {
-  ArrowLongDownIcon,
-  ArrowLongUpIcon,
-} from "@heroicons/react/20/solid";
-import { CloseIconButton } from "@/components/CloseIconButton";
+import { ArrowLongDownIcon, ArrowLongUpIcon } from "@heroicons/react/20/solid";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import type {
   DataFrame,
@@ -34,6 +30,8 @@ import type {
 } from "@sandworm/editor";
 import { head, uniq } from "ramda";
 import { PiEmpty } from "react-icons/pi";
+
+import { CloseIconButton } from "@/components/CloseIconButton";
 
 import useResettableState from "../Editor/hooks/useResettableState";
 import useSideBar from "../Editor/hooks/useSideBar";
@@ -154,7 +152,9 @@ function VisualizationViewV2(props: Props) {
                 strokeWidth={1.2}
                 className="h-10 w-10 text-ink-400"
               />
-              <span className="text-base text-ink-400">Something went wrong</span>
+              <span className="text-base text-ink-400">
+                Something went wrong
+              </span>
             </div>
           ) : props.error === "invalid-params" ? (
             <div className="flex flex-col items-center justify-center space-y-2">
