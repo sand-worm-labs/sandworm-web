@@ -80,7 +80,6 @@ interface Props {
   userId: string | null;
   isFullScreen: boolean;
   workspaceId: string;
-  modelId: string;
 }
 
 // =====================================
@@ -293,14 +292,12 @@ function PythonBlock(props: Props) {
       workspaceId: props.workspaceId,
       documentId: props.document.id,
       blockId,
-      modelId: props.modelId,
     });
   }, [
     editPythonWithAi,
     props.workspaceId,
     props.document.id,
     blockId,
-    props.modelId,
   ]);
 
   const onAcceptAISuggestion = useCallback(() => {
@@ -321,7 +318,6 @@ function PythonBlock(props: Props) {
       workspaceId: props.workspaceId,
       documentId: props.document.id,
       blockId,
-      modelId: props.modelId,
     });
 
     if (fixResult?.chatId) {
@@ -334,7 +330,6 @@ function PythonBlock(props: Props) {
     props.workspaceId,
     props.document.id,
     blockId,
-    props.modelId,
     hasOaiKey,
   ]);
 
@@ -571,16 +566,10 @@ function PythonBlock(props: Props) {
     >
       <div
         className={clsx(
-          "rounded-2xl border transition-colors duration-150",
+          "rounded-2xl border border-border-focus",
+          props.isBlockHiddenInPublished && "border-dashed",
           props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-xl",
-          diffButtonsVisible
-            ? "border-dashed border-primary shadow-[0_0_0_3px_theme(colors.primary/0.12)]"
-            : isEditorFocused && editorState.mode === "insert"
-              ? "border-primary shadow-sm"
-              : clsx(
-                  "border-border-focus",
-                  props.isBlockHiddenInPublished && "border-dashed"
-                )
+          isEditorFocused && editorState.mode === "insert" && "shadow-sm"
         )}
       >
         <div
@@ -635,7 +624,7 @@ function PythonBlock(props: Props) {
 
               {results.some(r => r.type === "error") && (
                 <div className="print:hidden flex items-center gap-x-1 text-[10px] text-ink-400 whitespace-nowrap">
-                  <code className="bg-error/10 text-error px-1.5 py-0.5 font-body font-medium rounded-md relative">
+                  <code className="bg-red-50 text-error px-1.5 py-0.5 font-mono rounded-md relative">
                     contains errors
                   </code>
                 </div>

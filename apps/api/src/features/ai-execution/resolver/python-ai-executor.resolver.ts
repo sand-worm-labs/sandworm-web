@@ -12,10 +12,9 @@ export class PythonAiExecutorResolver {
     @CurrentUser('id') userId: string,
     @Args('documentId') documentId: string,
     @Args('workspaceId') workspaceId: string,
-    @Args('blockId') blockId: string,
-    @Args('modelId') modelId: string,
+    @Args('blockId') blockId: string
   ): Promise<string> {
-    return this.pythonAiExecutorService.editPython(documentId, workspaceId, blockId, userId, modelId);
+    return this.pythonAiExecutorService.editPython(documentId, workspaceId, blockId, userId);
   }
 
   @Mutation(() => FixAiResult)
@@ -23,9 +22,8 @@ export class PythonAiExecutorResolver {
     @CurrentUser('id') userId: string,
     @Args('documentId') documentId: string,
     @Args('workspaceId') workspaceId: string,
-    @Args('blockId') blockId: string,
-    @Args('modelId') modelId: string,
+    @Args('blockId') blockId: string
   ): Promise<FixAiResult> {
-    return this.pythonAiExecutorService.fixPython(documentId, workspaceId, blockId, userId, modelId);
+    return this.pythonAiExecutorService.fixPython(documentId, workspaceId, blockId, userId);
   }
 }

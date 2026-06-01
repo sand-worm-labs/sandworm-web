@@ -206,6 +206,7 @@ function useCodeMirror({
   useEffect(() => {
     if (!containerRef.current) return () => {};
 
+    // ─── Destroy whatever is currently mounted ──────────────
     viewRef.current?.destroy();
     viewRef.current = null;
     mergeRef.current?.destroy();
@@ -410,14 +411,12 @@ const MarkdownBlock = (props: Props) => {
       workspaceId: props.workspaceId,
       documentId: props.document.id,
       blockId: id,
-      modelId: workspace?.assistantModel ?? "",
     });
   }, [
     editTextWithAi,
     props.workspaceId,
     props.document.id,
     id,
-    workspace?.assistantModel,
   ]);
 
   const tooltipContent = useCallback(
@@ -449,6 +448,7 @@ const MarkdownBlock = (props: Props) => {
     closeMarkdownEditWithAIPrompt(props.block, false);
   }, [props.block]);
 
+  // ─── Editor focus handlers ─────────────────────────────────
   const onFocus = useCallback(() => {
     setFocused(true);
     editorAPI.insert(id, { scrollIntoView: false });
@@ -478,16 +478,15 @@ const MarkdownBlock = (props: Props) => {
     }
   }, [props.isCursorInserting, props.isCursorWithin]);
 
+  // ─── Border ────────────────────────────────────────────────
   const borderClass = (() => {
     if (props.dashboardMode?._tag === "viewing") return "";
 
-    if (aiSuggestions !== null)
-      return "border border-dashed border-primary shadow-[0_0_0_3px_theme(colors.primary/0.12)]";
-
-    if (isFocused && props.isEditable) return "border border-primary shadow-sm";
+    if (isFocused && props.isEditable)
+      return "border border-border-focus dark:border-border-tertiary";
 
     if (props.isCursorWithin && !props.isCursorInserting)
-      return "border border-primary shadow-none";
+      return "border border-border-tertiary dark:border-border-tertiary";
 
     if (
       props.dashboardMode?._tag === "editing" &&
@@ -514,13 +513,13 @@ const MarkdownBlock = (props: Props) => {
       <div
         className={clsx(
           borderClass,
-          "transition-colors duration-150",
           props.dashboardMode ? "h-full overflow-y-auto" : "",
           props.belongsToMultiTabGroup
             ? "rounded-tl-none rounded-xl"
             : "rounded-lg"
         )}
       >
+        {/* ── Block header ── */}
         <div
           className="flex items-center justify-between px-3 py-2
           border-b border-border-secondary dark:border-border-tertiary"
