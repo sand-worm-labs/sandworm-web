@@ -162,6 +162,7 @@ const loggerModule = LoggerModule.forRootAsync({
                   port: Number(process.env.LOGDY_PORT ?? 10800),
                   mode: 'tcp',
                   reconnect: true,
+                  reconnectTries: 3,
                 },
               },
             ],

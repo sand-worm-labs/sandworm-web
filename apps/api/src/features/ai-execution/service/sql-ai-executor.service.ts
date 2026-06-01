@@ -1,5 +1,6 @@
 import * as Y from 'yjs';
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { YjsDocumentService } from '../../collaboration/yjs/yjs-document.service';
 import { PersistorFactory } from '../../collaboration/yjs/persistors/persistor.factory';
 import { ChatService } from '../../chat/chat.service';
@@ -24,15 +25,16 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
   constructor(
     yjsDocumentService: YjsDocumentService,
     persistorFactory: PersistorFactory,
+    eventEmitter: EventEmitter2,
     @Inject(forwardRef(() => ChatService))
     private readonly chatService: ChatService,
     private readonly sqlGeneratorService: SqlGeneratorService,
     private readonly workspaceService: WorkspaceService,
   ) {
-    super(yjsDocumentService, persistorFactory);
+    super(yjsDocumentService, persistorFactory, eventEmitter);
   }
 
-  async editSql(
+  async editAiSql(
     documentId: string,
     workspaceId: string,
     blockId: string,
@@ -49,14 +51,14 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
       if (!taskItem) throw new Error('Failed to dequeue edit-sql task');
 
       const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId };
-      return await this.runEdit(taskItem, block, sharedDoc.ydoc, ctx);
+      return await this.runAiEdit(taskItem, block, sharedDoc.ydoc, ctx);
     } catch (err) {
       this.logger.error('editSql failed', err);
       throw err;
     }
   }
 
-  async fixSql(
+  async fixAiSql(
     documentId: string,
     workspaceId: string,
     blockId: string,
@@ -84,7 +86,7 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
         updateDocumentTitle: false,
       });
 
-      const result = await this.runFix(taskItem, block, sharedDoc.ydoc, ctx);
+      const result = await this.runAiFix(taskItem, block, sharedDoc.ydoc, { ...ctx, chat_id: chat.id });
 
       return { result, chatId: chat.id };
     } catch (err) {
@@ -93,7 +95,7 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     }
   }
 
-  private async runEdit(
+  private async runAiEdit(
     taskItem: AITaskItem,
     block: Y.XmlElement<SQLBlock>,
     ydoc: Y.Doc,
@@ -103,7 +105,6 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     let aborted = false;
     try {
       cleanup = taskItem.observeStatus(s => { if (s._tag === 'aborting') aborted = true; });
-
       const { source, dataSourceId, editWithAIPrompt } = getSQLAttributes(block, getBlocks(ydoc));
       const instructions = editWithAIPrompt?.toJSON() ?? '';
       if (!instructions) { taskItem.setCompleted('error'); return ''; }
@@ -118,6 +119,7 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
       updateSQLAISuggestions(block, code);
       closeSQLEditWithAIPrompt(block, true);
       taskItem.setCompleted('success');
+      this.emitBlockAction('edited', 'SQL', block, ctx);
       return code;
     } catch (err) {
       taskItem.setCompleted('error');
@@ -127,7 +129,7 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     }
   }
 
-  private async runFix(
+  private async runAiFix(
     taskItem: AITaskItem,
     block: Y.XmlElement<SQLBlock>,
     ydoc: Y.Doc,
@@ -137,6 +139,8 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     let aborted = false;
     try {
       cleanup = taskItem.observeStatus(s => { if (s._tag === 'aborting') aborted = true; });
+
+      this.emitBlockAction('created', 'SQL', block, ctx);
 
       const { source, dataSourceId, result: blockResult } = getSQLAttributes(block, getBlocks(ydoc));
       if (!blockResult || blockResult.type !== 'syntax-error') {
@@ -153,6 +157,7 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
       if (aborted) { taskItem.setCompleted('aborted'); return code; }
       updateSQLAISuggestions(block, code);
       taskItem.setCompleted('success');
+      this.emitBlockAction('edited', 'SQL', block, ctx);
       return code;
     } catch (err) {
       taskItem.setCompleted('error');

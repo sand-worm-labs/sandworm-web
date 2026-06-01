@@ -1,5 +1,6 @@
 import * as Y from 'yjs';
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { YjsDocumentService } from '../../collaboration/yjs/yjs-document.service';
 import { ChatService } from '../../chat/chat.service';
 import { PersistorFactory } from '../../collaboration/yjs/persistors/persistor.factory';
@@ -27,15 +28,16 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
   constructor(
     yjsDocumentService: YjsDocumentService,
     persistorFactory: PersistorFactory,
+    eventEmitter: EventEmitter2,
     @Inject(forwardRef(() => ChatService))
     private readonly chatService: ChatService,
     private readonly pythonGeneratorService: PythonGeneratorService,
     private readonly workspaceService: WorkspaceService,
   ) {
-    super(yjsDocumentService, persistorFactory);
+    super(yjsDocumentService, persistorFactory, eventEmitter);
   }
 
-  async editPython(
+  async editAiPython(
     documentId: string,
     workspaceId: string,
     blockId: string,
@@ -51,7 +53,7 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
       const taskItem = aiTasks.next();
       if (!taskItem) throw new Error('Failed to dequeue edit-python task');
 
-      const ctx: GeneratorContext = { user_id: userId ?? '', workspace_id: workspaceId, document_id: documentId };
+      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId };
       return await this.runEdit(taskItem, block, ctx);
     } catch (err) {
       this.logger.error('editPython failed', err);
@@ -59,7 +61,7 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
     }
   }
 
-  async fixPython(
+  async fixAiPython(
     documentId: string,
     workspaceId: string,
     blockId: string,
@@ -75,7 +77,6 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
       const taskItem = aiTasks.next();
       if (!taskItem) throw new Error('Failed to dequeue fix-python task');
 
-      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId };
       const workspace = await this.workspaceService.getWorkspaceById(workspaceId);
 
       const chat = await this.chatService.createChat(userId, {
@@ -87,6 +88,7 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
         updateDocumentTitle: false,
       });
 
+      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId, chat_id: chat.id };
       const result = await this.runFix(taskItem, block, ctx);
 
       return { result, chatId: chat.id };
@@ -118,6 +120,7 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
       updatePythonAISuggestions(block, code);
       closePythonEditWithAIPrompt(block, true);
       taskItem.setCompleted('success');
+      this.emitBlockAction('edited', 'Python', block, ctx);
       return code;
     } catch (err) {
       taskItem.setCompleted('error');
@@ -136,7 +139,6 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
     let aborted = false;
     try {
       cleanup = taskItem.observeStatus(s => { if (s._tag === 'aborting') aborted = true; });
-
       const error = getPythonBlockResult(block).find(
         (r): r is PythonErrorOutput => r.type === 'error'
       );
@@ -153,6 +155,7 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
       if (aborted) { taskItem.setCompleted('aborted'); return code; }
       updatePythonAISuggestions(block, code);
       taskItem.setCompleted('success');
+      this.emitBlockAction('edited', 'Python', block, ctx);
       return code;
     } catch (err) {
       taskItem.setCompleted('error');

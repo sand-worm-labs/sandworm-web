@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { BaseAiExecutorService} from './base-ai-executor.service'
+import { EventEmitter2 } from '@nestjs/event-emitter'
+import { BaseAiExecutorService } from './base-ai-executor.service'
 import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
 import { PersistorFactory } from '@/features/collaboration/yjs/persistors/persistor.factory';
 
@@ -7,12 +8,12 @@ import { PersistorFactory } from '@/features/collaboration/yjs/persistors/persis
 export class ToolsAiExecutorService extends BaseAiExecutorService {
   protected readonly logger = new Logger(ToolsAiExecutorService.name)
 
-
   constructor(
     yjsDocumentService: YjsDocumentService,
-     persistorFactory: PersistorFactory,  
+    persistorFactory: PersistorFactory,
+    eventEmitter: EventEmitter2,
   ) {
-    super(yjsDocumentService, persistorFactory);
+    super(yjsDocumentService, persistorFactory, eventEmitter);
   }
 
 }

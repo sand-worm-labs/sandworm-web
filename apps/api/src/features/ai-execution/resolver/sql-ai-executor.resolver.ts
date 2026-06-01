@@ -14,7 +14,7 @@ export class SqlAiExecutorResolver {
     @Args('workspaceId') workspaceId: string,
     @Args('blockId') blockId: string,
   ): Promise<string> {
-    return this.sqlAiExecutorService.editSql(documentId, workspaceId, blockId, userId);
+    return this.sqlAiExecutorService.editAiSql(documentId, workspaceId, blockId, userId);
   }
 
   @Mutation(() => FixAiResult)
@@ -24,6 +24,6 @@ export class SqlAiExecutorResolver {
     @Args('workspaceId') workspaceId: string,
     @Args('blockId') blockId: string,
   ): Promise<FixAiResult> {
-    return this.sqlAiExecutorService.fixSql(documentId, workspaceId, blockId, userId);
+    return this.sqlAiExecutorService.fixAiSql(documentId, workspaceId, blockId, userId);
   }
 }
