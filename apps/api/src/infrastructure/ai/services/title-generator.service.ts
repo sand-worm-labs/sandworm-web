@@ -40,14 +40,14 @@ export class TitleGeneratorService {
 
     const workspace = await this.workspaceService.getWorkspaceById(request.workspace_id);
     const workspace_model = workspace.assistantModel;
-    const openrouter_api_key = await this.workspaceService.getWorkspaceAiHash(workspace.id);
+    const openrouter_api_key = await this.workspaceService.getWorkspaceAiKey(workspace.id);
     this.logger.log(`Generating title for document: ${request.document_id}`);
 
     const { data } = await firstValueFrom(
       this.httpService.post<GenerateTitleResponse>(
           `${url}/document/generate-title`,
           {
-            openrouter_api_key: 'OPENROUTER_KEY_PLACEHOLDER',
+            openrouter_api_key: openrouter_api_key,
             message: `${changeTitleMessage}: ${oldTitle}`,
             model: workspace_model,
             context: request,
