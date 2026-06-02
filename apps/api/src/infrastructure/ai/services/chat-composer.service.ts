@@ -15,11 +15,13 @@ import {
   ImageUrlPart,
   DocumentPart,
 } from '@/features/chat/types/message.types';
+import { WorkspaceService } from '@/features/workspace/service/workspace.service';
 
 export interface ChatAiContext {
   user_id: string;
   workspace_id: string;
   document_id: string;
+  focused_block_ids?: string[];
   chat_id: string;
 }
 
@@ -41,9 +43,10 @@ export interface CompletionMessage {
 
 export interface StreamCompletionRequest {
   messages: CompletionMessage[];
-  model: string;
-  openrouter_api_key: string;
   context: ChatAiContext;
+  derived_context?: string;
+  temperature?: number;
+  max_tokens?: number;
 }
 
 export type SsePartEvent =
@@ -76,6 +79,7 @@ export class ChatComposerService {
   constructor(
     private readonly configService: ConfigService<AllConfigType>,
     private readonly httpService: HttpService,
+    private readonly workspaceService: WorkspaceService,
   ) {}
 
   private get aiConfig() {
@@ -85,35 +89,25 @@ export class ChatComposerService {
   private get headers() {
     return {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.aiConfig.handshakeToken}`,
+      'x-handshake-token': this.aiConfig.handshakeToken,
     };
-  }
-
-  async generateTitle(request: GenerateTitleRequest): Promise<string> {
-    const { url } = this.aiConfig;
-
-    this.logger.log(`Generating title for document ${request.context.document_id}`);
-
-    const { data } = await firstValueFrom(
-      this.httpService.post<GenerateTitleResponse>(
-        `${url}/generate-title`,
-        {
-          message: request.message,
-          openrouter_api_key: request.openrouter_api_key,
-          context: request.context,
-        } satisfies GenerateTitleRequest,
-        { headers: this.headers },
-      ),
-    );
-
-    return data.title;
   }
 
   streamCompletion(request: StreamCompletionRequest): Observable<CompletionStreamEvent> {
     const subject = new Subject<CompletionStreamEvent>();
 
-    this.executeStream(request, subject).catch((err) => {
-      this.logger.error('streamCompletion failed', err);
+    this.executeStream(request, subject).catch(async (err) => {
+      let detail = err?.message;
+      if (err?.response?.data?.on) {
+        const chunks: Buffer[] = [];
+        await new Promise<void>((res) => {
+          err.response.data.on('data', (c: Buffer) => chunks.push(c));
+          err.response.data.on('end', res);
+          err.response.data.on('error', res);
+        });
+        detail = Buffer.concat(chunks).toString();
+      }
+      this.logger.error(`streamCompletion failed — status=${err?.response?.status} body=${detail}`);
       subject.error(err);
     });
 
@@ -126,19 +120,29 @@ export class ChatComposerService {
   ): Promise<void> {
     const { url } = this.aiConfig;
 
+    const workspace = await this.workspaceService.getWorkspaceById(request.context.workspace_id);
+    const openrouter_api_key = await this.workspaceService.getWorkspaceAiKey(workspace.id);
+
     const payload = {
       messages: request.messages.map((m) => ({
         role: m.role,
-        content: this.buildContentParts(m.content, m.attachments),
+        content: m.attachments?.length
+          ? this.buildContentParts(m.content, m.attachments)
+          : m.content,
       })),
-      model: request.model,
-      openrouter_api_key: request.openrouter_api_key,
+      model: workspace.assistantModel,
+      openrouter_api_key,
       context: request.context,
+      derived_context: request.derived_context ?? '',
+      temperature: request.temperature ?? 0.7,
+      max_tokens: request.max_tokens ?? 0,
       stream: true,
     };
 
+    this.logger.log(`POST ${url}/chat/completions model=${payload.model} msgs=${payload.messages.length}`);
+
     const response = await firstValueFrom(
-      this.httpService.post<IncomingMessage>(`${url}/chat/complete`, payload, {
+      this.httpService.post<IncomingMessage>(`${url}/chat/completions`, payload, {
         headers: { ...this.headers, Accept: 'text/event-stream' },
         responseType: 'stream',
       }),

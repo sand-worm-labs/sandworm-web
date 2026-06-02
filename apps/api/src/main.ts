@@ -97,6 +97,8 @@ async function bootstrap() {
       'X-File-Name',
       'X-File-Size',
       'Cookie',
+      'Cache-Control',
+      'Accept',
     ],
   });
   app.setGlobalPrefix('api', {
