@@ -42,6 +42,7 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
     workspaceId: string,
     blockId: string,
     userId: string,
+    chatId?: string,
   ): Promise<{ result: string; chatId: string }> {
     try {
       const sharedDoc = await this.getSharedDoc(documentId, workspaceId);
@@ -54,18 +55,32 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
       if (!taskItem) throw new Error('Failed to dequeue edit-python task');
 
       const workspace = await this.workspaceService.getWorkspaceById(workspaceId);
-      const chat = await this.chatService.createChat(userId, {
-        workspaceId,
-        documentId,
-        message: `Edited Python block with AI`,
-        model: workspace.assistantModel,
-        title: 'Python Edit',
-        updateDocumentTitle: false,
-      });
+      const focusedBlocks = [{ id: blockId, title: block.getAttribute('title') ?? '', type: 'Python' }];
 
-      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId, chat_id: chat.id };
+      let resolvedChatId = chatId;
+      if (resolvedChatId) {
+        await this.chatService.sendMessage(userId, {
+          chatId: resolvedChatId,
+          content: `Edited Python block with AI`,
+          model: workspace.assistantModel,
+          focusedBlocks,
+        });
+      } else {
+        const chat = await this.chatService.createChat(userId, {
+          workspaceId,
+          documentId,
+          message: `Edited Python block with AI`,
+          model: workspace.assistantModel,
+          title: 'Python Edit',
+          updateDocumentTitle: false,
+          focusedBlocks,
+        });
+        resolvedChatId = chat.id;
+      }
+
+      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId, chat_id: resolvedChatId };
       const result = await this.runEdit(taskItem, block, ctx);
-      return { result, chatId: chat.id };
+      return { result, chatId: resolvedChatId };
     } catch (err) {
       this.logger.error('editPython failed', err);
       throw err;
