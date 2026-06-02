@@ -38,6 +38,7 @@ import {
 } from "@/components/Editor/hooks/useWorkspaces";
 import type { ApiWorkspace, ApiDocument } from "@/types";
 import { useAITaskActions } from "@/components/Editor/hooks/useAITasks";
+import useSideBar from "@/components/Editor/hooks/useSideBar";
 
 import ApproveDiffButtons from "../../ApproveDiffButtons";
 import { TooltipV2 } from "../../ToolTips";
@@ -358,6 +359,7 @@ const MarkdownBlock = (props: Props) => {
   const { workspace } = useWorkspace(props.workspaceId);
 
   const { editTextWithAi, loading } = useAITaskActions();
+  const { api: sidebarApi } = useSideBar();
 
   // ─── AI suggestion diff ────────────────────────────────────
   const [aiSuggestions, setAiSuggestions] = useState<Y.Text | null>(() =>
@@ -406,12 +408,16 @@ const MarkdownBlock = (props: Props) => {
   }, [props.block, editorAPI, id]);
 
   const onSubmitEditWithAI = useCallback(async () => {
-    await editTextWithAi({
+    const result = await editTextWithAi({
       workspaceId: props.workspaceId,
       documentId: props.document.id,
       blockId: id,
     });
-  }, [editTextWithAi, props.workspaceId, props.document.id, id]);
+    if (result?.chatId) {
+      closeMarkdownEditWithAIPrompt(props.block, false);
+      sidebarApi.openRightPanel("chat", { chatId: result.chatId });
+    }
+  }, [editTextWithAi, props.workspaceId, props.document.id, id, props.block, sidebarApi]);
 
   const tooltipContent = useCallback(
     (ref: React.RefObject<HTMLDivElement>) => (

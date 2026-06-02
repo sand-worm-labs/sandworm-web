@@ -316,9 +316,9 @@ export type Mutation = {
   deleteWorkspace: Scalars['Boolean']['output'];
   /** Create a duplicate of a document in the same workspace */
   duplicateDocument: Document;
-  editPythonWithAi: Scalars['String']['output'];
-  editSqlWithAi: Scalars['String']['output'];
-  editTextWithAi: Scalars['String']['output'];
+  editPythonWithAi: FixAiResult;
+  editSqlWithAi: FixAiResult;
+  editTextWithAi: FixAiResult;
   editTitleWithAi: Scalars['String']['output'];
   fixPythonWithAi: FixAiResult;
   fixSqlWithAi: FixAiResult;
@@ -1285,7 +1285,7 @@ export type EditSqlWithAiMutationVariables = Exact<{
 }>;
 
 
-export type EditSqlWithAiMutation = { __typename?: 'Mutation', editSqlWithAi: string };
+export type EditSqlWithAiMutation = { __typename?: 'Mutation', editSqlWithAi: { __typename?: 'FixAiResult', chatId: string } };
 
 export type EditPythonWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
@@ -1294,7 +1294,7 @@ export type EditPythonWithAiMutationVariables = Exact<{
 }>;
 
 
-export type EditPythonWithAiMutation = { __typename?: 'Mutation', editPythonWithAi: string };
+export type EditPythonWithAiMutation = { __typename?: 'Mutation', editPythonWithAi: { __typename?: 'FixAiResult', chatId: string } };
 
 export type FixSqlWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
@@ -1321,7 +1321,7 @@ export type EditTextWithAiMutationVariables = Exact<{
 }>;
 
 
-export type EditTextWithAiMutation = { __typename?: 'Mutation', editTextWithAi: string };
+export type EditTextWithAiMutation = { __typename?: 'Mutation', editTextWithAi: { __typename?: 'FixAiResult', chatId: string } };
 
 export type CreateUserMutationVariables = Exact<{
   input: CreateUserInput;
@@ -2115,7 +2115,9 @@ export const EditSqlWithAiDocument = gql`
     documentId: $documentId
     workspaceId: $workspaceId
     blockId: $blockId
-  )
+  ) {
+    chatId
+  }
 }
     `;
 export type EditSqlWithAiMutationFn = Apollo.MutationFunction<EditSqlWithAiMutation, EditSqlWithAiMutationVariables>;
@@ -2152,7 +2154,9 @@ export const EditPythonWithAiDocument = gql`
     documentId: $documentId
     workspaceId: $workspaceId
     blockId: $blockId
-  )
+  ) {
+    chatId
+  }
 }
     `;
 export type EditPythonWithAiMutationFn = Apollo.MutationFunction<EditPythonWithAiMutation, EditPythonWithAiMutationVariables>;
@@ -2267,7 +2271,9 @@ export const EditTextWithAiDocument = gql`
     documentId: $documentId
     workspaceId: $workspaceId
     blockId: $blockId
-  )
+  ) {
+    chatId
+  }
 }
     `;
 export type EditTextWithAiMutationFn = Apollo.MutationFunction<EditTextWithAiMutation, EditTextWithAiMutationVariables>;

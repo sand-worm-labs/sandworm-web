@@ -479,12 +479,16 @@ function SQLBlock(props: Props) {
     envStatus,
   ]);
   const onSubmitEditWithAI = useCallback(async () => {
-    await editSqlWithAi({
+    const result = await editSqlWithAi({
       workspaceId: props.document?.workspaceId,
       documentId: props.document.id,
       blockId,
     });
-  }, [editSqlWithAi, props.document?.workspaceId, props.document.id, blockId]);
+    if (result?.chatId) {
+      closeSQLEditWithAIPrompt(props.block, false);
+      sidebarApi.openRightPanel("chat", { chatId: result.chatId });
+    }
+  }, [editSqlWithAi, props.document?.workspaceId, props.document.id, blockId, props.block, sidebarApi]);
 
   const onAcceptAISuggestion = useCallback(() => {
     if (aiSuggestions) {

@@ -288,16 +288,22 @@ function PythonBlock(props: Props) {
   }, [props.block, editorAPI, blockId, aiTask]);
 
   const onSubmitEditWithAI = useCallback(async () => {
-    await editPythonWithAi({
+    const result = await editPythonWithAi({
       workspaceId: props.workspaceId,
       documentId: props.document.id,
       blockId,
     });
+    if (result?.chatId) {
+      closePythonEditWithAIPrompt(props.block, false);
+      sidebarApi.openRightPanel("chat", { chatId: result.chatId });
+    }
   }, [
     editPythonWithAi,
     props.workspaceId,
     props.document.id,
     blockId,
+    props.block,
+    sidebarApi,
   ]);
 
   const onAcceptAISuggestion = useCallback(() => {

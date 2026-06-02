@@ -54,9 +54,9 @@ type FixAiResult = {
 
 type UseAITaskActions = {
   editTitleWithAi: (workspaceId: string, documentId: string) => Promise<void>;
-  editSqlWithAi: (params: BlockAIParams) => Promise<string | null>;
-  editPythonWithAi: (params: BlockAIParams) => Promise<string | null>;
-  editTextWithAi: (params: BlockAIParams) => Promise<string | null>;
+  editSqlWithAi: (params: BlockAIParams) => Promise<FixAiResult | null>;
+  editPythonWithAi: (params: BlockAIParams) => Promise<FixAiResult | null>;
+  editTextWithAi: (params: BlockAIParams) => Promise<FixAiResult | null>;
   fixSqlWithAi: (params: BlockAIParams) => Promise<FixAiResult | null>;
   fixPythonWithAi: (params: BlockAIParams) => Promise<FixAiResult | null>;
   loading: {
@@ -91,14 +91,16 @@ export function useAITaskActions(): UseAITaskActions {
     await editTitleWithAiMutation({ variables: { workspaceId, documentId } });
   }
 
-  async function editSqlWithAi(params: BlockAIParams): Promise<string | null> {
+  async function editSqlWithAi(
+    params: BlockAIParams
+  ): Promise<FixAiResult | null> {
     const result = await editSqlWithAiMutation({ variables: params });
     return result.data?.editSqlWithAi ?? null;
   }
 
   async function editPythonWithAi(
     params: BlockAIParams
-  ): Promise<string | null> {
+  ): Promise<FixAiResult | null> {
     const result = await editPythonWithAiMutation({ variables: params });
     return result.data?.editPythonWithAi ?? null;
   }
@@ -117,7 +119,9 @@ export function useAITaskActions(): UseAITaskActions {
     return result.data?.fixPythonWithAi ?? null;
   }
 
-  async function editTextWithAi(params: BlockAIParams): Promise<string | null> {
+  async function editTextWithAi(
+    params: BlockAIParams
+  ): Promise<FixAiResult | null> {
     const result = await editTextWithAiMutation({ variables: params });
     return result.data?.editTextWithAi ?? null;
   }
