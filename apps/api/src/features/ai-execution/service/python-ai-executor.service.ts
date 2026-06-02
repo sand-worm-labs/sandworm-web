@@ -41,8 +41,8 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
     documentId: string,
     workspaceId: string,
     blockId: string,
-    userId: string | null,
-  ): Promise<string> {
+    userId: string,
+  ): Promise<{ result: string; chatId: string }> {
     try {
       const sharedDoc = await this.getSharedDoc(documentId, workspaceId);
       const block = getBlocks(sharedDoc.ydoc).get(blockId) as Y.XmlElement<PythonBlock> | undefined;
@@ -53,8 +53,19 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
       const taskItem = aiTasks.next();
       if (!taskItem) throw new Error('Failed to dequeue edit-python task');
 
-      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId };
-      return await this.runEdit(taskItem, block, ctx);
+      const workspace = await this.workspaceService.getWorkspaceById(workspaceId);
+      const chat = await this.chatService.createChat(userId, {
+        workspaceId,
+        documentId,
+        message: `Edited Python block with AI`,
+        model: workspace.assistantModel,
+        title: 'Python Edit',
+        updateDocumentTitle: false,
+      });
+
+      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId, chat_id: chat.id };
+      const result = await this.runEdit(taskItem, block, ctx);
+      return { result, chatId: chat.id };
     } catch (err) {
       this.logger.error('editPython failed', err);
       throw err;

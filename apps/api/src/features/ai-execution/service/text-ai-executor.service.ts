@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import { Injectable, Logger } from '@nestjs/common'
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { YjsDocumentService } from '../../collaboration/yjs/yjs-document.service'
 import { PersistorFactory } from '../../collaboration/yjs/persistors/persistor.factory'
@@ -15,6 +15,8 @@ import type { MarkdownBlock } from '@sandworm/editor'
 import { BaseAiExecutorService } from './base-ai-executor.service'
 import { GeneratorContext } from "@/infrastructure/ai/types/generator.types"
 import { MarkdownGeneratorService } from '@/infrastructure/ai/services/markdown-generator.service'
+import { WorkspaceService } from '@/features/workspace/service/workspace.service'
+import { ChatService } from '@/features/chat/chat.service'
 
 @Injectable()
 export class TextAiExecutorService extends BaseAiExecutorService {
@@ -25,6 +27,9 @@ export class TextAiExecutorService extends BaseAiExecutorService {
     persistorFactory:   PersistorFactory,
     eventEmitter:       EventEmitter2,
     private readonly markdownGeneratorService: MarkdownGeneratorService,
+    private readonly workspaceService: WorkspaceService,
+    @Inject(forwardRef(() => ChatService))
+    private readonly chatService: ChatService,
   ) {
     super(yjsDocumentService, persistorFactory, eventEmitter)
   }
@@ -34,7 +39,7 @@ export class TextAiExecutorService extends BaseAiExecutorService {
     workspaceId: string,
     blockId:     string,
     userId:      string,
-  ): Promise<string> {
+  ): Promise<{ result: string; chatId: string }> {
     try {
       const sharedDoc = await this.getSharedDoc(documentId, workspaceId)
       const block = getBlocks(sharedDoc.ydoc).get(blockId) as Y.XmlElement<MarkdownBlock> | undefined
@@ -45,8 +50,19 @@ export class TextAiExecutorService extends BaseAiExecutorService {
       const taskItem = aiTasks.next()
       if (!taskItem) throw new Error('Failed to dequeue edit-text task')
 
-      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId }
-      return await this.runEdit(taskItem, block, ctx)
+      const workspace = await this.workspaceService.getWorkspaceById(workspaceId)
+      const chat = await this.chatService.createChat(userId, {
+        workspaceId,
+        documentId,
+        message: `Edited Markdown block with AI`,
+        model: workspace.assistantModel,
+        title: 'Markdown Edit',
+        updateDocumentTitle: false,
+      })
+
+      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId, chat_id: chat.id }
+      const result = await this.runEdit(taskItem, block, ctx)
+      return { result, chatId: chat.id }
     } catch (err) {
       this.logger.error('editText failed', err)
       throw err

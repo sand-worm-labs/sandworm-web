@@ -1,7 +1,7 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 
 @ObjectType()
-export class FixAiResult {
+export class AiResult {
   @Field()
   result: string;
 

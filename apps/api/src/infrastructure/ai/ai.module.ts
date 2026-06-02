@@ -6,6 +6,7 @@ import { TitleGeneratorService } from './services/title-generator.service';
 import { MarkdownGeneratorService } from './services/markdown-generator.service';
 import { PythonGeneratorService } from './services/python-generator.service';
 import { SqlGeneratorService } from './services/sql-generator.service';
+import { ChatComposerService } from './services/chat-composer.service';
 import { WorkspaceModule } from '@/features/workspace/workspace.module';
 
 const GENERATOR_SERVICES = [
@@ -13,13 +14,15 @@ const GENERATOR_SERVICES = [
   MarkdownGeneratorService,
   PythonGeneratorService,
   SqlGeneratorService,
+  ChatComposerService,
 ];
 
 @Module({
   imports: [
     ConfigModule.forFeature(aiServiceConfig),
     HttpModule,
-    WorkspaceModule
+    WorkspaceModule,
+    
   ],
   providers: [...GENERATOR_SERVICES],
   exports: [...GENERATOR_SERVICES],
