@@ -38,8 +38,8 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     documentId: string,
     workspaceId: string,
     blockId: string,
-    userId: string | null,
-  ): Promise<string> {
+    userId: string,
+  ): Promise<{ result: string; chatId: string }> {
     try {
       const sharedDoc = await this.getSharedDoc(documentId, workspaceId);
       const block = getBlocks(sharedDoc.ydoc).get(blockId) as Y.XmlElement<SQLBlock> | undefined;
@@ -50,8 +50,19 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
       const taskItem = aiTasks.next();
       if (!taskItem) throw new Error('Failed to dequeue edit-sql task');
 
-      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId };
-      return await this.runAiEdit(taskItem, block, sharedDoc.ydoc, ctx);
+      const workspace = await this.workspaceService.getWorkspaceById(workspaceId);
+      const chat = await this.chatService.createChat(userId, {
+        workspaceId,
+        documentId,
+        message: `Edited SQL block with AI`,
+        model: workspace.assistantModel,
+        title: 'SQL Edit',
+        updateDocumentTitle: false,
+      });
+
+      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId, chat_id: chat.id };
+      const result = await this.runAiEdit(taskItem, block, sharedDoc.ydoc, ctx);
+      return { result, chatId: chat.id };
     } catch (err) {
       this.logger.error('editSql failed', err);
       throw err;

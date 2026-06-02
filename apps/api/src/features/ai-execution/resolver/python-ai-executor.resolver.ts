@@ -1,29 +1,29 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
 import { PythonAiExecutorService } from '../service/python-ai-executor.service';
-import { FixAiResult } from '../dto/fix-ai-result.dto';
+import { AiResult } from '../dto/fix-ai-result.dto';
 
 @Resolver()
 export class PythonAiExecutorResolver {
   constructor(private readonly pythonAiExecutorService: PythonAiExecutorService) {}
 
-  @Mutation(() => String)
+  @Mutation(() => AiResult)
   async editPythonWithAi(
     @CurrentUser('id') userId: string,
     @Args('documentId') documentId: string,
     @Args('workspaceId') workspaceId: string,
     @Args('blockId') blockId: string
-  ): Promise<string> {
+  ): Promise<AiResult> {
     return this.pythonAiExecutorService.editAiPython(documentId, workspaceId, blockId, userId);
   }
 
-  @Mutation(() => FixAiResult)
+  @Mutation(() => AiResult)
   async fixPythonWithAi(
     @CurrentUser('id') userId: string,
     @Args('documentId') documentId: string,
     @Args('workspaceId') workspaceId: string,
     @Args('blockId') blockId: string
-  ): Promise<FixAiResult> {
+  ): Promise<AiResult> {
     return this.pythonAiExecutorService.fixAiPython(documentId, workspaceId, blockId, userId);
   }
 }
