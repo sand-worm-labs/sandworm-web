@@ -1,5 +1,6 @@
 import * as Y from 'yjs';
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { YjsDocumentService } from '../../collaboration/yjs/yjs-document.service';
 import { PersistorFactory } from '../../collaboration/yjs/persistors/persistor.factory';
 import { BaseAiExecutorService } from './base-ai-executor.service';
@@ -9,8 +10,9 @@ export class TitleAiExecutorService extends BaseAiExecutorService {
     constructor(
         yjsDocumentService: YjsDocumentService,
         persistorFactory: PersistorFactory,
+        eventEmitter: EventEmitter2,
     ) {
-        super(yjsDocumentService, persistorFactory);
+        super(yjsDocumentService, persistorFactory, eventEmitter);
     }
 
     async updateTitle(documentId: string, workspaceId: string, title: string): Promise<void> {
