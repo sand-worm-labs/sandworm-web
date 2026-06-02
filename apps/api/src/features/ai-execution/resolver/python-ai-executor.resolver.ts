@@ -12,9 +12,10 @@ export class PythonAiExecutorResolver {
     @CurrentUser('id') userId: string,
     @Args('documentId') documentId: string,
     @Args('workspaceId') workspaceId: string,
-    @Args('blockId') blockId: string
+    @Args('blockId') blockId: string,
+    @Args('chatId', { nullable: true }) chatId?: string,
   ): Promise<AiResult> {
-    return this.pythonAiExecutorService.editAiPython(documentId, workspaceId, blockId, userId);
+    return this.pythonAiExecutorService.editAiPython(documentId, workspaceId, blockId, userId, chatId);
   }
 
   @Mutation(() => AiResult)
