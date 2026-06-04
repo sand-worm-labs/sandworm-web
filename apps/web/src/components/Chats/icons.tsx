@@ -743,9 +743,10 @@ function P<TProps extends Record<string, unknown>>(
   return (p: IconProps) => <Icon {...(p as unknown as TProps)} />;
 }
 
-const BLOCK_KIND_ICONS: Record<BlockKind, React.FC<IconProps>> = {
+const BLOCK_KIND_ICONS: Partial<Record<BlockKind, React.FC<IconProps>>> = {
   [BlockType.SQL]: P(PiDatabase),
   [BlockType.Python]: P(PiCode),
+  [BlockType.Visualization]: P(PiChartBar),
   [BlockType.VisualizationV2]: P(PiChartBar),
   [BlockType.Markdown]: P(PiArticle),
   [BlockType.RichText]: P(PiTextT),
@@ -782,6 +783,7 @@ export function BlockKindIcon({
   className?: string;
 }) {
   const Icon = BLOCK_KIND_ICONS[kind];
+  if (!Icon) return null;
   return <Icon size={size} weight={weight} className={className} />;
 }
 
