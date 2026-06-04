@@ -193,7 +193,7 @@ export const useLogin = (): UseLogin => {
 
   const loginWithPassword = useCallback(
     (email: string, password: string, callback?: string) => {
-      setState(s => ({ ...s, loading: true }));
+      setState({ loading: true, data: undefined, error: undefined });
       fetch(`${NEXT_PUBLIC_API_URL()}/auth/email/login`, {
         credentials: "include",
         method: "POST",
