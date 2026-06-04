@@ -23,6 +23,7 @@ import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import { SandwormLogo } from "@/components/Assets";
 import { SidebarIcon } from "@/components/Assets/SidebarIcon";
 import { useDocuments } from "@/components/Editor/hooks/useDocuments";
+import { useFavorites } from "@/components/Editor/hooks/useFavorites";
 import { useSession } from "@/components/Editor/hooks/useAuth";
 import WorkspaceSwitcher from "@/components/WorkspaceSwitcher";
 import { useIsMobile } from "@/hooks/useMobile";
@@ -51,8 +52,8 @@ export const WorkspaceSidebar = () => {
   const user = session?.user;
   const isMobile = useIsMobile();
 
-  const favoriteDocument: any = [];
-  const unfavoriteDocument: any = [];
+  const [favorites, { favoriteDocument, unfavoriteDocument }] =
+    useFavorites(workspaceId);
 
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isSectionOpen, setIsSectionOpen] = useState(true);
@@ -122,9 +123,9 @@ export const WorkspaceSidebar = () => {
     },
   ] = useDocuments(workspaceId);
 
-  const documents = documentsState.documents.filter(
-    doc => doc.deletedAt === null && doc.version >= 1
-  );
+  const documents = documentsState.documents
+    .filter(doc => doc.deletedAt === null && doc.version >= 1)
+    .map(doc => ({ ...doc, isFavorite: favorites.has(doc.id) }));
 
   const handleToggle = useCallback(() => {
     if (isMobile) setIsMobileOpen(false);
