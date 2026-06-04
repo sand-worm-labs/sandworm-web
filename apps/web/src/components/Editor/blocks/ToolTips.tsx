@@ -285,7 +285,7 @@ export function TooltipV2<T extends Element>(props: TooltipV2Props<T>) {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <div style={pos} className="absolute z-[2000] rounded-md">
+            <div style={pos} className="absolute z-[2000] rounded-md bg-black">
               {(() => {
                 if (props.content) {
                   return props.content(tooltipRef);

@@ -488,7 +488,14 @@ function SQLBlock(props: Props) {
       closeSQLEditWithAIPrompt(props.block, false);
       sidebarApi.openRightPanel("chat", { chatId: result.chatId });
     }
-  }, [editSqlWithAi, props.document?.workspaceId, props.document.id, blockId, props.block, sidebarApi]);
+  }, [
+    editSqlWithAi,
+    props.document?.workspaceId,
+    props.document.id,
+    blockId,
+    props.block,
+    sidebarApi,
+  ]);
 
   const onAcceptAISuggestion = useCallback(() => {
     if (aiSuggestions) {
@@ -1215,8 +1222,7 @@ function SQLBlock(props: Props) {
                     !isRunButtonDisabled &&
                     (status._tag === "enqueued" ||
                       (status._tag === "running" && envStatus !== "Running")),
-                  "bg-primary-200":
-                    !isRunButtonDisabled && status._tag === "idle",
+                  "bg-primary text-white": !isRunButtonDisabled && status._tag === "idle",
                 },
                 "rounded-sm h-6 min-w-6 flex items-center justify-center relative group disabled:cursor-not-allowed"
               )}

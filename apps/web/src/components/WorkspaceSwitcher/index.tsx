@@ -234,7 +234,7 @@ function ExpandedSwitcher({
         type="button"
         onClick={() => setTreeOpen(o => !o)}
         className="flex items-center gap-1 px-2 mb-2 w-full rounded-lg
-          hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28] transition-colors duration-100"
+           transition-colors duration-100"
       >
         <svg
           className={clsx(

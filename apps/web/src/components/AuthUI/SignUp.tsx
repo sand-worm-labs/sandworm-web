@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-import { PartnersSection } from "../Partners";
 import { SandwormLogo } from "../Assets";
 
 import { SocialLogin } from "./SocialLogin";
