@@ -13,7 +13,8 @@ export class TextAiExecutorResolver {
     @Args('documentId') documentId: string,
     @Args('workspaceId') workspaceId: string,
     @Args('blockId') blockId: string,
+    @Args('chatId', { nullable: true }) chatId?: string,
   ): Promise<AiResult> {
-    return this.textAiExecutorService.editAiText(documentId, workspaceId, blockId, userId)
+    return this.textAiExecutorService.editAiText(documentId, workspaceId, blockId, userId, chatId)
   }
 }
