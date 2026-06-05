@@ -5,8 +5,6 @@
 import React, { useState, useEffect } from "react";
 import { GripHorizontal } from "lucide-react";
 import { PiDatabaseLight } from "react-icons/pi";
-
-import { CloseIconButton } from "@/components/CloseIconButton";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Card,
@@ -17,6 +15,7 @@ import {
 import { Input } from "@sandworm/ui/components/input";
 import { Button } from "@sandworm/ui/components/button";
 
+import { CloseIconButton } from "@/components/CloseIconButton";
 import { useChainStore } from "@/store/chains";
 import {
   ChainListPanel,
@@ -101,54 +100,54 @@ export function DataExplorerContent({
       <>
         {visible && (
           <Card className="h-full overflow-hidden rounded-none w-full bg-white dark:bg-base-100 gap-y-0 pt-0">
-              {loading && (
-                <div className="flex items-center justify-center h-full" />
-              )}
+            {loading && (
+              <div className="flex items-center justify-center h-full" />
+            )}
 
-              <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="flex items-center gap-x-1.5 text-base font-medium leading-6 dark:text-white text-ink-100">
-                      <PiDatabaseLight size={18} className="flex-shrink-0" />
-                      Data Explorer
-                    </h3>
-                    <p className="text-[12.5px] text-ink-400 mt-0.5">
-                      Browse and explore your blockchain data
-                    </p>
-                  </div>
-                  {onHide && (
-                    <CloseIconButton
-                      size="sm"
-                      round
-                      onClick={onHide}
-                      aria-label="Close data explorer"
-                    />
-                  )}
+            <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="flex items-center gap-x-1.5 text-base font-medium leading-6 dark:text-white text-ink-100">
+                    <PiDatabaseLight size={18} className="flex-shrink-0" />
+                    Data Explorer
+                  </h3>
+                  <p className="text-[12.5px] text-ink-400 mt-0.5">
+                    Browse and explore your blockchain data
+                  </p>
                 </div>
+                {onHide && (
+                  <CloseIconButton
+                    size="sm"
+                    round
+                    onClick={onHide}
+                    aria-label="Close data explorer"
+                  />
+                )}
               </div>
+            </div>
 
-              <CardContent className="p-2 px-0 h-[calc(100%-60px)] overflow-y-auto">
-                {chains && chains.length > 0 ? (
-                  <div className="space-y-2">
-                    <ExplorerBreadCrumbs
-                      basePath={basePath}
-                      entities={
-                        entityData || { raw: [], project: [], decoded: [] }
-                      }
-                    />
-                    <Input
-                      type="text"
-                      placeholder="Search..."
-                      value={searchTerm}
-                      onChange={handleSearch}
-                      className="m-auto w-[calc(100%-2rem)] focus:ring-0 hidden"
-                    />
-                    <ul className="pt-0 mt-0" style={{ marginTop: 0 }}>
-                      {renderExplorer()}
-                    </ul>
-                  </div>
-                ) : null}
-              </CardContent>
+            <CardContent className="p-2 px-0 h-[calc(100%-60px)] overflow-y-auto">
+              {chains && chains.length > 0 ? (
+                <div className="space-y-2">
+                  <ExplorerBreadCrumbs
+                    basePath={basePath}
+                    entities={
+                      entityData || { raw: [], project: [], decoded: [] }
+                    }
+                  />
+                  <Input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    className="m-auto w-[calc(100%-2rem)] focus:ring-0 hidden"
+                  />
+                  <ul className="pt-0 mt-0" style={{ marginTop: 0 }}>
+                    {renderExplorer()}
+                  </ul>
+                </div>
+              ) : null}
+            </CardContent>
           </Card>
         )}
       </>
@@ -158,7 +157,7 @@ export function DataExplorerContent({
   if (!visible) return null;
 
   return (
-    <Card className="h-full overflow-hidden relative border-border-secondary  dark:border-border-tertiary border-2 gap-y-0 min-w-[310px]">
+    <Card className="h-full overflow-hidden relative  gap-y-0 min-w-[310px] border-none">
       {showDragHandle && (
         <div
           aria-label="Drag panel"

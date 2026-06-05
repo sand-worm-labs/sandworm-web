@@ -136,7 +136,7 @@ const EditorThemeCard: React.FC<{
       className={`relative p-4 rounded-3xl border transition-all text-left ${
         selected
           ? "border-[#A308F0]    dark:border-primary"
-          : "border-border-secondary  dark:border-border-tertiary hover:border-gray-300 dark:hover:border-border-tertiary"
+          : "border-border-secondary  dark:border-border-tertiary hover:border-gray-300 dark:hover:border-border-tertiary font-body"
       }`}
     >
       <div className="flex items-center gap-3 mb-3">
@@ -144,7 +144,7 @@ const EditorThemeCard: React.FC<{
         {selected && <div className="w-2 h-2 rounded-full bg-primary" />}
       </div>
       <div
-        className="rounded-xl p-3 font-mono text-xs leading-relaxed"
+        className="rounded-xl p-3 font-body-mono text-xs leading-relaxed"
         style={{ backgroundColor: theme.bg, color: theme.text }}
       >
         <div>

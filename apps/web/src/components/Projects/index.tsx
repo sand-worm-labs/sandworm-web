@@ -11,6 +11,7 @@ import {
   PiArrowSquareOutLight,
   PiCopyLight,
   PiTrashLight,
+  PiMagnifyingGlass,
 } from "react-icons/pi";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -227,6 +228,19 @@ export const Projects: React.FC = () => {
         />
 
         {activeView === "grid" ? (
+          filteredProjects.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-3">
+              <PiMagnifyingGlass
+                size={28}
+                className="text-ink-200 dark:text-ink-600"
+              />
+              <p className="text-sm text-ink-300 dark:text-ink-500">
+                {searchValue
+                  ? `No projects matching "${searchValue}"`
+                  : "No projects found"}
+              </p>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProjects.map(project => (
               <div
@@ -366,12 +380,14 @@ export const Projects: React.FC = () => {
               </div>
             ))}
           </div>
+          )
         ) : (
           <ProjectsTable
             projects={filteredProjects}
             workspaceId={workspaceId}
             onToggleFavorite={toggleFavorite}
             onMenuAction={handleMenuAction}
+            searchQuery={searchValue}
           />
         )}
       </div>

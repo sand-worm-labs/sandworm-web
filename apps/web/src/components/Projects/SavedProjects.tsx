@@ -11,7 +11,7 @@ import {
   Copy,
   Trash2,
 } from "lucide-react";
-import { PiPlus } from "react-icons/pi";
+import { PiPlus, PiMagnifyingGlass } from "react-icons/pi";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -50,6 +50,7 @@ export const SavedProjects: React.FC = () => {
     { data, loading },
   ] = useFavorites(workspaceId);
 
+  const [searchValue, setSearchValue] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [hoveredUser, setHoveredUser] = useState<string | null>(null);
   const [hoveredSave, setHoveredSave] = useState<string | null>(null);
@@ -93,6 +94,16 @@ export const SavedProjects: React.FC = () => {
         isFavorite: true,
       }));
   }, [data]);
+
+  const filteredProjects = useMemo(() => {
+    if (!searchValue.trim()) return projects;
+    const q = searchValue.toLowerCase();
+    return projects.filter(
+      p =>
+        p.title.toLowerCase().includes(q) ||
+        p.creator.toLowerCase().includes(q)
+    );
+  }, [projects, searchValue]);
 
   const toggleFavorite = async (id: string): Promise<void> => {
     const isFavorite = favorites.has(id);
@@ -171,11 +182,28 @@ export const SavedProjects: React.FC = () => {
       </div>
 
       <div className="mx-auto">
-        <ProjectControl onViewChange={setActiveView} />
+        <ProjectControl
+          onViewChange={setActiveView}
+          searchValue={searchValue}
+          onSearchChange={setSearchValue}
+        />
 
         {activeView === "grid" ? (
+          filteredProjects.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-3">
+              <PiMagnifyingGlass
+                size={28}
+                className="text-ink-200 dark:text-ink-600"
+              />
+              <p className="text-sm text-ink-300 dark:text-ink-500">
+                {searchValue
+                  ? `No favorites matching "${searchValue}"`
+                  : "No favorites found"}
+              </p>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map(project => (
+            {filteredProjects.map(project => (
               <div
                 key={project.id}
                 className="bg-white dark:bg-base-100  rounded-3xl border border-[#CED4DA] dark:border-border-tertiary transition-all duration-200 p-4 py-3 relative group"
@@ -318,12 +346,14 @@ export const SavedProjects: React.FC = () => {
               </div>
             ))}
           </div>
+          )
         ) : (
           <ProjectsTable
-            projects={projects}
+            projects={filteredProjects}
             workspaceId={workspaceId}
             onToggleFavorite={toggleFavorite}
             onMenuAction={handleMenuAction}
+            searchQuery={searchValue}
           />
         )}
       </div>

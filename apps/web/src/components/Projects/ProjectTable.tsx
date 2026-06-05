@@ -8,6 +8,7 @@ import {
   PiTrashLight,
   PiCopyLight,
   PiArrowSquareOutLight,
+  PiMagnifyingGlass,
 } from "react-icons/pi";
 import Link from "next/link";
 
@@ -30,6 +31,7 @@ interface ProjectsTableProps {
     action: "duplicate" | "newTab" | "trash",
     projectId: string
   ) => void;
+  searchQuery?: string;
 }
 
 export const ProjectsTable: React.FC<ProjectsTableProps> = ({
@@ -37,6 +39,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
   workspaceId,
   onToggleFavorite,
   onMenuAction,
+  searchQuery,
 }) => {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
@@ -71,6 +74,23 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
           </tr>
         </thead>
         <tbody>
+          {projects.length === 0 ? (
+            <tr>
+              <td colSpan={9} className="py-16 text-center">
+                <div className="flex flex-col items-center justify-center gap-3">
+                  <PiMagnifyingGlass
+                    size={24}
+                    className="text-ink-200 dark:text-ink-600"
+                  />
+                  <p className="text-sm text-ink-300 dark:text-ink-500">
+                    {searchQuery
+                      ? `No projects matching "${searchQuery}"`
+                      : "No projects found"}
+                  </p>
+                </div>
+              </td>
+            </tr>
+          ) : null}
           {projects.map(project => (
             <tr
               key={project.id}
