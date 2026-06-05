@@ -1,0 +1,32 @@
+module.exports = {
+  apps: [
+    {
+      name: 'api',
+      script: '/home/daniel/development/sandworm-web/apps/api/dist/main.js',
+      cwd: '/home/daniel/development/sandworm-web/apps/api',
+      env: { NODE_ENV: 'production' },
+      max_memory_restart: '1G',
+      restart_delay: 3000,
+    },
+    {
+      name: 'web',
+      script: 'pnpm',
+      args: 'run start',
+      interpreter: 'none',
+      cwd: '/home/daniel/development/sandworm-web/apps/web',
+      env: { NODE_ENV: 'production' },
+      max_memory_restart: '1500M',
+      restart_delay: 3000,
+    },
+    {
+      name: 'landing',
+      script: 'pnpm',
+      args: 'run preview --host 0.0.0.0',
+      interpreter: 'none',
+      cwd: '/home/daniel/development/sandworm-web/apps/landing-page',
+      env: { NODE_ENV: 'production' },
+      max_memory_restart: '512M',
+      restart_delay: 3000,
+    },
+  ],
+};
