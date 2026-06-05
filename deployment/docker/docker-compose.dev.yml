@@ -115,13 +115,7 @@ services:
     image: haproxy:3.0
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
-    ports:
-      - "8080:8080"
-      - "8081:8081"
-    networks:
-      - sandworm-net
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    network_mode: host
 
   ###########################
   # Logdy Log Viewer
