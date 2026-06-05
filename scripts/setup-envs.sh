@@ -143,4 +143,16 @@ EOL
   echo "✅ Created $POSTGRES_ENV"
 fi
 
+# === AI .env ===
+AI_ENV="./apps/ai/.env"
+if [ ! -f "$AI_ENV" ]; then
+  echo "Creating AI .env..."
+  AI_TOKEN=$(grep AI_HANDSHAKE_TOKEN "$API_ENV" | cut -d '=' -f2 | tr -d "'" | tr -d '"')
+  cat > "$AI_ENV" <<EOL
+AI_HANDSHAKE_TOKEN=${AI_TOKEN}
+NEST_BASE_URL=http://host.docker.internal:8003/api/
+EOL
+  echo "✅ Created $AI_ENV"
+fi
+
 echo "▶ Env setup complete."

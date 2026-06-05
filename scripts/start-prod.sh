@@ -90,6 +90,14 @@ module.exports = {
       max_memory_restart: '512M',
       restart_delay: 3000,
     },
+    {
+      name: 'ai',
+      script: 'docker',
+      args: 'compose up --build',
+      interpreter: 'none',
+      cwd: '$ROOT_DIR/apps/ai',
+      restart_delay: 5000,
+    },
   ],
 };
 EOF
