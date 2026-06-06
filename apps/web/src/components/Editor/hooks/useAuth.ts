@@ -294,11 +294,15 @@ export const useSession = ({
   });
 
   useEffect(() => {
-    if (!loading && !data?.currentUser && redirectToLogin) {
-      const back = `${pathname}${searchParams.toString() ? `?${searchParams}` : ""}`;
-      router.replace(`/signin?callback=${encodeURIComponent(back)}`);
+    if (!loading && redirectToLogin) {
+      console.log("[useSession] settled — currentUser:", data?.currentUser ?? null, "| error:", error?.message ?? null, "| path:", pathname);
+      if (!data?.currentUser) {
+        const back = `${pathname}${searchParams.toString() ? `?${searchParams}` : ""}`;
+        console.warn("[useSession] redirecting to signin — reason:", error ? `error: ${error.message}` : "no currentUser returned");
+        router.replace(`/signin?callback=${encodeURIComponent(back)}`);
+      }
     }
-  }, [loading, data, redirectToLogin, router, pathname, searchParams]);
+  }, [loading, data, redirectToLogin, router, pathname, searchParams, error]);
 
   return useMemo(
     () => ({

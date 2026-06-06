@@ -247,9 +247,9 @@ export const WorkspaceSidebar = () => {
                   aria-label={collapsed ? "Open sidebar" : "Close sidebar"}
                   aria-expanded={!collapsed}
                   onClick={handleToggle}
-                  className="p-1 rounded-lg hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+                  className="p-1 rounded-md hover:bg-[#E8E8E6] dark:hover:bg-[#2A2A28]
                     flex items-center justify-center
-                    text-ink-400 dark:text-ink-400 transition-colors"
+                    text-ink-400 dark:text-ink-400 transition-all duration-100"
                 >
                   <SidebarIcon />
                 </button>

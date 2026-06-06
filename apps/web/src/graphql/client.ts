@@ -71,9 +71,11 @@ export const createApolloClient = ({
           // Start refresh — server reads refresh_token cookie and sets new access_token cookie
           refreshingPromise = refreshAccessToken()
             .then(() => {
+              console.log("[apollo] token refresh succeeded");
               onRefreshed();
             })
-            .catch(() => {
+            .catch(err => {
+              console.error("[apollo] token refresh FAILED — redirecting to /signin. Error:", err?.message ?? err, "| cookie still alive, middleware may loop");
               onRefreshed();
               if (typeof window !== "undefined") {
                 window.location.href = "/signin";

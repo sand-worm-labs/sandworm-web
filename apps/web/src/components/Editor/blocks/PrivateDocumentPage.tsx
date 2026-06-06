@@ -4,7 +4,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { isNil } from "ramda";
 import Link from "next/link";
 import { EyeIcon } from "@heroicons/react/24/outline";
-import clsx from "clsx";
 import { AITasks, ExecutionQueue } from "@sandworm/editor";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
@@ -16,7 +15,6 @@ import {
 } from "react-icons/pi";
 
 import type { ApiDocument } from "@/types";
-import { widthClasses } from "@/components/Editor/constants";
 import { DataExplorerContent } from "@/components/ExplorerPanels/DataExplorerContent";
 import { MiniChat } from "@/components/Chats/MiniChat";
 import { PencilSimple } from "@/components/Assets/PencilSimple";

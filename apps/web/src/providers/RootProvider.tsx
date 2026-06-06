@@ -9,6 +9,7 @@ import { ThemeProvider } from "./ThemeProvider";
 import AppProvider from "./AppProvider";
 
 const GRAPHQL_URL = `${NEXT_PUBLIC_API_URL()}/graphql`;
+console.log("[RootProvider] GRAPHQL_URL resolved to:", GRAPHQL_URL);
 
 const refreshAccessToken = async (): Promise<void> => {
   const response = await fetch(`${NEXT_PUBLIC_API_URL()}/auth/refresh`, {
