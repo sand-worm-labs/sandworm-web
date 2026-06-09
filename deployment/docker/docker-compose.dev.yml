@@ -6,8 +6,45 @@ volumes:
   sandworm-postgres-data:
   sandworm-jupyter-notebooks:
   sandworm-qdrant-data:
+  sandworm-redis-data:
 
 services:
+  ###########################
+  # Redis
+  ###########################
+  redis:
+    container_name: sandworm-redis
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - sandworm-redis-data:/data
+    networks:
+      - sandworm-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ###########################
+  # Redis Commander UI
+  ###########################
+  redis-commander:
+    container_name: sandworm-redis-ui
+    image: rediscommander/redis-commander:latest
+    restart: always
+    ports:
+      - "5050:8081"
+    environment:
+      REDIS_HOSTS: "local:sandworm-redis:6379"
+    networks:
+      - sandworm-net
+    depends_on:
+      - redis
+
   ###########################
   # PostgreSQL Database
   ###########################
@@ -50,7 +87,7 @@ services:
     image: dbgate/dbgate:alpine
     restart: always
     ports:
-      - 3100:3000
+      - "3100:3000"
     environment:
       CONNECTIONS: db
       LABEL_db: Sandworm
@@ -100,7 +137,11 @@ services:
     networks:
       - sandworm-net
     command: >
-      jupyter server --ip=0.0.0.0 --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=1.0e10 --ZMQChannelsWebsocketConnection.iopub_msg_rate_limit=1.0e6 --ServerApp.max_body_size=107374182400 --no-browser
+      jupyter server --ip=0.0.0.0
+      --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=1.0e10
+      --ZMQChannelsWebsocketConnection.iopub_msg_rate_limit=1.0e6
+      --ServerApp.max_body_size=107374182400
+      --no-browser
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8888/api || exit 1"]
       interval: 5s
