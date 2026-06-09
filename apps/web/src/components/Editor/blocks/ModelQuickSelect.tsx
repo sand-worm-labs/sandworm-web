@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Transition } from "@headlessui/react";
 import clsx from "clsx";
 import Image from "next/image";
+import { PiArrowRightLight } from "react-icons/pi";
 
 import type { NormalizedModel } from "../hooks/useOpenRouterModel";
 
@@ -204,24 +205,6 @@ function CheckIcon() {
   );
 }
 
-function ArrowRightIcon() {
-  return (
-    <svg
-      viewBox="0 0 12 12"
-      fill="none"
-      className="w-3 h-3 ml-auto text-ink-400 group-hover:text-ink-200 transition-colors"
-    >
-      <path
-        d="M2.5 6h7M6.5 3l3 3-3 3"
-        strokeWidth="1.3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="stroke-current"
-      />
-    </svg>
-  );
-}
-
 export interface ModelQuickSelectProps {
   models: NormalizedModel[];
   selectedModelId: string | null;
@@ -333,17 +316,17 @@ export function ModelQuickSelect({
             </button>
           ))}
 
-          <div className="mx-3 my-1.5 h-px bg-border-tertiary" />
-
           <button
             type="button"
             onClick={handleBrowseAll}
-            className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-primary/15 transition-colors duration-100 group"
+            className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-primary/15 transition-colors duration-100 group justify-between"
           >
             <span className="font-body text-[12px] text-ink-400 group-hover:text-ink-200 transition-colors">
               Browse all models
             </span>
-            <ArrowRightIcon />
+            <span>
+              <PiArrowRightLight />
+            </span>
           </button>
         </div>
       </Transition>

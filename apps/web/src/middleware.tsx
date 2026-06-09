@@ -26,8 +26,11 @@ export function middleware(req: NextRequest) {
     pathname.startsWith(route)
   );
 
+  console.log(`[middleware] ${pathname} | cookie:${isAuthenticated} | authRoute:${isAuthRoute} | protectedRoute:${isProtectedRoute}`);
+
   // Authenticated user hitting /signin, /signup etc → send to workspace
   if (isAuthenticated && isAuthRoute) {
+    console.warn(`[middleware] LOOP RISK — cookie present but user hitting ${pathname}, bouncing to /workspace`);
     return NextResponse.redirect(new URL("/workspace", req.nextUrl));
   }
 

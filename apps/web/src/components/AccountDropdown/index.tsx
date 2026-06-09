@@ -288,8 +288,8 @@ export const AccountDropdown = ({
                 ref={ref}
                 type="button"
                 aria-label="Account menu"
-                className="flex items-center justify-center rounded-xl p-1
-                  hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28] transition-colors"
+                className="flex items-center justify-center rounded-md p-1
+                  hover:bg-[#E8E8E6] dark:hover:bg-[#2A2A28] transition-all duration-100"
               >
                 <UserAvatar src={user.avater} name={user.firstName} size="sm" />
               </button>
@@ -314,7 +314,7 @@ export const AccountDropdown = ({
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="px-2 flex items-center gap-3 h-12 w-full justify-between hover:bg-base-100"
+            className="px-2 flex items-center gap-3 h-12 w-full justify-between hover:bg-[#E8E8E6] dark:hover:bg-[#2A2A28] transition-all duration-100"
           >
             <div className="flex items-center gap-3">
               <UserAvatar src={user.avater} name={user.firstName} />

@@ -150,7 +150,7 @@ export const MultimodalInputView = forwardRef<
                       type="button"
                       onClick={onFileClick}
                       disabled={isInputLocked}
-                      className="rounded-full p-2.5 h-fit bg-transparent dark:bg-transparent text-black dark:text-ink-400 border-[#B5C8DB] border hover:bg-[rgba(207,211,222,0.15)] dark:hover:bg-[rgba(255,255,255,0.05)] dark:border-border-tertiary disabled:opacity-50 disabled:pointer-events-none"
+                      className="rounded-full p-2.5 h-fit bg-transparent dark:bg-transparent text-black dark:text-ink-400 border-[#B5C8DB] border hover:bg-[#E8E8E6] dark:hover:bg-[#2A2A28] dark:border-border-tertiary transition-all duration-100 disabled:opacity-50 disabled:pointer-events-none"
                       title="Attach files"
                     >
                       <PiPlus size={18} />

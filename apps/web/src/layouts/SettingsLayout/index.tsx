@@ -48,7 +48,7 @@ export default function SettingsLayout({
       <header className="flex shrink-0 items-center gap-2 border-b border-[#F1F3F4] bg-[#FBFBFB] px-10 py-3 text-[1.1rem] dark:border-border-tertiary dark:bg-base-500">
         <Link
           href="/workspace"
-          className="text-ink-400 transition hover:text-ink-100 dark:text-ink-400 dark:hover:text-white"
+          className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md text-ink-400 hover:bg-[#E8E8E6] hover:text-ink-500 dark:text-ink-400 dark:hover:bg-[#2A2A28] dark:hover:text-ink-200 transition-all duration-100"
         >
           <ChevronLeft size={16} />
         </Link>
