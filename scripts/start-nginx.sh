@@ -15,7 +15,7 @@ while true; do
     update_hosts
 
     # Check if the web and api services are reachable
-    if curl --output /dev/null --silent --head --fail http://web:3000 && curl --output /dev/null --silent --head --fail http://api:8003/readyz; then
+    if curl --output /dev/null --silent --head --fail http://web:5000 && curl --output /dev/null --silent --head --fail http://api:8003/readyz; then
         echo "Web and API services are reachable, starting Nginx..."
         break
     else

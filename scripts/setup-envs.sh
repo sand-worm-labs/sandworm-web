@@ -27,8 +27,8 @@ APP_CORS_ORIGIN=*
 
 ##== API Configuration
 API_PREFIX=api
-FRONTEND_DOMAIN=http://localhost:3000
-BACKEND_DOMAIN=http://localhost:3000
+FRONTEND_DOMAIN=http://localhost:5000
+BACKEND_DOMAIN=http://localhost:5000
 
 ##== Swagger Documentation
 SWAGGER_ENABLED=true
@@ -111,11 +111,11 @@ if [ ! -f "$WEB_ENV" ]; then
 NODE_ENV=development
 NEXT_PUBLIC_API_URL=http://localhost:8003
 NEXT_PUBLIC_API_WS_URL=ws://localhost:8003/ws
-NEXT_PUBLIC_URL=http://localhost:3000
-NEXT_PUBLIC_PUBLIC_URL=http://localhost:3000
+NEXT_PUBLIC_URL=http://localhost:5000
+NEXT_PUBLIC_PUBLIC_URL=http://localhost:5000
 GOOGLE_CLIENT_ID=826443297313-bh9mp34f408b3urpili8knr4pap819hh.apps.googleusercontent.com
 GITHUB_CLIENT_ID=Ov23lisbzsoM7RX7aRDV
-REDIRECT_URI=http://localhost:3000/workspace/
+REDIRECT_URI=http://localhost:5000/workspace/
 EOL
   echo "✅ Created $WEB_ENV"
 fi
@@ -141,6 +141,18 @@ DATABASE_KEY=
 DATABASE_CERT=
 EOL
   echo "✅ Created $POSTGRES_ENV"
+fi
+
+# === AI .env ===
+AI_ENV="./apps/ai/.env"
+if [ ! -f "$AI_ENV" ]; then
+  echo "Creating AI .env..."
+  AI_TOKEN=$(grep AI_HANDSHAKE_TOKEN "$API_ENV" | cut -d '=' -f2 | tr -d "'" | tr -d '"')
+  cat > "$AI_ENV" <<EOL
+AI_HANDSHAKE_TOKEN=${AI_TOKEN}
+NEST_BASE_URL=http://host.docker.internal:8003/api/
+EOL
+  echo "✅ Created $AI_ENV"
 fi
 
 echo "▶ Env setup complete."
