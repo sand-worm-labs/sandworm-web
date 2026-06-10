@@ -154,9 +154,15 @@ services:
   nginx:
     container_name: sandworm-proxy
     image: nginx:alpine
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
-      - ../nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
-    network_mode: host
+      - ../nginx/nginx.staging.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - sandworm-net
 
   ###########################
   # Logdy Log Viewer

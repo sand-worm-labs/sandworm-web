@@ -19,7 +19,7 @@ export JUPYTER_TOKEN=$(grep JUPYTER_TOKEN "$ROOT_DIR/apps/api/.env" | cut -d '='
 
 # ─── DOCKER SERVICES ─────────────────────────────────────────────────────────
 echo "▶ Starting Docker services..."
-COMPOSE_BASE="$ROOT_DIR/deployment/docker/docker-compose.dev.yml"
+COMPOSE_BASE="$ROOT_DIR/deployment/docker/docker-compose.staging.yml"
 COMPOSE_ARCH="$ROOT_DIR/deployment/docker/$COMPOSE_OVERRIDE"
 
 docker compose \
@@ -108,11 +108,6 @@ pm2 start "$ROOT_DIR/ecosystem.config.js"
 pm2 save
 pm2 startup || true   # prints the command to run once as root to enable auto-start on reboot
 
-echo
-echo "✅ Production environment is ready!"
-echo "   Landing:  http://localhost:8080"
-echo "   App:      http://localhost:8081"
-echo
 echo "PM2 commands:"
 echo "   pm2 list          — status of all processes"
 echo "   pm2 logs          — tail all logs"
