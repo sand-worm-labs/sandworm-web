@@ -108,11 +108,6 @@ pm2 start "$ROOT_DIR/ecosystem.config.js"
 pm2 save
 pm2 startup || true   # prints the command to run once as root to enable auto-start on reboot
 
-echo
-echo "✅ Production environment is ready!"
-echo "   Landing:  http://sandworm.162.35.160.17.nip.io"
-echo "   App:      http://app.sandworm.162.35.160.17.nip.io"
-echo
 echo "PM2 commands:"
 echo "   pm2 list          — status of all processes"
 echo "   pm2 logs          — tail all logs"
