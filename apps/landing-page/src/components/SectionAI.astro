@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import SparkleIcon  from "../components/icons/Sparkle.astro";
 import  Ellipse  from "../components/icons/Ellipse.astro";
 import Wave  from "../components/icons/Wave.astro";
@@ -50,14 +51,14 @@ const aiCards: AICardProps[] = [
       width="1560"
       height="120"
       class="w-full"
-      alt=""
+      alt="decorative background lines"
       loading="lazy"
       decoding="async"
     />
   </div>
 
   <div class="container px-4 mx-auto flex flex-col items-center relative">
-    <img src="/img/ring.svg"  class="w-[48px]" alt="ring icon" width={48} height={48}/>
+    <Image src="/img/ring.svg" class="w-[48px]" alt="ring icon" width={48} height={48} loading="lazy" decoding="async" />
 
     
     <p class="uppercase mb-5 text-[15px] font-medium font-primary mt-5">
@@ -120,7 +121,7 @@ const aiCards: AICardProps[] = [
             <Ellipse size={115} className="xl:h-28.75" />
           </div>
           <div class="absolute -bottom-10 right-5" aria-hidden="true">
-            <img src="/img/bar-chart.svg"  class="xl:h-55.5"/>
+            <Image src="/img/bar-chart.svg" class="xl:h-55.5" alt="rainbow bar chart illustration" width={188} height={136} loading="lazy" decoding="async" />
           </div>
         </div>
       </article>

@@ -1,20 +1,25 @@
 ---
 // src/components/SectionWorkFlow.astro
+import { Image } from 'astro:assets';
+import box2 from '../assets/img/box-2.png';
+import box1 from '../assets/img/box1.svg';
+import box3 from '../assets/img/box3.svg';
+
 const workflowSteps = [
   {
     title: "Create and edit notes",
     description: "Using our powerful AI, create a full notebook, filled with charts, data points...",
-    imageUrl: "/img/box-2.png",
+    image: box2,
   },
   {
     title: "Visualize and store data",
     description: "View, understand, utilize and store the information you got from using our product.",
-    imageUrl: "/img/box1.svg",
+    image: box1,
   },
   {
     title: "Organize and export notebooks",
     description: "You can create any amount of dashboard to store your visualizations...",
-    imageUrl: "/img/box3.svg",
+    image: box3,
   }
 ];
 ---
@@ -47,8 +52,8 @@ const workflowSteps = [
                   {step.description}
                 </p>
               </div>
-              <img
-                src={step.imageUrl}
+              <Image
+                src={step.image}
                 alt={step.title}
                 class="absolute bottom-0 left-0 w-full h-auto object-contain pointer-events-none"
                 loading="lazy"

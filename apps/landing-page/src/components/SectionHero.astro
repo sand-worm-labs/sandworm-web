@@ -1,5 +1,6 @@
 ---
 // src/components/SectionHero.astro
+import { Image } from 'astro:assets';
 import ChatLaunchInput from './ChatLaunchInput.astro';
 ---
 
@@ -9,9 +10,11 @@ import ChatLaunchInput from './ChatLaunchInput.astro';
 >
 <picture class="absolute inset-0 -z-10">
   <source srcset="/img/herobg.webp" type="image/webp" />
-  <img
+  <Image
     src="/img/herobg.webp"
     alt=""
+    width={1920}
+    height={1080}
     class="w-full h-full object-cover lg:object-cover object-[center_center] lg:scale-100 scale-125"
     loading="eager"
     decoding="async"
@@ -67,19 +70,23 @@ import ChatLaunchInput from './ChatLaunchInput.astro';
       Trusted by
     </h2>
     <div class="flex flex-wrap items-center gap-8">
-      <img
+      <Image
         src="/img/base-logo.svg"
         alt="Base logo"
-        width="98"
-        height="32"
-        class="object-contain transition "
+        width={98}
+        height={32}
+        class="object-contain transition"
+        loading="lazy"
+        decoding="async"
       />
-      <img
+      <Image
         src="/img/icn-logo-black.svg"
         alt="ICN Logo"
-        width="130"
-        height="32"
+        width={130}
+        height={32}
         class="object-contain transition"
+        loading="lazy"
+        decoding="async"
       />
     </div>
   </div>

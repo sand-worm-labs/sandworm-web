@@ -1,6 +1,7 @@
 ---
-const previewSrcMobile = "/img/preview-mobile.png";
-const previewSrcDesktop = "/img/preview.webp";
+import { Image } from 'astro:assets';
+import previewMobile from '../assets/img/preview-mobile.png';
+import previewDesktop from '../assets/img/preview.webp';
 const bgPlaceholder = "data:image/webp;base64,YOUR_BLUR_PLACEHOLDER";
 ---
 
@@ -31,27 +32,25 @@ const bgPlaceholder = "data:image/webp;base64,YOUR_BLUR_PLACEHOLDER";
         <!-- Desktop image (1024px and up) -->
         <source
           media="(min-width: 1024px)"
-          srcset={previewSrcDesktop}
+          srcset={previewDesktop.src}
           type="image/webp"
-          width="1144"
-          height="665"
+          width={previewDesktop.width}
+          height={previewDesktop.height}
         />
-        
+
         <!-- Mobile image (below 1024px) -->
         <source
           media="(max-width: 523px)"
-          srcset={previewSrcMobile}
+          srcset={previewMobile.src}
           type="image/png"
-          width="351"
-          height="204"
+          width={previewMobile.width}
+          height={previewMobile.height}
         />
-        
+
         <!-- Fallback -->
-        <img
-          src={previewSrcMobile}
+        <Image
+          src={previewMobile}
           alt="Sandworm platform interface showing blockchain data analytics dashboard"
-         width="351"
-          height="204"
           class="w-full h-auto lg:min-h-125 object-contain"
           loading="lazy"
           decoding="async"

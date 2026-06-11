@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import  Star from "../assets/star.svg";
 import  CircuitIcon  from "../assets/circuit.svg";
 import  Boxes  from "../assets/boxes.svg";
@@ -94,12 +95,12 @@ import Dots from "./icons/Dots.astro";
               </div>
               <div class="flex flex-col lg:justify-between lg:h-full z-10 relative">
                 <div class="flex flex-col items-center">
-                  <img
+                  <Image
                     alt="Supported blockchain networks including Ethereum, Polygon, and more"
                     class="object-contain w-full min-h-[14rem]"
                     src="/img/chainimages.svg"
-                    width="606"
-                    height="345"
+                    width={606}
+                    height={345}
                     loading="lazy"
                     decoding="async"
                   />
