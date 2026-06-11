@@ -8,6 +8,7 @@ import { GithubConfig } from "@/features/auth/github/config/github-config.type";
 import { BlockExecutorConfig } from '@/features/block-executor/config/block-executor-config.type';
 import { OpenRouterConfig } from "@/infrastructure/openrouter/config/openrouter-config.type";
 import { AiServiceConfig } from '@/infrastructure/ai/config/ai-service-config.type';
+import { RedisConfig } from '@/infrastructure/redis/redis.config';
 
 export type AllConfigType = {
   app: AppConfig;
@@ -15,6 +16,7 @@ export type AllConfigType = {
   database: DatabaseConfig;
   auth: AuthConfig;
   jupyter: JupyterConfig;
+  redis:RedisConfig;
   google: GoogleConfig;
   mail: MailConfig;
   github: GithubConfig,

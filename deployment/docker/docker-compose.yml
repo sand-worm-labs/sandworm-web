@@ -14,5 +14,20 @@ services:
       TZ: "UTC"
     ports:
       - "25432:5432"
+
+  ###########################
+  # Portainer Docker UI
+  ###########################
+  portainer:
+    container_name: sandworm-portainer
+    image: portainer/portainer-ce:latest
+    restart: always
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
 volumes:
   postgres_data:
+  portainer_data:

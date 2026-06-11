@@ -26,6 +26,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppService } from './app.service';
 import { AllConfigType } from './core/config/config.type';
 import { TypeOrmConfigService } from './infrastructure/database/typeorm-config.service';
+import { RedisModule } from './infrastructure/redis/redis.module';
 import googleConfig from './features/auth/google/config/google.config';
 import mailConfig from './infrastructure/mail/config/mail.config';
 import authConfig from './features/auth/core/config/auth.config';
@@ -178,6 +179,7 @@ const loggerModule = LoggerModule.forRootAsync({
     configModule,
     dbModule,
     i18nModule,
+    RedisModule,
     WebsocketModule,
     ApiModule,
     eventEmitterModule,

@@ -7,6 +7,9 @@ volumes:
   sandworm-jupyter-notebooks:
   sandworm-qdrant-data:
   sandworm-redis-data:
+  sandworm-portainer-data:
+  sandworm-caddy-data:
+  sandworm-caddy-config:
 
 services:
   ###########################
@@ -17,7 +20,7 @@ services:
     image: redis:7-alpine
     restart: always
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     command: redis-server --appendonly yes
     volumes:
       - sandworm-redis-data:/data
@@ -37,7 +40,7 @@ services:
     image: rediscommander/redis-commander:latest
     restart: always
     ports:
-      - "5050:8081"
+      - "127.0.0.1:5050:8081"
     environment:
       REDIS_HOSTS: "local:sandworm-redis:6379"
     networks:
@@ -53,7 +56,7 @@ services:
     image: postgres:17
     restart: always
     ports:
-      - "25432:5432"
+      - "127.0.0.1:25432:5432"
     environment:
       POSTGRES_DB: sandworm
       POSTGRES_USER: postgres
@@ -72,8 +75,8 @@ services:
     image: qdrant/qdrant:v1.11.0
     pull_policy: always
     ports:
-      - "6333:6333"
-      - "6334:6334"
+      - "127.0.0.1:6333:6333"
+      - "127.0.0.1:6334:6334"
     volumes:
       - sandworm-qdrant-data:/qdrant/storage:z
     networks:
@@ -87,7 +90,7 @@ services:
     image: dbgate/dbgate:alpine
     restart: always
     ports:
-      - "3100:3000"
+      - "127.0.0.1:3100:3000"
     environment:
       CONNECTIONS: db
       LABEL_db: Sandworm
@@ -110,8 +113,8 @@ services:
       context: .
       dockerfile: maildev.Dockerfile
     ports:
-      - "1025:1025"
-      - "1080:1080"
+      - "127.0.0.1:1025:1025"
+      - "127.0.0.1:1080:1080"
     networks:
       - sandworm-net
 
@@ -128,7 +131,7 @@ services:
         TARGETARCH: arm64
     restart: always
     ports:
-      - "8888:8888"
+      - "127.0.0.1:8888:8888"
     environment:
       JUPYTER_TOKEN: ${JUPYTER_TOKEN:?error}
     volumes:
@@ -149,18 +152,37 @@ services:
       retries: 5
 
   ###########################
-  # Nginx Gateway
+  # Caddy Gateway
   ###########################
-  nginx:
+  caddy:
     container_name: sandworm-proxy
-    image: nginx:alpine
+    image: caddy:alpine
+    restart: always
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ../nginx/nginx.staging.conf:/etc/nginx/nginx.conf:ro
+      - ../caddy/Caddyfile.staging:/etc/caddy/Caddyfile:ro
+      - sandworm-caddy-data:/data
+      - sandworm-caddy-config:/config
+    networks:
+      - sandworm-net
+
+  ###########################
+  # Portainer Docker UI
+  ###########################
+  portainer:
+    container_name: sandworm-portainer
+    image: portainer/portainer-ce:latest
+    restart: always
+    ports:
+      - "127.0.0.1:9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - sandworm-portainer-data:/data
     networks:
       - sandworm-net
 
@@ -172,8 +194,8 @@ services:
     image: rickraven/logdy:0.14.0
     restart: unless-stopped
     ports:
-      - "8475:8080"
-      - "10800:10800"
+      - "127.0.0.1:8475:8080"
+      - "127.0.0.1:10800:10800"
     environment:
       LOGDY_MODE: "socket"
       LOGDY_SOCKET_PORTS: "10800"

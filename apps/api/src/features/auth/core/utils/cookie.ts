@@ -18,7 +18,7 @@ export function setTokenCookies(res: FastifyReply, tokens: TokenPair): void {
   const base = {
     httpOnly: true,
     secure: isProduction,
-    sameSite: 'strict' as const,
+    sameSite: 'lax' as const,
     path:"/"
   };
 

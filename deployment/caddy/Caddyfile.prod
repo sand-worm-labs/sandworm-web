@@ -1,0 +1,51 @@
+# ─── Landing ─────────────────────────────────────────────────────────────────
+sandwormlab.xyz, www.sandwormlab.xyz {
+	reverse_proxy localhost:4321
+}
+
+# ─── App ─────────────────────────────────────────────────────────────────────
+app.sandwormlab.xyz {
+	# SSE — flush immediately for streaming AI responses
+	@sse path /api/chat*
+	handle @sse {
+		reverse_proxy localhost:8003 {
+			flush_interval -1
+			transport http {
+				read_timeout  1h
+				write_timeout 1h
+			}
+		}
+	}
+
+	# Socket.IO
+	@socketio path /socket.io/*
+	handle @socketio {
+		reverse_proxy localhost:8003 {
+			transport http {
+				read_timeout  24h
+				write_timeout 24h
+			}
+		}
+	}
+
+	# YJS WebSocket
+	@yjs path /yjs*
+	handle @yjs {
+		reverse_proxy localhost:8005 {
+			transport http {
+				read_timeout  24h
+				write_timeout 24h
+			}
+		}
+	}
+
+	# REST API
+	handle /api/* {
+		reverse_proxy localhost:8003
+	}
+
+	# Next.js — catch-all
+	handle {
+		reverse_proxy localhost:3000
+	}
+}

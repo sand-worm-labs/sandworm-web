@@ -149,13 +149,13 @@ services:
       retries: 5
 
   ###########################
-  # Nginx Gateway
+  # Caddy Gateway
   ###########################
-  nginx:
+  caddy:
     container_name: sandworm-proxy
-    image: nginx:alpine
+    image: caddy:alpine
     volumes:
-      - ../nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
+      - ../caddy/Caddyfile.dev:/etc/caddy/Caddyfile:ro
     network_mode: host
 
   ###########################
