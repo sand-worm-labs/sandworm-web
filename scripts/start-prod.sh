@@ -2,9 +2,30 @@
 set -e
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
+ENV="${1:-}"
+
+case "$ENV" in
+  staging|prod) ;;
+  *)
+    echo "Usage: $0 [staging|prod]"
+    exit 1
+    ;;
+esac
+
+if [ "$ENV" = "staging" ]; then
+  COMPOSE_BASE="$ROOT_DIR/deployment/docker/docker-compose.staging.yml"
+else
+  COMPOSE_BASE="$ROOT_DIR/deployment/docker/docker-compose.yml"
+fi
+
+# ─── ENV SETUP ───────────────────────────────────────────────────────────────
 echo "▶ Running env setup..."
 chmod +x "$ROOT_DIR/scripts/setup-envs.sh"
 "$ROOT_DIR/scripts/setup-envs.sh"
+
+echo "▶ Setting $ENV domain envs..."
+chmod +x "$ROOT_DIR/scripts/setup-domain-envs.sh"
+"$ROOT_DIR/scripts/setup-domain-envs.sh" "$ENV"
 
 # ─── ARCH DETECTION ──────────────────────────────────────────────────────────
 ARCH=$(uname -m)
@@ -19,15 +40,12 @@ export JUPYTER_TOKEN=$(grep JUPYTER_TOKEN "$ROOT_DIR/apps/api/.env" | cut -d '='
 
 # ─── DOCKER SERVICES ─────────────────────────────────────────────────────────
 echo "▶ Starting Docker services..."
-COMPOSE_BASE="$ROOT_DIR/deployment/docker/docker-compose.staging.yml"
-COMPOSE_ARCH="$ROOT_DIR/deployment/docker/$COMPOSE_OVERRIDE"
-
 docker compose \
   -f "$COMPOSE_BASE" \
-  -f "$COMPOSE_ARCH" \
+  -f "$ROOT_DIR/deployment/docker/$COMPOSE_OVERRIDE" \
   up -d --build --remove-orphans
 
-# ─── WAIT FOR POSTGRES ────────────────────────────────────────────────────────
+# ─── WAIT FOR POSTGRES ───────────────────────────────────────────────────────
 echo "▶ Waiting for Postgres..."
 until docker exec sandworm-postgres pg_isready -U postgres > /dev/null 2>&1; do
   sleep 1
@@ -106,11 +124,10 @@ echo "▶ Starting apps with PM2..."
 pm2 delete all 2>/dev/null || true
 pm2 start "$ROOT_DIR/ecosystem.config.js"
 pm2 save
-pm2 startup || true   # prints the command to run once as root to enable auto-start on reboot
+pm2 startup || true
 
-echo "PM2 commands:"
-echo "   pm2 list          — status of all processes"
-echo "   pm2 logs          — tail all logs"
-echo "   pm2 logs api      — tail API logs only"
-echo "   pm2 monit         — live monitoring dashboard"
-echo "   pm2 restart all   — restart everything"
+echo
+echo "✅ $ENV deployment complete!"
+echo "   pm2 list        — process status"
+echo "   pm2 logs        — tail all logs"
+echo "   pm2 restart all — restart everything"

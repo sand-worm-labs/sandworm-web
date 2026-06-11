@@ -25,6 +25,10 @@ echo "▶ Running env setup..."
 chmod +x "$ROOT_DIR/scripts/setup-envs.sh"
 "$ROOT_DIR/scripts/setup-envs.sh"
 
+echo "▶ Setting dev domain envs..."
+chmod +x "$ROOT_DIR/scripts/setup-domain-envs.sh"
+"$ROOT_DIR/scripts/setup-domain-envs.sh" dev
+
 # ─── ARCH DETECTION ──────────────────────────────────────────────────────────
 ARCH=$(uname -m)
 if [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then

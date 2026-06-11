@@ -58,3 +58,5 @@ pnpm-debug.log*
 *.pem
 
 logdy
+# Staging config (contains credentials)
+deployment/caddy/Caddyfile.staging
