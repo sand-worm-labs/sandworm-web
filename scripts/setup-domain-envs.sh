@@ -42,7 +42,7 @@ LANDING_ENV="$ROOT_DIR/apps/landing-page/.env"
 set_env() {
   local file="$1" key="$2" value="$3"
   if grep -q "^${key}=" "$file"; then
-    sed -i "s|^${key}=.*|${key}=${value}|" "$file"
+    sed "s|^${key}=.*|${key}=${value}|" "$file" > "${file}.tmp" && mv "${file}.tmp" "$file"
   else
     echo "${key}=${value}" >> "$file"
   fi
