@@ -167,6 +167,7 @@ export default function SignUpForm() {
               onClick={() => setShowPassword(prev => !prev)}
               className="absolute right-4 top-1/2 translate-y-[-50%] text-ink-400 dark:text-ink-400 hover:text-ink-100 dark:hover:text-white transition-colors"
               tabIndex={-1}
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
                 <MdVisibilityOff size={18} />

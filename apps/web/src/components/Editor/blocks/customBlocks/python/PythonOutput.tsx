@@ -43,7 +43,6 @@ const EXPENSIVE_TYPES = new Set<PythonBlock["result"][0]["type"]>([
 // =====================================
 
 const SANDWORM_TABLE_CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&display=swap');
 
   * { box-sizing: border-box; }
 

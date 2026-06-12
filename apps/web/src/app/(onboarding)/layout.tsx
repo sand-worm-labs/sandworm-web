@@ -49,7 +49,7 @@ export default function OnboardingLayout({
           <div className="relative h-full w-full min-h-[100dvh] overflow-hidden shadow-lg">
             <Image
               alt=""
-              src="/img/abstract.png"
+              src="/img/abstract.webp"
               fill
               priority
               sizes="50vw"
@@ -64,7 +64,7 @@ export default function OnboardingLayout({
               muted
               playsInline
               preload="auto"
-              poster="/img/abstract.png"
+              poster="/img/abstract.webp"
               aria-hidden="true"
             >
               <source src="/videos/aurora.webm" type="video/webm" />
