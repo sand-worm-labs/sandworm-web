@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { NetworkStatus } from "@apollo/client";
+import { toast, Toaster } from "sonner";
 
 import { useSession, useSignout } from "@/components/Editor/hooks/useAuth";
 import { useCurrentWorkspaceInfo } from "@/components/Editor/hooks/useWorkspaces";
@@ -67,7 +68,13 @@ export default function WorkspaceRedirectPage() {
         "[workspace] session invalid, forcing signout:",
         error.message
       );
-      signout();
+      toast.error(
+        "No workspace found for this account. Please contact support.",
+        {
+          duration: 3000,
+        }
+      );
+      setTimeout(() => signout(), 3000);
       return;
     }
 
@@ -89,6 +96,7 @@ export default function WorkspaceRedirectPage() {
 
   return (
     <div className="loader-container h-screen">
+      <Toaster position="bottom-right" />
       <div className="bar-loader" />
     </div>
   );

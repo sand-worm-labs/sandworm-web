@@ -11,20 +11,21 @@ import {
   PiArrowSquareOutLight,
   PiCopyLight,
   PiTrashLight,
-  PiMagnifyingGlass,
+  PiFolderLight,
 } from "react-icons/pi";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import { iconButtonSmClassName } from "@/styles/interactive";
 import { useFavorites } from "@/components/Editor/hooks/useFavorites";
+import { useSession } from "@/components/Editor/hooks/useAuth";
 
 import { UploadIcon } from "../Assets/UploadIcon";
 import { useDocuments } from "../Editor/hooks/useDocuments";
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 import { Loader } from "../Loader";
 
-import ProjectControl from "./ProjectControls";
+import ProjectControl, { type FilterOption } from "./ProjectControls";
 import { ProjectsTable } from "./ProjectTable";
 
 interface Project {
@@ -38,12 +39,40 @@ interface Project {
 
 type MenuAction = "duplicate" | "newTab" | "trash";
 
+const RECENT_CUTOFF_MS = 7 * 24 * 60 * 60 * 1000;
+
+function formatDate(dateString: string | Date): string {
+  if (!dateString) return "Unknown";
+
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (diffInHours < 24) {
+    if (diffInHours < 1) return "Just now";
+    return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
+  }
+  if (diffInDays < 7) {
+    return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
+  }
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 // =====================================
 // ⬢ Projects
 // =====================================
 export const Projects: React.FC = () => {
   const workspaceId = useStringQuery("workspace");
   const router = useRouter();
+  const { user } = useSession({});
+  const currentUserId = user?.id;
+
   const [activeView, setActiveView] = useState<"grid" | "table">(() => {
     if (typeof window === "undefined") return "grid";
     const saved = localStorage.getItem("sandworm:projects:view");
@@ -59,6 +88,7 @@ export const Projects: React.FC = () => {
     useFavorites(workspaceId);
 
   const [searchValue, setSearchValue] = useState("");
+  const [activeFilter, setActiveFilter] = useState<FilterOption>("All");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [hoveredUser, setHoveredUser] = useState<string | null>(null);
   const [hoveredSave, setHoveredSave] = useState<string | null>(null);
@@ -88,48 +118,58 @@ export const Projects: React.FC = () => {
       [onCreateDocument]
     );
 
-  const documents = documentsState.documents.filter(
-    doc => doc.deletedAt === null && doc.version >= 1 && doc.parentId === null
+  // ⬢ Base document list — non-deleted, top-level, versioned
+  // =====================================
+  const allDocuments = useMemo(
+    () =>
+      documentsState.documents.filter(
+        doc =>
+          doc.deletedAt === null && doc.version >= 1 && doc.parentId === null
+      ),
+    [documentsState.documents]
   );
 
-  // ⬢ Format Date
+  // ⬢ Apply active filter
   // =====================================
-  const formatDate = (dateString: string | Date): string => {
-    if (!dateString) return "Unknown";
-
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInMs = now.getTime() - date.getTime();
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-
-    if (diffInHours < 24) {
-      if (diffInHours < 1) return "Just now";
-      return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
+  const filteredByFilter = useMemo(() => {
+    const docs = allDocuments.toArray();
+    switch (activeFilter) {
+      case "Published":
+        return docs.filter(doc => doc.publishedAt !== null);
+      case "Favorites":
+        return docs.filter(doc => favorites.has(doc.id));
+      case "Recent": {
+        const cutoff = Date.now() - RECENT_CUTOFF_MS;
+        return docs.filter(
+          doc => new Date(doc.updatedAt).getTime() >= cutoff
+        );
+      }
+      case "Created by me":
+        return currentUserId
+          ? docs.filter(doc => doc.authorId === currentUserId)
+          : [];
+      default:
+        return docs;
     }
-    if (diffInDays < 7) {
-      return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
-    }
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
+  }, [allDocuments, activeFilter, favorites, currentUserId]);
 
-  // ⬢ Normalise Project
+  // ⬢ Normalise to Project[]
   // =====================================
-  const projects: Project[] = useMemo(() => {
-    return documents.toArray().map(doc => ({
-      id: doc.id,
-      title: doc.title || "Untitled Project",
-      creator: doc.createdBy || "Unknown",
-      lastEdited: formatDate(doc.updatedAt),
-      created: formatDate(doc.createdAt),
-      isFavorite: favorites.has(doc.id),
-    }));
-  }, [documents, favorites]);
+  const projects: Project[] = useMemo(
+    () =>
+      filteredByFilter.map(doc => ({
+        id: doc.id,
+        title: doc.title || "Untitled Project",
+        creator: doc.createdBy || "Unknown",
+        lastEdited: formatDate(doc.updatedAt),
+        created: formatDate(doc.createdAt),
+        isFavorite: favorites.has(doc.id),
+      })),
+    [filteredByFilter, favorites]
+  );
 
+  // ⬢ Apply search
+  // =====================================
   const filteredProjects = useMemo(() => {
     if (!searchValue.trim()) return projects;
     const q = searchValue.toLowerCase();
@@ -140,9 +180,7 @@ export const Projects: React.FC = () => {
   }, [projects, searchValue]);
 
   const toggleFavorite = (id: string): void => {
-    const isFavorite = favorites.has(id);
-
-    if (isFavorite) {
+    if (favorites.has(id)) {
       unfavoriteDocument(id);
     } else {
       favoriteDocument(id);
@@ -171,7 +209,7 @@ export const Projects: React.FC = () => {
 
   // ⬢ Empty Project State
   // =====================================
-  if (projects.length === 0) {
+  if (allDocuments.size === 0) {
     return (
       <div className="h-full  flex items-center justify-center p-8">
         <div className="text-center flex items-center flex-col">
@@ -224,19 +262,24 @@ export const Projects: React.FC = () => {
           }}
           searchValue={searchValue}
           onSearchChange={setSearchValue}
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
         />
 
         {activeView === "grid" ? (
           filteredProjects.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 gap-3">
-              <PiMagnifyingGlass
-                size={28}
+              <PiFolderLight
+                size={36}
                 className="text-ink-200 dark:text-ink-600"
               />
-              <p className="text-sm text-ink-300 dark:text-ink-500">
+              <p className="text-sm font-medium text-ink-200 dark:text-ink-400">
                 {searchValue
                   ? `No projects matching "${searchValue}"`
-                  : "No projects found"}
+                  : `No ${activeFilter === "All" ? "" : activeFilter.toLowerCase() + " "}projects found`}
+              </p>
+              <p className="text-xs text-ink-300 dark:text-ink-500">
+                Try adjusting or clearing your filters to see all Projects.
               </p>
             </div>
           ) : (

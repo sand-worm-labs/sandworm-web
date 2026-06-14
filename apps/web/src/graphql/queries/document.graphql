@@ -31,6 +31,12 @@ query GetDocument($workspaceId: String!, $documentId: String!) {
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
+     author{
+      username
+      firstName
+      lastName
+      avater
+      }
   }
 }
 

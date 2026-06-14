@@ -8,7 +8,7 @@ import {
   PiTrashLight,
   PiCopyLight,
   PiArrowSquareOutLight,
-  PiMagnifyingGlass,
+  PiFolderLight,
 } from "react-icons/pi";
 import Link from "next/link";
 
@@ -78,14 +78,17 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
             <tr>
               <td colSpan={9} className="py-16 text-center">
                 <div className="flex flex-col items-center justify-center gap-3">
-                  <PiMagnifyingGlass
-                    size={24}
+                  <PiFolderLight
+                    size={36}
                     className="text-ink-200 dark:text-ink-600"
                   />
-                  <p className="text-sm text-ink-300 dark:text-ink-500">
+                  <p className="text-sm font-medium text-ink-200 dark:text-ink-400">
                     {searchQuery
                       ? `No projects matching "${searchQuery}"`
                       : "No projects found"}
+                  </p>
+                  <p className="text-xs text-ink-300 dark:text-ink-500">
+                    Try adjusting or clearing your filters to see all Projects.
                   </p>
                 </div>
               </td>

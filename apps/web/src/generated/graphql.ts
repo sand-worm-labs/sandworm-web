@@ -19,6 +19,12 @@ export type Scalars = {
   JSON: { input: any; output: any; }
 };
 
+export type AiResult = {
+  __typename?: 'AiResult';
+  chatId: Scalars['String']['output'];
+  result: Scalars['String']['output'];
+};
+
 export type AuthPayload = {
   __typename?: 'AuthPayload';
   id: Scalars['String']['output'];
@@ -219,12 +225,6 @@ export type FavoritePublicDocumentInput = {
   documentId: Scalars['String']['input'];
 };
 
-export type FixAiResult = {
-  __typename?: 'FixAiResult';
-  chatId: Scalars['String']['output'];
-  result: Scalars['String']['output'];
-};
-
 export type FocusedBlockInput = {
   id: Scalars['String']['input'];
   title: Scalars['String']['input'];
@@ -316,12 +316,12 @@ export type Mutation = {
   deleteWorkspace: Scalars['Boolean']['output'];
   /** Create a duplicate of a document in the same workspace */
   duplicateDocument: Document;
-  editPythonWithAi: FixAiResult;
-  editSqlWithAi: FixAiResult;
-  editTextWithAi: FixAiResult;
+  editPythonWithAi: AiResult;
+  editSqlWithAi: AiResult;
+  editTextWithAi: AiResult;
   editTitleWithAi: Scalars['String']['output'];
-  fixPythonWithAi: FixAiResult;
-  fixSqlWithAi: FixAiResult;
+  fixPythonWithAi: AiResult;
+  fixSqlWithAi: AiResult;
   /** Follow User */
   followUser: Profile;
   /** Fork a documents */
@@ -514,6 +514,7 @@ export type MutationDuplicateDocumentArgs = {
 
 export type MutationEditPythonWithAiArgs = {
   blockId: Scalars['String']['input'];
+  chatId?: InputMaybe<Scalars['String']['input']>;
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
@@ -521,6 +522,7 @@ export type MutationEditPythonWithAiArgs = {
 
 export type MutationEditSqlWithAiArgs = {
   blockId: Scalars['String']['input'];
+  chatId?: InputMaybe<Scalars['String']['input']>;
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
@@ -528,6 +530,7 @@ export type MutationEditSqlWithAiArgs = {
 
 export type MutationEditTextWithAiArgs = {
   blockId: Scalars['String']['input'];
+  chatId?: InputMaybe<Scalars['String']['input']>;
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
@@ -1285,7 +1288,7 @@ export type EditSqlWithAiMutationVariables = Exact<{
 }>;
 
 
-export type EditSqlWithAiMutation = { __typename?: 'Mutation', editSqlWithAi: { __typename?: 'FixAiResult', chatId: string } };
+export type EditSqlWithAiMutation = { __typename?: 'Mutation', editSqlWithAi: { __typename?: 'AiResult', chatId: string } };
 
 export type EditPythonWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
@@ -1294,7 +1297,7 @@ export type EditPythonWithAiMutationVariables = Exact<{
 }>;
 
 
-export type EditPythonWithAiMutation = { __typename?: 'Mutation', editPythonWithAi: { __typename?: 'FixAiResult', chatId: string } };
+export type EditPythonWithAiMutation = { __typename?: 'Mutation', editPythonWithAi: { __typename?: 'AiResult', chatId: string } };
 
 export type FixSqlWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
@@ -1303,7 +1306,7 @@ export type FixSqlWithAiMutationVariables = Exact<{
 }>;
 
 
-export type FixSqlWithAiMutation = { __typename?: 'Mutation', fixSqlWithAi: { __typename?: 'FixAiResult', chatId: string } };
+export type FixSqlWithAiMutation = { __typename?: 'Mutation', fixSqlWithAi: { __typename?: 'AiResult', chatId: string } };
 
 export type FixPythonWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
@@ -1312,7 +1315,7 @@ export type FixPythonWithAiMutationVariables = Exact<{
 }>;
 
 
-export type FixPythonWithAiMutation = { __typename?: 'Mutation', fixPythonWithAi: { __typename?: 'FixAiResult', chatId: string } };
+export type FixPythonWithAiMutation = { __typename?: 'Mutation', fixPythonWithAi: { __typename?: 'AiResult', chatId: string } };
 
 export type EditTextWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
@@ -1321,7 +1324,7 @@ export type EditTextWithAiMutationVariables = Exact<{
 }>;
 
 
-export type EditTextWithAiMutation = { __typename?: 'Mutation', editTextWithAi: { __typename?: 'FixAiResult', chatId: string } };
+export type EditTextWithAiMutation = { __typename?: 'Mutation', editTextWithAi: { __typename?: 'AiResult', chatId: string } };
 
 export type CreateUserMutationVariables = Exact<{
   input: CreateUserInput;
@@ -1790,7 +1793,7 @@ export type GetDocumentQueryVariables = Exact<{
 }>;
 
 
-export type GetDocumentQuery = { __typename?: 'Query', getDocument: { __typename?: 'Document', id: string, title: string, slug: string, icon: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
+export type GetDocumentQuery = { __typename?: 'Query', getDocument: { __typename?: 'Document', id: string, title: string, slug: string, icon: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null } };
 
 export type GetExplorerDocumentsQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Float']['input']>;
@@ -4742,6 +4745,12 @@ export const GetDocumentDocument = gql`
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
+    author {
+      username
+      firstName
+      lastName
+      avater
+    }
   }
 }
     `;
