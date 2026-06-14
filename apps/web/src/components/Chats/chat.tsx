@@ -24,7 +24,6 @@ type Message = {
   content: string;
 };
 
-// Demo only: set to 0 when done previewing the create-notebook loading overlay.
 const NOTEBOOK_CREATE_DEMO_DELAY_MS =
   process.env.NODE_ENV === "development" ? 2500 : 0;
 

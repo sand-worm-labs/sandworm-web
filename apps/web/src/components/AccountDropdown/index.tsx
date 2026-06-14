@@ -297,7 +297,7 @@ export const AccountDropdown = ({
           )}
         </TooltipV2>
         <DropdownMenuContent
-          className="w-64 rounded-2xl border border-border-secondary dark:border-border-tertiary
+          className="w-64 rounded-2xl border border-border-tertiary dark:border-border-tertiary
             dark:bg-base-400 shadow-md p-2 ml-2"
           align="start"
           side="right"

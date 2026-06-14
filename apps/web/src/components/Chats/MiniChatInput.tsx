@@ -421,7 +421,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
                   aria-label="Attach files"
                   className="flex items-center justify-center w-8 h-8 rounded-full
                     bg-white dark:bg-[#30302E]
-                    border border-[#B5C8DB] dark:border-transparent
+                    border border-[#E7EBF0] dark:border-transparent
                     text-ink-400 dark:text-ink-500
                     hover:bg-gray-50 dark:hover:bg-[#3A3A38]
                     transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
