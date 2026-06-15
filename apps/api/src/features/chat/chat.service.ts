@@ -74,6 +74,10 @@ export class ChatService {
     this.handshakeToken = this.configService.getOrThrow('ai.handshakeToken', { infer: true });
   }
 
+  async chatExists(chatId: string): Promise<boolean> {
+    return this.chatRepository.existsBy({ id: chatId });
+  }
+
   async getChats(userId: string, workspaceId: string, documentId: string): Promise<Chat[]> {
     const entities = await this.chatRepository.find({
       where: { userId, workspaceId, documentId },
@@ -222,6 +226,30 @@ export class ChatService {
     );
 
     return Message.fromEntity(message);
+  }
+
+  async createOrAppendMessageByJobId(
+    chatId: string,
+    jobId: string,
+    data: any,
+  ): Promise<void> {
+    const existing = await this.messageRepository.findOne({
+      where: { jobId, chat: { id: chatId } },
+    });
+
+    if (existing) {
+      const currentParts = Array.isArray(existing.parts) ? existing.parts : [];
+      await this.messageRepository.update(existing.id, {
+        parts: [...currentParts, data],
+      });
+    } else {
+      await this.messageRepository.save({
+        chat: { id: chatId },
+        role: MessageRole.ASSISTANT,
+        jobId,
+        parts: [data],
+      });
+    }
   }
 
   streamResponse(userId: string, chatId: string, messageId: string): Observable<SseEvent> {
