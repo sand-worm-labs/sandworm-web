@@ -5,6 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToOne,
+  Unique,
   type Relation,
 } from 'typeorm';
 import { AbstractEntity } from './abstract.entity';
@@ -94,6 +95,7 @@ export interface FocusedBlock {
 }
 
 @Entity('messages')
+@Unique(['jobId', 'chat'])
 export class MessageEntity extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'PK_message_id' })
   id!: string;

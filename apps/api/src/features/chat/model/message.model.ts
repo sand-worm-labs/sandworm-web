@@ -30,10 +30,10 @@ export class Message {
   createdAt!: Date;
 
   @StringFieldOptional()
-  model?: string;         
+  model?: string;
 
-  @StringFieldOptional()  
-  finishReason?: string;   
+  @StringFieldOptional()
+  finishReason?: string;
 
   @Field(() => GraphQLJSON, { nullable: true })
   usage?: {

@@ -31,6 +31,7 @@ export class AiJobListenerService implements OnModuleInit {
         return;
       }
 
+      await this.chatService.createOrAppendMessageByJobId(event.chat_id, jobId);
       this.logger.log(`[${channel}] chat=${event.chat_id} type=${event.type}`);
     });
   }

@@ -228,6 +228,28 @@ export class ChatService {
     return Message.fromEntity(message);
   }
 
+  async createOrAppendMessageByJobId(
+    chatId: string,
+    jobId: string,
+  ) {
+    const existing = await this.messageRepository.findOne({
+      where: { jobId, chat: { id: chatId } },
+    });
+    if (existing) {
+
+     return
+    };
+    const message = await this.messageRepository.save(
+      this.messageRepository.create({
+        chat: { id: chatId },
+        role: MessageRole.ASSISTANT,
+        content: '',
+        jobId,
+      }),
+    );
+    return
+  }
+
   streamResponse(userId: string, chatId: string, messageId: string): Observable<SseEvent> {
     return new Observable<SseEvent>((subscriber) => {
       this.executeStreamResponse(userId, chatId, messageId, subscriber);
