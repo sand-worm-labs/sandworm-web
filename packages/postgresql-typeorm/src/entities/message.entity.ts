@@ -123,6 +123,9 @@ export class MessageEntity extends AbstractEntity {
   @Column({ nullable: true })
   generationId?: string;
 
+  @Column({ nullable: true })
+  jobId?: string;
+
   @Column({ name: 'focused_blocks', type: 'jsonb', nullable: true })
   focusedBlocks?: FocusedBlock[];
 
