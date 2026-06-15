@@ -13,22 +13,16 @@ import { IoFilterOutline } from "react-icons/io5";
 import { PiSquareSplitVerticalFill, PiListThin } from "react-icons/pi";
 
 import { cn } from "@/lib/utils";
+import {
+  iconButtonClassName,
+  iconButtonMdClassName,
+} from "@/styles/interactive";
+
+import type { FilterOption, SortOption } from "./useProjectFilter";
+
+export type { FilterOption, SortOption };
 
 type ViewType = "grid" | "table";
-
-type SortOption =
-  | "Last Modified"
-  | "Name (A-Z)"
-  | "Name (Z-A)"
-  | "Date Created (Newest)"
-  | "Date Created (Oldest)";
-
-export type FilterOption =
-  | "All"
-  | "Published"
-  | "Favorites"
-  | "Recent"
-  | "Created by me";
 
 interface ProjectControlProps {
   searchValue?: string;
@@ -36,6 +30,7 @@ interface ProjectControlProps {
   onViewChange?: (view: ViewType) => void;
   activeFilter?: FilterOption;
   onFilterChange?: (filter: FilterOption) => void;
+  activeSort?: SortOption;
   onSortChange?: (sort: SortOption) => void;
 }
 
@@ -61,19 +56,14 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
   onViewChange,
   activeFilter = "All",
   onFilterChange,
+  activeSort = "Last Modified",
   onSortChange,
 }) => {
   const [activeView, setActiveView] = useState<ViewType>("grid");
-  const [, setSelectedSort] = useState<SortOption>("Last Modified");
 
   const handleViewChange = (view: ViewType): void => {
     setActiveView(view);
     onViewChange?.(view);
-  };
-
-  const handleSortChange = (sort: SortOption): void => {
-    setSelectedSort(sort);
-    onSortChange?.(sort);
   };
 
   const handleFilterSelect = (filter: FilterOption): void => {
@@ -97,6 +87,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
               />
             </div>
 
+            {/* ✦ Filter Dropdown ✦ */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -148,23 +139,32 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            {/* ✦ Sort Dropdown ✦ */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="gap-2 text-ink-200 hover:bg-primary/20"
+                <button
+                  type="button"
+                  className={cn(
+                    iconButtonClassName,
+                    "h-7 px-2 text-sm gap-1.5"
+                  )}
                 >
                   <span>Sort by</span>
-                </Button>
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-52">
                 {SORT_OPTIONS.map(option => (
                   <DropdownMenuItem
                     key={option}
-                    onClick={() => handleSortChange(option)}
-                    className="cursor-pointer"
+                    onClick={() => onSortChange?.(option)}
+                    className="flex items-center justify-between cursor-pointer"
                   >
-                    {option}
+                    <span>{option}</span>
+                    {activeSort === option && (
+                      <div className="w-4 h-4 bg-primary rounded flex items-center justify-center">
+                        <Check className="w-3 h-3 text-white" />
+                      </div>
+                    )}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -172,31 +172,32 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
 
             <div className="w-px h-6 bg-border-tertiary mx-1" />
 
-            <Button
-              variant="ghost"
-              size="icon"
+            {/* ✦ View Switcher ✦ */}
+            <button
+              type="button"
               className={cn(
-                "h-8 w-8 rounded-md hover:bg-primary/20",
-                activeView === "grid" && "text-primary"
+                iconButtonMdClassName,
+                activeView === "grid" &&
+                  "text-primary hover:text-primary dark:hover:text-primary"
               )}
               onClick={() => handleViewChange("grid")}
               title="Grid view"
             >
               <PiSquareSplitVerticalFill className="text-xl" />
-            </Button>
+            </button>
 
-            <Button
-              variant="ghost"
-              size="icon"
+            <button
+              type="button"
               className={cn(
-                "h-8 w-8 rounded-md hover:bg-primary/20",
-                activeView === "table" && "text-primary"
+                iconButtonMdClassName,
+                activeView === "table" &&
+                  "text-primary hover:text-primary dark:hover:text-primary"
               )}
               onClick={() => handleViewChange("table")}
               title="Table view"
             >
               <PiListThin className="text-xl" />
-            </Button>
+            </button>
           </div>
         </div>
       </div>

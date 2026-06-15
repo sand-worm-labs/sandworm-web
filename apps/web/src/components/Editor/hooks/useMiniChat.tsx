@@ -34,6 +34,7 @@ export interface LocalMessage {
   references?: AttachedReference[];
   fileRefs: UploadedFileRef[];
   streamParts?: PartPayload[];
+  createdAt?: string;
 }
 
 interface UseMiniChatParams {
@@ -119,6 +120,7 @@ export function useMiniChat({
   const loadThread = useCallback(
     async (chatId: string) => {
       const chat = await chatApi.fetchChat(chatId);
+      console.log(chat, "g")
       setActiveChatId(chat.id);
       setActiveThreadTitle(chat.title);
       setMessages(
@@ -133,6 +135,7 @@ export function useMiniChat({
           parts: m.parts ?? null,
           attachments: m.attachments ?? null,
           usage: m.usage ?? null,
+          createdAt: m.createdAt ?? undefined,
           fileRefs: (m.fileRefs ?? []) satisfies UploadedFileRef[],
           references: (m.focusedBlocks ?? []).map(
             (b: { id: string; title: string; type: string }) => ({
@@ -182,7 +185,7 @@ export function useMiniChat({
 
       console.log("[MiniChat] sending fileRefs:", fileRefs);
 
-      addMessage({ text, isUser: true, references, fileRefs });
+      addMessage({ text, isUser: true, references, fileRefs, createdAt: new Date().toISOString() });
       setIsLoading(true);
 
       const loadingId = addMessage({
@@ -335,10 +338,6 @@ export function useMiniChat({
     },
     [loadThread, stopStream]
   );
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   useEffect(() => {
     if (promptFiredRef.current) return;

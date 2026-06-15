@@ -25,8 +25,13 @@ import { useDocuments } from "../Editor/hooks/useDocuments";
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 import { Loader } from "../Loader";
 
-import ProjectControl, { type FilterOption } from "./ProjectControls";
+import ProjectControl from "./ProjectControls";
 import { ProjectsTable } from "./ProjectTable";
+import {
+  useProjectFilter,
+  type FilterOption,
+  type SortOption,
+} from "./useProjectFilter";
 
 interface Project {
   id: string;
@@ -38,8 +43,6 @@ interface Project {
 }
 
 type MenuAction = "duplicate" | "newTab" | "trash";
-
-const RECENT_CUTOFF_MS = 7 * 24 * 60 * 60 * 1000;
 
 function formatDate(dateString: string | Date): string {
   if (!dateString) return "Unknown";
@@ -71,7 +74,6 @@ export const Projects: React.FC = () => {
   const workspaceId = useStringQuery("workspace");
   const router = useRouter();
   const { user } = useSession({});
-  const currentUserId = user?.id;
 
   const [activeView, setActiveView] = useState<"grid" | "table">(() => {
     if (typeof window === "undefined") return "grid";
@@ -89,6 +91,7 @@ export const Projects: React.FC = () => {
 
   const [searchValue, setSearchValue] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterOption>("All");
+  const [activeSort, setActiveSort] = useState<SortOption>("Last Modified");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [hoveredUser, setHoveredUser] = useState<string | null>(null);
   const [hoveredSave, setHoveredSave] = useState<string | null>(null);
@@ -98,7 +101,6 @@ export const Projects: React.FC = () => {
   const onCreateDocument = useCallback(
     async (parentId: string | null) => {
       if (documentsState.loading) return;
-
       try {
         const doc = await createDocument({ parentId, version: 2 });
         router.push(`/workspace/${workspaceId}/documents/${doc.id}`);
@@ -118,46 +120,22 @@ export const Projects: React.FC = () => {
       [onCreateDocument]
     );
 
-  // ⬢ Base document list — non-deleted, top-level, versioned
+  // ⬢ Filter + Sort + Search
   // =====================================
-  const allDocuments = useMemo(
-    () =>
-      documentsState.documents.filter(
-        doc =>
-          doc.deletedAt === null && doc.version >= 1 && doc.parentId === null
-      ),
-    [documentsState.documents]
-  );
-
-  // ⬢ Apply active filter
-  // =====================================
-  const filteredByFilter = useMemo(() => {
-    const docs = allDocuments.toArray();
-    switch (activeFilter) {
-      case "Published":
-        return docs.filter(doc => doc.publishedAt !== null);
-      case "Favorites":
-        return docs.filter(doc => favorites.has(doc.id));
-      case "Recent": {
-        const cutoff = Date.now() - RECENT_CUTOFF_MS;
-        return docs.filter(
-          doc => new Date(doc.updatedAt).getTime() >= cutoff
-        );
-      }
-      case "Created by me":
-        return currentUserId
-          ? docs.filter(doc => doc.authorId === currentUserId)
-          : [];
-      default:
-        return docs;
-    }
-  }, [allDocuments, activeFilter, favorites, currentUserId]);
+  const { docs, allCount } = useProjectFilter({
+    documents: documentsState.documents,
+    favorites,
+    currentUserId: user?.id,
+    activeFilter,
+    activeSort,
+    searchValue,
+  });
 
   // ⬢ Normalise to Project[]
   // =====================================
   const projects: Project[] = useMemo(
     () =>
-      filteredByFilter.map(doc => ({
+      docs.map(doc => ({
         id: doc.id,
         title: doc.title || "Untitled Project",
         creator: doc.createdBy || "Unknown",
@@ -165,19 +143,8 @@ export const Projects: React.FC = () => {
         created: formatDate(doc.createdAt),
         isFavorite: favorites.has(doc.id),
       })),
-    [filteredByFilter, favorites]
+    [docs, favorites]
   );
-
-  // ⬢ Apply search
-  // =====================================
-  const filteredProjects = useMemo(() => {
-    if (!searchValue.trim()) return projects;
-    const q = searchValue.toLowerCase();
-    return projects.filter(
-      p =>
-        p.title.toLowerCase().includes(q) || p.creator.toLowerCase().includes(q)
-    );
-  }, [projects, searchValue]);
 
   const toggleFavorite = (id: string): void => {
     if (favorites.has(id)) {
@@ -201,7 +168,7 @@ export const Projects: React.FC = () => {
 
   if (documentsState.loading) {
     return (
-      <div className="min-h-screen  dark:bg-base-100  flex items-center justify-center p-8">
+      <div className="min-h-screen dark:bg-base-100 flex items-center justify-center p-8">
         <Loader />
       </div>
     );
@@ -209,9 +176,9 @@ export const Projects: React.FC = () => {
 
   // ⬢ Empty Project State
   // =====================================
-  if (allDocuments.size === 0) {
+  if (allCount === 0) {
     return (
-      <div className="h-full  flex items-center justify-center p-8">
+      <div className="h-full flex items-center justify-center p-8">
         <div className="text-center flex items-center flex-col">
           <UploadIcon />
           <h2 className="text-2xl font-medium text-ink-100 font-body mb-2 mt-3">
@@ -223,10 +190,10 @@ export const Projects: React.FC = () => {
           <button
             type="button"
             onClick={onCreateDocumentHandler}
-            className="p-2  bg-base-200 dark:bg-base-200  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF] dark:border-primary  text-primary mb-3 font-body font-medium "
+            className="py-2 px-6 bg-base-200 dark:bg-base-200 rounded-xl hover:cursor-pointer text-sm border mt-6 flex  items-center w-full border-[#D000FF] dark:border-primary text-primary mb-3 font-body font-medium gap-2"
           >
-            <PiPlus size={16} className="mr-1" />
-            Create Project
+            <PiPlus className="mr-3 h-4 w-4" />
+            <span>Create Project</span>
           </button>
         </div>
       </div>
@@ -237,24 +204,24 @@ export const Projects: React.FC = () => {
     <div className="min-h-screen dark:bg-base-200 p-8">
       <div className="flex justify-between w-full container mx-auto">
         <div className="flex items-center gap-3 mb-0">
-          <span className=" rounded-full  flex items-center justify-center">
+          <span className="rounded-full flex items-center justify-center">
             <UploadIcon />
           </span>
-          <h2 className="text-xl font-medium ">Projects</h2>
+          <h2 className="text-xl font-medium">Projects</h2>
         </div>
         <div>
           <button
             type="button"
-            className="p-2 bg-base-200  rounded-xl hover:cursor-pointer text-sm border mt-6 flex px-5 items-center justify-center w-full border-[#D000FF]  text-primary mb-3 font-body font-medium"
+            className="py-2 px-6 bg-primary/5 dark:bg-base-200 rounded-xl hover:cursor-pointer text-sm border mt-6 flex  items-center w-full border-[#D000FF] dark:border-primary text-primary mb-3 font-body font-medium gap-2"
             onClick={onCreateDocumentHandler}
           >
-            <PiPlus size={18} />
+            <PiPlus className=" h-4 w-4" />
             <span className="inline-block"> Create Project</span>
           </button>
         </div>
       </div>
 
-      <div className=" mx-auto container">
+      <div className="mx-auto container">
         <ProjectControl
           onViewChange={view => {
             setActiveView(view);
@@ -264,10 +231,12 @@ export const Projects: React.FC = () => {
           onSearchChange={setSearchValue}
           activeFilter={activeFilter}
           onFilterChange={setActiveFilter}
+          activeSort={activeSort}
+          onSortChange={setActiveSort}
         />
 
         {activeView === "grid" ? (
-          filteredProjects.length === 0 ? (
+          projects.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 gap-3">
               <PiFolderLight
                 size={36}
@@ -276,7 +245,7 @@ export const Projects: React.FC = () => {
               <p className="text-sm font-medium text-ink-200 dark:text-ink-400">
                 {searchValue
                   ? `No projects matching "${searchValue}"`
-                  : `No ${activeFilter === "All" ? "" : activeFilter.toLowerCase() + " "}projects found`}
+                  : `No ${activeFilter === "All" ? "" : `${activeFilter.toLowerCase()} `}projects found`}
               </p>
               <p className="text-xs text-ink-300 dark:text-ink-500">
                 Try adjusting or clearing your filters to see all Projects.
@@ -284,10 +253,10 @@ export const Projects: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProjects.map(project => (
+              {projects.map(project => (
                 <div
                   key={project.id}
-                  className="bg-base-100 rounded-3xl border border-border-tertiary transition-all duration-200 p-4 py-3 relative group flex flex-col  hover:shadow-[0_1px_3px_rgba(208,0,255,0.08)]"
+                  className="bg-base-100 rounded-3xl border border-border-tertiary transition-all duration-200 p-4 py-3 relative group flex flex-col hover:shadow-[0_1px_3px_rgba(208,0,255,0.08)]"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <Link
@@ -326,7 +295,7 @@ export const Projects: React.FC = () => {
                         </button>
 
                         {openMenuId === project.id && (
-                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100  rounded-xl shadow-lg border border-[#CED4DA] dark:border-border-tertiary pb-1 z-10 text-ink-200 dark:text-white">
+                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100 rounded-xl shadow-lg border border-[#CED4DA] dark:border-border-tertiary pb-1 z-10 text-ink-200 dark:text-white">
                             <button
                               type="button"
                               onClick={() =>
@@ -352,7 +321,7 @@ export const Projects: React.FC = () => {
                               onClick={() =>
                                 handleMenuAction("trash", project.id)
                               }
-                              className="w-full px-4 py-2 text-left text-sm  hover:bg-primary/20 flex items-center gap-2"
+                              className="w-full px-4 py-2 text-left text-sm hover:bg-primary/20 flex items-center gap-2"
                             >
                               <PiTrashLight className="w-3.5 h-3.5" />
                               Move to trash
@@ -377,7 +346,7 @@ export const Projects: React.FC = () => {
                       </button>
 
                       {hoveredUser === project.id && (
-                        <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-base-100  bg-white text-ink-400 border-border-secondary  dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
+                        <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-base-100 bg-white text-ink-400 border-border-secondary dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                           Creator: {project.creator}
                         </div>
                       )}
@@ -394,7 +363,7 @@ export const Projects: React.FC = () => {
                       </button>
 
                       {hoveredSave === project.id && (
-                        <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-base-100  bg-white text-ink-500 border-border-secondary  dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
+                        <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-base-100 bg-white text-ink-500 border-border-secondary dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
                           <div className="space-y-1">
                             <div>
                               <span className="font-medium text-ink-400 dark:text-white">
@@ -409,7 +378,7 @@ export const Projects: React.FC = () => {
                               {project.lastEdited}
                             </div>
                             <div>
-                              <span className="font-medium text-ink-400  dark:text-white ">
+                              <span className="font-medium text-ink-400 dark:text-white">
                                 Created:
                               </span>{" "}
                               {project.created}
@@ -425,7 +394,7 @@ export const Projects: React.FC = () => {
           )
         ) : (
           <ProjectsTable
-            projects={filteredProjects}
+            projects={projects}
             workspaceId={workspaceId}
             onToggleFavorite={toggleFavorite}
             onMenuAction={handleMenuAction}

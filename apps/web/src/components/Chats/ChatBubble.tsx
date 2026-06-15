@@ -6,6 +6,8 @@ import {
   PiFileText,
 } from "react-icons/pi";
 
+import { TooltipV2 } from "../Editor/blocks/ToolTips";
+import { timeAgo, formatFullDate } from "../../lib/date";
 import { BubbleReferencePill } from "./ReferencePill";
 import type { AttachedReference } from "./types";
 import type { UploadedFileRef } from "./MiniChatInput";
@@ -21,6 +23,7 @@ interface ChatBubbleProps {
   isUser: boolean;
   references?: AttachedReference[];
   fileRefs?: UploadedFileRef[];
+  createdAt?: string;
   onRate?: (rating: Rating) => void;
 }
 
@@ -30,7 +33,7 @@ interface ChatBubbleProps {
 
 function FileBubbleChip({ fileRef }: { fileRef: UploadedFileRef }) {
   const isCsv =
-    fileRef.type.includes("csv") || fileRef.type.includes("spreadsheet");
+    fileRef.name.endsWith(".csv") || fileRef.name.endsWith(".xlsx");
   const Icon = isCsv ? PiFileCsv : PiFileText;
 
   return (
@@ -59,25 +62,31 @@ interface RatingButtonProps {
 
 function RatingButton({ type, active, onClick }: RatingButtonProps) {
   const Icon = type === "up" ? PiThumbsUp : PiThumbsDown;
-  const label = type === "up" ? "Helpful" : "Not helpful";
+  const tooltipLabel =
+    active ? "Unrate response" : type === "up" ? "Rate response" : "Not helpful";
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      aria-pressed={active}
-      className={`p-1 rounded-md transition-all duration-150
-        ${
-          active
-            ? type === "up"
-              ? "text-[#185FA5] bg-[#E6F1FB] dark:bg-[#0C1824] dark:text-[#85B7EB]"
-              : "text-[#D85A30] bg-[#FAECE7] dark:bg-[#1A0D08] dark:text-[#F0997B]"
-            : "text-ink-300 dark:text-ink-600 hover:text-ink-400 hover:bg-[#F1F3F4] dark:hover:bg-[#252523]"
-        }`}
-    >
-      <Icon size={13} />
-    </button>
+    <TooltipV2<HTMLButtonElement> title={tooltipLabel} active position="top">
+      {ref => (
+        <button
+          ref={ref}
+          type="button"
+          onClick={onClick}
+          aria-label={tooltipLabel}
+          aria-pressed={active}
+          className={`p-1 rounded-md transition-all duration-150
+            ${
+              active
+                ? type === "up"
+                  ? "text-[#185FA5] bg-[#E6F1FB] dark:bg-[#0C1824] dark:text-[#85B7EB]"
+                  : "text-[#D85A30] bg-[#FAECE7] dark:bg-[#1A0D08] dark:text-[#F0997B]"
+                : "text-ink-300 dark:text-ink-600 hover:text-ink-400 hover:bg-[#F1F3F4] dark:hover:bg-[#252523]"
+            }`}
+        >
+          <Icon size={13} />
+        </button>
+      )}
+    </TooltipV2>
   );
 }
 
@@ -90,6 +99,7 @@ export function ChatBubble({
   isUser,
   references = [],
   fileRefs = [],
+  createdAt,
   onRate,
 }: ChatBubbleProps) {
   const [rating, setRating] = useState<Rating>(null);
@@ -114,7 +124,7 @@ export function ChatBubble({
           ))}
           {fileRefs.map((file, i) => (
             // eslint-disable-next-line react/no-array-index-key
-            <FileBubbleChip key={`${file.name}-${i}`} file={file} />
+            <FileBubbleChip key={`${file.name}-${i}`} fileRef={file} />
           ))}
         </div>
       )}
@@ -136,6 +146,24 @@ export function ChatBubble({
         >
           {text}
         </div>
+      )}
+
+      {isUser && createdAt && (
+        <TooltipV2<HTMLSpanElement>
+          title={formatFullDate(createdAt)}
+          active
+          className="text-[9px]"
+          position="top"
+        >
+          {ref => (
+            <span
+              ref={ref}
+              className="text-[10px] text-ink-300 dark:text-ink-600 cursor-default select-none"
+            >
+              {timeAgo(createdAt)}
+            </span>
+          )}
+        </TooltipV2>
       )}
 
       {!isUser && (

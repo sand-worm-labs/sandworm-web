@@ -8,6 +8,7 @@ import {
 } from "date-fns";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import advancedFormat from "dayjs/plugin/advancedFormat";
 
 export const getDateCompare = (after: Date) => {
   const currDate = new Date();
@@ -31,6 +32,7 @@ export const getDateCompare = (after: Date) => {
 };
 
 dayjs.extend(relativeTime);
+dayjs.extend(advancedFormat);
 
 /**
  * Returns how long ago something happened, like '3 hours ago' or '2 months ago'
@@ -39,6 +41,9 @@ dayjs.extend(relativeTime);
 export const timeAgo = (date: string | Date): string => {
   return dayjs(date).fromNow();
 };
+
+export const formatFullDate = (date: string | Date): string =>
+  dayjs(date).format("MMMM Do, YYYY, h:mm A");
 
 const RELATIVE_THRESHOLD_DAYS = 30;
 
