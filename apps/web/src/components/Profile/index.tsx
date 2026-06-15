@@ -21,7 +21,6 @@ import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
 import type { ApiDocument } from "@/types";
 
 import { Copy } from "../Assets/Copy";
-import { Loader } from "../Loader";
 import { useCurrentUser } from "../Editor/hooks/useCurrentUser";
 import { useWallets } from "../Editor/hooks/useWallets";
 import { useUser } from "../Editor/hooks/useUser";
@@ -34,6 +33,7 @@ import { QueryList } from "../Queries";
 import { UserConnectionsModal } from "./UserConnectionModal";
 import { ManageWalletsModal, AddWalletModal } from "./ManageWalletModal";
 import { ProfileSettingsModal } from "./ProfileSettingModal";
+import { ProfileSkeleton } from "./ProfileSkeleton";
 
 // =====================================
 // ⬢ Types
@@ -157,9 +157,7 @@ const ProfileComponent = ({
     <>
       <div className="min-h-screen transition-colors font-body">
         {isLoading ? (
-          <div className="mx-auto min-h-screen w-full flex items-center justify-center px-4 py-8">
-            <Loader />
-          </div>
+          <ProfileSkeleton />
         ) : !user ? (
           <div className=" mx-auto md:px-4 py-8">
             <p className="text-center text-ink-200 dark:text-ink-400">

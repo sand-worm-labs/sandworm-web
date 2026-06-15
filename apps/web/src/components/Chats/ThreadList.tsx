@@ -18,6 +18,7 @@ import {
 } from "react-icons/pi";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
+import { Shimmer } from "@/components/Skeletons";
 import { useChat } from "@/components/Editor/hooks/useChat";
 import type { Chat } from "@/generated/graphql";
 
@@ -265,14 +266,34 @@ function EmptyState({ query }: { query: string }) {
   );
 }
 
+const THREAD_SKELETON_WIDTHS = [
+  "w-40",
+  "w-52",
+  "w-36",
+  "w-44",
+  "w-32",
+] as const;
+
 function LoadingState() {
   return (
-    <div className="flex flex-col gap-2 px-3 py-3">
-      {[1, 2, 3].map(n => (
+    <div
+      className="flex flex-col gap-0.5 px-1.5 py-2"
+      aria-busy="true"
+      aria-label="Loading threads"
+    >
+      {THREAD_SKELETON_WIDTHS.map((w, i) => (
         <div
-          key={n}
-          className="h-10 rounded-xl bg-[#F1F3F4] dark:bg-[#2A2A28] animate-pulse"
-        />
+          key={w}
+          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl mx-1.5"
+        >
+          <Shimmer className="w-7 h-7 rounded-lg shrink-0" />
+          <div className="flex flex-1 items-center justify-between gap-2 min-w-0">
+            <Shimmer className={`h-3 ${w} max-w-full`} />
+            <Shimmer
+              className={`h-2.5 w-8 shrink-0 ${i % 2 === 0 ? "opacity-60" : "opacity-40"}`}
+            />
+          </div>
+        </div>
       ))}
     </div>
   );

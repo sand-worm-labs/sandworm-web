@@ -23,9 +23,9 @@ import { useSession } from "@/components/Editor/hooks/useAuth";
 import { UploadIcon } from "../Assets/UploadIcon";
 import { useDocuments } from "../Editor/hooks/useDocuments";
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
-import { Loader } from "../Loader";
 
 import ProjectControl from "./ProjectControls";
+import { ProjectsPageSkeleton } from "./ProjectsSkeleton";
 import { ProjectsTable } from "./ProjectTable";
 import {
   useProjectFilter,
@@ -167,11 +167,7 @@ export const Projects: React.FC = () => {
   };
 
   if (documentsState.loading) {
-    return (
-      <div className="min-h-screen dark:bg-base-100 flex items-center justify-center p-8">
-        <Loader />
-      </div>
-    );
+    return <ProjectsPageSkeleton />;
   }
 
   // ⬢ Empty Project State

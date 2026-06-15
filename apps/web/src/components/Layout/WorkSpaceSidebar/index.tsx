@@ -20,6 +20,7 @@ import {
 import { AccountDropdown } from "@/components/AccountDropdown";
 import DocumentTree from "@/components/Editor/blocks/DocumentsTree";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
+import { Shimmer } from "@/components/Skeletons";
 import { SandwormLogo } from "@/components/Assets";
 import { SidebarIcon } from "@/components/Assets/SidebarIcon";
 import { useDocuments } from "@/components/Editor/hooks/useDocuments";
@@ -381,21 +382,45 @@ export const WorkspaceSidebar = () => {
                   <span>Recent Projects</span>
                 </button>
 
-                {isSectionOpen && (
-                  <DocumentTree
-                    workspaceId={workspaceId}
-                    current={documentId}
-                    documents={documents}
-                    onDuplicate={onDuplicateDocument}
-                    onDelete={onDeleteDocument}
-                    onFavorite={onFavoriteDocument}
-                    onUnfavorite={onUnfavoriteDocument}
-                    role={userRole}
-                    onCreate={onCreateDocument}
-                    onUpdateParent={onUpdateDocumentParent}
-                    onBeforeNavigate={onBeforeNavigate}
-                  />
-                )}
+                {isSectionOpen &&
+                  (documentsState.loading ? (
+                    <div
+                      className="flex flex-col gap-1 mt-1 px-1"
+                      aria-busy="true"
+                      aria-label="Loading projects"
+                    >
+                      {(
+                        [
+                          "w-28",
+                          "w-36",
+                          "w-24",
+                          "w-32",
+                        ] as const
+                      ).map(w => (
+                        <div
+                          key={w}
+                          className="flex items-center gap-2 px-2 py-1.5"
+                        >
+                          <Shimmer className="h-2.5 w-2.5 rounded-sm shrink-0" />
+                          <Shimmer className={`h-3 ${w}`} />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <DocumentTree
+                      workspaceId={workspaceId}
+                      current={documentId}
+                      documents={documents}
+                      onDuplicate={onDuplicateDocument}
+                      onDelete={onDeleteDocument}
+                      onFavorite={onFavoriteDocument}
+                      onUnfavorite={onUnfavoriteDocument}
+                      role={userRole}
+                      onCreate={onCreateDocument}
+                      onUpdateParent={onUpdateDocumentParent}
+                      onBeforeNavigate={onBeforeNavigate}
+                    />
+                  ))}
               </div>
             )}
           </nav>
