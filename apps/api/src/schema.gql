@@ -45,11 +45,72 @@ type UserSetting {
   wallets: [JSON!]!
 }
 
-type Profile {
-  username: String!
-  bio: String!
-  image: String!
-  following: Boolean!
+type Message {
+  id: String!
+  chatId: String!
+  role: String!
+  content: String!
+  parts: JSON
+  attachments: JSON
+  focusedBlocks: JSON
+  createdAt: DateTime!
+  model: String
+  finishReason: String
+  usage: JSON
+}
+
+type Chat {
+  id: String!
+  userId: String!
+  workspaceId: String!
+  documentId: String!
+  title: String!
+  isPrivate: Boolean!
+  pin: Boolean!
+  lastContext: JSON
+  messages: [Message!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Vote {
+  userId: String!
+  messageId: String!
+  isUpvoted: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Document {
+  id: String!
+  slug: String!
+  title: String!
+  authorId: String!
+  workspaceId: String!
+  parentId: String
+  runUnexecutedBlocks: Boolean!
+  runSQLSelection: Boolean!
+  shareLinksWithoutSidebar: Boolean!
+  icon: String!
+  orderIndex: Float!
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  version: Float!
+  publishedAt: DateTime
+  isDataApp: Boolean!
+  isSyncedWithYjs: Boolean!
+  hasDashboard: Boolean!
+  appId: String!
+  clock: Float!
+  appClock: Float!
+  userAppClock: JSON!
+  children: [Document!]!
+  parent: Document
+  author: User
+  forkCount: Int!
+  favoriteCount: Int!
+  isFavorite: Boolean!
 }
 
 type WorkspaceSecrets {
@@ -92,38 +153,6 @@ type WorkspaceInvitationInfo {
 
   """The role the user will have in the workspace"""
   role: String!
-}
-
-type Document {
-  id: String!
-  slug: String!
-  title: String!
-  authorId: String!
-  workspaceId: String!
-  parentId: String
-  runUnexecutedBlocks: Boolean!
-  runSQLSelection: Boolean!
-  shareLinksWithoutSidebar: Boolean!
-  icon: String!
-  orderIndex: Float!
-  deletedAt: DateTime
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  version: Float!
-  publishedAt: DateTime
-  isDataApp: Boolean!
-  isSyncedWithYjs: Boolean!
-  hasDashboard: Boolean!
-  appId: String!
-  clock: Float!
-  appClock: Float!
-  userAppClock: JSON!
-  children: [Document!]!
-  parent: Document
-  author: User
-  forkCount: Int!
-  favoriteCount: Int!
-  isFavorite: Boolean!
 }
 
 type Environment {
@@ -180,6 +209,18 @@ type OpenRouterAccountCredits {
   totalCredits: Float!
   usedCredits: Float!
   availableCredits: Float!
+}
+
+type AiResult {
+  result: String!
+  chatId: String!
+}
+
+type Profile {
+  username: String!
+  bio: String!
+  image: String!
+  following: Boolean!
 }
 
 type Comment {
@@ -252,48 +293,17 @@ type ReusableComponentInstance {
   updatedAt: DateTime!
 }
 
-type Message {
-  id: String!
-  chatId: String!
-  role: String!
-  content: String!
-  parts: JSON
-  attachments: JSON
-  focusedBlocks: JSON
-  createdAt: DateTime!
-  model: String
-  finishReason: String
-  usage: JSON
-}
-
-type Chat {
-  id: String!
-  userId: String!
-  workspaceId: String!
-  documentId: String!
-  title: String!
-  isPrivate: Boolean!
-  pin: Boolean!
-  lastContext: JSON
-  messages: [Message!]
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-type Vote {
-  userId: String!
-  messageId: String!
-  isUpvoted: Boolean!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-type AiResult {
-  result: String!
-  chatId: String!
-}
-
 type Query {
+  """List chats for workspace/document"""
+  chats(workspaceId: String!, documentId: String!): [Chat!]!
+
+  """Get a chat with its messages"""
+  chat(chatId: String!): Chat!
+
+  """Get messages for a chat"""
+  chatMessages(chatId: String!): [Message!]!
+  messageVote(messageId: String!): Boolean
+
   """Get current user (from token)"""
   currentUser: AuthPayload!
 
@@ -309,6 +319,30 @@ type Query {
   """Auth user is following a userid """
   isFollowing(followerId: String!): Boolean!
 
+  """Get workspace by ID"""
+  getWorkspace(workspaceId: String!): Workspace!
+
+  """Get User workspaces"""
+  getUserWorkspaces: [Workspace!]!
+
+  """Get user workspace info with role"""
+  getUserWorkspaceInfo: WorkspaceInfo!
+
+  """Get workspace members"""
+  getWorkspaceMembers(workspaceId: String!): [WorkspaceMember!]!
+
+  """Get all workspaces the current user is an admin of, with their members"""
+  getAdminWorkspacesWithMembers: [WorkspaceMember!]!
+
+  """Get all pending invites for a workspace"""
+  getPendingInvites(workspaceId: String!): [WorkspaceMember!]!
+
+  """Get pending role requests for a workspace"""
+  getPendingRoleRequests(workspaceId: String!): [WorkspaceMember!]!
+
+  """Get invitation details from hash without accepting it"""
+  getInvitationInfo(hash: String!): WorkspaceInvitationInfo!
+
   """Get environment details for a workspace"""
   environment(workspaceId: String!): Environment!
 
@@ -320,6 +354,15 @@ type Query {
 
   """Get current system info"""
   currentSysInfo(workspaceId: String!, sessionId: String!): JSON!
+
+  """List all available OpenRouter models"""
+  openRouterModels: [OpenRouterModel!]!
+
+  """Get a specific OpenRouter model by ID"""
+  openRouterModel(modelId: String!): OpenRouterModel
+
+  """Get OpenRouter account credit usage"""
+  openRouterAccountCredits(workspaceId: String!): OpenRouterAccountCredits!
 
   """Get a single document by ID"""
   getDocument(documentId: String!, workspaceId: String!): Document!
@@ -353,49 +396,6 @@ type Query {
 
   """Get all reusable components in a workspace"""
   getWorkspaceComponents(workspaceId: String!): [ReusableComponent!]!
-
-  """Get workspace by ID"""
-  getWorkspace(workspaceId: String!): Workspace!
-
-  """Get User workspaces"""
-  getUserWorkspaces: [Workspace!]!
-
-  """Get user workspace info with role"""
-  getUserWorkspaceInfo: WorkspaceInfo!
-
-  """Get workspace members"""
-  getWorkspaceMembers(workspaceId: String!): [WorkspaceMember!]!
-
-  """Get all workspaces the current user is an admin of, with their members"""
-  getAdminWorkspacesWithMembers: [WorkspaceMember!]!
-
-  """Get all pending invites for a workspace"""
-  getPendingInvites(workspaceId: String!): [WorkspaceMember!]!
-
-  """Get pending role requests for a workspace"""
-  getPendingRoleRequests(workspaceId: String!): [WorkspaceMember!]!
-
-  """Get invitation details from hash without accepting it"""
-  getInvitationInfo(hash: String!): WorkspaceInvitationInfo!
-
-  """List all available OpenRouter models"""
-  openRouterModels: [OpenRouterModel!]!
-
-  """Get a specific OpenRouter model by ID"""
-  openRouterModel(modelId: String!): OpenRouterModel
-
-  """Get OpenRouter account credit usage"""
-  openRouterAccountCredits(workspaceId: String!): OpenRouterAccountCredits!
-
-  """List chats for workspace/document"""
-  chats(workspaceId: String!, documentId: String!): [Chat!]!
-
-  """Get a chat with its messages"""
-  chat(chatId: String!): Chat!
-
-  """Get messages for a chat"""
-  chatMessages(chatId: String!): [Message!]!
-  messageVote(messageId: String!): Boolean
 
   """Get Profile"""
   profile(
@@ -433,6 +433,30 @@ input ListSchedulesInput {
 }
 
 type Mutation {
+  """Create a new chat"""
+  createChat(input: CreateChatInput!): Chat!
+
+  """Update chat title or visibility"""
+  updateChat(input: UpdateChatInput!): Chat!
+
+  """Delete a chat and its messages"""
+  deleteChat(chatId: String!): Boolean!
+
+  """Pin or unpin a chat"""
+  pinChat(chatId: String!): Chat!
+
+  """Send a user message"""
+  sendMessage(input: SendMessageInput!): Message!
+
+  """Upvote or downvote a message"""
+  voteMessage(input: VoteMessageInput!): Vote!
+
+  """Retract a vote on a message"""
+  removeVote(messageId: String!): Boolean!
+
+  """Sign in"""
+  login(input: LoginInput!): AuthPayload!
+
   """Register new user"""
   createUser(input: CreateUserInput!): User!
 
@@ -448,6 +472,43 @@ type Mutation {
   """Update status text for the current user"""
   updateStatusText(statusText: String!): Boolean!
 
+  """Create a new workspace"""
+  createWorkspace(name: String!): Workspace!
+
+  """Delete a workspace"""
+  deleteWorkspace(workspaceId: String!): Boolean!
+
+  """Update workspace info"""
+  updateWorkspace(workspaceId: String!, name: String, icon: String): Workspace!
+
+  """Switch to a different workspace"""
+  switchWorkspace(workspaceId: String!): Boolean!
+
+  """Remove a user from workspace"""
+  removeUserFromWorkspace(workspaceId: String!, userId: String!): Boolean!
+
+  """Remove multiple users from workspaces"""
+  batchRemoveUsersFromWorkspace(removals: [RemoveUserFromWorkspaceInput!]!): Boolean!
+
+  """Invite a user to workspace by email"""
+  inviteUserToWorkspace(workspaceId: String!, email: String!, role: String): Boolean!
+
+  """Accept workspace invitation with hash from email"""
+  acceptWorkspaceInvitation(hash: String!): Boolean!
+
+  """Request a role upgrade in a workspace"""
+  requestRoleUpgrade(workspaceId: String!, role: String!): Boolean!
+
+  """Approve a pending role request"""
+  approveRoleRequest(workspaceId: String!, userId: String!): Boolean!
+
+  """Reject a pending role request"""
+  rejectRoleRequest(workspaceId: String!, userId: String!): Boolean!
+
+  """Update a user role in a workspace"""
+  updateWorkspaceMemberRole(workspaceId: String!, userId: String!, role: String!): Boolean!
+  setWorkspaceDefaultAiModel(workspaceId: String!, model: String!): Boolean!
+
   """Restart the Jupyter environment"""
   restartEnvironment(input: RestartEnvironmentInput!): Environment!
 
@@ -456,9 +517,12 @@ type Mutation {
 
   """Delete a single environment variable"""
   deleteEnvironmentVariable(workspaceId: String!, variableId: String!): Boolean!
-
-  """Sign in"""
-  login(input: LoginInput!): AuthPayload!
+  editTitleWithAi(documentId: String!, workspaceId: String!): String!
+  editSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!, chatId: String): AiResult!
+  fixSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!): AiResult!
+  editPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!, chatId: String): AiResult!
+  fixPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!): AiResult!
+  editTextWithAi(documentId: String!, workspaceId: String!, blockId: String!, chatId: String): AiResult!
 
   """Create a new document in a workspace"""
   createDocument(workspaceId: String!, input: CreateDocumentInput!): Document!
@@ -510,70 +574,6 @@ type Mutation {
 
   """Delete a component instance"""
   deleteComponentInstance(componentId: String!, blockId: String!, workspaceId: String!): Boolean!
-  editTitleWithAi(documentId: String!, workspaceId: String!): String!
-  editSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!, chatId: String): AiResult!
-  fixSqlWithAi(documentId: String!, workspaceId: String!, blockId: String!): AiResult!
-  editPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!, chatId: String): AiResult!
-  fixPythonWithAi(documentId: String!, workspaceId: String!, blockId: String!): AiResult!
-  editTextWithAi(documentId: String!, workspaceId: String!, blockId: String!, chatId: String): AiResult!
-
-  """Create a new workspace"""
-  createWorkspace(name: String!): Workspace!
-
-  """Delete a workspace"""
-  deleteWorkspace(workspaceId: String!): Boolean!
-
-  """Update workspace info"""
-  updateWorkspace(workspaceId: String!, name: String, icon: String): Workspace!
-
-  """Switch to a different workspace"""
-  switchWorkspace(workspaceId: String!): Boolean!
-
-  """Remove a user from workspace"""
-  removeUserFromWorkspace(workspaceId: String!, userId: String!): Boolean!
-
-  """Remove multiple users from workspaces"""
-  batchRemoveUsersFromWorkspace(removals: [RemoveUserFromWorkspaceInput!]!): Boolean!
-
-  """Invite a user to workspace by email"""
-  inviteUserToWorkspace(workspaceId: String!, email: String!, role: String): Boolean!
-
-  """Accept workspace invitation with hash from email"""
-  acceptWorkspaceInvitation(hash: String!): Boolean!
-
-  """Request a role upgrade in a workspace"""
-  requestRoleUpgrade(workspaceId: String!, role: String!): Boolean!
-
-  """Approve a pending role request"""
-  approveRoleRequest(workspaceId: String!, userId: String!): Boolean!
-
-  """Reject a pending role request"""
-  rejectRoleRequest(workspaceId: String!, userId: String!): Boolean!
-
-  """Update a user role in a workspace"""
-  updateWorkspaceMemberRole(workspaceId: String!, userId: String!, role: String!): Boolean!
-  setWorkspaceDefaultAiModel(workspaceId: String!, model: String!): Boolean!
-
-  """Create a new chat"""
-  createChat(input: CreateChatInput!): Chat!
-
-  """Update chat title or visibility"""
-  updateChat(input: UpdateChatInput!): Chat!
-
-  """Delete a chat and its messages"""
-  deleteChat(chatId: String!): Boolean!
-
-  """Pin or unpin a chat"""
-  pinChat(chatId: String!): Chat!
-
-  """Send a user message"""
-  sendMessage(input: SendMessageInput!): Message!
-
-  """Upvote or downvote a message"""
-  voteMessage(input: VoteMessageInput!): Vote!
-
-  """Retract a vote on a message"""
-  removeVote(messageId: String!): Boolean!
 
   """Follow User"""
   followUser(
@@ -606,6 +606,54 @@ type Mutation {
   deleteSchedule(input: DeleteScheduleInput!): Boolean!
 }
 
+input CreateChatInput {
+  workspaceId: String!
+  documentId: String!
+  message: String!
+  model: String!
+
+  """Optional custom title. Auto-generated from message if not provided."""
+  title: String
+  focusedBlocks: [FocusedBlockInput!]
+
+  """
+  Whether to update the document title from the chat message. Defaults to false.
+  """
+  updateDocumentTitle: Boolean
+}
+
+input FocusedBlockInput {
+  id: String!
+  title: String!
+  type: String!
+}
+
+input UpdateChatInput {
+  chatId: String!
+  title: String
+}
+
+input SendMessageInput {
+  chatId: String!
+  content: String!
+  model: String!
+  focusedBlocks: [FocusedBlockInput!]
+}
+
+input VoteMessageInput {
+  messageId: String!
+  isUpvoted: Boolean!
+}
+
+"""Login input"""
+input LoginInput {
+  """Email address"""
+  email: String!
+
+  """Password"""
+  password: String!
+}
+
 """User register request"""
 input CreateUserInput {
   email: String!
@@ -635,6 +683,11 @@ input WalletInput {
   address: String!
 }
 
+input RemoveUserFromWorkspaceInput {
+  userId: String!
+  workspaceId: String!
+}
+
 input RestartEnvironmentInput {
   workspaceId: String!
 }
@@ -647,15 +700,6 @@ input SetEnvironmentVariablesInput {
 input EnvironmentVariableInput {
   name: String!
   value: String!
-}
-
-"""Login input"""
-input LoginInput {
-  """Email address"""
-  email: String!
-
-  """Password"""
-  password: String!
 }
 
 input CreateDocumentInput {
@@ -720,50 +764,6 @@ input UpdateReusableComponentInput {
 input CreateComponentInstanceInput {
   documentId: String!
   blockId: String!
-}
-
-input RemoveUserFromWorkspaceInput {
-  userId: String!
-  workspaceId: String!
-}
-
-input CreateChatInput {
-  workspaceId: String!
-  documentId: String!
-  message: String!
-  model: String!
-
-  """Optional custom title. Auto-generated from message if not provided."""
-  title: String
-  focusedBlocks: [FocusedBlockInput!]
-
-  """
-  Whether to update the document title from the chat message. Defaults to false.
-  """
-  updateDocumentTitle: Boolean
-}
-
-input FocusedBlockInput {
-  id: String!
-  title: String!
-  type: String!
-}
-
-input UpdateChatInput {
-  chatId: String!
-  title: String
-}
-
-input SendMessageInput {
-  chatId: String!
-  content: String!
-  model: String!
-  focusedBlocks: [FocusedBlockInput!]
-}
-
-input VoteMessageInput {
-  messageId: String!
-  isUpvoted: Boolean!
 }
 
 input CreateCommentInput {

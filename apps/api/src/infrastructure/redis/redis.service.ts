@@ -57,6 +57,22 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     this.patternHandlers.get(pattern)!.add(handler);
   }
 
+  async catchUpAndSubscribe(handler: PatternHandler): Promise<void> {
+    const keys = await this.client.keys('ai:job:*:events');
+    for (const key of keys) {
+      const jobId = key.split(':')[2];
+      const missed = await this.client.lrange(key, 0, -1);
+      for (const event of missed) {
+        handler(`ai:job:${jobId}`, event);
+      }
+    }
+    this.psubscribe('ai:job:*', handler);
+  }
+
+  async del(key: string): Promise<void> {
+    await this.client.del(key);
+  }
+
   unsubscribe(channel: string, handler: MessageHandler): void {
     const set = this.handlers.get(channel);
     if (!set) return;

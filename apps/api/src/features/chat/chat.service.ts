@@ -74,6 +74,10 @@ export class ChatService {
     this.handshakeToken = this.configService.getOrThrow('ai.handshakeToken', { infer: true });
   }
 
+  async chatExists(chatId: string): Promise<boolean> {
+    return this.chatRepository.existsBy({ id: chatId });
+  }
+
   async getChats(userId: string, workspaceId: string, documentId: string): Promise<Chat[]> {
     const entities = await this.chatRepository.find({
       where: { userId, workspaceId, documentId },
