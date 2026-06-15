@@ -231,23 +231,25 @@ export class ChatService {
   async createOrAppendMessageByJobId(
     chatId: string,
     jobId: string,
-  ) {
+    data: any,
+  ): Promise<void> {
     const existing = await this.messageRepository.findOne({
       where: { jobId, chat: { id: chatId } },
     });
-    if (existing) {
 
-     return
-    };
-    const message = await this.messageRepository.save(
-      this.messageRepository.create({
+    if (existing) {
+      const currentParts = Array.isArray(existing.parts) ? existing.parts : [];
+      await this.messageRepository.update(existing.id, {
+        parts: [...currentParts, data],
+      });
+    } else {
+      await this.messageRepository.save({
         chat: { id: chatId },
         role: MessageRole.ASSISTANT,
-        content: '',
         jobId,
-      }),
-    );
-    return
+        parts: [data],
+      });
+    }
   }
 
   streamResponse(userId: string, chatId: string, messageId: string): Observable<SseEvent> {
