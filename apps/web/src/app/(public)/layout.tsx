@@ -76,7 +76,7 @@ function usePublicYDoc(documentId: string): {
   });
 
   useEffect(() => {
-    if (!documentId) return;
+    if (!documentId) return () => {};
 
     const doc = new Y.Doc();
     yDocRef.current = doc;

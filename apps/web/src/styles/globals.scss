@@ -1177,6 +1177,62 @@ label {
 }
 
 /* ╔════════════════════════════════════════════╗
+   ║                Print / PDF Export          ║
+   ╚════════════════════════════════════════════╝ */
+@media print {
+  /* Allow the page to expand beyond the fixed viewport height */
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* The Layout <main> uses h-screen + overflow-hidden which would clip content */
+  main {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Break the overflow-hidden chain on the editor scroll wrapper */
+  .editor-v2,
+  #editor-scrollview {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /*
+   * OverlayScrollbars v2 wraps content in several internal divs.
+   * When isPDF=true the library no longer applies scroll behaviour, but the
+   * internal viewport / content elements can still carry fixed heights from
+   * the host element's geometry. Force them all to be auto in print.
+   */
+  [data-overlayscrollbars-initialize],
+  .os-scrollbar-host,
+  .os-padding,
+  .os-viewport,
+  .os-content,
+  .os-scrollbar {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    transform: none !important;
+  }
+
+  .recharts-responsive-container {
+    height: auto !important;
+  }
+
+  .editor-v2 > * {
+    break-inside: avoid;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 1.5cm 2cm;
+  }
+}
+
+/* ╔════════════════════════════════════════════╗
    ║                Media Queries               ║
    ╚════════════════════════════════════════════╝ */
 @media (max-width: 672px) {

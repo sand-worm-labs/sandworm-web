@@ -10,6 +10,8 @@ import {
   PiGlobe,
   PiCheckCircle,
   PiShareNetwork,
+  PiFilePdf,
+  PiSpinner,
 } from "react-icons/pi";
 import { cn } from "@sandworm/ui/lib/utils";
 
@@ -30,6 +32,8 @@ type ShareModalProps = {
     visibility: ShareVisibility,
     meta?: { description?: string; tags?: string[] }
   ) => Promise<void> | void;
+  onExportPDF?: () => void;
+  isExportingPDF?: boolean;
 };
 
 // =====================================
@@ -148,6 +152,8 @@ export default function ShareModal({
   link = "https://app.sandworm.dev/notebooks/demo",
   initialVisibility = "WORKSPACE",
   onVisibilityChange,
+  onExportPDF,
+  isExportingPDF = false,
 }: ShareModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -184,6 +190,13 @@ export default function ShareModal({
 
   const openModal = useCallback(() => setIsOpen(true), []);
   const closeModal = useCallback(() => setIsOpen(false), []);
+
+  const handleExportPDF = useCallback(() => {
+    // Close the modal first, then trigger print after the leave animation
+    // completes (leave transition is duration-150, so 200ms is safe).
+    setIsOpen(false);
+    setTimeout(() => onExportPDF?.(), 200);
+  }, [onExportPDF]);
 
   return (
     <>
@@ -438,6 +451,46 @@ export default function ShareModal({
                       </div>
                     </div>
                   </Transition>
+
+                  {onExportPDF && (
+                    <div className="px-5 pb-4">
+                      <div className="h-px bg-[#F1F3F4] dark:bg-[#2A2A28] mb-4" />
+                      <button
+                        type="button"
+                        onClick={handleExportPDF}
+                        disabled={isExportingPDF}
+                        className={cn(
+                          "w-full flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-150 border",
+                          isExportingPDF
+                            ? "border-[#DEE2E6] dark:border-[#3A3A38] bg-[#F8F9FA] dark:bg-[#1C1C1A] text-ink-300 dark:text-ink-600 cursor-not-allowed"
+                            : "border-[#DEE2E6] dark:border-[#3A3A38] hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26] hover:border-[#D9A8F8] dark:hover:border-[#7A06B8] text-ink-500 dark:text-ink-200"
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0",
+                            isExportingPDF
+                              ? "bg-[#F1F3F4] dark:bg-[#2A2A28] text-ink-300 dark:text-ink-600"
+                              : "bg-[#F1F3F4] dark:bg-[#2A2A28] text-ink-400 dark:text-ink-500"
+                          )}
+                        >
+                          {isExportingPDF ? (
+                            <PiSpinner size={16} className="animate-spin" />
+                          ) : (
+                            <PiFilePdf size={16} />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0 text-left">
+                          <p className="text-sm font-medium leading-tight">
+                            {isExportingPDF ? "Preparing PDF…" : "Download as PDF"}
+                          </p>
+                          <p className="text-[12px] text-ink-300 dark:text-ink-600 mt-0.5">
+                            Export this notebook as a printable PDF
+                          </p>
+                        </div>
+                      </button>
+                    </div>
+                  )}
 
                   {/* ── Footer ── */}
                   <div
