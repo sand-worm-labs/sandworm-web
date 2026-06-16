@@ -42,10 +42,6 @@ import {
   CommentDeletedEvent,
   CommentEventNames
 } from '@/events/comment.events';
-import {
-  BlockActionEvent,
-  BlockActionEventNames,
-} from '@/events/block-action.events';
 import { Session } from '@/features/auth/core/types/session.type';
 
 
@@ -293,19 +289,7 @@ export class AppGateway
     });
 
   }
-
-  // Block Action Events
-  @OnEvent(BlockActionEventNames.BLOCK_ACTION)
-  handleBlockActionEvent(event: BlockActionEvent): void {
-    this.server.to(event.workspaceId).emit('block-action', {
-      documentId: event.documentId,
-      blockId: event.blockId,
-      blockType: event.blockType,
-      blockTitle: event.blockTitle,
-      action: event.action,
-    });
-  }
-
+ 
 
   private async trackWork<T>(fn: () => Promise<T>): Promise<T> {
     const id = uuidv4();
