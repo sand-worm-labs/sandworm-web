@@ -10,7 +10,7 @@ export class AiBlockEventService implements OnModuleInit {
 
   onModuleInit(): void {
     this.eventEmitter.on(BlockActionEventNames.BLOCK_ACTION, (event: BlockActionEvent) => {
-      this.logger.log(`[block-action] action=${event.action} type=${event.blockType} title="${event.blockTitle}" blockId=${event.blockId}`);
+      this.logger.log(`[block-action] action=${event.action} type=${event.blockType} title="${event.blockTitle}"`);
     });
   }
 }
