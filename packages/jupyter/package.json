@@ -28,7 +28,7 @@
     }
   },
   "dependencies": {
-    "@nestjs/common": "^11.1.6",
+    "@nestjs/common": "^11.1.18",
     "@nestjs/config": "^4.0.2",
     "@sandworm/nest-common": "workspace:*",
     "class-transformer": "^0.5.1",
