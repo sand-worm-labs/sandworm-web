@@ -4,6 +4,7 @@ import { HttpModule } from "@nestjs/axios";
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SqlAiExecutorService } from './service/sql-ai-executor.service';
 import { TitleAiExecutorService } from './service/title-ai-executor.service';
+import { AiBlockEventService } from './service/ai-block-event.service';
 import { TitleAiExecutorResolver } from './resolver/title-ai-executor.resolver';
 import { YjsModule } from '../collaboration/yjs/yjs.module';
 import { SqlAiExecutorResolver } from './resolver/sql-ai-executor.resolver';
@@ -21,6 +22,7 @@ const EXECUTORS = [
   SqlAiExecutorService,
   PythonAiExecutorService,
   TextAiExecutorService,
+  AiBlockEventService,
 ]
 
 const RESOLVERS = [

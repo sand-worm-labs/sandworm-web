@@ -2,6 +2,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  OnModuleInit,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -28,6 +29,8 @@ import { AllConfigType } from '@/core/config/config.type';
 import { TitleAiExecutorService } from '../ai-execution/service/title-ai-executor.service';
 import type { FastifyReply } from 'fastify/types/reply';
 import type { FastifyRequest } from 'fastify/types/request';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { AiJobEvent,AiJobEventNames } from '@/core/events/ai-job.events';
 
 export interface SseEvent {
   event?: 'part' | 'token';
@@ -51,7 +54,7 @@ const SIMULATED_PART_DELAY_MS = 1000;
 const LOREM_IPSUM = `Done. I've built the full DAO treasury analysis across 8 DAOs with $1.08B nominal value. Uniswap and Aave are 100% own-token. Compound is 99.8% liquid. The chart and written summary are in the blocks above. Want me to add Arbitrum and ENS once their data clears?`;
 
 @Injectable()
-export class ChatService {
+export class ChatService implements OnModuleInit {
   private readonly logger = new Logger(ChatService.name);
   private readonly aiBaseUrl: string;
   private readonly handshakeToken: string;
@@ -69,9 +72,16 @@ export class ChatService {
     private readonly voteRepository: Repository<VoteEntity>,
     private readonly configService: ConfigService<AllConfigType>,
     private readonly titleAiExecutorService: TitleAiExecutorService,
+    private readonly eventEmitter: EventEmitter2
   ) {
     this.aiBaseUrl = this.configService.getOrThrow('ai.url', { infer: true });
     this.handshakeToken = this.configService.getOrThrow('ai.handshakeToken', { infer: true });
+  }
+
+  onModuleInit(): void {
+    this.eventEmitter.on(AiJobEventNames.AI_JOB_EVENT, (event: AiJobEvent) => {
+      this.logger.log(`[ai-job] chatId=${event.chatId} jobId=${event.jobId} type=${event.type}`);
+    });
   }
 
   async chatExists(chatId: string): Promise<boolean> {
@@ -236,18 +246,18 @@ export class ChatService {
     const existing = await this.messageRepository.findOne({
       where: { jobId, chat: { id: chatId } },
     });
-
+    const incoming = Array.isArray(data) ? data : [data];
     if (existing) {
       const currentParts = Array.isArray(existing.parts) ? existing.parts : [];
       await this.messageRepository.update(existing.id, {
-        parts: [...currentParts, data],
+        parts: [...currentParts, ...incoming],
       });
     } else {
       await this.messageRepository.save({
         chat: { id: chatId },
         role: MessageRole.ASSISTANT,
         jobId,
-        parts: [data],
+        parts: incoming,
       });
     }
   }

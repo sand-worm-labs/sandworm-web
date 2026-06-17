@@ -25,8 +25,6 @@ export abstract class BaseAiExecutorService {
         const event: BlockActionEvent = {
             action,
             blockType,
-            workspaceId: ctx.workspace_id,
-            documentId: ctx.document_id,
             blockId: block.getAttribute('id') ?? '',
             blockTitle: block.getAttribute('title') ?? '',
             chatId: ctx.chat_id,
