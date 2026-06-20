@@ -13,7 +13,6 @@ import {
   CardTitle,
 } from "@sandworm/ui/components/card";
 import { Input } from "@sandworm/ui/components/input";
-import { Button } from "@sandworm/ui/components/button";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
 import { useChainStore } from "@/store/chains";

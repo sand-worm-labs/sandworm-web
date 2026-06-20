@@ -34,10 +34,7 @@ interface FeaturedExploreCardProps {
   };
   stars: number;
   forks: number;
-  isSaved?: boolean;
   isFavorite?: boolean;
-  onSave?: (id: string) => void;
-  onClick?: (id: string) => void;
   variant?: "default" | "purple";
 }
 
@@ -60,7 +57,6 @@ export function FeaturedExploreCard({
   stars,
   forks,
   isFavorite,
-  onClick,
   variant = "default",
 }: FeaturedExploreCardProps) {
   const router = useRouter();
@@ -101,7 +97,7 @@ export function FeaturedExploreCard({
     }
   };
 
-  const handleForkClick = (e: React.MouseEvent) => {
+  const handleSaveClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsForkModalOpen(true);
   };
@@ -125,7 +121,7 @@ export function FeaturedExploreCard({
   return (
     <>
       <div
-        onClick={() => onClick?.(id)}
+        onClick={() => router.push(`/p/${id}`)}
         className={cn(
           "flex flex-col rounded-3xl py-5 border px-6 cursor-pointer transition-shadow font-body group/card",
           isPurple
@@ -134,7 +130,9 @@ export function FeaturedExploreCard({
         )}
         role="button"
         tabIndex={0}
-        onKeyDown={e => (e.key === "Enter" || e.key === " ") && onClick?.(id)}
+        onKeyDown={e =>
+          (e.key === "Enter" || e.key === " ") && router.push(`/p/${id}`)
+        }
       >
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
@@ -157,9 +155,11 @@ export function FeaturedExploreCard({
               Created {formattedDate}
             </span>
           </div>
+          {/* Save = fork to workspace */}
           <button
             type="button"
-            onClick={handleFavoriteClick}
+            onClick={handleSaveClick}
+            aria-label="Save to workspace"
             className={cn(
               "transition-colors rounded-full w-6 h-6 flex justify-center items-center",
               isPurple
@@ -168,13 +168,7 @@ export function FeaturedExploreCard({
             )}
           >
             <BookmarkSimple
-              className={cn(
-                isFavorited
-                  ? "fill-current"
-                  : isPurple
-                    ? "text-ink-400"
-                    : "text-[#1C3B5A]"
-              )}
+              className={cn(isPurple ? "text-ink-400" : "text-[#1C3B5A]")}
             />
           </button>
         </div>
@@ -218,7 +212,9 @@ export function FeaturedExploreCard({
           )}
         >
           <button
+            type="button"
             onClick={handleFavoriteClick}
+            aria-label={isFavorited ? "Unfavorite" : "Favorite"}
             className={cn(
               "flex items-center gap-1 transition-colors",
               isPurple ? "hover:text-yellow-300" : "hover:text-yellow-500"
@@ -232,8 +228,10 @@ export function FeaturedExploreCard({
           </button>
 
           <button
-            onClick={handleForkClick}
+            type="button"
+            onClick={handleSaveClick}
             disabled={forking}
+            aria-label="Fork to workspace"
             className={cn(
               "flex items-center gap-1 transition-colors disabled:opacity-50",
               isPurple ? "hover:text-blue-300" : "hover:text-blue-500"

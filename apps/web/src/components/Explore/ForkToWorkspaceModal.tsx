@@ -4,11 +4,10 @@
 // ⬢ Imports
 // =====================================
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState, useEffect, useMemo } from "react";
+import { Fragment, useState, useEffect, useMemo, useCallback } from "react";
 import { Check } from "lucide-react";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
-
 import type { ApiWorkspace } from "@/types";
 
 import { useWorkspaces } from "../Editor/hooks/useWorkspaces";
@@ -46,11 +45,15 @@ function WorkspaceRow({
   onSelect,
   disabled,
 }: WorkspaceRowProps) {
+  const handleClick = useCallback(
+    () => onSelect(workspace.id),
+    [onSelect, workspace.id]
+  );
   return (
     <button
       type="button"
       disabled={disabled}
-      onClick={() => onSelect(workspace.id)}
+      onClick={handleClick}
       className={[
         "w-full flex items-center gap-3 px-3 py-2 rounded-2xl transition-all duration-100 text-left border mb-1.5 border-[#DEE2E6]",
         "focus:outline-none ",
@@ -119,7 +122,7 @@ export function ForkToWorkspaceModal({
     }
   }, [isOpen]);
 
-  async function handleFork() {
+  const handleFork = useCallback(async () => {
     if (!canFork || !selectedId) return;
 
     setStatus("loading");
@@ -140,12 +143,12 @@ export function ForkToWorkspaceModal({
         err instanceof Error ? err.message : "Failed to fork. Please try again."
       );
     }
-  }
+  }, [canFork, selectedId, onFork, document.id, onClose, onForkSuccess]);
 
-  function handleClose() {
+  const handleClose = useCallback(() => {
     if (status === "loading") return;
     onClose();
-  }
+  }, [status, onClose]);
 
   const buttonLabel = useMemo(() => {
     if (status === "loading") return "Forking…";
