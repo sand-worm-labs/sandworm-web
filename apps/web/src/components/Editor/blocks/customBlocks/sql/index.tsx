@@ -1,11 +1,9 @@
 import {
-  PlayIcon,
-  StopIcon,
-  ClockIcon,
   SparklesIcon,
   BookOpenIcon,
   VariableIcon,
 } from "@heroicons/react/20/solid";
+import { PiPlay, PiStop, PiClock } from "react-icons/pi";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -882,7 +880,7 @@ function SQLBlock(props: Props) {
     >
       <div
         className={clsx(
-          "rounded-2xl border",
+          "rounded-2xl border border-[#E6E0F1]",
           props.isBlockHiddenInPublished && "border-dashed",
           props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-2xl",
           {
@@ -920,11 +918,11 @@ function SQLBlock(props: Props) {
               className={clsx(
                 "flex items-center justify-between px-3 pr-0 gap-x-4 font-body  h-12 rounded-t-2xl",
                 !isCodeHidden &&
-                  "divide-x divide-border-secondary dark:divide-border-tertiary",
+                  "divide-x divide-[#E9ECEF] dark:divide-border-tertiary",
                 props.hasMultipleTabs ? "rounded-tl-none" : "",
                 isCodeHidden && (isResultHidden || !result)
                   ? "rounded-b-md"
-                  : "border-b border-border-secondary dark:border-border-tertiary"
+                  : "border-b border-[#E6E0F1] dark:border-border-tertiary"
               )}
             >
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5 px-4">
@@ -945,10 +943,10 @@ function SQLBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-base font-body  font-medium pl-1 ring-gray-200 focus:ring-border-focus block w-full rounded-lg border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-base-100"
+                    "text-sm font-body  font-normal pl-1 ring-gray-200 focus:ring-border-focus block w-full rounded-lg border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-[#868E96] py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-base-100"
                   )}
                   placeholder={
-                    props.isEditable ? "SQL (click to add a title)" : "SQL"
+                    props.isEditable ? "Click to add a title..." : "SQL"
                   }
                   value={title}
                   onChange={onChangeTitle}
@@ -1222,21 +1220,27 @@ function SQLBlock(props: Props) {
                     !isRunButtonDisabled &&
                     (status._tag === "enqueued" ||
                       (status._tag === "running" && envStatus !== "Running")),
-                  "bg-primary text-white": !isRunButtonDisabled && status._tag === "idle",
+                  "bg-primary":
+                    !isRunButtonDisabled && status._tag === "idle",
+                  "bg-[#F8F9FA]":
+                    !isRunButtonDisabled &&
+                    status._tag !== "idle" &&
+                    status._tag !== "running" &&
+                    status._tag !== "enqueued",
                 },
-                "rounded-sm h-6 min-w-6 flex items-center justify-center relative group disabled:cursor-not-allowed"
+                "rounded-[5px] border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-gray-50"
               )}
             >
               {status._tag !== "idle" ? (
                 <div>
                   {status._tag === "enqueued" ? (
-                    <ClockIcon className="w-3 h-3 text-ink-400 " />
+                    <PiClock className="w-[13px] h-[13px] text-[#1C3B5A]" />
                   ) : (
-                    <StopIcon className="w-3 h-3 text-ink-400 " />
+                    <PiStop className="w-[13px] h-[13px] text-[#1C3B5A]" />
                   )}
                 </div>
               ) : (
-                <PlayIcon className="w-3 h-3 text-ink-400 " />
+                <PiPlay className="w-[13px] h-[13px] text-white" />
               )}
             </button>
           )}

@@ -246,7 +246,7 @@ function SQLSuccess(props: SQLSuccessProps) {
 
       <div
         className={clsx(
-          "flex w-full items-center justify-between border-border-secondary px-3 h-10 bg-gray-50 text-xs rounded-b-md text-ink-400",
+          "flex w-full items-center justify-between border-border-secondary px-3 h-10  text-xs rounded-b-md text-ink-400",
           ((props.dashboardMode &&
             (props.dashboardMode._tag === "live" ||
               props.dashboardMode.position !== "expanded")) ||

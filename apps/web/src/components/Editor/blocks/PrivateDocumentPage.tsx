@@ -3,7 +3,6 @@ import { useCallback, useMemo, useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { isNil } from "ramda";
 import Link from "next/link";
-import { EyeIcon } from "@heroicons/react/24/outline";
 import { AITasks, ExecutionQueue } from "@sandworm/editor";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
@@ -17,7 +16,6 @@ import {
 import type { ApiDocument } from "@/types";
 import { DataExplorerContent } from "@/components/ExplorerPanels/DataExplorerContent";
 import { MiniChat } from "@/components/Chats/MiniChat";
-import { PencilSimple } from "@/components/Assets/PencilSimple";
 import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
 import { useExportPDF } from "@/lib/useExportPDF";
@@ -396,21 +394,21 @@ function PrivateDocumentPageInner(
 
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
-      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-ink-400 dark:text-ink-400  font-body">
-        {props.isApp || isViewer ? (
-          <EyeIcon className="w-4 h-4" />
-        ) : (
-          <PencilSimple className="w-4 h-4" />
-        )}
-        <span className="w-full truncate">
-          <span className="font-semibold">
+      <div className="w-full  flex items-center gap-x-1.5 text-[13px] text-ink-400 dark:text-ink-400  font-body ">
+        <span className="w-full flex gap-x-2 items-center ">
+          <span className="font-normal bg-[#EBF7F7] rounded-full px-3 py-0.5 text-ink-100 border border-[#E9ECEF] flex gap-x-2 w-[90px] items-center  ">
+            <span className="relative flex items-center justify-center w-[10px] h-[10px]">
+              <span className="absolute inline-flex w-full h-full rounded-full bg-[#A308F0]/15" />
+              <span className="absolute inline-flex w-full h-full animate-[ping_1.8s_cubic-bezier(0,0,0.2,1)_infinite] rounded-full bg-[#A308F0]/30" />
+              <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-[#A308F0]" />
+            </span>
             {props.isApp || isViewer ? (
-              <span className="text-ink-400">Viewing</span>
+              <span className="text-ink-100">Viewing</span>
             ) : (
               "Editing"
             )}
           </span>{" "}
-          {documentTitle}
+          <span className="text-[#6C757D] ">/ {documentTitle}</span>
         </span>
       </div>
       <DashboardNotebookGroupButton
