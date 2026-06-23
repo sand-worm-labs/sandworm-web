@@ -1,9 +1,4 @@
-import {
-  SparklesIcon,
-  BookOpenIcon,
-  VariableIcon,
-} from "@heroicons/react/20/solid";
-import { PiPlay, PiStop, PiClock } from "react-icons/pi";
+import { PiPlay, PiStop, PiClock, PiCpu, PiDatabase } from "react-icons/pi";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -40,6 +35,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { Transition } from "@headlessui/react";
 import { useTheme } from "next-themes";
+import { HiVariable } from "react-icons/hi2";
 
 import type { ApiDocument, ApiWorkspace } from "@/types";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
@@ -71,6 +67,7 @@ import EditWithAIForm from "../../EditWithAIForm";
 
 import DataframeNameInput from "./DataframeNameInput";
 import SQLResult from "./SQLResult";
+
 // =====================================
 // ⬢ Types
 // =====================================
@@ -880,15 +877,15 @@ function SQLBlock(props: Props) {
     >
       <div
         className={clsx(
-          "rounded-2xl border border-[#E6E0F1]",
+          "rounded-2xl border-[1.5px] border-[#E6E0F1] shadow-[0px_7.5px_8px_0px_#8497C30A]",
           props.isBlockHiddenInPublished && "border-dashed",
           props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-2xl",
           {
-            "border-border-focus shadow-sm":
+            "border-[#E6E0F1] shadow-sm":
               isEditorFocused && editorState.mode === "insert",
-            "border-border-focus shadow-none":
+            "border-[#E6E0F1] shadow-none":
               isEditorFocused && editorState.mode === "normal",
-            "border-border-focus dark:border-border-tertiary": !isEditorFocused,
+            "border-[#E6E0F1] dark:border-border-tertiary": !isEditorFocused,
           }
         )}
       >
@@ -1038,7 +1035,7 @@ function SQLBlock(props: Props) {
             <div
               className={clsx((isResultHidden || !result) && "rounded-b-md")}
             >
-              <div className="print:hidden py-5">
+              <div className="print:hidden py-5 bg-[#F4FFFF]">
                 <div>
                   <CodeEditor
                     ref={codeEditor}
@@ -1084,7 +1081,7 @@ function SQLBlock(props: Props) {
                     "rounded-b-md": isResultHidden || !result,
                   })}
                 >
-                  <div className="flex justify-between text-xs">
+                  <div className="flex justify-between text-xs pt-2">
                     <div className="flex items-center">{queryStatusText}</div>
                     <div className="flex items-center gap-x-2">
                       {!props.isPublicMode &&
@@ -1097,12 +1094,12 @@ function SQLBlock(props: Props) {
                             onClick={onSchemaExplorer}
                             className={clsx(
                               !props.isEditable
-                                ? "cursor-not-allowed bg-gray-200"
-                                : "cusor-pointer hover:bg-gray-50 hover:text-ink-400  dark:hover:bg-base-500",
-                              "flex items-center border rounded-sm border-border-secondary px-2 py-1 gap-x-1 text-ink-400 group relative font-body "
+                                ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
+                                : "cursor-pointer hover:bg-gray-50 hover:text-gray-700",
+                              "flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
                             )}
                           >
-                            <BookOpenIcon className="w-3 h-3" />
+                            <PiDatabase className="w-[11.5px] h-[11.5px] text-ink-300" />
                             <span>Schema</span>
                           </button>
                         )}
@@ -1122,14 +1119,14 @@ function SQLBlock(props: Props) {
                                 ref={ref}
                                 disabled={!props.isEditable}
                                 className={clsx(
-                                  !props.isEditable || !hasOaiKey
+                                  !props.isEditable
                                     ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                                    : "cusor-pointer hover:bg-gray-50 dark:hover:bg-base-500 hover:text-gray-700",
-                                  "flex items-center border rounded-sm border-border-secondary px-2 py-1 gap-x-1 text-ink-400 group relative font-body "
+                                    : "cursor-pointer hover:bg-gray-50 hover:text-gray-700",
+                                  "flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
                                 )}
                                 onClick={onAddVariable}
                               >
-                                <VariableIcon className="w-3 h-3" />
+                                <HiVariable className="w-[11.5px] h-[11.5px] text-ink-300" />
                                 <span>Variable</span>
                               </button>
                             )}
@@ -1153,10 +1150,10 @@ function SQLBlock(props: Props) {
                                   !props.isEditable || !hasOaiKey
                                     ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
                                     : "cusor-pointer hover:bg-gray-50 hover:text-gray-700",
-                                  "flex items-center border rounded-sm border-border-secondary px-2 py-1 gap-x-1 text-ink-400 group relative font-body "
+                                  "flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body "
                                 )}
                               >
-                                <SparklesIcon className="w-3 h-3" />
+                                <PiCpu className="w-[11.5px] h-[11.5px] text-ink-300" />
                                 <span>Edit with AI</span>
                               </button>
                             )}
@@ -1220,8 +1217,7 @@ function SQLBlock(props: Props) {
                     !isRunButtonDisabled &&
                     (status._tag === "enqueued" ||
                       (status._tag === "running" && envStatus !== "Running")),
-                  "bg-primary":
-                    !isRunButtonDisabled && status._tag === "idle",
+                  "bg-primary": !isRunButtonDisabled && status._tag === "idle",
                   "bg-[#F8F9FA]":
                     !isRunButtonDisabled &&
                     status._tag !== "idle" &&
