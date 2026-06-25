@@ -924,7 +924,6 @@ function SQLBlock(props: Props) {
             >
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5 px-4">
                 <div className="relative group w-4 h-4">
-                  <CircleStackIcon className="absolute inset-0 h-5 w-5 text-ink-400 group-hover:opacity-0 transition-opacity" />
                   <button
                     type="button"
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -1035,7 +1034,7 @@ function SQLBlock(props: Props) {
             <div
               className={clsx((isResultHidden || !result) && "rounded-b-md")}
             >
-              <div className="print:hidden py-5 bg-[#F4FFFF]">
+              <div className="print:hidden py-5 ">
                 <div>
                   <CodeEditor
                     ref={codeEditor}
@@ -1081,7 +1080,7 @@ function SQLBlock(props: Props) {
                     "rounded-b-md": isResultHidden || !result,
                   })}
                 >
-                  <div className="flex justify-between text-xs pt-2">
+                  <div className="flex justify-between text-xs pt-2 ">
                     <div className="flex items-center">{queryStatusText}</div>
                     <div className="flex items-center gap-x-2">
                       {!props.isPublicMode &&
@@ -1196,9 +1195,9 @@ function SQLBlock(props: Props) {
       </div>
       <div
         className={clsx(
-          "absolute h-full transition-opacity opacity-0 group-hover/block:opacity-100 pl-1.5 right-0 top-0 translate-x-full flex flex-col gap-y-1",
+          "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-1 flex flex-row gap-x-1",
           isEditorFocused || statusIsDisabled ? "opacity-100" : "opacity-0",
-          !props.isEditable ? "hidden" : "block"
+          !props.isEditable ? "hidden" : "flex"
         )}
       >
         <TooltipV2<HTMLButtonElement> {...runTooltipContent} active>
