@@ -1,9 +1,4 @@
-import {
-  ClockIcon,
-  PlayIcon,
-  StopIcon,
-  SparklesIcon,
-} from "@heroicons/react/20/solid";
+import { PiPlayFill, PiStop, PiClock, PiCpu, PiCode } from "react-icons/pi";
 import type * as Y from "yjs";
 import {
   type YBlock,
@@ -29,6 +24,7 @@ import type { ConnectDragPreview } from "react-dnd";
 import { exhaustiveCheck } from "@sandworm/types";
 import { head } from "ramda";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { BlockTypePill } from "../../BlockTypePill";
 import { Transition } from "@headlessui/react";
 import { useTheme } from "next-themes";
 
@@ -562,7 +558,7 @@ function PythonBlock(props: Props) {
   // =====================================
   return (
     <div
-      className="bg-white dark:bg-base-100 relative group/block"
+      className="relative group/block mt-6"
       role="presentation"
       onClick={onClickWithin}
       onKeyDown={e => {
@@ -572,10 +568,14 @@ function PythonBlock(props: Props) {
     >
       <div
         className={clsx(
-          "rounded-2xl border border-border-focus",
+          "rounded-2xl border-[1.5px] border-[#E6E0F1] shadow-[0px_7.5px_8px_0px_#8497C30A]",
           props.isBlockHiddenInPublished && "border-dashed",
-          props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-xl",
-          isEditorFocused && editorState.mode === "insert" && "shadow-sm"
+          props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-2xl",
+          {
+            "border-[#E6E0F1] shadow-sm": isEditorFocused && editorState.mode === "insert",
+            "border-[#E6E0F1] shadow-none": isEditorFocused && editorState.mode === "normal",
+            "border-[#E6E0F1] dark:border-border-tertiary": !isEditorFocused,
+          }
         )}
       >
         <div
@@ -587,17 +587,16 @@ function PythonBlock(props: Props) {
         >
           <div
             className={clsx(
-              "rounded-t-2xl",
-              isCodeHidden && isResultHidden
-                ? "rounded-b-2xl"
-                : "border-b border-border-secondary dark:border-border-tertiary"
+              "rounded-t-2xl dark:bg-base-100",
+              props.hasMultipleTabs ? "rounded-tl-none" : "",
+              isCodeHidden && isResultHidden ? "rounded-b-2xl" : "border-b border-[#E6E0F1] dark:border-border-tertiary"
             )}
             ref={d => {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-4 gap-x-4 font-body h-12">
-              <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
+            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body h-10 rounded-t-2xl">
+              <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5 px-4">
                 <div className="relative group w-4 h-4">
                   <CodeIcon className="absolute inset-0 h-4 w-4 text-ink-400 group-hover:opacity-0 transition-opacity" />
                   <button
@@ -615,11 +614,11 @@ function PythonBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-base font-body font-medium pl-1 ring-border-secondary focus:ring-primary/40 block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white focus-visible:ring-none focus-visible:outline-none"
+                    "text-sm font-body font-normal pl-1 ring-gray-200 focus:ring-border-focus block w-full rounded-lg border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-[#868E96] py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-base-100"
                   )}
                   placeholder={
                     props.isEditable
-                      ? "Python (click to add a title)"
+                      ? "Add a title..."
                       : "Python"
                   }
                   value={title}
@@ -720,12 +719,12 @@ function PythonBlock(props: Props) {
                             onClick={onToggleEditWithAIPromptOpen}
                             className={clsx(
                               !props.isEditable || !hasOaiKey
-                                ? "cursor-not-allowed bg-gray-200"
-                                : "cursor-pointer hover:bg-gray-50 hover:text-gray-700",
-                              "flex items-center border rounded-sm border-border-secondary px-2 py-1 gap-x-1 text-ink-400 group relative font-body"
+                                ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
+                                : "cusor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
+                              "flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
                             )}
                           >
-                            <SparklesIcon className="w-3 h-3" />
+                            <PiCpu className="w-[11.5px] h-[11.5px] text-ink-300" />
                             <span>Edit with AI</span>
                           </button>
                         )}
@@ -769,11 +768,14 @@ function PythonBlock(props: Props) {
         </Transition>
       </div>
 
+      <div className="absolute left-0 top-0 -translate-y-full pb-1">
+        <BlockTypePill label="Python" icon={<PiCode className="w-3 h-3" />} />
+      </div>
       <div
         className={clsx(
-          "absolute h-full transition-opacity opacity-0 group-hover/block:opacity-100 pl-1.5 right-0 top-0 translate-x-full flex flex-col gap-y-1 z-20",
+          "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-1 flex flex-row gap-x-1",
           isEditorFocused || statusIsDisabled ? "opacity-100" : "opacity-0",
-          !props.isEditable ? "hidden" : "block"
+          !props.isEditable ? "hidden" : "flex"
         )}
       >
         <TooltipV2<HTMLButtonElement> {...runTooltipContent} active>
@@ -791,21 +793,26 @@ function PythonBlock(props: Props) {
                     !isRunButtonDisabled &&
                     (status === "enqueued" ||
                       (status === "running" && envStatus !== "Running")),
-                  "bg-[#A308F0]": !isRunButtonDisabled && status === "idle",
+                  "bg-[#FEFEFF]": !isRunButtonDisabled && status === "idle",
+                  "bg-[#F8F9FA]":
+                    !isRunButtonDisabled &&
+                    status !== "idle" &&
+                    status !== "running" &&
+                    status !== "enqueued",
                 },
-                "rounded-sm h-6 min-w-6 flex items-center justify-center relative group disabled:cursor-not-allowed"
+                "rounded-[5px] border-[#E6E0F1] border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-gray-50"
               )}
             >
               {status !== "idle" ? (
                 <div>
                   {status === "enqueued" ? (
-                    <ClockIcon className="w-3 h-3 text-[#F8F9FA]" />
+                    <PiClock className="w-[13px] h-[13px] text-[#1C3B5A]" />
                   ) : (
-                    <StopIcon className="w-3 h-3 text-[#F8F9FA]" />
+                    <PiStop className="w-[13px] h-[13px] text-[#1C3B5A]" />
                   )}
                 </div>
               ) : (
-                <PlayIcon className="w-3 h-3 text-[#F8F9FA]" />
+                <PiPlayFill className="w-[13px] h-[13px] text-[#1C3B5A]" />
               )}
             </button>
           )}

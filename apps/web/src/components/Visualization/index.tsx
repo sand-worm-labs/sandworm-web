@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from "uuid";
-import { ClockIcon, StopIcon, PlayIcon } from "@heroicons/react/20/solid";
 import * as Y from "yjs";
 import type {
   ExecutionQueue,
@@ -37,7 +36,8 @@ import {
 } from "@sandworm/types";
 import type { ConnectDragPreview } from "react-dnd";
 import { equals, head, omit } from "ramda";
-import { PiChartBar } from "react-icons/pi";
+import { PiChartBar, PiPlayFill, PiStop, PiClock } from "react-icons/pi";
+import { BlockTypePill } from "@/components/Editor/blocks/BlockTypePill";
 
 import type { ApiDocument } from "@/types";
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
@@ -791,35 +791,34 @@ function VisualizationBlockV2(props: Props) {
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div
-      className="group/block w-full"
+      className="relative group/block w-full mt-6"
       onClick={onClickWithin}
       data-block-id={attrs.id}
     >
       <div
         className={clsx(
-          "rounded-2xl border",
+          "rounded-2xl border-[1.5px] border-[#E6E0F1] shadow-[0px_7.5px_8px_0px_#8497C30A]",
           props.isBlockHiddenInPublished && "border-dashed",
           props.isCursorWithin
             ? "border-border-focus shadow-sm"
-            : "border-border-focus dark:border-border-tertiary"
+            : "border-[#E6E0F1] dark:border-border-tertiary"
         )}
       >
         <div className="rounded-2xl">
           <div
-            className="border-b border-border-focus dark:border-border-tertiary rounded-t-2xl"
+            className="border-b border-[#E6E0F1] dark:border-border-tertiary rounded-t-2xl"
             ref={d => {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body h-12 divide-x divide-border-secondary dark:divide-border-tertiary">
-              <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-0.5 px-1">
-                <PiChartBar className="h-5 w-5 text-ink-400" />
+            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body h-10 divide-x divide-[#E9ECEF] dark:divide-border-tertiary">
+              <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5 px-4">
                 <input
                   type="text"
                   className={clsx(
-                    "text-base font-body font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-400 dark:placeholder:text-ink-300 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white dark:text-white"
+                    "text-sm font-body font-normal pl-1 ring-gray-200 focus:ring-border-focus block w-full rounded-lg border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-[#868E96] py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-base-100"
                   )}
-                  placeholder="Visualization (click to add a title)"
+                  placeholder="Click to add a title..."
                   value={attrs.title}
                   onChange={onChangeTitle}
                   disabled={!props.isEditable}
@@ -928,9 +927,12 @@ function VisualizationBlockV2(props: Props) {
           />
         </div>
 
+        <div className="absolute left-0 top-0 -translate-y-full pb-1">
+          <BlockTypePill label="Chart" icon={<PiChartBar className="w-3 h-3" />} />
+        </div>
         <div
           className={clsx(
-            "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 translate-x-full pl-1.5 top-0 flex flex-col gap-y-1",
+            "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-1 flex flex-row gap-x-1",
             viewLoading ? "opacity-100" : "opacity-0",
             { hidden: !props.isEditable }
           )}
@@ -949,9 +951,14 @@ function VisualizationBlockV2(props: Props) {
                       !isRunButtonDisabled &&
                       (status === "enqueued" ||
                         (status === "running" && envStatus !== "Running")),
-                    "bg-primary-200": !isRunButtonDisabled && status === "idle",
+                    "bg-[#FEFEFF]": !isRunButtonDisabled && status === "idle",
+                    "bg-[#F8F9FA]":
+                      !isRunButtonDisabled &&
+                      status !== "running" &&
+                      status !== "enqueued" &&
+                      status !== "idle",
                   },
-                  "rounded-sm h-6 min-w-6 flex items-center justify-center relative group disabled:cursor-not-allowed"
+                  "rounded-[5px] border-[#E6E0F1] border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-gray-50"
                 )}
                 onClick={onRunAbort}
                 disabled={isRunButtonDisabled}
@@ -959,13 +966,13 @@ function VisualizationBlockV2(props: Props) {
                 {status !== "idle" ? (
                   <div>
                     {status === "enqueued" ? (
-                      <ClockIcon className="w-3 h-3 text-ink-400" />
+                      <PiClock className="w-[13px] h-[13px] text-[#1C3B5A]" />
                     ) : (
-                      <StopIcon className="w-3 h-3 text-ink-400" />
+                      <PiStop className="w-[13px] h-[13px] text-[#1C3B5A]" />
                     )}
                   </div>
                 ) : (
-                  <PlayIcon className="w-3 h-3 text-ink-400" />
+                  <PiPlayFill className="w-[13px] h-[13px] text-[#1C3B5A]" />
                 )}
               </button>
             )}

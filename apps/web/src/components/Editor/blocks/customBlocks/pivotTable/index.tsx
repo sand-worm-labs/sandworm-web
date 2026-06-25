@@ -20,8 +20,8 @@ import clsx from "clsx";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { equals, head } from "ramda";
-import { ClockIcon, PlayIcon, StopIcon } from "@heroicons/react/20/solid";
-import { TableCellsIcon } from "@heroicons/react/24/solid";
+import { PiPlayFill, PiStop, PiClock, PiTable } from "react-icons/pi";
+import { BlockTypePill } from "../../BlockTypePill";
 
 // FIX import/no-named-as-default: LargeSpinner is a named export, not default
 import { LargeSpinner } from "../../LargeSpinner";
@@ -505,43 +505,42 @@ function PivotTableBlock(props: Props) {
   return (
     <button
       type="button"
-      className="relative group/block w-full"
+      className="relative group/block w-full mt-6"
       onClick={onClickWithin}
       data-block-id={attrs.id}
     >
       <div
         className={clsx(
-          "rounded-md border",
+          "rounded-2xl border-[1.5px] border-[#E6E0F1] shadow-[0px_7.5px_8px_0px_#8497C30A]",
           props.isBlockHiddenInPublished && "border-dashed",
-          props.hasMultipleTabs ? "rounded-tl-none" : "rounded-tl-md",
+          props.hasMultipleTabs ? "rounded-tl-none" : "rounded-tl-2xl",
           props.isCursorWithin
-            ? "border-border-tertiaryshadow-sm"
-            : "border-border-secondary dark:border-border-tertiary"
+            ? "border-border-focus shadow-sm"
+            : "border-[#E6E0F1] dark:border-border-tertiary"
         )}
       >
         <div
           className={clsx(
-            "rounded-md",
+            "rounded-2xl",
             props.hasMultipleTabs ? "rounded-tl-none" : ""
           )}
         >
           <div
-            className="border-b border-border-secondary dark:border-border-tertiary bg-gray-50 dark:bg-base-100  rounded-t-md"
+            className="border-b border-[#E6E0F1] dark:border-border-tertiary rounded-t-2xl"
             ref={d => {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body  h-12 divide-x divide-border-secondary dark:divide-border-tertiary">
-              <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
-                <TableCellsIcon className="h-4 w-4 text-ink-400" />
+            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body  h-10 divide-x divide-[#E9ECEF] dark:divide-border-tertiary">
+              <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5 px-4">
                 <input
                   type="text"
                   className={clsx(
-                    "text-sm font-body  font-medium pl-1 ring-gray-200 focus:ring-gray-400 block w-full rounded-md border-0 text-gray-800 dark:text-white hover:ring-1 focus:ring-1 ring-inset placeholder:text-ink-400 focus:ring-inset py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white dark:focus:ring-[#262A30] dark:focus:bg-[#181C21] "
+                    "text-sm font-body font-normal pl-1 ring-gray-200 focus:ring-border-focus block w-full rounded-lg border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-[#868E96] py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-base-100"
                   )}
                   placeholder={
                     props.isEditable
-                      ? "Pivot Table (click to add a title)"
+                      ? "Add a title..."
                       : "Pivot Table"
                   }
                   value={attrs.title}
@@ -549,7 +548,7 @@ function PivotTableBlock(props: Props) {
                   disabled={!props.isEditable}
                 />
               </div>
-              <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-border-secondary dark:divide-border-tertiary">
+              <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-[#E9ECEF] dark:divide-border-tertiary">
                 <HeaderSelect
                   value={dataframe?.name ?? ""}
                   onChange={onChangeDataframe}
@@ -595,9 +594,12 @@ function PivotTableBlock(props: Props) {
           />
         </div>
       </div>
+      <div className="absolute left-0 top-0 -translate-y-full pb-1">
+        <BlockTypePill label="Pivot" icon={<PiTable className="w-3 h-3" />} />
+      </div>
       <div
         className={clsx(
-          "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 translate-x-full pl-1.5 top-0 flex flex-col gap-y-1",
+          "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-1 flex flex-row gap-x-1",
           execStatusIsDisabled(execStatus) ? "opacity-100" : "opacity-0",
           {
             hidden: !props.isEditable,
@@ -617,9 +619,9 @@ function PivotTableBlock(props: Props) {
                     !isRunButtonDisabled &&
                     (status === "enqueued" ||
                       (status === "running" && envStatus !== "Running")),
-                  "bg-primary-200": !isRunButtonDisabled && status === "idle",
+                  "bg-[#FEFEFF]": !isRunButtonDisabled && status === "idle",
                 },
-                "rounded-sm h-6 min-w-6 flex items-center justify-center relative group disabled:cursor-not-allowed"
+                "rounded-[5px] border-[#E6E0F1] border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-gray-50"
               )}
               onClick={onRunAbort}
               disabled={!dataframe || isRunButtonDisabled}
@@ -627,13 +629,13 @@ function PivotTableBlock(props: Props) {
               {isExecutionStatusLoading(execStatus) ? (
                 <div>
                   {execStatus === "enqueued" ? (
-                    <ClockIcon className="w-3 h-3 text-ink-400 " />
+                    <PiClock className="w-[13px] h-[13px] text-[#1C3B5A]" />
                   ) : (
-                    <StopIcon className="w-3 h-3 text-ink-400 " />
+                    <PiStop className="w-[13px] h-[13px] text-[#1C3B5A]" />
                   )}
                 </div>
               ) : (
-                <PlayIcon className="w-3 h-3 text-ink-400 " />
+                <PiPlayFill className="w-[13px] h-[13px] text-[#1C3B5A]" />
               )}
             </button>
           )}

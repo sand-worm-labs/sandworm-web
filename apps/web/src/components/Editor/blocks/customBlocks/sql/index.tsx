@@ -1,4 +1,11 @@
-import { PiPlayFill, PiStop, PiClock, PiCpu, PiDatabase } from "react-icons/pi";
+import {
+  PiPlayFill,
+  PiStop,
+  PiClock,
+  PiCpu,
+  PiDatabase,
+  PiCode,
+} from "react-icons/pi";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -58,7 +65,6 @@ import { useAITaskActions, useAITasks } from "../../../hooks/useAITasks";
 import CodeEditor from "../CodeEditor";
 import type { CodeEditorRef } from "../CodeEditor";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
-import FormatSQLButton from "../../FormatSQLButton";
 import ApproveDiffButons from "../../ApproveDiffButtons";
 import EditWithAIForm from "../../EditWithAIForm";
 
@@ -1127,6 +1133,33 @@ function SQLBlock(props: Props) {
                           </TooltipV2>
                         )}
                       {!props.isPublicMode &&
+                        props.isEditable &&
+                        aiSuggestions === null &&
+                        !isAIFixing && (
+                          <TooltipV2<HTMLButtonElement>
+                            message="Format and structure your SQL code for better readability."
+                            active
+                          >
+                            {ref => (
+                              <button
+                                type="button"
+                                ref={ref}
+                                disabled={!props.isEditable}
+                                className={clsx(
+                                  !props.isEditable
+                                    ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
+                                    : "cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
+                                  "flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
+                                )}
+                                onClick={onToggleFormatSQLCode}
+                              >
+                                <PiCode className="w-[11.5px] h-[11.5px] text-ink-300" />
+                                <span>Format</span>
+                              </button>
+                            )}
+                          </TooltipV2>
+                        )}
+                      {!props.isPublicMode &&
                         aiSuggestions === null &&
                         props.isEditable &&
                         !isAIFixing && (
@@ -1261,14 +1294,6 @@ function SQLBlock(props: Props) {
               onSave={onSaveReusableComponent}
               disabled={!props.isEditable || isComponentInstance}
               isComponentInstance={isComponentInstance}
-            />
-          )}
-
-        {((result && !isResultHidden) || !isCodeHidden) &&
-          !props.dashboardMode && (
-            <FormatSQLButton
-              onFormat={onToggleFormatSQLCode}
-              disabled={!props.isEditable}
             />
           )}
       </div>
