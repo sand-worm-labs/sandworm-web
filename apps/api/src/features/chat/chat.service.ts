@@ -7,7 +7,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { Observable, Subscriber } from 'rxjs';
+import { Observable, Subscriber, firstValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
 import {
   ChatEntity,
   DocumentEntity,
@@ -27,6 +28,7 @@ import {
 import { MessageRole } from './types/message.types';
 import { AllConfigType } from '@/core/config/config.type';
 import { TitleAiExecutorService } from '../ai-execution/service/title-ai-executor.service';
+import { WorkspaceService } from '../workspace/service/workspace.service';
 import type { FastifyReply } from 'fastify/types/reply';
 import type { FastifyRequest } from 'fastify/types/request';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -73,7 +75,9 @@ export class ChatService implements OnModuleInit {
     private readonly voteRepository: Repository<VoteEntity>,
     private readonly configService: ConfigService<AllConfigType>,
     private readonly titleAiExecutorService: TitleAiExecutorService,
-    private readonly eventEmitter: EventEmitter2
+    private readonly eventEmitter: EventEmitter2,
+    private readonly httpService: HttpService,
+    private readonly workspaceService: WorkspaceService,
   ) {
     this.aiBaseUrl = this.configService.getOrThrow('ai.url', { infer: true });
     this.handshakeToken = this.configService.getOrThrow('ai.handshakeToken', { infer: true });
@@ -89,8 +93,54 @@ export class ChatService implements OnModuleInit {
     this.logger.log(`[ai-job] chatId=${event.chatId} jobId=${event.jobId} type=${event.type}`);
   }
 
-  private handleChatMessageCreated(event: MessageCreatedEvent): void {
-    this.logger.log(`[message-created] chatId=${event.chatId}`);
+  private async handleChatMessageCreated(event: MessageCreatedEvent): Promise<void> {
+    const [chat, messages] = await Promise.all([
+      this.chatRepository.findOne({ where: { id: event.chatId } }),
+      this.messageRepository.find({
+        where: { chat: { id: event.chatId } },
+        order: { createdAt: 'DESC' },
+      }),
+    ]);
+
+    if (!chat) return;
+
+    const lastUserMessage = messages.find(m => m.role === MessageRole.USER);
+    const focusedBlockIds = lastUserMessage?.focusedBlocks?.map(b => b.id) ?? [];
+    const openrouterApiKey = await this.workspaceService.getWorkspaceAiKey(chat.workspaceId);
+    if (!openrouterApiKey) {
+      this.logger.warn(`[message-created] no OpenRouter API key for workspace=${chat.workspaceId}, skipping`);
+      return;
+    }
+
+    const payload = {
+      messages: messages.map(m => ({ role: m.role, content: m.content ?? '' })),
+      model: lastUserMessage?.model ?? '',
+      openrouter_api_key: openrouterApiKey ?? '',
+      context: {
+        user_id: chat.userId,
+        workspace_id: chat.workspaceId,
+        document_id: chat.documentId,
+        focused_block_ids: focusedBlockIds,
+        chat_id: chat.id,
+      },
+      derived_context: '',
+      stream: false,
+      temperature: 0.7,
+      max_tokens: 0  
+    };
+
+    this.logger.log(JSON.stringify(payload, null, 2));
+
+    // const response = await firstValueFrom(
+    //   this.httpService.post(`${this.aiBaseUrl}/chat/completions`, payload, {
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'x-handshake-token': this.handshakeToken,
+    //     },
+    //   }),
+    // );
+
+    //this.logger.log(`[chat-completions] status=${response.status}`);
   }
 
   async chatExists(chatId: string): Promise<boolean> {
