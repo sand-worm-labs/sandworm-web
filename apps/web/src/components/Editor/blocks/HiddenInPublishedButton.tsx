@@ -41,7 +41,7 @@ function HiddenInPublishedButton(props: Props) {
               {ref => (
                 <Menu.Button
                   ref={ref}
-                  className="bg-[#F8F9FA] rounded-[5px] border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group hover:bg-gray-50"
+                  className="bg-[#FEFEFF] rounded-[5px] border border-[#E6E0F1] dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group hover:bg-gray-50"
                 >
                   <PiEye className="w-[13px] h-[13px] text-[#1C3B5A] group-hover:text-ink-400 " />
                 </Menu.Button>

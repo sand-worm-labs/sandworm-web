@@ -9,11 +9,9 @@ import type {
 import { migrateSuccessSQLResult } from "@sandworm/types";
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { SparklesIcon } from "@heroicons/react/20/solid";
-import { ChartPieIcon } from "@heroicons/react/24/solid";
 import debounce from "lodash.debounce";
 import { Transition } from "@headlessui/react";
-import { PiFileCsvLight } from "react-icons/pi";
+import { PiFileCsvLight, PiSparkle, PiChartPie } from "react-icons/pi";
 
 import { Tooltip, TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
@@ -246,7 +244,7 @@ function SQLSuccess(props: SQLSuccessProps) {
 
       <div
         className={clsx(
-          "flex w-full items-center justify-between border-border-secondary px-3 h-10  text-xs rounded-b-md text-ink-400",
+          "flex w-full items-center justify-between border-[#E6E0F1] px-3 h-10  text-xs rounded-b-xl text-ink-400 bg-[#F8F9FA]",
           ((props.dashboardMode &&
             (props.dashboardMode._tag === "live" ||
               props.dashboardMode.position !== "expanded")) ||
@@ -291,19 +289,22 @@ function SQLSuccess(props: SQLSuccessProps) {
             <Tooltip
               title="Visualize results"
               message="Create a new tab with a visualization of this data."
-              className="flex h-full items-center"
+              className="flex items-center"
               tooltipClassname="w-40"
               active
             >
               <button
                 type="button"
                 className={clsx(
-                  " bg-white hover:bg-gray-100 border border-border-tertiary py-0.5 px-2 rounded-full text-ink-400  flex items-center gap-x-1 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed h-full"
+                  props.isAddVisualizationDisabled
+                    ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
+                    : "cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
+                  "flex items-center h-full border rounded-full border-[#E6E0F1] px-2 gap-x-1 text-ink-300 group relative font-body bg-[#FEFEFF] py-0.5"
                 )}
                 disabled={props.isAddVisualizationDisabled}
                 onClick={props.onAddVisualization}
               >
-                <ChartPieIcon className="w-3 h-3 shrink-0" />
+                <PiChartPie className="w-[11.5px] h-[11.5px] shrink-0 text-[#868E96]" />
                 <span>Visualize</span>
               </button>
             </Tooltip>
@@ -324,9 +325,9 @@ function SQLSuccess(props: SQLSuccessProps) {
                 disabled={csvRes.loading}
                 className={clsx(
                   csvRes.loading
-                    ? "bg-gray-100"
-                    : "bg-white hover:bg-gray-100 border border-border-tertiary",
-                  "py-0.5 px-2 rounded-full text-ink-400  flex items-center gap-x-1 h-full aspect-square"
+                    ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
+                    : "cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary bg-[#FEFEFF]",
+                  "flex items-center h-full border rounded-full border-[#E6E0F1] px-2 gap-x-1 text-ink-300 group relative font-body"
                 )}
                 onClick={onDownloadCSV}
               >
@@ -334,7 +335,7 @@ function SQLSuccess(props: SQLSuccessProps) {
                   <Spin />
                 ) : (
                   <>
-                    <PiFileCsvLight className="w-3.5 h-3.5 shrink-0" />
+                    <PiFileCsvLight className="w-[11.5px] h-[11.5px] shrink-0 text-[#868E96]" />
                     <span>CSV</span>
                   </>
                 )}
@@ -453,7 +454,12 @@ function SQLSyntaxError(props: {
                     type="button"
                     disabled={!props.canFixWithAI}
                     onClick={props.onFixWithAI}
-                    className="mt-4 flex items-center border rounded-sm px-2 py-1 gap-x-2  border-border-secondary hover:bg-gray-50 hover:text-gray-700 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed"
+                    className={clsx(
+                      !props.canFixWithAI
+                        ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
+                        : "cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
+                      "mt-4 flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
+                    )}
                   >
                     {props.isFixingWithAI ? (
                       <>
@@ -462,7 +468,7 @@ function SQLSyntaxError(props: {
                       </>
                     ) : (
                       <>
-                        <SparklesIcon className="w-3 h-3" />
+                        <PiSparkle className="w-[11.5px] h-[11.5px]" />
                         Fix with AI
                       </>
                     )}

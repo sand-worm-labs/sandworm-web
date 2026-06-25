@@ -1,7 +1,4 @@
-import {
-  ExclamationCircleIcon,
-  QuestionMarkCircleIcon,
-} from "@heroicons/react/24/solid";
+import { PiExclamationMarkFill, PiQuestionFill } from "react-icons/pi";
 import type * as Y from "yjs";
 import type { ExecutionQueue, SQLBlock } from "@sandworm/editor";
 import { useCallback } from "react";
@@ -133,14 +130,14 @@ function DataframeNameInput(props: Props) {
   }
 
   return (
-    <div className="relative min-w-[148px] h-full group">
+    <div className="relative w-auto max-w-[6.8rem] h-auto  group mx-[1rem]">
       <input
         type="text"
         className={clsx(
           dataframeName.error
             ? "bg-red-50 group-hover:bg-red-100"
-            : "bg-transparent group-hover:bg-gray-100/50",
-          "pl-2.5 pr-8 block w-full border-0 text-ink-400 ring-0 focus:ring-0 placeholder:text-ink-400 text-xs disabled:cursor-not-allowed h-full focus:!bg-white  dark:focus:bg-base-100 font-mono font-medium"
+            : "bg-[#F1F2F4] group-hover:bg-gray-100/50",
+          "pl-2.5 pr-8 py-1.5 block w-full border-0 text-ink-400 ring-0 focus:ring-0 placeholder:text-ink-400 text-[0.8rem] disabled:cursor-not-allowed h-full focus:!bg-white  dark:focus:bg-base-100 font-body-mono font-normal rounded-md"
         )}
         placeholder="DataFrame name"
         value={dataframeName.newValue}
@@ -156,8 +153,8 @@ function DataframeNameInput(props: Props) {
               disabled={dataframeName.error !== "unexpected"}
               onClick={onRetry}
             >
-              <ExclamationCircleIcon
-                className="h-4 w-4 text-red-300"
+              <PiExclamationMarkFill
+                className="h-4 w-4 text-error"
                 aria-hidden="true"
               />
             </button>
@@ -169,17 +166,18 @@ function DataframeNameInput(props: Props) {
             </div>
           </>
         ) : (
-          <TooltipV2<SVGSVGElement>
+          <TooltipV2<HTMLSpanElement>
             message="Use this variable name to reference the results as a Pandas DataFrame in further Python blocks."
             active
             className="w-44"
           >
             {ref => (
-              <QuestionMarkCircleIcon
-                className="h-4 w-4 text-gray-300"
-                aria-hidden="true"
-                ref={ref}
-              />
+              <span ref={ref} className="inline-flex">
+                <PiQuestionFill
+                  className="h-4 w-4 text-[#868E96]"
+                  aria-hidden="true"
+                />
+              </span>
             )}
           </TooltipV2>
         )}

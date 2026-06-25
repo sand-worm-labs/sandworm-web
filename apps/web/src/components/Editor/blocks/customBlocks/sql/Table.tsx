@@ -108,7 +108,7 @@ function Table(props: Props) {
                       rowIndex === props.rows.length - 1 && !props.isDashboard
                         ? "border-b-0"
                         : "border-b",
-                      "px-3 py-2 text-[#343A40] whitespace-nowrap border-[#E6E0F1] "
+                      "px-3 py-2 text-ink-400 whitespace-nowrap border-[#E6E0F1] "
                     )}
                   >
                     {cell === null ? (
