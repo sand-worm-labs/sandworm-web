@@ -79,10 +79,18 @@ export class ChatService implements OnModuleInit {
     this.handshakeToken = this.configService.getOrThrow('ai.handshakeToken', { infer: true });
   }
 
+
   onModuleInit(): void {
-    this.eventEmitter.on(AiJobEventNames.AI_JOB_EVENT, (event: AiJobEvent) => {
-      this.logger.log(`[ai-job] chatId=${event.chatId} jobId=${event.jobId} type=${event.type}`);
-    });
+    this.eventEmitter.on(AiJobEventNames.AI_JOB_EVENT, (event: AiJobEvent) => this.handleAiJobEvent(event));
+    this.eventEmitter.on(MessageEventNames.MESSAGE_CREATED, (event: MessageCreatedEvent) => this.handleChatMessageCreated(event));
+  }
+
+  private handleAiJobEvent(event: AiJobEvent): void {
+    this.logger.log(`[ai-job] chatId=${event.chatId} jobId=${event.jobId} type=${event.type}`);
+  }
+
+  private handleChatMessageCreated(event: MessageCreatedEvent): void {
+    this.logger.log(`[message-created] chatId=${event.chatId}`);
   }
 
   async chatExists(chatId: string): Promise<boolean> {
