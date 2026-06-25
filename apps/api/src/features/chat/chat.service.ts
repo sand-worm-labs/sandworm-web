@@ -31,6 +31,7 @@ import type { FastifyReply } from 'fastify/types/reply';
 import type { FastifyRequest } from 'fastify/types/request';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AiJobEvent,AiJobEventNames } from '@/core/events/ai-job.events';
+import { MessageCreatedEvent, MessageEventNames } from '@/core/events/message.events';
 
 export interface SseEvent {
   event?: 'part' | 'token';
@@ -154,6 +155,8 @@ export class ChatService implements OnModuleInit {
       }),
     );
 
+    this.eventEmitter.emit(MessageEventNames.MESSAGE_CREATED, { chatId: savedChat.id } satisfies MessageCreatedEvent);
+
     if (input.updateDocumentTitle) {
       this.titleAiExecutorService.updateTitle(documentId, workspaceId, title);
     }
@@ -234,6 +237,8 @@ export class ChatService implements OnModuleInit {
         focusedBlocks: focusedBlocks ?? null,
       }),
     );
+
+    this.eventEmitter.emit(MessageEventNames.MESSAGE_CREATED, { chatId } satisfies MessageCreatedEvent);
 
     return Message.fromEntity(message);
   }
