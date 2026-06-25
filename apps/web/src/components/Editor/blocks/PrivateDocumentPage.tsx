@@ -20,6 +20,7 @@ import { MiniChat } from "@/components/Chats/MiniChat";
 import { PencilSimple } from "@/components/Assets/PencilSimple";
 import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
+import { useExportPDF } from "@/lib/useExportPDF";
 
 import { useDataSources } from "../hooks/useDataSources";
 import { useDocuments } from "../hooks/useDocuments";
@@ -84,6 +85,7 @@ function PrivateDocumentPageInner(
     [props.document.title]
   );
   const { state: sidebarState } = useSideBar();
+  const { isPrinting, triggerPrint } = useExportPDF();
 
   const [selectedSidebar, setSelectedSidebar] = useState<
     | { _tag: "comments" }
@@ -352,6 +354,8 @@ function PrivateDocumentPageInner(
           link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook`}
           initialVisibility="WORKSPACE"
           onVisibilityChange={handleVisibilityChange}
+          onExportPDF={triggerPrint}
+          isExportingPDF={isPrinting}
         />
         <EllipsisDropdown
           onToggleSchedules={onToggleSchedules}
@@ -385,6 +389,8 @@ function PrivateDocumentPageInner(
       props.workspaceId,
       props.documentId,
       handleVisibilityChange,
+      triggerPrint,
+      isPrinting,
     ]
   );
 
@@ -489,7 +495,7 @@ function PrivateDocumentPageInner(
             isDeleted={isDeleted}
             onRestoreDocument={onRestoreDocument}
             isEditable={!props.isApp && !isViewer}
-            isPDF={false}
+            isPDF={isPrinting}
             isApp={props.isApp}
             userId={props.user.id}
             role={role}

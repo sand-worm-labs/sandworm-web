@@ -97,7 +97,7 @@ export default function Layout({
         <div
           className={clsx(
             isSideBarOpen ? "px-8" : "pr-8",
-            "shrink-0 w-full h-12 border-b border-border-secondary dark:border-border-tertiary flex justify-between",
+            "shrink-0 w-full h-12 border-b border-border-secondary dark:border-border-tertiary flex justify-between print:hidden",
             topBarClassname
           )}
         >

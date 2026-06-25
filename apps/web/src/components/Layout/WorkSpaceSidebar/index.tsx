@@ -214,6 +214,7 @@ export const WorkspaceSidebar = () => {
           border-r border-border-secondary dark:border-border-tertiary
           font-body flex flex-col justify-between
           transition-all duration-300 ease-in-out relative
+          print:hidden
           ${isMobile ? "fixed top-0 left-0 h-full z-50 w-[17.5rem]" : "h-full"}
           ${
             isMobile

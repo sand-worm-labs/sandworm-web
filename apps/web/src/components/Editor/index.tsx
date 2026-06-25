@@ -1001,7 +1001,7 @@ file`;
         className={clsx(
           "flex flex-col gap-y-1 absolute -translate-x-[calc(100%+4px)] h-full",
           {
-            hidden: !props.isEditable || props.isApp,
+            hidden: !props.isEditable || props.isApp || props.isPDF,
           }
         )}
       >
@@ -1153,7 +1153,7 @@ const V2EditorRow = (props: {
   const isLast = props.index === props.totalBlocks - 1;
   return (
     <div>
-      {props.index === 0 && (
+      {props.index === 0 && !props.isPDF && (
         <Dropzone
           workspaceId={props.document.workspaceId}
           dropIndex={props.index}
@@ -1190,19 +1190,21 @@ const V2EditorRow = (props: {
         isFullScreen={props.isFullScreen}
         workspaceId={props.workspaceId}
       />
-      <div className={clsx(isLast ? "pt-2" : "")}>
-        <Dropzone
-          workspaceId={props.document.workspaceId}
-          dropIndex={props.index + 1}
-          isLast={isLast}
-          isEditable={props.isEditable && !props.isApp}
-          onAddBlock={props.onAddBlock}
-          onDropItem={props.onDropItem}
-          onCheckCanDrop={props.onCheckCanDrop}
-          writebackEnabled={props.writebackEnabled}
-          onAddAnalyticsBlock={props.onAddAnalyticsBlock}
-        />
-      </div>
+      {!props.isPDF && (
+        <div className={clsx(isLast ? "pt-2" : "")}>
+          <Dropzone
+            workspaceId={props.document.workspaceId}
+            dropIndex={props.index + 1}
+            isLast={isLast}
+            isEditable={props.isEditable && !props.isApp}
+            onAddBlock={props.onAddBlock}
+            onDropItem={props.onDropItem}
+            onCheckCanDrop={props.onCheckCanDrop}
+            writebackEnabled={props.writebackEnabled}
+            onAddAnalyticsBlock={props.onAddAnalyticsBlock}
+          />
+        </div>
+      )}
     </div>
   );
 };
@@ -1739,7 +1741,7 @@ const Editor = (props: Props) => {
         </div>
       )}
 
-      {props.role !== "viewer" && props.userId && (
+      {props.role !== "viewer" && props.userId && !props.isPDF && (
         <RunAllV2
           disabled={false}
           yDoc={props.yDoc}
