@@ -1,4 +1,4 @@
-export type BlockActionType = 'created' | 'edited' | 'ran' | 'deleted';
+export type BlockActionType = 'generating' | 'created' | 'edited' | 'ran' | 'deleted';
 
 export class BlockActionEvent {
   chatId: string;
@@ -6,6 +6,7 @@ export class BlockActionEvent {
   blockType: string;
   blockTitle: string;
   action: BlockActionType;
+  content?: string;
 }
 
 export const BlockActionEventNames = {

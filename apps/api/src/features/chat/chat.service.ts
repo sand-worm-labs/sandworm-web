@@ -146,7 +146,7 @@ export class ChatService implements OnModuleInit {
         subject.next({ event: 'part', data: JSON.stringify({ type: 'thinking', thinking: event.payload.thinking, duration_ms: event.payload.duration_ms }) });
         break;
       case 'generating_block':
-        subject.next({ event: 'part', data: JSON.stringify({ type: 'block_action', action: 'created', blockId: event.payload.block_id, blockType: event.payload.block_type, blockTitle: event.payload.block_title }) });
+        subject.next({ event: 'part', data: JSON.stringify({ type: 'block_action', action: 'generating', blockId: event.payload.block_id, blockType: event.payload.block_type, blockTitle: event.payload.block_title }) });
         break;
       case 'block_ready':
         subject.next({ event: 'part', data: JSON.stringify({ type: 'block_action', action: 'ran', blockId: event.payload.block_id, blockType: event.payload.block_type, blockTitle: event.payload.block_title }) });

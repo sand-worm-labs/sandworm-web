@@ -29,7 +29,7 @@ export interface ToolResultPart {
 
 export interface BlockActionPart {
   type: "block_action";
-  action: "created" | "edited" | "ran" | "deleted";
+  action: "generating" | "created" | "edited" | "ran" | "deleted";
   status?: "completed" | "rejected";
   blockType: string;
   blockTitle: string;

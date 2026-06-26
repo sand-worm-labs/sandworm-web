@@ -12,6 +12,7 @@ import type { BlockActionPart } from "./parts.types";
 // =====================================
 
 const ACTION_LABEL: Record<string, string> = {
+  generating: "Generating",
   created: "Created",
   edited: "Edited",
   ran: "Ran",

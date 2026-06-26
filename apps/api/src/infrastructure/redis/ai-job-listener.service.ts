@@ -79,6 +79,7 @@ export class AiJobListenerService implements OnModuleInit {
         blockId: (rest as any).block_id ?? '',
         blockType: (rest as any).block_type ?? '',
         blockTitle: (rest as any).block_title ?? '',
+        content: (rest as any).content ?? '',
         chatId: chat_id!,
       };
       this.eventEmitter.emit(BlockActionEventNames.BLOCK_ACTION, blockEvent);
