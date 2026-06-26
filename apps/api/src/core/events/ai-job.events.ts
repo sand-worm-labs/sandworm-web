@@ -10,7 +10,8 @@ export type AiJobEventType =
   | 'block_ready'
   | 'generating_response'
   | 'completed'
-  | 'error';
+  | 'error'
+  | 'intent_error';
 
 export class AiJobEvent {
   chatId: string;

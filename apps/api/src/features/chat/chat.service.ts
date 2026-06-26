@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { Observable, Subscriber, firstValueFrom } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import {
   ChatEntity,
@@ -32,35 +32,41 @@ import { WorkspaceService } from '../workspace/service/workspace.service';
 import type { FastifyReply } from 'fastify/types/reply';
 import type { FastifyRequest } from 'fastify/types/request';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { AiJobEvent,AiJobEventNames } from '@/core/events/ai-job.events';
+import { AiJobEvent, AiJobEventNames } from '@/core/events/ai-job.events';
 import { MessageCreatedEvent, MessageEventNames } from '@/core/events/message.events';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ⬢ Types
+// ─────────────────────────────────────────────────────────────────────────────
 
 export interface SseEvent {
   event?: 'part' | 'token';
   data: string;
 }
 
-type BlockAction='created'|'edited'|'ran'|'deleted';
-type Block={blockId:string;blockType:string;blockTitle:string};
+type BlockAction = 'created' | 'edited' | 'ran' | 'deleted';
+type Block       = { blockId: string; blockType: string; blockTitle: string };
 
-export type PartPayload=
-  |{type:'pending_review';blocks:(Block&{action:Extract<BlockAction,'created'|'edited'>})[]}
-  |{type:'thinking';thinking:string;duration_ms:number}
-  |{type:'tool_call';toolName:string;category:string;params:Record<string,string>}
-  |({type:'block_action';action:BlockAction}&Block)
-  |{type:'tool_result';summary:string;rowCount?:number}
-  |{type:'error';message:string;retryable:boolean};
+export type PartPayload =
+  | { type: 'pending_review'; blocks: (Block & { action: Extract<BlockAction, 'created' | 'edited'> })[] }
+  | { type: 'thinking'; thinking: string; duration_ms: number }
+  | { type: 'tool_call'; toolName: string; category: string; params: Record<string, string> }
+  | ({ type: 'block_action'; action: BlockAction } & Block)
+  | { type: 'tool_result'; summary: string; rowCount?: number }
+  | { type: 'error'; message: string; retryable: boolean };
 
-const SIMULATED_TOKEN_DELAY_MS = 100;
-const SIMULATED_PART_DELAY_MS = 1000;
 
-const LOREM_IPSUM = `Done. I've built the full DAO treasury analysis across 8 DAOs with $1.08B nominal value. Uniswap and Aave are 100% own-token. Compound is 99.8% liquid. The chart and written summary are in the blocks above. Want me to add Arbitrum and ENS once their data clears?`;
+// ─────────────────────────────────────────────────────────────────────────────
+// ⬢ Service
+// ─────────────────────────────────────────────────────────────────────────────
 
 @Injectable()
 export class ChatService implements OnModuleInit {
-  private readonly logger = new Logger(ChatService.name);
-  private readonly aiBaseUrl: string;
+  private readonly logger        = new Logger(ChatService.name);
+  private readonly aiBaseUrl:      string;
   private readonly handshakeToken: string;
+
+  private readonly chatStreams = new Map<string, ReplaySubject<SseEvent>>();
 
   constructor(
     @InjectRepository(ChatEntity)
@@ -79,19 +85,24 @@ export class ChatService implements OnModuleInit {
     private readonly httpService: HttpService,
     private readonly workspaceService: WorkspaceService,
   ) {
-    this.aiBaseUrl = this.configService.getOrThrow('ai.url', { infer: true });
+    this.aiBaseUrl      = this.configService.getOrThrow('ai.url',            { infer: true });
     this.handshakeToken = this.configService.getOrThrow('ai.handshakeToken', { infer: true });
   }
 
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // ⬢ Init
+  // ─────────────────────────────────────────────────────────────────────────
+
   onModuleInit(): void {
-    this.eventEmitter.on(AiJobEventNames.AI_JOB_EVENT, (event: AiJobEvent) => this.handleAiJobEvent(event));
-    this.eventEmitter.on(MessageEventNames.MESSAGE_CREATED, (event: MessageCreatedEvent) => this.handleChatMessageCreated(event));
+    this.eventEmitter.on(AiJobEventNames.AI_JOB_EVENT,     (e: AiJobEvent)          => this.handleAiJobEvent(e));
+    this.eventEmitter.on(MessageEventNames.MESSAGE_CREATED, (e: MessageCreatedEvent) => this.handleChatMessageCreated(e));
   }
 
-  private handleAiJobEvent(event: AiJobEvent): void {
-    this.logger.log(`[ai-job] chatId=${event.chatId} jobId=${event.jobId} type=${event.type}`);
-  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // ⬢ Message Created
+  // ─────────────────────────────────────────────────────────────────────────
 
   private async handleChatMessageCreated(event: MessageCreatedEvent): Promise<void> {
     const [chat, messages] = await Promise.all([
@@ -104,44 +115,188 @@ export class ChatService implements OnModuleInit {
 
     if (!chat) return;
 
-    const lastUserMessage = messages.find(m => m.role === MessageRole.USER);
-    const focusedBlockIds = lastUserMessage?.focusedBlocks?.map(b => b.id) ?? [];
+    const lastUserMessage  = messages.find(m => m.role === MessageRole.USER);
+    const focusedBlockIds  = lastUserMessage?.focusedBlocks?.map(b => b.id) ?? [];
     const openrouterApiKey = await this.workspaceService.getWorkspaceAiKey(chat.workspaceId);
+
     if (!openrouterApiKey) {
-      this.logger.warn(`[message-created] no OpenRouter API key for workspace=${chat.workspaceId}, skipping`);
+      this.logger.warn(`[message-created] no OpenRouter key for workspace=${chat.workspaceId}`);
       return;
     }
 
+    const subject = new ReplaySubject<SseEvent>(Infinity, 5 * 60 * 1000);
+    this.chatStreams.set(chat.id, subject);
+
     const payload = {
-      messages: messages.map(m => ({ role: m.role, content: m.content ?? '' })),
-      model: lastUserMessage?.model ?? '',
-      openrouter_api_key: openrouterApiKey ?? '',
+      messages:           messages.map(m => ({ role: m.role, content: m.content ?? '' })),
+      model:              lastUserMessage?.model ?? '',
+      openrouter_api_key: openrouterApiKey,
       context: {
-        user_id: chat.userId,
-        workspace_id: chat.workspaceId,
-        document_id: chat.documentId,
+        user_id:           chat.userId,
+        workspace_id:      chat.workspaceId,
+        document_id:       chat.documentId,
         focused_block_ids: focusedBlockIds,
-        chat_id: chat.id,
+        chat_id:           chat.id,
       },
       derived_context: '',
-      stream: false,
-      temperature: 0.7,
-      max_tokens: 0  
+      stream:          false,
+      temperature:     0.7,
+      max_tokens:      4000,
     };
 
-    this.logger.log(JSON.stringify(payload, null, 2));
+    this.httpService
+      .post(`${this.aiBaseUrl}/chat/completions`, payload, {
+        headers: {
+          'Content-Type':      'application/json',
+          'x-handshake-token': this.handshakeToken,
+        },
+      })
+      .subscribe({
+        next:  (r)   => this.logger.log(`[chat-completions] job started status=${r.status}`),
+        error: (err) => this.logger.error('[chat-completions] failed to start job', err),
+      });
 
-    // const response = await firstValueFrom(
-    //   this.httpService.post(`${this.aiBaseUrl}/chat/completions`, payload, {
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'x-handshake-token': this.handshakeToken,
-    //     },
-    //   }),
-    // );
-
-    //this.logger.log(`[chat-completions] status=${response.status}`);
   }
+
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // ⬢ Simulation
+  // ─────────────────────────────────────────────────────────────────────────
+
+  private simulateAiJob(chatId: string): void {
+    const jobId = `sim-${Date.now()}`;
+    const emit  = (type: AiJobEvent['type'], payload: Record<string, unknown> = {}) => {
+      this.handleAiJobEvent({ chatId, jobId, type, payload });
+    };
+
+    setTimeout(() => emit('planning',         { thinking: 'Analyzing your query...', duration_ms: 800 }), 100);
+    setTimeout(() => emit('generating_block', { blockType: 'sql', blockTitle: 'Query Results', blockId: 'block-1' }), 500);
+    setTimeout(() => emit('block_ready',      { blockType: 'sql', blockTitle: 'Query Results', blockId: 'block-1' }), 900);
+
+    const tokens = ['Here', ' is', ' the', ' result', ' of', ' your', ' query', '.'];
+    tokens.forEach((token, i) => {
+      setTimeout(() => emit('generating_response', { token }), 1100 + i * 80);
+    });
+
+    setTimeout(() => emit('completed', {}), 1100 + tokens.length * 80 + 150);
+  }
+
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // ⬢ AiJobEvent
+  // ─────────────────────────────────────────────────────────────────────────
+
+  private handleAiJobEvent(event: AiJobEvent): void {
+    this.logger.log(`[ai-job] chatId=${event.chatId} type=${event.type}`);
+
+    const subject = this.chatStreams.get(event.chatId);
+    if (!subject) return;
+
+    switch (event.type) {
+      case 'started':
+        subject.next({ event: 'part', data: JSON.stringify({ type: 'started' }) });
+        break;
+      case 'planning':
+        subject.next({ event: 'part', data: JSON.stringify({ type: 'thinking', thinking: event.payload.thinking, duration_ms: event.payload.duration_ms }) });
+        break;
+      case 'generating_block':
+        subject.next({ event: 'part', data: JSON.stringify({ type: 'block_action', action: 'created', blockType: event.payload.block_type, blockTitle: event.payload.block_title, blockId: event.payload.block_id }) });
+        break;
+      case 'block_ready':
+        subject.next({ event: 'part', data: JSON.stringify({ type: 'block_action', action: 'ran', blockType: event.payload.block_type, blockTitle: event.payload.block_title, blockId: event.payload.block_id }) });
+        break;
+      case 'generating_response':
+        subject.next({ event: 'token', data: event.payload.token as string });
+        break;
+      case 'completed':
+        subject.complete();
+        this.chatStreams.delete(event.chatId);
+        break;
+      case 'error':
+        subject.error(new Error((event.payload.message as string) ?? 'AI job failed'));
+        this.chatStreams.delete(event.chatId);
+        break;
+      case 'intent_error':
+        subject.error(new Error((event.payload.detail as string) ?? 'Intent error'));
+        this.chatStreams.delete(event.chatId);
+        break;
+    }
+  }
+
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // ⬢ SSE Stream
+  // ─────────────────────────────────────────────────────────────────────────
+
+  streamResponse(userId: string, chatId: string, messageId: string): Observable<SseEvent> {
+    return new Observable<SseEvent>((subscriber) => {
+      Promise.all([
+        this.chatRepository.findOne({ where: { id: chatId, userId } }),
+        this.messageRepository.findOne({ where: { id: messageId, chat: { id: chatId }, role: MessageRole.USER } }),
+      ]).then(([chat, userMessage]) => {
+        if (!chat)        { subscriber.error(new NotFoundException('Chat not found'));    return; }
+        if (!userMessage) { subscriber.error(new NotFoundException('Message not found')); return; }
+        if (userMessage.isAnswered) { subscriber.complete(); return; }
+
+        if (!this.chatStreams.has(chatId)) {
+          this.chatStreams.set(chatId, new ReplaySubject<SseEvent>(Infinity, 5 * 60 * 1000));
+        }
+
+        this.chatStreams.get(chatId)!.subscribe(subscriber);
+      }).catch((err) => subscriber.error(err));
+    });
+  }
+
+  async streamToReply(
+    userId: string,
+    chatId: string,
+    messageId: string,
+    req: FastifyRequest,
+    reply: FastifyReply,
+  ): Promise<void> {
+    reply.raw.writeHead(200, {
+      'Content-Type':      'text/event-stream',
+      'Cache-Control':     'no-cache',
+      'Connection':        'keep-alive',
+      'X-Accel-Buffering': 'no',
+    });
+
+    const write = (event: SseEvent) => {
+      if (reply.raw.writableEnded) return;
+      const line = event.event
+        ? `event: ${event.event}\ndata: ${event.data}\n\n`
+        : `data: ${event.data}\n\n`;
+      reply.raw.write(line);
+    };
+
+    await new Promise<void>((resolve, reject) => {
+      this.streamResponse(userId, chatId, messageId).subscribe({
+        next: write,
+        error: (err) => {
+          this.logger.error('Stream failed', err);
+          if (!reply.raw.writableEnded) {
+            reply.raw.write('data: [ERROR]\n\n');
+            reply.raw.end();
+          }
+          reject(err);
+        },
+        complete: () => {
+          if (!reply.raw.writableEnded) {
+            reply.raw.write('data: [DONE]\n\n');
+            reply.raw.end();
+          }
+          resolve();
+        },
+      });
+
+      req.raw.on('close', () => resolve());
+    });
+  }
+
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // ⬢ Chat CRUD
+  // ─────────────────────────────────────────────────────────────────────────
 
   async chatExists(chatId: string): Promise<boolean> {
     return this.chatRepository.existsBy({ id: chatId });
@@ -190,24 +345,24 @@ export class ChatService implements OnModuleInit {
     ]);
 
     if (!workspace) throw new NotFoundException('Workspace not found');
-    if (!document) throw new NotFoundException('Document not found or does not belong to workspace');
+    if (!document)  throw new NotFoundException('Document not found or does not belong to workspace');
 
-    const chat = this.chatRepository.create({
-      userId,
-      workspace: { id: workspaceId },
-      document: { id: documentId },
-      title,
-      private: false,
-      lastContext: null,
-    });
-
-    const savedChat = await this.chatRepository.save(chat);
+    const savedChat = await this.chatRepository.save(
+      this.chatRepository.create({
+        userId,
+        workspace:   { id: workspaceId },
+        document:    { id: documentId },
+        title,
+        private:     false,
+        lastContext: null,
+      }),
+    );
 
     await this.messageRepository.save(
       this.messageRepository.create({
-        chat: { id: savedChat.id },
-        role: MessageRole.USER,
-        content: message,
+        chat:          { id: savedChat.id },
+        role:          MessageRole.USER,
+        content:       message,
         model,
         focusedBlocks: focusedBlocks ?? null,
       }),
@@ -246,15 +401,37 @@ export class ChatService implements OnModuleInit {
     return Chat.fromEntity(await this.chatRepository.save(chat));
   }
 
+  async sendMessage(userId: string, input: SendMessageInput): Promise<Message> {
+    const { chatId, content, model, focusedBlocks } = input;
+
+    const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
+    if (!chat) throw new NotFoundException('Chat not found');
+
+    const message = await this.messageRepository.save(
+      this.messageRepository.create({
+        chat:          { id: chatId },
+        role:          MessageRole.USER,
+        content,
+        model,
+        focusedBlocks: focusedBlocks ?? null,
+      }),
+    );
+
+    this.eventEmitter.emit(MessageEventNames.MESSAGE_CREATED, { chatId } satisfies MessageCreatedEvent);
+
+    return Message.fromEntity(message);
+  }
+
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // ⬢ Votes
+  // ─────────────────────────────────────────────────────────────────────────
+
   async voteMessage(userId: string, input: VoteMessageInput): Promise<Vote> {
-    const message = await this.messageRepository.findOne({
-      where: { id: input.messageId },
-    });
+    const message = await this.messageRepository.findOne({ where: { id: input.messageId } });
     if (!message) throw new NotFoundException('Message not found');
 
-    const existing = await this.voteRepository.findOne({
-      where: { userId, messageId: input.messageId },
-    });
+    const existing = await this.voteRepository.findOne({ where: { userId, messageId: input.messageId } });
 
     if (existing) {
       existing.isUpvoted = input.isUpvoted;
@@ -263,11 +440,7 @@ export class ChatService implements OnModuleInit {
 
     return Vote.fromEntity(
       await this.voteRepository.save(
-        this.voteRepository.create({
-          userId,
-          messageId: input.messageId,
-          isUpvoted: input.isUpvoted,
-        }),
+        this.voteRepository.create({ userId, messageId: input.messageId, isUpvoted: input.isUpvoted }),
       ),
     );
   }
@@ -280,41 +453,20 @@ export class ChatService implements OnModuleInit {
     return true;
   }
 
-  async sendMessage(userId: string, input: SendMessageInput): Promise<Message> {
-    const { chatId, content, model, focusedBlocks } = input;
 
-    const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
-    if (!chat) throw new NotFoundException('Chat not found');
+  // ─────────────────────────────────────────────────────────────────────────
+  // ⬢ Parts Persistence
+  // ─────────────────────────────────────────────────────────────────────────
 
-    const message = await this.messageRepository.save(
-      this.messageRepository.create({
-        chat: { id: chatId },
-        role: MessageRole.USER,
-        content,
-        model,
-        focusedBlocks: focusedBlocks ?? null,
-      }),
-    );
-
-    this.eventEmitter.emit(MessageEventNames.MESSAGE_CREATED, { chatId } satisfies MessageCreatedEvent);
-
-    return Message.fromEntity(message);
-  }
-
-  async createOrAppendMessageByJobId(
-    chatId: string,
-    jobId: string,
-    data: any,
-  ): Promise<void> {
+  async createOrAppendMessageByJobId(chatId: string, jobId: string, data: any): Promise<void> {
     const existing = await this.messageRepository.findOne({
       where: { jobId, chat: { id: chatId } },
     });
     const incoming = Array.isArray(data) ? data : [data];
+
     if (existing) {
       const currentParts = Array.isArray(existing.parts) ? existing.parts : [];
-      await this.messageRepository.update(existing.id, {
-        parts: [...currentParts, ...incoming],
-      });
+      await this.messageRepository.update(existing.id, { parts: [...currentParts, ...incoming] });
     } else {
       await this.messageRepository.save({
         chat: { id: chatId },
@@ -323,147 +475,5 @@ export class ChatService implements OnModuleInit {
         parts: incoming,
       });
     }
-  }
-
-  streamResponse(userId: string, chatId: string, messageId: string): Observable<SseEvent> {
-    return new Observable<SseEvent>((subscriber) => {
-      this.executeStreamResponse(userId, chatId, messageId, subscriber);
-    });
-  }
-
-  private async executeStreamResponse(
-    userId: string,
-    chatId: string,
-    messageId: string,
-    subscriber: Subscriber<SseEvent>,
-  ): Promise<void> {
-    const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
-    if (!chat) { subscriber.error(new NotFoundException('Chat not found')); return; }
-
-    const userMessage = await this.messageRepository.findOne({
-      where: { id: messageId, chat: { id: chatId }, role: MessageRole.USER },
-    });
-    if (!userMessage) { subscriber.error(new NotFoundException('Message not found')); return; }
-
-    if (userMessage.isAnswered) { subscriber.complete(); return; }
-
-    const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
-    const emitPart = (payload: PartPayload) => subscriber.next({ event: 'part', data: JSON.stringify(payload) });
-    const emitToken = (token: string) => subscriber.next({ event: 'token', data: token });
-
-    try {
-      await delay(SIMULATED_PART_DELAY_MS);
-      emitPart({ type: 'thinking', thinking: 'The user wants a DAO treasury analysis. I need to fetch balances using the DAO Treasury PowerToolbox, then flatten with SQL, cluster with Python, visualise, and write a markdown summary.', duration_ms: 5800 });
-
-      await delay(SIMULATED_PART_DELAY_MS);
-      emitPart({ type: 'tool_call', toolName: 'DAO Treasury Balances', category: 'defi', params: { daos: 'top-8', chain: 'Ethereum' } });
-
-      await delay(SIMULATED_PART_DELAY_MS);
-      emitPart({ type: 'block_action', action: 'created', blockType: 'PowerToolbox', blockTitle: 'DAO treasury balances', blockId: 'ptb-001' });
-      await delay(SIMULATED_PART_DELAY_MS);
-      emitPart({ type: 'block_action', action: 'ran', blockType: 'PowerToolbox', blockTitle: 'DAO treasury balances', blockId: 'ptb-001' });
-
-      await delay(SIMULATED_PART_DELAY_MS);
-      emitPart({ type: 'tool_result', summary: 'Fetched 8 DAOs · $1.08B nominal value', rowCount: 8 });
-
-      await delay(SIMULATED_PART_DELAY_MS);
-      emitPart({ type: 'block_action', action: 'created', blockType: 'SQL', blockTitle: 'Flatten token holdings', blockId: 'sql-001' });
-      await delay(SIMULATED_PART_DELAY_MS);
-      emitPart({ type: 'block_action', action: 'ran', blockType: 'SQL', blockTitle: 'Flatten token holdings', blockId: 'sql-001' });
-
-      await delay(SIMULATED_PART_DELAY_MS);
-      emitPart({ type: 'block_action', action: 'created', blockType: 'Python', blockTitle: 'Cluster by asset type', blockId: 'py-001' });
-      await delay(SIMULATED_PART_DELAY_MS);
-      emitPart({ type: 'block_action', action: 'ran', blockType: 'Python', blockTitle: 'Cluster by asset type', blockId: 'py-001' });
-
-      await delay(SIMULATED_PART_DELAY_MS);
-      emitPart({ type: 'block_action', action: 'created', blockType: 'Visualization', blockTitle: 'Treasury breakdown chart', blockId: 'viz-001' });
-      await delay(SIMULATED_PART_DELAY_MS);
-      emitPart({ type: 'block_action', action: 'ran', blockType: 'Visualization', blockTitle: 'Treasury breakdown chart', blockId: 'viz-001' });
-
-      await delay(SIMULATED_PART_DELAY_MS);
-      emitPart({ type: 'block_action', action: 'created', blockType: 'Markdown', blockTitle: 'Analysis summary', blockId: 'md-001' });
-      await delay(SIMULATED_PART_DELAY_MS);
-      emitPart({ type: 'block_action', action: 'edited', blockType: 'Markdown', blockTitle: 'Analysis summary', blockId: 'md-001' });
-
-      emitPart({
-        type: 'pending_review',
-        blocks: [
-          { blockId: 'sql-001', blockType: 'SQL',    blockTitle: 'Flatten token holdings', action: 'created' },
-          { blockId: 'py-001',  blockType: 'Python', blockTitle: 'Cluster by asset type',  action: 'created' },
-          { blockId: 'md-001',  blockType: 'Markdown', blockTitle: 'Analysis summary',     action: 'edited'  },
-        ],
-      });
-      let fullContent = '';
-      for (const word of LOREM_IPSUM.split(' ')) {
-        await delay(SIMULATED_TOKEN_DELAY_MS);
-        const token = word + ' ';
-        fullContent += token;
-        emitToken(token);
-      }
-
-      await Promise.all([
-        this.messageRepository.save(
-          this.messageRepository.create({
-            chat: { id: chatId },
-            role: MessageRole.ASSISTANT,
-            content: fullContent.trim(),
-          }),
-        ),
-        this.messageRepository.update(messageId, { isAnswered: true }),
-      ]);
-
-      subscriber.complete();
-    } catch (err) {
-      subscriber.error(err);
-    }
-  }
-  
-  async streamToReply(
-    userId: string,
-    chatId: string,
-    messageId: string,
-    req: FastifyRequest,
-    reply: FastifyReply,
-  ): Promise<void> {
-    reply.raw.writeHead(200, {
-      'Content-Type':      'text/event-stream',
-      'Cache-Control':     'no-cache',
-      'Connection':        'keep-alive',
-      'X-Accel-Buffering': 'no',
-    });
-  
-    const write = (event: SseEvent) => {
-      if (reply.raw.writableEnded) return;
-      const line = event.event
-        ? `event: ${event.event}\ndata: ${event.data}\n\n`
-        : `data: ${event.data}\n\n`;
-      reply.raw.write(line);
-    };
-  
-    const stream$ = this.streamResponse(userId, chatId, messageId);
-  
-    await new Promise<void>((resolve, reject) => {
-      stream$.subscribe({
-        next: write,
-        error: (err) => {
-          this.logger.error('Stream failed', err);
-          if (!reply.raw.writableEnded) {
-            reply.raw.write('data: [ERROR]\n\n');
-            reply.raw.end();
-          }
-          reject(err);
-        },
-        complete: () => {
-          if (!reply.raw.writableEnded) {
-            reply.raw.write('data: [DONE]\n\n');
-            reply.raw.end();
-          }
-          resolve();
-        },
-      });
-  
-      req.raw.on('close', () => resolve());
-    });
   }
 }
