@@ -35,30 +35,12 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AiJobEvent, AiJobEventNames } from '@/core/events/ai-job.events';
 import { MessageCreatedEvent, MessageEventNames } from '@/core/events/message.events';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ⬢ Types
-// ─────────────────────────────────────────────────────────────────────────────
-
 export interface SseEvent {
   event?: 'part' | 'token';
   data: string;
 }
 
-type BlockAction = 'created' | 'edited' | 'ran' | 'deleted';
-type Block       = { blockId: string; blockType: string; blockTitle: string };
 
-export type PartPayload =
-  | { type: 'pending_review'; blocks: (Block & { action: Extract<BlockAction, 'created' | 'edited'> })[] }
-  | { type: 'thinking'; thinking: string; duration_ms: number }
-  | { type: 'tool_call'; toolName: string; category: string; params: Record<string, string> }
-  | ({ type: 'block_action'; action: BlockAction } & Block)
-  | { type: 'tool_result'; summary: string; rowCount?: number }
-  | { type: 'error'; message: string; retryable: boolean };
-
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ⬢ Service
-// ─────────────────────────────────────────────────────────────────────────────
 
 @Injectable()
 export class ChatService implements OnModuleInit {
@@ -89,20 +71,12 @@ export class ChatService implements OnModuleInit {
     this.handshakeToken = this.configService.getOrThrow('ai.handshakeToken', { infer: true });
   }
 
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // ⬢ Init
-  // ─────────────────────────────────────────────────────────────────────────
-
   onModuleInit(): void {
     this.eventEmitter.on(AiJobEventNames.AI_JOB_EVENT,     (e: AiJobEvent)          => this.handleAiJobEvent(e));
     this.eventEmitter.on(MessageEventNames.MESSAGE_CREATED, (e: MessageCreatedEvent) => this.handleChatMessageCreated(e));
   }
 
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // ⬢ Message Created
-  // ─────────────────────────────────────────────────────────────────────────
 
   private async handleChatMessageCreated(event: MessageCreatedEvent): Promise<void> {
     const [chat, messages] = await Promise.all([
@@ -158,34 +132,6 @@ export class ChatService implements OnModuleInit {
 
   }
 
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // ⬢ Simulation
-  // ─────────────────────────────────────────────────────────────────────────
-
-  private simulateAiJob(chatId: string): void {
-    const jobId = `sim-${Date.now()}`;
-    const emit  = (type: AiJobEvent['type'], payload: Record<string, unknown> = {}) => {
-      this.handleAiJobEvent({ chatId, jobId, type, payload });
-    };
-
-    setTimeout(() => emit('planning',         { thinking: 'Analyzing your query...', duration_ms: 800 }), 100);
-    setTimeout(() => emit('generating_block', { blockType: 'sql', blockTitle: 'Query Results', blockId: 'block-1' }), 500);
-    setTimeout(() => emit('block_ready',      { blockType: 'sql', blockTitle: 'Query Results', blockId: 'block-1' }), 900);
-
-    const tokens = ['Here', ' is', ' the', ' result', ' of', ' your', ' query', '.'];
-    tokens.forEach((token, i) => {
-      setTimeout(() => emit('generating_response', { token }), 1100 + i * 80);
-    });
-
-    setTimeout(() => emit('completed', {}), 1100 + tokens.length * 80 + 150);
-  }
-
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // ⬢ AiJobEvent
-  // ─────────────────────────────────────────────────────────────────────────
-
   private handleAiJobEvent(event: AiJobEvent): void {
     this.logger.log(`[ai-job] chatId=${event.chatId} type=${event.type}`);
 
@@ -196,17 +142,20 @@ export class ChatService implements OnModuleInit {
       case 'started':
         subject.next({ event: 'part', data: JSON.stringify({ type: 'started' }) });
         break;
-      case 'planning':
+      case 'plan_ready':
         subject.next({ event: 'part', data: JSON.stringify({ type: 'thinking', thinking: event.payload.thinking, duration_ms: event.payload.duration_ms }) });
         break;
       case 'generating_block':
-        subject.next({ event: 'part', data: JSON.stringify({ type: 'block_action', action: 'created', blockType: event.payload.block_type, blockTitle: event.payload.block_title, blockId: event.payload.block_id }) });
+        subject.next({ event: 'part', data: JSON.stringify({ type: 'block_action', action: 'created', blockId: event.payload.block_id, blockType: event.payload.block_type, blockTitle: event.payload.block_title }) });
         break;
       case 'block_ready':
-        subject.next({ event: 'part', data: JSON.stringify({ type: 'block_action', action: 'ran', blockType: event.payload.block_type, blockTitle: event.payload.block_title, blockId: event.payload.block_id }) });
+        subject.next({ event: 'part', data: JSON.stringify({ type: 'block_action', action: 'ran', blockId: event.payload.block_id, blockType: event.payload.block_type, blockTitle: event.payload.block_title }) });
         break;
       case 'generating_response':
         subject.next({ event: 'token', data: event.payload.token as string });
+        break;
+      case 'follow_up':
+        subject.next({ event: 'part', data: JSON.stringify({ type: 'follow_up', message: event.payload.message, questions: event.payload.questions }) });
         break;
       case 'completed':
         subject.complete();
@@ -217,16 +166,11 @@ export class ChatService implements OnModuleInit {
         this.chatStreams.delete(event.chatId);
         break;
       case 'intent_error':
-        subject.error(new Error((event.payload.detail as string) ?? 'Intent error'));
+        subject.error(new Error((event.payload.message as string) ?? 'Intent error'));
         this.chatStreams.delete(event.chatId);
         break;
     }
   }
-
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // ⬢ SSE Stream
-  // ─────────────────────────────────────────────────────────────────────────
 
   streamResponse(userId: string, chatId: string, messageId: string): Observable<SseEvent> {
     return new Observable<SseEvent>((subscriber) => {
@@ -293,10 +237,6 @@ export class ChatService implements OnModuleInit {
     });
   }
 
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // ⬢ Chat CRUD
-  // ─────────────────────────────────────────────────────────────────────────
 
   async chatExists(chatId: string): Promise<boolean> {
     return this.chatRepository.existsBy({ id: chatId });
@@ -423,10 +363,6 @@ export class ChatService implements OnModuleInit {
   }
 
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // ⬢ Votes
-  // ─────────────────────────────────────────────────────────────────────────
-
   async voteMessage(userId: string, input: VoteMessageInput): Promise<Vote> {
     const message = await this.messageRepository.findOne({ where: { id: input.messageId } });
     if (!message) throw new NotFoundException('Message not found');
@@ -453,10 +389,6 @@ export class ChatService implements OnModuleInit {
     return true;
   }
 
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // ⬢ Parts Persistence
-  // ─────────────────────────────────────────────────────────────────────────
 
   async createOrAppendMessageByJobId(chatId: string, jobId: string, data: any): Promise<void> {
     const existing = await this.messageRepository.findOne({

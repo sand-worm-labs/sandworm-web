@@ -74,11 +74,11 @@ export class AiJobListenerService implements OnModuleInit {
     this.eventEmitter.emit(AiJobEventNames.AI_JOB_EVENT, event);
 
     if (type === 'block_ready') {
-      const block = (rest as any).block ?? {};
       const blockEvent: BlockActionEvent = {
         action: 'created',
-        blockType: block.type ?? '',
-        blockTitle: block.title ?? '',
+        blockId: (rest as any).block_id ?? '',
+        blockType: (rest as any).block_type ?? '',
+        blockTitle: (rest as any).block_title ?? '',
         chatId: chat_id!,
       };
       this.eventEmitter.emit(BlockActionEventNames.BLOCK_ACTION, blockEvent);
