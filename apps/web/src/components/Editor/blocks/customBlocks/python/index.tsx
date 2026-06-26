@@ -24,7 +24,6 @@ import type { ConnectDragPreview } from "react-dnd";
 import { exhaustiveCheck } from "@sandworm/types";
 import { head } from "ramda";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import { BlockTypePill } from "../../BlockTypePill";
 import { Transition } from "@headlessui/react";
 import { useTheme } from "next-themes";
 
@@ -32,6 +31,7 @@ import { CodeIcon } from "@/components/Assets/Blocks/CodeIcon";
 import type { ApiDocument, ApiWorkspace } from "@/types";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
 
+import { BlockTypePill } from "../../BlockTypePill";
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
 import { useAITaskActions, useAITasks } from "../../../hooks/useAITasks";
 import { TooltipV2 } from "../../ToolTips";
@@ -572,8 +572,10 @@ function PythonBlock(props: Props) {
           props.isBlockHiddenInPublished && "border-dashed",
           props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-2xl",
           {
-            "border-[#E6E0F1] shadow-sm": isEditorFocused && editorState.mode === "insert",
-            "border-[#E6E0F1] shadow-none": isEditorFocused && editorState.mode === "normal",
+            "border-[#E6E0F1] shadow-sm":
+              isEditorFocused && editorState.mode === "insert",
+            "border-[#E6E0F1] shadow-none":
+              isEditorFocused && editorState.mode === "normal",
             "border-[#E6E0F1] dark:border-border-tertiary": !isEditorFocused,
           }
         )}
@@ -589,7 +591,9 @@ function PythonBlock(props: Props) {
             className={clsx(
               "rounded-t-2xl dark:bg-base-100",
               props.hasMultipleTabs ? "rounded-tl-none" : "",
-              isCodeHidden && isResultHidden ? "rounded-b-2xl" : "border-b border-[#E6E0F1] dark:border-border-tertiary"
+              isCodeHidden && isResultHidden
+                ? "rounded-b-2xl"
+                : "border-b border-[#E6E0F1] dark:border-border-tertiary"
             )}
             ref={d => {
               props.dragPreview?.(d);
@@ -616,11 +620,7 @@ function PythonBlock(props: Props) {
                   className={clsx(
                     "text-sm font-body font-normal pl-1 ring-gray-200 focus:ring-border-focus block w-full rounded-lg border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-[#868E96] py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-base-100"
                   )}
-                  placeholder={
-                    props.isEditable
-                      ? "Add a title..."
-                      : "Python"
-                  }
+                  placeholder={props.isEditable ? "Add a title..." : "Python"}
                   value={title}
                   disabled={!props.isEditable}
                   onChange={onChangeTitle}
