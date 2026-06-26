@@ -62,8 +62,8 @@ function Table(props: Props) {
         className="!w-full text-xs text-left table-auto border-spacing-0 border-separate font-body "
         contentEditable={false}
       >
-        <thead className="bg-gray-50 sticky top-0">
-          <tr className="divide-x h-10">
+        <thead className="bg-[#F9FAFB] sticky top-0">
+          <tr className="divide-x h-10 divide-[#E6E0F1]">
             {props.columns.map(column => {
               const Icon = getColumnTypeIcon(column.type);
               return (
@@ -97,7 +97,7 @@ function Table(props: Props) {
         </thead>
         <tbody className="bg-white overflow-y-scroll">
           {props.rows.map((row, rowIndex) => (
-            <tr key={rowIndex} className="divide-x">
+            <tr key={rowIndex} className="divide-x divide-[#E6E0F1]">
               {props.columns.map((column, cellIndex) => {
                 const cell = row[column.name];
 
@@ -108,7 +108,7 @@ function Table(props: Props) {
                       rowIndex === props.rows.length - 1 && !props.isDashboard
                         ? "border-b-0"
                         : "border-b",
-                      "px-2 py-1.5 text-ink-100 whitespace-nowrap border-border-secondary "
+                      "px-3 py-2 text-ink-400 whitespace-nowrap border-[#E6E0F1] "
                     )}
                   >
                     {cell === null ? (

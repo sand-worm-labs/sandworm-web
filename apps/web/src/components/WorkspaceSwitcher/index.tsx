@@ -27,7 +27,6 @@ interface WorkspaceSwitcherProps {
 // =====================================
 // ⬢ Constants
 // =====================================
-// Transform-only — opacity fade lets sidebar nav show through the panel
 const TRANSITION_DROPDOWN = {
   enter: "transition ease-out duration-150",
   enterFrom: "scale-95 -translate-y-1",
@@ -159,8 +158,8 @@ function CollapsedSwitcher({
         type="button"
         onClick={() => setOpen(o => !o)}
         className={clsx(
-          "w-7 h-7 rounded-lg flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-primary/40",
-          "transition-colors duration-100",
+          "w-8 h-8 rounded-lg flex-shrink-0 self-center flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary/40",
+          "transition-colors duration-100 shadow-[0_1px_5.5px_6px_#A9A9D41A]",
           open
             ? "bg-[#F9F5FF] dark:bg-[#1A0D26]"
             : "hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26]"
@@ -168,8 +167,8 @@ function CollapsedSwitcher({
       >
         <WorkspaceIcon
           icon={workspaceInfo.icon}
-          size={28}
-          className="rounded-lg"
+          size={20}
+          className="rounded-lg h-auto "
         />
       </button>
 

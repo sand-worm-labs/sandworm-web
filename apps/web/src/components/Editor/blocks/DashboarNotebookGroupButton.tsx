@@ -25,13 +25,13 @@ function DashboardNotebookGroupButton(props: Props) {
     props.userRole === "viewer" && !props.isPublished;
 
   return (
-    <div className="flex items-center px-2 relative">
+    <div className="flex items-center px-1 relative bg-[#EBF7F7] py-1 rounded-lg gap-x-1">
       <Link
         className={clsx(
-          "flex gap-x-1.5 items-center rounded-l-sm px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50 ring-1 ring-inset ring-gray-300 dark:ring-border-tertiary hover:bg-[#F5F3FF]",
+          "flex gap-x-1.5 items-center px-2 py-0.5 text-[0.8rem] disabled:cursor-not-allowed disabled:opacity-50 hover:bg-white/70 dark:hover:bg-white/10 rounded-md font-medium",
           props.current === "notebook"
-            ? "bg-accent/10 dark:bg-base-600 dark:text-[#9D8FF0] text-accent -mr-px"
-            : "bg-white text-ink-400 dark:bg-transparent dark:text-ink-400"
+            ? "bg-white dark:bg-base-600 dark:text-[#9D8FF0] border border-primary text-primary -mr-px"
+            : "bg-transparent text-ink-400 dark:bg-transparent dark:text-ink-400"
         )}
         href={`/workspace/${props.workspaceId}/documents/${props.documentId}/notebook${props.isEditing ? "/edit" : ""}`}
       >
@@ -50,10 +50,10 @@ function DashboardNotebookGroupButton(props: Props) {
           type="button"
           id="dashboard-view-button"
           className={clsx(
-            "flex gap-x-1.5 items-center rounded-r-sm px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50 ring-1 ring-inset ring-gray-300 hover:bg-[#F5F3FF] dark:ring-border-tertiary",
+            "flex gap-x-1.5 items-center px-2 py-0.5 text-[0.8rem] disabled:cursor-not-allowed disabled:opacity-50 hover:bg-white/70 dark:hover:bg-white/10 rounded-md font-medium",
             props.current === "dashboard"
-              ? "bg-accent/10 dark:bg-base-600 dark:text-[#9D8FF0] text-accent -ml-px"
-              : "bg-white text-ink-400 dark:bg-transparent dark:text-ink-400"
+              ? "bg-white dark:bg-base-600 dark:text-[#9D8FF0]   border border-primary text-primary -ml-px"
+              : "bg-transparent text-ink-400 dark:bg-transparent dark:text-ink-400"
           )}
           disabled={isDashboardButtonDisabled}
           onClick={() => {

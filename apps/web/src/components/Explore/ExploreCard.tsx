@@ -140,6 +140,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
 
             <div className="flex items-center gap-3 text-sm pl-11 sm:pl-0 flex-shrink-0">
               <button
+                type="button"
                 onClick={handleFavorite}
                 className="flex items-center gap-1 group"
                 aria-label={isFavorited ? "Unfavorite" : "Favorite"}
@@ -157,6 +158,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
               </button>
 
               <button
+                type="button"
                 onClick={handleForkClick}
                 disabled={forking}
                 className="flex items-center gap-1 group disabled:opacity-50"

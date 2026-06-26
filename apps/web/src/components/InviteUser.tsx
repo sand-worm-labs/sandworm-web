@@ -2,8 +2,8 @@
 
 import React, { useState, useCallback, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import type { UserWorkspaceRole } from "@/types";
 
+import type { UserWorkspaceRole } from "@/types";
 import { CloseIconButton } from "@/components/CloseIconButton";
 
 // =====================================

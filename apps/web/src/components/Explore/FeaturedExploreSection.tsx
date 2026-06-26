@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { usePublicDocuments } from "@/components/Editor/hooks/usePublicDocuments";
 import type { ApiDocument } from "@/types";
@@ -7,7 +7,7 @@ import { FeaturedExploreCard } from "./FeaturedExploreCard";
 import { FeaturedExploreSectionSkeleton } from "./ExploreSkeletons";
 
 // =====================================
-// ⬢ Constants
+// ⬢ Types
 // =====================================
 type CardTag = "featured" | "popular" | "trending" | "new";
 
@@ -32,9 +32,8 @@ interface FeaturedQuery {
 const PLACEHOLDER_AVATAR = "/img/avatar/avatar1.svg";
 
 // Map ApiDocument → card props.
-// TODO(creator): resolve authorId → { username, avater } via GetUser.
+// TODO(creator): resolve authorId → { username, avatar } via GetUser.
 //                Do NOT do this per-card — batch it, or embed author on Document.
-// TODO(stars|forks): wire once backend ships them. 0 is a lie.
 // TODO(tag): everything from getFeaturedDocuments is "featured" by definition.
 //            Other tags need backend support (separate query or Document.tag field).
 function toFeaturedQuery(doc: ApiDocument): FeaturedQuery {
@@ -59,22 +58,8 @@ function toFeaturedQuery(doc: ApiDocument): FeaturedQuery {
 // =====================================
 export function FeaturedExploreSection() {
   const { featured, featuredLoading, featuredError } = usePublicDocuments();
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   const queries = useMemo(() => featured.map(toFeaturedQuery), [featured]);
-
-  const handleSave = (id: string) => {
-    setSavedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  const handleClick = (_id: string) => {};
-
-  console.log(queries);
 
   if (featuredLoading && queries.length === 0) {
     return <FeaturedExploreSectionSkeleton />;
@@ -83,7 +68,7 @@ export function FeaturedExploreSection() {
   if (featuredError && queries.length === 0) {
     return (
       <div className="mb-12 text-sm text-red-600 dark:text-red-400">
-        Couldn’t load featured notebooks.
+        Couldn&apos;t load featured notebooks.
       </div>
     );
   }
@@ -104,9 +89,6 @@ export function FeaturedExploreSection() {
           creator={query.creator}
           stars={query.stars}
           forks={query.forks}
-          isSaved={savedIds.has(query.id)}
-          onSave={handleSave}
-          onClick={handleClick}
           isFavorite={query.isFavorite}
           variant={index === 0 ? "purple" : "default"}
         />

@@ -147,8 +147,8 @@ function Title(props: Props) {
         TitleExtension.configure({
           level: 1,
           HTMLAttributes: {
-            style: `font-weight: 500; font-size: 2.8rem; line-height: 1.1; ${props.style ?? ""}`,
-            class: "font-body",
+            style: `font-weight: 700; font-size: 2.5rem; line-height: 1.1;  ${props.style ?? ""}`,
+            class: "font-body text-[#050818]",
           },
         }),
         Placeholder.configure({

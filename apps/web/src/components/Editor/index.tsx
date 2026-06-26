@@ -1718,7 +1718,7 @@ const Editor = (props: Props) => {
   console.log("hi", !props.isSyncing, domBlocks, domBlocks.length === 0);
 
   return (
-    <div className="editor-v2 flex flex-col flex-grow justify-center font-body  subpixel-antialiased h-full w-full relative flex-1 min-w-0">
+    <div className="editor-v2 flex flex-col flex-grow justify-center font-body  subpixel-antialiased h-full w-full relative flex-1 min-w-0 bg-[#fdfdfd] dark:bg-base-100">
       {props.isDeleted && (
         <div className="bg-yellow-50 py-6 border-b border-yellow-200">
           <div className="flex justify-center">

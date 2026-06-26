@@ -1,9 +1,5 @@
 import { Menu, Transition } from "@headlessui/react";
-import { EyeIcon } from "@heroicons/react/20/solid";
-import {
-  CodeBracketIcon,
-  ComputerDesktopIcon,
-} from "@heroicons/react/24/outline";
+import { PiCode, PiEye, PiMonitor } from "react-icons/pi";
 import { BookUpIcon } from "lucide-react";
 import { useRef } from "react";
 import { createPortal } from "react-dom";
@@ -45,9 +41,9 @@ function HiddenInPublishedButton(props: Props) {
               {ref => (
                 <Menu.Button
                   ref={ref}
-                  className="rounded-sm border border-border-secondary dark:border-border-tertiary h-6 min-w-6 flex items-center justify-center relative group hover:bg-gray-50"
+                  className="bg-[#FEFEFF] rounded-[5px] border border-[#E6E0F1] dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group hover:bg-gray-50"
                 >
-                  <EyeIcon className="w-3 h-3 text-ink-400 group-hover:text-ink-400 " />
+                  <PiEye className="w-[13px] h-[13px] text-[#1C3B5A] group-hover:text-ink-400 " />
                 </Menu.Button>
               )}
             </TooltipV2>
@@ -92,7 +88,7 @@ function HiddenInPublishedButton(props: Props) {
                             onClick={props.onToggleIsCodeHidden}
                             className="hover:bg-primary/20 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                           >
-                            <CodeBracketIcon className="h-4 w-4" />
+                            <PiCode className="h-4 w-4" />
                             <span>
                               {props.isCodeHidden ? "Show" : "Hide"} code
                             </span>
@@ -104,7 +100,7 @@ function HiddenInPublishedButton(props: Props) {
                             onClick={props.onToggleIsOutputHidden}
                             className="hover:bg-primary/20 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                           >
-                            <ComputerDesktopIcon className="h-4 w-4" />
+                            <PiMonitor className="h-4 w-4" />
                             <span>
                               {props.isOutputHidden ? "Show" : "Hide"} output
                             </span>

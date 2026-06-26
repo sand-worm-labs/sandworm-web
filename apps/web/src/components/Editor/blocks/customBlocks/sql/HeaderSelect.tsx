@@ -88,13 +88,13 @@ export default function HeaderSelect(props: Props) {
           <Listbox.Button
             as="div"
             className={clsx(
-              "h-full relative w-full rounded-tr-md pl-3 pr-10 text-left text-ink-400  sm:text-xs flex items-center bg-gray-50",
+              "h-full relative w-full rounded-tr-md pl-3 pr-10 text-left text-ink-400  sm:text-xs flex items-center ",
               !isDisabled
-                ? "hover:bg-gray-100 cursor-pointer"
+                ? " cursor-pointer"
                 : "select-none cursor-not-allowed",
               !hasValue || !hasOptions
                 ? "text-red-400 bg-red-50 hover:bg-red-100"
-                : "text-ink-400 bg-gray-100 hover:bg-gray-100"
+                : "text-ink-400 bg-white"
             )}
           >
             <div className="flex gap-x-3 items-center font-mono overflow-hidden">

@@ -12,7 +12,10 @@ import {
 
 const ICON_SIZE = { sm: 13, md: 18 } as const;
 
-export type CloseIconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+export type CloseIconButtonProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "type"
+> & {
   size?: keyof typeof ICON_SIZE;
   round?: boolean;
   iconSize?: number;
@@ -24,7 +27,6 @@ export function CloseIconButton({
   iconSize,
   className,
   "aria-label": ariaLabel = "Close",
-  type = "button",
   ...props
 }: CloseIconButtonProps) {
   const sizeClasses = round
@@ -39,7 +41,7 @@ export function CloseIconButton({
 
   return (
     <button
-      type={type}
+      type="button"
       aria-label={ariaLabel}
       className={clsx(sizeClasses, className)}
       {...props}

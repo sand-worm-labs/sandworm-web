@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import {  useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -40,19 +39,11 @@ export default function Layout({
 
   const {
     state: { isOpen: isSideBarOpen },
-    api: sideBarApi,
   } = useSideBar();
 
   useHotkeys(["mod+k"], () => {
     setSearchOpen(prev => !prev);
   });
-
-  const toggleSideBar = useCallback(
-    (state: boolean) => {
-      return () => sideBarApi.toggle(state);
-    },
-    [sideBarApi.toggle]
-  );
 
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -101,18 +92,7 @@ export default function Layout({
             topBarClassname
           )}
         >
-          <div className="flex w-full items-center">
-            <button
-              type="button"
-              className={clsx(
-                isSideBarOpen ? "hidden" : "mr-8",
-                "relative h-12 w-12 bg-ceramic-50 text-ink-400  hover:bg-ceramic-100 flex-shrink-0"
-              )}
-              onClick={toggleSideBar(true)}
-            >
-              <ChevronDoubleRightIcon className="w-5 h-5 absolute inset-1/2 -translate-x-1/2 -translate-y-1/2" />
-            </button>
-
+          <div className="flex w-full items-center px-4 pl-10">
             {pagePath && <PagePath pages={pagePath} />}
             {topBarContent}
           </div>

@@ -228,7 +228,7 @@ export const WorkspaceSidebar = () => {
         `}
       >
         <div className="flex flex-col flex-1 min-h-0">
-          <div className="flex justify-between py-[0.69rem] px-3 bg-[#F9F9F9] dark:bg-base-500 items-center flex-shrink-0">
+          <div className="flex justify-between py-[0.50rem] px-3 bg-[#FAF8FB] dark:bg-base-500 items-center flex-shrink-0">
             {!collapsed && (
               <Link href="/" className="flex items-center gap-2">
                 <SandwormLogo width="30" height="30" />
@@ -390,14 +390,7 @@ export const WorkspaceSidebar = () => {
                       aria-busy="true"
                       aria-label="Loading projects"
                     >
-                      {(
-                        [
-                          "w-28",
-                          "w-36",
-                          "w-24",
-                          "w-32",
-                        ] as const
-                      ).map(w => (
+                      {(["w-28", "w-36", "w-24", "w-32"] as const).map(w => (
                         <div
                           key={w}
                           className="flex items-center gap-2 px-2 py-1.5"

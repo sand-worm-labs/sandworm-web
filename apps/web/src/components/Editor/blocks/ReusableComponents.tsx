@@ -2,12 +2,11 @@
 import { v4 as uuidv4 } from "uuid";
 import type * as Y from "yjs";
 import React, { useCallback, useState } from "react";
-import { PiStackLight } from "react-icons/pi";
+import { PiStackLight, PiFloppyDisk } from "react-icons/pi";
 import { CloseIconButton } from "@/components/CloseIconButton";
 import { Transition, Dialog } from "@headlessui/react";
 import { format } from "date-fns";
 import clsx from "clsx";
-import { SaveIcon } from "lucide-react";
 import { addComponentToDocument, decodeComponentState } from "@sandworm/editor";
 import Link from "next/link";
 import * as allOutlineIcons from "@heroicons/react/24/outline";
@@ -354,12 +353,12 @@ export function SaveReusableComponentButton(
           {ref => (
             <button
               type="button"
-              className="rounded-sm h-6 min-w-6 flex items-center justify-center border border-border-secondary dark:border-border-tertiary text-ink-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
+              className="bg-[#FEFEFF] rounded-[5px] border border-[#E6E0F1] dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
               onClick={onSave}
               disabled={props.disabled || props.isComponentInstance}
               ref={ref}
             >
-              <SaveIcon strokeWidth={2} className="w-3 h-3" />
+              <PiFloppyDisk className="w-[13px] h-[13px] text-[#1C3B5A]" />
             </button>
           )}
         </TooltipV2>

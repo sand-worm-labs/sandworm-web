@@ -85,19 +85,13 @@ export function ExploreClient({
     [setSortBy]
   );
 
-  const {
-    documents,
-    loading,
-    loadingMore,
-    error,
-    hasMore,
-    loadMore,
-  } = usePublicDocuments({
-    filter,
-    initialDocuments: isDefault ? initialDocuments : [],
-    initialFeatured,
-    pageSize,
-  });
+  const { documents, loading, loadingMore, error, hasMore, loadMore } =
+    usePublicDocuments({
+      filter,
+      initialDocuments: isDefault ? initialDocuments : [],
+      initialFeatured,
+      pageSize,
+    });
 
   const sentinelRef = useInfiniteScroll({
     hasMore,

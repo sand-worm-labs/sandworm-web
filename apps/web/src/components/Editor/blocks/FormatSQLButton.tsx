@@ -1,5 +1,5 @@
 import { Menu } from "@headlessui/react";
-import { CodeBracketIcon } from "@heroicons/react/20/solid";
+import { PiCode } from "react-icons/pi";
 import { useRef } from "react";
 
 import { TooltipV2 } from "./ToolTips";
@@ -24,11 +24,11 @@ function FormatSQLButton(props: Props) {
             {ref => (
               <Menu.Button
                 ref={ref}
-                className="rounded-sm border border-border-secondary dark:border-border-tertiary h-6 min-w-6 flex items-center justify-center relative group hover:bg-gray-50"
+                className="bg-[#F8F9FA] rounded-[5px] border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group hover:bg-gray-50"
                 onClick={props.onFormat}
                 disabled={props.disabled}
               >
-                <CodeBracketIcon className="w-3 h-3 text-ink-400 group-hover:text-ink-400 " />
+                <PiCode className="w-[13px] h-[13px] text-[#1C3B5A]" />
               </Menu.Button>
             )}
           </TooltipV2>
