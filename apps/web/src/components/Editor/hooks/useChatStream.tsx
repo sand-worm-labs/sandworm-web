@@ -141,7 +141,9 @@ export function useChatStream(): UseChatStream {
           const { done, value } = await reader.read();
           if (done) return;
 
-          buffer += decoder.decode(value, { stream: true });
+          const chunk = decoder.decode(value, { stream: true });
+          console.log("[useChatStream] raw stuffs:", chunk);
+          buffer += chunk;
           const raw = buffer.split("\n");
           buffer = raw.pop() ?? "";
 
