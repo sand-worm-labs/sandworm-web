@@ -55,7 +55,7 @@ interface BlockActionRowProps {
 }
 
 export function BlockActionRow({ part, onLocate }: BlockActionRowProps) {
-  const meta = BLOCK_TYPE_META[part.blockType.toUpperCase().replace(/ /g, "_")];
+  const meta = part.blockType ? BLOCK_TYPE_META[part.blockType.toUpperCase().replace(/ /g, "_")] : undefined;
   const isRejected = part.status === "rejected";
   const isClickable = !!onLocate && !isRejected;
 
