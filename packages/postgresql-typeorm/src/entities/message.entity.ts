@@ -137,6 +137,17 @@ export class MessageEntity extends AbstractEntity {
   @Column({ type: 'jsonb', nullable: true })
   attachments?: MessageAttachment[];
 
+  @Column({ name: 'parent_id', type: 'uuid', nullable: true })
+  parentId?: string | null;
+
+  @ManyToOne(() => MessageEntity, { onDelete: 'SET NULL', nullable: true })
+  @JoinColumn({
+    name: 'parent_id',
+    referencedColumnName: 'id',
+    foreignKeyConstraintName: 'FK_message_parent',
+  })
+  parent?: Relation<MessageEntity> | null;
+
   @OneToOne(() => VoteEntity, (vote) => vote.message)
   vote?: Relation<VoteEntity>;
 }

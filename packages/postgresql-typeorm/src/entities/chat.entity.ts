@@ -12,7 +12,6 @@ import { WorkspaceEntity } from "./workspace.entity";
 import { DocumentEntity } from "./document.entity";
 import { AbstractEntity } from "./abstract.entity";
 import { MessageEntity } from "./message.entity";
-import { VoteEntity } from "./vote.entity";
 
 @Entity("chats")
 export class ChatEntity extends AbstractEntity {
