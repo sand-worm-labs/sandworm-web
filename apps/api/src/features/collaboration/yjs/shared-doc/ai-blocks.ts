@@ -3,6 +3,7 @@ import {
   BlockType,
   getBlocks,
   getLayout,
+  setTitle,
 } from '@sandworm/editor'
 import type { PowerToolboxInputs, YBlock, YBlockGroup } from '@sandworm/editor'
 import * as Y from 'yjs'
@@ -57,12 +58,18 @@ export function addRichTextBlock(doc: Y.Doc) {
   )
 }
 
-export function addMarkdownBlock(doc: Y.Doc) {
-  add(doc, (layout, blocks, idx) =>
-    addBlockGroup(layout, blocks, {
-      type: BlockType.Markdown,
-    }, idx, true)
-  )
+export function addMarkdownBlock(doc: Y.Doc, source = '') {
+  const blocks = getBlocks(doc)
+  const layout = getLayout(doc)
+
+  doc.transact(() => {
+    const idx = layout.length
+    const blockId = addBlockGroup(layout, blocks, { type: BlockType.Markdown }, idx, true)
+    if (source && blockId) {
+      const block = blocks.get(blockId) as any
+      ;(block?.getAttribute('source') as Y.Text | undefined)?.insert(0, source)
+    }
+  })
 }
 
 export function addVisualizationBlock(doc: Y.Doc, dataframeName: string | null = null) {
@@ -137,11 +144,13 @@ export function addPowerToolboxBlock(doc: Y.Doc, toolId: string, inputs: PowerTo
 // ─── Batch ────────────────────────────────────────────────────────────────────
 // All blocks in a single transaction — single broadcast to clients.
 
-export type BlockSpec =
+type WithTitle = { title?: string }
+
+export type BlockSpec = WithTitle & (
   | { type: BlockType.Python;          source?: string }
   | { type: BlockType.SQL;             source?: string; dataSourceId?: string | null; isFileDataSource?: boolean }
   | { type: BlockType.RichText }
-  | { type: BlockType.Markdown }
+  | { type: BlockType.Markdown;        source?: string }
   | { type: BlockType.VisualizationV2; dataframeName?: string | null }
   | { type: BlockType.Input }
   | { type: BlockType.DropdownInput }
@@ -149,10 +158,14 @@ export type BlockSpec =
   | { type: BlockType.FileUpload }
   | { type: BlockType.DashboardHeader; content?: string }
   | { type: BlockType.PivotTable;      dataframeName?: string | null }
-  | { type: BlockType.PowerToolbox,       
-     toolId?: string
-     inputs?: PowerToolboxInputs
- }
+  | { type: BlockType.PowerToolbox;    toolId?: string; inputs?: PowerToolboxInputs }
+)
+
+function applyTitle(blocks: Y.Map<YBlock>, blockId: string, title: string | undefined): void {
+  if (!title) return
+  const block = blocks.get(blockId)
+  if (block) setTitle(block, title)
+}
 
 export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): void {
   const blocks = getBlocks(doc)
@@ -163,74 +176,85 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): void {
 
     for (const spec of specs) {
       switch (spec.type) {
-        case BlockType.Python:
-          addBlockGroup(layout, blocks, {
-            type: BlockType.Python,
-            source: spec.source ?? '',
-          }, idx, true)
+        case BlockType.Python: {
+          const id = addBlockGroup(layout, blocks, { type: BlockType.Python, source: spec.source ?? '' }, idx, true)
+          applyTitle(blocks, id, spec.title)
           break
+        }
 
-        case BlockType.SQL:
-          addBlockGroup(layout, blocks, {
+        case BlockType.SQL: {
+          const id = addBlockGroup(layout, blocks, {
             type: BlockType.SQL,
             dataSourceId: spec.dataSourceId ?? null,
             isFileDataSource: spec.isFileDataSource ?? false,
             source: spec.source ?? '',
           }, idx, true)
+          applyTitle(blocks, id, spec.title)
           break
+        }
 
-        case BlockType.RichText:
-          addBlockGroup(layout, blocks, { type: BlockType.RichText }, idx, true)
+        case BlockType.RichText: {
+          const id = addBlockGroup(layout, blocks, { type: BlockType.RichText }, idx, true)
+          applyTitle(blocks, id, spec.title)
           break
+        }
 
-        case BlockType.Markdown:
-          addBlockGroup(layout, blocks, { type: BlockType.Markdown }, idx, true)
+        case BlockType.Markdown: {
+          const id = addBlockGroup(layout, blocks, { type: BlockType.Markdown }, idx, true)
+          applyTitle(blocks, id, spec.title)
+          if (spec.source) {
+            ;(blocks.get(id) as any)?.getAttribute('source')?.insert(0, spec.source)
+          }
           break
+        }
 
-        case BlockType.VisualizationV2:
-          addBlockGroup(layout, blocks, {
-            type: BlockType.VisualizationV2,
-            dataframeName: spec.dataframeName ?? null,
-          }, idx, true)
+        case BlockType.VisualizationV2: {
+          const id = addBlockGroup(layout, blocks, { type: BlockType.VisualizationV2, dataframeName: spec.dataframeName ?? null }, idx, true)
+          applyTitle(blocks, id, spec.title)
           break
+        }
 
-        case BlockType.Input:
-          addBlockGroup(layout, blocks, { type: BlockType.Input }, idx, true)
+        case BlockType.Input: {
+          const id = addBlockGroup(layout, blocks, { type: BlockType.Input }, idx, true)
+          applyTitle(blocks, id, spec.title)
           break
+        }
 
-        case BlockType.DropdownInput:
-          addBlockGroup(layout, blocks, { type: BlockType.DropdownInput }, idx, true)
+        case BlockType.DropdownInput: {
+          const id = addBlockGroup(layout, blocks, { type: BlockType.DropdownInput }, idx, true)
+          applyTitle(blocks, id, spec.title)
           break
+        }
 
-        case BlockType.DateInput:
-          addBlockGroup(layout, blocks, { type: BlockType.DateInput }, idx, true)
+        case BlockType.DateInput: {
+          const id = addBlockGroup(layout, blocks, { type: BlockType.DateInput }, idx, true)
+          applyTitle(blocks, id, spec.title)
           break
+        }
 
-        case BlockType.FileUpload:
-          addBlockGroup(layout, blocks, { type: BlockType.FileUpload }, idx, true)
+        case BlockType.FileUpload: {
+          const id = addBlockGroup(layout, blocks, { type: BlockType.FileUpload }, idx, true)
+          applyTitle(blocks, id, spec.title)
           break
+        }
 
-        case BlockType.DashboardHeader:
-          addBlockGroup(layout, blocks, {
-            type: BlockType.DashboardHeader,
-            content: spec.content ?? '',
-          }, idx)
+        case BlockType.DashboardHeader: {
+          const id = addBlockGroup(layout, blocks, { type: BlockType.DashboardHeader, content: spec.content ?? '' }, idx)
+          applyTitle(blocks, id, spec.title)
           break
+        }
 
-        case BlockType.PivotTable:
-          addBlockGroup(layout, blocks, {
-            type: BlockType.PivotTable,
-            dataframeName: spec.dataframeName ?? null,
-          }, idx,true)
+        case BlockType.PivotTable: {
+          const id = addBlockGroup(layout, blocks, { type: BlockType.PivotTable, dataframeName: spec.dataframeName ?? null }, idx, true)
+          applyTitle(blocks, id, spec.title)
           break
+        }
 
-        case BlockType.PowerToolbox:
-          addBlockGroup(layout, blocks, { 
-            type: BlockType.PowerToolbox,    
-            toolId: spec.toolId ??  "",
-            inputs: spec.inputs ?? null
-           }, idx,true)
+        case BlockType.PowerToolbox: {
+          const id = addBlockGroup(layout, blocks, { type: BlockType.PowerToolbox, toolId: spec.toolId ?? '', inputs: spec.inputs ?? null }, idx, true)
+          applyTitle(blocks, id, spec.title)
           break
+        }
       }
 
       idx++

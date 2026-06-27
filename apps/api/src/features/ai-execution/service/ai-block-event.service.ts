@@ -58,7 +58,7 @@ export class AiBlockEventService implements OnModuleInit {
     const persistor = this.persistorFactory.createDocumentPersistor(chat.documentId);
     const sharedDoc = await this.yjsDocumentService.getYDoc(docId, chat.documentId, chat.workspaceId, persistor);
 
-    addBlocks(sharedDoc.ydoc, [{ type: blockType, source: event.content } as BlockSpec]);
+    addBlocks(sharedDoc.ydoc, [{ type: blockType, source: event.content, title: event.blockTitle } as BlockSpec]);
 
     this.logger.log(`[block-action] inserted ${event.blockType} block "${event.blockTitle}" → doc ${chat.documentId}`);
   }
