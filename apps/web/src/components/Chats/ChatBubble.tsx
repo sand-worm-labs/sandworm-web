@@ -5,9 +5,12 @@ import {
   PiFileCsv,
   PiFileText,
 } from "react-icons/pi";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 import { TooltipV2 } from "../Editor/blocks/ToolTips";
 import { timeAgo, formatFullDate } from "../../lib/date";
+
 import { BubbleReferencePill } from "./ReferencePill";
 import type { AttachedReference } from "./types";
 import type { UploadedFileRef } from "./MiniChatInput";
@@ -28,12 +31,119 @@ interface ChatBubbleProps {
 }
 
 // =====================================
+// ⬢ Markdown Components
+// =====================================
+
+type MDComponents = React.ComponentProps<typeof ReactMarkdown>["components"];
+
+const MdP: NonNullable<MDComponents>["p"] = ({ children }) => (
+  <p className="mb-3 last:mb-0 leading-relaxed">{children}</p>
+);
+const MdStrong: NonNullable<MDComponents>["strong"] = ({ children }) => (
+  <strong className="font-semibold text-ink-300 dark:text-ink-200">
+    {children}
+  </strong>
+);
+const MdA: NonNullable<MDComponents>["a"] = ({ href, children }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-[#185FA5] dark:text-[#85B7EB] underline underline-offset-2 hover:opacity-75 transition-opacity"
+  >
+    {children}
+  </a>
+);
+const MdCode: NonNullable<MDComponents>["code"] = ({ className, children }) => {
+  const isBlock = /language-(\w+)/.test(className ?? "");
+  return isBlock ? (
+    <code
+      className={`${className ?? ""} font-mono text-xs text-ink-400 dark:text-ink-300`}
+    >
+      {children}
+    </code>
+  ) : (
+    <code className="text-[#A308F0] dark:text-[#C97FF5] bg-[#F5E6FD] dark:bg-[#1F0A2E] px-1 py-0.5 rounded-[4px] text-[0.82em] font-mono">
+      {children}
+    </code>
+  );
+};
+const MdPre: NonNullable<MDComponents>["pre"] = ({ children }) => (
+  <pre className="bg-[#F1F3F4] dark:bg-[#1E1E1C] border border-[#DEE2E6] dark:border-[#2A2A28] rounded-lg p-3 overflow-x-auto mb-3 last:mb-0 text-xs leading-relaxed">
+    {children}
+  </pre>
+);
+const MdUl: NonNullable<MDComponents>["ul"] = ({ children }) => (
+  <ul className="list-disc pl-4 mb-3 last:mb-0 space-y-1">{children}</ul>
+);
+const MdOl: NonNullable<MDComponents>["ol"] = ({ children }) => (
+  <ol className="list-decimal pl-4 mb-3 last:mb-0 space-y-1">{children}</ol>
+);
+const MdLi: NonNullable<MDComponents>["li"] = ({ children }) => (
+  <li className="leading-relaxed">{children}</li>
+);
+const MdH1: NonNullable<MDComponents>["h1"] = ({ children }) => (
+  <h1 className="text-sm font-semibold text-ink-300 dark:text-ink-200 mb-1.5 mt-3 first:mt-0">
+    {children}
+  </h1>
+);
+
+const MdH2: NonNullable<MDComponents>["h2"] = ({ children }) => (
+  <h2 className="text-[13px] font-semibold text-ink-300 dark:text-ink-200 mb-1 mt-2.5 first:mt-0">
+    {children}
+  </h2>
+);
+
+const MdH3: NonNullable<MDComponents>["h3"] = ({ children }) => (
+  <h3 className="text-[13px] font-medium text-ink-300 dark:text-ink-200 mb-1 mt-2 first:mt-0">
+    {children}
+  </h3>
+);
+const MdBlockquote: NonNullable<MDComponents>["blockquote"] = ({
+  children,
+}) => (
+  <blockquote className="border-l-2 border-[#DEE2E6] dark:border-[#3A3A38] pl-3 italic text-ink-400 dark:text-ink-500 mb-3 last:mb-0">
+    {children}
+  </blockquote>
+);
+const MdHr: NonNullable<MDComponents>["hr"] = () => (
+  <hr className="border-[#DEE2E6] dark:border-[#3A3A38] mb-3" />
+);
+
+const MD_COMPONENTS: MDComponents = {
+  p: MdP,
+  strong: MdStrong,
+  a: MdA,
+  code: MdCode,
+  pre: MdPre,
+  ul: MdUl,
+  ol: MdOl,
+  li: MdLi,
+  h1: MdH1,
+  h2: MdH2,
+  h3: MdH3,
+  blockquote: MdBlockquote,
+  hr: MdHr,
+};
+
+// =====================================
+// ⬢ Markdown Message
+// =====================================
+
+function MarkdownMessage({ text }: { text: string }) {
+  return (
+    <ReactMarkdown remarkPlugins={[remarkGfm]} components={MD_COMPONENTS}>
+      {text}
+    </ReactMarkdown>
+  );
+}
+
+// =====================================
 // ⬢ File Chip
 // =====================================
 
 function FileBubbleChip({ fileRef }: { fileRef: UploadedFileRef }) {
-  const isCsv =
-    fileRef.name.endsWith(".csv") || fileRef.name.endsWith(".xlsx");
+  const isCsv = fileRef.name.endsWith(".csv") || fileRef.name.endsWith(".xlsx");
   const Icon = isCsv ? PiFileCsv : PiFileText;
 
   return (
@@ -62,8 +172,11 @@ interface RatingButtonProps {
 
 function RatingButton({ type, active, onClick }: RatingButtonProps) {
   const Icon = type === "up" ? PiThumbsUp : PiThumbsDown;
-  const tooltipLabel =
-    active ? "Unrate response" : type === "up" ? "Rate response" : "Not helpful";
+  const tooltipLabel = active
+    ? "Unrate response"
+    : type === "up"
+      ? "Rate response"
+      : "Not helpful";
 
   return (
     <TooltipV2<HTMLButtonElement> title={tooltipLabel} active position="top">
@@ -103,6 +216,7 @@ export function ChatBubble({
   onRate,
 }: ChatBubbleProps) {
   const [rating, setRating] = useState<Rating>(null);
+  console.log(text);
 
   function handleRate(value: "up" | "down") {
     const next = rating === value ? null : value;
@@ -142,9 +256,9 @@ export function ChatBubble({
         <div
           className="w-full text-sm leading-relaxed
             text-ink-500 dark:text-ink-400
-            [overflow-wrap:anywhere] whitespace-pre-line"
+            [overflow-wrap:anywhere]"
         >
-          {text}
+          <MarkdownMessage text={text} />
         </div>
       )}
 
