@@ -42,17 +42,17 @@ export default function HeaderSelect(props: Props) {
   return (
     <Listbox value={value} onChange={onChange} disabled={disabled}>
       {({ open }) => (
-        <div className="h-full w-56 max-w-56 relative overflow-visible font-normal rounded-tr-3xl">
+        <div className="h-auto  w-[7.8rem] max-w-56 relative overflow-visible font-normal mr-[1rem]">
           <Listbox.Button
             as="div"
             className={clsx(
-              "h-full relative w-full rounded-tr-2xl pl-3 pr-10 text-left sm:text-xs flex items-center cursor-pointer",
+              " py-1.5 h-full relative w-full rounded-lg pl-3 pr-10 text-left sm:text-xs flex items-center cursor-pointer",
               hasValue
-                ? "text-ink-400 dark:text-white bg-gray-50 dark:bg-base-100  hover:bg-gray-100"
-                : "text-error bg-base-100 dark:bg-base-100  hover:bg-red-100"
+                ? "text-ink-400 dark:text-white bg-[#F1F2F4] dark:bg-base-100 hover:bg-gray-100/50"
+                : "text-error bg-red-50 hover:bg-red-100"
             )}
           >
-            <div className="flex gap-x-3 items-center font-body  overflow-hidden">
+            <div className="flex gap-x-3 items-center font-body overflow-hidden">
               <span className="block truncate">{selectedOptionContent}</span>
             </div>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -72,7 +72,7 @@ export default function HeaderSelect(props: Props) {
           >
             <Listbox.Options
               as="div"
-              className="mt-[1px] absolute z-10 max-h-60 overflow-auto bg-white dark:bg-base-100  text-base shadow-lg ring-1 ring-gray-200 dark:ring-border-tertiary focus:outline-none sm:text-xs w-[calc(100%-1px)]"
+              className="mt-[1px] absolute z-10 max-h-60 overflow-auto bg-white dark:bg-base-100 text-base shadow-lg ring-1 ring-gray-200 dark:ring-border-tertiary focus:outline-none sm:text-xs w-[calc(100%-1px)]"
             >
               {options.map(option => (
                 <Listbox.Option

@@ -130,14 +130,14 @@ function DataframeNameInput(props: Props) {
   }
 
   return (
-    <div className="relative w-auto max-w-[6.8rem] h-auto  group mx-[1rem]">
+    <div className="relative w-[6.8rem] shrink-0 h-auto group ml-[1rem] mr-[0.25rem]">
       <input
         type="text"
         className={clsx(
           dataframeName.error
             ? "bg-red-50 group-hover:bg-red-100"
             : "bg-[#F1F2F4] group-hover:bg-gray-100/50",
-          "pl-2.5 pr-8 py-1.5 block w-full border-0 text-ink-400 ring-0 focus:ring-0 placeholder:text-ink-400 text-[0.8rem] disabled:cursor-not-allowed h-full focus:!bg-white  dark:focus:bg-base-100 font-body-mono font-normal rounded-md"
+          "pl-2.5 pr-8 py-1.5 block w-full border border-transparent focus:border-primary text-ink-400 ring-0 focus:ring-0 placeholder:text-ink-400 text-[0.8rem] disabled:cursor-not-allowed h-full focus:!bg-white dark:focus:bg-base-100 font-body-mono font-normal rounded-lg"
         )}
         placeholder="DataFrame name"
         value={dataframeName.newValue}
