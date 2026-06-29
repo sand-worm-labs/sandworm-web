@@ -10,10 +10,17 @@ import { PersistorFactory } from '../../collaboration/yjs/persistors/persistor.f
 import { addBlocks, BlockSpec } from '../../collaboration/yjs/shared-doc/ai-blocks';
 
 const BLOCK_TYPE_MAP: Partial<Record<string, BlockType>> = {
-  sql:           BlockType.SQL,
-  python:        BlockType.Python,
-  markdown:      BlockType.Markdown,
-  visualization: BlockType.VisualizationV2,
+  sql:              BlockType.SQL,
+  python:           BlockType.Python,
+  markdown:         BlockType.Markdown,
+  rich_text:        BlockType.RichText,
+  visualization:    BlockType.VisualizationV2,
+  pivot_table:      BlockType.PivotTable,
+  dashboard_header: BlockType.DashboardHeader,
+  input:            BlockType.Input,
+  dropdown_input:   BlockType.DropdownInput,
+  date_input:       BlockType.DateInput,
+  power_toolbox:    BlockType.PowerToolbox,
 };
 
 @Injectable()
