@@ -1,18 +1,17 @@
 /* eslint-disable react/no-array-index-key */
-import {
-  Bars3BottomLeftIcon,
-  CalendarIcon,
-  FlagIcon,
-  HashtagIcon,
-} from "@heroicons/react/24/outline";
 import type { DataFrameColumn, Json, TableSort } from "@sandworm/types";
 import { exhaustiveCheck } from "@sandworm/types";
 import clsx from "clsx";
+import type { IconType } from "react-icons";
 import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  ArrowsUpDownIcon,
-} from "@heroicons/react/20/solid";
+  PiArrowDown,
+  PiArrowUp,
+  PiArrowsDownUp,
+  PiCalendar,
+  PiFlag,
+  PiHash,
+  PiTextAlignLeft,
+} from "react-icons/pi";
 
 import ScrollBar from "../../ScrollBar";
 
@@ -70,24 +69,24 @@ function Table(props: Props) {
                 <th
                   scope="col"
                   className={clsx(
-                    "p-2 text-ink-400  whitespace-nowrap font-medium border-b hover:bg-gray-100 cursor-pointer",
+                    "p-2 text-ink-400  whitespace-nowrap font-bold border-b hover:bg-gray-100 cursor-pointer",
                     props.topBorder && "border-t"
                   )}
                   onClick={onChangeSort(column.name.toString())}
                 >
                   <div className="flex space-x-2 items-center w-full justify-between">
                     <div className="flex items-center space-x-1">
-                      <Icon className="h-3 w-3 text-ink-400" />
+                      <Icon className="h-[14px] w-[14px] text-ink-400" />
                       <span>{column.name}</span>
                     </div>
                     {props.sort && props.sort.column === column.name ? (
                       props.sort.order === "asc" ? (
-                        <ArrowUpIcon className="h-3 w-3" />
+                        <PiArrowUp className="h-3 w-3" />
                       ) : (
-                        <ArrowDownIcon className="h-3 w-3" />
+                        <PiArrowDown className="h-3 w-3" />
                       )
                     ) : (
-                      <ArrowsUpDownIcon className="w-3 h-3 text-gray-300" />
+                      <PiArrowsDownUp className="w-3 h-3 text-[#C4CCD3]" />
                     )}
                   </div>
                 </th>
@@ -97,7 +96,7 @@ function Table(props: Props) {
         </thead>
         <tbody className="bg-white overflow-y-scroll">
           {props.rows.map((row, rowIndex) => (
-            <tr key={rowIndex} className="divide-x divide-[#E6E0F1]">
+            <tr key={rowIndex} className="divide-x divide-[#E6E0F1] ">
               {props.columns.map((column, cellIndex) => {
                 const cell = row[column.name];
 
@@ -108,7 +107,7 @@ function Table(props: Props) {
                       rowIndex === props.rows.length - 1 && !props.isDashboard
                         ? "border-b-0"
                         : "border-b",
-                      "px-3 py-2 text-ink-400 whitespace-nowrap border-[#E6E0F1] "
+                      "px-3 py-2 dark:text-ink-400 text-[#343A40] whitespace-nowrap border-[#E6E0F1] font-medium "
                     )}
                   >
                     {cell === null ? (
@@ -132,11 +131,9 @@ function Table(props: Props) {
 // =====================================
 // ⬢ Utils
 // =====================================
-export function getColumnTypeIcon(
-  type: DataFrameColumn["type"]
-): typeof FlagIcon {
+export function getColumnTypeIcon(type: DataFrameColumn["type"]): IconType {
   if (type.startsWith("datetime64")) {
-    return CalendarIcon;
+    return PiCalendar;
   }
 
   switch (type) {
@@ -202,7 +199,7 @@ export function getColumnTypeIcon(
     case "longfloat":
     case "double":
     case "longdouble":
-      return HashtagIcon;
+      return PiHash;
 
     case "string":
     case "unicode":
@@ -213,7 +210,7 @@ export function getColumnTypeIcon(
     case "category":
     case "object":
     case "object0":
-      return Bars3BottomLeftIcon;
+      return PiTextAlignLeft;
 
     case "dbdate":
     case "dbtime":
@@ -238,16 +235,16 @@ export function getColumnTypeIcon(
     case "period[ms]":
     case "period[us]":
     case "period[ns]":
-      return CalendarIcon;
+      return PiCalendar;
 
     case "bool":
     case "bool8":
     case "b1":
     case "boolean":
-      return FlagIcon;
+      return PiFlag;
 
     default:
-      return FlagIcon;
+      return PiFlag;
   }
 }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { List } from "immutable";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
@@ -124,9 +125,12 @@ export const WorkspaceSidebar = () => {
     },
   ] = useDocuments(workspaceId);
 
-  const documents = documentsState.documents
-    .filter(doc => doc.deletedAt === null && doc.version >= 1)
-    .map(doc => ({ ...doc, isFavorite: favorites.has(doc.id) }));
+  const documents = List(
+    documentsState.documents
+      .toArray()
+      .filter(doc => doc.deletedAt === null && doc.version >= 1)
+      .map(doc => ({ ...doc, isFavorite: favorites.has(doc.id) }))
+  );
 
   const handleToggle = useCallback(() => {
     if (isMobile) setIsMobileOpen(false);
@@ -351,9 +355,9 @@ export const WorkspaceSidebar = () => {
                       onClick={onCreateDocumentHandler}
                       className={`
                         flex items-center justify-center gap-1.5
-                        rounded-xl border border-[#D000FF] dark:border-[#A78BFA]
+                        rounded-xl border border-[#C44FFF] dark:border-[#A78BFA]
                         text-primary dark:text-[#A78BFA]
-                        hover:bg-primary/5 dark:hover:bg-primary/10
+                        hover:bg-primary/5 bg-[#F7E8FF] dark:hover:bg-primary/10
                         transition-colors font-body font-medium text-sm
                         ${collapsed ? "w-9 h-9" : "w-full px-4 py-2"}
                       `}

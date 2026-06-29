@@ -9,6 +9,7 @@ import {
   PiAt,
   PiSpinner,
   PiWarningCircle,
+  PiStop,
 } from "react-icons/pi";
 
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
@@ -44,10 +45,12 @@ interface MiniChatInputProps {
     references: AttachedReference[];
   }) => void;
   onUploadFile?: (file: File) => Promise<UploadedFileRef>;
+  onAbort?: () => void;
   placeholder?: string;
   maxHeight?: number;
   acceptedFileTypes?: string;
   disabled: boolean;
+  isGenerating?: boolean;
   referenceSources?: ReferenceSource[];
   pendingReview?: PendingReviewPart;
   onAcceptAll?: () => void;
@@ -149,6 +152,33 @@ function PillStrip({ references, onRemove }: PillStripProps) {
 }
 
 // =====================================
+// ⬢ Abort Button
+// =====================================
+
+function AbortButton({ onAbort }: { onAbort?: () => void }) {
+  return (
+    <div className="relative w-8 h-8 flex-shrink-0">
+      <div
+        className="absolute inset-0 rounded-xl animate-spin"
+        style={{
+          background:
+            "conic-gradient(#A308F0 0deg 90deg, transparent 90deg 360deg)",
+        }}
+      />
+      <button
+        type="button"
+        onClick={onAbort}
+        aria-label="Stop generation"
+        className="absolute inset-[2px] rounded-[10px] flex items-center justify-center
+          bg-[#FEFEFF] dark:bg-base-200"
+      >
+        <PiStop size={14} className="text-[#1C3B5A] dark:text-ink-300" />
+      </button>
+    </div>
+  );
+}
+
+// =====================================
 // ⬢ Default Sources
 // =====================================
 
@@ -163,10 +193,12 @@ const DEFAULT_SOURCES: ReferenceSource[] = [
 export const MiniChatInput: React.FC<MiniChatInputProps> = ({
   onSend,
   onUploadFile,
+  onAbort,
   placeholder = "Create a bar chart with tokens above $1m market cap on Base.",
   maxHeight = 200,
   acceptedFileTypes = ".csv,.pdf,.doc,.docx,.txt,.xls,.xlsx,.md",
   disabled,
+  isGenerating = false,
   referenceSources = DEFAULT_SOURCES,
   pendingReview,
   onAcceptAll,
@@ -190,9 +222,10 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
 
   const selectedIds = new Set(references.map(r => r.id));
   const isUploading = trackedFiles.some(f => f.status === "uploading");
+  const isLocked = disabled || isGenerating;
   const canSend =
     (message.trim().length > 0 || trackedFiles.length > 0) &&
-    !disabled &&
+    !isLocked &&
     !isUploading;
   const hasReferencableItems = referenceSources.some(s => s.items.length > 0);
 
@@ -394,7 +427,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            disabled={disabled}
+            disabled={isLocked}
             rows={2}
             aria-label="Message input"
             className="w-full resize-none bg-transparent outline-none
@@ -417,7 +450,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
                   ref={ref}
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={disabled}
+                  disabled={isLocked}
                   aria-label="Attach files"
                   className="flex items-center justify-center w-8 h-8 rounded-full
                     bg-white dark:bg-[#30302E]
@@ -441,41 +474,45 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
                   <AtButton
                     onClick={() => setPickerOpen(o => !o)}
                     isActive={pickerOpen || references.length > 0}
-                    disabled={disabled || !hasReferencableItems}
+                    disabled={isLocked || !hasReferencableItems}
                   />
                 </div>
               )}
             </TooltipV2>
           </div>
 
-          {/* ─── Send / uploading indicator ─── */}
-          <TooltipV2<HTMLButtonElement>
-            title={isUploading ? "Uploading files…" : ""}
-            active={isUploading}
-            position="top"
-          >
-            {ref => (
-              <button
-                ref={ref}
-                type="button"
-                onClick={handleSend}
-                disabled={!canSend}
-                aria-label="Send message"
-                className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors
-                  ${
-                    canSend
-                      ? "bg-[#A308F0] hover:bg-[#8A06CC] text-white"
-                      : "bg-white dark:bg-[#30302E] text-ink-400 cursor-not-allowed border border-[#DEE2E6] dark:border-border-tertiary"
-                  }`}
-              >
-                {isUploading ? (
-                  <PiSpinner size={15} className="animate-spin" />
-                ) : (
-                  <PiPaperPlaneTilt size={15} />
-                )}
-              </button>
-            )}
-          </TooltipV2>
+          {/* ─── Abort / Send ─── */}
+          {isGenerating ? (
+            <AbortButton onAbort={onAbort} />
+          ) : (
+            <TooltipV2<HTMLButtonElement>
+              title={isUploading ? "Uploading files…" : ""}
+              active={isUploading}
+              position="top"
+            >
+              {ref => (
+                <button
+                  ref={ref}
+                  type="button"
+                  onClick={handleSend}
+                  disabled={!canSend}
+                  aria-label="Send message"
+                  className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors
+                    ${
+                      canSend
+                        ? "bg-[#A308F0] hover:bg-[#8A06CC] text-white"
+                        : "bg-white dark:bg-[#30302E] text-ink-400 cursor-not-allowed border border-[#DEE2E6] dark:border-border-tertiary"
+                    }`}
+                >
+                  {isUploading ? (
+                    <PiSpinner size={15} className="animate-spin" />
+                  ) : (
+                    <PiPaperPlaneTilt size={15} />
+                  )}
+                </button>
+              )}
+            </TooltipV2>
+          )}
 
           <input
             ref={fileInputRef}

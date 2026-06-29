@@ -136,7 +136,8 @@ export const MiniChat: React.FC<MiniChatProps> = ({
                 <MiniChatInput
                   onSend={handlers.inputSend}
                   onUploadFile={handleUploadFile}
-                  disabled={state.isLoading}
+                  disabled={false}
+                  isGenerating={state.isLoading}
                   referenceSources={state.referenceSources}
                   pendingReview={pendingReview}
                   onAcceptAll={() => handlers.acceptAll("")}

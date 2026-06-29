@@ -131,6 +131,18 @@ function AIEditTooltipContent({
   );
 }
 
+function HatchBackground (){
+  return (
+    <div
+  className="border border-[#E7E1F0] h-2"
+  style={{
+    backgroundColor: 'white',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Cline x1='0' y1='8' x2='8' y2='0' stroke='%23E7E1F0' stroke-width='1'/%3E%3C/svg%3E")`,
+  }}
+/>
+  )
+}
+
 // =====================================
 // ⬢  Run Query Tooltip Content
 // =====================================
@@ -1193,6 +1205,7 @@ function SQLBlock(props: Props) {
             </div>
           </Transition>
         </div>
+        <HatchBackground/>
         {result && (
           <SQLResult
             page={page}
