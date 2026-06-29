@@ -70,7 +70,9 @@ function Table(props: Props) {
                   scope="col"
                   className={clsx(
                     "p-2 text-ink-400  whitespace-nowrap font-bold border-b hover:bg-gray-100 cursor-pointer",
-                    props.topBorder && "border-t"
+                    props.sort && props.sort.column === column.name
+                      ? "border-t border-l !border-t-[#A308F0] !border-l-[#A308F0]"
+                      : props.topBorder && "border-t"
                   )}
                   onClick={onChangeSort(column.name.toString())}
                 >
