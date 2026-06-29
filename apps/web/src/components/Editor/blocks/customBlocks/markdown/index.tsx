@@ -501,8 +501,14 @@ const MarkdownBlock = (props: Props) => {
     >
       <div
         className={clsx(
-          "rounded-2xl border-[1.5px] border-[#E6E0F1] shadow-[0px_7.5px_8px_0px_#8497C30A]",
-          props.belongsToMultiTabGroup ? "rounded-tl-none" : ""
+          "rounded-2xl border-[1.5px] shadow-[0px_7.5px_8px_0px_#8497C30A]",
+          props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
+          {
+            "border-[#A308F0] shadow-[0px_0px_1px_4px_#8B74FF33]":
+              props.isCursorWithin && props.isCursorInserting,
+            "border-[#E6E0F1] dark:border-border-tertiary":
+              !props.isCursorWithin || !props.isCursorInserting,
+          }
         )}
       >
         <div
@@ -630,7 +636,7 @@ const MarkdownBlock = (props: Props) => {
       </div>
 
       {/* ── Block type pill ── */}
-      <div className="absolute left-0 top-0 -translate-y-full pb-1">
+      <div className="absolute left-0 top-0 -translate-y-full pb-2">
         <BlockTypePill
           label="Markdown"
           icon={<PiMarkdownLogo className="w-3 h-3" />}

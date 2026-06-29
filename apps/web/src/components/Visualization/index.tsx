@@ -797,11 +797,13 @@ function VisualizationBlockV2(props: Props) {
     >
       <div
         className={clsx(
-          "rounded-2xl border-[1.5px] border-[#E6E0F1] shadow-[0px_7.5px_8px_0px_#8497C30A]",
+          "rounded-2xl border-[1.5px] shadow-[0px_7.5px_8px_0px_#8497C30A]",
           props.isBlockHiddenInPublished && "border-dashed",
-          props.isCursorWithin
-            ? "border-border-focus shadow-sm"
-            : "border-[#E6E0F1] dark:border-border-tertiary"
+          {
+            "border-[#A308F0] shadow-[0px_0px_1px_4px_#8B74FF33]": props.isCursorWithin && props.isCursorInserting,
+            "border-[#E6E0F1] shadow-none": props.isCursorWithin && !props.isCursorInserting,
+            "border-[#E6E0F1] dark:border-border-tertiary": !props.isCursorWithin,
+          }
         )}
       >
         <div className="rounded-2xl">
@@ -927,12 +929,12 @@ function VisualizationBlockV2(props: Props) {
           />
         </div>
 
-        <div className="absolute left-0 top-0 -translate-y-full pb-1">
+        <div className="absolute left-0 top-0 -translate-y-full pb-2">
           <BlockTypePill label="Chart" icon={<PiChartBar className="w-3 h-3" />} />
         </div>
         <div
           className={clsx(
-            "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-1 flex flex-row gap-x-1",
+            "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-2 flex flex-row gap-x-1",
             viewLoading ? "opacity-100" : "opacity-0",
             { hidden: !props.isEditable }
           )}
