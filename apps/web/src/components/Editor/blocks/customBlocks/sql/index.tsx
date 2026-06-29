@@ -5,6 +5,7 @@ import {
   PiCpu,
   PiDatabase,
   PiCode,
+  PiTrash,
 } from "react-icons/pi";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import type { RefObject } from "react";
@@ -1271,7 +1272,7 @@ function SQLBlock(props: Props) {
                     status._tag !== "running" &&
                     status._tag !== "enqueued",
                 },
-                "rounded-[5px] border-[#E6E0F1] border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-gray-50"
+                "rounded-[5px] border-[#E6E0F1] border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-[#F1F2F4] hover:border-primary"
               )}
             >
               {status._tag !== "idle" ? (
@@ -1309,6 +1310,12 @@ function SQLBlock(props: Props) {
               isComponentInstance={isComponentInstance}
             />
           )}
+        <button
+          type="button"
+          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+        >
+          <PiTrash className="w-[13px] h-[13px] text-[#1C3B5A] group-hover:text-white" />
+        </button>
       </div>
     </div>
   );

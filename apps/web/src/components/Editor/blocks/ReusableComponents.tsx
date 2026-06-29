@@ -353,7 +353,7 @@ export function SaveReusableComponentButton(
           {ref => (
             <button
               type="button"
-              className="bg-[#FEFEFF] rounded-[5px] border border-[#E6E0F1] dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
+              className="bg-[#FEFEFF] rounded-[5px] border border-[#E6E0F1] dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center hover:bg-[#F1F2F4] hover:border-primary disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
               onClick={onSave}
               disabled={props.disabled || props.isComponentInstance}
               ref={ref}

@@ -1,4 +1,11 @@
-import { PiPlayFill, PiStop, PiClock, PiCpu, PiCode } from "react-icons/pi";
+import {
+  PiPlayFill,
+  PiStop,
+  PiClock,
+  PiCpu,
+  PiCode,
+  PiTrash,
+} from "react-icons/pi";
 import type * as Y from "yjs";
 import {
   type YBlock,
@@ -800,7 +807,7 @@ function PythonBlock(props: Props) {
                     status !== "running" &&
                     status !== "enqueued",
                 },
-                "rounded-[5px] border-[#E6E0F1] border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-gray-50"
+                "rounded-[5px] border-[#E6E0F1] border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-[#F1F2F4] hover:border-primary"
               )}
             >
               {status !== "idle" ? (
@@ -836,6 +843,12 @@ function PythonBlock(props: Props) {
             isComponentInstance={isComponentInstance}
           />
         )}
+        <button
+          type="button"
+          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+        >
+          <PiTrash className="w-[13px] h-[13px] text-[#1C3B5A] group-hover:text-white" />
+        </button>
       </div>
     </div>
   );
