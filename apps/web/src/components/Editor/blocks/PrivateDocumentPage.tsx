@@ -19,6 +19,7 @@ import { MiniChat } from "@/components/Chats/MiniChat";
 import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
 import { useExportPDF } from "@/lib/useExportPDF";
+import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
 
 import { useDataSources } from "../hooks/useDataSources";
 import { useDocuments } from "../hooks/useDocuments";
@@ -420,7 +421,7 @@ function PrivateDocumentPageInner(
         isPublished={props.document.publishedAt !== null}
       />
 
-      <div className="w-full justify-end flex items-center gap-x-2 h-[30px]">
+      <div className="w-full justify-end flex items-center gap-x-0.5 h-[30px]">
         {!props.isApp && (
           <LiveButton
             onClick={onGoToApp}
@@ -428,13 +429,16 @@ function PrivateDocumentPageInner(
             tooltipActive={props.document.publishedAt === null}
           />
         )}
+        <ThemeTogggle iconSize={18} />
+
+        <div className="ml-1 mr-3 h-5 w-px bg-[#E8E8EA] dark:bg-border-tertiary" />
 
         {isViewer ? null : props.isApp ? (
           <Link
             className="flex items-center gap-1.5
           rounded-lg px-3 py-1 text-sm font-body
           bg-white dark:bg-base-100 dark:text-ink-100
-          border border-border-secondary dark:border-border-tertiary
+          border border-primary dark:border-border-tertiary
           hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
           disabled:cursor-not-allowed disabled:opacity-50"
             href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
@@ -454,17 +458,21 @@ function PrivateDocumentPageInner(
               type="button"
               className="flex items-center gap-1.5
     rounded-lg px-3 py-1 text-sm font-body
-    bg-primary text-white
+    bg-transparent text-primary
     hover:bg-primary-300
     disabled:cursor-not-allowed disabled:opacity-50
-    border-none relative group"
+    border-[1.5px] border-primary relative group font-medium"
               onClick={onPublish}
               disabled={props.publishing}
             >
-              <PiFloppyDisk
-                size={16}
-                className="rotate-0 group-hover:-rotate-12 transition-transform duration-300"
-              />
+              <span
+                className="inline-flex items-center gap-[2px] font-body font-medium leading-none
+    text-primary border border-primary rounded-sm
+    px-1 py-0.5 text-[12px] tracking-tight
+    group-hover:scale-95 transition-transform duration-300"
+              >
+                ⌘ S
+              </span>
               <span>Save</span>
               {isDirty && props.document.publishedAt && (
                 <PublishBlinkingSignal />
