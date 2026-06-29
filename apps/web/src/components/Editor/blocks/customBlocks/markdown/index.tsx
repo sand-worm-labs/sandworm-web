@@ -27,15 +27,14 @@ import {
   toggleMarkdownEditWithAIPromptOpen,
   closeMarkdownEditWithAIPrompt,
   getMarkdownAISuggestions,
+  getBaseAttributes,
+  setTitle,
 } from "@sandworm/editor";
-import { SparklesIcon } from "@heroicons/react/20/solid";
 import { tags as t } from "@lezer/highlight";
-import { PiCaretDown, PiMarkdownLogo } from "react-icons/pi";
+import { PiMarkdownLogo, PiCpu } from "react-icons/pi";
+import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
-import {
-  useWorkspace,
-  useWorkspaces,
-} from "@/components/Editor/hooks/useWorkspaces";
+import { useWorkspaces } from "@/components/Editor/hooks/useWorkspaces";
 import type { ApiWorkspace, ApiDocument } from "@/types";
 import { useAITaskActions } from "@/components/Editor/hooks/useAITasks";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
@@ -45,6 +44,23 @@ import { TooltipV2 } from "../../ToolTips";
 import EditWithAIForm from "../../EditWithAIForm";
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import type { DashboardMode } from "../../Dashboard";
+import { BlockTypePill } from "../../BlockTypePill";
+
+// =====================================
+// ⬢ HatchBackground
+// =====================================
+
+function HatchBackground() {
+  return (
+    <div
+      className="border border-[#E7E1F0] h-2"
+      style={{
+        backgroundColor: "white",
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Cline x1='0' y1='8' x2='8' y2='0' stroke='%23E7E1F0' stroke-width='1'/%3E%3C/svg%3E")`,
+      }}
+    />
+  );
+}
 
 // =====================================
 // ⬢ markdown-it Config
@@ -206,7 +222,6 @@ function useCodeMirror({
   useEffect(() => {
     if (!containerRef.current) return () => {};
 
-    // ─── Destroy whatever is currently mounted ──────────────
     viewRef.current?.destroy();
     viewRef.current = null;
     mergeRef.current?.destroy();
@@ -320,35 +335,6 @@ const MarkdownPreview = ({ source }: { source: Y.Text }) => {
 };
 
 // =====================================
-// ⬢ SectionToggle
-// =====================================
-
-const SectionToggle = ({
-  label,
-  collapsed,
-  onToggle,
-}: {
-  label: string;
-  collapsed: boolean;
-  onToggle: () => void;
-}) => (
-  <button
-    type="button"
-    onClick={onToggle}
-    className="flex items-center gap-1 text-ink-300 hover:text-ink-400 transition-colors duration-100 group"
-  >
-    <PiCaretDown
-      size={11}
-      className={clsx(
-        "transition-transform duration-200 flex-shrink-0",
-        collapsed && "-rotate-90"
-      )}
-    />
-    <span className="text-[11px] font-body font-medium">{label}</span>
-  </button>
-);
-
-// =====================================
 // ⬢ MarkdownBlock
 // =====================================
 
@@ -356,7 +342,6 @@ const MarkdownBlock = (props: Props) => {
   const id = props.block.getAttribute("id")!;
   const source = props.block.getAttribute("source")!;
   const [workspaces] = useWorkspaces();
-  const { workspace } = useWorkspace(props.workspaceId);
 
   const { editTextWithAi, loading } = useAITaskActions();
   const { api: sidebarApi } = useSideBar();
@@ -386,11 +371,18 @@ const MarkdownBlock = (props: Props) => {
 
   // ─── State ─────────────────────────────────────────────────
   const [isSourceCollapsed, setSourceCollapsed] = useState(false);
-  const [isPreviewCollapsed, setPreviewCollapsed] = useState(false);
-  const [isFocused, setFocused] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [, editorAPI] = useEditorAwareness();
+
+  const { title } = getBaseAttributes(props.block);
+
+  const onChangeTitle = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTitle(props.block, e.target.value);
+    },
+    [props.block]
+  );
 
   const editWithAIPrompt = getMarkdownBlockEditWithAIPrompt(props.block);
   const isEditWithAIPromptOpen = isMarkdownBlockEditWithAIPromptOpen(
@@ -417,15 +409,32 @@ const MarkdownBlock = (props: Props) => {
       closeMarkdownEditWithAIPrompt(props.block, false);
       sidebarApi.openRightPanel("chat", { chatId: result.chatId });
     }
-  }, [editTextWithAi, props.workspaceId, props.document.id, id, props.block, sidebarApi]);
+  }, [
+    editTextWithAi,
+    props.workspaceId,
+    props.document.id,
+    id,
+    props.block,
+    sidebarApi,
+  ]);
 
-  const tooltipContent = useCallback(
+  const aiEditTooltipContent = useCallback(
     (ref: React.RefObject<HTMLDivElement>) => (
       <div
         ref={ref}
-        className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md"
+        className={clsx(
+          "font-body pointer-events-none absolute opacity-0 transition-opacity group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col items-center justify-center gap-y-1 z-30",
+          hasOaiKey ? "w-32" : "w-40"
+        )}
       >
-        {hasOaiKey ? "Edit with AI" : "Missing OpenAI API key"}
+        <span className="text-center">
+          {hasOaiKey ? "Open AI edit form" : "Missing OpenAI API key"}
+        </span>
+        {!hasOaiKey && (
+          <span className="text-ink-400 text-center">
+            Admins can add an AI key in settings.
+          </span>
+        )}
       </div>
     ),
     [hasOaiKey]
@@ -450,12 +459,10 @@ const MarkdownBlock = (props: Props) => {
 
   // ─── Editor focus handlers ─────────────────────────────────
   const onFocus = useCallback(() => {
-    setFocused(true);
     editorAPI.insert(id, { scrollIntoView: false });
   }, [id, editorAPI]);
 
   const onBlur = useCallback(() => {
-    setFocused(false);
     editorAPI.blur();
   }, [editorAPI]);
 
@@ -478,119 +485,88 @@ const MarkdownBlock = (props: Props) => {
     }
   }, [props.isCursorInserting, props.isCursorWithin]);
 
-  // ─── Border ────────────────────────────────────────────────
-  const borderClass = (() => {
-    if (props.dashboardMode?._tag === "viewing") return "";
+  const sourceLineCount = Math.max(
+    source.toString().split("\n").length,
+    aiSuggestions?.toString().split("\n").length ?? 0
+  );
+  const dynamicHeight = `${sourceLineCount * 20 + 130}px`;
 
-    if (isFocused && props.isEditable)
-      return "border border-border-focus dark:border-border-tertiary";
-
-    if (props.isCursorWithin && !props.isCursorInserting)
-      return "border border-border-tertiary dark:border-border-tertiary";
-
-    if (
-      props.dashboardMode?._tag === "editing" &&
-      props.dashboardMode.position === "expanded"
-    )
-      return "border border-border-focus";
-
-    return "border border-border-secondary dark:border-border-tertiary";
-  })();
-
-  // ─── Source height ─────────────────────────────────────────
-  const sourceLineCount = source.toString().split("\n").length;
-  const sourceHeight = `${Math.max(sourceLineCount, 3) * 20 + 24}px`;
+  const diffButtonsVisible = aiSuggestions !== null;
 
   return (
     <div
+      className="relative group/block mt-6"
       data-testid={`MarkdownBlock-${id}`}
-      ref={d => {
-        props.dragPreview?.(d);
-      }}
       data-block-id={id}
-      className="flex flex-col"
     >
       <div
         className={clsx(
-          borderClass,
-          props.dashboardMode ? "h-full overflow-y-auto" : "",
-          props.belongsToMultiTabGroup
-            ? "rounded-tl-none rounded-xl"
-            : "rounded-lg"
+          "rounded-2xl border-[1.5px] border-[#E6E0F1] shadow-[0px_7.5px_8px_0px_#8497C30A]",
+          props.belongsToMultiTabGroup ? "rounded-tl-none" : ""
         )}
       >
-        {/* ── Block header ── */}
         <div
-          className="flex items-center justify-between px-3 py-2
-          border-b border-border-secondary dark:border-border-tertiary"
+          className={clsx(
+            "rounded-t-2xl dark:bg-base-100",
+            props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
+            isSourceCollapsed
+              ? "rounded-b-2xl"
+              : "border-b border-[#E6E0F1] dark:border-border-tertiary"
+          )}
+          ref={d => {
+            props.dragPreview?.(d);
+          }}
         >
-          <div className="flex items-center gap-3">
-            <SectionToggle
-              label="source"
-              collapsed={isSourceCollapsed}
-              onToggle={() => setSourceCollapsed(v => !v)}
-            />
-            <SectionToggle
-              label="preview"
-              collapsed={isPreviewCollapsed}
-              onToggle={() => setPreviewCollapsed(v => !v)}
-            />
-          </div>
-
-          <div className="inline-flex items-center gap-1.5">
-            {props.isEditable && !props.dashboardMode && (
-              <TooltipV2<HTMLButtonElement> content={tooltipContent} active>
-                {ref => (
-                  <button
-                    type="button"
-                    ref={ref}
-                    onClick={onToggleEditWithAIPromptOpen}
-                    disabled={!hasOaiKey}
-                    className={clsx(
-                      hasOaiKey
-                        ? "text-ink-300 hover:text-primary cursor-pointer"
-                        : "text-ink-200 cursor-not-allowed",
-                      "flex items-center transition-colors"
-                    )}
-                  >
-                    <SparklesIcon className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </TooltipV2>
+          <div
+            className={clsx(
+              "flex items-center px-3 gap-x-4 font-body h-10 rounded-t-2xl",
+              props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
+              isSourceCollapsed ? "rounded-b-2xl" : ""
             )}
-
-            <span className="inline-flex items-center gap-1 text-[10px] font-medium font-body text-ink-300 dark:text-ink-600 bg-[#F1F3F4] dark:bg-[#2A2A28] border border-[#DEE2E6] dark:border-[#3A3A38] px-1.5 py-0.5 rounded-md select-none">
-              <PiMarkdownLogo size={11} />
-              Markdown
-            </span>
+          >
+            <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5 px-4">
+              <div className="relative group w-4 h-4">
+                <button
+                  type="button"
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => setSourceCollapsed(v => !v)}
+                >
+                  {isSourceCollapsed ? (
+                    <ChevronRightIcon className="h-4 w-4" />
+                  ) : (
+                    <ChevronDownIcon className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              <input
+                type="text"
+                className="text-sm font-body font-normal pl-1 ring-gray-200 focus:ring-border-focus block w-full rounded-lg border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-[#868E96] py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-base-100"
+                placeholder={props.isEditable ? "Add a title..." : "Markdown"}
+                value={title}
+                disabled={!props.isEditable}
+                onChange={onChangeTitle}
+              />
+            </div>
           </div>
         </div>
 
-        {/* ── Source (CodeMirror / MergeView) ── */}
         <Transition
+          as="div"
           show={!isSourceCollapsed}
-          unmount={false}
-          enter="transition-all ease-in duration-200 overflow-hidden"
-          enterFrom="max-h-0 opacity-0"
-          enterTo="max-h-[var(--source-height)] opacity-100"
-          leave="transition-all ease-out duration-200 overflow-hidden"
-          leaveFrom="max-h-[var(--source-height)] opacity-100"
-          leaveTo="max-h-0 opacity-0"
+          enter="transition-all ease-in duration-300 overflow-hidden"
+          enterFrom="max-h-0"
+          enterTo="max-h-[var(--dynamic-height)]"
+          leave="transition-[max-height] ease-out duration-300 overflow-hidden"
+          leaveFrom="max-h-[var(--dynamic-height)]"
+          leaveTo="max-h-0"
+          style={{ "--dynamic-height": dynamicHeight } as React.CSSProperties}
         >
-          <div
-            ref={containerRef}
-            style={{ "--source-height": sourceHeight } as React.CSSProperties}
-            className={clsx(
-              "p-3",
-              !isPreviewCollapsed
-                ? "border-b border-border-secondary dark:border-border-tertiary"
-                : ""
-            )}
-          />
-        </Transition>
-        <div className="mt-1.5">
+          <div className="print:hidden py-5">
+            <div ref={containerRef} />
+          </div>
+
           <ApproveDiffButtons
-            visible={aiSuggestions !== null}
+            visible={diffButtonsVisible}
             status="pending"
             canTry={false}
             onTry={() => {}}
@@ -598,39 +574,67 @@ const MarkdownBlock = (props: Props) => {
             onReject={onRejectAISuggestion}
             onUndo={onRejectAISuggestion}
           />
-        </div>
 
-        {isEditWithAIPromptOpen ? (
-          <EditWithAIForm
-            loading={loading.text}
-            disabled={loading.text}
-            onSubmit={onSubmitEditWithAI}
-            onClose={onCloseEditWithAIPrompt}
-            value={editWithAIPrompt}
-            hasOutput={false}
-          />
-        ) : null}
-
-        {/* ── Preview ── */}
-        <Transition
-          show={!isPreviewCollapsed}
-          enter="transition-all ease-in duration-200 overflow-hidden"
-          enterFrom="max-h-0 opacity-0"
-          enterTo="max-h-[2000px] opacity-100"
-          leave="transition-all ease-out duration-200 overflow-hidden"
-          leaveFrom="max-h-[2000px] opacity-100"
-          leaveTo="max-h-0 opacity-0"
-        >
-          <div
-            className={clsx(
-              props.dashboardMode
-                ? "px-4 py-4 h-full overflow-y-auto"
-                : "px-4 py-3"
-            )}
-          >
-            <MarkdownPreview source={source} />
-          </div>
+          {isEditWithAIPromptOpen ? (
+            <EditWithAIForm
+              loading={loading.text}
+              disabled={loading.text}
+              onSubmit={onSubmitEditWithAI}
+              onClose={onCloseEditWithAIPrompt}
+              value={editWithAIPrompt}
+              hasOutput
+            />
+          ) : (
+            <div className="print:hidden px-3 pb-3">
+              <div className="flex justify-end text-xs pt-2 pb-3 px-3 -mx-3 -mb-3 bg-[#F8F9FA] dark:bg-base-200 border-t border-[#E6E0F1]">
+                {props.isEditable && !props.dashboardMode && (
+                  <TooltipV2<HTMLButtonElement>
+                    content={aiEditTooltipContent}
+                    active
+                  >
+                    {ref => (
+                      <button
+                        type="button"
+                        ref={ref}
+                        onClick={onToggleEditWithAIPromptOpen}
+                        disabled={!hasOaiKey}
+                        className={clsx(
+                          !hasOaiKey
+                            ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
+                            : "cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
+                          "flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
+                        )}
+                      >
+                        <PiCpu className="w-[11.5px] h-[11.5px] text-ink-300" />
+                        <span>Edit with AI</span>
+                      </button>
+                    )}
+                  </TooltipV2>
+                )}
+              </div>
+            </div>
+          )}
         </Transition>
+
+        {!isSourceCollapsed && <HatchBackground />}
+
+        <div
+          className={clsx(
+            props.dashboardMode
+              ? "px-4 py-4 h-full overflow-y-auto"
+              : "px-4 py-3"
+          )}
+        >
+          <MarkdownPreview source={source} />
+        </div>
+      </div>
+
+      {/* ── Block type pill ── */}
+      <div className="absolute left-0 top-0 -translate-y-full pb-1">
+        <BlockTypePill
+          label="Markdown"
+          icon={<PiMarkdownLogo className="w-3 h-3" />}
+        />
       </div>
     </div>
   );

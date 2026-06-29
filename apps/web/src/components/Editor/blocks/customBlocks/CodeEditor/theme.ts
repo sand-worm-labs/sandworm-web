@@ -19,15 +19,15 @@ const LIGHT = {
   selection: "#add6ff",
   selectionMatch: "#c9e2ff",
 
-  keyword: "#AF00DB",
+  keyword: "#A308F1",
   variable: "#001080",
-  string: "#795E27",
+  string: "#785E26",
   number: "#098658",
   comment: "#297F99",
   operator: "#000000",
   type: "#267F99",
-  builtin: "#795E26",
-  decorator: "#795E26",
+  builtin: "#785E26",
+  decorator: "#785E26",
   escape: "#EE0000",
   regexp: "#811F3F",
 };
@@ -45,7 +45,7 @@ const DARK = {
   selectionMatch: "#1e3a5f",
 
   keyword: "#0000FF",
-  keywordModifier: "#AF00DB",
+  keywordModifier: "#A308F1",
   variable: "#1f1f1f",
   string: "#A31515",
   number: "#098658",

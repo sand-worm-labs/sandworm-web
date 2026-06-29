@@ -701,7 +701,7 @@ function PythonBlock(props: Props) {
                   hidden: isCodeHidden,
                 })}
               >
-                <div className="flex justify-between text-xs">
+                <div className="flex justify-between text-xs pt-2 pb-3 px-3 -mx-3 -mb-3 bg-[#F8F9FA] dark:bg-base-200 border-t border-[#E6E0F1]">
                   <div className="flex items-center">{queryStatusText}</div>
                   {aiSuggestions === null &&
                     !props.isPublicMode &&

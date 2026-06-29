@@ -2,7 +2,7 @@ import Ansi from "@cocalc/ansi-to-react";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import clsx from "clsx";
 import { useCallback } from "react";
-import { SparklesIcon } from "@heroicons/react/20/solid";
+import { PiCpu } from "react-icons/pi";
 import type { PythonErrorOutput } from "@sandworm/types";
 
 import Spin from "../../Spin";
@@ -72,14 +72,17 @@ export function PythonErrorUI(props: PythonErrorUIProps) {
                 type="button"
                 onClick={props.onFixWithAI}
                 className={clsx(
-                  "mt-2 flex items-center border rounded-sm px-2 py-1 gap-x-2 font-syne border-border-secondary hover:bg-gray-50 hover:text-gray-700 disabled:bg-gray-200 disabled:border-0 disabled:cursor-not-allowed"
+                  !props.canFixWithAI
+                    ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
+                    : "cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
+                  "mt-2 flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
                 )}
                 disabled={props.isFixWithAILoading || !props.canFixWithAI}
               >
                 {props.isFixWithAILoading ? (
                   <Spin />
                 ) : (
-                  <SparklesIcon className="w-3 h-3" />
+                  <PiCpu className="w-[11.5px] h-[11.5px] text-ink-300" />
                 )}
                 Fix with AI
               </button>

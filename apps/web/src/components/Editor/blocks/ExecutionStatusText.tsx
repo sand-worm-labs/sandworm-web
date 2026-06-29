@@ -1,6 +1,5 @@
 import { format } from "date-fns";
 import {
-  CheckCircleIcon,
   CloudArrowDownIcon,
   Cog8ToothIcon,
   ChevronRightIcon,
@@ -148,14 +147,30 @@ export function PythonSucceededText({
   onToggleResultHidden,
 }: LastExecutedStatusTextProps) {
   return (
-    <div className="flex items-center gap-x-1 text-ink-400">
+    <div className="flex items-center gap-x-1 text-ink-400 font-[300]">
       <div className="relative group w-4 h-4">
-        <CheckCircleIcon
+        <div
           className={clsx(
-            "absolute inset-0 h-4 w-4",
+            "relative w-[18px] h-[18px]",
             "group-hover:opacity-0 transition-opacity"
           )}
-        />
+        >
+          <svg
+            viewBox="0 0 18 18"
+            fill="none"
+            className="absolute inset-0 w-full h-full"
+          >
+            <circle
+              cx="9"
+              cy="9"
+              r="8"
+              stroke="#E6E0F1"
+              strokeWidth="1.5"
+              className="fill-[#FEFEFF] dark:fill-[var(--color-base-100)]"
+            />
+          </svg>
+          <PiCheck className="absolute inset-0 w-full h-full p-[4px] text-[#A308F0]" />
+        </div>
         <button
           type="button"
           className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -168,7 +183,9 @@ export function PythonSucceededText({
           )}
         </button>
       </div>
-      <span>Succeeded in {formatExecutionTime(lastExecutionTime)}</span>
+      <span className="ml-1">
+        Succeeded in {formatExecutionTime(lastExecutionTime)}
+      </span>
     </div>
   );
 }
