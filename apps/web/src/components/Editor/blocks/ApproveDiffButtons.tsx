@@ -3,7 +3,7 @@ import {
   PiCheck,
   PiX,
   PiArrowCounterClockwise,
-  PiTerminal,
+  PiArrowBendDownLeft,
 } from "react-icons/pi";
 
 import type { AiBlockStatus } from "../hooks/useAiDiff";
@@ -96,46 +96,45 @@ function ApproveDiffButtons({
           : "pending"}
       </span>
 
-      {/* ── Action buttons ── */}
       <div className="flex items-center gap-x-2">
         <button
           type="button"
           onClick={onTry}
           disabled={!canTry}
           className="flex items-center gap-x-1.5 px-3 py-1 rounded-lg
-            border border-border-secondary dark:border-[#2A2A28]
-            bg-white dark:bg-[#1C1C1A]
+            border-none dark:border-[#2A2A28]
+            bg-transparent dark:bg-[#1C1C1A]
             text-ink-400 dark:text-ink-500
             hover:border-ink-300 hover:text-ink-500
             disabled:opacity-40 disabled:cursor-not-allowed
             text-[12px] transition-colors"
         >
-          <PiTerminal size={12} /> Try
+          Try
         </button>
 
         <button
           type="button"
           onClick={onReject}
           className="flex items-center gap-x-1.5 px-3 py-1 rounded-lg
-            border border-border-secondary dark:border-[#2A2A28]
+            border border-[#E6E0F1] dark:border-[#2A2A28]
             bg-white dark:bg-[#1C1C1A]
             text-ink-400 dark:text-ink-500
             hover:border-red-400/50 hover:text-red-500
             text-[12px] transition-colors"
         >
-          <PiX size={12} /> Reject
+          Reject
         </button>
 
         <button
           type="button"
           onClick={onAccept}
           className="flex items-center gap-x-1.5 px-3 py-1 rounded-lg
-            bg-[#0F0F0F] hover:bg-[#1A1A1A]
+            bg-[#A308F0] hover:bg-[#1A1A1A]
             dark:bg-white dark:hover:bg-gray-100
             text-white dark:text-[#0F0F0F]
             text-[12px] transition-colors"
         >
-          <PiCheck size={12} /> Accept
+          Accept <PiArrowBendDownLeft size={12} />
         </button>
       </div>
     </div>
