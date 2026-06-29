@@ -131,16 +131,16 @@ function AIEditTooltipContent({
   );
 }
 
-function HatchBackground (){
+function HatchBackground() {
   return (
     <div
-  className="border border-[#E7E1F0] h-2"
-  style={{
-    backgroundColor: 'white',
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Cline x1='0' y1='8' x2='8' y2='0' stroke='%23E7E1F0' stroke-width='1'/%3E%3C/svg%3E")`,
-  }}
-/>
-  )
+      className="border border-[#E7E1F0] h-2"
+      style={{
+        backgroundColor: "white",
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Cline x1='0' y1='8' x2='8' y2='0' stroke='%23E7E1F0' stroke-width='1'/%3E%3C/svg%3E")`,
+      }}
+    />
+  );
 }
 
 // =====================================
@@ -906,7 +906,7 @@ function SQLBlock(props: Props) {
       >
         <div
           className={clsx(
-            "rounded-2xl",
+            "rounded-2xl overflow-hidden",
             statusIsDisabled ? "bg-gray-100" : "bg-white dark:bg-base-100 ",
             props.hasMultipleTabs ? "rounded-tl-none" : "",
             !(isResultHidden || !result) &&
@@ -1093,7 +1093,7 @@ function SQLBlock(props: Props) {
                     "rounded-b-md": isResultHidden || !result,
                   })}
                 >
-                  <div className="flex justify-between text-xs pt-2 ">
+                  <div className="flex justify-between text-xs pt-2 pb-3 px-3 -mx-3 -mb-3 bg-[#F8F9FA] dark:bg-base-200 border-t border-[#E6E0F1]">
                     <div className="flex items-center">{queryStatusText}</div>
                     <div className="flex items-center gap-x-2">
                       {!props.isPublicMode &&
@@ -1107,7 +1107,7 @@ function SQLBlock(props: Props) {
                             className={clsx(
                               !props.isEditable
                                 ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                                : "cursor-pointer hover:bg-gray-50  hover:text-gray-700",
+                                : "cursor-pointer bg-[#FEFEFF] hover:bg-gray-50 hover:text-gray-700",
                               "flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
                             )}
                           >
@@ -1133,7 +1133,7 @@ function SQLBlock(props: Props) {
                                 className={clsx(
                                   !props.isEditable
                                     ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                                    : "cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
+                                    : "cursor-pointer bg-[#FEFEFF] hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
                                   "flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
                                 )}
                                 onClick={onAddVariable}
@@ -1160,7 +1160,7 @@ function SQLBlock(props: Props) {
                                 className={clsx(
                                   !props.isEditable
                                     ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                                    : "cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
+                                    : "cursor-pointer bg-[#FEFEFF] hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
                                   "flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
                                 )}
                                 onClick={onToggleFormatSQLCode}
@@ -1188,8 +1188,8 @@ function SQLBlock(props: Props) {
                                 className={clsx(
                                   !props.isEditable || !hasOaiKey
                                     ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                                    : "cusor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary ",
-                                  "flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body "
+                                    : "cursor-pointer bg-[#FEFEFF] hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
+                                  "flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
                                 )}
                               >
                                 <PiCpu className="w-[11.5px] h-[11.5px] text-ink-300" />
@@ -1205,7 +1205,7 @@ function SQLBlock(props: Props) {
             </div>
           </Transition>
         </div>
-        <HatchBackground/>
+        {result && !isResultHidden && <HatchBackground />}
         {result && (
           <SQLResult
             page={page}
