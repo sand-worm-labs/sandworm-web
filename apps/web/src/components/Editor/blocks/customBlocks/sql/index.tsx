@@ -132,6 +132,22 @@ function AIEditTooltipContent({
   );
 }
 
+function countSQLLines(source: Y.Text): number {
+  const text = source.toString().trim();
+  if (!text) return 0;
+  return text.split("\n").length;
+}
+
+function CollapsedCodeSummary({ lineCount }: { lineCount: number }) {
+  return (
+    <div className="flex items-center gap-x-2 px-4 py-1.5 text-xs bg-[#F8F9FA] dark:bg-base-200 border-t border-[#E6E0F1] dark:border-border-tertiary">
+      <span className="italic text-ink-400">{lineCount} lines hidden</span>
+      <span className="text-ink-300">·</span>
+      <span className="text-ink-400">Output hidden</span>
+    </div>
+  );
+}
+
 function HatchBackground() {
   return (
     <div
@@ -1206,7 +1222,10 @@ function SQLBlock(props: Props) {
             </div>
           </Transition>
         </div>
-        {result && !isResultHidden && <HatchBackground />}
+        {isCodeHidden && isResultHidden && result && (
+          <CollapsedCodeSummary lineCount={countSQLLines(source)} />
+        )}
+        {result && (!isResultHidden || isCodeHidden) && <HatchBackground />}
         {result && (
           <SQLResult
             page={page}

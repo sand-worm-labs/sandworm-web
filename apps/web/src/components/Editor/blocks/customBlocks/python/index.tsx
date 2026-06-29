@@ -146,6 +146,37 @@ function AIEditTooltipContent({
 }
 
 // =====================================
+// ⬢ Hatch / Collapsed Summary
+// =====================================
+function HatchBackground() {
+  return (
+    <div
+      className="border border-[#E7E1F0] h-2"
+      style={{
+        backgroundColor: "white",
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Cline x1='0' y1='8' x2='8' y2='0' stroke='%23E7E1F0' stroke-width='1'/%3E%3C/svg%3E")`,
+      }}
+    />
+  );
+}
+
+function countPythonLines(source: Y.Text): number {
+  const text = source.toString().trim();
+  if (!text) return 0;
+  return text.split("\n").length;
+}
+
+function CollapsedCodeSummary({ lineCount }: { lineCount: number }) {
+  return (
+    <div className="flex items-center gap-x-2 px-4 py-1.5 text-xs bg-[#F8F9FA] dark:bg-base-200 border-t border-[#E6E0F1] dark:border-border-tertiary">
+      <span className="italic text-ink-400">{lineCount} lines hidden</span>
+      <span className="text-ink-300">·</span>
+      <span className="text-ink-400">Output hidden</span>
+    </div>
+  );
+}
+
+// =====================================
 // ⬢ PythonBlock
 // =====================================
 function PythonBlock(props: Props) {
@@ -743,6 +774,12 @@ function PythonBlock(props: Props) {
           </Transition>
         </div>
 
+        {isCodeHidden && isResultHidden && results.length > 0 && (
+          <CollapsedCodeSummary lineCount={countPythonLines(source)} />
+        )}
+        {results.length > 0 && (!isResultHidden || isCodeHidden) && (
+          <HatchBackground />
+        )}
         <Transition
           show={!(isResultHidden || results.length === 0)}
           enter="transition-all ease-in duration-300"
