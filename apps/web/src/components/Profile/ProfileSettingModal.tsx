@@ -49,7 +49,7 @@ interface ProfileSettingsModalProps {
 // ⬢ Constants
 // =====================================
 const inputClassName =
-  "w-full px-3 md:py-2.5 py-1.5 rounded-xl bg-white dark:bg-base-400 border border-[#DEE2E6] dark:border-border-tertiary text-ink-100 dark:text-white placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition md:text-sm text-[13px] disabled:bg-[#DEE2E6] disabled:border-[#DEE2E6] disabled:text-[#868E96] ";
+  "w-full px-3 md:py-2.5 py-1.5 rounded-lg bg-[#F1F3F4] dark:bg-base-400 border border-[#E6E0F1] dark:border-border-tertiary text-ink-100 dark:text-white placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition md:text-sm text-[13px] disabled:bg-[#DEE2E6] disabled:border-[#DEE2E6] disabled:text-[#868E96] ";
 
 const labelClassName =
   "block text-xs font-bold text-[#6C757D] dark:text-gray-300 mb-2 uppercase font-bold";
@@ -207,7 +207,7 @@ export function ProfileSettingsModal({
                                   type="email"
                                   value={user?.email || ""}
                                   disabled
-                                  className={`${inputClassName} bg-gray-50 dark:bg-[#0D0F11] cursor-not-allowed opacity-60`}
+                                  className={`${inputClassName} bg-[#DEE2E6] dark:bg-[#0D0F11] cursor-not-allowed `}
                                 />
                                 <p className="text-xs text-ink-400  dark:text-ink-400 mt-1">
                                   Email cannot be changed
