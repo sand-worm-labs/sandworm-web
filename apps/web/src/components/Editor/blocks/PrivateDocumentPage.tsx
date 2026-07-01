@@ -395,9 +395,9 @@ function PrivateDocumentPageInner(
 
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
-      <div className="w-full  flex items-center gap-x-1.5 text-[13px] text-ink-400 dark:text-ink-400  font-body ">
-        <span className="w-full flex gap-x-2 items-center ">
-          <span className="font-normal bg-[#EBF7F7] rounded-full px-3 py-0.5 text-ink-100 border border-[#E9ECEF] flex gap-x-2 w-[90px] items-center  ">
+      <div className="w-full min-w-0 overflow-hidden flex items-center gap-x-1.5 text-[13px] text-ink-400 dark:text-ink-400  font-body ">
+        <span className="w-full min-w-0 flex gap-x-2 items-center ">
+          <span className="font-normal bg-[#EBF7F7] rounded-full px-3 py-0.5 text-ink-100 border border-[#E9ECEF] flex gap-x-2 w-[90px] shrink-0 items-center  ">
             <span className="relative flex items-center justify-center w-[10px] h-[10px]">
               <span className="absolute inline-flex w-full h-full rounded-full bg-[#A308F0]/15" />
               <span className="absolute inline-flex w-full h-full animate-[ping_1.8s_cubic-bezier(0,0,0.2,1)_infinite] rounded-full bg-[#A308F0]/30" />
@@ -409,7 +409,9 @@ function PrivateDocumentPageInner(
               "Editing"
             )}
           </span>{" "}
-          <span className="text-[#6C757D] ">/ {documentTitle}</span>
+          <span className="text-[#6C757D] truncate min-w-0">
+            / {documentTitle}
+          </span>
         </span>
       </div>
       <DashboardNotebookGroupButton
