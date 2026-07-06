@@ -102,6 +102,43 @@ export const LoadingQueryText = ({
   );
 };
 
+function formatElapsedTime(ms: number): string {
+  if (ms < 60000) {
+    return `${(ms / 1000).toFixed(1)}s`;
+  }
+
+  return `${(ms / 60000).toFixed(1)}m`;
+}
+
+export const RunningQueryText = ({
+  startExecutionTime,
+}: StartExecutionStatusTextProps) => {
+  const [elapsedMs, setElapsedMs] = useState(0);
+
+  useEffect(() => {
+    if (!startExecutionTime) {
+      return () => {};
+    }
+
+    const startedAt = new Date(startExecutionTime).getTime();
+    const tick = () => setElapsedMs(Date.now() - startedAt);
+
+    tick();
+    const interval = setInterval(tick, 100);
+    return () => clearInterval(interval);
+  }, [startExecutionTime]);
+
+  return (
+    <span className="flex items-center gap-x-1.5 text-xs text-primary select-none">
+      <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+      <span>
+        Running
+        {startExecutionTime && ` · ${formatElapsedTime(elapsedMs)}`}
+      </span>
+    </span>
+  );
+};
+
 export const LoadingEnvText = () => {
   return (
     <span className=" text-ink-400 text-xs flex items-center select-none">

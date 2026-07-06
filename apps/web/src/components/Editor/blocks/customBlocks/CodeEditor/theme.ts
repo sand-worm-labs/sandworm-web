@@ -9,7 +9,7 @@ import { tags as t } from "@lezer/highlight";
 
 const LIGHT = {
   bg: "#FFFFFF",
-  bgDisabled: "#f5f5f5",
+  bgDisabled: "#EBF7F7",
   bgGutter: "#ffffff",
   border: "#e4e4e7",
   text: "#1f1f1f",
