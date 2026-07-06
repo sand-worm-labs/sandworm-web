@@ -37,8 +37,8 @@ import {
 import type { ConnectDragPreview } from "react-dnd";
 import { equals, head, omit } from "ramda";
 import { PiChartBar, PiPlayFill, PiStop, PiClock } from "react-icons/pi";
-import { BlockTypePill } from "@/components/Editor/blocks/BlockTypePill";
 
+import { BlockTypePill } from "@/components/Editor/blocks/BlockTypePill";
 import type { ApiDocument } from "@/types";
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 import HeaderSelect from "@/components/Editor/blocks/HeaderSelect";
@@ -800,9 +800,12 @@ function VisualizationBlockV2(props: Props) {
           "rounded-2xl border-[1.5px] shadow-[0px_7.5px_8px_0px_#8497C30A]",
           props.isBlockHiddenInPublished && "border-dashed",
           {
-            "border-[#A308F0] shadow-[0px_0px_1px_4px_#8B74FF33]": props.isCursorWithin && props.isCursorInserting,
-            "border-[#E6E0F1] shadow-none": props.isCursorWithin && !props.isCursorInserting,
-            "border-[#E6E0F1] dark:border-border-tertiary": !props.isCursorWithin,
+            "border-[#A308F0] shadow-[0px_0px_1px_4px_#8B74FF33]":
+              props.isCursorWithin && props.isCursorInserting,
+            "border-[#E6E0F1] shadow-none":
+              props.isCursorWithin && !props.isCursorInserting,
+            "border-[#E6E0F1] dark:border-border-tertiary":
+              !props.isCursorWithin,
           }
         )}
       >
@@ -930,7 +933,10 @@ function VisualizationBlockV2(props: Props) {
         </div>
 
         <div className="absolute left-0 top-0 -translate-y-full pb-2">
-          <BlockTypePill label="Chart" icon={<PiChartBar className="w-3 h-3" />} />
+          <BlockTypePill
+            label="Chart"
+            icon={<PiChartBar className="w-3 h-3" />}
+          />
         </div>
         <div
           className={clsx(

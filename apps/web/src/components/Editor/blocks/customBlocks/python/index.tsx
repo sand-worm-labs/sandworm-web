@@ -37,6 +37,7 @@ import { useTheme } from "next-themes";
 import { CodeIcon } from "@/components/Assets/Blocks/CodeIcon";
 import type { ApiDocument, ApiWorkspace } from "@/types";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
+import { Shimmer } from "@/components/Skeletons";
 
 import { BlockTypePill } from "../../BlockTypePill";
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
@@ -50,7 +51,7 @@ import { useWorkspaces } from "../../../hooks/useWorkspaces";
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import ScrollBar from "../../ScrollBar";
 import {
-  ExecutingPythonText,
+  RunningQueryText,
   LoadingEnvText,
   PythonSucceededText,
 } from "../../ExecutionStatusText";
@@ -59,6 +60,7 @@ import CodeEditor from "../CodeEditor";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 import EditWithAIForm from "../../EditWithAIForm";
 import ApproveDiffButons from "../../ApproveDiffButtons";
+import { RunningBorderBar } from "../../RunningBorderBar";
 
 import { PythonOutputs } from "./PythonOutput";
 
@@ -501,9 +503,7 @@ function PythonBlock(props: Props) {
         if (envStatus === "Starting") {
           return <LoadingEnvText />;
         }
-        return (
-          <ExecutingPythonText startExecutionTime={startQueryTime ?? null} />
-        );
+        return <RunningQueryText startExecutionTime={startQueryTime ?? null} />;
       case "unknown":
         return null;
       default:
@@ -606,18 +606,26 @@ function PythonBlock(props: Props) {
     >
       <div
         className={clsx(
-          "rounded-2xl border-[1.5px] shadow-[0px_7.5px_8px_0px_#8497C30A]",
+          "relative rounded-2xl border-[1.5px] shadow-[0px_7.5px_8px_0px_#8497C30A]",
           props.isBlockHiddenInPublished && "border-dashed",
           props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-2xl",
           {
             "border-[#A308F0] shadow-[0px_7.5px_8px_0px_#8497C30A,0px_0px_1px_4px_#8B74FF33]":
-              isEditorFocused && editorState.mode === "insert",
+              !statusIsDisabled &&
+              isEditorFocused &&
+              editorState.mode === "insert",
+            "border-[#E6E0F1] shadow-[0px_7.5px_8px_0px_#8497C30A,0px_0px_1px_4px_#8B74FF33] dark:border-border-tertiary":
+              statusIsDisabled,
             "border-[#E6E0F1] shadow-none":
-              isEditorFocused && editorState.mode === "normal",
-            "border-[#E6E0F1] dark:border-border-tertiary": !isEditorFocused,
+              !statusIsDisabled &&
+              isEditorFocused &&
+              editorState.mode === "normal",
+            "border-[#E6E0F1] dark:border-border-tertiary":
+              !statusIsDisabled && !isEditorFocused,
           }
         )}
       >
+        <RunningBorderBar active={statusIsDisabled} />
         <div
           className={clsx(
             "rounded-2xl",
@@ -810,6 +818,13 @@ function PythonBlock(props: Props) {
             </div>
           </div>
         </Transition>
+        {results.length === 0 && statusIsDisabled && (
+          <div className="rounded-b-2xl px-4 py-4 space-y-3">
+            <Shimmer className="h-3 w-full" />
+            <Shimmer className="h-3 w-3/4" />
+            <Shimmer className="h-3 w-1/2" />
+          </div>
+        )}
       </div>
 
       <div className="absolute left-0 top-0 -translate-y-full pb-2">

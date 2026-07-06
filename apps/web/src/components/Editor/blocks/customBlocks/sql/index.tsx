@@ -355,9 +355,7 @@ function SQLBlock(props: Props) {
 
   const loadingPage = isExecutionStatusLoading(pageStatus);
 
-  const statusIsDisabled: boolean =
-    true ||
-    (() => {
+  const statusIsDisabled: boolean = (() => {
       switch (status._tag) {
         case "idle":
         case "completed":

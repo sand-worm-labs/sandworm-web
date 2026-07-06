@@ -29,7 +29,7 @@ import type {
   XAxis,
 } from "@sandworm/editor";
 import { head, uniq } from "ramda";
-import { PiEmpty } from "react-icons/pi";
+import { PiDownloadSimple, PiEmpty } from "react-icons/pi";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
 
@@ -204,10 +204,11 @@ function VisualizationViewV2(props: Props) {
         props.input.chartType !== "trend" && (
           <button
             type="button"
-            className="absolute bottom-0 bg-white rounded-tl-md rounded-br-2xl border-t border-l border-border-secondary p-2 hover:bg-gray-50 z-10 right-0 text-xs text-ink-400 dark:bg-[#181C21] dark:border-border-tertiary"
+            className="absolute bottom-2 right-2 z-10 flex items-center gap-x-1 rounded-md border border-[#E6E0F1] bg-[#FEFEFF] px-2 py-1 text-xs text-ink-300 font-body cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary dark:bg-[#181C21] dark:border-border-tertiary"
             onClick={props.onExportToPNG}
           >
-            PNG
+            <PiDownloadSimple className="h-[11.5px] w-[11.5px] text-ink-300" />
+            <span>PNG</span>
           </button>
         )}
     </div>
