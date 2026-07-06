@@ -157,17 +157,14 @@ function EditWithAIForm(props: Props) {
           className={clsx(
             // layout
             "print:hidden w-full flex items-center gap-2 px-3 py-2 mt-[-1px]",
-            // border top via ::before pseudo (see styles above)
             "relative",
             props.loading ? "rainbow-border-top" : "rainbow-border-top-static",
-            // bottom border + bg
             "border-b border-x border-border dark:border-border-dark",
             !props.hasOutput && "rounded-b-xl",
             "bg-surface dark:bg-surface-dark",
             "transition-colors duration-150"
           )}
         >
-          {/* Sparkle icon */}
           <div className="flex-shrink-0 text-ink-400 dark:text-ink-500">
             <SparkleAI size={32} />
           </div>
@@ -200,10 +197,10 @@ function EditWithAIForm(props: Props) {
             type="button"
             onClick={props.onClose}
             className={clsx(
-              "flex-shrink-0",
-              "text-ink-400 dark:text-ink-500",
-              "hover:text-[#A308F0] dark:hover:text-[#C97FF5]",
-              "transition-colors duration-150"
+              "flex-shrink-0 flex items-center justify-center ",
+              "text-error dark:text-ink-500",
+              "hover:text-error dark:hover:text-[#C97FF5]",
+              "transition-colors duration-150 border border-[#E6E0F1] w-6 h-6 rounded-lg"
             )}
           >
             <PiX size={12} />
@@ -218,7 +215,6 @@ function EditWithAIForm(props: Props) {
               "transition-all duration-150",
               props.loading || props.disabled
                 ? [
-                    // Loading state: rainbow gradient pill that pulses
                     "relative overflow-hidden cursor-not-allowed",
                     "bg-transparent border border-transparent",
                     // inner bg so spinner is readable against the gradient shell
@@ -229,7 +225,6 @@ function EditWithAIForm(props: Props) {
             )}
           >
             {props.loading ? (
-              // Spinner sits on top of the pseudo-element bg
               <span className="relative z-10 text-[#A308F0] dark:text-[#C97FF5]">
                 <Spin />
               </span>

@@ -800,7 +800,8 @@ function VisualizationBlockV2(props: Props) {
           "rounded-2xl border-[1.5px] shadow-[0px_7.5px_8px_0px_#8497C30A]",
           props.isBlockHiddenInPublished && "border-dashed",
           {
-            "border-[#A308F0] shadow-[0px_0px_1px_4px_#8B74FF33]": props.isCursorWithin && props.isCursorInserting,
+            "border-[#A308F0] shadow-[0px_7.5px_8px_0px_#8497C30A,0px_0px_1px_4px_#8B74FF33]":
+              props.isCursorWithin && props.isCursorInserting,
             "border-[#E6E0F1] shadow-none": props.isCursorWithin && !props.isCursorInserting,
             "border-[#E6E0F1] dark:border-border-tertiary": !props.isCursorWithin,
           }

@@ -6,6 +6,9 @@ import {
   PiDatabase,
   PiCode,
   PiTrash,
+  PiCopy,
+  PiCheck,
+  PiCheckCircleLight,
 } from "react-icons/pi";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import type { RefObject } from "react";
@@ -913,7 +916,7 @@ function SQLBlock(props: Props) {
           props.isBlockHiddenInPublished && "border-dashed",
           props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-2xl",
           {
-            "border-[#A308F0] shadow-[0px_0px_1px_4px_#8B74FF33]":
+            "border-[#A308F0] shadow-[0px_7.5px_8px_0px_#8497C30A,0px_0px_1px_4px_#8B74FF33]":
               isEditorFocused && editorState.mode === "insert",
             "border-[#E6E0F1] shadow-none":
               isEditorFocused && editorState.mode === "normal",
@@ -1012,7 +1015,7 @@ function SQLBlock(props: Props) {
               </Transition>
               <Transition
                 as="div"
-                className="print:hidden flex items-center gap-x-1 text-[10px] text-ink-400 whitespace-nowrap pr-3"
+                className="print:hidden flex items-center gap-x-1 text-[11px] text-ink-400 whitespace-nowrap pr-3"
                 show={!(!isCodeHidden && dataframeName?.value)}
                 enter="transition-opacity ease-in duration-300"
                 enterFrom="opacity-0"
@@ -1024,11 +1027,20 @@ function SQLBlock(props: Props) {
                   text={dataframeName?.value ?? ""}
                   onCopy={() => setCopied(true)}
                 >
-                  <code className="bg-primary-500/20 text-primary-700 px-1.5 py-0.5 font-mono rounded-md relative group cursor-pointer">
+                  <code className="group relative flex cursor-pointer items-center gap-x-1.5 rounded-lg bg-[#F1F2F4] px-3 py-1 font-body-mono text-[#6C757D]">
                     {copied ? "Copied!" : dataframeName?.value}
 
-                    <div className="font-body  pointer-events-none absolute -top-2 right-0 -translate-y-full opacity-0 transition-opacity scale-0 group-hover:scale-100 group-hover:opacity-100 bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1 w-56 whitespace-normal z-20">
-                      <span className="text-ink-400 text-center">
+                    {copied ? (
+                      <PiCheckCircleLight
+                        size={14}
+                        className="shrink-0 text-primary"
+                      />
+                    ) : (
+                      <PiCopy size={14} className="shrink-0 text-[#6C757D]" />
+                    )}
+
+                    <div className="font-body pointer-events-none absolute -top-2 right-0 z-20 flex w-56 -translate-y-full scale-0 flex-col gap-y-1 whitespace-normal rounded-md bg-hunter-950 p-2 text-xs text-white opacity-0 transition-opacity group-hover:scale-100 group-hover:opacity-100">
+                      <span className="text-center text-ink-400">
                         Use this variable name to reference the results as a
                         Pandas dataframe in further Python blocks.{" "}
                         <span className="underline">Click to copy</span>.
@@ -1062,7 +1074,7 @@ function SQLBlock(props: Props) {
             }
           >
             <div
-              className={clsx((isResultHidden || !result) && "rounded-b-md")}
+              className={clsx((isResultHidden || !result) && "rounded-b-xl")}
             >
               <div className="print:hidden py-5 ">
                 <div>

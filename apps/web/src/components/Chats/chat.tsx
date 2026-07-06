@@ -117,7 +117,7 @@ export function Chat({
 
         <p className="text-ink-400">Search the blockchain for information</p>
 
-        <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[800px] max-w-[calc(100dvw-32px)] md:px-4 px-0 md:min-w-[760px]">
+        <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[700px] max-w-[calc(100dvw-32px)] md:px-4 px-0 md:min-w-[660px]">
           <MultimodalInput
             input={input}
             setInput={setInput}
