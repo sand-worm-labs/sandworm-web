@@ -128,24 +128,15 @@ function EditWithAIForm(props: Props) {
           animation: rainbow-slide 1.4s linear infinite;
           pointer-events: none;
         }
-        /* Static (non-running) border — no animation, just show it dimly */
+        /* Static (non-running) border — no animation, solid purple */
         .rainbow-border-top-static::before {
           content: '';
           position: absolute;
           top: 0;
           left: 0;
           right: 0;
-          height: 2px;
-          background: linear-gradient(
-            98.58deg,
-            #6368FF 0.62%,
-            #CBECFF 15.71%,
-            #7BFF42 25.15%,
-            #2DB2FF 42.6%,
-            #FF0000 60.53%,
-            #DED757 80.81%,
-            #FF00E1 98.74%
-          );
+          height: 1.5px;
+          background: #A308F0;
           opacity: 0.35;
           pointer-events: none;
         }
@@ -161,7 +152,7 @@ function EditWithAIForm(props: Props) {
             props.loading ? "rainbow-border-top" : "rainbow-border-top-static",
             "border-b border-x border-border dark:border-border-dark",
             !props.hasOutput && "rounded-b-xl",
-            "bg-surface dark:bg-surface-dark",
+            "bg-[#F8F9FA] dark:bg-surface-dark",
             "transition-colors duration-150"
           )}
         >
@@ -169,69 +160,75 @@ function EditWithAIForm(props: Props) {
             <SparkleAI size={32} />
           </div>
 
-          {/* Text input */}
-          <input
-            ref={inputRef}
-            disabled={props.disabled}
-            defaultValue={props.value.toString()}
-            className={clsx(
-              "flex-1 min-w-0 rounded-md px-2 py-1",
-              "border border-border dark:border-border-dark",
-              "bg-white dark:bg-ink-950",
-              "outline-none ring-offset-0",
-              "focus:border-[#A308F0] dark:focus:border-[#C97FF5]",
-              "dark:focus:ring-[#C97FF5]/20",
-              "text-[12.5px] font-body",
-              "text-ink-700 dark:text-ink-200",
-              "placeholder:text-ink-400 dark:placeholder:text-ink-500",
-              "disabled:opacity-50 disabled:cursor-not-allowed",
-              "transition-[border-color,box-shadow] duration-150"
-            )}
-            placeholder="Describe what you want to change…"
-            onChange={onChange}
-            onKeyDown={onKeyDown}
-          />
+          {/* Text input + action buttons */}
+          <div className="relative flex-1 min-w-0">
+            <input
+              ref={inputRef}
+              disabled={props.disabled}
+              defaultValue={props.value.toString()}
+              className={clsx(
+                "w-full min-w-0 rounded-2xl pl-3 py-1.5 pr-[68px]",
+                "border border-[#E6E0F1] dark:border-border-dark",
+                "bg-[#F1F3F4] dark:bg-ink-950",
+                "outline-none ring-offset-0",
+                "focus:border-[#A308F0] dark:focus:border-[#C97FF5]",
+                "dark:focus:ring-[#C97FF5]/20",
+                "text-[12.5px] font-body",
+                "text-ink-700 dark:text-ink-200",
+                "placeholder:text-[#868E96] dark:placeholder:text-ink-500",
+                "disabled:opacity-50 disabled:cursor-not-allowed",
+                "transition-[border-color,box-shadow] duration-150"
+              )}
+              placeholder="Start suggesting…"
+              onChange={onChange}
+              onKeyDown={onKeyDown}
+            />
 
-          {/* Close button */}
-          <button
-            type="button"
-            onClick={props.onClose}
-            className={clsx(
-              "flex-shrink-0 flex items-center justify-center ",
-              "text-error dark:text-ink-500",
-              "hover:text-error dark:hover:text-[#C97FF5]",
-              "transition-colors duration-150 border border-[#E6E0F1] w-6 h-6 rounded-lg"
-            )}
-          >
-            <PiX size={12} />
-          </button>
-
-          {/* Submit / spinner button */}
-          <button
-            type="submit"
-            disabled={props.disabled}
-            className={clsx(
-              "flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-lg",
-              "transition-all duration-150",
-              props.loading || props.disabled
-                ? [
-                    "relative overflow-hidden cursor-not-allowed",
-                    "bg-transparent border border-transparent",
-                    // inner bg so spinner is readable against the gradient shell
-                    "before:absolute before:inset-[1px] before:rounded-[7px]",
-                    "before:bg-surface dark:before:bg-surface-dark",
-                  ]
-                : "bg-[#A308F0] hover:bg-[#8A06CC] text-white"
-            )}
-          >
-            {props.loading ? (
-              <span className="relative z-10 text-[#A308F0] dark:text-[#C97FF5]">
-                <Spin />
-              </span>
-            ) : (
-              <PiArrowRight size={12} />
-            )}
-          </button>
+            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+              {/* Submit / spinner button */}
+              <button
+                type="submit"
+                disabled={props.disabled}
+                className={clsx(
+                  "flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-lg",
+                  "transition-all duration-150",
+                  props.loading || props.disabled
+                    ? [
+                        "relative overflow-hidden cursor-not-allowed",
+                        "bg-transparent border border-transparent",
+                        "before:absolute before:inset-[1px] before:rounded-[7px]",
+                        "before:bg-surface dark:before:bg-surface-dark",
+                      ]
+                    : "bg-[#FEFEFF] hover:bg-[#8A06CC] text-white border border-[#E6E0F1]"
+                )}
+              >
+                {props.loading ? (
+                  <span className="relative z-10 text-[#A308F0] dark:text-[#C97FF5]">
+                    <Spin />
+                  </span>
+                ) : (
+                  <PiArrowRight
+                    size={12}
+                    className="text-[#A308F0] dark:text-[#C97FF5]"
+                  />
+                )}
+              </button>
+              {/* Close button */}
+              <button
+                type="button"
+                onClick={props.onClose}
+                className={clsx(
+                  "flex-shrink-0 flex items-center justify-center ",
+                  "text-error dark:text-ink-500",
+                  "hover:text-error dark:hover:text-[#C97FF5]",
+                  "transition-colors duration-150 border border-[#E6E0F1] w-6 h-6 rounded-lg",
+                  "bg-[#FEFEFF] dark:bg-ink-950"
+                )}
+              >
+                <PiX size={12} />
+              </button>
+            </div>
+          </div>
         </form>
       </div>
     </>
