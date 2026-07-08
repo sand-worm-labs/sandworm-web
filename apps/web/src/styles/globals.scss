@@ -203,6 +203,24 @@
 }
 
 /* ╔════════════════════════════════════════════╗
+   ║        Block focus / AI-active ring        ║
+   ║ Plain CSS (not a Tailwind arbitrary value)  ║
+   ║ because prettier/eslint --fix keeps         ║
+   ║ mangling the comma-separated box-shadow     ║
+   ║ inside shadow-[...] class strings, silently ║
+   ║ breaking the ring.                          ║
+   ╚════════════════════════════════════════════╝ */
+.block-shadow-soft {
+  box-shadow: 0px 7.5px 8px 0px #8497c30a;
+}
+
+.block-focus-ring {
+  box-shadow:
+    0px 7.5px 8px 0px #8497c30a,
+    0px 0px 1px 4px #8b74ff33;
+}
+
+/* ╔════════════════════════════════════════════╗
    ║                Rich Text Editor            ║
    ╚════════════════════════════════════════════╝ */
 .sandworm-prose.tiptap {

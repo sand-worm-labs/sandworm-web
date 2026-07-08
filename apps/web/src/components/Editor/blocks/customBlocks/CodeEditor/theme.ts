@@ -264,3 +264,66 @@ export function materialDark(disabled: boolean): Extension {
 export function editorTheme(disabled: boolean, dark: boolean): Extension {
   return dark ? materialDark(disabled) : materialLight(disabled);
 }
+
+// =====================================
+// ⬢ Unified Diff Theme
+// =====================================
+// Styles for the AI-suggestion diff view (@codemirror/merge's
+// unifiedMergeView). Deleted lines get a struck-through red treatment,
+// changed/inserted lines get the brand purple used by the AI accept/reject
+// controls, and untouched lines are left exactly as the base theme renders
+// them.
+
+const DIFF_LIGHT = {
+  deletedBg: "#FFE3E3",
+  deletedText: "#C4362D",
+  changedBg: "#EBE3FF",
+};
+
+const DIFF_DARK = {
+  deletedBg: "#3A2323",
+  deletedText: "#E5827A",
+  changedBg: "#2A2440",
+};
+
+export function diffTheme(dark: boolean): Extension {
+  const c = dark ? DIFF_DARK : DIFF_LIGHT;
+  return EditorView.theme({
+    ".cm-deletedChunk": {
+      backgroundColor: c.deletedBg,
+    },
+    ".cm-deletedLine, .cm-deletedLine del": {
+      textDecoration: "none",
+    },
+    ".cm-deletedLine del": {
+      color: c.deletedText,
+      textDecoration: "line-through",
+    },
+
+    "&.cm-merge-b .cm-changedLine, .cm-inlineChangedLine": {
+      backgroundColor: c.changedBg,
+    },
+    "&.cm-merge-b .cm-changedText": {
+      background: "none",
+    },
+
+    ".cm-gutterElement.cm-diff-deleted-gutter": {
+      backgroundColor: c.deletedBg,
+    },
+    ".cm-gutterElement.cm-diff-changed-gutter": {
+      backgroundColor: c.changedBg,
+    },
+    // The base editor theme puts left inset on the gutters *container*,
+    // which leaves a gap before our per-line tint starts. Move that inset
+    // onto each gutter element instead so the tint runs flush to the
+    // block's border. !important because this is two same-priority
+    // EditorView.theme() extensions colliding on the same property, and the
+    // base editor theme (configured first) otherwise wins the tie.
+    ".cm-gutters": {
+      paddingLeft: "0px !important",
+    },
+    ".cm-lineNumbers .cm-gutterElement": {
+      paddingLeft: "8px !important",
+    },
+  });
+}

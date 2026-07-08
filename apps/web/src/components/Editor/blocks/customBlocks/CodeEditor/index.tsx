@@ -8,18 +8,37 @@ import {
   useRef,
 } from "react";
 import type { ChangeSpec, Extension } from "@codemirror/state";
-import { Annotation, Compartment, EditorState } from "@codemirror/state";
-import { MergeView } from "@codemirror/merge";
+import {
+  Annotation,
+  ChangeSet,
+  Compartment,
+  EditorState,
+  RangeSetBuilder,
+  StateField,
+} from "@codemirror/state";
+import {
+  getChunks,
+  getOriginalDoc,
+  originalDocChangeEffect,
+  unifiedMergeView,
+} from "@codemirror/merge";
 import { vscodeKeymap } from "@replit/codemirror-vscode-keymap";
 import { basicSetup } from "codemirror";
 import { indentUnit } from "@codemirror/language";
 import type { ViewUpdate } from "@codemirror/view";
-import { EditorView, keymap, ViewPlugin } from "@codemirror/view";
+import {
+  EditorView,
+  GutterMarker,
+  gutterLineClass,
+  gutterWidgetClass,
+  keymap,
+  ViewPlugin,
+} from "@codemirror/view";
 import { historyField } from "@codemirror/commands";
 
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 
-import { editorTheme } from "./theme";
+import { diffTheme, editorTheme } from "./theme";
 import { useSQLExtension } from "./sql";
 import { usePythonExtension } from "./python";
 
@@ -132,6 +151,132 @@ function createTextSync(source: Y.Text) {
   return plugin;
 }
 
+function createOriginalDocSync(source: Y.Text) {
+  const plugin = ViewPlugin.fromClass(
+    class OriginalDocSync {
+      constructor(private view: EditorView) {
+        this.observe();
+      }
+
+      public destroy() {
+        source.unobserve(this.onEvent);
+      }
+
+      private observe() {
+        source.observe(this.onEvent);
+      }
+
+      private onEvent = (e: Y.YTextEvent, tr: Y.Transaction) => {
+        if (tr.local) {
+          return;
+        }
+
+        const changeSpecs: ChangeSpec[] = [];
+        let pos = 0;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const change of e.delta) {
+          if (change.insert) {
+            const text =
+              typeof change.insert === "string"
+                ? change.insert
+                : Array.isArray(change.insert)
+                  ? change.insert.join("")
+                  : "";
+            changeSpecs.push({
+              from: pos,
+              to: pos,
+              insert: text,
+            });
+            pos += text.length;
+          } else if (change.delete) {
+            changeSpecs.push({
+              from: pos,
+              to: pos + change.delete,
+              insert: "",
+            });
+            pos += change.delete;
+          } else if (change.retain) {
+            pos += change.retain;
+          }
+        }
+
+        if (changeSpecs.length === 0) {
+          return;
+        }
+
+        const original = getOriginalDoc(this.view.state);
+        const changes = ChangeSet.of(changeSpecs, original.length);
+
+        this.view.dispatch({
+          effects: originalDocChangeEffect(this.view.state, changes),
+        });
+      };
+    }
+  );
+
+  return plugin;
+}
+
+class DiffChangedGutterMarker extends GutterMarker {
+  public elementClass = "cm-diff-changed-gutter";
+}
+
+class DiffDeletedGutterMarker extends GutterMarker {
+  public elementClass = "cm-diff-deleted-gutter";
+}
+
+const diffChangedGutterMarker = new DiffChangedGutterMarker();
+const diffDeletedGutterMarker = new DiffDeletedGutterMarker();
+
+function buildDiffGutterLines(state: EditorState) {
+  const builder = new RangeSetBuilder<GutterMarker>();
+  const result = getChunks(state);
+  if (!result) {
+    return builder.finish();
+  }
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const chunk of result.chunks) {
+    if (chunk.fromB >= chunk.endB) {
+      // Pure deletion: no lines on the B (current) side to mark.
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
+    const firstLine = state.doc.lineAt(chunk.fromB).number;
+    const lastLine = state.doc.lineAt(
+      Math.max(chunk.fromB, chunk.endB - 1)
+    ).number;
+    for (let n = firstLine; n <= lastLine; n += 1) {
+      const line = state.doc.line(n);
+      builder.add(line.from, line.from, diffChangedGutterMarker);
+    }
+  }
+
+  return builder.finish();
+}
+
+// Extends the diff background color into the line-number gutter itself:
+// unifiedMergeView only decorates line/widget content, so without this the
+// gutter stays the plain editor background even on a changed or deleted row.
+function createDiffGutterHighlight(): Extension {
+  const changedLinesField = StateField.define<
+    ReturnType<typeof buildDiffGutterLines>
+  >({
+    create: state => buildDiffGutterLines(state),
+    update: (value, tr) =>
+      tr.docChanged ? buildDiffGutterLines(tr.state) : value,
+  });
+
+  return [
+    changedLinesField,
+    gutterLineClass.from(changedLinesField),
+    // Every block widget in this editor's config is a deletion widget
+    // (see unifiedMergeView above), so any widget here gets the marker.
+    gutterWidgetClass.of(() => diffDeletedGutterMarker),
+  ];
+}
+
 function sandwormKeyMaps(cbs: {
   onBlur: () => void;
   onEditWithAI: () => void;
@@ -189,6 +334,7 @@ const sqlCompartment = new Compartment();
 const pythonCompartment = new Compartment();
 const readonlyCompartment = new Compartment();
 const themeCompartment = new Compartment();
+const diffThemeCompartment = new Compartment();
 const keymapsCompartment = new Compartment();
 const watchSelectionCompartment = new Compartment();
 
@@ -265,7 +411,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
 
     const editorRef = useRef<HTMLDivElement>(null);
     const viewRef = useRef<EditorView | null>(null);
-    const mergeRef = useRef<{ view: MergeView; state: any } | null>(null);
+    const mergeRef = useRef<{ view: EditorView; state: any } | null>(null);
 
     const resolveTheme = useCallback(
       (disabled: boolean): Extension => {
@@ -328,7 +474,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
       function getSelection() {
         const selection =
           viewRef.current?.state.selection ??
-          mergeRef.current?.view.a.state.selection;
+          mergeRef.current?.view.state.selection;
 
         const isOutOfRange =
           selection &&
@@ -405,28 +551,30 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
         });
         destroyCurrent();
 
-        const a = {
-          extensions: getExtensions(props.source, {
-            disabled: props.disabled,
-            watchSelection: false,
+        const view = new EditorView({
+          state: EditorState.create({
+            doc: diff.toString(),
+            selection,
+            extensions: [
+              ...getExtensions(diff, {
+                disabled: props.disabled,
+                watchSelection: true,
+              }),
+              createOriginalDocSync(props.source),
+              unifiedMergeView({
+                original: props.source.toString(),
+                mergeControls: false,
+                gutter: false,
+              }),
+              createDiffGutterHighlight(),
+              diffThemeCompartment.of(diffTheme(props.isDark ?? false)),
+            ],
           }),
-          doc: props.source.toString(),
-          selection,
-        };
-        const b = {
-          extensions: getExtensions(diff, {
-            disabled: props.disabled,
-            watchSelection: true,
-          }),
-          doc: diff.toString(),
-        };
+          parent,
+        });
 
         return {
-          view: new MergeView({
-            a,
-            b,
-            parent,
-          }),
+          view,
           state,
         };
       }
@@ -455,10 +603,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
       }
 
       if (mergeRef.current) {
-        mergeRef.current.view.a.dispatch({
-          effects: effect,
-        });
-        mergeRef.current.view.b.dispatch({
+        mergeRef.current.view.dispatch({
           effects: effect,
         });
       }
@@ -474,10 +619,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
       }
 
       if (mergeRef.current) {
-        mergeRef.current.view.a.dispatch({
-          effects: effect,
-        });
-        mergeRef.current.view.b.dispatch({
+        mergeRef.current.view.dispatch({
           effects: effect,
         });
       }
@@ -495,10 +637,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
       }
 
       if (mergeRef.current) {
-        mergeRef.current.view.a.dispatch({
-          effects: effect,
-        });
-        mergeRef.current.view.b.dispatch({
+        mergeRef.current.view.dispatch({
           effects: effect,
         });
       }
@@ -513,11 +652,11 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
       }
 
       if (mergeRef.current) {
-        mergeRef.current.view.a.dispatch({
-          effects: effect,
-        });
-        mergeRef.current.view.b.dispatch({
-          effects: effect,
+        mergeRef.current.view.dispatch({
+          effects: [
+            effect,
+            diffThemeCompartment.reconfigure(diffTheme(props.isDark ?? false)),
+          ],
         });
       }
     }, [props.disabled, props.isDark, props.customTheme, resolveTheme]);
@@ -540,10 +679,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
       }
 
       if (mergeRef.current) {
-        mergeRef.current.view.a.dispatch({
-          effects: effect,
-        });
-        mergeRef.current.view.b.dispatch({
+        mergeRef.current.view.dispatch({
           effects: effect,
         });
       }
@@ -567,7 +703,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
       }
 
       if (mergeRef.current) {
-        mergeRef.current.view.a.dispatch({
+        mergeRef.current.view.dispatch({
           effects: effect,
         });
       }
@@ -580,12 +716,8 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
       ) {
         if (viewRef.current && !viewRef.current.hasFocus) {
           viewRef.current.focus();
-        } else if (
-          mergeRef.current &&
-          !mergeRef.current.view.a.hasFocus &&
-          !mergeRef.current.view.b.hasFocus
-        ) {
-          mergeRef.current.view.a.focus();
+        } else if (mergeRef.current && !mergeRef.current.view.hasFocus) {
+          mergeRef.current.view.focus();
         }
       }
     }, [editorState.cursorBlockId, editorState.mode, props.blockId]);
@@ -664,7 +796,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
 
             viewRef.current.focus();
           } else if (mergeRef.current) {
-            const currSelection = mergeRef.current.view.b.state.selection.main;
+            const currSelection = mergeRef.current.view.state.selection.main;
 
             let from = 0;
             let to = 0;
@@ -672,12 +804,12 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
               from = 0;
               to = from;
             } else if (pos === "end") {
-              from = mergeRef.current.view.b.state.doc.length;
+              from = mergeRef.current.view.state.doc.length;
               to = from;
             } else if (typeof pos === "number") {
               from = Math.min(
                 pos,
-                Math.max(0, mergeRef.current.view.b.state.doc.length)
+                Math.max(0, mergeRef.current.view.state.doc.length)
               );
             } else {
               const result = pos(currSelection.from);
@@ -685,17 +817,17 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
                 from = 0;
                 to = from;
               } else if (result === "end") {
-                from = mergeRef.current.view.b.state.doc.length;
+                from = mergeRef.current.view.state.doc.length;
                 to = from;
               } else {
                 from = Math.min(
                   result,
-                  Math.max(0, mergeRef.current.view.b.state.doc.length)
+                  Math.max(0, mergeRef.current.view.state.doc.length)
                 );
               }
             }
 
-            mergeRef.current.view.b.dispatch({
+            mergeRef.current.view.dispatch({
               changes: [
                 {
                   from,
@@ -715,7 +847,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
                     },
             });
 
-            mergeRef.current.view.b.focus();
+            mergeRef.current.view.focus();
           }
         },
       }),

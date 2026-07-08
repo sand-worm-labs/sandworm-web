@@ -515,12 +515,12 @@ const MarkdownBlock = (props: Props) => {
     >
       <div
         className={clsx(
-          "rounded-2xl border-[1.5px] shadow-[0px_7.5px_8px_0px_#8497C30A]",
+          "rounded-2xl border-[1.5px]",
           props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
           {
-            "border-[#A308F0] shadow-[0px_7.5px_8px_0px_#8497C30A,0px_0px_1px_4px_#8B74FF33]":
+            "border-[#A308F0] block-focus-ring":
               props.isCursorWithin && props.isCursorInserting,
-            "border-[#E6E0F1] dark:border-border-tertiary":
+            "border-[#E6E0F1] block-shadow-soft dark:border-border-tertiary":
               !props.isCursorWithin || !props.isCursorInserting,
           }
         )}

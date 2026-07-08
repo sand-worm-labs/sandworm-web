@@ -606,22 +606,28 @@ function PythonBlock(props: Props) {
     >
       <div
         className={clsx(
-          "relative rounded-2xl border-[1.5px] shadow-[0px_7.5px_8px_0px_#8497C30A]",
+          "relative rounded-2xl border-[1.5px]",
           props.isBlockHiddenInPublished && "border-dashed",
           props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-2xl",
           {
-            "border-[#A308F0] shadow-[0px_7.5px_8px_0px_#8497C30A,0px_0px_1px_4px_#8B74FF33]":
+            "border-[#A308F0] block-focus-ring":
               !statusIsDisabled &&
-              isEditorFocused &&
-              editorState.mode === "insert",
-            "border-[#E6E0F1] shadow-[0px_7.5px_8px_0px_#8497C30A,0px_0px_1px_4px_#8B74FF33] dark:border-border-tertiary":
+              ((isEditorFocused && editorState.mode === "insert") ||
+                isAIEditing ||
+                aiSuggestions !== null),
+            "border-[#E6E0F1] block-focus-ring dark:border-border-tertiary":
               statusIsDisabled,
             "border-[#E6E0F1] shadow-none":
               !statusIsDisabled &&
+              !isAIEditing &&
+              aiSuggestions === null &&
               isEditorFocused &&
               editorState.mode === "normal",
-            "border-[#E6E0F1] dark:border-border-tertiary":
-              !statusIsDisabled && !isEditorFocused,
+            "border-[#E6E0F1] block-shadow-soft dark:border-border-tertiary":
+              !statusIsDisabled &&
+              !isAIEditing &&
+              aiSuggestions === null &&
+              !isEditorFocused,
           }
         )}
       >
