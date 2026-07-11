@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 
 import { AIChatIcon } from "../Assets/AIChatIcon";
 
@@ -61,19 +62,20 @@ const ExamplePrompts: React.FC<ExamplePromptsProps> = ({ onSelect }) => (
 // =====================================
 
 interface MiniChatEmptyStateProps {
-  onSelectPrompt: (prompt: string) => void;
+  onSelectPrompt?: (prompt: string) => void;
 }
 
 export const MiniChatEmptyState: React.FC<MiniChatEmptyStateProps> = ({
   onSelectPrompt,
 }) => (
   <div className="flex flex-col items-center py-8 font-body justify-end h-full">
-    <div className="flex flex-col items-center">
-      <AIChatIcon />
-      <p className="font-body text-sm text-ink-300 dark:text-ink-400 text-center max-w-[12rem] mt-5">
-        Search any data type across multiple blockchains
-      </p>
+    <div className="flex flex-col items-center justify-center ">
+      <Image
+        src="/img/ellipse.svg"
+        alt="Empty state"
+        width={400}
+        height={400}
+      />
     </div>
-    <ExamplePrompts onSelect={onSelectPrompt} />
   </div>
 );

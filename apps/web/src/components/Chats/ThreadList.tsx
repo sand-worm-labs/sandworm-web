@@ -159,14 +159,6 @@ function ThreadRow({
         }
       }}
     >
-      <div
-        className="flex-shrink-0 flex items-center justify-center w-7 h-7
-          rounded-lg border border-[#DEE2E6] dark:border-[#3A3A38]
-          bg-white dark:bg-[#252523] text-ink-300 dark:text-ink-500"
-      >
-        <PiChatCircle size={13} />
-      </div>
-
       <div className="flex-1 min-w-0">
         {isRenamingThis ? (
           <RenameInput

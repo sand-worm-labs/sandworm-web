@@ -11,6 +11,7 @@ import { FollowUpCard } from "./FollowUpCard";
 import { ChatBubble } from "./ChatBubble";
 import { MiniChatEmptyState } from "./MiniChatEmptyState";
 import type { PartPayload, FollowUpPart } from "./parts.types";
+import RotatingGradientRing from "./RotatingGradientRing";
 
 // =====================================
 // ⬢ LoadingBubble
@@ -127,7 +128,7 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
                           transition: { duration: 0.2, ease: "easeOut" },
                         }}
                       >
-                        <LoadingBubble />
+                        <RotatingGradientRing />
                       </motion.div>
                     )}
                   </AnimatePresence>

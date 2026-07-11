@@ -159,10 +159,8 @@ function CollapsedSwitcher({
         onClick={() => setOpen(o => !o)}
         className={clsx(
           "w-8 h-8 rounded-lg flex-shrink-0 self-center flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary/40",
-          "transition-colors duration-100 shadow-[0_1px_5.5px_6px_#A9A9D41A]",
-          open
-            ? "bg-[#F9F5FF] dark:bg-[#1A0D26]"
-            : "hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26]"
+          "transition-colors duration-100 shadow-[0px_1px_12px_1px_#A9A9D44D]",
+          open ? "bg-[#F9F5FF] dark:bg-[#1A0D26]" : " dark:hover:bg-[#1A0D26]"
         )}
       >
         <WorkspaceIcon
