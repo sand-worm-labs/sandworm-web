@@ -274,7 +274,7 @@ export const WorkspaceSidebar = () => {
                   aria-label={collapsed ? "Open sidebar" : "Close sidebar"}
                   aria-expanded={!collapsed}
                   onClick={handleToggle}
-                  className="p-1 rounded-md hover:bg-[#E8E8E6] dark:hover:bg-[#2A2A28]
+                  className="p-1 rounded-[10px] hover:bg-[#F1F2F4]  hover:border-[#E6E0F1] border border-transparent dark:hover:bg-[#2A2A28]
                     flex items-center justify-center
                     text-ink-400 dark:text-ink-400 transition-all duration-100"
                 >
@@ -302,10 +302,7 @@ export const WorkspaceSidebar = () => {
                         aria-label={item.name.trim()}
                         className={linkClasses(item.href)}
                       >
-                        <item.icon
-                          size={collapsed ? 16 : 18}
-                          className={iconClass(item.href)}
-                        />
+                        <item.icon size={16} className={iconClass(item.href)} />
                         {!collapsed && item.name}
                       </Link>
                     )}
@@ -357,7 +354,7 @@ export const WorkspaceSidebar = () => {
                               className={linkClasses(item.href)}
                             >
                               <ItemIcon
-                                size={collapsed ? 16 : 18}
+                                size={16}
                                 className={iconClass(item.href)}
                               />
                               {!collapsed && item.name}

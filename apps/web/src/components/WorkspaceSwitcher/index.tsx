@@ -158,7 +158,7 @@ function CollapsedSwitcher({
         type="button"
         onClick={() => setOpen(o => !o)}
         className={clsx(
-          "w-8 h-8 rounded-lg flex-shrink-0 self-center flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary/40",
+          "w-8 h-8 rounded-[10px] flex-shrink-0 self-center flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary/40",
           "transition-colors duration-100 shadow-[0px_1px_12px_1px_#A9A9D44D]",
           open ? "bg-[#F9F5FF] dark:bg-[#1A0D26]" : " dark:hover:bg-[#1A0D26]"
         )}
@@ -254,9 +254,8 @@ function ExpandedSwitcher({
           type="button"
           onClick={() => setOpen(o => !o)}
           className={clsx(
-            "w-full flex items-center gap-3 px-3 py-1.5 rounded-xl border-none transition-all",
+            "w-full flex items-center gap-3 px-3 py-1.5 rounded-[10px] border-none transition-all",
             "bg-[#FFFFFF] dark:bg-base-100 dark:border-border-tertiary",
-            "hover:border-[#DEE2E6] dark:hover:border-border-tertiary",
             "shadow-[0_1px_5.5px_6px_#A9A9D41A]"
           )}
         >
