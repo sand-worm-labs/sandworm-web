@@ -61,11 +61,14 @@ export default function RunAllV2(props: Props) {
         "flex items-center gap-1.5 px-4 py-1.5",
         "rounded-lg text-sm font-medium font-body",
         "transition-all duration-150 shadow-[0px_7.5px_8px_0px_rgba(132,151,195,0.04)]",
+        "run-all-gradient-border",
         {
+          "is-running": loading,
+
           "bg-[#F1F3F4] dark:bg-[#2A2A28] text-ink-300 dark:text-ink-600 cursor-not-allowed":
             props.disabled || isAborting,
 
-          "bg-[#FEFEFF] dark:bg-[#1C1C1A] text-ink-100 dark:text-ink-200 border border-[#DEE2E6] dark:border-[#3A3A38] hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]":
+          "bg-[#FEFEFF] dark:bg-[#1C1C1A] text-ink-100 dark:text-ink-200 border border-[#DEE2E6] dark:border-[#3A3A38] hover:bg-[#0F0F0F] hover:text-white hover:border-transparent dark:hover:bg-[#0F0F0F] dark:hover:text-white":
             !props.disabled && !loading && !isAborting,
 
           "bg-[#FEE2E2] dark:bg-[#2A0A0A] text-[#DC2626] dark:text-[#F87171] hover:bg-[#FECACA] dark:hover:bg-[#3A0F0F] border border-[#FECACA] dark:border-[#7F1D1D]":

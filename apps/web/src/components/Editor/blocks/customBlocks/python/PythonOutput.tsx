@@ -44,80 +44,129 @@ const EXPENSIVE_TYPES = new Set<PythonBlock["result"][0]["type"]>([
 
 const SANDWORM_TABLE_CSS = `
 
+  @font-face {
+    font-family: "Moderat";
+    src: url("/fonts/moderat/Moderat-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: "Moderat";
+    src: url("/fonts/moderat/Moderat-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: "Moderat";
+    src: url("/fonts/moderat/Moderat-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+  }
+
   * { box-sizing: border-box; }
 
   body {
     margin: 0;
-    padding: 12px;
-    font-family: "Moderat Mono", ui-monospace, monospace;
+    padding: 0;
+    font-family: "Moderat", sans-serif;
     font-size: 12px;
+    line-height: 16px;
     background: transparent;
-    color: #455768;
-  }
-
-  .dataframe-wrap {
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
-    overflow: hidden;
+    color: #343a40;
   }
 
   table {
     border-collapse: collapse;
     width: 100%;
+    text-align: left;
     border: none !important;
   }
 
   thead tr {
+    height: 40px;
     background: #f9fafb;
-    border-bottom: 1px solid #e5e7eb;
   }
 
   thead th {
-    padding: 9px 16px;
-    text-align: left;
-    font-weight: 500;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #9ca3af;
+    padding: 8px;
+    font-weight: 600;
+    font-size: 12px;
+    color: #6c757d;
     white-space: nowrap;
     border: none !important;
+    border-bottom: 1px solid #e6e0f1 !important;
+  }
+
+  tbody {
+    background: #ffffff;
   }
 
   tbody tr {
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid #e6e0f1;
   }
 
   tbody tr:last-child { border-bottom: none; }
-  tbody tr:hover { background: #fafafa; }
 
   tbody td {
-    padding: 9px 16px;
-    color: #6c757d;
+    padding: 8px 12px;
+    font-weight: 500;
+    color: #343a40;
+    white-space: nowrap;
     border: none !important;
     vertical-align: middle;
   }
 
+  /* Pandas renders the DataFrame index as a leading <th> column — hide it. */
   thead th:first-child,
-  tbody td:first-child {
-    font-weight: 500;
-    color: #6b7280;
-    min-width: 40px;
+  tbody th:first-child {
+    display: none;
   }
+`;
+
+// Matches pandas' truncated-repr caption, e.g. "500 rows × 4 columns"
+const DATAFRAME_DIMENSIONS_REGEX = /<p>\s*(\d+ rows × \d+ columns)\s*<\/p>/;
+
+export function getDataFrameDimensions(html: string): string | null {
+  return html.match(DATAFRAME_DIMENSIONS_REGEX)?.[1] ?? null;
+}
+
+export const HTML_OUTPUT_HEIGHT_MESSAGE = "sandworm-html-output-height";
+
+// The iframe is sandboxed without allow-same-origin, so its document is a
+// cross-origin/opaque origin from the parent's perspective — the parent
+// can't read `contentDocument.body.scrollHeight` directly (it silently
+// resolves to null/undefined). Instead, the sandboxed content measures
+// itself and reports its height back via postMessage.
+const RESIZE_REPORTER_SCRIPT = `
+  <script>
+    function reportHeight() {
+      parent.postMessage(
+        { type: ${JSON.stringify(
+          HTML_OUTPUT_HEIGHT_MESSAGE
+        )}, height: document.documentElement.scrollHeight },
+        "*"
+      );
+    }
+    window.addEventListener("load", reportHeight);
+    new ResizeObserver(reportHeight).observe(document.body);
+  </script>
 `;
 
 function injectTableStyles(html: string): string {
   const styleTag = `<style>${SANDWORM_TABLE_CSS}</style>`;
 
-  // Wrap table in a clipping div for border-radius to work
-  const wrapped = html
-    .replace(/<table/g, '<div class="dataframe-wrap"><table')
-    .replace(/<\/table>/g, "</table></div>");
+  // The "N rows × M columns" caption is surfaced in the block's result
+  // footer instead, so drop it from the iframe content entirely.
+  const withoutDimensions = html.replace(DATAFRAME_DIMENSIONS_REGEX, "");
 
-  if (wrapped.includes("</head>")) {
-    return wrapped.replace("</head>", `${styleTag}</head>`);
+  if (withoutDimensions.includes("</head>")) {
+    return withoutDimensions
+      .replace("</head>", `${styleTag}</head>`)
+      .concat(RESIZE_REPORTER_SCRIPT);
   }
-  return styleTag + wrapped;
+  return styleTag + withoutDimensions + RESIZE_REPORTER_SCRIPT;
 }
 
 export function PythonOutputs(props: Props) {
@@ -289,12 +338,34 @@ export function PythonOutputWrapper(props: PythonOutputWrapperProps) {
 
 function HTMLOutput(props: { output: PythonHTMLOutput }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [height, setHeight] = React.useState(500);
+  // Starts at 0 rather than a fixed guess — the iframe's content height
+  // varies a lot (a 3-row dataframe vs. a 500-row one). The sandboxed
+  // iframe reports its real height via postMessage once it loads (see
+  // RESIZE_REPORTER_SCRIPT), since it's cross-origin and can't be measured
+  // directly through contentDocument.
+  const [height, setHeight] = React.useState(0);
 
   const styledHtml = useMemo(
     () => injectTableStyles(props.output.html),
     [props.output.html]
   );
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (
+        event.source !== iframeRef.current?.contentWindow ||
+        event.data?.type !== HTML_OUTPUT_HEIGHT_MESSAGE
+      ) {
+        return;
+      }
+      if (typeof event.data.height === "number" && event.data.height > 0) {
+        setHeight(event.data.height);
+      }
+    };
+
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
 
   return (
     <iframe
@@ -303,12 +374,6 @@ function HTMLOutput(props: { output: PythonHTMLOutput }) {
       title="HTML block"
       sandbox="allow-scripts"
       style={{ width: "100%", height, border: "none" }}
-      onLoad={() => {
-        try {
-          const h = iframeRef.current?.contentDocument?.body?.scrollHeight;
-          if (h && h > 0) setHeight(h + 24);
-        } catch {}
-      }}
     />
   );
 }

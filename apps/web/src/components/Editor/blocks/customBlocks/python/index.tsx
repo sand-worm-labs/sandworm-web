@@ -62,7 +62,7 @@ import EditWithAIForm from "../../EditWithAIForm";
 import ApproveDiffButons from "../../ApproveDiffButtons";
 import { RunningBorderBar } from "../../RunningBorderBar";
 
-import { PythonOutputs } from "./PythonOutput";
+import { PythonOutputs, getDataFrameDimensions } from "./PythonOutput";
 
 // =====================================
 // ⬢ Types
@@ -190,16 +190,19 @@ function CollapsedCodeSummary({
 
 function PythonResultFooter({
   outputCount,
+  dataframeDimensions,
   isResultHidden,
   toggleResultHidden,
 }: {
   outputCount: number;
+  dataframeDimensions: string | null;
   isResultHidden: boolean;
   toggleResultHidden: () => void;
 }) {
   return (
     <div className="flex items-center px-3 h-10 text-xs text-ink-400 bg-[#F8F9FA] dark:bg-base-200 border-t border-[#E6E0F1] dark:border-border-tertiary">
       {outputCount} {outputCount === 1 ? "output" : "outputs"}
+      {dataframeDimensions && ` · ${dataframeDimensions}`}
       {isResultHidden && (
         <button
           type="button"
@@ -295,6 +298,18 @@ function PythonBlock(props: Props) {
   const startQueryTime = props.block.getAttribute("startQueryTime");
   const lastQueryTime = props.block.getAttribute("lastQueryTime");
   const results = props.block.getAttribute("result") ?? [];
+  const dataframeDimensions = useMemo(() => {
+    const dimensions = results
+      .filter(result => result.type === "html")
+      .map(result => getDataFrameDimensions(result.html));
+
+    return dimensions.find(dimension => dimension !== null) ?? null;
+  }, [results]);
+  // Tables should sit flush against the result panel's edges (no gutter),
+  // but only when the block's *only* output is a table — mixed output
+  // blocks (e.g. a print + a dataframe) keep the normal padded layout.
+  const isTableOnlyOutput =
+    results.length > 0 && results.every(result => result.type === "html");
   const aiSuggestions = getPythonAISuggestions(props.block);
   const editWithAIPrompt = getPythonBlockEditWithAIPrompt(props.block);
   const { title } = getBaseAttributes(props.block);
@@ -842,10 +857,10 @@ function PythonBlock(props: Props) {
           leaveTo="max-h-0 overflow-hidden"
         >
           <div className="text-xs border-t border-border-secondary">
-            <div className="p-3">
+            <div className={clsx(!isTableOnlyOutput && "p-3")}>
               <ScrollBar
                 className={clsx("overflow-auto ph-no-capture", {
-                  "px-0.5 pt-3.5 pb-2": !props.isPDF,
+                  "px-0.5 pt-3.5 pb-2": !props.isPDF && !isTableOnlyOutput,
                 })}
               >
                 <PythonOutputs
@@ -865,6 +880,7 @@ function PythonBlock(props: Props) {
         {results.length > 0 && (
           <PythonResultFooter
             outputCount={results.length}
+            dataframeDimensions={dataframeDimensions}
             isResultHidden={isResultHidden ?? false}
             toggleResultHidden={toggleResultHidden}
           />
