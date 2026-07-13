@@ -142,12 +142,22 @@ function countSQLLines(source: Y.Text): number {
   return text.split("\n").length;
 }
 
-function CollapsedCodeSummary({ lineCount }: { lineCount: number }) {
+function CollapsedCodeSummary({
+  lineCount,
+  showOutputHidden,
+}: {
+  lineCount: number;
+  showOutputHidden: boolean;
+}) {
   return (
     <div className="flex items-center gap-x-2 px-4 py-1.5 text-xs bg-[#F8F9FA] dark:bg-base-200 border-t border-[#E6E0F1] dark:border-border-tertiary">
       <span className="italic text-ink-400">{lineCount} lines hidden</span>
-      <span className="text-ink-300">·</span>
-      <span className="text-ink-400">Output hidden</span>
+      {showOutputHidden && (
+        <>
+          <span className="text-ink-300">·</span>
+          <span className="text-ink-400">Output hidden</span>
+        </>
+      )}
     </div>
   );
 }
@@ -989,7 +999,7 @@ function SQLBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-sm font-body  font-normal pl-1 ring-primary/20 focus:ring-border-focus block w-full rounded-lg border-0 text-ink-100 hover:ring-b-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-[#868E96] py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-base-100"
+                    "text-sm font-body  font-normal pl-1 block w-full border-0 border-b border-transparent focus:border-primary focus:outline-none text-ink-100 placeholder:text-[#868E96] py-0 h-2/3 bg-transparent focus:bg-base-100"
                   )}
                   placeholder={props.isEditable ? "Add a title..." : "SQL"}
                   value={title}
@@ -1249,10 +1259,13 @@ function SQLBlock(props: Props) {
             </div>
           </Transition>
         </div>
-        {isCodeHidden && isResultHidden && result && (
-          <CollapsedCodeSummary lineCount={countSQLLines(source)} />
+        {isCodeHidden && (
+          <CollapsedCodeSummary
+            lineCount={countSQLLines(source)}
+            showOutputHidden={Boolean(isResultHidden && result)}
+          />
         )}
-        {result && (!isResultHidden || isCodeHidden) && <HatchBackground />}
+        {((result && !isResultHidden) || isCodeHidden) && <HatchBackground />}
         {result && (
           <SQLResult
             page={page}
@@ -1285,6 +1298,11 @@ function SQLBlock(props: Props) {
             <Shimmer className="h-3 w-full" />
             <Shimmer className="h-3 w-3/4" />
             <Shimmer className="h-3 w-1/2" />
+          </div>
+        )}
+        {!result && !statusIsDisabled && isCodeHidden && (
+          <div className="flex items-center px-3 h-10 text-xs text-ink-400 bg-[#F8F9FA] dark:bg-base-200">
+            No output
           </div>
         )}
       </div>

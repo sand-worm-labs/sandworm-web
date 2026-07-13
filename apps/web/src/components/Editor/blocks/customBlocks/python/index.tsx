@@ -168,12 +168,47 @@ function countPythonLines(source: Y.Text): number {
   return text.split("\n").length;
 }
 
-function CollapsedCodeSummary({ lineCount }: { lineCount: number }) {
+function CollapsedCodeSummary({
+  lineCount,
+  showOutputHidden,
+}: {
+  lineCount: number;
+  showOutputHidden: boolean;
+}) {
   return (
     <div className="flex items-center gap-x-2 px-4 py-1.5 text-xs bg-[#F8F9FA] dark:bg-base-200 border-t border-[#E6E0F1] dark:border-border-tertiary">
       <span className="italic text-ink-400">{lineCount} lines hidden</span>
-      <span className="text-ink-300">·</span>
-      <span className="text-ink-400">Output hidden</span>
+      {showOutputHidden && (
+        <>
+          <span className="text-ink-300">·</span>
+          <span className="text-ink-400">Output hidden</span>
+        </>
+      )}
+    </div>
+  );
+}
+
+function PythonResultFooter({
+  outputCount,
+  isResultHidden,
+  toggleResultHidden,
+}: {
+  outputCount: number;
+  isResultHidden: boolean;
+  toggleResultHidden: () => void;
+}) {
+  return (
+    <div className="flex items-center px-3 h-10 text-xs text-ink-400 bg-[#F8F9FA] dark:bg-base-200 border-t border-[#E6E0F1] dark:border-border-tertiary">
+      {outputCount} {outputCount === 1 ? "output" : "outputs"}
+      {isResultHidden && (
+        <button
+          type="button"
+          className="text-gray-300 pl-3 hover:text-ink-400 cursor-pointer"
+          onClick={toggleResultHidden}
+        >
+          collapsed
+        </button>
+      )}
     </div>
   );
 }
@@ -634,7 +669,7 @@ function PythonBlock(props: Props) {
         <RunningBorderBar active={statusIsDisabled} />
         <div
           className={clsx(
-            "rounded-2xl",
+            "rounded-2xl overflow-hidden",
             statusIsDisabled ? "" : "bg-white dark:bg-base-100",
             props.hasMultipleTabs ? "rounded-tl-none" : ""
           )}
@@ -670,7 +705,7 @@ function PythonBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-sm font-body font-normal pl-1 ring-gray-200 focus:ring-border-focus block w-full rounded-lg border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-[#868E96] py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-base-100"
+                    "text-sm font-body font-normal pl-1 block w-full border-0 border-b border-transparent focus:border-primary focus:outline-none text-ink-100 placeholder:text-[#868E96] py-0 h-2/3 bg-transparent focus:bg-base-100"
                   )}
                   placeholder={props.isEditable ? "Add a title..." : "Python"}
                   value={title}
@@ -788,10 +823,13 @@ function PythonBlock(props: Props) {
           </Transition>
         </div>
 
-        {isCodeHidden && isResultHidden && results.length > 0 && (
-          <CollapsedCodeSummary lineCount={countPythonLines(source)} />
+        {isCodeHidden && (
+          <CollapsedCodeSummary
+            lineCount={countPythonLines(source)}
+            showOutputHidden={Boolean(isResultHidden && results.length > 0)}
+          />
         )}
-        {results.length > 0 && (!isResultHidden || isCodeHidden) && (
+        {((results.length > 0 && !isResultHidden) || isCodeHidden) && (
           <HatchBackground />
         )}
         <Transition
@@ -824,11 +862,23 @@ function PythonBlock(props: Props) {
             </div>
           </div>
         </Transition>
+        {results.length > 0 && (
+          <PythonResultFooter
+            outputCount={results.length}
+            isResultHidden={isResultHidden ?? false}
+            toggleResultHidden={toggleResultHidden}
+          />
+        )}
         {results.length === 0 && statusIsDisabled && (
           <div className="rounded-b-2xl px-4 py-4 space-y-3">
             <Shimmer className="h-3 w-full" />
             <Shimmer className="h-3 w-3/4" />
             <Shimmer className="h-3 w-1/2" />
+          </div>
+        )}
+        {results.length === 0 && !statusIsDisabled && isCodeHidden && (
+          <div className="flex items-center px-3 h-10 text-xs text-ink-400 bg-[#F8F9FA] dark:bg-base-200">
+            No output
           </div>
         )}
       </div>
