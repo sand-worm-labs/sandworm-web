@@ -50,7 +50,7 @@ export function ExamplePrompts({
             "focus:outline-none focus:outline-2 focus:outline-offset-2 focus:outline-[#A308F0]",
             "disabled:opacity-50 disabled:pointer-events-none",
             "*[data-slot=icon]:-mx-0.5 *[data-slot=icon]:my-0.5 *[data-slot=icon]:size-5 *[data-slot=icon]:shrink-0 *[data-slot=icon]:text-(--btn-icon) sm:*[data-slot=icon]:my-1 sm:*[data-slot=icon]:size-4 forced-colors:[--btn-icon:ButtonText] forced-colors:hover:[--btn-icon:ButtonText]",
-            "border-border-secondary    hover:bg-zinc-950/[2.5%] text-ink-400 active:bg-zinc-950/[2.5%]",
+            "border-border-secondary hover:bg-[#F1F2F4] hover:border-primary text-ink-400 active:bg-[#F1F2F4]",
             "dark:border-white/15     dark:[--btn-bg:transparent] dark:hover:bg-white/5 dark:active:bg-white/5",
             "[--btn-icon:var(--color-zinc-500)] hover:[--btn-icon:var(--color-zinc-700)] active:[--btn-icon:var(--color-zinc-700)] dark:active:[--btn-icon:var(--color-zinc-400)] dark:hover:[--btn-icon:var(--color-zinc-400)]",
           ])}

@@ -128,12 +128,12 @@ export const MultimodalInputView = forwardRef<
         border-none
         focus:ring-0
         resize-none
-        pt-4 px-5 pb-2 
-        text-sm text-black dark:text-white
+        pt-4 px-5 pb-2
+        font-body text-sm text-black dark:text-white
         placeholder:text-ink-300 dark:placeholder:text-ink-400
         scrollbar-thin
-        outline-none    
-    focus:outline-none  placeholder:font-tertiary placeholder:text-[13px]
+        outline-none
+    focus:outline-none  placeholder:[font-family:'Azeret_Mono',sans-serif] placeholder:text-[13px]
       "
             />
 
@@ -144,13 +144,13 @@ export const MultimodalInputView = forwardRef<
                   active
                   position="bottom"
                 >
-                  {ref => (
+                  {tooltipRef => (
                     <button
-                      ref={ref}
+                      ref={tooltipRef}
                       type="button"
                       onClick={onFileClick}
                       disabled={isInputLocked}
-                      className="rounded-full p-2.5 h-fit bg-transparent dark:bg-transparent text-black dark:text-ink-400 border-[#E7EBF0] border hover:bg-[#E8E8E6] dark:hover:bg-[#2A2A28] dark:border-border-tertiary transition-all duration-100 disabled:opacity-50 disabled:pointer-events-none"
+                      className="rounded-full p-2.5 h-fit bg-transparent dark:bg-transparent text-black dark:text-ink-400 border-[#E7EBF0] border hover:bg-[#F1F2F4] hover:border-primary dark:hover:bg-[#2A2A28] transition-all duration-100 disabled:opacity-50 disabled:pointer-events-none"
                       title="Attach files"
                     >
                       <PiPlus size={18} />
@@ -162,6 +162,7 @@ export const MultimodalInputView = forwardRef<
               <div className="flex flex-row gap-2 items-center">
                 <ModelQuickSelect
                   models={models}
+                  showBrowseAll={false}
                   selectedModelId={selectedModelId}
                   onSelect={selectModel}
                   onBrowseAll={openPicker}
@@ -184,7 +185,9 @@ export const MultimodalInputView = forwardRef<
                         ? "text-white bg-primary"
                         : "text-white bg-[#868E96] cursor-not-allowed"
                     }`}
-                    onClick={() => input.trim() && !isInputLocked && onSubmit?.()}
+                    onClick={() =>
+                      input.trim() && !isInputLocked && onSubmit?.()
+                    }
                     disabled={isInputLocked}
                   >
                     <PiPaperPlaneTilt size={18} strokeWidth={0.5} />

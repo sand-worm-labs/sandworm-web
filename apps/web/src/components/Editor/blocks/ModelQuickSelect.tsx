@@ -6,10 +6,16 @@ import clsx from "clsx";
 import Image from "next/image";
 import { PiArrowRightLight } from "react-icons/pi";
 
+import { SparkleAI } from "@/components/Assets/SparkleAI";
+
 import type { NormalizedModel } from "../hooks/useOpenRouterModel";
 
+// =====================================
+// ⬢ Constants
+// =====================================
+
 const PROVIDER_DOMAINS: Record<string, string> = {
-  anthropic: "anthropic.com",
+  anthropic: "claude.ai",
   openai: "openai.com",
   google: "google.com",
   "meta-llama": "meta.com",
@@ -72,8 +78,56 @@ const QUICK_SELECT_DEFAULTS = [
   "deepseek/deepseek-v3.2",
 ];
 
+export const AUTO_MODEL_ID = "openrouter/auto";
+
+const EFFORT_LEVELS = ["low", "medium", "high", "extra-high", "max"] as const;
+
+const EFFORT_LABELS: Record<EffortLevel, string> = {
+  low: "Low",
+  medium: "Medium",
+  high: "High",
+  "extra-high": "Extra High",
+  max: "Max",
+};
+
 const RECENT_STORAGE_KEY = "sandworm:recent-models";
 const MAX_RECENT = 4;
+
+const C = {
+  border: "#E6E0F1",
+  lightBlue: "#EBF7F7",
+  purple: "#A308F0",
+  ink400: "#6D6C7D",
+  pillInner: "#FEFEFF",
+} as const;
+
+// =====================================
+// ⬢ Types
+// =====================================
+
+export type EffortLevel = (typeof EFFORT_LEVELS)[number];
+
+/**
+ * NormalizedModel needs `supportedParameters` mapped from OpenRouter's
+ * `supported_parameters` in useOpenRouterModel — effort is gated on it.
+ */
+type ModelWithCaps = NormalizedModel & {
+  supportedParameters?: string[];
+};
+
+export interface ModelQuickSelectProps {
+  models: NormalizedModel[];
+  selectedModelId: string | null;
+  onSelect: (modelId: string) => void;
+  onBrowseAll: () => void;
+  showBrowseAll?: boolean;
+  effort?: EffortLevel;
+  onEffortChange?: (effort: EffortLevel) => void;
+}
+
+// =====================================
+// ⬢ Utils
+// =====================================
 
 function getRecentModelIds(): string[] {
   if (typeof window === "undefined") return [];
@@ -99,29 +153,36 @@ function stripProviderPrefix(name: string): string {
 
 function buildQuickList(
   models: NormalizedModel[],
-  recentIds: string[]
+  recentIds: string[],
+  excludeId: string | null
 ): NormalizedModel[] {
   const seen = new Set<string>();
   const result: NormalizedModel[] = [];
 
   const tryAdd = (id: string) => {
-    if (seen.has(id)) return;
+    if (seen.has(id) || id === excludeId) return;
     const model = models.find(m => m.id === id);
     if (!model) return;
     result.push(model);
     seen.add(id);
   };
 
-  const candidates = [...recentIds, ...QUICK_SELECT_DEFAULTS];
-
-  candidates.forEach(id => {
-    if (result.length < MAX_RECENT) {
-      tryAdd(id);
-    }
+  [...recentIds, ...QUICK_SELECT_DEFAULTS].forEach(id => {
+    if (result.length < MAX_RECENT) tryAdd(id);
   });
 
   return result;
 }
+
+function modelSupportsEffort(model: ModelWithCaps | undefined): boolean {
+  if (!model) return false;
+  const params = model.supportedParameters ?? [];
+  return params.includes("reasoning") || params.includes("reasoning_effort");
+}
+
+// =====================================
+// ⬢ Icons
+// =====================================
 
 function ProviderIcon({
   provider,
@@ -155,7 +216,7 @@ function ProviderIcon({
 
   return (
     <Image
-      src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
+      src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
       alt={provider}
       width={size}
       height={size}
@@ -164,6 +225,10 @@ function ProviderIcon({
       className="object-contain"
     />
   );
+}
+
+function AutoIcon({ size = 14 }: { size?: number }) {
+  return <SparkleAI size={size} />;
 }
 
 function ChevronDownIcon({ open }: { open: boolean }) {
@@ -187,36 +252,143 @@ function ChevronDownIcon({ open }: { open: boolean }) {
   );
 }
 
-function CheckIcon() {
+// =====================================
+// ⬢ Components — selected header
+// =====================================
+
+function SelectedModelCard({ model }: { model: ModelWithCaps | undefined }) {
+  const isAuto = !model || model.id === AUTO_MODEL_ID;
+
   return (
-    <svg
-      viewBox="0 0 12 12"
-      fill="none"
-      className="w-3 h-3 shrink-0 text-[#A308F0]"
+    <div
+      className="mx-1.5 mt-1.5 mb-2 flex items-center gap-3 rounded-xl px-3 py-1.5"
+      style={{ background: C.lightBlue }}
     >
-      <path
-        d="M2 6l3 3 5-5"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="stroke-current"
-      />
-    </svg>
+      {isAuto ? (
+        <AutoIcon size={26} />
+      ) : (
+        <ProviderIcon provider={model.provider} size={30} />
+      )}
+      <div className="min-w-0">
+        <div className="font-body text-[12.5px] font-medium text-ink-100 truncate leading-tight">
+          {isAuto ? "Auto" : stripProviderPrefix(model.name)}
+        </div>
+        <div
+          className="font-body text-[12px] font-medium truncate"
+          style={{ color: C.ink400 }}
+        >
+          {isAuto ? "OpenRouter" : model.provider}
+        </div>
+      </div>
+    </div>
   );
 }
 
-export interface ModelQuickSelectProps {
-  models: NormalizedModel[];
-  selectedModelId: string | null;
-  onSelect: (modelId: string) => void;
-  onBrowseAll: () => void;
+// =====================================
+// ⬢ Components — pills
+// =====================================
+
+function ModelPill({
+  model,
+  onClick,
+}: {
+  model: NormalizedModel;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-center gap-1.5 rounded-full px-2.5 py-1 bg-white dark:bg-transparent hover:bg-[#F1F2F4] hover:border-primary border-[#F6F5F7] transition-colors duration-100 border"
+    >
+      <ProviderIcon provider={model.provider} size={15} />
+      <span className="font-body text-[13px] font-medium text-ink-100 truncate max-w-[110px]">
+        {stripProviderPrefix(model.name)}
+      </span>
+    </button>
+  );
 }
+
+function AutoPill({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-center gap-1.5 rounded-full px-2.5 py-1 bg-white dark:bg-transparent hover:bg-[#F1F2F4] hover:border-primary border-[#F6F5F7] transition-colors duration-100 border"
+    >
+      <AutoIcon size={14} />
+      <span className="font-body text-[13px] font-medium text-ink-100">
+        Auto
+      </span>
+    </button>
+  );
+}
+
+// =====================================
+// ⬢ Components — effort selector
+// =====================================
+
+function EffortSelector({
+  effort,
+  onChange,
+}: {
+  effort: EffortLevel;
+  onChange: (e: EffortLevel) => void;
+}) {
+  return (
+    <div className="px-3 pt-2 pb-1">
+      <div
+        className="font-body text-[10.5px] font-semibold uppercase tracking-wider mb-1.5"
+        style={{ color: C.ink400 }}
+      >
+        Effort
+      </div>
+      <div
+        className="flex items-center gap-0.5 rounded-xl p-1"
+        style={{ background: C.lightBlue }}
+      >
+        {EFFORT_LEVELS.map(level => {
+          const active = level === effort;
+          return (
+            <button
+              key={level}
+              type="button"
+              onClick={() => onChange(level)}
+              className={clsx(
+                "flex-1 rounded-lg px-1.5 py-1 font-body text-[11.5px] font-medium",
+                "transition-all duration-100 whitespace-nowrap",
+                active ? "text-[#A308F0]" : "hover:text-ink-100"
+              )}
+              style={
+                active
+                  ? {
+                      background: C.pillInner,
+                      border: `1px solid ${C.purple}`,
+                    }
+                  : { color: C.ink400, border: "1px solid transparent" }
+              }
+            >
+              {EFFORT_LABELS[level]}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// =====================================
+// ⬢ Main
+// =====================================
 
 export function ModelQuickSelect({
   models,
   selectedModelId,
   onSelect,
   onBrowseAll,
+  showBrowseAll = true,
+  effort = "medium",
+  onEffortChange,
 }: ModelQuickSelectProps) {
   const [open, setOpen] = useState(false);
   const [recentIds, setRecentIds] = useState<string[]>([]);
@@ -244,12 +416,14 @@ export function ModelQuickSelect({
     return () => document.removeEventListener("keydown", handler);
   }, [open]);
 
+  // ── handlers
   const handleSelect = useCallback(
     (id: string) => {
       onSelect(id);
-      pushRecentModelId(id);
-      setRecentIds(getRecentModelIds());
-      setOpen(false);
+      if (id !== AUTO_MODEL_ID) {
+        pushRecentModelId(id);
+        setRecentIds(getRecentModelIds());
+      }
     },
     [onSelect]
   );
@@ -259,29 +433,36 @@ export function ModelQuickSelect({
     onBrowseAll();
   }, [onBrowseAll]);
 
-  const quickList = buildQuickList(models, recentIds);
-  const activeModel = models.find(m => m.id === selectedModelId);
+  const activeModel = models.find(m => m.id === selectedModelId) as
+    | ModelWithCaps
+    | undefined;
+  const isAutoSelected = selectedModelId === AUTO_MODEL_ID || !activeModel;
+  const quickList = buildQuickList(models, recentIds, selectedModelId);
+  const showEffort = !!onEffortChange && modelSupportsEffort(activeModel);
 
   return (
     <div ref={containerRef} className="relative">
+      {/* ── trigger */}
       <button
         type="button"
         onClick={() => setOpen(v => !v)}
         className={clsx(
           "flex items-center gap-1.5 rounded-full px-3 py-2 h-fit",
-          "font-body text-xs font-medium border transition-all duration-150",
+          "font-body text-xs font-medium border transition-all duration-200",
           open
-            ? "bg-[rgba(207,211,222,0.6)] "
-            : " bg-[#E7EBF0] dark:bg-transparent  border-transparent",
+            ? "bg-[rgba(207,211,222,0.6)]"
+            : "bg-[#E7EBF0] dark:bg-transparent border-transparent",
           !open &&
-            "text-ink-100  hover:bg-[rgba(207,211,222,0.6)] dark:hover:bg-[rgba(255,255,255,0.08)]"
+            "text-ink-100 hover:bg-[#E7EBF0] hover:border-primary dark:hover:bg-[rgba(255,255,255,0.08)]"
         )}
       >
-        {activeModel && (
-          <ProviderIcon provider={activeModel.provider} size={14} />
+        {isAutoSelected ? (
+          <AutoIcon size={13} />
+        ) : (
+          <ProviderIcon provider={activeModel!.provider} size={14} />
         )}
         <span className="max-w-[120px] truncate">
-          {activeModel ? stripProviderPrefix(activeModel.name) : "Select model"}
+          {isAutoSelected ? "Auto" : stripProviderPrefix(activeModel!.name)}
         </span>
         <ChevronDownIcon open={open} />
       </button>
@@ -295,39 +476,45 @@ export function ModelQuickSelect({
         leaveFrom="opacity-100 translate-y-0 scale-100"
         leaveTo="opacity-0 translate-y-1 scale-95"
       >
-        <div className="absolute top-[3rem] left-0 mb-2 w-[260px] z-50 bg-base-100 border border-border-tertiary rounded-2xl shadow-[0_0.5px_4px_#2516660A] py-1.5 overflow-hidden">
-          {quickList.map(m => (
-            <button
-              key={m.id}
-              type="button"
-              onClick={() => handleSelect(m.id)}
-              className={clsx(
-                "w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors duration-100",
-                m.id === selectedModelId
-                  ? "bg-[#A308F0]/08 text-[#A308F0]"
-                  : "hover:bg-primary/15 text-ink-100"
-              )}
-            >
-              <ProviderIcon provider={m.provider} size={18} />
-              <span className="font-body text-[12.5px] font-medium truncate flex-1">
-                {stripProviderPrefix(m.name)}
-              </span>
-              {m.id === selectedModelId && <CheckIcon />}
-            </button>
-          ))}
+        <div
+          className="absolute top-[3rem] left-0 mb-2 w-[300px] z-50 bg-base-100 rounded-2xl shadow-[0px_1.5px_13px_3px_#526A9F1F] pb-1.5 overflow-hidden"
+          style={{ border: `1px solid ${C.border}` }}
+        >
+          <SelectedModelCard model={isAutoSelected ? undefined : activeModel} />
 
-          <button
-            type="button"
-            onClick={handleBrowseAll}
-            className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-primary/15 transition-colors duration-100 group justify-between"
-          >
-            <span className="font-body text-[12px] text-ink-400 group-hover:text-ink-200 transition-colors">
-              Browse all models
-            </span>
-            <span>
-              <PiArrowRightLight />
-            </span>
-          </button>
+          {/* quick pills: auto + recents/defaults */}
+          <div className="flex flex-wrap gap-1.5 px-3 pb-1.5">
+            {!isAutoSelected && (
+              <AutoPill onClick={() => handleSelect(AUTO_MODEL_ID)} />
+            )}
+            {quickList.map(m => (
+              <ModelPill
+                key={m.id}
+                model={m}
+                onClick={() => handleSelect(m.id)}
+              />
+            ))}
+          </div>
+
+          {showEffort && (
+            <EffortSelector effort={effort} onChange={onEffortChange!} />
+          )}
+
+          {showBrowseAll && (
+            <button
+              type="button"
+              onClick={handleBrowseAll}
+              className="w-full flex items-center gap-2 px-3 py-2 mt-0.5 text-left hover:bg-primary/15 transition-colors duration-100 group justify-between"
+            >
+              <span
+                className="font-body text-[12px] group-hover:text-ink-200 transition-colors"
+                style={{ color: C.ink400 }}
+              >
+                Browse all models
+              </span>
+              <PiArrowRightLight style={{ color: C.ink400 }} />
+            </button>
+          )}
         </div>
       </Transition>
     </div>

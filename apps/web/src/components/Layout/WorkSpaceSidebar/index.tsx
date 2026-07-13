@@ -12,9 +12,13 @@ import {
   PiHouse,
   PiBinoculars,
   PiStar,
+  PiStarThin,
   PiTerminal,
+  PiTerminalThin,
   PiSquaresFour,
+  PiSquaresFourThin,
   PiTrash,
+  PiTrashThin,
   PiToolbox,
 } from "react-icons/pi";
 
@@ -40,6 +44,7 @@ interface NavItem {
   name: string;
   href: string;
   icon: React.ElementType;
+  iconThin?: React.ElementType;
 }
 
 // =====================================
@@ -87,33 +92,49 @@ export const WorkspaceSidebar = () => {
       name: "Favorites",
       href: `/workspace/${workspaceId}/favorites`,
       icon: PiStar,
+      iconThin: PiStarThin,
     },
     {
       name: "Console",
       href: `/workspace/${workspaceId}/console`,
       icon: PiTerminal,
+      iconThin: PiTerminalThin,
     },
     {
       name: "All tools",
       href: `/workspace/${workspaceId}/tools`,
       icon: PiSquaresFour,
+      iconThin: PiSquaresFourThin,
     },
-    { name: "Trash", href: `/workspace/${workspaceId}/trash`, icon: PiTrash },
+    {
+      name: "Trash",
+      href: `/workspace/${workspaceId}/trash`,
+      icon: PiTrash,
+      iconThin: PiTrashThin,
+    },
   ];
 
-  const linkClasses = (href: string) =>
-    `flex items-center ${collapsed ? "justify-center" : "justify-start"} gap-3
-     rounded-xl px-2 py-1.5 text-sm font-medium transition-colors
-     ${
-       pathname === href
-         ? "bg-base-600 text-primary dark:bg-base-600 dark:text-ink-100"
-         : "text-menu-ink dark:text-white hover:bg-base-600 dark:hover:bg-base-600 hover:text-black dark:hover:text-white"
-     }`;
+  const linkClasses = (href: string) => {
+    const isActive = pathname === href;
+    const sizeClass = collapsed
+      ? "w-[30px] h-[30px] mx-auto justify-center"
+      : "justify-start px-2 py-1";
+    const activeClass = isActive
+      ? "bg-[#F1F2F4] dark:bg-base-600 dark:text-ink-100 border-[#E6E0F1]"
+      : "text-menu-ink dark:text-white border-transparent hover:bg-[#F1F2F4] dark:hover:bg-base-600 hover:border-[#E6E0F1] hover:dark:text-ink-100";
+    return [
+      "flex items-center gap-3 rounded-[10px] font-medium text-[13px] transition-colors border",
+      sizeClass,
+      activeClass,
+    ].join(" ");
+  };
 
-  const iconClass = (href: string) =>
-    `flex-shrink-0 transition-colors ${
-      pathname === href ? "text-[#A308F0] dark:text-ink-100" : "text-ink-icon"
-    }`;
+  const iconClass = (href: string) => {
+    const base = "flex-shrink-0 transition-colors";
+    if (collapsed) return `${base} text-[#1C3B5A] dark:text-[#1C3B5A]`;
+    if (pathname === href) return `${base} dark:text-ink-100`;
+    return `${base} text-ink-icon`;
+  };
 
   const [
     documentsState,
@@ -226,13 +247,13 @@ export const WorkspaceSidebar = () => {
                 ? "translate-x-0"
                 : "-translate-x-full border-none"
               : collapsed
-                ? "w-16"
+                ? "w-[56px]"
                 : "w-[17.5rem]"
           }
         `}
       >
         <div className="flex flex-col flex-1 min-h-0">
-          <div className="flex justify-between py-[0.50rem] px-3 bg-[#FAF8FB] dark:bg-base-500 items-center flex-shrink-0">
+          <div className="flex justify-between py-[0.50rem] px-3 bg-[#FFFFFF] dark:bg-base-500 items-center flex-shrink-0 border-b border-[#F1F3F4]">
             {!collapsed && (
               <Link href="/" className="flex items-center gap-2">
                 <SandwormLogo width="30" height="30" />
@@ -266,7 +287,7 @@ export const WorkspaceSidebar = () => {
           <WorkspaceSwitcher collapsed={collapsed} />
 
           <nav className="flex-1 px-3 overflow-y-auto">
-            <ul className="space-y-1 mt-1">
+            <ul className="space-y-1.5 mt-4">
               {mainNav.map(item => (
                 <li key={item.name}>
                   <TooltipV2<HTMLAnchorElement>
@@ -281,7 +302,10 @@ export const WorkspaceSidebar = () => {
                         aria-label={item.name.trim()}
                         className={linkClasses(item.href)}
                       >
-                        <item.icon size={18} className={iconClass(item.href)} />
+                        <item.icon
+                          size={collapsed ? 16 : 18}
+                          className={iconClass(item.href)}
+                        />
                         {!collapsed && item.name}
                       </Link>
                     )}
@@ -290,52 +314,59 @@ export const WorkspaceSidebar = () => {
               ))}
             </ul>
 
-            <div className="my-3 h-px bg-[#F1F3F4] dark:bg-[#2A2A28]" />
-
             <div>
-              {!collapsed && (
-                <button
-                  type="button"
-                  onClick={() => setIsToolsOpen(v => !v)}
-                  className="w-full flex items-center gap-1 px-1 py-1 mb-1
-                    text-[11px] font-medium text-ink-300 dark:text-ink-600
-                    hover:text-ink-400 transition-colors font-body"
-                >
-                  {isToolsOpen ? (
-                    <PiCaretDown size={11} />
-                  ) : (
-                    <PiCaretRight size={11} />
-                  )}
-                  <span>More</span>
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => setIsToolsOpen(v => !v)}
+                aria-label="More"
+                aria-expanded={isToolsOpen}
+                className={`flex items-center gap-1 mb-1 mt-4 text-[#8C98A3] hover:text-[#8C98A3]
+                  transition-colors font-body
+                  ${
+                    collapsed
+                      ? "w-full justify-center py-1"
+                      : "w-full px-1 py-1 text-[11px] font-medium"
+                  }`}
+              >
+                {isToolsOpen ? (
+                  <PiCaretDown size={13} className="text-[#8C98A3]" />
+                ) : (
+                  <PiCaretRight size={13} className="text-[#8C98A3]" />
+                )}
+                {!collapsed && <span>More</span>}
+              </button>
 
-              {(collapsed || isToolsOpen) && (
-                <ul className="space-y-1">
-                  {toolsNav.map(item => (
-                    <li key={item.name}>
-                      <TooltipV2<HTMLAnchorElement>
-                        title={item.name.trim()}
-                        active={collapsed}
-                        position="right"
-                      >
-                        {ref => (
-                          <Link
-                            ref={ref}
-                            href={item.href}
-                            aria-label={item.name.trim()}
-                            className={linkClasses(item.href)}
-                          >
-                            <item.icon
-                              size={18}
-                              className={iconClass(item.href)}
-                            />
-                            {!collapsed && item.name}
-                          </Link>
-                        )}
-                      </TooltipV2>
-                    </li>
-                  ))}
+              {isToolsOpen && (
+                <ul className="space-y-1.5">
+                  {toolsNav.map(item => {
+                    const ItemIcon = collapsed
+                      ? (item.iconThin ?? item.icon)
+                      : item.icon;
+                    return (
+                      <li key={item.name}>
+                        <TooltipV2<HTMLAnchorElement>
+                          title={item.name.trim()}
+                          active={collapsed}
+                          position="right"
+                        >
+                          {ref => (
+                            <Link
+                              ref={ref}
+                              href={item.href}
+                              aria-label={item.name.trim()}
+                              className={linkClasses(item.href)}
+                            >
+                              <ItemIcon
+                                size={collapsed ? 16 : 18}
+                                className={iconClass(item.href)}
+                              />
+                              {!collapsed && item.name}
+                            </Link>
+                          )}
+                        </TooltipV2>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </div>
@@ -355,14 +386,14 @@ export const WorkspaceSidebar = () => {
                       onClick={onCreateDocumentHandler}
                       className={`
                         flex items-center justify-center gap-1.5
-                        rounded-xl border border-[#C44FFF] dark:border-[#A78BFA]
+                       border border-[#C44FFF] dark:border-[#A78BFA]
                         text-primary dark:text-[#A78BFA]
                         hover:bg-primary/5 bg-[#F7E8FF] dark:hover:bg-primary/10
                         transition-colors font-body font-medium text-sm
-                        ${collapsed ? "w-9 h-9" : "w-full px-4 py-2"}
+                        ${collapsed ? "w-8 h-8 rounded-[10px]" : "w-full px-4 py-2   rounded-xl"}
                       `}
                     >
-                      <PiPlus size={16} />
+                      <PiPlus size={collapsed ? 12 : 16} />
                       {!collapsed && <span>New Project</span>}
                     </button>
                   )}

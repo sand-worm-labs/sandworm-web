@@ -63,7 +63,8 @@ interface MiniChatInputProps {
 
 let _localIdCounter = 0;
 function genLocalId() {
-  return `tracked-file-${++_localIdCounter}`;
+  _localIdCounter += 1;
+  return `tracked-file-${_localIdCounter}`;
 }
 
 // =====================================
@@ -371,7 +372,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
         />
       )}
 
-      <div className="bg-[#F1F3F4] dark:bg-[#30302E] border border-border-secondary dark:border-border-tertiary rounded-2xl shadow-sm">
+      <div className="bg-[#FFFFFF] dark:bg-[#30302E] border border-[#E9ECEF] dark:border-border-tertiary rounded-2xl shadow-sm">
         {pendingChanges && pendingChanges.length > 0 && (
           <div className="px-0 pt-0 border-b border-[#DEE2E6] dark:border-border-tertiary">
             <ChangesPanelCompact

@@ -254,7 +254,7 @@ function ExpandedSwitcher({
           type="button"
           onClick={() => setOpen(o => !o)}
           className={clsx(
-            "w-full flex items-center gap-3 px-3 py-2 rounded-xl border-none transition-all",
+            "w-full flex items-center gap-3 px-3 py-1.5 rounded-xl border-none transition-all",
             "bg-[#FFFFFF] dark:bg-base-100 dark:border-border-tertiary",
             "hover:border-[#DEE2E6] dark:hover:border-border-tertiary",
             "shadow-[0_1px_5.5px_6px_#A9A9D41A]"
