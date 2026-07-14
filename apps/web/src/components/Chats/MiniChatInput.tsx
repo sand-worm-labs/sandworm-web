@@ -6,7 +6,6 @@ import {
   PiX,
   PiFileCsv,
   PiFileText,
-  PiAt,
   PiSpinner,
   PiWarningCircle,
   PiStop,
@@ -14,7 +13,7 @@ import {
 
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 
-import { ReferencePicker } from "./ReferencePicker";
+import { AddMenu } from "./AddMenu";
 import { InputReferencePill } from "./ReferencePill";
 import ChangesPanelCompact from "./ChangesPanel";
 import { DUMMY_BLOCKS } from "./types";
@@ -101,38 +100,6 @@ function FileStatusIndicator({ status }: { status: TrackedFile["status"] }) {
 }
 
 // =====================================
-// ⬢ @ Trigger Button
-// =====================================
-
-interface AtButtonProps {
-  onClick: () => void;
-  isActive: boolean;
-  disabled: boolean;
-}
-
-function AtButton({ onClick, isActive, disabled }: AtButtonProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      aria-label="Reference a block, dataframe, or file"
-      aria-pressed={isActive}
-      className={`flex items-center justify-center w-7 h-7 rounded-lg
-        text-[13px] border transition-all duration-150 select-none
-        disabled:opacity-40 disabled:cursor-not-allowed
-        ${
-          isActive
-            ? "bg-[#F3E6FD] border-[#C97FF5] text-[#7A06B8] dark:bg-[#1F0A2E] dark:border-[#7A06B8] dark:text-[#C97FF5]"
-            : "bg-white dark:bg-[#30302E] border-[#B5C8DB] dark:border-transparent text-ink-400 dark:text-ink-500 hover:border-[#C97FF5] hover:text-[#7A06B8] dark:hover:text-[#C97FF5]"
-        }`}
-    >
-      <PiAt size={15} />
-    </button>
-  );
-}
-
-// =====================================
 // ⬢ Pill Strip
 // =====================================
 
@@ -212,7 +179,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
   const [message, setMessage] = useState("");
   const [trackedFiles, setTrackedFiles] = useState<TrackedFile[]>([]);
   const [references, setReferences] = useState<AttachedReference[]>([]);
-  const [pickerOpen, setPickerOpen] = useState(false);
+  const [addMenuOpen, setAddMenuOpen] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -238,7 +205,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
     setReferences(prev =>
       prev.some(r => r.id === ref.id) ? prev : [...prev, ref]
     );
-    setPickerOpen(false);
+    setAddMenuOpen(false);
     textareaRef.current?.focus();
   }, []);
 
@@ -299,6 +266,11 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
     setTrackedFiles(prev => prev.filter(f => f.localId !== localId));
   }, []);
 
+  const handleAddFilesClick = useCallback(() => {
+    setAddMenuOpen(false);
+    fileInputRef.current?.click();
+  }, []);
+
   // =====================================
   // ⬢ Send Handler
   // =====================================
@@ -326,12 +298,12 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
   // =====================================
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (pickerOpen && e.key === "Escape") {
+    if (addMenuOpen && e.key === "Escape") {
       e.preventDefault();
-      setPickerOpen(false);
+      setAddMenuOpen(false);
       return;
     }
-    if (e.key === "Enter" && !e.shiftKey && !pickerOpen) {
+    if (e.key === "Enter" && !e.shiftKey && !addMenuOpen) {
       e.preventDefault();
       handleSend();
     }
@@ -363,12 +335,14 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
 
   return (
     <div className="w-full relative">
-      {pickerOpen && (
-        <ReferencePicker
+      {addMenuOpen && (
+        <AddMenu
           sources={referenceSources}
           selectedIds={selectedIds}
-          onSelect={handleReferenceSelect}
-          onClose={() => setPickerOpen(false)}
+          hasReferencableItems={hasReferencableItems}
+          onSelectReference={handleReferenceSelect}
+          onAddFiles={handleAddFilesClick}
+          onClose={() => setAddMenuOpen(false)}
         />
       )}
 
@@ -441,43 +415,28 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
 
         <div className="flex items-center justify-between px-3 pb-3">
           <div className="flex items-center gap-1.5">
-            <TooltipV2<HTMLButtonElement>
-              title="Attach Files"
-              active
-              position="top"
-            >
+            <TooltipV2<HTMLButtonElement> title="Add" active position="top">
               {ref => (
                 <button
                   ref={ref}
                   type="button"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => setAddMenuOpen(o => !o)}
                   disabled={isLocked}
-                  aria-label="Attach files"
-                  className="flex items-center justify-center w-8 h-8 rounded-full
-                    bg-white dark:bg-[#30302E]
-                    border border-[#E7EBF0] dark:border-transparent
-                    text-ink-400 dark:text-ink-500
-                    hover:bg-gray-50 dark:hover:bg-[#3A3A38]
-                    transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  aria-label="Add to message"
+                  aria-expanded={addMenuOpen}
+                  className={`flex items-center justify-center w-8 h-8 rounded-full
+                    border transition-colors disabled:opacity-40 disabled:cursor-not-allowed
+                    ${
+                      addMenuOpen || references.length > 0
+                        ? "bg-[#F3E6FD] border-[#C97FF5] text-[#7A06B8] dark:bg-[#1F0A2E] dark:border-[#7A06B8] dark:text-[#C97FF5]"
+                        : "bg-white dark:bg-[#30302E] border-[#E7EBF0] dark:border-transparent text-ink-400 dark:text-ink-500 hover:bg-gray-50 dark:hover:bg-[#3A3A38]"
+                    }`}
                 >
-                  <PiPlus size={18} />
-                </button>
-              )}
-            </TooltipV2>
-
-            <TooltipV2<HTMLDivElement>
-              title="Add Context"
-              active
-              position="top"
-            >
-              {ref => (
-                <div ref={ref}>
-                  <AtButton
-                    onClick={() => setPickerOpen(o => !o)}
-                    isActive={pickerOpen || references.length > 0}
-                    disabled={isLocked || !hasReferencableItems}
+                  <PiPlus
+                    size={18}
+                    className={`transition-transform duration-150 ${addMenuOpen ? "rotate-45" : ""}`}
                   />
-                </div>
+                </button>
               )}
             </TooltipV2>
           </div>
