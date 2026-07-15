@@ -12,6 +12,9 @@ import {
 } from "react-icons/pi";
 
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
+import { ModelQuickSelect } from "@/components/Editor/blocks/ModelQuickSelect";
+import { ModelPickerModal } from "@/components/Editor/blocks/ModelPicker";
+import type { NormalizedModel } from "@/components/Editor/hooks/useOpenRouterModel";
 
 import { AddMenu } from "./AddMenu";
 import { InputReferencePill } from "./ReferencePill";
@@ -54,6 +57,14 @@ interface MiniChatInputProps {
   pendingReview?: PendingReviewPart;
   onAcceptAll?: () => void;
   onRejectAll?: () => void;
+  models?: NormalizedModel[];
+  modelsLoading?: boolean;
+  modelsError?: Error;
+  selectedModelId?: string | null;
+  onSelectModel?: (modelId: string) => void;
+  isModelPickerOpen?: boolean;
+  onOpenModelPicker?: () => void;
+  onCloseModelPicker?: () => void;
 }
 
 // =====================================
@@ -171,6 +182,14 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
   pendingReview,
   onAcceptAll,
   onRejectAll,
+  models = [],
+  modelsLoading = false,
+  modelsError,
+  selectedModelId = null,
+  onSelectModel,
+  isModelPickerOpen = false,
+  onOpenModelPicker,
+  onCloseModelPicker,
 }) => {
   // =====================================
   // ⬢ State
@@ -441,38 +460,53 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
             </TooltipV2>
           </div>
 
-          {/* ─── Abort / Send ─── */}
-          {isGenerating ? (
-            <AbortButton onAbort={onAbort} />
-          ) : (
-            <TooltipV2<HTMLButtonElement>
-              title={isUploading ? "Uploading files…" : ""}
-              active={isUploading}
-              position="top"
-            >
-              {ref => (
-                <button
-                  ref={ref}
-                  type="button"
-                  onClick={handleSend}
-                  disabled={!canSend}
-                  aria-label="Send message"
-                  className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors
+          <div className="flex items-center gap-2">
+            {onSelectModel && onOpenModelPicker && onCloseModelPicker && (
+              <ModelQuickSelect
+                models={models}
+                showBrowseAll={false}
+                selectedModelId={selectedModelId}
+                onSelect={onSelectModel}
+                onBrowseAll={onOpenModelPicker}
+                variant="compact"
+                dropdownPosition="top"
+                dropdownAlign="right"
+              />
+            )}
+
+            {/* ─── Abort / Send ─── */}
+            {isGenerating ? (
+              <AbortButton onAbort={onAbort} />
+            ) : (
+              <TooltipV2<HTMLButtonElement>
+                title={isUploading ? "Uploading files…" : ""}
+                active={isUploading}
+                position="top"
+              >
+                {ref => (
+                  <button
+                    ref={ref}
+                    type="button"
+                    onClick={handleSend}
+                    disabled={!canSend}
+                    aria-label="Send message"
+                    className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors
                     ${
                       canSend
                         ? "bg-[#A308F0] hover:bg-[#8A06CC] text-white"
                         : "bg-white dark:bg-[#30302E] text-ink-400 cursor-not-allowed border border-[#DEE2E6] dark:border-border-tertiary"
                     }`}
-                >
-                  {isUploading ? (
-                    <PiSpinner size={15} className="animate-spin" />
-                  ) : (
-                    <PiPaperPlaneTilt size={15} />
-                  )}
-                </button>
-              )}
-            </TooltipV2>
-          )}
+                  >
+                    {isUploading ? (
+                      <PiSpinner size={15} className="animate-spin" />
+                    ) : (
+                      <PiPaperPlaneTilt size={15} />
+                    )}
+                  </button>
+                )}
+              </TooltipV2>
+            )}
+          </div>
 
           <input
             ref={fileInputRef}
@@ -485,6 +519,19 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
           />
         </div>
       </div>
+
+      {onSelectModel && onCloseModelPicker && (
+        <ModelPickerModal
+          isOpen={isModelPickerOpen}
+          onClose={onCloseModelPicker}
+          onSelect={onSelectModel}
+          models={models}
+          loading={modelsLoading}
+          error={modelsError}
+          selectedModelId={selectedModelId}
+          title="Select Model"
+        />
+      )}
     </div>
   );
 };

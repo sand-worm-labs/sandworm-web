@@ -12,6 +12,7 @@ import { useChat } from "./useChat";
 import { useChatStream } from "./useChatStream";
 import { useNotebookBlocks } from "./useNotebookBlocks";
 import { useWorkspace } from "./useWorkspaces";
+import { useOpenRouterModels } from "./useOpenRouterModel";
 import useSideBar from "./useSideBar";
 
 // =====================================
@@ -57,7 +58,20 @@ export function useMiniChat({
   const searchParams = useSearchParams();
   const { workspace } = useWorkspace(workspaceId);
   const { state: sidebarState } = useSideBar();
-  const currentModel = workspace?.assistantModel ?? "";
+  const defaultModel = workspace?.assistantModel ?? "";
+
+  const {
+    models,
+    loading: modelsLoading,
+    error: modelsError,
+    selectedModelId,
+    isPickerOpen: isModelPickerOpen,
+    openPicker: openModelPicker,
+    closePicker: closeModelPicker,
+    selectModel,
+  } = useOpenRouterModels(workspaceId, defaultModel);
+
+  const currentModel = selectedModelId ?? defaultModel;
 
   const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -368,6 +382,11 @@ export function useMiniChat({
       activeThreadTitle,
       referenceSources,
       bottomRef,
+      models,
+      modelsLoading,
+      modelsError,
+      selectedModelId,
+      isModelPickerOpen,
     },
     handlers: {
       setView,
@@ -380,6 +399,9 @@ export function useMiniChat({
       followUpSubmit: handleFollowUpSubmit,
       acceptAll: handleAcceptAll,
       rejectAll: handleRejectAll,
+      selectModel,
+      openModelPicker,
+      closeModelPicker,
     },
   };
 }

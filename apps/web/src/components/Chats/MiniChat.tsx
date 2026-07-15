@@ -142,6 +142,14 @@ export const MiniChat: React.FC<MiniChatProps> = ({
                   pendingReview={pendingReview}
                   onAcceptAll={() => handlers.acceptAll("")}
                   onRejectAll={() => handlers.rejectAll("")}
+                  models={state.models}
+                  modelsLoading={state.modelsLoading}
+                  modelsError={state.modelsError}
+                  selectedModelId={state.selectedModelId}
+                  onSelectModel={handlers.selectModel}
+                  isModelPickerOpen={state.isModelPickerOpen}
+                  onOpenModelPicker={handlers.openModelPicker}
+                  onCloseModelPicker={handlers.closeModelPicker}
                 />
               </div>
             </>

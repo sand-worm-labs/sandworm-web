@@ -105,10 +105,10 @@ export const NotebookPanel = ({
   return (
     <aside
       className={cn(
-        "flex flex-col items-center py-4 pb-0 px-0 h-[95%]",
+        "flex flex-col items-center py-4 pb-0 px-0 h-[100%]",
         "bg-white dark:bg-base-500",
         "border-l border-[#E3E5E8] dark:border-border-tertiary",
-        "w-14 z-[50] print:hidden"
+        "w-[56px] z-[50] print:hidden"
       )}
     >
       <div className="flex flex-col items-center gap-x-0 w-full">

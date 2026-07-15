@@ -208,11 +208,9 @@ export default function ShareModal({
             type="button"
             onClick={openModal}
             aria-label="Share"
-            className="p-2 mb-2 rounded-lg transition-colors flex items-center justify-center
-              text-[#1C3B5A] hover:text-ink-100 dark:text-ink-100 dark:hover:text-white
-             hover:bg-base-600 dark:hover:bg-[#2A2A28]"
+            className="w-[30px] h-[30px] mx-auto mb-1.5 flex items-center justify-center rounded-[10px] border border-transparent text-[#1C3B5A] dark:text-[#1C3B5A] hover:bg-[#F1F2F4] hover:border-[#E6E0F1] dark:hover:bg-base-600 transition-colors duration-100"
           >
-            <PiShareNetwork size={18} />
+            <PiShareNetwork size={16} />
           </button>
         )}
       </TooltipV2>

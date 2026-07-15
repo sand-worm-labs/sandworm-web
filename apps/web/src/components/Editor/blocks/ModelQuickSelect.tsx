@@ -123,6 +123,12 @@ export interface ModelQuickSelectProps {
   showBrowseAll?: boolean;
   effort?: EffortLevel;
   onEffortChange?: (effort: EffortLevel) => void;
+  /** Trigger button styling — "compact" is used in tighter spaces (e.g. the mini chat). */
+  variant?: "default" | "compact";
+  /** Which side of the trigger the dropdown panel opens on. */
+  dropdownPosition?: "top" | "bottom";
+  /** Which edge the dropdown panel aligns to. */
+  dropdownAlign?: "left" | "right";
 }
 
 // =====================================
@@ -389,6 +395,9 @@ export function ModelQuickSelect({
   showBrowseAll = true,
   effort = "medium",
   onEffortChange,
+  variant = "default",
+  dropdownPosition = "bottom",
+  dropdownAlign = "left",
 }: ModelQuickSelectProps) {
   const [open, setOpen] = useState(false);
   const [recentIds, setRecentIds] = useState<string[]>([]);
@@ -440,6 +449,8 @@ export function ModelQuickSelect({
   const quickList = buildQuickList(models, recentIds, selectedModelId);
   const showEffort = !!onEffortChange && modelSupportsEffort(activeModel);
 
+  const isCompact = variant === "compact";
+
   return (
     <div ref={containerRef} className="relative">
       {/* ── trigger */}
@@ -447,20 +458,31 @@ export function ModelQuickSelect({
         type="button"
         onClick={() => setOpen(v => !v)}
         className={clsx(
-          "flex items-center gap-1.5 rounded-full px-3 py-2 h-fit",
-          "font-body text-xs font-medium border transition-all duration-200",
-          open
-            ? "bg-[rgba(207,211,222,0.6)]"
-            : "bg-[#E7EBF0] dark:bg-transparent border-transparent",
-          !open &&
-            "text-ink-100 hover:bg-[#E7EBF0] hover:border-primary dark:hover:bg-[rgba(255,255,255,0.08)]"
+          "flex items-center h-fit",
+          "font-body font-medium border transition-all duration-200",
+          isCompact
+            ? clsx(
+                "gap-1 rounded-full px-2 py-1 text-[11px] bg-[#FEFEFF] dark:bg-transparent",
+                open
+                  ? "border-primary"
+                  : "border-[#E6E0F1] dark:border-border-tertiary"
+              )
+            : clsx(
+                "gap-1.5 rounded-full px-3 py-2 text-xs",
+                open
+                  ? "bg-[rgba(207,211,222,0.6)]"
+                  : "bg-[#E7EBF0] dark:bg-transparent border-transparent",
+                !open &&
+                  "text-ink-100 hover:bg-[#E7EBF0] hover:border-primary dark:hover:bg-[rgba(255,255,255,0.08)]"
+              )
         )}
       >
-        {isAutoSelected ? (
-          <AutoIcon size={13} />
-        ) : (
-          <ProviderIcon provider={activeModel!.provider} size={14} />
-        )}
+        {!isCompact &&
+          (isAutoSelected ? (
+            <AutoIcon size={13} />
+          ) : (
+            <ProviderIcon provider={activeModel!.provider} size={14} />
+          ))}
         <span className="max-w-[120px] truncate">
           {isAutoSelected ? "Auto" : stripProviderPrefix(activeModel!.name)}
         </span>
@@ -477,7 +499,11 @@ export function ModelQuickSelect({
         leaveTo="opacity-0 translate-y-1 scale-95"
       >
         <div
-          className="absolute top-[3rem] left-0 mb-2 w-[300px] z-50 bg-base-100 rounded-2xl shadow-[0px_1.5px_13px_3px_#526A9F1F] pb-1.5 overflow-hidden"
+          className={clsx(
+            "absolute w-[300px] z-50 bg-base-100 rounded-2xl shadow-[0px_1.5px_13px_3px_#526A9F1F] pb-1.5 overflow-hidden",
+            dropdownPosition === "top" ? "bottom-full mb-2" : "top-[3rem] mb-2",
+            dropdownAlign === "right" ? "right-0" : "left-0"
+          )}
           style={{ border: `1px solid ${C.border}` }}
         >
           <SelectedModelCard model={isAutoSelected ? undefined : activeModel} />
