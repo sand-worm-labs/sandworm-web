@@ -1741,16 +1741,6 @@ const Editor = (props: Props) => {
         </div>
       )}
 
-      {props.role !== "viewer" && props.userId && !props.isPDF && (
-        <RunAllV2
-          disabled={false}
-          yDoc={props.yDoc}
-          primary={props.isApp}
-          userId={props.userId}
-          executionQueue={props.executionQueue}
-        />
-      )}
-
       <OverlayScrollbarsComponent
         id="editor-scrollview"
         element="div"
@@ -1782,15 +1772,31 @@ const Editor = (props: Props) => {
             )}
           >
             <div className={!props.isPDF ? "pt-12" : ""}>
-              <Title
-                content={props.yDoc.getXmlFragment("title")}
-                isLoading={props.isSyncing}
-                isEditable={
-                  props.isEditable && !props.isApp && props.role !== "viewer"
-                }
-                workspaceId={props.document.workspaceId}
-                documentId={props.document.id}
-              />
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <Title
+                    content={props.yDoc.getXmlFragment("title")}
+                    isLoading={props.isSyncing}
+                    isEditable={
+                      props.isEditable &&
+                      !props.isApp &&
+                      props.role !== "viewer"
+                    }
+                    workspaceId={props.document.workspaceId}
+                    documentId={props.document.id}
+                  />
+                </div>
+
+                {props.role !== "viewer" && props.userId && !props.isPDF && (
+                  <RunAllV2
+                    disabled={false}
+                    yDoc={props.yDoc}
+                    primary={props.isApp}
+                    userId={props.userId}
+                    executionQueue={props.executionQueue}
+                  />
+                )}
+              </div>
             </div>
 
             <ContentSkeleton visible={props.isSyncing} />

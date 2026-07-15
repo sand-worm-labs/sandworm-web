@@ -57,7 +57,7 @@ export default function RunAllV2(props: Props) {
       onClick={onClick}
       disabled={props.disabled || isAborting}
       className={clsx(
-        "absolute top-3 right-8 z-10",
+        "relative flex-shrink-0",
         "flex items-center gap-1.5 px-4 py-1.5",
         "rounded-lg text-sm font-medium font-body",
         "transition-all duration-150 shadow-[0px_7.5px_8px_0px_rgba(132,151,195,0.04)]",
