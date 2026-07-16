@@ -83,7 +83,7 @@ function PrivateDocumentPageInner(
     () => props.document.title || "Untitled",
     [props.document.title]
   );
-  const { state: sidebarState } = useSideBar();
+  const { state: sidebarState, api: sideBarApi } = useSideBar();
   const { isPrinting, triggerPrint } = useExportPDF();
 
   const [selectedSidebar, setSelectedSidebar] = useState<
@@ -176,6 +176,23 @@ function PrivateDocumentPageInner(
       setSelectedSidebar({ _tag: "chat" });
     }
   }, [sidebarState.rightPanelId, sidebarState.rightPanelMeta]);
+
+  // ⬢ Mutual exclusion between the workspace sidebar and the notebook panel
+  // =====================================
+  // Only one of the two should ever be visible at once: opening a notebook
+  // panel collapses the workspace sidebar, and opening the workspace sidebar
+  // closes any active notebook panel.
+  useEffect(() => {
+    if (selectedSidebar !== null) {
+      sideBarApi.close();
+    }
+  }, [selectedSidebar, sideBarApi]);
+
+  useEffect(() => {
+    if (sidebarState.isOpen) {
+      setSelectedSidebar(null);
+    }
+  }, [sidebarState.isOpen]);
 
   const router = useRouter();
 

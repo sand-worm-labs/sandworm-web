@@ -1258,53 +1258,56 @@ function SQLBlock(props: Props) {
               )}
             </div>
           </Transition>
+
+          {isCodeHidden && (
+            <CollapsedCodeSummary
+              lineCount={countSQLLines(source)}
+              showOutputHidden={Boolean(isResultHidden && result)}
+            />
+          )}
+          {((result && !isResultHidden) || isCodeHidden) && (
+            <HatchBackground />
+          )}
+          {result && (
+            <SQLResult
+              page={page}
+              dashboardPage={dashboardPage}
+              result={result}
+              isPublic={false}
+              documentId={props.document.id}
+              workspaceId={props.document.workspaceId}
+              blockId={blockId}
+              dataframeName={dataframeName?.value ?? ""}
+              isResultHidden={isResultHidden ?? false}
+              toggleResultHidden={toggleResultHidden}
+              isFixingWithAI={isAIFixing}
+              onFixWithAI={onFixWithAI}
+              dashboardMode={props.dashboardMode}
+              canFixWithAI={hasOaiKey}
+              sort={sort}
+              isAddVisualizationDisabled={isVisualizationButtonDisabled}
+              onAddVisualization={onAddVisualization}
+              onChangeSort={onChangeSort}
+              onChangePage={onChangePage}
+              loadingPage={loadingPage}
+              onChangeDashboardPageSize={onChangeDashboardPageSize}
+              hasTitle={title.trim() !== ""}
+              dashboardPageSize={dashboardPageSize}
+            />
+          )}
+          {!result && statusIsDisabled && (
+            <div className="px-4 py-4 space-y-3">
+              <Shimmer className="h-3 w-full" />
+              <Shimmer className="h-3 w-3/4" />
+              <Shimmer className="h-3 w-1/2" />
+            </div>
+          )}
+          {!result && !statusIsDisabled && isCodeHidden && (
+            <div className="flex items-center px-3 h-10 text-xs text-ink-400 bg-[#F8F9FA] dark:bg-base-200">
+              No output
+            </div>
+          )}
         </div>
-        {isCodeHidden && (
-          <CollapsedCodeSummary
-            lineCount={countSQLLines(source)}
-            showOutputHidden={Boolean(isResultHidden && result)}
-          />
-        )}
-        {((result && !isResultHidden) || isCodeHidden) && <HatchBackground />}
-        {result && (
-          <SQLResult
-            page={page}
-            dashboardPage={dashboardPage}
-            result={result}
-            isPublic={false}
-            documentId={props.document.id}
-            workspaceId={props.document.workspaceId}
-            blockId={blockId}
-            dataframeName={dataframeName?.value ?? ""}
-            isResultHidden={isResultHidden ?? false}
-            toggleResultHidden={toggleResultHidden}
-            isFixingWithAI={isAIFixing}
-            onFixWithAI={onFixWithAI}
-            dashboardMode={props.dashboardMode}
-            canFixWithAI={hasOaiKey}
-            sort={sort}
-            isAddVisualizationDisabled={isVisualizationButtonDisabled}
-            onAddVisualization={onAddVisualization}
-            onChangeSort={onChangeSort}
-            onChangePage={onChangePage}
-            loadingPage={loadingPage}
-            onChangeDashboardPageSize={onChangeDashboardPageSize}
-            hasTitle={title.trim() !== ""}
-            dashboardPageSize={dashboardPageSize}
-          />
-        )}
-        {!result && statusIsDisabled && (
-          <div className="rounded-b-2xl px-4 py-4 space-y-3">
-            <Shimmer className="h-3 w-full" />
-            <Shimmer className="h-3 w-3/4" />
-            <Shimmer className="h-3 w-1/2" />
-          </div>
-        )}
-        {!result && !statusIsDisabled && isCodeHidden && (
-          <div className="flex items-center px-3 h-10 text-xs text-ink-400 bg-[#F8F9FA] dark:bg-base-200">
-            No output
-          </div>
-        )}
       </div>
       <div className="absolute left-0 top-0 -translate-y-full pb-2">
         <BlockTypePill

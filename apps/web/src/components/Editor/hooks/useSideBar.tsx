@@ -11,8 +11,8 @@ export const DEFAULT_SIDEBAR_WIDTH = 320;
 export const DEFAULT_SMALL_SCREEN_WIDTH = 300;
 
 const SMALL_SCREEN_BREAKPOINT = 768;
-const WIDE_SCREEN_BREAKPOINT = 1280;
-const STORAGE_KEY = "sidebar-width";
+const WIDTH_STORAGE_KEY = "sidebar-width";
+const OPEN_STORAGE_KEY = "sidebar-open";
 
 // =====================================
 // ⬢ Types
@@ -45,7 +45,7 @@ type SideBarContext = {
 // =====================================
 const initialContext: SideBarContext = {
   state: {
-    isOpen: true,
+    isOpen: false,
     width: DEFAULT_SIDEBAR_WIDTH,
     rightPanelId: null,
     rightPanelMeta: null,
@@ -78,7 +78,7 @@ function getInitialWidth(): SideBarWidth {
   const isSmallScreen = window.innerWidth < SMALL_SCREEN_BREAKPOINT;
   if (isSmallScreen) return DEFAULT_SMALL_SCREEN_WIDTH;
 
-  const stored = localStorage.getItem(STORAGE_KEY);
+  const stored = localStorage.getItem(WIDTH_STORAGE_KEY);
   if (stored) {
     const parsed = parseInt(stored, 10);
     if (
@@ -94,13 +94,21 @@ function getInitialWidth(): SideBarWidth {
 }
 
 function getInitialOpen(): boolean {
-  if (typeof window === "undefined") return true;
+  if (typeof window === "undefined") return false;
+
   if (window.location.pathname.includes("/documents/")) return false;
 
-  return (
-    new URLSearchParams(window.location.search).get("sidebarCollapsed") !==
+  if (
+    new URLSearchParams(window.location.search).get("sidebarCollapsed") ===
     "true"
-  );
+  ) {
+    return false;
+  }
+
+  const stored = localStorage.getItem(OPEN_STORAGE_KEY);
+  if (stored !== null) return stored === "true";
+
+  return false;
 }
 
 // =====================================
@@ -116,8 +124,12 @@ export function SideBarProvider({ children }: { children: React.ReactNode }) {
   > | null>(null);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, width.toString());
+    localStorage.setItem(WIDTH_STORAGE_KEY, width.toString());
   }, [width]);
+
+  useEffect(() => {
+    localStorage.setItem(OPEN_STORAGE_KEY, String(isOpen));
+  }, [isOpen]);
 
   // 🔁 Clamp width on viewport resize
   useEffect(() => {
@@ -157,7 +169,10 @@ export function SideBarProvider({ children }: { children: React.ReactNode }) {
         setIsOpen(false);
       },
       openRightPanel: (id: string, meta?: Record<string, string>) => {
-        if (window.innerWidth < WIDE_SCREEN_BREAKPOINT) setIsOpen(false);
+        // ⌐ Mutual exclusion with the left sidebar is enforced where the
+        // notebook panel's active state actually lives (PrivateDocumentPage),
+        // so every panel type collapses the sidebar consistently, not just
+        // the ones routed through this generic API.
         setRightPanelId(id);
         setRightPanelMeta(meta ?? null);
       },
