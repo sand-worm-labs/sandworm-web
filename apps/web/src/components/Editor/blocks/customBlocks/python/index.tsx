@@ -836,67 +836,67 @@ function PythonBlock(props: Props) {
               </div>
             )}
           </Transition>
-        </div>
 
-        {isCodeHidden && (
-          <CollapsedCodeSummary
-            lineCount={countPythonLines(source)}
-            showOutputHidden={Boolean(isResultHidden && results.length > 0)}
-          />
-        )}
-        {((results.length > 0 && !isResultHidden) || isCodeHidden) && (
-          <HatchBackground />
-        )}
-        <Transition
-          show={!(isResultHidden || results.length === 0)}
-          enter="transition-all ease-in duration-300"
-          enterFrom="max-h-0 overflow-hidden"
-          enterTo="max-h-[300px] overflow-hidden"
-          leave="transition-all ease-out duration-300"
-          leaveFrom="max-h-[300px] overflow-hidden"
-          leaveTo="max-h-0 overflow-hidden"
-        >
-          <div className="text-xs border-t border-border-secondary">
-            <div className={clsx(!isTableOnlyOutput && "p-3")}>
-              <ScrollBar
-                className={clsx("overflow-auto ph-no-capture", {
-                  "px-0.5 pt-3.5 pb-2": !props.isPDF && !isTableOnlyOutput,
-                })}
-              >
-                <PythonOutputs
-                  outputs={results}
-                  isFixWithAILoading={isAIFixing}
-                  onFixWithAI={onFixWithAI}
-                  canFixWithAI={hasOaiKey}
-                  isPDF={props.isPDF}
-                  isDashboardView={false}
-                  lazyRender={!props.isPDF}
-                  blockId={blockId}
-                />
-              </ScrollBar>
+          {isCodeHidden && (
+            <CollapsedCodeSummary
+              lineCount={countPythonLines(source)}
+              showOutputHidden={Boolean(isResultHidden && results.length > 0)}
+            />
+          )}
+          {((results.length > 0 && !isResultHidden) || isCodeHidden) && (
+            <HatchBackground />
+          )}
+          <Transition
+            show={!(isResultHidden || results.length === 0)}
+            enter="transition-all ease-in duration-300"
+            enterFrom="max-h-0 overflow-hidden"
+            enterTo="max-h-[300px] overflow-hidden"
+            leave="transition-all ease-out duration-300"
+            leaveFrom="max-h-[300px] overflow-hidden"
+            leaveTo="max-h-0 overflow-hidden"
+          >
+            <div className="text-xs border-t border-border-secondary">
+              <div className={clsx(!isTableOnlyOutput && "p-3")}>
+                <ScrollBar
+                  className={clsx("overflow-auto ph-no-capture", {
+                    "px-0.5 pt-3.5 pb-2": !props.isPDF && !isTableOnlyOutput,
+                  })}
+                >
+                  <PythonOutputs
+                    outputs={results}
+                    isFixWithAILoading={isAIFixing}
+                    onFixWithAI={onFixWithAI}
+                    canFixWithAI={hasOaiKey}
+                    isPDF={props.isPDF}
+                    isDashboardView={false}
+                    lazyRender={!props.isPDF}
+                    blockId={blockId}
+                  />
+                </ScrollBar>
+              </div>
             </div>
-          </div>
-        </Transition>
-        {results.length > 0 && (
-          <PythonResultFooter
-            outputCount={results.length}
-            dataframeDimensions={dataframeDimensions}
-            isResultHidden={isResultHidden ?? false}
-            toggleResultHidden={toggleResultHidden}
-          />
-        )}
-        {results.length === 0 && statusIsDisabled && (
-          <div className="rounded-b-2xl px-4 py-4 space-y-3">
-            <Shimmer className="h-3 w-full" />
-            <Shimmer className="h-3 w-3/4" />
-            <Shimmer className="h-3 w-1/2" />
-          </div>
-        )}
-        {results.length === 0 && !statusIsDisabled && isCodeHidden && (
-          <div className="flex items-center px-3 h-10 text-xs text-ink-400 bg-[#F8F9FA] dark:bg-base-200">
-            No output
-          </div>
-        )}
+          </Transition>
+          {results.length > 0 && (
+            <PythonResultFooter
+              outputCount={results.length}
+              dataframeDimensions={dataframeDimensions}
+              isResultHidden={isResultHidden ?? false}
+              toggleResultHidden={toggleResultHidden}
+            />
+          )}
+          {results.length === 0 && statusIsDisabled && (
+            <div className="px-4 py-4 space-y-3">
+              <Shimmer className="h-3 w-full" />
+              <Shimmer className="h-3 w-3/4" />
+              <Shimmer className="h-3 w-1/2" />
+            </div>
+          )}
+          {results.length === 0 && !statusIsDisabled && isCodeHidden && (
+            <div className="flex items-center px-3 h-10 text-xs text-ink-400 bg-[#F8F9FA] dark:bg-base-200">
+              No output
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="absolute left-0 top-0 -translate-y-full pb-2">
