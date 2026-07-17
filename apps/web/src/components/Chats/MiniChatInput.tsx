@@ -7,7 +7,6 @@ import {
   PiFileCsv,
   PiFileText,
   PiSpinner,
-  PiWarningCircle,
   PiStop,
 } from "react-icons/pi";
 
@@ -17,7 +16,12 @@ import { ModelPickerModal } from "@/components/Editor/blocks/ModelPicker";
 import type { NormalizedModel } from "@/components/Editor/hooks/useOpenRouterModel";
 
 import { AddMenu } from "./AddMenu";
-import { InputReferencePill } from "./ReferencePill";
+import {
+  InputReferencePill,
+  PILL_BASE,
+  PILL_TEXT_CLASS,
+  PILL_CANCEL_CLASS,
+} from "./ReferencePill";
 import ChangesPanelCompact from "./ChangesPanel";
 import { DUMMY_BLOCKS } from "./types";
 import type { AttachedReference, ReferenceSource } from "./types";
@@ -83,9 +87,9 @@ function genLocalId() {
 
 function FileIcon({ file }: { file: File }) {
   if (file.type.includes("csv") || file.type.includes("spreadsheet")) {
-    return <PiFileCsv size={15} />;
+    return <PiFileCsv size={12} />;
   }
-  return <PiFileText size={15} />;
+  return <PiFileText size={12} />;
 }
 
 // =====================================
@@ -100,14 +104,42 @@ function FileStatusIndicator({ status }: { status: TrackedFile["status"] }) {
       </span>
     );
   }
-  if (status === "error") {
-    return (
-      <span className="text-red-400">
-        <PiWarningCircle size={12} />
-      </span>
-    );
-  }
   return null;
+}
+
+// =====================================
+// ⬢ File Pill
+// =====================================
+
+function FilePill({
+  tracked,
+  onRemove,
+}: {
+  tracked: TrackedFile;
+  onRemove: (localId: string) => void;
+}) {
+  const isError = tracked.status === "error";
+  return (
+    <div
+      className={`${PILL_BASE} ${
+        isError ? "text-error" : PILL_TEXT_CLASS
+      } text-[11px] pl-1.5 pr-1 py-[2.5px] transition-colors`}
+    >
+      <span className={isError ? "text-error" : "text-primary"}>
+        <FileIcon file={tracked.file} />
+      </span>
+      <span className="max-w-[140px] truncate">{tracked.file.name}</span>
+      <FileStatusIndicator status={tracked.status} />
+      <button
+        type="button"
+        onClick={() => onRemove(tracked.localId)}
+        aria-label="Remove file"
+        className={PILL_CANCEL_CLASS}
+      >
+        <PiX size={10} />
+      </button>
+    </div>
+  );
 }
 
 // =====================================
@@ -116,15 +148,33 @@ function FileStatusIndicator({ status }: { status: TrackedFile["status"] }) {
 
 interface PillStripProps {
   references: AttachedReference[];
-  onRemove: (id: string) => void;
+  onRemoveReference: (id: string) => void;
+  trackedFiles: TrackedFile[];
+  onRemoveFile: (localId: string) => void;
 }
 
-function PillStrip({ references, onRemove }: PillStripProps) {
-  if (references.length === 0) return null;
+function PillStrip({
+  references,
+  onRemoveReference,
+  trackedFiles,
+  onRemoveFile,
+}: PillStripProps) {
+  if (references.length === 0 && trackedFiles.length === 0) return null;
   return (
     <div className="flex flex-wrap gap-1 px-3 pt-2.5 pb-0">
+      {trackedFiles.map(tracked => (
+        <FilePill
+          key={tracked.localId}
+          tracked={tracked}
+          onRemove={onRemoveFile}
+        />
+      ))}
       {references.map(ref => (
-        <InputReferencePill key={ref.id} reference={ref} onRemove={onRemove} />
+        <InputReferencePill
+          key={ref.id}
+          reference={ref}
+          onRemove={onRemoveReference}
+        />
       ))}
     </div>
   );
@@ -173,7 +223,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
   onSend,
   onUploadFile,
   onAbort,
-  placeholder = "Create a bar chart with tokens above $1m market cap on Base.",
+  placeholder = "Ask a question or run an analysis...",
   maxHeight = 200,
   acceptedFileTypes = ".csv,.pdf,.doc,.docx,.txt,.xls,.xlsx,.md",
   disabled,
@@ -275,7 +325,6 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
         newTracked.forEach(t => uploadTrackedFile(t));
       }
 
-      // Reset input so the same file can be re-selected
       e.target.value = "";
     },
     [onUploadFile, uploadTrackedFile]
@@ -376,43 +425,12 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
           </div>
         )}
 
-        {/* ─── File attachments ─── */}
-        {trackedFiles.length > 0 && (
-          <div className="px-4 pt-3 pb-2 border-b border-border dark:border-border-tertiary">
-            <div className="flex flex-wrap gap-2">
-              {trackedFiles.map(tracked => (
-                <div
-                  key={tracked.localId}
-                  className={`flex items-center gap-2 bg-white dark:bg-base-720
-                    border rounded-lg px-2.5 py-1.5 transition-colors
-                    ${
-                      tracked.status === "error"
-                        ? "border-red-300 dark:border-red-700"
-                        : "border-border dark:border-base-710"
-                    }`}
-                >
-                  <span className="text-ink-400 dark:text-ink-500">
-                    <FileIcon file={tracked.file} />
-                  </span>
-                  <span className="text-[12px] text-ink-500 dark:text-ink-300 max-w-[140px] truncate">
-                    {tracked.file.name}
-                  </span>
-                  <FileStatusIndicator status={tracked.status} />
-                  <button
-                    type="button"
-                    onClick={() => removeTrackedFile(tracked.localId)}
-                    aria-label="Remove file"
-                    className="text-ink-300 hover:text-ink-500 dark:hover:text-ink-200 transition-colors"
-                  >
-                    <PiX size={13} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <PillStrip references={references} onRemove={handleReferenceRemove} />
+        <PillStrip
+          references={references}
+          onRemoveReference={handleReferenceRemove}
+          trackedFiles={trackedFiles}
+          onRemoveFile={removeTrackedFile}
+        />
 
         <div className="px-1.5 pt-1.5 pb-1.5">
           <textarea
@@ -428,7 +446,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
               text-ink-100 dark:text-white text-sm
               placeholder:text-ink-300 dark:placeholder:text-ink-400
               pt-1.5 px-3 max-h-[300px]
-              disabled:opacity-50"
+              disabled:opacity-95"
           />
         </div>
 
@@ -443,7 +461,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
                   disabled={isLocked}
                   aria-label="Add to message"
                   aria-expanded={addMenuOpen}
-                  className={`flex items-center justify-center w-8 h-8 rounded-full
+                  className={`flex items-center justify-center w-[26px] h-[26px] rounded-full
                     border transition-colors disabled:opacity-40 disabled:cursor-not-allowed
                     ${
                       addMenuOpen || references.length > 0
@@ -452,7 +470,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
                     }`}
                 >
                   <PiPlus
-                    size={18}
+                    size={13}
                     className={`transition-transform duration-150 ${addMenuOpen ? "rotate-45" : ""}`}
                   />
                 </button>
@@ -490,7 +508,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
                     onClick={handleSend}
                     disabled={!canSend}
                     aria-label="Send message"
-                    className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors
+                    className={`flex items-center justify-center w-[26px] h-[26px] rounded-full transition-colors
                     ${
                       canSend
                         ? "bg-primary hover:bg-primary-710 text-white"
@@ -498,9 +516,9 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
                     }`}
                   >
                     {isUploading ? (
-                      <PiSpinner size={15} className="animate-spin" />
+                      <PiSpinner size={13} className="animate-spin" />
                     ) : (
-                      <PiPaperPlaneTilt size={15} />
+                      <PiPaperPlaneTilt size={13} />
                     )}
                   </button>
                 )}

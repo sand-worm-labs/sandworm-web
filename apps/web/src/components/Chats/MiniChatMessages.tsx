@@ -48,7 +48,7 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
 
   useEffect(() => {
     const el = scrollContainerRef.current;
-    if (!el) return;
+    if (!el) return undefined;
     el.addEventListener("scroll", handleScroll, { passive: true });
     return () => el.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);

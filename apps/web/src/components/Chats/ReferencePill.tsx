@@ -8,11 +8,17 @@ import type { AttachedReference } from "./types";
 // ⬢ Shared pill classes
 // =====================================
 
-const PILL_BASE =
-  "inline-flex items-center gap-1 font-medium leading-none rounded-md " +
-  "bg-base-300 dark:bg-base-700 " +
-  "border border-border dark:border-base-710 " +
-  "text-ink-500 dark:text-ink-300 ";
+export const PILL_BASE =
+  "inline-flex items-center gap-1 font-medium leading-none rounded-[5px] bg-primary-tint-75 ";
+
+export const PILL_TEXT_CLASS = "text-ink-450";
+
+export const PILL_ICON_CLASS = "flex-shrink-0 text-primary";
+
+export const PILL_CANCEL_CLASS =
+  "flex items-center justify-center w-3.5 h-3.5 ml-0.5 rounded " +
+  "text-ink-300 hover:text-ink-500 hover:bg-input dark:hover:bg-base-710 " +
+  "transition-colors";
 
 // =====================================
 // ⬢ Utils
@@ -37,20 +43,22 @@ interface InputPillProps {
 
 export function InputReferencePill({ reference, onRemove }: InputPillProps) {
   return (
-    <span className={`${PILL_BASE} text-[11px] pl-1.5 pr-1 py-[3px]`}>
+    <span
+      className={` ${PILL_BASE} ${PILL_TEXT_CLASS} text-[11px] pl-1.5 pr-1 py-[2.5px]`}
+    >
       {reference.blockKind ? (
         <BlockKindIcon
           kind={reference.blockKind}
-          size={11}
+          size={12}
           weight="bold"
-          className="flex-shrink-0 opacity-60"
+          className={PILL_ICON_CLASS}
         />
       ) : (
         <SourceKindIcon
           kind={reference.sourceKind}
-          size={11}
+          size={12}
           weight="bold"
-          className="flex-shrink-0 opacity-60"
+          className={PILL_ICON_CLASS}
         />
       )}
 
@@ -60,11 +68,9 @@ export function InputReferencePill({ reference, onRemove }: InputPillProps) {
         type="button"
         onClick={() => onRemove(reference.id)}
         aria-label={`Remove ${reference.label}`}
-        className="flex items-center justify-center w-3.5 h-3.5 ml-0.5
-          rounded opacity-40 hover:opacity-80 hover:bg-input dark:hover:bg-base-710
-          transition-opacity"
+        className={PILL_CANCEL_CLASS}
       >
-        <PiX size={9} />
+        <PiX size={10} />
       </button>
     </span>
   );
@@ -84,16 +90,16 @@ export function BubbleReferencePill({ reference }: BubblePillProps) {
       {reference.blockKind ? (
         <BlockKindIcon
           kind={reference.blockKind}
-          size={10}
+          size={12}
           weight="bold"
-          className="flex-shrink-0 opacity-60"
+          className={PILL_ICON_CLASS}
         />
       ) : (
         <SourceKindIcon
           kind={reference.sourceKind}
-          size={10}
+          size={12}
           weight="bold"
-          className="flex-shrink-0 opacity-60"
+          className={PILL_ICON_CLASS}
         />
       )}
       <span>{reference.label}</span>
@@ -105,7 +111,7 @@ export function BubbleReferencePill({ reference }: BubblePillProps) {
       <button
         type="button"
         onClick={() => dispatchScrollToBlock(reference.id)}
-        className={`${PILL_BASE} text-[10.5px] px-1.5 py-[3px]
+        className={`${PILL_BASE} ${PILL_TEXT_CLASS} text-[10.5px] px-1.5 py-[2.5px]
           cursor-pointer hover:bg-[#EAECEE] dark:hover:bg-[#333330]
           transition-colors duration-150`}
       >
@@ -115,7 +121,9 @@ export function BubbleReferencePill({ reference }: BubblePillProps) {
   }
 
   return (
-    <span className={`${PILL_BASE} text-[10.5px] px-1.5 py-[3px]`}>
+    <span
+      className={`${PILL_BASE} ${PILL_TEXT_CLASS} text-[10.5px] px-1.5 py-[2.5px]`}
+    >
       {inner}
     </span>
   );

@@ -42,7 +42,8 @@ export function pickNextVerb(current: string): string {
   if (CHAIN_VERBS.length <= 1) return CHAIN_VERBS[0] ?? "";
   let next = current;
   while (next === current) {
-    next = CHAIN_VERBS[Math.floor(Math.random() * CHAIN_VERBS.length)] ?? current;
+    next =
+      CHAIN_VERBS[Math.floor(Math.random() * CHAIN_VERBS.length)] ?? current;
   }
   return next;
 }

@@ -75,6 +75,7 @@ const config: Config = {
           200: "var(--ink-200)",
           300: "var(--ink-300)",
           400: "var(--ink-400)",
+          450: "var(--ink-450)",
           500: "var(--ink-500)",
           600: "var(--ink-600)",
           700: "var(--ink-700)",

@@ -39,7 +39,7 @@ export default function RotatingGradientRing({
   );
 
   useEffect(() => {
-    if (!showLabel) return;
+    if (!showLabel) return undefined;
     const id = setInterval(() => {
       setVerb(current => pickNextVerb(current));
     }, VERB_INTERVAL_MS);

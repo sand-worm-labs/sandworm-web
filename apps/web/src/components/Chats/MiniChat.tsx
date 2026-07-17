@@ -132,7 +132,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
                 onFollowUpSubmit={() => {}}
               />
 
-              <div className="pb-4 md:px-4">
+              <div className="pb-4 md:px-2">
                 <MiniChatInput
                   onSend={handlers.inputSend}
                   onUploadFile={handleUploadFile}

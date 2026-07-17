@@ -11,7 +11,12 @@ import remarkGfm from "remark-gfm";
 import { TooltipV2 } from "../Editor/blocks/ToolTips";
 import { timeAgo, formatFullDate } from "../../lib/date";
 
-import { BubbleReferencePill } from "./ReferencePill";
+import {
+  BubbleReferencePill,
+  PILL_BASE,
+  PILL_ICON_CLASS,
+  PILL_TEXT_CLASS,
+} from "./ReferencePill";
 import type { AttachedReference } from "./types";
 import type { UploadedFileRef } from "./MiniChatInput";
 
@@ -148,13 +153,9 @@ function FileBubbleChip({ fileRef }: { fileRef: UploadedFileRef }) {
 
   return (
     <span
-      className="inline-flex items-center gap-1 text-[10.5px] font-medium
-        px-1.5 py-[3px] rounded-md leading-none
-        bg-base-300 dark:bg-base-700
-        border border-border dark:border-base-710
-        text-ink-500 dark:text-ink-300"
+      className={`${PILL_BASE} ${PILL_TEXT_CLASS} text-[10.5px] px-1.5 py-[2.5px]`}
     >
-      <Icon size={11} className="flex-shrink-0 opacity-60" />
+      <Icon size={12} className={PILL_ICON_CLASS} />
       <span className="max-w-[120px] truncate">{fileRef.name}</span>
     </span>
   );
