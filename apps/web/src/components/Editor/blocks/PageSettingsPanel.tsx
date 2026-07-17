@@ -1,6 +1,7 @@
 import { Switch, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import { PiGearSixLight } from "react-icons/pi";
+
 import { CloseIconButton } from "@/components/CloseIconButton";
 
 import useDocument from "../hooks/useDocument";

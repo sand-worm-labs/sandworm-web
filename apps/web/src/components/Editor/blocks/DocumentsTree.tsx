@@ -229,7 +229,11 @@ function DropDown(props: DropDownProps) {
       </button>
 
       <Menu as="div" className="relative inline-flex text-left font-body">
-        <Menu.Button className="pr-0.5 focus-visible:outline-none" ref={buttonRef} onClick={onOpen}>
+        <Menu.Button
+          className="pr-0.5 focus-visible:outline-none"
+          ref={buttonRef}
+          onClick={onOpen}
+        >
           <PiDotsThree
             size={18}
             className="invisible group-hover:visible focus-visible:outline-none hover:bg-ceramic-200/50 rounded-md shrink-0"

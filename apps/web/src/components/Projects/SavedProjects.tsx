@@ -100,8 +100,7 @@ export const SavedProjects: React.FC = () => {
     const q = searchValue.toLowerCase();
     return projects.filter(
       p =>
-        p.title.toLowerCase().includes(q) ||
-        p.creator.toLowerCase().includes(q)
+        p.title.toLowerCase().includes(q) || p.creator.toLowerCase().includes(q)
     );
   }, [projects, searchValue]);
 
@@ -202,150 +201,153 @@ export const SavedProjects: React.FC = () => {
               </p>
             </div>
           ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map(project => (
-              <div
-                key={project.id}
-                className="bg-white dark:bg-base-100  rounded-3xl border border-border-tertiary dark:border-border-tertiary transition-all duration-200 p-4 py-3 relative group"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <Link
-                    href={`/workspace/${workspaceId}/documents/${project.id}`}
-                    className="text-[0.9rem] font-medium text-ink-100 dark:text-white flex-1 pr-2 hover:underline"
-                  >
-                    {project.title}
-                  </Link>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => toggleFavorite(project.id)}
-                      className={`opacity-0 group-hover:opacity-100 transition-opacity ${
-                        project.isFavorite ? "opacity-100" : ""
-                      }`}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProjects.map(project => (
+                <div
+                  key={project.id}
+                  className="bg-white dark:bg-base-100  rounded-3xl border border-border-tertiary dark:border-border-tertiary transition-all duration-200 p-4 py-3 relative group"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <Link
+                      href={`/workspace/${workspaceId}/documents/${project.id}`}
+                      className="text-[0.9rem] font-medium text-ink-100 dark:text-white flex-1 pr-2 hover:underline"
                     >
-                      <Star
-                        className={`w-4 h-4 ${
-                          project.isFavorite
-                            ? "fill-primary text-primary"
-                            : "text-ink-400 hover:text-primary"
+                      {project.title}
+                    </Link>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleFavorite(project.id)}
+                        className={`opacity-0 group-hover:opacity-100 transition-opacity ${
+                          project.isFavorite ? "opacity-100" : ""
                         }`}
-                      />
-                    </button>
+                      >
+                        <Star
+                          className={`w-4 h-4 ${
+                            project.isFavorite
+                              ? "fill-primary text-primary"
+                              : "text-ink-400 hover:text-primary"
+                          }`}
+                        />
+                      </button>
+
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setOpenMenuId(
+                              openMenuId === project.id ? null : project.id
+                            )
+                          }
+                          className="p-1 rounded transition-colors"
+                        >
+                          <MoreHorizontal className="w-4 h-4 text-ink-200" />
+                        </button>
+
+                        {openMenuId === project.id && (
+                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100  rounded-xl shadow-lg border border-border-tertiary dark:border-border-tertiary pb-1 z-10 text-ink-200 dark:text-white">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleMenuAction("duplicate", project.id)
+                              }
+                              className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20"
+                            >
+                              <Copy className="w-3.5 h-.5" strokeWidth={1.4} />
+                              Duplicate
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleMenuAction("newTab", project.id)
+                              }
+                              className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20"
+                            >
+                              <ExternalLink
+                                className="w-3.5 h-3.5"
+                                strokeWidth={1.4}
+                              />
+                              Open in new tab
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleMenuAction("trash", project.id)
+                              }
+                              className="w-full px-4 py-2 text-left text-sm hover:bg-primary/20 flex items-center gap-2"
+                            >
+                              <Trash2
+                                className="w-3.5 h-3.5"
+                                strokeWidth={1.4}
+                              />
+                              Move to trash
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white dark:bg-base-100  rounded-lg h-10 mb-4 flex items-center justify-center" />
+
+                  <div className="flex items-center justify-between">
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onMouseEnter={() => setHoveredUser(project.id)}
+                        onMouseLeave={() => setHoveredUser(null)}
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors dark:hover:bg-editor-100"
+                      >
+                        <User className="w-4 h-4 text-ink-200" />
+                      </button>
+
+                      {hoveredUser === project.id && (
+                        <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-base-100  bg-white text-ink-400 border-border-secondary  dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
+                          Creator: {project.creator}
+                        </div>
+                      )}
+                    </div>
 
                     <div className="relative">
                       <button
                         type="button"
-                        onClick={() =>
-                          setOpenMenuId(
-                            openMenuId === project.id ? null : project.id
-                          )
-                        }
-                        className="p-1 rounded transition-colors"
+                        onMouseEnter={() => setHoveredSave(project.id)}
+                        onMouseLeave={() => setHoveredSave(null)}
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors dark:hover:bg-editor-100"
                       >
-                        <MoreHorizontal className="w-4 h-4 text-ink-200" />
+                        <Save className="w-4 h-4 text-ink-200" />
                       </button>
 
-                      {openMenuId === project.id && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100  rounded-xl shadow-lg border border-border-tertiary dark:border-border-tertiary pb-1 z-10 text-ink-200 dark:text-white">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleMenuAction("duplicate", project.id)
-                            }
-                            className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20"
-                          >
-                            <Copy className="w-3.5 h-.5" strokeWidth={1.4} />
-                            Duplicate
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleMenuAction("newTab", project.id)
-                            }
-                            className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20"
-                          >
-                            <ExternalLink
-                              className="w-3.5 h-3.5"
-                              strokeWidth={1.4}
-                            />
-                            Open in new tab
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleMenuAction("trash", project.id)
-                            }
-                            className="w-full px-4 py-2 text-left text-sm hover:bg-primary/20 flex items-center gap-2"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" strokeWidth={1.4} />
-                            Move to trash
-                          </button>
+                      {hoveredSave === project.id && (
+                        <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-base-100  bg-white text-ink-500 border-border-secondary  dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
+                          <div className="space-y-1">
+                            <div>
+                              <span className="font-medium text-ink-400 dark:text-white">
+                                Creator:
+                              </span>{" "}
+                              {project.creator}
+                            </div>
+                            <div>
+                              <span className="font-medium text-ink-400 dark:text-white">
+                                Last edited:
+                              </span>{" "}
+                              {project.lastEdited}
+                            </div>
+                            <div>
+                              <span className="font-medium text-ink-400 dark:text-white">
+                                Created:
+                              </span>{" "}
+                              {project.created}
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
-
-                <div className="bg-white dark:bg-base-100  rounded-lg h-10 mb-4 flex items-center justify-center" />
-
-                <div className="flex items-center justify-between">
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onMouseEnter={() => setHoveredUser(project.id)}
-                      onMouseLeave={() => setHoveredUser(null)}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors dark:hover:bg-editor-100"
-                    >
-                      <User className="w-4 h-4 text-ink-200" />
-                    </button>
-
-                    {hoveredUser === project.id && (
-                      <div className="absolute bottom-full left-0 mb-2 px-3 py-1 dark:bg-base-100  bg-white text-ink-400 border-border-secondary  dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
-                        Creator: {project.creator}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onMouseEnter={() => setHoveredSave(project.id)}
-                      onMouseLeave={() => setHoveredSave(null)}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors dark:hover:bg-editor-100"
-                    >
-                      <Save className="w-4 h-4 text-ink-200" />
-                    </button>
-
-                    {hoveredSave === project.id && (
-                      <div className="absolute bottom-full right-0 mb-2 px-4 py-1.5 dark:bg-base-100  bg-white text-ink-500 border-border-secondary  dark:border-border-tertiary border dark:text-white text-xs rounded shadow-[0_0.5px_4px_#2516660A] whitespace-nowrap z-20">
-                        <div className="space-y-1">
-                          <div>
-                            <span className="font-medium text-ink-400 dark:text-white">
-                              Creator:
-                            </span>{" "}
-                            {project.creator}
-                          </div>
-                          <div>
-                            <span className="font-medium text-ink-400 dark:text-white">
-                              Last edited:
-                            </span>{" "}
-                            {project.lastEdited}
-                          </div>
-                          <div>
-                            <span className="font-medium text-ink-400 dark:text-white">
-                              Created:
-                            </span>{" "}
-                            {project.created}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
           )
         ) : (
           <ProjectsTable

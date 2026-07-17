@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Dialog, Transition } from "@headlessui/react";
 
 import type { UserWorkspaceRole } from "@/types";
-
 import { CloseIconButton } from "@/components/CloseIconButton";
 
 import { User } from "./Assets/Avatar/User";

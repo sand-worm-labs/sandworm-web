@@ -14,21 +14,6 @@ import type { PartPayload, FollowUpPart } from "./parts.types";
 import RotatingGradientRing from "./RotatingGradientRing";
 
 // =====================================
-// ⬢ LoadingBubble
-// =====================================
-
-const LoadingBubble: React.FC = () => (
-  <div className="flex justify-start">
-    <div
-      className="bg-base-300 dark:bg-editor-600 text-ink-500 dark:text-ink-400
-        px-4 py-3 rounded-2xl text-sm flex gap-1 items-center"
-    >
-      <div className="dot-loader" />
-    </div>
-  </div>
-);
-
-// =====================================
 // ⬢ MiniChatMessages
 // =====================================
 
@@ -99,7 +84,7 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
                 | undefined;
 
               if (msg.isLoading && !msg.text && !hasParts) {
-                return <LoadingBubble key={msg.id} />;
+                return <RotatingGradientRing showLabel />;
               }
 
               return (
@@ -128,7 +113,7 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
                           transition: { duration: 0.2, ease: "easeOut" },
                         }}
                       >
-                        <RotatingGradientRing />
+                        <RotatingGradientRing showLabel />
                       </motion.div>
                     )}
                   </AnimatePresence>

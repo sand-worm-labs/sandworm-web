@@ -1,4 +1,4 @@
-import {  useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";

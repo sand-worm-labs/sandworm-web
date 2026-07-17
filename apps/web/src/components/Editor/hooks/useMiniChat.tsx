@@ -134,7 +134,7 @@ export function useMiniChat({
   const loadThread = useCallback(
     async (chatId: string) => {
       const chat = await chatApi.fetchChat(chatId);
-      console.log(chat, "g")
+      console.log(chat, "g");
       setActiveChatId(chat.id);
       setActiveThreadTitle(chat.title);
       setMessages(
@@ -199,7 +199,13 @@ export function useMiniChat({
 
       console.log("[MiniChat] sending fileRefs:", fileRefs);
 
-      addMessage({ text, isUser: true, references, fileRefs, createdAt: new Date().toISOString() });
+      addMessage({
+        text,
+        isUser: true,
+        references,
+        fileRefs,
+        createdAt: new Date().toISOString(),
+      });
       setIsLoading(true);
 
       const loadingId = addMessage({

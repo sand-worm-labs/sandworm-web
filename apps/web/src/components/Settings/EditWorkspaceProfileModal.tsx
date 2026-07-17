@@ -146,15 +146,11 @@ export default function EditWorkspaceProfileModal({
                   />
                   <ul className="mt-2 space-y-1 text-xs font-medium">
                     <li className="flex items-center gap-1">
-                      <span className="text-ink-400 dark:text-ink-400">
-                        ·
-                      </span>
+                      <span className="text-ink-400 dark:text-ink-400">·</span>
                       Workspace name should be less than 40 characters
                     </li>
                     <li className="flex items-center gap-1">
-                      <span className="text-ink-400 dark:text-ink-400">
-                        ·
-                      </span>
+                      <span className="text-ink-400 dark:text-ink-400">·</span>
                       Cannot contain punctuation/special marks
                     </li>
                   </ul>

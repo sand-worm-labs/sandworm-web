@@ -295,10 +295,20 @@ export const useSession = ({
 
   useEffect(() => {
     if (!loading && redirectToLogin) {
-      console.log("[useSession] settled — currentUser:", data?.currentUser ?? null, "| error:", error?.message ?? null, "| path:", pathname);
+      console.log(
+        "[useSession] settled — currentUser:",
+        data?.currentUser ?? null,
+        "| error:",
+        error?.message ?? null,
+        "| path:",
+        pathname
+      );
       if (!data?.currentUser) {
         const back = `${pathname}${searchParams.toString() ? `?${searchParams}` : ""}`;
-        console.warn("[useSession] redirecting to signin — reason:", error ? `error: ${error.message}` : "no currentUser returned");
+        console.warn(
+          "[useSession] redirecting to signin — reason:",
+          error ? `error: ${error.message}` : "no currentUser returned"
+        );
         router.replace(`/signin?callback=${encodeURIComponent(back)}`);
       }
     }

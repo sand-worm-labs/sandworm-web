@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import { CloseIconButton } from "@/components/CloseIconButton";
 
 interface BannerAlertProps {

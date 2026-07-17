@@ -103,10 +103,7 @@ export function ThemeTogggle({ iconSize = 22 }: ThemeToggleProps) {
                 onClick={() => setTheme("system")}
                 className="p-2 rounded-md text-ink-400 focus:bg-base-600 cursor-pointer"
               >
-                <Desktop
-                  className="h-5 w-5 text-ink-500"
-                  aria-hidden="true"
-                />
+                <Desktop className="h-5 w-5 text-ink-500" aria-hidden="true" />
                 <span className="sr-only">System</span>
               </DropdownMenuItem>
             )}

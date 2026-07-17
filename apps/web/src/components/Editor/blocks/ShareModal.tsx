@@ -480,7 +480,9 @@ export default function ShareModal({
                         </div>
                         <div className="flex-1 min-w-0 text-left">
                           <p className="text-sm font-medium leading-tight">
-                            {isExportingPDF ? "Preparing PDF…" : "Download as PDF"}
+                            {isExportingPDF
+                              ? "Preparing PDF…"
+                              : "Download as PDF"}
                           </p>
                           <p className="text-[12px] text-ink-300 dark:text-ink-600 mt-0.5">
                             Export this notebook as a printable PDF

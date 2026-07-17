@@ -1,10 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
-// True continuous spin for a loading state — no hold/plateau.
-// Rotates a full 360deg linearly and loops forever, so it never
-// appears to pause. (The original [0,720,720] keyframe spec had
-// a built-in 2s freeze in the back half of every cycle, which is
-// what caused the "stopping" look.)
+import { CHAIN_VERBS, pickNextVerb } from "./chainVerbs";
 
 const styleSheet = `
 @keyframes spin-continuous {
@@ -16,18 +13,51 @@ const styleSheet = `
 }
 `;
 
+const VERB_INTERVAL_MS = 2200;
+
 interface RotatingGradientRingProps {
   size?: number;
+  // "inline": small, left-aligned, no background — sits next to a chat
+  //   message or other content. Default, since that's the only current use.
+  // "page": large, centered in a full-size white box — for full-page/panel
+  //   loading states. Matches this component's original look.
+  variant?: "inline" | "page";
+  // Cycles a whimsical "Indexing blocks…"-style label next to the ring.
+  // Off by default so existing bare usages of the ring are unaffected.
+  showLabel?: boolean;
 }
 
-export default function RotatingGradientRing({ size = 96 }: RotatingGradientRingProps) {
+export default function RotatingGradientRing({
+  size,
+  variant = "inline",
+  showLabel = false,
+}: RotatingGradientRingProps) {
+  const resolvedSize = size ?? (variant === "page" ? 96 : 20);
+
+  const [verb, setVerb] = useState(
+    () => CHAIN_VERBS[Math.floor(Math.random() * CHAIN_VERBS.length)] ?? ""
+  );
+
+  useEffect(() => {
+    if (!showLabel) return;
+    const id = setInterval(() => {
+      setVerb(current => pickNextVerb(current));
+    }, VERB_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [showLabel]);
+
+  const containerClassName =
+    variant === "page"
+      ? "w-full h-full flex items-center justify-center bg-white p-16 gap-2"
+      : "inline-flex items-center justify-start self-start w-fit gap-2";
+
   return (
-    <div className="w-full h-full flex items-center justify-center bg-white p-16">
+    <div className={containerClassName}>
       <style>{styleSheet}</style>
       <svg
-        className="spin-ring"
-        width={size}
-        height={size}
+        className="spin-ring flex-shrink-0"
+        width={resolvedSize}
+        height={resolvedSize}
         viewBox="0 0 16 16"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -55,6 +85,23 @@ export default function RotatingGradientRing({ size = 96 }: RotatingGradientRing
           </radialGradient>
         </defs>
       </svg>
+
+      {showLabel && (
+        <span className="text-[12.5px] text-ink-400 dark:text-ink-500 font-semibold overflow-hidden">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={verb}
+              className="inline-block"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.18 }}
+            >
+              {verb}…
+            </motion.span>
+          </AnimatePresence>
+        </span>
+      )}
     </div>
   );
 }

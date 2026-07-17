@@ -28,7 +28,11 @@ const NOTEBOOK_CREATE_DEMO_DELAY_MS =
   process.env.NODE_ENV === "development" ? 2500 : 0;
 
 function demoDelay(ms: number) {
-  return ms > 0 ? new Promise<void>(resolve => setTimeout(resolve, ms)) : null;
+  return ms > 0
+    ? new Promise<void>(resolve => {
+        setTimeout(resolve, ms);
+      })
+    : null;
 }
 
 // =====================================

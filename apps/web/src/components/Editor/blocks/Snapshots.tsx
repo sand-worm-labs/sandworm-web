@@ -2,8 +2,8 @@
 import * as dfns from "date-fns";
 import React from "react";
 import { PiCameraLight } from "react-icons/pi";
-import { CloseIconButton } from "@/components/CloseIconButton";
 
+import { CloseIconButton } from "@/components/CloseIconButton";
 import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 
 import ScrollBar from "./ScrollBar";

@@ -1,7 +1,8 @@
 import tzList from "timezones-list";
-import { CloseIconButton } from "@/components/CloseIconButton";
 import type { SubmitHandler, UseFormReturn } from "react-hook-form";
 import { useWatch } from "react-hook-form";
+
+import { CloseIconButton } from "@/components/CloseIconButton";
 
 import FormError from "../forms/formError";
 import ScrollBar from "../ScrollBar";

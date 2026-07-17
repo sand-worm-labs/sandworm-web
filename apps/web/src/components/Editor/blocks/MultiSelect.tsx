@@ -129,9 +129,11 @@ export default function MultiSelect<T>(props: Props<T>) {
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           {props.getIcon?.(option) && (
-                            <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-md
+                            <span
+                              className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-md
                               border border-border dark:border-base-710
-                              bg-white dark:bg-base-750">
+                              bg-white dark:bg-base-750"
+                            >
                               {props.getIcon(option)}
                             </span>
                           )}

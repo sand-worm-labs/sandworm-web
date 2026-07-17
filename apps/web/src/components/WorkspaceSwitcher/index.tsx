@@ -160,7 +160,9 @@ function CollapsedSwitcher({
         className={clsx(
           "w-8 h-8 rounded-[10px] flex-shrink-0 self-center flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary/40",
           "transition-colors duration-100 shadow-[0px_1px_12px_1px_#A9A9D44D]",
-          open ? "bg-primary-tint-50 dark:bg-primary-900" : " dark:hover:bg-primary-900"
+          open
+            ? "bg-primary-tint-50 dark:bg-primary-900"
+            : " dark:hover:bg-primary-900"
         )}
       >
         <WorkspaceIcon

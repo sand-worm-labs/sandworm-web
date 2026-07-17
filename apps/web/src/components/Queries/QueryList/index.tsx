@@ -16,7 +16,6 @@ export const QueryList: React.FC<IQueryListProps> = ({
   documents,
   loadingMore = false,
 }) => {
-
   if (!documents || documents.length === 0) {
     return (
       <div className="py-6 flex flex-col items-center justify-center">

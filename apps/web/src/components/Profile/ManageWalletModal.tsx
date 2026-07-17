@@ -2,9 +2,9 @@
 
 import { useState, useRef, Fragment } from "react";
 import { Check } from "lucide-react";
+import { Dialog, Transition } from "@headlessui/react";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
-import { Dialog, Transition } from "@headlessui/react";
 
 import { Copy } from "../Assets/Copy";
 import { Trash } from "../Assets/Trash";

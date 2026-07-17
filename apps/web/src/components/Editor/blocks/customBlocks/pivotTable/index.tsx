@@ -21,6 +21,7 @@ import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { equals, head } from "ramda";
 import { PiPlayFill, PiStop, PiClock, PiTable } from "react-icons/pi";
+
 import { BlockTypePill } from "../../BlockTypePill";
 
 // FIX import/no-named-as-default: LargeSpinner is a named export, not default
@@ -544,9 +545,7 @@ function PivotTableBlock(props: Props) {
                     "text-sm font-body font-normal pl-1 block w-full border-0 border-b border-transparent focus:border-primary focus:outline-none text-ink-100 placeholder:text-ink-300 py-0 h-2/3 bg-transparent focus:bg-base-100"
                   )}
                   placeholder={
-                    props.isEditable
-                      ? "Add a title..."
-                      : "Pivot Table"
+                    props.isEditable ? "Add a title..." : "Pivot Table"
                   }
                   value={attrs.title}
                   onChange={onChangeTitle}

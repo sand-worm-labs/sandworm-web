@@ -4,8 +4,8 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import cronstrue from "cronstrue";
 import { PiTimerLight } from "react-icons/pi";
-import { CloseIconButton } from "@/components/CloseIconButton";
 
+import { CloseIconButton } from "@/components/CloseIconButton";
 import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 import type {
   ExecutionSchedule,

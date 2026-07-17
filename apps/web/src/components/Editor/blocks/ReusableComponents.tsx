@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import type * as Y from "yjs";
 import React, { useCallback, useState } from "react";
 import { PiStackLight, PiFloppyDisk } from "react-icons/pi";
-import { CloseIconButton } from "@/components/CloseIconButton";
 import { Transition, Dialog } from "@headlessui/react";
 import { format } from "date-fns";
 import clsx from "clsx";
@@ -15,6 +14,7 @@ import type {
   ReusableComponentType,
 } from "@sandworm/types";
 
+import { CloseIconButton } from "@/components/CloseIconButton";
 import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 import { Trash } from "@/components/Assets/Trash";
 import allLucideIcons from "@/utils/lucideIcons";

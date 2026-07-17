@@ -1265,9 +1265,7 @@ function SQLBlock(props: Props) {
               showOutputHidden={Boolean(isResultHidden && result)}
             />
           )}
-          {((result && !isResultHidden) || isCodeHidden) && (
-            <HatchBackground />
-          )}
+          {((result && !isResultHidden) || isCodeHidden) && <HatchBackground />}
           {result && (
             <SQLResult
               page={page}

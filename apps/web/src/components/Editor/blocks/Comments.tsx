@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import { useCallback, useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { CloseIconButton } from "@/components/CloseIconButton";
 import { PiPaperPlaneRight, PiChatCenteredTextLight } from "react-icons/pi";
 
+import { CloseIconButton } from "@/components/CloseIconButton";
 import { timeAgo } from "@/lib";
 import { Trash } from "@/components/Assets/Trash";
 import { CommentIcon } from "@/components/Assets/CommentIcon";
