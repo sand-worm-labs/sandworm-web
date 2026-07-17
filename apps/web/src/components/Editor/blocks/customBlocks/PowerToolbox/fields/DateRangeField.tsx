@@ -102,7 +102,7 @@ function DateInput({
           "w-full px-3 py-2.5 rounded-lg text-sm",
           "bg-white/[0.04] border border-border-tertiary transition-colors outline-none",
           "text-ink-100 ",
-          "focus:border-[#A308F0]/50 focus:bg-white/[0.05]",
+          "focus:border-primary/50 focus:bg-white/[0.05]",
           "[color-scheme:dark]"
         )}
       />

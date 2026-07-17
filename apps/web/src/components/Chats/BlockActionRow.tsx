@@ -39,7 +39,7 @@ function Pill({
 }) {
   return (
     <span
-      className={`flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-white dark:bg-[#252523] border border-[#DEE2E6] dark:border-[#3A3A38] tabular-nums ${error ? "text-[#D85A30]" : "text-ink-400 dark:text-ink-500"}`}
+      className={`flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-white dark:bg-base-720 border border-border dark:border-base-710 tabular-nums ${error ? "text-warning" : "text-ink-400 dark:text-ink-500"}`}
     >
       {children}
     </span>
@@ -64,18 +64,18 @@ export function BlockActionRow({ part, onLocate }: BlockActionRowProps) {
     <>
       <div
         style={{ width: 24, height: 24, minWidth: 24, minHeight: 24 }}
-        className="flex items-center justify-center rounded-lg bg-white dark:bg-[#252523] border border-[#B1DDE8] dark:border-[#1A3A52]"
+        className="flex items-center justify-center rounded-lg bg-white dark:bg-base-720 border border-[#B1DDE8] dark:border-[#1A3A52]"
       >
         {meta ? (
           <BlockKindIcon
             kind={meta.kind}
             size={16}
             weight="bold"
-            className="text-[#343330] dark:text-ink-200"
+            className="text-ink-700 dark:text-ink-200"
             style={{ display: "block", flexShrink: 0 }}
           />
         ) : (
-          <span className="text-[#343330] dark:text-ink-200">
+          <span className="text-ink-700 dark:text-ink-200">
             <PiOctagon size={16} />
           </span>
         )}
@@ -108,7 +108,7 @@ export function BlockActionRow({ part, onLocate }: BlockActionRowProps) {
   );
 
   const base = `flex items-center gap-3 px-3 py-1.5 rounded-xl w-full text-left transition-all duration-150 ${isRejected ? "opacity-40" : ""}`;
-  const container = `bg-[#F1F3F4] dark:bg-[#1A1A18]`;
+  const container = `bg-base-300 dark:bg-base-770`;
   const hover = `hover:bg-[#EAECEE] dark:hover:bg-[#1F1F1D]`;
 
   if (isClickable) {

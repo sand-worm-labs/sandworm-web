@@ -99,17 +99,17 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
         onClick={handleOpen}
         className={clsx(
           "flex items-center gap-1.5 px-3 py-0.5 rounded-lg border text-sm font-medium transition-colors min-w-[70px]",
-          "border-[#DEE2E6] dark:border-border-tertiary",
-          "bg-[#F8F9FA] dark:bg-base-100 ",
-          "text-[#343A40] dark:text-white",
-          "hover:bg-[#F8F9FA] dark:hover:bg-[#262A30]",
+          "border-border dark:border-border-tertiary",
+          "bg-inputBg dark:bg-base-100 ",
+          "text-ink-500 dark:text-white",
+          "hover:bg-inputBg dark:hover:bg-editor-200",
           disabled && "cursor-not-allowed"
         )}
       >
         {current?.label ?? "—"}
         <svg
           className={clsx(
-            "w-4 h-3.5 text-[#1C3B5A] dark:text-ink-400 transition-transform",
+            "w-4 h-3.5 text-ink-navy dark:text-ink-400 transition-transform",
             open && "rotate-180"
           )}
           viewBox="0 0 16 16"
@@ -133,8 +133,8 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
               zIndex: 9999,
             }}
             className={clsx(
-              "bg-[#F8F9FA] dark:bg-[#1A1D21]",
-              "border border-[#DEE2E6] dark:border-border-tertiary",
+              "bg-inputBg dark:bg-[#1A1D21]",
+              "border border-border dark:border-border-tertiary",
               "rounded-lg py-0"
             )}
           >
@@ -147,14 +147,14 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
                   setOpen(false);
                 }}
                 className={clsx(
-                  "w-full text-left px-3 py-1.5 hover:bg-[#EAECEF] dark:hover:bg-[#262A30] transition-colors font-body",
-                  r.value === role && "bg-[#F8F9FA] dark:bg-[#262A30]"
+                  "w-full text-left px-3 py-1.5 hover:bg-[#EAECEF] dark:hover:bg-editor-200 transition-colors font-body",
+                  r.value === role && "bg-inputBg dark:bg-editor-200"
                 )}
               >
-                <p className="text-xs font-medium text-[#343A40] dark:text-white">
+                <p className="text-xs font-medium text-ink-500 dark:text-white">
                   {r.label}
                 </p>
-                <p className="text-[11px] text-[#6C757D] mt-1.5">
+                <p className="text-[11px] text-ink-400 mt-1.5">
                   {r.description}
                 </p>
               </button>
@@ -194,18 +194,18 @@ function MiniUserItem({
   );
 
   return (
-    <div className="flex items-center gap-3 py-3 px-4 border-b border-[#DEE2E6] dark:border-border-tertiary last:border-0">
+    <div className="flex items-center gap-3 py-3 px-4 border-b border-border dark:border-border-tertiary last:border-0">
       <Avatar />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-[#1A1A1A] dark:text-white truncate">
+        <p className="text-sm font-medium text-ink-100 dark:text-white truncate">
           {user.firstName} {user.lastName}
           {isCurrentUser && (
-            <span className="ml-1.5 text-xs font-normal text-[#6C757D]  dark:text-ink-400">
+            <span className="ml-1.5 text-xs font-normal text-ink-400  dark:text-ink-400">
               (you)
             </span>
           )}
         </p>
-        <p className="text-xs text-[#6C757D] dark:text-ink-400 truncate">
+        <p className="text-xs text-ink-400 dark:text-ink-400 truncate">
           {user.email}
         </p>
       </div>
@@ -218,7 +218,7 @@ function MiniUserItem({
         type="checkbox"
         checked={isSelected}
         onChange={handleToggle}
-        className="h-4 w-4 rounded-[5px] border-[1.5px] border-[#D0D5DD] appearance-none checked:bg-[#7F56D9] checked:border-[#7F56D9] focus:outline-none focus:ring-2 focus:ring-[#7F56D9] cursor-pointer"
+        className="h-4 w-4 rounded-[5px] border-[1.5px] border-border-faint appearance-none checked:bg-accent-violet checked:border-accent-violet focus:outline-none focus:ring-2 focus:ring-accent-violet cursor-pointer"
       />
     </div>
   );
@@ -283,9 +283,9 @@ export function MiniUsersList({
 
   return (
     <div className="relative w-full">
-      <div className="rounded-xl border border-[#DEE2E6] dark:border-border-tertiary overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-2 border-b border-[#CED4DA] dark:border-border-tertiary">
-          <span className="text-sm font-medium text-[#6C757D] dark:text-white">
+      <div className="rounded-xl border border-border dark:border-border-tertiary overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-border-tertiary dark:border-border-tertiary">
+          <span className="text-sm font-medium text-ink-400 dark:text-white">
             {users.length} member{users.length !== 1 ? "s" : ""}
           </span>
           <div className="flex items-center gap-3">
@@ -293,7 +293,7 @@ export function MiniUsersList({
               <button
                 type="button"
                 onClick={() => setModalOpen(true)}
-                className="text-xs text-[#A308F0] hover:underline font-medium"
+                className="text-xs text-primary hover:underline font-medium"
               >
                 View all members
               </button>
@@ -304,8 +304,8 @@ export function MiniUsersList({
                 onClick={onInvite}
                 className={clsx(
                   "flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium",
-                  "bg-[#F8F9FA] dark:bg-base-100  border border-[#DEE2E6] dark:border-border-tertiary",
-                  "text-[#A308F0] dark:text-white hover:bg-[#F8F9FA] dark:hover:bg-[#262A30] transition-colors"
+                  "bg-inputBg dark:bg-base-100  border border-border dark:border-border-tertiary",
+                  "text-primary dark:text-white hover:bg-inputBg dark:hover:bg-editor-200 transition-colors"
                 )}
               >
                 <PlusIcon className="w-4 h-4" /> Invite
@@ -355,18 +355,18 @@ export function MiniUsersList({
               leaveFrom="opacity-100 scale-100 translate-y-0"
               leaveTo="opacity-0 scale-95 translate-y-2"
             >
-              <DialogPanel className="w-full max-w-md bg-white dark:bg-base-400 dark:bg-[#0D0F12] rounded-2xl border border-[#DEE2E6] dark:border-border-tertiary shadow-xl flex flex-col max-h-[80vh] overflow-hidden font-body">
-                <div className="flex items-center justify-between px-5 py-4 border-b border-[#DEE2E6] dark:border-border-tertiary flex-shrink-0">
-                  <DialogTitle className="text-sm font-semibold text-[#1A1A1A] dark:text-white">
+              <DialogPanel className="w-full max-w-md bg-white dark:bg-base-400 dark:bg-[#0D0F12] rounded-2xl border border-border dark:border-border-tertiary shadow-xl flex flex-col max-h-[80vh] overflow-hidden font-body">
+                <div className="flex items-center justify-between px-5 py-4 border-b border-border dark:border-border-tertiary flex-shrink-0">
+                  <DialogTitle className="text-sm font-semibold text-ink-100 dark:text-white">
                     All members{" "}
-                    <span className="text-xs font-normal text-[#6C757D]">
+                    <span className="text-xs font-normal text-ink-400">
                       {users.length}
                     </span>
                   </DialogTitle>
                   <button
                     type="button"
                     onClick={() => setModalOpen(false)}
-                    className="text-[#6C757D] hover:text-[#1A1A1A] dark:hover:text-white transition-colors"
+                    className="text-ink-400 hover:text-ink-100 dark:hover:text-white transition-colors"
                   >
                     <svg
                       className="w-4 h-4"
@@ -401,21 +401,21 @@ export function MiniUsersList({
         className={clsx(
           "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",
           "flex items-center gap-4 px-3 py-3",
-          "bg-[#0F0F0F] dark:bg-base-600 border border-border-secondary  dark:border-border-tertiary",
+          "bg-base-400 dark:bg-base-600 border border-border-secondary  dark:border-border-tertiary",
           "rounded-[14px] transition-all duration-200 ease-out",
           selectionCount > 0
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 translate-y-4 pointer-events-none"
         )}
       >
-        <span className="text-[13px] text-[#F8F9FA] whitespace-nowrap">
+        <span className="text-[13px] text-inputBg whitespace-nowrap">
           <span className="text-white">{selectionCount}</span>{" "}
           {selectionCount === 1 ? "user" : "users"} selected
         </span>
         <button
           type="button"
           onClick={handleBulkRemove}
-          className="flex items-center gap-1.5 text-xs font-medium bg-[#F8F9FA] rounded-lg px-2 py-1.5 text-[#343A40] transition-colors"
+          className="flex items-center gap-1.5 text-xs font-medium bg-inputBg rounded-lg px-2 py-1.5 text-ink-500 transition-colors"
         >
           Remove member
         </button>

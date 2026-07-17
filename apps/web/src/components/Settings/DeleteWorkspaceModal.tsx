@@ -34,7 +34,7 @@ export function DeleteWorkspaceModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A]" />
+          <div className="fixed inset-0 bg-black/[10.2%]" />
         </Transition.Child>
 
         <div className="fixed inset-0 flex items-center justify-center p-4 font-body">
@@ -68,14 +68,14 @@ export function DeleteWorkspaceModal({
                 <button
                   type="button"
                   onClick={onDelete}
-                  className="rounded-xl bg-error px-6 py-2 text-sm font-medium text-[#F8F9FA] hover:bg-red-700 dark:bg-[#FF4444] "
+                  className="rounded-xl bg-error px-6 py-2 text-sm font-medium text-inputBg hover:bg-red-700 dark:bg-[#FF4444] "
                 >
                   {isDeleting ? "Deleting Workspace" : "Delete"}
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
-                  className={`rounded-xl border border-[#DEE2E6] bg-[#F8F9FA] dark:bg-base-400 px-6 py-2 text-sm font-medium text-ink-400 dark:border-border-tertiary ${surfaceHoverClassName}`}
+                  className={`rounded-xl border border-border bg-inputBg dark:bg-base-400 px-6 py-2 text-sm font-medium text-ink-400 dark:border-border-tertiary ${surfaceHoverClassName}`}
                 >
                   Cancel
                 </button>

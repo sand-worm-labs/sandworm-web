@@ -110,7 +110,7 @@ function BlockSuggestion({ id, icon, text, onAdd }: BlockSuggestionProps) {
     <div id={id} className="w-full text-sm px-1 relative z-30">
       <button
         type="button"
-        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 hover:border-[#A308F0] border border-border-secondary dark:border-border-tertiary font-body font-normal text-sm"
+        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-ink-400 dark:text-ink-400 bg-white dark:bg-base-100 hover:border-primary border border-border-secondary dark:border-border-tertiary font-body font-normal text-sm"
         onClick={onClick}
       >
         {icon}
@@ -138,7 +138,7 @@ function MultiBlockSuggestion({
 }: MultiBlockSuggestionProps) {
   return (
     <Menu as="div" id={id} className="w-full text-sm px-1 relative z-30">
-      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 hover:text-gray-700 relative border border-border-secondary dark:border-border-tertiary py-2.5 hover:border-[#A308F0]">
+      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-ink-400 dark:text-ink-400 bg-white dark:bg-base-100 hover:text-gray-700 relative border border-border-secondary dark:border-border-tertiary py-2.5 hover:border-primary">
         {icon}
         <span>{text}</span>
         <PiCaretDown size={14} />
@@ -191,7 +191,7 @@ function OverflowMenu({ items }: { items: OverflowItem[] }) {
     <Menu as="div" className="w-auto min-w-[120px] text-sm px-1 relative z-30">
       <Menu.Button
         aria-label="More block types"
-        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-[#6C757D] dark:text-ink-400 bg-white dark:bg-base-100 border border-border-secondary dark:border-border-tertiary hover:border-[#A308F0]"
+        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-ink-400 dark:text-ink-400 bg-white dark:bg-base-100 border border-border-secondary dark:border-border-tertiary hover:border-primary"
       >
         <PiDotsThree size={16} />
         <span>More</span>
@@ -514,12 +514,12 @@ function PlusButton(props: Props) {
           )}
           onClick={toggleOptions}
         >
-          <div className="w-full h-[1px] bg-[#E9ECEF] dark:bg-border-tertiary font-body" />
-          <div className="flex text-[#6C757D] dark:text-ink-400 font-medium justify-center items-center gap-x-1 text-[12px] whitespace-nowrap">
+          <div className="w-full h-[1px] bg-border-secondary dark:bg-border-tertiary font-body" />
+          <div className="flex text-ink-400 dark:text-ink-400 font-medium justify-center items-center gap-x-1 text-[12px] whitespace-nowrap">
             <PiPlus size={12} />
             <span>Add block</span>
           </div>
-          <div className="w-full h-[1px] bg-[#E9ECEF] dark:bg-border-tertiary" />
+          <div className="w-full h-[1px] bg-border-secondary dark:bg-border-tertiary" />
         </button>
 
         {props.isEditable && (showOptions || props.alwaysOpen) && (

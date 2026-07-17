@@ -40,8 +40,8 @@ function ActionBtn({ icon, label, onClick, danger }: ActionBtnProps) {
           transition-colors duration-100
           ${
             danger
-              ? "text-ink-300 hover:text-[#D85A30] hover:bg-[#FAECE7] dark:hover:bg-[#1A0D08]"
-              : "text-ink-300 hover:text-ink-500 dark:hover:text-ink-200 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]"
+              ? "text-ink-300 hover:text-warning hover:bg-error-tint dark:hover:bg-error-shade"
+              : "text-ink-300 hover:text-ink-500 dark:hover:text-ink-200 hover:bg-base-300 dark:hover:bg-base-700"
           }`}
       >
         {icon}
@@ -103,13 +103,13 @@ export default function TrashList({
             key={doc.id}
             className="group flex items-center gap-3 px-3 py-3.5
               rounded-xl transition-colors duration-100
-              hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26]"
+              hover:bg-primary-tint-50 dark:hover:bg-primary-900"
           >
             {/* ── Icon ── */}
             <div
               className="flex-shrink-0 flex items-center justify-center w-8 h-8
-              rounded-lg border border-[#DEE2E6] dark:border-[#3A3A38]
-              bg-white dark:bg-[#252523] text-ink-300 dark:text-ink-500"
+              rounded-lg border border-border dark:border-base-710
+              bg-white dark:bg-base-720 text-ink-300 dark:text-ink-500"
             >
               <PiNotebook size={15} />
             </div>
@@ -119,7 +119,7 @@ export default function TrashList({
               <Link
                 href={`/workspace/${workspaceId}/documents/${doc.id}`}
                 className="text-[15px] font-medium text-ink-500 dark:text-ink-200
-                  hover:text-[#A308F0] dark:hover:text-[#C97FF5]
+                  hover:text-primary dark:hover:text-primary-300
                   transition-colors duration-100 truncate block leading-tight"
               >
                 {doc.title || "Untitled"}

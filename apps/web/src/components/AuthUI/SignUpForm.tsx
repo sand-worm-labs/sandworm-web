@@ -121,7 +121,7 @@ export default function SignUpForm() {
             placeholder="First name"
             value={formData.firstName}
             onChange={handleChange}
-            className="mt-1 w-full rounded-3xl dark:bg-base-400 bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:placeholder:text-ink-400 dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
+            className="mt-1 w-full rounded-3xl dark:bg-base-400 bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-border dark:placeholder:text-ink-400 dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-primary outline-none text-[0.9rem]"
           />
           <input
             name="lastName"
@@ -129,12 +129,12 @@ export default function SignUpForm() {
             placeholder="Last name"
             value={formData.lastName}
             onChange={handleChange}
-            className="mt-1 w-full rounded-3xl dark:bg-base-400 bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:placeholder:text-ink-400 dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
+            className="mt-1 w-full rounded-3xl dark:bg-base-400 bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-border dark:placeholder:text-ink-400 dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-primary outline-none text-[0.9rem]"
           />
           <button
             type="button"
             onClick={handleNext}
-            className="w-full rounded-3xl bg-[#0F0F0F] dark:text-black dark:bg-white py-3.5 text-white font-medium text-sm"
+            className="w-full rounded-3xl bg-base-400 dark:text-black dark:bg-white py-3.5 text-white font-medium text-sm"
           >
             Continue
           </button>
@@ -151,7 +151,7 @@ export default function SignUpForm() {
             autoComplete="email"
             value={formData.email}
             onChange={handleChange}
-            className="mt-1 w-full rounded-3xl  dark:bg-base-400 bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:placeholder:text-ink-400 dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-[#A308F0] outline-none text-[0.9rem]"
+            className="mt-1 w-full rounded-3xl  dark:bg-base-400 bg-white p-2.5 px-5 text-ink-100 dark:text-white border border-border dark:placeholder:text-ink-400 dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-primary outline-none text-[0.9rem]"
           />
           <div className="relative">
             <input
@@ -160,7 +160,7 @@ export default function SignUpForm() {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              className="mt-1 w-full font-body rounded-3xl dark:bg-base-400 bg-[#FFFFFF] p-2.5 px-5 pr-12 text-ink-100 dark:text-white border border-[#DEE2E6] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400 dark:border-border-tertiary"
+              className="mt-1 w-full font-body rounded-3xl dark:bg-base-400 bg-base-100 p-2.5 px-5 pr-12 text-ink-100 dark:text-white border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400 dark:border-border-tertiary"
             />
             <button
               type="button"
@@ -178,7 +178,7 @@ export default function SignUpForm() {
           </div>
           <button
             type="submit"
-            className="w-full rounded-3xl bg-[#0F0F0F] dark:bg-white dark:text-black px-4 py-3.5 text-white font-medium text-sm font-body"
+            className="w-full rounded-3xl bg-base-400 dark:bg-white dark:text-black px-4 py-3.5 text-white font-medium text-sm font-body"
           >
             Continue
           </button>

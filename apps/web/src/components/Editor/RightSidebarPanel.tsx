@@ -71,8 +71,8 @@ export function RightSidebarPanel({ visible, children }: Props) {
               className={cn(
                 "w-[1px] h-full transition-colors duration-150",
                 isResizing
-                  ? "bg-[#A308F0]/60"
-                  : "bg-border-secondary dark:bg-border-tertiary group-hover:bg-[#A308F0]/30"
+                  ? "bg-primary/60"
+                  : "bg-border-secondary dark:bg-border-tertiary group-hover:bg-primary/30"
               )}
             />
           </div>

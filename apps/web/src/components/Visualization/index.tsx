@@ -800,28 +800,28 @@ function VisualizationBlockV2(props: Props) {
           "rounded-2xl border-[1.5px]",
           props.isBlockHiddenInPublished && "border-dashed",
           {
-            "border-[#A308F0] block-focus-ring":
+            "border-primary block-focus-ring":
               props.isCursorWithin && props.isCursorInserting,
-            "border-[#E6E0F1] shadow-none":
+            "border-hover-border shadow-none":
               props.isCursorWithin && !props.isCursorInserting,
-            "border-[#E6E0F1] block-shadow-soft dark:border-border-tertiary":
+            "border-hover-border block-shadow-soft dark:border-border-tertiary":
               !props.isCursorWithin,
           }
         )}
       >
         <div className="rounded-2xl">
           <div
-            className="border-b border-[#E6E0F1] dark:border-border-tertiary rounded-t-2xl"
+            className="border-b border-hover-border dark:border-border-tertiary rounded-t-2xl"
             ref={d => {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body h-10 divide-x divide-[#E9ECEF] dark:divide-border-tertiary">
+            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body h-10 divide-x divide-border-secondary dark:divide-border-tertiary">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5 px-4">
                 <input
                   type="text"
                   className={clsx(
-                    "text-sm font-body font-normal pl-1 ring-gray-200 focus:ring-border-focus block w-full rounded-lg border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-[#868E96] py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-base-100"
+                    "text-sm font-body font-normal pl-1 ring-gray-200 focus:ring-border-focus block w-full rounded-lg border-0 text-ink-100 hover:ring-1 focus:ring-1 ring-inset focus:ring-inset placeholder:text-ink-300 py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-base-100"
                   )}
                   placeholder="Click to add a title..."
                   value={attrs.title}
@@ -833,7 +833,7 @@ function VisualizationBlockV2(props: Props) {
                 <button
                   type="button"
                   className={clsx(
-                    "font-body text-xs flex justify-center items-center gap-x-1.5 text-ink-400 px-2.5 whitespace-nowrap disabled:bg-white hover:bg-gray-100 disabled:cursor-not-allowed h-full min-w-[124px] dark:hover:bg-[#181C21]",
+                    "font-body text-xs flex justify-center items-center gap-x-1.5 text-ink-400 px-2.5 whitespace-nowrap disabled:bg-white hover:bg-gray-100 disabled:cursor-not-allowed h-full min-w-[124px] dark:hover:bg-editor-100",
                     props.isPublicMode ? "hidden" : "inline-block"
                   )}
                   onClick={onAddFilter}
@@ -959,14 +959,14 @@ function VisualizationBlockV2(props: Props) {
                       !isRunButtonDisabled &&
                       (status === "enqueued" ||
                         (status === "running" && envStatus !== "Running")),
-                    "bg-[#FEFEFF]": !isRunButtonDisabled && status === "idle",
-                    "bg-[#F8F9FA]":
+                    "bg-base-200": !isRunButtonDisabled && status === "idle",
+                    "bg-inputBg":
                       !isRunButtonDisabled &&
                       status !== "running" &&
                       status !== "enqueued" &&
                       status !== "idle",
                   },
-                  "rounded-[5px] border-[#E6E0F1] border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-gray-50"
+                  "rounded-[5px] border-hover-border border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-gray-50"
                 )}
                 onClick={onRunAbort}
                 disabled={isRunButtonDisabled}
@@ -974,13 +974,13 @@ function VisualizationBlockV2(props: Props) {
                 {status !== "idle" ? (
                   <div>
                     {status === "enqueued" ? (
-                      <PiClock className="w-[13px] h-[13px] text-[#1C3B5A]" />
+                      <PiClock className="w-[13px] h-[13px] text-ink-navy" />
                     ) : (
-                      <PiStop className="w-[13px] h-[13px] text-[#1C3B5A]" />
+                      <PiStop className="w-[13px] h-[13px] text-ink-navy" />
                     )}
                   </div>
                 ) : (
-                  <PiPlayFill className="w-[13px] h-[13px] text-[#1C3B5A]" />
+                  <PiPlayFill className="w-[13px] h-[13px] text-ink-navy" />
                 )}
               </button>
             )}

@@ -38,7 +38,7 @@ function CategoryIcon() {
         width="6"
         height="6"
         rx="1.5"
-        className="fill-[#C2D1D8] stroke-[#1C3B5A]"
+        className="fill-icon-muted stroke-ink-navy"
         strokeWidth="1.2"
       />
       <rect
@@ -47,7 +47,7 @@ function CategoryIcon() {
         width="6"
         height="6"
         rx="1.5"
-        className="fill-[#C2D1D8]/50 stroke-[#1C3B5A]/60"
+        className="fill-icon-muted/50 stroke-ink-navy/60"
         strokeWidth="1.2"
       />
       <rect
@@ -56,7 +56,7 @@ function CategoryIcon() {
         width="6"
         height="6"
         rx="1.5"
-        className="fill-[#C2D1D8]/50 stroke-[#1C3B5A]/60"
+        className="fill-icon-muted/50 stroke-ink-navy/60"
         strokeWidth="1.2"
       />
       <rect
@@ -65,7 +65,7 @@ function CategoryIcon() {
         width="6"
         height="6"
         rx="1.5"
-        className="fill-[#C2D1D8]/50 stroke-[#1C3B5A]/60"
+        className="fill-icon-muted/50 stroke-ink-navy/60"
         strokeWidth="1.2"
       />
     </svg>
@@ -180,19 +180,19 @@ function CategoryRow({
       className={clsx(
         "w-full flex items-center gap-3 px-4 py-3 text-left",
         "transition-colors duration-75 rounded-lg",
-        isActive ? "bg-[#EBF7F7]" : "hover:bg-[#EBF7F7]"
+        isActive ? "bg-base-600" : "hover:bg-base-600"
       )}
     >
       <span
         className={clsx(
           "flex items-center justify-center w-8 h-8 rounded-lg shrink-0 ",
-          isActive ? "bg-[#DFEDED]" : "hover:bg-[#DFEDED] bg-[#EBF7F7]"
+          isActive ? "bg-[#DFEDED]" : "hover:bg-[#DFEDED] bg-base-600"
         )}
       >
         <BoltIcon
           className={clsx(
             "transition-colors",
-            isActive ? "text-[#005DE7]" : "text-[#1C3B5A]"
+            isActive ? "text-link" : "text-ink-navy"
           )}
         />
       </span>
@@ -242,7 +242,7 @@ function ToolRow({
       className={clsx(
         "w-full flex items-center gap-3 px-4 py-3 text-left",
         "transition-colors duration-75 rounded-lg",
-        isActive ? "hover:bg-[#EBF7F7]" : "hover:bg-[#EBF7F7]"
+        isActive ? "hover:bg-base-600" : "hover:bg-base-600"
       )}
     >
       <span
@@ -256,7 +256,7 @@ function ToolRow({
         <BoltIcon
           className={clsx(
             "transition-colors",
-            isActive ? "text-[#005DE7]" : "text-ink-400"
+            isActive ? "text-link" : "text-ink-400"
           )}
         />
       </span>
@@ -305,8 +305,8 @@ function KeyHint({
             "min-w-[20px] h-5 px-1 rounded",
             " text-[14px] leading-none",
             muted
-              ? "bg-white/[0.04] border border-border-secondary text-[#1C3B5A]"
-              : "bg-white/[0.06] border border-border-secondary text-[#1C3B5A]"
+              ? "bg-white/[0.04] border border-border-secondary text-ink-navy"
+              : "bg-white/[0.06] border border-border-secondary text-ink-navy"
           )}
         >
           {k}
@@ -427,7 +427,7 @@ export function PowerToolboxModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A]" />
+          <div className="fixed inset-0 bg-black/[10.2%]" />
         </Transition.Child>
 
         <div className="fixed inset-0 flex items-start justify-center pt-[15vh] px-4 font-body">
@@ -484,7 +484,7 @@ export function PowerToolboxModal({
                   className={clsx(
                     "flex items-center gap-2.5 px-3 py-1.5 rounded-lg",
                     "bg-white/[0.04] border border-border-secondary",
-                    "focus-within:border-[#A308F0]/40 ",
+                    "focus-within:border-primary/40 ",
                     "transition-colors"
                   )}
                 >
@@ -501,7 +501,7 @@ export function PowerToolboxModal({
                     }
                     className={clsx(
                       "flex-1 bg-transparent text-sm text-ink-100 placeholder:text-ink-400",
-                      "outline-none caret-[#A308F0]"
+                      "outline-none caret-primary"
                     )}
                     autoComplete="off"
                     autoCorrect="off"
@@ -581,7 +581,7 @@ export function PowerToolboxModal({
                         className={clsx(
                           "inline-flex items-center gap-1.5 text-xs font-medium",
                           "px-2.5 py-0.5 rounded-md",
-                          "bg-[#EBF7F7] border border-border-secondary text-ink-100"
+                          "bg-base-600 border border-border-secondary text-ink-100"
                         )}
                       >
                         <CategoryIcon />

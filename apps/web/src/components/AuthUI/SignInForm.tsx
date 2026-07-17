@@ -63,7 +63,7 @@ export const SignInForm = () => {
         <input
           type="email"
           name="email"
-          className="mt-1 w-full font-body rounded-[20px] dark:bg-base-400 bg-[#FFFFFF] p-2.5 px-5 text-ink-100 dark:text-white border border-[#DEE2E6] dark:border-border-tertiary focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-medium lg:text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400 text-base"
+          className="mt-1 w-full font-body rounded-[20px] dark:bg-base-400 bg-base-100 p-2.5 px-5 text-ink-100 dark:text-white border border-border dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-primary outline-none font-medium lg:text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400 text-base"
           placeholder="Email"
           value={formData.email}
           onChange={handleChange}
@@ -74,7 +74,7 @@ export const SignInForm = () => {
         <input
           type={showPassword ? "text" : "password"}
           name="password"
-          className="mt-1 w-full font-body rounded-[20px] dark:bg-base-400 bg-[#FFFFFF] p-2.5 px-5 pr-12 text-ink-100 dark:text-white border border-[#DEE2E6] focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-medium lg:text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400 dark:border-border-tertiary text-base"
+          className="mt-1 w-full font-body rounded-[20px] dark:bg-base-400 bg-base-100 p-2.5 px-5 pr-12 text-ink-100 dark:text-white border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none font-medium lg:text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400 dark:border-border-tertiary text-base"
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
@@ -101,7 +101,7 @@ export const SignInForm = () => {
       <button
         type="submit"
         disabled={state.loading}
-        className="w-full rounded-3xl bg-[#0F0F0F] hover:opacity-85 dark:bg-white dark:text-black px-4 py-3.5 text-white font-medium disabled:bg-[#868E96] text-sm font-body flex items-center justify-center gap-2"
+        className="w-full rounded-3xl bg-base-400 hover:opacity-85 dark:bg-white dark:text-black px-4 py-3.5 text-white font-medium disabled:bg-disabled text-sm font-body flex items-center justify-center gap-2"
       >
         {state.loading ? (
           <>

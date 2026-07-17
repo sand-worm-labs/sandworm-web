@@ -47,7 +47,7 @@ export function TextField({
           "focus:bg-white/[0.05]",
           inlineError
             ? "border-error focus:border-error"
-            : "border-border-tertiary focus:border-[#A308F0]/50"
+            : "border-border-tertiary focus:border-primary/50"
         )}
       />
       {inlineError && <FieldError message={inlineError} />}
@@ -113,7 +113,7 @@ export function NumberField({
             "focus:bg-white/[0.05]",
             inlineError
               ? "border-error focus:border-red-500/60"
-              : "border-border-tertiary focus:border-[#A308F0]/50"
+              : "border-border-tertiary focus:border-primary/50"
           )}
         />
 

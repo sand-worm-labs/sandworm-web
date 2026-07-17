@@ -234,8 +234,8 @@ export default function UsersPage() {
               disabled={!isAdmin}
               className={clsx(
                 isAdmin
-                  ? "bg-[#A308F0] hover:bg-primary-300"
-                  : "bg-[#A308F0DD] cursor-not-allowed",
+                  ? "bg-primary hover:bg-primary-300"
+                  : "bg-primary/[86.7%] cursor-not-allowed",
                 "px-6 py-2 text-white rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
               )}
             >

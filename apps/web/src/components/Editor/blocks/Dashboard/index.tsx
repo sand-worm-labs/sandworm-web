@@ -568,7 +568,7 @@ export default function Dashboard(props: Props) {
           <button
             type="button"
             onClick={onToggleComments}
-            className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-[#F1F2F4] dark:bg-base-500 dark:hover:bg-base-200 dark:text-ink-100  h-full bg-white mb-1.5"
+            className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-hover-bg dark:bg-base-500 dark:hover:bg-base-200 dark:text-ink-100  h-full bg-white mb-1.5"
             title="Comments"
           >
             <ChatIcon size={22} />
@@ -578,7 +578,7 @@ export default function Dashboard(props: Props) {
             <button
               type="button"
               onClick={onToggleSchedules}
-              className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-[#F1F2F4] dark:bg-base-500  h-full bg-white mb-1.5 dark:text-ink-100"
+              className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-hover-bg dark:bg-base-500  h-full bg-white mb-1.5 dark:text-ink-100"
               title="Schedules"
             >
               <ClockCountdown size={22} />
@@ -659,7 +659,7 @@ export default function Dashboard(props: Props) {
             <button
               type="button"
               id="dashboard-publish-button"
-              className="flex items-center rounded-lg px-5 py-1 text-sm bg-[#A308F0] text-white hover:bg-primary-300 border border-transparent disabled:border-border-secondary disabled:bg-gray-100 disabled:cursor-not-allowed gap-x-1.5 group relative disabled:text-ink-400 "
+              className="flex items-center rounded-lg px-5 py-1 text-sm bg-primary text-white hover:bg-primary-300 border border-transparent disabled:border-border-secondary disabled:bg-gray-100 disabled:cursor-not-allowed gap-x-1.5 group relative disabled:text-ink-400 "
               onClick={onPublish}
               disabled={props.publishing}
             >

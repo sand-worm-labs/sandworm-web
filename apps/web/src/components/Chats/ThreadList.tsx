@@ -61,15 +61,15 @@ function RenameInput({ initialValue, onConfirm, onCancel }: RenameInputProps) {
         onChange={e => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
         className="flex-1 min-w-0 text-[12.5px] font-medium
-          bg-white dark:bg-[#2A2A28]
-          border border-[#A308F0] rounded-md px-2 py-0.5
+          bg-white dark:bg-base-700
+          border border-primary rounded-md px-2 py-0.5
           outline-none text-ink-500 dark:text-ink-200"
       />
       <button
         type="button"
         onClick={() => onConfirm(value.trim() || initialValue)}
         aria-label="Confirm"
-        className="flex-shrink-0 text-[#A308F0] hover:opacity-80 transition-opacity"
+        className="flex-shrink-0 text-primary hover:opacity-80 transition-opacity"
       >
         <PiCheck size={13} />
       </button>
@@ -104,8 +104,8 @@ function ActionBtn({ icon, label, onClick, danger }: ActionBtnProps) {
       className={`flex items-center justify-center w-6 h-6 rounded-md transition-all duration-100
         ${
           danger
-            ? "text-ink-300 hover:text-[#D85A30] hover:bg-[#FAECE7] dark:hover:bg-[#1A0D08]"
-            : "text-ink-300 hover:text-ink-500 dark:hover:text-ink-200 hover:bg-[#E8E8E6] dark:hover:bg-[#2A2A28]"
+            ? "text-ink-300 hover:text-warning hover:bg-error-tint dark:hover:bg-error-shade"
+            : "text-ink-300 hover:text-ink-500 dark:hover:text-ink-200 hover:bg-base-350 dark:hover:bg-base-700"
         }`}
     >
       {icon}
@@ -148,7 +148,7 @@ function ThreadRow({
       tabIndex={0}
       className={`group relative flex items-center gap-2.5 px-3 py-2.5
         rounded-xl mx-1.5 transition-colors duration-100 cursor-pointer
-        ${hovered ? "bg-[#F9F5FF] dark:bg-[#1A0D26]" : ""}`}
+        ${hovered ? "bg-primary-tint-50 dark:bg-primary-900" : ""}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={() => !isRenamingThis && onSelect(item.id)}
@@ -174,7 +174,7 @@ function ThreadRow({
             {item.pin && !hovered && (
               <PiPushPin
                 size={10}
-                className="flex-shrink-0 text-[#A308F0] opacity-60"
+                className="flex-shrink-0 text-primary opacity-60"
               />
             )}
             {!isRenamingThis && (
@@ -238,7 +238,7 @@ function SectionLabel({ label }: { label: string }) {
       <span className="text-[10px] font-semibold uppercase tracking-wider text-ink-300 dark:text-ink-600">
         {label}
       </span>
-      <div className="flex-1 h-px bg-[#F1F3F4] dark:bg-[#2A2A28]" />
+      <div className="flex-1 h-px bg-base-300 dark:bg-base-700" />
     </div>
   );
 }
@@ -403,7 +403,7 @@ export function ThreadList({
           onClick={onBack}
           aria-label="Back to chat"
           className="flex items-center justify-center w-7 h-7 rounded-lg
-            text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+            text-ink-400 hover:text-ink-500 hover:bg-base-300 dark:hover:bg-base-700
             transition-colors"
         >
           <PiArrowLeft size={15} />
@@ -418,12 +418,12 @@ export function ThreadList({
         )}
       </header>
 
-      <div className="px-3 py-2.5 border-b border-[#F1F3F4] dark:border-[#2A2A28]">
+      <div className="px-3 py-2.5 border-b border-base-300 dark:border-base-700">
         <div
           className="flex items-center gap-2 px-2.5 py-1.5
-            bg-[#F1F3F4] dark:bg-[#2A2A28]
+            bg-base-300 dark:bg-base-700
             border border-transparent
-            focus-within:border-[#D9A8F8] dark:focus-within:border-[#7A06B8]
+            focus-within:border-primary-200 dark:focus-within:border-primary-700
             rounded-xl transition-colors duration-150"
         >
           <PiMagnifyingGlass

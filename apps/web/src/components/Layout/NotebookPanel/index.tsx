@@ -40,9 +40,9 @@ const PanelItem = ({
           className={cn(
             "p-2 rounded-lg transition-colors flex items-center justify-center",
             "text-ink-400 hover:text-ink-100 dark:text-ink-300 dark:hover:text-white",
-            "hover:bg-[#F1F3F4] dark:hover:bg-[#21262d]",
+            "hover:bg-base-300 dark:hover:bg-editor-500",
             isActive &&
-              "bg-[#F1F3F4] dark:bg-base-500 text-ink-100 dark:text-white"
+              "bg-base-300 dark:bg-base-500 text-ink-100 dark:text-white"
           )}
           aria-label={action.label}
         >
@@ -107,7 +107,7 @@ export const NotebookPanel = ({
       className={cn(
         "flex flex-col items-center py-4 pb-0 px-0 h-[100%]",
         "bg-white dark:bg-base-500",
-        "border-l border-[#E3E5E8] dark:border-border-tertiary",
+        "border-l border-border-quiet dark:border-border-tertiary",
         "w-[56px] z-[50] print:hidden"
       )}
     >

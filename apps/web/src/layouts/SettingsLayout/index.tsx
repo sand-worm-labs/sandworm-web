@@ -44,11 +44,11 @@ export default function SettingsLayout({
   ];
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-[#FEFFFF]">
-      <header className="flex shrink-0 items-center gap-2 border-b border-[#F1F3F4] bg-[#FBFBFB] px-10 py-3 text-[1.1rem] dark:border-border-tertiary dark:bg-base-500">
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-base-200">
+      <header className="flex shrink-0 items-center gap-2 border-b border-base-300 bg-base-500 px-10 py-3 text-[1.1rem] dark:border-border-tertiary dark:bg-base-500">
         <Link
           href="/workspace"
-          className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md text-ink-400 hover:bg-[#E8E8E6] hover:text-ink-500 dark:text-ink-400 dark:hover:bg-[#2A2A28] dark:hover:text-ink-200 transition-all duration-100"
+          className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md text-ink-400 hover:bg-base-350 hover:text-ink-500 dark:text-ink-400 dark:hover:bg-base-700 dark:hover:text-ink-200 transition-all duration-100"
         >
           <ChevronLeft size={16} />
         </Link>
@@ -58,7 +58,7 @@ export default function SettingsLayout({
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
         <aside
-          className="flex shrink-0 flex-col justify-between border-r border-border-secondary bg-[#FEFFFF] p-6 px-3 dark:border-borderLight dark:border-border-tertiary dark:bg-base-500 md:h-full md:overflow-hidden"
+          className="flex shrink-0 flex-col justify-between border-r border-border-secondary bg-base-200 p-6 px-3 dark:border-borderLight dark:border-border-tertiary dark:bg-base-500 md:h-full md:overflow-hidden"
           style={{ minWidth: 250 }}
         >
           <ul className="mt-4 flex w-full flex-col">
@@ -68,7 +68,7 @@ export default function SettingsLayout({
                   href={tab.href}
                   className={`mb-1.5 flex items-center space-x-2 rounded-xl border-l-4 px-4 py-1.5 text-sm font-medium ${
                     pathname === tab.href
-                      ? "bg-[#EBF7F7] text-primary dark:bg-[#181C21]"
+                      ? "bg-base-600 text-primary dark:bg-editor-100"
                       : "text-text-gray hover:bg-dark-translucent"
                   }`}
                 >
@@ -85,7 +85,7 @@ export default function SettingsLayout({
             <Button
               variant="destructive"
               onClick={signout}
-              className="w-full py-2 font-body text-[0.8rem] bg-[#FF0000] dark:bg-[#FF4444]"
+              className="w-full py-2 font-body text-[0.8rem] bg-error dark:bg-[#FF4444]"
             >
               <span>Sign Out</span>
             </Button>
@@ -94,7 +94,7 @@ export default function SettingsLayout({
 
         <hr className="md:hidden" />
 
-        <main className="min-h-0 flex-1 overflow-y-auto bg-[#FEFFFF] p-6 px-2 dark:bg-base-100 md:px-6  ">
+        <main className="min-h-0 flex-1 overflow-y-auto bg-base-200 p-6 px-2 dark:bg-base-100 md:px-6  ">
           <div className="ml-4 border-l-8 border-t-8">{children}</div>
         </main>
       </div>

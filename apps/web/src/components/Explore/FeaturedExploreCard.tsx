@@ -125,8 +125,8 @@ export function FeaturedExploreCard({
         className={cn(
           "flex flex-col rounded-3xl py-5 border px-6 cursor-pointer transition-shadow font-body group/card",
           isPurple
-            ? "bg-[#A308F0] border-[#01E3D433] text-white"
-            : "bg-[#F2F3FB] dark:bg-base-100 border-[#01E3D433] dark:border-border-tertiary"
+            ? "bg-primary border-teal/[20%] text-white"
+            : "bg-[#F2F3FB] dark:bg-base-100 border-teal/[20%] dark:border-border-tertiary"
         )}
         role="button"
         tabIndex={0}
@@ -149,7 +149,7 @@ export function FeaturedExploreCard({
             <span
               className={cn(
                 "text-xs",
-                isPurple ? "text-[#F8F9FA]" : "text-ink-400"
+                isPurple ? "text-inputBg" : "text-ink-400"
               )}
             >
               Created {formattedDate}
@@ -168,7 +168,7 @@ export function FeaturedExploreCard({
             )}
           >
             <BookmarkSimple
-              className={cn(isPurple ? "text-ink-400" : "text-[#1C3B5A]")}
+              className={cn(isPurple ? "text-ink-400" : "text-ink-navy")}
             />
           </button>
         </div>
@@ -197,7 +197,7 @@ export function FeaturedExploreCard({
             onClick={e => e.stopPropagation()}
             className={cn(
               "text-sm font-medium hover:underline",
-              isPurple ? "text-[#F8F9FA]" : "text-ink-400"
+              isPurple ? "text-inputBg" : "text-ink-400"
             )}
           >
             @{creator?.username}

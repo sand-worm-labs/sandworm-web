@@ -66,7 +66,7 @@ export default async function ExplorePage() {
     await fetchInitialData();
 
   return (
-    <div className="dark:text-white bg-[#FEFEFF] min-h-[88vh] dark:bg-base-200">
+    <div className="dark:text-white bg-base-200 min-h-[88vh] dark:bg-base-200">
       <div className="pt-5 px-8">
         <Suspense fallback={null}>
           <ExploreClient

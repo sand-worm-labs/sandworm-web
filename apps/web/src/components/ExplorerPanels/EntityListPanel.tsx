@@ -34,7 +34,7 @@ export const EntityListPanel: React.FC<IEntityListPanelProps> = ({
                 type="button"
                 key={entity.name}
                 onClick={() => onSelect(entity.name, key)}
-                className="cursor-pointer py-2 px-2 rounded-md hover:bg-primary/10 text-sm text-left flex items-center space-x-2 lowercase font-medium text-[#0F0F0F] dark:text-white w-full"
+                className="cursor-pointer py-2 px-2 rounded-md hover:bg-primary/10 text-sm text-left flex items-center space-x-2 lowercase font-medium text-base-400 dark:text-white w-full"
               >
                 <Sheet size={15} />
                 <span>{entity.name}</span>

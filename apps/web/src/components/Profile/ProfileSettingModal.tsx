@@ -49,10 +49,10 @@ interface ProfileSettingsModalProps {
 // ⬢ Constants
 // =====================================
 const inputClassName =
-  "w-full px-3 md:py-2.5 py-1.5 rounded-lg bg-[#F1F3F4] dark:bg-base-400 border border-[#E6E0F1] dark:border-border-tertiary text-ink-100 dark:text-white placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0]/50 focus:border-[#A308F0] transition md:text-sm text-[13px] disabled:bg-[#DEE2E6] disabled:border-[#DEE2E6] disabled:text-[#868E96] ";
+  "w-full px-3 md:py-2.5 py-1.5 rounded-lg bg-base-300 dark:bg-base-400 border border-hover-border dark:border-border-tertiary text-ink-100 dark:text-white placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition md:text-sm text-[13px] disabled:bg-input disabled:border-border disabled:text-ink-300 ";
 
 const labelClassName =
-  "block text-xs font-bold text-[#6C757D] dark:text-gray-300 mb-2 uppercase font-bold";
+  "block text-xs font-bold text-ink-400 dark:text-gray-300 mb-2 uppercase font-bold";
 
 // =====================================
 // ⬢ Profile Settings Modal
@@ -97,7 +97,7 @@ export function ProfileSettingsModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A]" />
+          <div className="fixed inset-0 bg-black/[10.2%]" />
         </TransitionChild>
 
         <div className="fixed inset-0 overflow-y-auto font-body">
@@ -126,7 +126,7 @@ export function ProfileSettingsModal({
                         >
                           Edit Profile
                         </DialogTitle>
-                        <p className="text-[#6C757D] dark:text-ink-400 text-sm mt-1.5">
+                        <p className="text-ink-400 dark:text-ink-400 text-sm mt-1.5">
                           Change details relating to how other users see your
                           account
                         </p>
@@ -207,7 +207,7 @@ export function ProfileSettingsModal({
                                   type="email"
                                   value={user?.email || ""}
                                   disabled
-                                  className={`${inputClassName} bg-[#DEE2E6] dark:bg-[#0D0F11] cursor-not-allowed `}
+                                  className={`${inputClassName} bg-input dark:bg-[#0D0F11] cursor-not-allowed `}
                                 />
                                 <p className="text-xs text-ink-400  dark:text-ink-400 mt-1">
                                   Email cannot be changed
@@ -352,14 +352,14 @@ export function ProfileSettingsModal({
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="px-7 py-2 text-sm font-medium text-white bg-[#0F0F0F] dark:bg-white dark:text-black rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-7 py-2 text-sm font-medium text-white bg-base-400 dark:bg-white dark:text-black rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
                         {isSubmitting ? "Saving..." : "Save"}
                       </button>
                       <button
                         type="button"
                         onClick={handleClose}
-                        className={`px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-[#F8F9FA] dark:bg-transparent border border-[#DEE2E6] rounded-xl dark:border-border-tertiary ${surfaceHoverClassName}`}
+                        className={`px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-inputBg dark:bg-transparent border border-border rounded-xl dark:border-border-tertiary ${surfaceHoverClassName}`}
                       >
                         Cancel
                       </button>

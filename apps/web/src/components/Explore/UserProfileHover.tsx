@@ -57,7 +57,7 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
             <Button
               size="sm"
               variant="secondary"
-              className="bg-[#E2ECFF] dark:bg-[#A308F020] dark:text-primary text-accent hover:bg-[#E2ECFF]/90 text-sm rounded-md font-medium h-6"
+              className="bg-link-tint dark:bg-primary/[12.5%] dark:text-primary text-accent hover:bg-link-tint/90 text-sm rounded-md font-medium h-6"
             >
               Share
             </Button>
@@ -87,7 +87,7 @@ export function UserProfileHover({ children }: UserProfileHoverProps) {
 
           <Button
             variant="outline"
-            className="w-full bg-[#F8F9FA] dark:bg-[#0C1015] border border-[#DEE2E6] dark:border-border-tertiary py-5 rounded-lg"
+            className="w-full bg-inputBg dark:bg-editor-400 border border-border dark:border-border-tertiary py-5 rounded-lg"
           >
             Visit profile
           </Button>

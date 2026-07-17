@@ -115,7 +115,7 @@ export function AddressListField({
           "cursor-text",
           error
             ? "border-error/40"
-            : "border-border-tertiary focus-within:border-[#A308F0]/40"
+            : "border-border-tertiary focus-within:border-primary/40"
         )}
         role="presentation"
         onClick={() => inputRef.current?.focus()}
@@ -198,8 +198,8 @@ function EntryPill({
     <span
       className={clsx(
         "inline-flex items-center gap-1 px-2 py-1 rounded-md",
-        "bg-[#A308F0]/10 border border-[#A308F0]/20",
-        "text-[11px]  text-[#A308F0]/80",
+        "bg-primary/10 border border-primary/20",
+        "text-[11px]  text-primary/80",
         "max-w-[160px]"
       )}
       title={value}
@@ -211,7 +211,7 @@ function EntryPill({
           e.stopPropagation();
           onRemove();
         }}
-        className="shrink-0 text-[#A308F0]/40 hover:text-[#A308F0]/80 transition-colors leading-none"
+        className="shrink-0 text-primary/40 hover:text-primary/80 transition-colors leading-none"
         aria-label={`Remove ${value}`}
       >
         ×

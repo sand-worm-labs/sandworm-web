@@ -74,8 +74,8 @@ export function PythonErrorUI(props: PythonErrorUIProps) {
                 className={clsx(
                   !props.canFixWithAI
                     ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                    : "cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
-                  "mt-2 flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
+                    : "cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary",
+                  "mt-2 flex items-center border rounded-md border-hover-border px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
                 )}
                 disabled={props.isFixWithAILoading || !props.canFixWithAI}
               >

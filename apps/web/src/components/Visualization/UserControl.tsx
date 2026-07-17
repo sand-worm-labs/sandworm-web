@@ -48,7 +48,7 @@ export function UserControl({
             placeholder="Search Name or email..."
             value={searchValue}
             onChange={e => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-16 py-1 h-8  rounded-lg dark:bg-base-400  dark:text-white placeholder:dark:text-ink-300  placeholder-[#868E96] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#EBF7F7] placeholder:text-[#868E96]"
+            className="w-full pl-10 pr-16 py-1 h-8  rounded-lg dark:bg-base-400  dark:text-white placeholder:dark:text-ink-300  placeholder-[#868E96] focus:outline-none focus:ring focus:ring-primary transition text-xs md:text-sm bg-base-600 placeholder:text-ink-300"
           />
         </div>
 
@@ -77,7 +77,7 @@ export function UserControl({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Popover.Panel className="absolute right-0  mt-2 w-[12rem] origin-top-right rounded-xl border border-[#CED4DA]  bg-white z-40  shadow-lg focus:outline-none dark:border-border-tertiary dark:bg-base-400">
+                <Popover.Panel className="absolute right-0  mt-2 w-[12rem] origin-top-right rounded-xl border border-border-tertiary  bg-white z-40  shadow-lg focus:outline-none dark:border-border-tertiary dark:bg-base-400">
                   <div className="p-4 px-2.5">
                     {/* ✦ Header ✦ */}
                     <div className="mb-3 flex items-center justify-between">
@@ -110,7 +110,7 @@ export function UserControl({
                                   e.target.checked
                                 )
                               }
-                              className="h-4 w-4 cursor-pointer appearance-none rounded border border-[#D0D5DD] bg-white transition-colors  checked:border-primary checked:bg-primary focus:outline-none focus:ring-2 focus:ring-[#A308F0] dark:focus:ring-primary focus:ring-offset-1 focus:ring-none"
+                              className="h-4 w-4 cursor-pointer appearance-none rounded border border-border-faint bg-white transition-colors  checked:border-primary checked:bg-primary focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary focus:ring-offset-1 focus:ring-none"
                             />
                             {filter.enabled && (
                               <svg
@@ -128,10 +128,10 @@ export function UserControl({
                               </svg>
                             )}
                           </div>
-                          <span className="flex-1 ml-2 text-sm font-medium text-[#6C757D] dark:text-ink-400">
+                          <span className="flex-1 ml-2 text-sm font-medium text-ink-400 dark:text-ink-400">
                             {filter.label}
                           </span>
-                          <span className="text-sm text-[#6C757D]  dark:text-ink-400 font-medium">
+                          <span className="text-sm text-ink-400  dark:text-ink-400 font-medium">
                             ({filter.count})
                           </span>
                         </label>

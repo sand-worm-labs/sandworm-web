@@ -23,21 +23,21 @@ function StatusIcon({ status }: { status: AccessStatus }) {
           rx="1.5"
           stroke="currentColor"
           strokeWidth="1.2"
-          className="text-[#F8F9FA]"
+          className="text-inputBg"
         />
         <path
           d="M4.5 6V4.5a2.5 2.5 0 015 0V6"
           stroke="currentColor"
           strokeWidth="1.2"
           strokeLinecap="round"
-          className="text-[#F8F9FA]"
+          className="text-inputBg"
         />
         <circle
           cx="7"
           cy="9.5"
           r="1"
           fill="currentColor"
-          className="text-[#F8F9FA]"
+          className="text-inputBg"
         />
       </svg>
     );
@@ -51,7 +51,7 @@ function StatusIcon({ status }: { status: AccessStatus }) {
         viewBox="0 0 14 14"
         fill="none"
         aria-hidden="true"
-        className="shrink-0 text-[#F8F9FA]"
+        className="shrink-0 text-inputBg"
       >
         <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2" />
         <path
@@ -120,7 +120,7 @@ export function ViewerAccessBar({
       <div
         className={[
           "flex items-center gap-3 rounded-full px-4 py-2.5 text-sm",
-          "bg-[#0F0F0F] ",
+          "bg-base-400 ",
           "border transition-colors duration-300",
           status === "sent" || status === "pending"
             ? "border-violet-500/30"
@@ -132,9 +132,9 @@ export function ViewerAccessBar({
         <span
           className={[
             "tracking-wide transition-colors duration-300 whitespace-nowrap font-body text-[12.5px]",
-            status === "sent" ? "text-[#F8F9FA]" : "",
+            status === "sent" ? "text-inputBg" : "",
             status === "pending" ? "text-zinc-600" : "",
-            status === "viewing" ? "text-[#F8F9FA]" : "",
+            status === "viewing" ? "text-inputBg" : "",
           ].join(" ")}
         >
           {LABEL[status]}
@@ -146,8 +146,8 @@ export function ViewerAccessBar({
             onClick={handleRequest}
             disabled={loading}
             className={[
-              "rounded-full bg-[#F8F9FA] border border-[#DEE2E6]",
-              "px-3.5 py-1 font-body text-[11.5px] font-medium text-[#343A40]",
+              "rounded-full bg-inputBg border border-border",
+              "px-3.5 py-1 font-body text-[11.5px] font-medium text-ink-500",
               "transition-colors duration-200",
               "disabled:opacity-40 disabled:cursor-not-allowed",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50",

@@ -88,7 +88,7 @@ function useWorkspaceSwitcher() {
 // ⬢ Loading Skeleton
 // =====================================
 function WorkspaceSwitcherSkeleton({ collapsed }: { collapsed: boolean }) {
-  const pulse = "bg-[#F1F3F4] dark:bg-[#2A2A28] animate-pulse";
+  const pulse = "bg-base-300 dark:bg-base-700 animate-pulse";
 
   if (collapsed) {
     return (
@@ -107,9 +107,9 @@ function WorkspaceSwitcherSkeleton({ collapsed }: { collapsed: boolean }) {
       <div
         className={`flex items-center gap-3 px-3 py-2 rounded-xl border border-transparent ${pulse}`}
       >
-        <div className="w-[22px] h-[22px] rounded-lg bg-[#E4E6E8] dark:bg-[#353533] flex-shrink-0" />
-        <div className="flex-1 h-3.5 rounded-md bg-[#E4E6E8] dark:bg-[#353533]" />
-        <div className="w-3.5 h-3.5 rounded bg-[#E4E6E8] dark:bg-[#353533] flex-shrink-0" />
+        <div className="w-[22px] h-[22px] rounded-lg bg-base-360 dark:bg-[#353533] flex-shrink-0" />
+        <div className="flex-1 h-3.5 rounded-md bg-base-360 dark:bg-[#353533]" />
+        <div className="w-3.5 h-3.5 rounded bg-base-360 dark:bg-[#353533] flex-shrink-0" />
       </div>
     </div>
   );
@@ -160,7 +160,7 @@ function CollapsedSwitcher({
         className={clsx(
           "w-8 h-8 rounded-[10px] flex-shrink-0 self-center flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary/40",
           "transition-colors duration-100 shadow-[0px_1px_12px_1px_#A9A9D44D]",
-          open ? "bg-[#F9F5FF] dark:bg-[#1A0D26]" : " dark:hover:bg-[#1A0D26]"
+          open ? "bg-primary-tint-50 dark:bg-primary-900" : " dark:hover:bg-primary-900"
         )}
       >
         <WorkspaceIcon
@@ -255,7 +255,7 @@ function ExpandedSwitcher({
           onClick={() => setOpen(o => !o)}
           className={clsx(
             "w-full flex items-center gap-3 px-3 py-1.5 rounded-[10px] border-none transition-all",
-            "bg-[#FFFFFF] dark:bg-base-100 dark:border-border-tertiary",
+            "bg-base-100 dark:bg-base-100 dark:border-border-tertiary",
             "shadow-[0_1px_5.5px_6px_#A9A9D41A]"
           )}
         >

@@ -187,7 +187,7 @@ function VisualizationViewV2(props: Props) {
         <button
           type="button"
           className={clsx(
-            "absolute bottom-0 bg-white rounded-tr-md border-t border-r border-border-secondary p-2 hover:bg-gray-50 z-10 dark:bg-[#181C21] dark:border-border-tertiary",
+            "absolute bottom-0 bg-white rounded-tr-md border-t border-r border-border-secondary p-2 hover:bg-gray-50 z-10 dark:bg-editor-100 dark:border-border-tertiary",
             props.isHidden ? "left-0 rounded-bl-md" : "-left-[1px]"
           )}
           onClick={props.onToggleHidden}
@@ -204,7 +204,7 @@ function VisualizationViewV2(props: Props) {
         props.input.chartType !== "trend" && (
           <button
             type="button"
-            className="absolute bottom-2 right-2 z-10 flex items-center gap-x-1 rounded-md border border-[#E6E0F1] bg-[#FEFEFF] px-2 py-1 text-xs text-ink-300 font-body cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary dark:bg-[#181C21] dark:border-border-tertiary"
+            className="absolute bottom-2 right-2 z-10 flex items-center gap-x-1 rounded-md border border-hover-border bg-base-200 px-2 py-1 text-xs text-ink-300 font-body cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary dark:bg-editor-100 dark:border-border-tertiary"
             onClick={props.onExportToPNG}
           >
             <PiDownloadSimple className="h-[11.5px] w-[11.5px] text-ink-300" />

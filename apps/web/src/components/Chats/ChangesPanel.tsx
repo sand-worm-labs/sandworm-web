@@ -114,9 +114,9 @@ export default function ChangesPanelCompact({
   };
 
   return (
-    <div className="w-full rounded-t-xl border border-border-secondary dark:border-[#2A2A28] overflow-hidden bg-[#F1F3F4] dark:bg-[#1C1C1A]">
+    <div className="w-full rounded-t-xl border border-border-secondary dark:border-base-700 overflow-hidden bg-base-300 dark:bg-base-730">
       {/* ─── Header ─── */}
-      <div className="flex items-center justify-between px-3 py-2.5 border-b border-border-secondary dark:border-[#2A2A28]">
+      <div className="flex items-center justify-between px-3 py-2.5 border-b border-border-secondary dark:border-base-700">
         <button
           type="button"
           onClick={() => setIsExpanded(v => !v)}
@@ -144,8 +144,8 @@ export default function ChangesPanelCompact({
             onClick={handleUndo}
             className="px-2 py-1 rounded-lg text-[11px] font-medium
               text-ink-400 dark:text-ink-500
-              border border-border-secondary dark:border-[#2A2A28]
-              hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+              border border-border-secondary dark:border-base-700
+              hover:bg-base-300 dark:hover:bg-base-700
               transition-colors"
           >
             Undo
@@ -155,7 +155,7 @@ export default function ChangesPanelCompact({
             onClick={handleConfirm}
             disabled={acceptedIds.size === 0}
             className="px-2 py-1 rounded-lg text-[11px] font-medium
-              bg-[#A308F0] hover:bg-[#8A06CC] text-white
+              bg-primary hover:bg-primary-710 text-white
               disabled:bg-[#E4C4F9] dark:disabled:bg-[#2A1040]
               disabled:cursor-not-allowed
               transition-colors"
@@ -181,15 +181,15 @@ export default function ChangesPanelCompact({
                 className={`group flex items-center gap-2 px-2.5 py-1.5 rounded-lg border transition-all duration-150
                   ${
                     isDeclined
-                      ? "bg-[#FAECE7] dark:bg-[#1A0D08] border-[#FAECE7] dark:border-[#2A1510] opacity-60"
+                      ? "bg-error-tint dark:bg-error-shade border-error-tint dark:border-[#2A1510] opacity-60"
                       : isAccepted
                         ? "bg-[#E1F5EE] dark:bg-[#081A12] border-[#E1F5EE] dark:border-[#0D2A1C]"
-                        : "bg-white dark:bg-[#1C1C1A] border-border-secondary dark:border-[#2A2A28] hover:border-[#A308F0]/40"
+                        : "bg-white dark:bg-base-730 border-border-secondary dark:border-base-700 hover:border-primary/40"
                   }`}
               >
                 {/* Type icon */}
                 <span
-                  className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-md text-[14px] text-[#343330] border border-[#B1DDE8]"
+                  className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-md text-[14px] text-ink-700 border border-[#B1DDE8]"
                   style={{ display: "flex", flexShrink: 0 }}
                 >
                   {meta.icon}
@@ -228,14 +228,14 @@ export default function ChangesPanelCompact({
                   <button
                     type="button"
                     onClick={() => handleDecline(change.id)}
-                    className="p-1 rounded-md hover:bg-[#FAECE7] dark:hover:bg-[#1A0D08] transition-colors"
+                    className="p-1 rounded-md hover:bg-error-tint dark:hover:bg-error-shade transition-colors"
                     title="Decline"
                   >
                     <PiX
                       size={13}
                       className={
                         isDeclined
-                          ? "text-[#D85A30]"
+                          ? "text-warning"
                           : "text-ink-300 dark:text-ink-600"
                       }
                     />

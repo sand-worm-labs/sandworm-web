@@ -131,7 +131,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
               </td>
               <td className="p-4 text-sm text-ink-200 dark:text-ink-300">-</td>
               <td className="p-4 text-sm text-ink-200 dark:text-ink-300">
-                <span className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium border border-[#DEE2E6] dark:border-border-tertiary bg-[#F8F9FA] dark:bg-base-100 text-ink-200 dark:text-ink-300">
+                <span className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium border border-border dark:border-border-tertiary bg-inputBg dark:bg-base-100 text-ink-200 dark:text-ink-300">
                   Owner
                 </span>
               </td>
@@ -160,7 +160,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                     </button>
 
                     {openMenuId === project.id && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100 rounded-xl shadow-lg border border-[#CED4DA] dark:border-border-tertiary pb-1 z-20">
+                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100 rounded-xl shadow-lg border border-border-tertiary dark:border-border-tertiary pb-1 z-20">
                         <button
                           type="button"
                           onClick={() => {

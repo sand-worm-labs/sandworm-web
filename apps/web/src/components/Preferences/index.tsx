@@ -68,9 +68,9 @@ const ThemeCard: React.FC<{
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="font-medium text-ink-100 ">{option.label}</h3>
-            {selected && <div className="w-2 h-2 rounded-full bg-[#A308F0]" />}
+            {selected && <div className="w-2 h-2 rounded-full bg-primary" />}
           </div>
-          <p className="text-sm text-[#6C757D] dark:text-ink-400">
+          <p className="text-sm text-ink-400 dark:text-ink-400">
             {option.description}
           </p>
         </div>
@@ -81,17 +81,17 @@ const ThemeCard: React.FC<{
           <div className="flex gap-2 mb-2">
             <div
               className={`w-2 h-2 rounded-full ${
-                option.id === "light" ? "bg-[#E7F3F6]" : "bg-gray-600"
+                option.id === "light" ? "bg-info-tint" : "bg-gray-600"
               }`}
             />
             <div
               className={`w-2 h-2 rounded-full ${
-                option.id === "light" ? "bg-[#E7F3F6]" : "bg-gray-600"
+                option.id === "light" ? "bg-info-tint" : "bg-gray-600"
               }`}
             />
             <div
               className={`w-2 h-2 rounded-full ${
-                option.id === "light" ? "bg-[#E7F3F6]" : "bg-gray-600"
+                option.id === "light" ? "bg-info-tint" : "bg-gray-600"
               }`}
             />
           </div>
@@ -102,17 +102,17 @@ const ThemeCard: React.FC<{
           >
             <div
               className={`h-10 rounded-xl ${
-                option.id === "light" ? "bg-[#E7F3F6]" : "bg-[#E7F3F6]"
+                option.id === "light" ? "bg-info-tint" : "bg-info-tint"
               }`}
             />
             <div
               className={`h-2 w-3/4 rounded ${
-                option.id === "light" ? "bg-[#E7F3F6]" : "bg-[#E7F3F6]"
+                option.id === "light" ? "bg-info-tint" : "bg-info-tint"
               }`}
             />
             <div
               className={`h-2 w-1/2 rounded ${
-                option.id === "light" ? "bg-[#E7F3F6]" : "bg-[#E7F3F6]"
+                option.id === "light" ? "bg-info-tint" : "bg-info-tint"
               }`}
             />
           </div>
@@ -137,7 +137,7 @@ const AIEditCard: React.FC<{
       onClick={onClick}
       className={`relative w-full p-5 py-4 border rounded-xl transition-all text-left ${
         selected
-          ? "border-[#A308F0] dark:border-primary"
+          ? "border-primary dark:border-primary"
           : "border-border-secondary dark:border-border-tertiary"
       }`}
     >
@@ -145,12 +145,12 @@ const AIEditCard: React.FC<{
         <div
           className={`mt-0.5 w-5 h-5 rounded-full border border flex items-center justify-center flex-shrink-0 ${
             selected
-              ? "border-[#7F56D9] dark:border-primary"
+              ? "border-accent-violet dark:border-primary"
               : "border-border-secondary dark:border-border-tertiary"
           }`}
         >
           {selected && (
-            <div className="w-2 h-2 rounded-full bg-[#7F56D9] dark:bg-primary" />
+            <div className="w-2 h-2 rounded-full bg-accent-violet dark:bg-primary" />
           )}
         </div>
         <div className="flex-1">
@@ -160,8 +160,8 @@ const AIEditCard: React.FC<{
           <p
             className={`text-sm ${
               selected
-                ? "text-[#A308F0] dark:text-primary"
-                : "text-[#6C757D] dark:text-ink-400"
+                ? "text-primary dark:text-primary"
+                : "text-ink-400 dark:text-ink-400"
             }`}
           >
             {description}
@@ -186,7 +186,7 @@ const EditorThemeCard: React.FC<{
       onClick={onClick}
       className={`relative p-4 rounded-3xl border transition-all text-left ${
         selected
-          ? "border-[#A308F0]    dark:border-primary"
+          ? "border-primary    dark:border-primary"
           : "border-border-secondary  dark:border-border-tertiary hover:border-gray-300 dark:hover:border-border-tertiary font-body"
       }`}
     >
@@ -300,7 +300,7 @@ const Preferences: React.FC = () => {
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="mb-8">
           <h2 className="text-lg font-medium text-ink-100 mb-2">Preferences</h2>
-          <p className="text-[#6C757D] dark:text-ink-400 text-sm">
+          <p className="text-ink-400 dark:text-ink-400 text-sm">
             Manage your interface and privacy settings{" "}
           </p>
         </div>
@@ -312,7 +312,7 @@ const Preferences: React.FC = () => {
               <h2 className="text-lg font-medium text-ink-100 ">
                 Regional and Data
               </h2>
-              <p className="text-sm text-[#6C757D] dark:text-ink-400 max-w-[25rem] mt-2 ">
+              <p className="text-sm text-ink-400 dark:text-ink-400 max-w-[25rem] mt-2 ">
                 Set your region and preferred currency to be displayed.{" "}
               </p>
             </div>
@@ -321,13 +321,13 @@ const Preferences: React.FC = () => {
           <div className="flex-1">
             <div className="space-y-6">
               <div>
-                <label className="block xl:text-sm text-xs font-bold text-[#6C757D] dark:text-ink-400  mb-3 uppercase">
+                <label className="block xl:text-sm text-xs font-bold text-ink-400 dark:text-ink-400  mb-3 uppercase">
                   Timezone
                 </label>
                 <select
                   value={dateFormat}
                   onChange={e => setDateFormat(e.target.value as DateFormat)}
-                  className=" text-sm  w-full px-5 py-2 rounded-xl border border-[#CED4DA]  bg-white dark:bg-base-200 dark:border-border-tertiary text-ink-100 focus:ring-2 focus:ring-[#A308F0] focus:border-transparent"
+                  className=" text-sm  w-full px-5 py-2 rounded-xl border border-border-tertiary  bg-white dark:bg-base-200 dark:border-border-tertiary text-ink-100 focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   <option value="us">US (MM/DD/YYYY)</option>
                   <option value="eu">European (DD/MM/YYYY)</option>
@@ -338,13 +338,13 @@ const Preferences: React.FC = () => {
 
             <div className="space-y-6 my-6">
               <div>
-                <label className="block xl:text-sm text-xs  font-bold text-[#6C757D] dark:text-ink-400  mb-3 uppercase">
+                <label className="block xl:text-sm text-xs  font-bold text-ink-400 dark:text-ink-400  mb-3 uppercase">
                   Currency Display
                 </label>
                 <select
                   value={dateFormat}
                   onChange={e => setDateFormat(e.target.value as DateFormat)}
-                  className="text-sm w-full px-5 py-2 rounded-xl border border-[#CED4DA]  bg-white dark:bg-base-200 dark:border-border-tertiary text-ink-100 focus:ring-2 focus:ring-[#A308F0] focus:border-transparent"
+                  className="text-sm w-full px-5 py-2 rounded-xl border border-border-tertiary  bg-white dark:bg-base-200 dark:border-border-tertiary text-ink-100 focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   <option value="us">USD($)</option>
                   <option value="eu">European (DD/MM/YYYY)</option>
@@ -362,7 +362,7 @@ const Preferences: React.FC = () => {
               <h2 className="text-lg font-medium text-ink-100">
                 AI Edit Permission Control
               </h2>
-              <p className="text-sm text-[#6C757D] dark:text-ink-400 max-w-[25rem] mt-2">
+              <p className="text-sm text-ink-400 dark:text-ink-400 max-w-[25rem] mt-2">
                 Control how AI-generated changes are applied to your blocks.
               </p>
             </div>
@@ -391,7 +391,7 @@ const Preferences: React.FC = () => {
           <div className="flex items-center gap-3 mb-6">
             <div>
               <h2 className="text-lg font-medium text-ink-100 ">Appearance</h2>
-              <p className="text-sm text-[#6C757D] dark:text-ink-400 max-w-[25rem] mt-2 ">
+              <p className="text-sm text-ink-400 dark:text-ink-400 max-w-[25rem] mt-2 ">
                 Choose how Sandworm looks to you. Select a single theme, or sync
                 it with your system.
               </p>
@@ -417,7 +417,7 @@ const Preferences: React.FC = () => {
               <h2 className="text-lg font-medium text-ink-100 ">
                 Code Editor Theme
               </h2>
-              <p className="text-sm text-[#6C757D] dark:text-ink-400 max-w-[25rem] mt-2 ">
+              <p className="text-sm text-ink-400 dark:text-ink-400 max-w-[25rem] mt-2 ">
                 Select your preferred syntax highlighting theme for the SQL and
                 python editors.
               </p>

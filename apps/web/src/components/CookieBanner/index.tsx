@@ -58,7 +58,7 @@ export default function CookieBanner() {
       ].join(" ")}
     >
       <h2 className="font-medium mt-2">Cookie Settings</h2>
-      <p className="flex-1 text-[13px] leading-relaxed dark:text-ink-400 text-[#343A40] m-0 pr-2">
+      <p className="flex-1 text-[13px] leading-relaxed dark:text-ink-400 text-ink-500 m-0 pr-2">
         We use essential functionality cookies to make the site work. If you
         accept, we may also use cookies to enhance your experience, measure ad
         performance and analyze.
@@ -76,14 +76,14 @@ export default function CookieBanner() {
         <button
           type="button"
           onClick={() => dismiss("accepted")}
-          className="w-full text-[13px] font-medium px-5 py-2 rounded-full bg-[#0F0F0F] text-white border  hover:opacity-85 active:scale-[0.97] transition-all"
+          className="w-full text-[13px] font-medium px-5 py-2 rounded-full bg-base-400 text-white border  hover:opacity-85 active:scale-[0.97] transition-all"
         >
           Accept
         </button>
         <button
           type="button"
           onClick={() => dismiss("accepted")}
-          className="w-full inline-block text-[13px] font-medium px-5 py-2 rounded-full bg-[#F8F9FA] text-ink-100  border  hover:opacity-85 active:scale-[0.97] transition-all"
+          className="w-full inline-block text-[13px] font-medium px-5 py-2 rounded-full bg-inputBg text-ink-100  border  hover:opacity-85 active:scale-[0.97] transition-all"
         >
           Decline
         </button>

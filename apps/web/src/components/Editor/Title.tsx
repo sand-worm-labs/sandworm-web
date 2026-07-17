@@ -51,7 +51,7 @@ export function TitleAIButton({
           className={[
             "flex items-center justify-center w-7 h-7",
             "rounded-full border-none border-[#B5C8DB]",
-            "bg-white dark:bg-[#30302E]",
+            "bg-white dark:bg-base-740",
             "text-gray-500 dark:text-ink-400",
             "hover:text-violet-500 hover:border-violet-300",
             "dark:hover:border-violet-500/40 dark:hover:text-violet-400",

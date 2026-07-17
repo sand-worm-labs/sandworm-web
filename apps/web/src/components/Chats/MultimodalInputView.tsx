@@ -87,8 +87,8 @@ export const MultimodalInputView = forwardRef<
     relative flex flex-col
     w-full min-h-[120px]
     rounded-3xl
-    border-[1.5px] border-[#E6E0F1]
-    bg-base-100 dark:border-border-tertiary dark:bg-[#30302E]
+    border-[1.5px] border-hover-border
+    bg-base-100 dark:border-border-tertiary dark:bg-base-740
     shadow-[0_3.5px_24px_rgba(120,147,208,0.09)] dark:shadow-none
 
     transition-all duration-300 ease-in-out font-tertiary text-[13px] 
@@ -96,7 +96,7 @@ export const MultimodalInputView = forwardRef<
           >
             {isCreatingNotebook && (
               <div
-                className="absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-base-100/85 dark:bg-[#30302E]/85 backdrop-blur-[1px]"
+                className="absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-base-100/85 dark:bg-base-740/85 backdrop-blur-[1px]"
                 aria-busy="true"
                 aria-label="Creating notebook"
               >
@@ -150,7 +150,7 @@ export const MultimodalInputView = forwardRef<
                       type="button"
                       onClick={onFileClick}
                       disabled={isInputLocked}
-                      className="rounded-full p-2.5 h-fit bg-transparent dark:bg-transparent text-black dark:text-ink-400 border-[#E7EBF0] border hover:bg-[#F1F2F4] hover:border-primary dark:hover:bg-[#2A2A28] transition-all duration-100 disabled:opacity-50 disabled:pointer-events-none"
+                      className="rounded-full p-2.5 h-fit bg-transparent dark:bg-transparent text-black dark:text-ink-400 border-border-cool border hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700 transition-all duration-100 disabled:opacity-50 disabled:pointer-events-none"
                       title="Attach files"
                     >
                       <PiPlus size={18} />
@@ -183,7 +183,7 @@ export const MultimodalInputView = forwardRef<
                     className={`rounded-full p-2.5 h-fit font-light transition-colors ${
                       input.trim() && !isInputLocked
                         ? "text-white bg-primary"
-                        : "text-white bg-[#868E96] cursor-not-allowed"
+                        : "text-white bg-disabled cursor-not-allowed"
                     }`}
                     onClick={() =>
                       input.trim() && !isInputLocked && onSubmit?.()

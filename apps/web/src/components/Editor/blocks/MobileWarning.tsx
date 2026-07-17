@@ -34,7 +34,7 @@ export default function MobileWarning() {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left border transition-all my-auto font-body border-border-tertiary ">
                 <div>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#A308F020]">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/[12.5%]">
                     <ScheduleIcon />
                   </div>
                   <div className="mt-4 text-center sm:mt-5">
@@ -59,7 +59,7 @@ export default function MobileWarning() {
                 <div className="mt-6">
                   <button
                     type="button"
-                    className="rounded-xl  border border-primary-400 text-white inline-flex w-full justify-center dark:bg-white dark:text-black px-3 py-2.5 text-sm font-semibold shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400 bg-[#0F0F0F] "
+                    className="rounded-xl  border border-primary-400 text-white inline-flex w-full justify-center dark:bg-white dark:text-black px-3 py-2.5 text-sm font-semibold shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400 bg-base-400 "
                     onClick={() => setOpen(false)}
                   >
                     I want to stay on mobile

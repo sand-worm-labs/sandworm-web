@@ -20,7 +20,7 @@ import RotatingGradientRing from "./RotatingGradientRing";
 const LoadingBubble: React.FC = () => (
   <div className="flex justify-start">
     <div
-      className="bg-[#F1F3F4] dark:bg-[#121417] text-ink-500 dark:text-ink-400
+      className="bg-base-300 dark:bg-editor-600 text-ink-500 dark:text-ink-400
         px-4 py-3 rounded-2xl text-sm flex gap-1 items-center"
     >
       <div className="dot-loader" />
@@ -186,11 +186,11 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
             }}
             className="absolute bottom-3 left-[35%] z-10
               flex items-center gap-1.5 px-3 py-1 rounded-full text-[0.65rem] font-medium
-              bg-white dark:bg-[#1A1A18]
-              border border-[#DEE2E6] dark:border-[#2A2A28]
+              bg-white dark:bg-base-770
+              border border-border dark:border-base-700
               text-ink-400 dark:text-ink-300
               shadow-sm hover:shadow-md
-              hover:bg-[#F8F9FA] dark:hover:bg-[#222220]
+              hover:bg-inputBg dark:hover:bg-[#222220]
               transition-colors"
           >
             <PiArrowDown size={12} />

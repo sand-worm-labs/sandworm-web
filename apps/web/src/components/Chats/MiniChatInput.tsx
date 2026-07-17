@@ -95,7 +95,7 @@ function FileIcon({ file }: { file: File }) {
 function FileStatusIndicator({ status }: { status: TrackedFile["status"] }) {
   if (status === "uploading") {
     return (
-      <span className="text-[#A308F0] animate-spin">
+      <span className="text-primary animate-spin">
         <PiSpinner size={12} />
       </span>
     );
@@ -149,9 +149,9 @@ function AbortButton({ onAbort }: { onAbort?: () => void }) {
         onClick={onAbort}
         aria-label="Stop generation"
         className="absolute inset-[2px] rounded-[10px] flex items-center justify-center
-          bg-[#FEFEFF] dark:bg-base-200"
+          bg-base-200 dark:bg-base-200"
       >
-        <PiStop size={14} className="text-[#1C3B5A] dark:text-ink-300" />
+        <PiStop size={14} className="text-ink-navy dark:text-ink-300" />
       </button>
     </div>
   );
@@ -365,9 +365,9 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
         />
       )}
 
-      <div className="bg-[#FFFFFF] dark:bg-[#30302E] border border-[#E9ECEF] dark:border-border-tertiary rounded-2xl shadow-sm">
+      <div className="bg-base-100 dark:bg-base-740 border border-border-secondary dark:border-border-tertiary rounded-2xl shadow-sm">
         {pendingChanges && pendingChanges.length > 0 && (
-          <div className="px-0 pt-0 border-b border-[#DEE2E6] dark:border-border-tertiary">
+          <div className="px-0 pt-0 border-b border-border dark:border-border-tertiary">
             <ChangesPanelCompact
               changes={pendingChanges}
               onConfirm={onAcceptAll}
@@ -378,17 +378,17 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
 
         {/* ─── File attachments ─── */}
         {trackedFiles.length > 0 && (
-          <div className="px-4 pt-3 pb-2 border-b border-[#DEE2E6] dark:border-border-tertiary">
+          <div className="px-4 pt-3 pb-2 border-b border-border dark:border-border-tertiary">
             <div className="flex flex-wrap gap-2">
               {trackedFiles.map(tracked => (
                 <div
                   key={tracked.localId}
-                  className={`flex items-center gap-2 bg-white dark:bg-[#252523]
+                  className={`flex items-center gap-2 bg-white dark:bg-base-720
                     border rounded-lg px-2.5 py-1.5 transition-colors
                     ${
                       tracked.status === "error"
                         ? "border-red-300 dark:border-red-700"
-                        : "border-[#DEE2E6] dark:border-[#3A3A38]"
+                        : "border-border dark:border-base-710"
                     }`}
                 >
                   <span className="text-ink-400 dark:text-ink-500">
@@ -447,8 +447,8 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
                     border transition-colors disabled:opacity-40 disabled:cursor-not-allowed
                     ${
                       addMenuOpen || references.length > 0
-                        ? "bg-[#F3E6FD] border-[#C97FF5] text-[#7A06B8] dark:bg-[#1F0A2E] dark:border-[#7A06B8] dark:text-[#C97FF5]"
-                        : "bg-white dark:bg-[#30302E] border-[#E7EBF0] dark:border-transparent text-ink-400 dark:text-ink-500 hover:bg-gray-50 dark:hover:bg-[#3A3A38]"
+                        ? "bg-[#F3E6FD] border-primary-300 text-primary-700 dark:bg-primary-920 dark:border-primary-700 dark:text-primary-300"
+                        : "bg-white dark:bg-base-740 border-border-cool dark:border-transparent text-ink-400 dark:text-ink-500 hover:bg-gray-50 dark:hover:bg-base-710"
                     }`}
                 >
                   <PiPlus
@@ -493,8 +493,8 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
                     className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors
                     ${
                       canSend
-                        ? "bg-[#A308F0] hover:bg-[#8A06CC] text-white"
-                        : "bg-white dark:bg-[#30302E] text-ink-400 cursor-not-allowed border border-[#DEE2E6] dark:border-border-tertiary"
+                        ? "bg-primary hover:bg-primary-710 text-white"
+                        : "bg-white dark:bg-base-740 text-ink-400 cursor-not-allowed border border-border dark:border-border-tertiary"
                     }`}
                   >
                     {isUploading ? (

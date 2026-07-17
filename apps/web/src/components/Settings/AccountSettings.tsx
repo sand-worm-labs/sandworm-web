@@ -55,7 +55,7 @@ type WorkspaceRowProps = {
 // =====================================
 function WorkspaceTableHeader() {
   return (
-    <div className="flex items-center px-5 py-3 text-xs font-medium text-[#6C757D] dark:text-ink-400 uppercase tracking-wider border-border-secondary dark:border-border-tertiary border-b shrink-0">
+    <div className="flex items-center px-5 py-3 text-xs font-medium text-ink-400 dark:text-ink-400 uppercase tracking-wider border-border-secondary dark:border-border-tertiary border-b shrink-0">
       <div className="flex-1">Workspace</div>
       <div className="hidden sm:block w-32 text-center">Members</div>
       <div className="hidden sm:block w-24 text-center">Plan</div>
@@ -78,20 +78,20 @@ function WorkspaceTableSkeleton() {
             className="flex items-center px-5 py-4 border-b border-border-secondary dark:border-border-tertiary animate-pulse"
           >
             <div className="flex-1 flex items-center gap-4 min-w-0">
-              <div className="h-10 w-10 rounded-full bg-[#F8F9FA] dark:bg-base-100 shrink-0" />
+              <div className="h-10 w-10 rounded-full bg-inputBg dark:bg-base-100 shrink-0" />
               <div className="flex-1 min-w-0 space-y-2">
-                <div className="h-4 w-36 max-w-full rounded bg-[#F8F9FA] dark:bg-base-100" />
-                <div className="h-3 w-24 rounded bg-[#F8F9FA] dark:bg-base-100 sm:hidden" />
+                <div className="h-4 w-36 max-w-full rounded bg-inputBg dark:bg-base-100" />
+                <div className="h-3 w-24 rounded bg-inputBg dark:bg-base-100 sm:hidden" />
               </div>
             </div>
             <div className="hidden sm:block w-32">
-              <div className="mx-auto h-4 w-20 rounded bg-[#F8F9FA] dark:bg-base-100" />
+              <div className="mx-auto h-4 w-20 rounded bg-inputBg dark:bg-base-100" />
             </div>
             <div className="hidden sm:block w-24">
-              <div className="mx-auto h-4 w-12 rounded bg-[#F8F9FA] dark:bg-base-100" />
+              <div className="mx-auto h-4 w-12 rounded bg-inputBg dark:bg-base-100" />
             </div>
             <div className="w-10 flex justify-center">
-              <div className="h-5 w-5 rounded bg-[#F8F9FA] dark:bg-base-100" />
+              <div className="h-5 w-5 rounded bg-inputBg dark:bg-base-100" />
             </div>
           </div>
         ))}
@@ -118,7 +118,7 @@ function WorkspaceEmptyState({
       )}
     >
       <WorkspaceIcon />
-      <p className="text-sm font-medium text-[#868E96] mt-3">{message}</p>
+      <p className="text-sm font-medium text-ink-300 mt-3">{message}</p>
     </div>
   );
 }
@@ -142,7 +142,7 @@ function WorkspaceRow({
     <div
       className={clsx(
         "flex items-center px-5 py-4 border-b border-border-secondary  dark:border-border-tertiary transition-colors",
-        !isCurrentWorkspace && "hover:bg-gray-50 dark:hover:bg-[#181C21]"
+        !isCurrentWorkspace && "hover:bg-gray-50 dark:hover:bg-editor-100"
       )}
     >
       {/* ✦ Workspace name + switch  ✦ */}
@@ -160,17 +160,17 @@ function WorkspaceRow({
               {workspace.name}
             </span>
             {isCurrentWorkspace && (
-              <PiCheckCircle className="w-5 h-5 text-[#7F56D9]" />
+              <PiCheckCircle className="w-5 h-5 text-accent-violet" />
             )}
           </div>
 
           {/* ✦  Mobile-only member + plan info  ✦ */}
           <div className="flex items-center gap-2 mt-0.5 sm:hidden">
-            <span className="text-xs text-[#6C757D] dark:text-ink-400">
+            <span className="text-xs text-ink-400 dark:text-ink-400">
               {memberLabel(memberCount)}
             </span>
-            <span className="text-xs text-[#6C757D] dark:text-ink-400">·</span>
-            <span className="text-xs text-[#6C757D] dark:text-ink-400 capitalize">
+            <span className="text-xs text-ink-400 dark:text-ink-400">·</span>
+            <span className="text-xs text-ink-400 dark:text-ink-400 capitalize">
               {workspace.plan || "Free"}
             </span>
           </div>
@@ -178,7 +178,7 @@ function WorkspaceRow({
       </button>
 
       {/* ✦ Member Count ✦ */}
-      <div className="hidden sm:flex w-32 items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400">
+      <div className="hidden sm:flex w-32 items-center justify-center gap-2 text-sm text-ink-400 font-medium dark:text-ink-400">
         <PiUsers className="w-5 h-5" />
         <span>{memberLabel(memberCount)}</span>
       </div>
@@ -348,14 +348,14 @@ export default function WorkspaceSettings() {
             <h3 className="text-xl font-bold text-ink-100 mb-2">
               Account Settings
             </h3>
-            <p className="text-[#6C757D] dark:text-ink-400 text-sm xl:text-base">
+            <p className="text-ink-400 dark:text-ink-400 text-sm xl:text-base">
               Manage your workspaces, settings, permissions and billings.
             </p>
           </div>
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
-            className="mt-4 md:mt-0 text-white px-5 py-1.5 rounded-xl text-sm bg-[#A308F0] hover:bg-[#8a07c9] transition-colors duration-100"
+            className="mt-4 md:mt-0 text-white px-5 py-1.5 rounded-xl text-sm bg-primary hover:bg-primary-720 transition-colors duration-100"
           >
             Create New Team
           </button>
@@ -367,7 +367,7 @@ export default function WorkspaceSettings() {
             <h4 className="text-lg font-bold mb-3 dark:text-white">
               Your Teams
             </h4>
-            <p className="text-[#6C757D] dark:text-ink-400 mb-5 max-w-[32rem] pr-6 text-sm xl:text-base">
+            <p className="text-ink-400 dark:text-ink-400 mb-5 max-w-[32rem] pr-6 text-sm xl:text-base">
               Your workspaces can be deleted, renamed, team members added etc
               depending on your permission level within the organization.
             </p>
@@ -394,7 +394,7 @@ export default function WorkspaceSettings() {
             <h4 className="text-lg font-bold mb-3 dark:text-white">
               Invited Teams
             </h4>
-            <p className="text-[#6C757D] dark:text-ink-400 mb-5 max-w-[32rem] pr-6 text-sm xl:text-base">
+            <p className="text-ink-400 dark:text-ink-400 mb-5 max-w-[32rem] pr-6 text-sm xl:text-base">
               These are workspaces you've been invited to. Settings are managed
               by the workspace owner.
             </p>

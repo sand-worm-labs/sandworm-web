@@ -290,8 +290,8 @@ function ScheduleList(props: ScheduleListProps) {
                     className={clsx(
                       "flex items-center justify-center gap-x-2 text-sm px-4 py-2 rounded-full",
                       !props.isLimited
-                        ? "bg-[#A308F0] hover:bg-primary-300 text-white"
-                        : "bg-[#868E96] cursor-not-allowed text-white"
+                        ? "bg-primary hover:bg-primary-300 text-white"
+                        : "bg-disabled cursor-not-allowed text-white"
                     )}
                     onClick={props.onAddSchedule}
                     disabled={props.isLimited}
@@ -322,8 +322,8 @@ function ScheduleList(props: ScheduleListProps) {
                     className={clsx(
                       "flex items-center justify-center gap-x-2 text-sm px-4 py-2 rounded-full",
                       !props.isLimited
-                        ? "bg-[#A308F0] hover:bg-primary-300 text-white"
-                        : "bg-[#868E96] cursor-not-allowed text-white"
+                        ? "bg-primary hover:bg-primary-300 text-white"
+                        : "bg-disabled cursor-not-allowed text-white"
                     )}
                     onClick={props.onAddSchedule}
                     disabled={props.isLimited}
@@ -345,7 +345,7 @@ function ScheduleList(props: ScheduleListProps) {
             </div>
             <button
               type="button"
-              className="rounded-full px-4 py-2 text-sm bg-[#A308F0] hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 text-white"
+              className="rounded-full px-4 py-2 text-sm bg-primary hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 text-white"
               onClick={props.onPublish}
               disabled={props.publishing}
             >

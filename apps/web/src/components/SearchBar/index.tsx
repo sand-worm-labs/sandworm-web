@@ -144,14 +144,14 @@ export const SearchBar = () => {
       <button
         type="button"
         onClick={() => setIsActive(true)}
-        className="p-2 rounded-lg dark:bg-base-100 border dark:border-border-tertiary border-[#DEE2E6] dark:text-white text-ink-200 hover:bg-gray-100 dark:hover:bg-[#21262d] transition-colors bg-[#F1F3F4]"
+        className="p-2 rounded-lg dark:bg-base-100 border dark:border-border-tertiary border-border dark:text-white text-ink-200 hover:bg-gray-100 dark:hover:bg-editor-500 transition-colors bg-base-300"
         aria-label="Open search"
       >
         <Search size={18} />
       </button>
 
       {isActive && (
-        <div className="absolute z-50 top-full mt-4 left-[0px] min-w-[32rem] dark:bg-base-100 bg-white border dark:border-border-tertiary rounded-xl shadow-md overflow-hidden border-[#E3E5E8]">
+        <div className="absolute z-50 top-full mt-4 left-[0px] min-w-[32rem] dark:bg-base-100 bg-white border dark:border-border-tertiary rounded-xl shadow-md overflow-hidden border-border-quiet">
           {/* Search Input Inside Dropdown */}
           <div className="px-4 py-3 border-b dark:border-border-tertiary border-border-secondary">
             <div className="relative">
@@ -169,7 +169,7 @@ export const SearchBar = () => {
                   setHighlightIndex(-1);
                 }}
                 onKeyDown={handleKeyDown}
-                className="w-full pl-10 pr-16 py-1 rounded-md dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring-[1p] focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F1F3F4] font-body "
+                className="w-full pl-10 pr-16 py-1 rounded-md dark:bg-ink-100 border dark:border-border-tertiary border-border dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring-[1p] focus:ring-primary transition text-xs md:text-sm bg-base-300 font-body "
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-gray select-none font-medium">
                 Press{" "}
@@ -190,8 +190,8 @@ export const SearchBar = () => {
                   onClick={() => setActiveFilter(filter.key)}
                   className={`px-3 py-0.5 rounded-md text-[0.75rem] font-medium transition-colors ${
                     activeFilter === filter.key
-                      ? "bg-[#A308F0]  text-white"
-                      : "dark:bg-[#21262d] dark:text-gray-300 dark:hover:bg-[#30363d]  text-ink-100  hover:bg-gray-200 border border-[#E3E5E8] dark:border-border-tertiary"
+                      ? "bg-primary  text-white"
+                      : "dark:bg-editor-500 dark:text-gray-300 dark:hover:bg-[#30363d]  text-ink-100  hover:bg-gray-200 border border-border-quiet dark:border-border-tertiary"
                   }`}
                 >
                   {filter.label}
@@ -221,8 +221,8 @@ export const SearchBar = () => {
                     key={item.id}
                     className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${
                       highlightIndex === globalIndex
-                        ? "dark:bg-[#161b22] bg-gray-100"
-                        : "dark:hover:bg-[#161b22] hover:bg-gray-50"
+                        ? "dark:bg-editor-300 bg-gray-100"
+                        : "dark:hover:bg-editor-300 hover:bg-gray-50"
                     }`}
                     onMouseEnter={() => setHighlightIndex(globalIndex)}
                     onClick={() => {
@@ -238,8 +238,8 @@ export const SearchBar = () => {
                       );
                     }}
                   >
-                    <span className="border border-[#E3E5E8] p-1 rounded-md dark:border-border-tertiary">
-                      <LucideBox size={18} className="text-[#005DE7]" />
+                    <span className="border border-border-quiet p-1 rounded-md dark:border-border-tertiary">
+                      <LucideBox size={18} className="text-link" />
                     </span>
                     <div className="flex-1 text-left">
                       <div className="font-medium dark:text-gray-200 text-ink-200 text-sm ">
@@ -268,8 +268,8 @@ export const SearchBar = () => {
                     key={item.id}
                     className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${
                       highlightIndex === globalIndex
-                        ? "dark:bg-[#161b22] bg-gray-100"
-                        : "dark:hover:bg-[#161b22] hover:bg-gray-50"
+                        ? "dark:bg-editor-300 bg-gray-100"
+                        : "dark:hover:bg-editor-300 hover:bg-gray-50"
                     }`}
                     onMouseEnter={() => setHighlightIndex(globalIndex)}
                     onClick={() => {
@@ -285,8 +285,8 @@ export const SearchBar = () => {
                       );
                     }}
                   >
-                    <span className="border border-[#E3E5E8] p-1 rounded-md dark:border-border-tertiary">
-                      <User2Icon size={18} className="text-[#005DE7]" />
+                    <span className="border border-border-quiet p-1 rounded-md dark:border-border-tertiary">
+                      <User2Icon size={18} className="text-link" />
                     </span>
                     <div className="flex-1 text-left">
                       <div className="font-medium text-sm dark:text-gray-200 text-ink-200">
@@ -315,8 +315,8 @@ export const SearchBar = () => {
                     key={item.id}
                     className={`w-full px-4 py-2 flex items-center gap-3 transition-colors ${
                       highlightIndex === globalIndex
-                        ? "dark:bg-[#161b22] bg-gray-100"
-                        : "dark:hover:bg-[#161b22] hover:bg-gray-50"
+                        ? "dark:bg-editor-300 bg-gray-100"
+                        : "dark:hover:bg-editor-300 hover:bg-gray-50"
                     }`}
                     onMouseEnter={() => setHighlightIndex(globalIndex)}
                     onClick={() => {
@@ -332,8 +332,8 @@ export const SearchBar = () => {
                       );
                     }}
                   >
-                    <span className="border border-[#E3E5E8] p-1 rounded-md dark:border-border-tertiary">
-                      <File size={18} className="text-[#005DE7]" />
+                    <span className="border border-border-quiet p-1 rounded-md dark:border-border-tertiary">
+                      <File size={18} className="text-link" />
                     </span>
                     <div className="flex-1 text-left">
                       <div className="font-medium dark:text-gray-200 text-ink-200 text-sm">
@@ -351,24 +351,24 @@ export const SearchBar = () => {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
                 <div className="flex items-center space-x-2">
-                  <span className="border border-[#E3E5E8] dark:border-border-tertiary  p-0.5 rounded-sm">
+                  <span className="border border-border-quiet dark:border-border-tertiary  p-0.5 rounded-sm">
                     <ChevronUp className="w-3.5 h-3.5" />
                   </span>
-                  <span className="border border-[#E3E5E8] dark:border-border-tertiary p-0.5 rounded-sm">
+                  <span className="border border-border-quiet dark:border-border-tertiary p-0.5 rounded-sm">
                     <ChevronDown className="w-3.5 h-3.5" />
                   </span>
                 </div>
                 <span>to navigate</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="border border-[#E3E5E8] p-0.5 dark:border-border-tertiary rounded-sm">
+                <span className="border border-border-quiet p-0.5 dark:border-border-tertiary rounded-sm">
                   <CornerDownLeft className="w-3.5 h-3.5" />
                 </span>
                 <span>to select</span>
               </div>
             </div>
             <div className="flex items-center gap-1.5">
-              <kbd className="px-2 py-0.5 rounded text-[0.8rem] font-medium dark:bg-[#21262d] dark:text-gray-300 dark:border-border-tertiary bg-white text-ink-100  border border-gray-300">
+              <kbd className="px-2 py-0.5 rounded text-[0.8rem] font-medium dark:bg-editor-500 dark:text-gray-300 dark:border-border-tertiary bg-white text-ink-100  border border-gray-300">
                 esc
               </kbd>
               <span>to close</span>

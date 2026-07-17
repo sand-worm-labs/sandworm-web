@@ -139,7 +139,7 @@ export default function Comments({
                   </div>
                 </div>
 
-                <p className="text-[13px] leading-5 text-[#6C757D] dark:text-ink-100">
+                <p className="text-[13px] leading-5 text-ink-400 dark:text-ink-100">
                   {comment.content}
                 </p>
               </div>
@@ -154,7 +154,7 @@ export default function Comments({
             <CommentIcon />
           </div>
 
-          <div className="flex flex-1 items-center rounded-xl border-[1.5px] border-[#E6E0F1] dark:border-border-tertiary bg-white dark:bg-base-400 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-shadow px-3 py-1.5 gap-x-2">
+          <div className="flex flex-1 items-center rounded-xl border-[1.5px] border-hover-border dark:border-border-tertiary bg-white dark:bg-base-400 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-shadow px-3 py-1.5 gap-x-2">
             <label htmlFor="comment" className="sr-only">
               Add your comment
             </label>
@@ -172,7 +172,7 @@ export default function Comments({
               type="button"
               onClick={onComment}
               disabled={!content.trim()}
-              className="flex-shrink-0 rounded-lg bg-[#A308F0] p-2 text-white hover:bg-primary-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all border border-[#7104A8]"
+              className="flex-shrink-0 rounded-lg bg-primary p-2 text-white hover:bg-primary-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all border border-[#7104A8]"
               aria-label="Send comment"
             >
               <PiPaperPlaneRight size={16} />

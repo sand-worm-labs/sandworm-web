@@ -203,7 +203,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A] dark:bg-black/30" />
+          <div className="fixed inset-0 bg-black/[10.2%] dark:bg-black/30" />
         </Transition.Child>
 
         {/* ── Panel ── */}
@@ -217,7 +217,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
             leaveFrom="opacity-100 scale-100 translate-y-0"
             leaveTo="opacity-0 scale-95 translate-y-1"
           >
-            <Dialog.Panel className="w-full max-w-lg bg-white dark:bg-base-100 rounded-2xl overflow-hidden border border-border-secondary dark:border-[#2A2A28] ">
+            <Dialog.Panel className="w-full max-w-lg bg-white dark:bg-base-100 rounded-2xl overflow-hidden border border-border-secondary dark:border-base-700 ">
               {submitted ? (
                 <SuccessState />
               ) : (
@@ -243,10 +243,10 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                           <Listbox.Button
                             className="w-full flex items-center justify-between
                             px-3.5 py-2.5 rounded-xl text-[13px] text-left
-                            bg-[#F1F3F4] dark:bg-[#1C1C1A]
+                            bg-base-300 dark:bg-base-730
                             border border-transparent
-                            focus:outline-none focus:border-[#D9A8F8] dark:focus:border-[#7A06B8]
-                            hover:border-[#DEE2E6] dark:hover:border-[#3A3A38]
+                            focus:outline-none focus:border-primary-200 dark:focus:border-primary-700
+                            hover:border-border dark:hover:border-base-710
                             transition-colors duration-100"
                           >
                             {selectedType ? (
@@ -278,8 +278,8 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                           >
                             <Listbox.Options
                               className="absolute z-10 mt-1.5 w-full
-                              bg-white dark:bg-[#1C1C1A]
-                              border border-[#E8E8E6] dark:border-[#2E2E2C]
+                              bg-white dark:bg-base-730
+                              border border-base-350 dark:border-base-760
                               rounded-2xl shadow-sm
                               overflow-hidden focus:outline-none p-1"
                             >
@@ -297,7 +297,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                                       <span
                                         className={
                                           selected
-                                            ? "text-[#A308F0]"
+                                            ? "text-primary"
                                             : "text-ink-400 dark:text-ink-500"
                                         }
                                       >
@@ -307,7 +307,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                                         <p
                                           className={`text-[13px] font-medium ${
                                             selected
-                                              ? "text-[#A308F0]"
+                                              ? "text-primary"
                                               : "text-ink-500 dark:text-ink-200"
                                           }`}
                                         >
@@ -320,7 +320,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                                       {selected && (
                                         <PiCheck
                                           size={14}
-                                          className="text-[#A308F0] ml-auto shrink-0"
+                                          className="text-primary ml-auto shrink-0"
                                         />
                                       )}
                                     </li>
@@ -355,10 +355,10 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                         rows={4}
                         className="w-full text-[13px] text-ink-500 dark:text-ink-200
                           placeholder:text-ink-300 dark:placeholder:text-ink-600
-                          bg-[#F1F3F4] dark:bg-[#1C1C1A]
+                          bg-base-300 dark:bg-base-730
                           border border-transparent
-                          focus:border-[#D9A8F8] dark:focus:border-[#7A06B8]
-                          hover:border-[#DEE2E6] dark:hover:border-[#3A3A38]
+                          focus:border-primary-200 dark:focus:border-primary-700
+                          hover:border-border dark:hover:border-base-710
                           rounded-xl px-3.5 py-3 resize-none
                           focus:outline-none transition-colors duration-100"
                       />
@@ -398,13 +398,13 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                             bg-transparent w-full
                             ${
                               isDragging
-                                ? "border-[#A308F0] bg-primary/5 dark:bg-primary/10"
-                                : "border-[#DEE2E6] dark:border-[#3A3A38] hover:border-[#C97FF5] dark:hover:border-[#7A06B8] hover:bg-primary/[0.02]"
+                                ? "border-primary bg-primary/5 dark:bg-primary/10"
+                                : "border-border dark:border-base-710 hover:border-primary-300 dark:hover:border-primary-700 hover:bg-primary/[0.02]"
                             }`}
                         >
                           <div
                             className="flex items-center justify-center w-8 h-8 rounded-lg
-                            bg-[#F1F3F4] dark:bg-[#2A2A28]
+                            bg-base-300 dark:bg-base-700
                             text-ink-300 dark:text-ink-500"
                           >
                             <PiUploadSimple size={15} />
@@ -437,7 +437,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                             <li
                               key={`${file.name}-${file.size}-${file.lastModified}`}
                               className="flex items-center gap-2.5 px-3 py-2
-                              bg-[#F9F5FF] dark:bg-[#1A0D26]
+                              bg-primary-tint-50 dark:bg-primary-900
                               border border-[#E8D5FC] dark:border-[#2E1A40]
                               rounded-lg"
                             >
@@ -455,7 +455,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                                 type="button"
                                 onClick={() => removeFile(i)}
                                 aria-label="Remove file"
-                                className="shrink-0 text-ink-300 hover:text-[#D85A30] transition-colors"
+                                className="shrink-0 text-ink-300 hover:text-warning transition-colors"
                               >
                                 <PiX size={13} />
                               </button>
@@ -468,18 +468,18 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
 
                   <div
                     className="flex items-center justify-between px-6 py-4
-                    border-t border-[#F1F3F4] dark:border-[#2A2A28]"
+                    border-t border-base-300 dark:border-base-700"
                   >
                     <button
                       type="button"
                       onClick={handleClose}
                       className="text-sm font-medium
                         text-ink-400 dark:text-ink-500
-                        border border-[#DEE2E6] dark:border-[#3A3A38]
+                        border border-border dark:border-base-710
                         px-6 py-1.5 rounded-xl
-                        hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+                        hover:bg-base-300 dark:hover:bg-base-700
                         hover:text-ink-500 dark:hover:text-ink-300
-                        transition-colors duration-100 bg-[#F8F9FA]"
+                        transition-colors duration-100 bg-inputBg"
                     >
                       Cancel
                     </button>
@@ -492,8 +492,8 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                         transition-all duration-100 active:scale-[0.98]
                         ${
                           canSubmit && !isSubmitting
-                            ? "bg-[#A308F0] hover:bg-[#8A06CC] text-white"
-                            : "bg-[#868E96] dark:bg-[#2A2A28] text-white dark:text-ink-600 cursor-not-allowed"
+                            ? "bg-primary hover:bg-primary-710 text-white"
+                            : "bg-disabled dark:bg-base-700 text-white dark:text-ink-600 cursor-not-allowed"
                         }`}
                     >
                       {isSubmitting ? (

@@ -67,25 +67,25 @@ function UserItem(props: UserItemProps) {
           type="checkbox"
           checked={props.isSelected}
           onChange={onToggleSelect}
-          className="h-4 w-4 rounded-2xl border-[#D0D5DD] text-[#7F56D9] focus:border-[#7F56D9] cursor-pointer"
+          className="h-4 w-4 rounded-2xl border-border-faint text-accent-violet focus:border-accent-violet cursor-pointer"
         />
       </td>
-      <td className="whitespace-nowrap p-4 text-sm font-medium text-[#1A1A1A] dark:text-white">
+      <td className="whitespace-nowrap p-4 text-sm font-medium text-ink-100 dark:text-white">
         <Avatar />
         <span>{props.user.name}</span>{" "}
-        <span className="text-[#6C757D] dark:text-ink-400 inline-block font-light">
+        <span className="text-ink-400 dark:text-ink-400 inline-block font-light">
           {props.user.email}
         </span>
       </td>
       <td className="whitespace-nowrap p-4 text-sm text-ink-100">
-        <span className="bg-[#F8F9FA] border border-[#DEE2E6] dark:bg-base-100  dark:border-border-tertiary rounded-md px-3 py-1">
+        <span className="bg-inputBg border border-border dark:bg-base-100  dark:border-border-tertiary rounded-md px-3 py-1">
           {props.user.workspaceName || "—"} workspace
         </span>
       </td>
-      <td className="whitespace-nowrap p-4 text-sm text-[#6C757D] dark:text-ink-400  font-medium">
+      <td className="whitespace-nowrap p-4 text-sm text-ink-400 dark:text-ink-400  font-medium">
         {badge}
       </td>
-      <td className="whitespace-nowrap p-4 text-sm text-[#6C757D] dark:text-ink-400  font-medium">
+      <td className="whitespace-nowrap p-4 text-sm text-ink-400 dark:text-ink-400  font-medium">
         10 mins ago
       </td>
       <td className="whitespace-nowrap p-4 text-sm font-medium sm:pl-6 lg:pl-8 pr-4 items-end flex w-full">
@@ -193,7 +193,7 @@ function UsersList(props: Props) {
                     type="checkbox"
                     checked={allSelected}
                     onChange={handleSelectAll}
-                    className="h-4 w-4 rounded-2xl border-[#D0D5DD]  dark:border-border-tertiary text-[#7F56D9] focus:border-[#7F56D9] cursor-pointer"
+                    className="h-4 w-4 rounded-2xl border-border-faint  dark:border-border-tertiary text-accent-violet focus:border-accent-violet cursor-pointer"
                   />
                 </th>
                 <th
@@ -253,7 +253,7 @@ function UsersList(props: Props) {
         className={clsx(
           "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",
           "flex items-center gap-4 px-3 py-3",
-          "bg-[#0F0F0F] dark:bg-[#1A1D21] border border-border-secondary  dark:border-border-tertiary",
+          "bg-base-400 dark:bg-[#1A1D21] border border-border-secondary  dark:border-border-tertiary",
           "rounded-[14px]",
           "transition-all duration-200 ease-out",
           selectionCount > 0
@@ -261,8 +261,8 @@ function UsersList(props: Props) {
             : "opacity-0 translate-y-4 pointer-events-none"
         )}
       >
-        <span className="text-[13px] text-[#F8F9FA] dark:text-ink-300 whitespace-nowrap">
-          <span className=" text-[#F8F9FA] dark:text-white">
+        <span className="text-[13px] text-inputBg dark:text-ink-300 whitespace-nowrap">
+          <span className=" text-inputBg dark:text-white">
             {selectionCount}
           </span>{" "}
           {selectionCount === 1 ? "user" : "users"} selected
@@ -271,7 +271,7 @@ function UsersList(props: Props) {
         <button
           type="button"
           onClick={handleBulkRemove}
-          className="flex items-center gap-1.5 text-xs font-medium  transition-colors bg-[#F8F9FA] rounded-lg px-2 py-1.5 text-[#343A40]"
+          className="flex items-center gap-1.5 text-xs font-medium  transition-colors bg-inputBg rounded-lg px-2 py-1.5 text-ink-500"
         >
           Remove member
         </button>

@@ -52,9 +52,9 @@ export const ContactForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="border border-[#ffffff30] flex flex-col gap-4 rounded-md md:w-[85%] p-1 mt-6 md:mt-0 w-full"
+      className="border border-white/[18.8%] flex flex-col gap-4 rounded-md md:w-[85%] p-1 mt-6 md:mt-0 w-full"
     >
-      <div className="md:px-6 px-3 py-10  border-[#ffffff60] border rounded-lg  flex flex-col  justify-center w-full space-y-3">
+      <div className="md:px-6 px-3 py-10  border-white/[37.6%] border rounded-lg  flex flex-col  justify-center w-full space-y-3">
         <div className="flex flex-col">
           <label htmlFor="name" className="text-sm text-white mb-1">
             Name
@@ -105,7 +105,7 @@ export const ContactForm = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full border border-[#ffffff60] px-4 py-3  font-medium disabled:opacity-90 mt-5 rounded-md flex items-center justify-center space-x-3  hover:bg-btnHover"
+          className="w-full border border-white/[37.6%] px-4 py-3  font-medium disabled:opacity-90 mt-5 rounded-md flex items-center justify-center space-x-3  hover:bg-btnHover"
         >
           <Send size={18} />
           <p> {loading ? "Sending..." : "Submit"}</p>

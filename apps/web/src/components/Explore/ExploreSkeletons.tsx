@@ -36,8 +36,8 @@ export function FeaturedExploreCardSkeleton({
       className={cn(
         "flex flex-col rounded-3xl py-5 border px-6 font-body",
         isPurple
-          ? "bg-[#A308F0] border-[#01E3D433]"
-          : "bg-[#F2F3FB] dark:bg-base-100 border-[#01E3D433] dark:border-border-tertiary"
+          ? "bg-primary border-teal/[20%]"
+          : "bg-[#F2F3FB] dark:bg-base-100 border-teal/[20%] dark:border-border-tertiary"
       )}
     >
       <div className="flex items-center justify-between mb-3">

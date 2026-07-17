@@ -53,7 +53,7 @@ export default function Snapshots(props: Props) {
                 <button
                   type="button"
                   disabled
-                  className="rounded-full px-4 py-2 text-sm bg-[#A308F0] hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 text-white"
+                  className="rounded-full px-4 py-2 text-sm bg-primary hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50 text-white"
                 >
                   Save
                 </button>

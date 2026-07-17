@@ -96,8 +96,8 @@ export function ThinkingPart({ part, isActive = false }: ThinkingPartProps) {
 
   return (
     <div
-      className="rounded-lg border border-border-secondary dark:border-[#2A2A28]
-        bg-white dark:bg-[#1C1C1A] overflow-hidden"
+      className="rounded-lg border border-border-secondary dark:border-base-700
+        bg-white dark:bg-base-730 overflow-hidden"
     >
       <button
         type="button"
@@ -182,7 +182,7 @@ export function ThinkingPart({ part, isActive = false }: ThinkingPartProps) {
             exit="exit"
             style={{ overflow: "hidden" }}
           >
-            <div className="border-t border-border-secondary dark:border-[#2A2A28] px-2.5 py-2 space-y-2">
+            <div className="border-t border-border-secondary dark:border-base-700 px-2.5 py-2 space-y-2">
               {part.contextUsed && part.contextUsed.length > 0 && (
                 <div className="flex flex-wrap gap-1">
                   {part.contextUsed.map(ctx => {
@@ -195,8 +195,8 @@ export function ThinkingPart({ part, isActive = false }: ThinkingPartProps) {
                         key={ctx.blockId}
                         className="inline-flex items-center gap-1 text-[10.5px] font-medium
                           px-1.5 py-[2px] rounded-md
-                          bg-[#F1F3F4] dark:bg-[#2A2A28]
-                          border border-[#DEE2E6] dark:border-[#3A3A38]
+                          bg-base-300 dark:bg-base-700
+                          border border-border dark:border-base-710
                           text-ink-400 dark:text-ink-500"
                       >
                         {kind && (

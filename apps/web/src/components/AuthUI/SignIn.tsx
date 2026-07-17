@@ -36,11 +36,11 @@ export const SignIn = () => {
       <SocialLogin variant="signin" />
 
       <div className="flex items-center justify-center lg:justify-normal gap-3 w-full lg:my-2.5 my-0.5">
-        <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1 lg:block hidden" />
+        <div className="h-px bg-border-secondary dark:bg-white/[18.8%] flex-1 lg:block hidden" />
         <span className="text-sm text-ink-100 font-medium font-body text-center ">
           or
         </span>
-        <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1 lg:block hidden" />
+        <div className="h-px bg-border-secondary dark:bg-white/[18.8%] flex-1 lg:block hidden" />
       </div>
 
       <SignInForm />

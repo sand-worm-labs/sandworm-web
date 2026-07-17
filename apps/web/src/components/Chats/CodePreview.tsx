@@ -19,7 +19,7 @@ export const WormQLPreview = ({ query }: WormQLPreviewProps) => {
   };
 
   return (
-    <div className="relative rounded-sm border border-zinc-700 overflow-hidden pb-12 bg-[#ffffff15] ">
+    <div className="relative rounded-sm border border-zinc-700 overflow-hidden pb-12 bg-white/[8.2%] ">
       <SyntaxHighlighter
         language="sql"
         style={twilight}

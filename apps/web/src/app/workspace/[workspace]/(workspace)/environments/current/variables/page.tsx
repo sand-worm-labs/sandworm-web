@@ -47,11 +47,11 @@ function errorToMessage(error: ErrorType): string {
 
 const inputCls =
   "w-full px-3 py-2 rounded-lg font-body text-sm " +
-  "bg-[#F1F3F4] dark:bg-[#1A1A1A] " +
-  "border border-[#DEE2E6] dark:border-border-tertiary " +
+  "bg-base-300 dark:bg-ink-100 " +
+  "border border-border dark:border-border-tertiary " +
   "text-ink-500 dark:text-white " +
   "placeholder-ink-300 dark:placeholder-ink-600 " +
-  "focus:outline-none focus:ring-1 focus:ring-[#A308F0] " +
+  "focus:outline-none focus:ring-1 focus:ring-primary " +
   "transition-colors duration-100 " +
   "disabled:opacity-50 disabled:cursor-not-allowed";
 
@@ -151,8 +151,8 @@ function EnvVarInput(props: EnvVarInputProps) {
           disabled={props.disabled}
           aria-label="Remove variable"
           className="flex items-center justify-center w-8 h-8 rounded-lg
-            text-ink-300 hover:text-[#D85A30] hover:bg-[#FAECE7]
-            dark:hover:bg-[#1A0D08]
+            text-ink-300 hover:text-warning hover:bg-error-tint
+            dark:hover:bg-error-shade
             transition-colors duration-100
             disabled:opacity-40 disabled:cursor-not-allowed"
         >
@@ -268,7 +268,7 @@ export default function EnvironmentVariablesPage() {
       <ScrollBar className="w-full bg-white dark:bg-base-100 h-full overflow-auto font-body">
         <div className="px-4 sm:px-6 lg:px-8 py-6">
           {/* ── Header ── */}
-          <div className="mb-6 pb-5 border-b border-[#F1F3F4] dark:border-[#2A2A28]">
+          <div className="mb-6 pb-5 border-b border-base-300 dark:border-base-700">
             <h2 className="text-lg font-semibold text-ink-100 dark:text-white">
               Environment variables
             </h2>
@@ -276,8 +276,8 @@ export default function EnvironmentVariablesPage() {
               Available in Python blocks via{" "}
               <code
                 className="font-mono text-[0.8125em] px-1.5 py-0.5
-                bg-[#F1F3F4] dark:bg-[#2A2A28]
-                border border-[#DEE2E6] dark:border-[#3A3A38]
+                bg-base-300 dark:bg-base-700
+                border border-border dark:border-base-710
                 text-ink-500 dark:text-ink-300 rounded-md"
               >
                 os.getenv("VAR_NAME")
@@ -315,9 +315,9 @@ export default function EnvironmentVariablesPage() {
                 onClick={onAdd}
                 className="flex items-center gap-2 text-sm font-medium
                   text-ink-400 dark:text-ink-500
-                  border border-[#DEE2E6] dark:border-[#3A3A38]
+                  border border-border dark:border-base-710
                   px-4 py-2 rounded-lg
-                  hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+                  hover:bg-base-300 dark:hover:bg-base-700
                   hover:text-ink-500 dark:hover:text-ink-300
                   transition-colors duration-100"
               >
@@ -334,9 +334,9 @@ export default function EnvironmentVariablesPage() {
                 disabled={saving}
                 className="text-sm font-medium
                   text-ink-400 dark:text-ink-500
-                  border border-[#DEE2E6] dark:border-[#3A3A38]
+                  border border-border dark:border-base-710
                   px-5 py-2 rounded-lg
-                  hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+                  hover:bg-base-300 dark:hover:bg-base-700
                   hover:text-ink-500 dark:hover:text-ink-300
                   transition-colors duration-100
                   disabled:opacity-50 disabled:cursor-not-allowed"
@@ -349,10 +349,10 @@ export default function EnvironmentVariablesPage() {
                 disabled={!isDirty || loading}
                 className="flex items-center gap-2
                   text-sm font-medium text-white
-                  bg-[#A308F0] hover:bg-[#8A06CC]
+                  bg-primary hover:bg-primary-710
                   px-5 py-2 rounded-lg
                   transition-colors duration-100
-                  disabled:bg-[#DEE2E6] dark:disabled:bg-[#2A2A28]
+                  disabled:bg-input dark:disabled:bg-base-700
                   disabled:text-ink-300 dark:disabled:text-ink-600
                   disabled:cursor-not-allowed"
               >

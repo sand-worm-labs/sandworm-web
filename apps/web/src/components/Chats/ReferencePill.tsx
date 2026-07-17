@@ -10,8 +10,8 @@ import type { AttachedReference } from "./types";
 
 const PILL_BASE =
   "inline-flex items-center gap-1 font-medium leading-none rounded-md " +
-  "bg-[#F1F3F4] dark:bg-[#2A2A28] " +
-  "border border-[#DEE2E6] dark:border-[#3A3A38] " +
+  "bg-base-300 dark:bg-base-700 " +
+  "border border-border dark:border-base-710 " +
   "text-ink-500 dark:text-ink-300 ";
 
 // =====================================
@@ -61,7 +61,7 @@ export function InputReferencePill({ reference, onRemove }: InputPillProps) {
         onClick={() => onRemove(reference.id)}
         aria-label={`Remove ${reference.label}`}
         className="flex items-center justify-center w-3.5 h-3.5 ml-0.5
-          rounded opacity-40 hover:opacity-80 hover:bg-[#DEE2E6] dark:hover:bg-[#3A3A38]
+          rounded opacity-40 hover:opacity-80 hover:bg-input dark:hover:bg-base-710
           transition-opacity"
       >
         <PiX size={9} />

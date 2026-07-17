@@ -47,7 +47,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A] transition-opacity" />
+          <div className="fixed inset-0 bg-black/[10.2%] transition-opacity" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto ">
@@ -92,7 +92,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
                   <button
                     type="button"
                     onClick={props.onUpdate}
-                    className="inline-flex w-full justify-center rounded-xl bg-[#A308F0] px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2  sm:col-start-2"
+                    className="inline-flex w-full justify-center rounded-xl bg-primary px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2  sm:col-start-2"
                   >
                     Update component
                   </button>
@@ -100,7 +100,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
                     type="button"
                     data-autofocus
                     onClick={props.onClose}
-                    className="mt-3 inline-flex w-full justify-center rounded-xl bg-[#F8F9FA] px-3 py-2 text-sm font-medium text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0 dark:text-black"
+                    className="mt-3 inline-flex w-full justify-center rounded-xl bg-inputBg px-3 py-2 text-sm font-medium text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0 dark:text-black"
                   >
                     Cancel
                   </button>
@@ -302,7 +302,7 @@ export default function ReusableComponents(props: Props) {
             </>
           ) : (
             <div className="flex-1 p-4">
-              <div className="flex items-center justify-center h-full text-ink-300 dark:text-ink-400 rounded-lg border border-dashed border-border-secondary dark:border-border-tertiary p-8 text-center font-body font-medium flex-col bg-[#FBFBFB] dark:bg-base-100">
+              <div className="flex items-center justify-center h-full text-ink-300 dark:text-ink-400 rounded-lg border border-dashed border-border-secondary dark:border-border-tertiary p-8 text-center font-body font-medium flex-col bg-base-500 dark:bg-base-100">
                 <ScheduleIcon />
                 <p className="mt-2 text-[0.9rem]">
                   You have no reusable components. Save a block to create one.
@@ -353,12 +353,12 @@ export function SaveReusableComponentButton(
           {ref => (
             <button
               type="button"
-              className="bg-[#FEFEFF] rounded-[5px] border border-[#E6E0F1] dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center hover:bg-[#F1F2F4] hover:border-primary disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
+              className="bg-base-200 rounded-[5px] border border-hover-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center hover:bg-hover-bg hover:border-primary disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
               onClick={onSave}
               disabled={props.disabled || props.isComponentInstance}
               ref={ref}
             >
-              <PiFloppyDisk className="w-[13px] h-[13px] text-[#1C3B5A]" />
+              <PiFloppyDisk className="w-[13px] h-[13px] text-ink-navy" />
             </button>
           )}
         </TooltipV2>

@@ -71,7 +71,7 @@ export const AppSidebar = ({
   return (
     <>
       <TooltipProvider>
-        <div className="h-full w-16  border-r flex flex-col items-center py-4 space-y-4  pt-12 border-border-secondary  bg-[#F1F3F4]">
+        <div className="h-full w-16  border-r flex flex-col items-center py-4 space-y-4  pt-12 border-border-secondary  bg-base-300">
           <ScrollArea className="flex-grow ">
             {viewOptions.map(item => (
               <Tooltip key={item.id}>

@@ -17,7 +17,7 @@ export function FieldLabel({ param }: { param: ParamDefinition }) {
     <label className="flex items-center gap-1.5 text-xs font-medium text-ink-400 ">
       {param.label}
       {param.required && (
-        <span className="text-[#A308F0]/70 text-[10px]">*</span>
+        <span className="text-primary/70 text-[10px]">*</span>
       )}
       {param.description && (
         <span className="ml-auto text-[10px] text-ink-400   font-normal">
@@ -116,7 +116,7 @@ export function AddressField({
               ? "border-error focus:border-error"
               : isValid
                 ? "border-border-tertiary focus:border-tertiary"
-                : "border-border-tertiary focus:border-[#A308F0]/50"
+                : "border-border-tertiary focus:border-primary/50"
           )}
         />
 

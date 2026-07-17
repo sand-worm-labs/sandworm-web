@@ -254,7 +254,7 @@ function SettingsRow({
         <label className="block text-md font-bold leading-4 dark:text-white text-ink-100">
           {label}
         </label>
-        <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
+        <p className="text-xs xl:text-sm mt-2 text-ink-400 dark:text-ink-400">
           {description}
         </p>
         {action}
@@ -282,7 +282,7 @@ function CreditArc({ pct }: { pct: number }) {
         r={r}
         fill="none"
         strokeWidth="3"
-        className="stroke-[#E9ECEF] dark:stroke-border-tertiary"
+        className="stroke-border-secondary dark:stroke-border-tertiary"
       />
       <circle
         cx={cx}
@@ -325,7 +325,7 @@ function TeamPlanSection({
             router.push(`/workspace/${workspaceId}/settings/billing`);
             onClose();
           }}
-          className="px-2.5 py-1 border border-[#DEE2E6] dark:border-gray-700 dark:text-black bg-[#F8F9FA] rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 text-xs"
+          className="px-2.5 py-1 border border-border dark:border-gray-700 dark:text-black bg-inputBg rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 text-xs"
         >
           Change Plan
         </button>
@@ -334,26 +334,26 @@ function TeamPlanSection({
       <div className="flex w-full justify-between border-b border-border-secondary  pb-2 dark:border-border-tertiary items-center">
         {/* ✦ Plan Badge ✦ */}
         <div>
-          <span className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
+          <span className="text-[13px] uppercase text-ink-400 dark:text-ink-400 font-bold block mb-2.5">
             Current Plan
           </span>
-          <div className="font-medium capitalize bg-[#F7E8FF] dark:bg-[#2a1a3a] px-3 py-0.5 rounded-md text-primary inline-block text-sm">
+          <div className="font-medium capitalize bg-primary-tint-75 dark:bg-primary-910 px-3 py-0.5 rounded-md text-primary inline-block text-sm">
             Free
           </div>
         </div>
 
         {/* ✦ Credits ✦ */}
         <div>
-          <span className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-2.5">
+          <span className="text-[13px] uppercase text-ink-400 dark:text-ink-400 font-bold block mb-2.5">
             AI Credits
           </span>
           <div className="flex items-center gap-2 min-h-[2.25rem]">
             {creditsLoading ? (
               <div className="flex items-center gap-2 w-full">
-                <div className="h-9 w-9 rounded-full bg-[#F8F9FA] dark:bg-base-100 animate-pulse shrink-0" />
+                <div className="h-9 w-9 rounded-full bg-inputBg dark:bg-base-100 animate-pulse shrink-0" />
                 <div className="flex flex-col gap-1.5 flex-1">
-                  <div className="h-3.5 w-24 rounded bg-[#F8F9FA] dark:bg-base-100 animate-pulse" />
-                  <div className="h-2.5 w-20 rounded bg-[#F8F9FA] dark:bg-base-100 animate-pulse" />
+                  <div className="h-3.5 w-24 rounded bg-inputBg dark:bg-base-100 animate-pulse" />
+                  <div className="h-2.5 w-20 rounded bg-inputBg dark:bg-base-100 animate-pulse" />
                 </div>
               </div>
             ) : (
@@ -364,12 +364,12 @@ function TeamPlanSection({
                 <div className="flex flex-col leading-tight">
                   <span className="text-sm font-semibold text-ink-900 dark:text-ink-100">
                     ${credits ? formatCredit(credits.availableCredits) : "—"}
-                    <span className="text-xs font-normal text-[#6C757D] dark:text-ink-400">
+                    <span className="text-xs font-normal text-ink-400 dark:text-ink-400">
                       {" "}
                       / ${credits ? formatCredit(credits.totalCredits) : "—"}
                     </span>
                   </span>
-                  <span className="text-[11px] text-[#6C757D] dark:text-ink-400">
+                  <span className="text-[11px] text-ink-400 dark:text-ink-400">
                     available (USD)
                   </span>
                 </div>
@@ -399,19 +399,19 @@ function AIConfigSection({
       label="AI Configuration"
       description="Select the default AI model for your team workspace"
     >
-      <div className="text-[13px] uppercase text-[#6C757D] dark:text-ink-400 font-bold block mb-1.5">
+      <div className="text-[13px] uppercase text-ink-400 dark:text-ink-400 font-bold block mb-1.5">
         Model
       </div>
       <button
         type="button"
         onClick={onOpenPicker}
-        className="flex items-center justify-between w-full rounded-[10px] xl:py-2 py-1.5 pl-4 pr-3 ring-1 ring-inset ring-[#CED4DA] dark:ring-border-tertiary focus:ring-[#A308F0] dark:bg-base-400 text-sm font-medium text-ink-100 dark:text-white transition-colors hover:ring-[#A308F0]/50"
+        className="flex items-center justify-between w-full rounded-[10px] xl:py-2 py-1.5 pl-4 pr-3 ring-1 ring-inset ring-border-tertiary dark:ring-border-tertiary focus:ring-primary dark:bg-base-400 text-sm font-medium text-ink-100 dark:text-white transition-colors hover:ring-primary/50"
       >
-        <span className="text-[#6C757D] dark:text-ink-400">
+        <span className="text-ink-400 dark:text-ink-400">
           {selectedModelId ?? assistantModel}
         </span>
         <svg
-          className="w-4 h-4 text-[#6C757D] shrink-0"
+          className="w-4 h-4 text-ink-400 shrink-0"
           viewBox="0 0 16 16"
           fill="none"
         >
@@ -454,13 +454,13 @@ function MembersSection({
     >
       {isMembersLoading ? (
         <div
-          className="w-full rounded-xl border border-[#DEE2E6] dark:border-border-tertiary overflow-hidden min-h-[11.5rem]"
+          className="w-full rounded-xl border border-border dark:border-border-tertiary overflow-hidden min-h-[11.5rem]"
           aria-busy="true"
           aria-label="Loading members"
         >
-          <div className="h-10 border-b border-[#CED4DA] dark:border-border-tertiary bg-[#F8F9FA]/60 dark:bg-base-100/60 animate-pulse" />
-          <div className="h-[4.5rem] border-b border-[#DEE2E6] dark:border-border-tertiary bg-[#F8F9FA]/40 dark:bg-base-100/40 animate-pulse" />
-          <div className="h-[4.5rem] bg-[#F8F9FA]/40 dark:bg-base-100/40 animate-pulse" />
+          <div className="h-10 border-b border-border-tertiary dark:border-border-tertiary bg-inputBg/60 dark:bg-base-100/60 animate-pulse" />
+          <div className="h-[4.5rem] border-b border-border dark:border-border-tertiary bg-inputBg/40 dark:bg-base-100/40 animate-pulse" />
+          <div className="h-[4.5rem] bg-inputBg/40 dark:bg-base-100/40 animate-pulse" />
         </div>
       ) : (
         <MiniUsersList
@@ -483,17 +483,17 @@ function MembersSection({
 function DangerZoneSection({ onDelete }: { onDelete: () => void }) {
   return (
     <SettingsRow label="Delete Workspace" description="Delete this Workspace">
-      <h3 className="uppercase mb-2 text-[#6C757D] dark:text-ink-400 font-bold text-[13px]">
+      <h3 className="uppercase mb-2 text-ink-400 dark:text-ink-400 font-bold text-[13px]">
         Delete this workspace
       </h3>
-      <div className="flex bg-[#FFDBDB] dark:bg-[#2a1a1a] border border-[#CED4DA] dark:border-[#5a2e2e] rounded-xl text-[13px] py-1 px-2 items-center gap-x-5 justify-between">
-        <span className="inline-block text-[#ff0000] dark:text-[#ff6b6b]">
+      <div className="flex bg-[#FFDBDB] dark:bg-[#2a1a1a] border border-border-tertiary dark:border-[#5a2e2e] rounded-xl text-[13px] py-1 px-2 items-center gap-x-5 justify-between">
+        <span className="inline-block text-error dark:text-[#ff6b6b]">
           Once deleted, all files, users and data will be permanently lost
         </span>
         <button
           type="button"
           onClick={onDelete}
-          className={`bg-[#F8F9FA] dark:bg-base-400 text-[12px] py-1 px-2 rounded-lg border border-[#DEE2E6] dark:border-border-tertiary text-[#ff0000] dark:text-[#ff6b6b] font-medium inline-block ${surfaceHoverClassName}`}
+          className={`bg-inputBg dark:bg-base-400 text-[12px] py-1 px-2 rounded-lg border border-border dark:border-border-tertiary text-error dark:text-[#ff6b6b] font-medium inline-block ${surfaceHoverClassName}`}
         >
           Delete Workspace
         </button>
@@ -542,7 +542,7 @@ function SettingsHeader({
             </button>
           </h2>
 
-          <div className="w-32 flex items-center justify-center gap-2 text-sm text-[#6C757D] font-medium dark:text-ink-400 border-r border-[#1A1A1A]">
+          <div className="w-32 flex items-center justify-center gap-2 text-sm text-ink-400 font-medium dark:text-ink-400 border-r border-ink-100">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -565,7 +565,7 @@ function SettingsHeader({
           <button
             type="button"
             onClick={onManageInvites}
-            className={`flex items-center gap-2 px-2.5 py-0.5 border bg-[#F8F9FA] border-[#DEE2E6] dark:text-black dark:border-border-tertiary rounded-lg text-xs font-medium ${surfaceHoverClassName}`}
+            className={`flex items-center gap-2 px-2.5 py-0.5 border bg-inputBg border-border dark:text-black dark:border-border-tertiary rounded-lg text-xs font-medium ${surfaceHoverClassName}`}
           >
             Manage Invites
           </button>
@@ -586,7 +586,7 @@ function SettingsHeader({
           </button>
         </div>
 
-        <p className="text-xs xl:text-sm mt-2 text-[#6C757D] dark:text-ink-400">
+        <p className="text-xs xl:text-sm mt-2 text-ink-400 dark:text-ink-400">
           Change details about your workspace
         </p>
       </div>
@@ -720,7 +720,7 @@ export default function WorkspaceSettingsModal({
           leaveTo="opacity-0"
         >
           <div
-            className="fixed inset-0 bg-[#0000001A]"
+            className="fixed inset-0 bg-black/[10.2%]"
             onClick={onClose}
             onKeyDown={(e: React.KeyboardEvent) => {
               if (e.key === "Enter" || e.key === " ") {

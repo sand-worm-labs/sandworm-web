@@ -53,7 +53,7 @@ export function SelectField({
             "focus:bg-white/[0.05]",
             error
               ? "border-error focus:border-red-500/60"
-              : "border-border-tertiary focus:border-[#A308F0]/50"
+              : "border-border-tertiary focus:border-primary/50"
           )}
         >
           {!value && (
@@ -121,7 +121,7 @@ export function ChainMultiSelect({
           "bg-white/[0.03] transition-colors",
           error
             ? "border-error"
-            : "border-border-tertiary focus-within:border-[#A308F0]/40"
+            : "border-border-tertiary focus-within:border-primary/40"
         )}
       >
         {options.map(opt => {
@@ -134,7 +134,7 @@ export function ChainMultiSelect({
               className={clsx(
                 "px-2.5 py-1 rounded-md text-xs font-medium transition-colors",
                 isSelected
-                  ? "bg-[#A308F0]/20 border border-[#A308F0]/40 text-[#A308F0]"
+                  ? "bg-primary/20 border border-primary/40 text-primary"
                   : "bg-white/[0.04] border border-border-tertiary text-white/40 hover:text-white/60 hover:border-white/20"
               )}
             >

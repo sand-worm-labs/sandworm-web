@@ -66,7 +66,7 @@ const KeyboardKey = (props: {
       "px-1.5 py-0.5 rounded-md font-tertiary text-[0.85rem] ",
       props.mode === "insert"
         ? "bg-[#F1E6F7] text-primary"
-        : "bg-[#F7F6E6] text-[#1C3B5A]"
+        : "bg-[#F7F6E6] text-ink-navy"
     )}
   >
     {props.children}
@@ -85,7 +85,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#161633] dark:bg-[#00000020] bg-opacity-20 transition-opacity font-body" />
+          <div className="fixed inset-0 bg-[#161633] dark:bg-black/[12.5%] bg-opacity-20 transition-opacity font-body" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto font-body ">
@@ -101,7 +101,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
             >
               <Dialog.Panel className="relative transform overflow-y-auto rounded-2xl bg-white dark:bg-base-100  dark:border-border-tertiary dark:border text-left  transition-all sm:my-8 px-8 py-6 w-[600px] max-h-[90vh]">
                 <div>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#A308F020]">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/[12.5%]">
                     <ScheduleIcon />
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
@@ -153,7 +153,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                     type="button"
                     data-autofocus
                     onClick={props.onHide}
-                    className="rounded-xl  px-3 py-2 text-sm font-medium text-white bg-[#0F0F0F] dark:bg-white dark:text-black mt-0 w-1/3"
+                    className="rounded-xl  px-3 py-2 text-sm font-medium text-white bg-base-400 dark:bg-white dark:text-black mt-0 w-1/3"
                   >
                     Close
                   </button>

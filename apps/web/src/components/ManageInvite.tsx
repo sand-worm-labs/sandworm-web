@@ -124,7 +124,7 @@ const InviteForm: React.FC<InviteFormProps> = ({ onSendInvite }) => {
               setError("");
             }}
             placeholder="Samsonderulo@gmail.com"
-            className="flex-1 px-4 py-2.5 border border-[#DEE2E6] bg-[#F8F9FA] dark:bg-base-400 dark:border-border-tertiary rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A308F0] placeholder:text-[#868E96] dark:placeholder:text-ink-400 text-sm font-medium"
+            className="flex-1 px-4 py-2.5 border border-border bg-inputBg dark:bg-base-400 dark:border-border-tertiary rounded-xl focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-ink-300 dark:placeholder:text-ink-400 text-sm font-medium"
             disabled={isLoading}
           />
           {error && <p className="text-xs text-error">{error}</p>}
@@ -132,7 +132,7 @@ const InviteForm: React.FC<InviteFormProps> = ({ onSendInvite }) => {
         <button
           type="submit"
           disabled={isLoading || !email.trim()}
-          className="px-6 py-2.5 bg-[#A308F0] text-white disabled:text-[#E9ECEF] font-medium font-body rounded-xl disabled:bg-[#868E96] dark:disabled:bg-[#4a4a48] disabled:cursor-not-allowed transition-colors text-sm"
+          className="px-6 py-2.5 bg-primary text-white disabled:text-border-secondary font-medium font-body rounded-xl disabled:bg-disabled dark:disabled:bg-[#4a4a48] disabled:cursor-not-allowed transition-colors text-sm"
         >
           {isLoading ? "Sending..." : "Send invite"}
         </button>
@@ -190,16 +190,16 @@ const PendingRequestItem: React.FC<PendingRequestItemProps> = ({
       <div className="flex-1 min-w-0">
         <p className="mb-1">
           <span className="font-medium text-ink-100 mr-1">{request.name}</span>
-          <span className="text-sm text-[#343A40]">requested access as</span>
-          <span className="text-[13px] font-medium text-[#A308F0] font-tertiary ml-1">
+          <span className="text-sm text-ink-500">requested access as</span>
+          <span className="text-[13px] font-medium text-primary font-tertiary ml-1">
             {request.requestedRole}
           </span>
         </p>
-        <div className="text-sm text-[#6C757D]">
+        <div className="text-sm text-ink-400">
           {request.email} | {getTimeAgo(request.requestedAt)}
         </div>
         {request.message && (
-          <p className="text-sm text-[#6C757D] mt-1 italic">
+          <p className="text-sm text-ink-400 mt-1 italic">
             "{request.message}"
           </p>
         )}
@@ -210,7 +210,7 @@ const PendingRequestItem: React.FC<PendingRequestItemProps> = ({
           type="button"
           onClick={handleApprove}
           disabled={isProcessing}
-          className="px-3 py-1 text-xs font-medium bg-[#F8F9FA] border border-[#DEE2E6] text-[#1A1A1A] rounded-md  disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-3 py-1 text-xs font-medium bg-inputBg border border-border text-ink-100 rounded-md  disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {isApproving ? "Approving..." : "Approve"}
         </button>
@@ -218,9 +218,9 @@ const PendingRequestItem: React.FC<PendingRequestItemProps> = ({
           type="button"
           onClick={handleDeny}
           disabled={isProcessing}
-          className="px-2 py-2 text-xs font-medium  bg-[#FF0000]  rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-2 py-2 text-xs font-medium  bg-error  rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          <X className="w-[14px] h-[14px] text-[#F8F9FA]" />
+          <X className="w-[14px] h-[14px] text-inputBg" />
         </button>
       </div>
     </div>
@@ -260,27 +260,27 @@ const PendingInviteItem: React.FC<PendingInviteItemProps> = ({
       <div className="flex-1 min-w-0">
         <p className=" mb-1">
           <span className="font-medium text-ink-100 mr-1">{invite.name} </span>
-          <span className="text-sm text-[#343A40]">
+          <span className="text-sm text-ink-500">
             invited to collaborate as
           </span>
-          <span className="text-[13px] font-medium text-[#A308F0] font-tertiary  ml-1 ">
+          <span className="text-[13px] font-medium text-primary font-tertiary  ml-1 ">
             {invite.role}
           </span>
         </p>
-        <div className="text-sm text-[#6C757D]">
+        <div className="text-sm text-ink-400">
           {invite.email} | {getTimeAgo(invite.invitedAt)}
         </div>
       </div>
 
       <div className="flex items-center gap-3 flex-shrink-0">
-        <span className="text-xs text-[#6C757D] font-medium bg-[#F8F9FA] py-1 px-2.5 rounded-md">
+        <span className="text-xs text-ink-400 font-medium bg-inputBg py-1 px-2.5 rounded-md">
           Pending
         </span>
         <button
           type="button"
           onClick={handleCancel}
           disabled={isCancelling}
-          className="px-2.5 py-1 text-xs font-medium border border-[#DEE2E6] bg-[#F8F9FA] rounded-md hover:bg-gray-50 disabled:opacity-50 transition-colors"
+          className="px-2.5 py-1 text-xs font-medium border border-border bg-inputBg rounded-md hover:bg-gray-50 disabled:opacity-50 transition-colors"
         >
           Cancel Invite
         </button>
@@ -319,12 +319,12 @@ const PendingTabsContent: React.FC<PendingTabsContentProps> = ({
           className={`pb-2 text-sm font-medium transition-colors relative ${
             activeTab === "requests"
               ? "text-ink-100 border-b-2 border-border-tertiary"
-              : "text-[#6C757D] dark:text-ink-400 hover:text-gray-700"
+              : "text-ink-400 dark:text-ink-400 hover:text-gray-700"
           }`}
         >
           Pending requests
           {requests.length > 0 && (
-            <span className="ml-2 px-1.5 py-0.5 text-xs bg-[#A308F0] text-white rounded-full">
+            <span className="ml-2 px-1.5 py-0.5 text-xs bg-primary text-white rounded-full">
               {requests.length}
             </span>
           )}
@@ -335,19 +335,19 @@ const PendingTabsContent: React.FC<PendingTabsContentProps> = ({
           className={`pb-2 text-sm font-medium transition-colors ${
             activeTab === "invites"
               ? "text-ink-100 border-b-2 border-border-tertiary"
-              : "text-[#6C757D] dark:text-ink-400 hover:text-gray-700"
+              : "text-ink-400 dark:text-ink-400 hover:text-gray-700"
           }`}
         >
           Pending invites
           {invites.length > 0 && (
-            <span className="ml-2 px-1.5 py-0.5 text-xs bg-[#6C757D] text-white rounded-full">
+            <span className="ml-2 px-1.5 py-0.5 text-xs bg-ink-400 text-white rounded-full">
               {invites.length}
             </span>
           )}
         </button>
       </div>
 
-      <div className="space-y-2 divide-y divide-[#E9ECEF]">
+      <div className="space-y-2 divide-y divide-border-secondary">
         {activeTab === "requests" ? (
           requests.length === 0 ? (
             <p className="text-sm text-ink-400 text-center py-8">
@@ -403,41 +403,41 @@ const WorkspaceDescription: React.FC<WorkspaceDescriptionProps> = () => {
       </div>
       <div className="mt-8">
         <h3 className="text-sm font-bold mb-2 text-ink-100">Description</h3>
-        <p className="text-sm text-[#6C757D] dark:text-ink-400 font-medium mb-4">
+        <p className="text-sm text-ink-400 dark:text-ink-400 font-medium mb-4">
           Invite people to collaborate with you on your workspace. There are 3
           levels of access.
         </p>
 
         <div className="flex gap-2 mb-4 font-tertiary">
           <span className="bg-rainbow-gradient p-[1px] rounded-[8px] inline-block">
-            <span className="px-2 py-1 text-xs rounded-[7px] bg-[#F8F9FA] dark:bg-base-400 inline-block">
+            <span className="px-2 py-1 text-xs rounded-[7px] bg-inputBg dark:bg-base-400 inline-block">
               Owner
             </span>
           </span>
 
           <span className="bg-rainbow-gradient p-[1px] rounded-[8px] inline-block">
-            <span className="px-2 py-1 text-xs rounded-[7px] bg-[#F8F9FA] dark:bg-base-400  inline-block">
+            <span className="px-2 py-1 text-xs rounded-[7px] bg-inputBg dark:bg-base-400  inline-block">
               Editor
             </span>
           </span>
 
           <span className="bg-rainbow-gradient p-[1px] rounded-[8px] inline-block">
-            <span className="px-2 py-1 text-xs rounded-[7px] bg-[#F8F9FA] dark:bg-base-400  inline-block">
+            <span className="px-2 py-1 text-xs rounded-[7px] bg-inputBg dark:bg-base-400  inline-block">
               Viewer
             </span>
           </span>
         </div>
 
         <ul className="space-y-1 mt-2 text-sm opacity-90">
-          <li className="flex items-start gap-2 text-[#6C757D] dark:text-ink-400 font-medium ">
-            <span className="mt-1 text-[#6C757D] dark:text-ink-400">•</span>
+          <li className="flex items-start gap-2 text-ink-400 dark:text-ink-400 font-medium ">
+            <span className="mt-1 text-ink-400 dark:text-ink-400">•</span>
             <span>Owners have full access to the workspace</span>
           </li>
-          <li className="flex items-start gap-2 text-[#6C757D] dark:text-ink-400 font-medium">
+          <li className="flex items-start gap-2 text-ink-400 dark:text-ink-400 font-medium">
             <span className="mt-1">•</span>
             <span>Editors have edit access to the workspace</span>
           </li>
-          <li className="flex items-start gap-2 text-[#6C757D] dark:text-ink-400 font-medium">
+          <li className="flex items-start gap-2 text-ink-400 dark:text-ink-400 font-medium">
             <span className="mt-1">•</span>
             <span>Viewers can only view files.</span>
           </li>
@@ -487,7 +487,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A]" />
+          <div className="fixed inset-0 bg-black/[10.2%]" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-50 overflow-y-auto font-body">

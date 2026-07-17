@@ -152,7 +152,7 @@ function EditWithAIForm(props: Props) {
             props.loading ? "rainbow-border-top" : "rainbow-border-top-static",
             "border-b border-x border-border dark:border-border-dark",
             !props.hasOutput && "rounded-b-xl",
-            "bg-[#F8F9FA] dark:bg-surface-dark",
+            "bg-inputBg dark:bg-surface-dark",
             "transition-colors duration-150"
           )}
         >
@@ -168,14 +168,14 @@ function EditWithAIForm(props: Props) {
               defaultValue={props.value.toString()}
               className={clsx(
                 "w-full min-w-0 rounded-2xl pl-3 py-1.5 pr-[68px]",
-                "border border-[#E6E0F1] dark:border-border-dark",
-                "bg-[#F1F3F4] dark:bg-ink-950",
+                "border border-hover-border dark:border-border-dark",
+                "bg-base-300 dark:bg-ink-950",
                 "outline-none ring-offset-0",
-                "focus:border-[#A308F0] dark:focus:border-[#C97FF5]",
-                "dark:focus:ring-[#C97FF5]/20",
+                "focus:border-primary dark:focus:border-primary-300",
+                "dark:focus:ring-primary-300/20",
                 "text-[12.5px] font-body",
                 "text-ink-700 dark:text-ink-200",
-                "placeholder:text-[#868E96] dark:placeholder:text-ink-500",
+                "placeholder:text-ink-300 dark:placeholder:text-ink-500",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
                 "transition-[border-color,box-shadow] duration-150"
               )}
@@ -199,17 +199,17 @@ function EditWithAIForm(props: Props) {
                         "before:absolute before:inset-[1px] before:rounded-[7px]",
                         "before:bg-surface dark:before:bg-surface-dark",
                       ]
-                    : "bg-[#FEFEFF] hover:bg-[#8A06CC] text-white border border-[#E6E0F1]"
+                    : "bg-base-200 hover:bg-primary-710 text-white border border-hover-border"
                 )}
               >
                 {props.loading ? (
-                  <span className="relative z-10 text-[#A308F0] dark:text-[#C97FF5]">
+                  <span className="relative z-10 text-primary dark:text-primary-300">
                     <Spin />
                   </span>
                 ) : (
                   <PiArrowRight
                     size={12}
-                    className="text-[#A308F0] dark:text-[#C97FF5]"
+                    className="text-primary dark:text-primary-300"
                   />
                 )}
               </button>
@@ -220,9 +220,9 @@ function EditWithAIForm(props: Props) {
                 className={clsx(
                   "flex-shrink-0 flex items-center justify-center ",
                   "text-error dark:text-ink-500",
-                  "hover:text-error dark:hover:text-[#C97FF5]",
-                  "transition-colors duration-150 border border-[#E6E0F1] w-6 h-6 rounded-lg",
-                  "bg-[#FEFEFF] dark:bg-ink-950"
+                  "hover:text-error dark:hover:text-primary-300",
+                  "transition-colors duration-150 border border-hover-border w-6 h-6 rounded-lg",
+                  "bg-base-200 dark:bg-ink-950"
                 )}
               >
                 <PiX size={12} />

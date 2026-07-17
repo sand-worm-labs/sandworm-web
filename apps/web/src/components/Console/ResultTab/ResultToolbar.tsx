@@ -83,7 +83,7 @@ export const ResultToolbar = ({
               className={`cursor-pointer px-3 py-1 text-xs rounded-full flex items-center gap-2 hover:text-white ${
                 viewMode === option
                   ? "bg-orange-700 text-white"
-                  : "bg-[#ffffff]/20 text-white"
+                  : "bg-base-100/20 text-white"
               }`}
               onClick={() => setViewMode(option)}
             >

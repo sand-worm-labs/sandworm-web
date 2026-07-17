@@ -244,7 +244,7 @@ function SQLSuccess(props: SQLSuccessProps) {
 
       <div
         className={clsx(
-          "flex w-full items-center justify-between border-[#E6E0F1] px-3 h-10  text-xs rounded-b-xl text-ink-400 bg-[#F8F9FA]",
+          "flex w-full items-center justify-between border-hover-border px-3 h-10  text-xs rounded-b-xl text-ink-400 bg-inputBg",
           ((props.dashboardMode &&
             (props.dashboardMode._tag === "live" ||
               props.dashboardMode.position !== "expanded")) ||
@@ -298,13 +298,13 @@ function SQLSuccess(props: SQLSuccessProps) {
                 className={clsx(
                   props.isAddVisualizationDisabled
                     ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                    : "cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
-                  "flex items-center h-full border rounded-full border-[#E6E0F1] px-2 gap-x-1 text-ink-300 group relative font-body bg-[#FEFEFF] py-0.5"
+                    : "cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary",
+                  "flex items-center h-full border rounded-full border-hover-border px-2 gap-x-1 text-ink-300 group relative font-body bg-base-200 py-0.5"
                 )}
                 disabled={props.isAddVisualizationDisabled}
                 onClick={props.onAddVisualization}
               >
-                <PiChartPie className="w-[11.5px] h-[11.5px] shrink-0 text-[#868E96]" />
+                <PiChartPie className="w-[11.5px] h-[11.5px] shrink-0 text-ink-300" />
                 <span>Visualize</span>
               </button>
             </Tooltip>
@@ -326,8 +326,8 @@ function SQLSuccess(props: SQLSuccessProps) {
                 className={clsx(
                   csvRes.loading
                     ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                    : "cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary bg-[#FEFEFF]",
-                  "flex items-center h-full border rounded-full border-[#E6E0F1] px-2 gap-x-1 text-ink-300 group relative font-body"
+                    : "cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary bg-base-200",
+                  "flex items-center h-full border rounded-full border-hover-border px-2 gap-x-1 text-ink-300 group relative font-body"
                 )}
                 onClick={onDownloadCSV}
               >
@@ -335,7 +335,7 @@ function SQLSuccess(props: SQLSuccessProps) {
                   <Spin />
                 ) : (
                   <>
-                    <PiFileCsvLight className="w-[11.5px] h-[11.5px] shrink-0 text-[#868E96]" />
+                    <PiFileCsvLight className="w-[11.5px] h-[11.5px] shrink-0 text-ink-300" />
                     <span>CSV</span>
                   </>
                 )}
@@ -457,8 +457,8 @@ function SQLSyntaxError(props: {
                     className={clsx(
                       !props.canFixWithAI
                         ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                        : "cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
-                      "mt-4 flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
+                        : "cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary",
+                      "mt-4 flex items-center border rounded-md border-hover-border px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
                     )}
                   >
                     {props.isFixingWithAI ? (

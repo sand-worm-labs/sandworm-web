@@ -53,7 +53,7 @@ export const CheckMail = ({
         {description}
       </p>
 
-      <div className="bg-[#E9ECEF] h-[1px]  w-48 mt-2.5" />
+      <div className="bg-border-secondary h-[1px]  w-48 mt-2.5" />
       <p className="text-sm font-body font-medium text-ink-400 mt-2">
         {resendText}{" "}
         <button

@@ -55,10 +55,10 @@ function WorkspaceRow({
       disabled={disabled}
       onClick={handleClick}
       className={[
-        "w-full flex items-center gap-3 px-3 py-2 rounded-2xl transition-all duration-100 text-left border mb-1.5 border-[#DEE2E6]",
+        "w-full flex items-center gap-3 px-3 py-2 rounded-2xl transition-all duration-100 text-left border mb-1.5 border-border",
         "focus:outline-none ",
         "disabled:pointer-events-none disabled:opacity-50",
-        selected ? "bg-[#F8F9FA] " : "",
+        selected ? "bg-inputBg " : "",
       ].join(" ")}
     >
       <WorkspaceIcon icon={workspace.icon} />
@@ -161,9 +161,9 @@ export function ForkToWorkspaceModal({
       "w-full py-3.5 rounded-xl text-[13px] font-medium text-white transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
     if (status === "success")
       return `${base} bg-emerald-500 focus-visible:ring-emerald-400 cursor-default`;
-    if (status === "loading") return `${base} bg-[#A308F0] cursor-not-allowed`;
-    if (!canFork) return `${base} bg-[#A308F0] cursor-not-allowed`;
-    return `${base} bg-[#A308F0] hover:bg-[#A308F0] active:scale-[0.98] focus-visible:ring-violet-500`;
+    if (status === "loading") return `${base} bg-primary cursor-not-allowed`;
+    if (!canFork) return `${base} bg-primary cursor-not-allowed`;
+    return `${base} bg-primary hover:bg-primary active:scale-[0.98] focus-visible:ring-violet-500`;
   }, [status, canFork]);
 
   // =====================================
@@ -182,7 +182,7 @@ export function ForkToWorkspaceModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A]" aria-hidden="true" />
+          <div className="fixed inset-0 bg-black/[10.2%]" aria-hidden="true" />
         </Transition.Child>
 
         {/* ✦ Panel ✦  */}
@@ -238,7 +238,7 @@ export function ForkToWorkspaceModal({
 
                 {/* ✦ Has Single workspace ✦  */}
                 {!workspacesLoading && isSingle && selectedWorkspace && (
-                  <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#F8F9FA] border border-[#DEE2E6]">
+                  <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-inputBg border border-border">
                     <WorkspaceIcon icon={selectedWorkspace.icon} />
 
                     <span className="flex-1 text-sm text-ink-400 font-medium truncate capitalize">

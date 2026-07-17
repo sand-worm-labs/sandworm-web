@@ -48,10 +48,10 @@ export function QuerySucceededText({
               r="8"
               stroke="#E6E0F1"
               strokeWidth="1.5"
-              className="fill-[#FEFEFF] dark:fill-[var(--color-base-100)]"
+              className="fill-base-200 dark:fill-[var(--color-base-100)]"
             />
           </svg>
-          <PiCheck className="absolute inset-0 w-full h-full p-[4px] text-[#A308F0]" />{" "}
+          <PiCheck className="absolute inset-0 w-full h-full p-[4px] text-primary" />{" "}
         </div>
         <button
           type="button"
@@ -203,10 +203,10 @@ export function PythonSucceededText({
               r="8"
               stroke="#E6E0F1"
               strokeWidth="1.5"
-              className="fill-[#FEFEFF] dark:fill-[var(--color-base-100)]"
+              className="fill-base-200 dark:fill-[var(--color-base-100)]"
             />
           </svg>
-          <PiCheck className="absolute inset-0 w-full h-full p-[4px] text-[#A308F0]" />
+          <PiCheck className="absolute inset-0 w-full h-full p-[4px] text-primary" />
         </div>
         <button
           type="button"

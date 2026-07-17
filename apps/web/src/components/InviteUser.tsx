@@ -119,7 +119,7 @@ export default function InviteUserModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A] dark:bg-base-100/20" />
+          <div className="fixed inset-0 bg-black/[10.2%] dark:bg-base-100/20" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto font-body ">
@@ -137,7 +137,7 @@ export default function InviteUserModal({
                 <div className="flex items-center justify-between mb-7">
                   <Dialog.Title
                     as="h3"
-                    className="text-base font-medium leading-6 text-[#1A1A1A] dark:text-white"
+                    className="text-base font-medium leading-6 text-ink-100 dark:text-white"
                   >
                     {isMultiWorkspace
                       ? "Invite to workspace"
@@ -155,7 +155,7 @@ export default function InviteUserModal({
                     <div className="mb-4">
                       <label
                         htmlFor="workspace"
-                        className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-2"
+                        className="block text-sm font-medium text-ink-100 dark:text-gray-300 mb-2"
                       >
                         Workspace
                       </label>
@@ -164,7 +164,7 @@ export default function InviteUserModal({
                         value={selectedWorkspaceId}
                         onChange={e => setSelectedWorkspaceId(e.target.value)}
                         disabled={isSubmitting}
-                        className="w-full px-3 py-2 rounded-xl dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
+                        className="w-full px-3 py-2 rounded-xl dark:bg-ink-100 border dark:border-border-tertiary border-border dark:text-white focus:outline-none focus:ring focus:ring-primary transition text-xs md:text-sm bg-inputBg"
                       >
                         <option value="">Select a workspace</option>
                         {workspaces.map(ws => (
@@ -179,7 +179,7 @@ export default function InviteUserModal({
                   <div className="mb-4">
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-2"
+                      className="block text-sm font-medium text-ink-100 dark:text-gray-300 mb-2"
                     >
                       Email Address
                     </label>
@@ -193,14 +193,14 @@ export default function InviteUserModal({
                       }}
                       placeholder="colleague@example.com"
                       disabled={isSubmitting}
-                      className="w-full px-5 py-3.5 rounded-xl dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white placeholder:dark:text-ink-300 placeholder-[#868E96] focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
+                      className="w-full px-5 py-3.5 rounded-xl dark:bg-ink-100 border dark:border-border-tertiary border-border dark:text-white placeholder:dark:text-ink-300 placeholder-[#868E96] focus:outline-none focus:ring focus:ring-primary transition text-xs md:text-sm bg-inputBg"
                     />
                   </div>
 
                   <div className="mb-4">
                     <label
                       htmlFor="role"
-                      className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-2"
+                      className="block text-sm font-medium text-ink-100 dark:text-gray-300 mb-2"
                     >
                       Select role
                     </label>
@@ -211,7 +211,7 @@ export default function InviteUserModal({
                         setRole(e.target.value as UserWorkspaceRole)
                       }
                       disabled={isSubmitting}
-                      className="w-auto px-3 py-1 rounded-lg dark:bg-[#1A1A1A] border dark:border-border-tertiary border-[#DEE2E6] dark:text-white focus:outline-none focus:ring focus:ring-[#A308F0] transition text-xs md:text-sm bg-[#F8F9FA]"
+                      className="w-auto px-3 py-1 rounded-lg dark:bg-ink-100 border dark:border-border-tertiary border-border dark:text-white focus:outline-none focus:ring focus:ring-primary transition text-xs md:text-sm bg-inputBg"
                     >
                       <option value="editor">Editor</option>
                       <option value="viewer">Viewer</option>
@@ -229,7 +229,7 @@ export default function InviteUserModal({
                         !email.trim() ||
                         (isMultiWorkspace && !selectedWorkspaceId)
                       }
-                      className="flex-1 px-4 py-3.5 text-sm font-medium text-white bg-[#A308F0] rounded-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 px-4 py-3.5 text-sm font-medium text-white bg-primary rounded-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isSubmitting ? "Sending..." : "Send invite"}
                     </button>

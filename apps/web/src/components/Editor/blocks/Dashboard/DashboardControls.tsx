@@ -136,7 +136,7 @@ function PlaceholderBars({ rows, cols = 4 }: { rows: number; cols?: number }) {
       {Array.from({ length: rows * cols }, (_, i) => (
         <div
           key={`cell-${rows}-${cols}-${i}`}
-          className="h-1.5 rounded-sm bg-[#DEE2E6] dark:bg-[#3A3A38]"
+          className="h-1.5 rounded-sm bg-input dark:bg-base-710"
         />
       ))}
     </div>
@@ -159,7 +159,7 @@ function BlockPlaceholderVisual({ type }: { type: BlockType }) {
           {[100, 72, 88].map(w => (
             <div
               key={w}
-              className="h-1.5 rounded-sm bg-[#DEE2E6] dark:bg-[#3A3A38]"
+              className="h-1.5 rounded-sm bg-input dark:bg-base-710"
               style={{ width: `${w}%` }}
             />
           ))}
@@ -167,40 +167,40 @@ function BlockPlaceholderVisual({ type }: { type: BlockType }) {
       );
     case BlockType.Input:
       return (
-        <div className="w-full max-w-[148px] h-7 rounded-md border border-[#DEE2E6] dark:border-[#3A3A38] bg-white dark:bg-[#252523] px-2 flex items-center">
-          <div className="h-1.5 w-16 rounded-sm bg-[#E9ECEF] dark:bg-[#3A3A38]" />
+        <div className="w-full max-w-[148px] h-7 rounded-md border border-border dark:border-base-710 bg-white dark:bg-base-720 px-2 flex items-center">
+          <div className="h-1.5 w-16 rounded-sm bg-border-secondary dark:bg-base-710" />
         </div>
       );
     case BlockType.DropdownInput:
       return (
-        <div className="w-full max-w-[148px] h-7 rounded-md border border-[#DEE2E6] dark:border-[#3A3A38] bg-white dark:bg-[#252523] px-2 flex items-center justify-between">
-          <div className="h-1.5 w-12 rounded-sm bg-[#E9ECEF] dark:bg-[#3A3A38]" />
+        <div className="w-full max-w-[148px] h-7 rounded-md border border-border dark:border-base-710 bg-white dark:bg-base-720 px-2 flex items-center justify-between">
+          <div className="h-1.5 w-12 rounded-sm bg-border-secondary dark:bg-base-710" />
           <div className="w-0 h-0 border-l-[3px] border-r-[3px] border-t-[4px] border-l-transparent border-r-transparent border-t-ink-300" />
         </div>
       );
     case BlockType.DateInput:
       return (
-        <div className="w-full max-w-[148px] h-7 rounded-md border border-[#DEE2E6] dark:border-[#3A3A38] bg-white dark:bg-[#252523] px-2 flex items-center gap-1.5">
+        <div className="w-full max-w-[148px] h-7 rounded-md border border-border dark:border-base-710 bg-white dark:bg-base-720 px-2 flex items-center gap-1.5">
           <PiCalendar
             size={12}
             className="text-ink-300 dark:text-ink-500 flex-shrink-0"
           />
-          <div className="h-1.5 flex-1 rounded-sm bg-[#E9ECEF] dark:bg-[#3A3A38]" />
+          <div className="h-1.5 flex-1 rounded-sm bg-border-secondary dark:bg-base-710" />
         </div>
       );
     case BlockType.RichText:
       return (
         <div className="flex flex-col gap-1.5 w-full max-w-[148px]">
-          <div className="h-2 w-20 rounded-sm bg-[#CED4DA] dark:bg-[#4A4A48]" />
-          <div className="h-1.5 w-full rounded-sm bg-[#E9ECEF] dark:bg-[#3A3A38]" />
-          <div className="h-1.5 w-[85%] rounded-sm bg-[#E9ECEF] dark:bg-[#3A3A38]" />
+          <div className="h-2 w-20 rounded-sm bg-border-tertiary dark:bg-[#4A4A48]" />
+          <div className="h-1.5 w-full rounded-sm bg-border-secondary dark:bg-base-710" />
+          <div className="h-1.5 w-[85%] rounded-sm bg-border-secondary dark:bg-base-710" />
         </div>
       );
     case BlockType.Markdown:
       return (
         <div className="flex flex-col gap-1 w-full max-w-[148px] font-mono text-[9px] text-ink-300">
           <div className="h-1.5 w-14 rounded-sm bg-[#7B2FBE]/30" />
-          <div className="h-1.5 w-full rounded-sm bg-[#E9ECEF] dark:bg-[#3A3A38]" />
+          <div className="h-1.5 w-full rounded-sm bg-border-secondary dark:bg-base-710" />
           <div className="h-1.5 w-[70%] rounded-sm bg-[#2E9E5B]/25" />
         </div>
       );
@@ -213,12 +213,12 @@ function BlockTypePlaceholder({ type }: { type: BlockType }) {
   return (
     <div
       className="flex flex-col items-center justify-center w-full h-32 gap-2 rounded-lg
-        bg-[#F8F9FA] dark:bg-[#1E1E1C]
-        border border-dashed border-[#DEE2E6] dark:border-[#3A3A38] p-3"
+        bg-inputBg dark:bg-base-750
+        border border-dashed border-border dark:border-base-710 p-3"
     >
       <div
-        className="flex-shrink-0 w-8 h-8 rounded-lg border border-[#DEE2E6] dark:border-[#3A3A38]
-          bg-white dark:bg-[#252523] flex items-center justify-center"
+        className="flex-shrink-0 w-8 h-8 rounded-lg border border-border dark:border-base-710
+          bg-white dark:bg-base-720 flex items-center justify-center"
       >
         {getTypeIcon(type, 16)}
       </div>
@@ -278,12 +278,12 @@ function BlockPreview(props: BlockPreviewProps) {
     onSQL: () => <BlockTypePlaceholder type={BlockType.SQL} />,
     onPython: () => <BlockTypePlaceholder type={BlockType.Python} />,
     onVisualization: block => (
-      <div className="w-full h-48 overflow-hidden rounded-lg border border-[#E9ECEF] dark:border-[#3A3A38]">
+      <div className="w-full h-48 overflow-hidden rounded-lg border border-border-secondary dark:border-base-710">
         <VisualizationV2Block block={block} {...vizPreviewProps(props)} />
       </div>
     ),
     onVisualizationV2: block => (
-      <div className="w-full h-48 overflow-hidden rounded-lg border border-[#E9ECEF] dark:border-[#3A3A38]">
+      <div className="w-full h-48 overflow-hidden rounded-lg border border-border-secondary dark:border-base-710">
         <VisualizationV2Block block={block} {...vizPreviewProps(props)} />
       </div>
     ),
@@ -295,7 +295,7 @@ function BlockPreview(props: BlockPreviewProps) {
     onDateInput: () => <BlockTypePlaceholder type={BlockType.DateInput} />,
     onPivotTable: () => <BlockTypePlaceholder type={BlockType.PivotTable} />,
     onMarkdown: block => (
-      <div className="w-full h-48 overflow-hidden rounded-lg border border-[#E9ECEF] dark:border-[#3A3A38]">
+      <div className="w-full h-48 overflow-hidden rounded-lg border border-border-secondary dark:border-base-710">
         <MarkdownBlock block={block} {...markdownPreviewProps(props)} />
       </div>
     ),
@@ -334,7 +334,7 @@ function BlockListItem(props: BlockListItemProps) {
 
       const dragImage = document.createElement("div");
       dragImage.className =
-        "shadow-lg bg-white dark:bg-[#252523] rounded-xl overflow-hidden border border-[#E9ECEF]";
+        "shadow-lg bg-white dark:bg-base-720 rounded-xl overflow-hidden border border-border-secondary";
       dragImage.style.position = "absolute";
       dragImage.style.top = "-1000px";
       dragImage.style.left = "-1000px";
@@ -378,9 +378,9 @@ function BlockListItem(props: BlockListItemProps) {
     <div
       key={id}
       className={clsx(
-        "group relative rounded-xl border border-[#E9ECEF] dark:border-[#2A2A28]",
-        "bg-white dark:bg-[#252523] p-3 overflow-hidden select-none",
-        "transition-colors duration-100 hover:border-[#D9A8F8] dark:hover:border-[#7A06B8]",
+        "group relative rounded-xl border border-border-secondary dark:border-base-700",
+        "bg-white dark:bg-base-720 p-3 overflow-hidden select-none",
+        "transition-colors duration-100 hover:border-primary-200 dark:hover:border-primary-700",
         props.className
       )}
       draggable
@@ -390,8 +390,8 @@ function BlockListItem(props: BlockListItemProps) {
       <div className="flex items-center gap-2.5 mb-2.5">
         <div
           className="flex-shrink-0 flex items-center justify-center w-7 h-7
-            rounded-lg border border-[#DEE2E6] dark:border-[#3A3A38]
-            bg-[#F8F9FA] dark:bg-[#1E1E1C]"
+            rounded-lg border border-border dark:border-base-710
+            bg-inputBg dark:bg-base-750"
         >
           {getTypeIcon(type)}
         </div>
@@ -415,11 +415,11 @@ function BlockListItem(props: BlockListItemProps) {
 
       <div
         className="absolute inset-0 z-10 rounded-xl flex items-center justify-center
-          bg-white/60 dark:bg-[#252523]/70 opacity-0 group-hover:opacity-100
+          bg-white/60 dark:bg-base-720/70 opacity-0 group-hover:opacity-100
           transition-opacity duration-150 cursor-grab active:cursor-grabbing"
       >
         <div className="flex flex-col items-center gap-1.5 px-3 text-center">
-          <PiDotsSixVertical size={18} className="text-[#A308F0]" />
+          <PiDotsSixVertical size={18} className="text-primary" />
           <span className="text-[11px] font-medium text-ink-500 dark:text-ink-300">
             Drag to dashboard
           </span>
@@ -672,9 +672,9 @@ function DashboardControls(props: Props) {
         <button
           type="button"
           onClick={props.onOpen}
-          className="bg-white dark:bg-[#252523] flex items-center rounded-l-xl px-3 py-1.5
-            text-[12.5px] text-ink-400 hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26]
-            border border-r-0 border-[#E9ECEF] dark:border-[#3A3A38]
+          className="bg-white dark:bg-base-720 flex items-center rounded-l-xl px-3 py-1.5
+            text-[12.5px] text-ink-400 hover:bg-primary-tint-50 dark:hover:bg-primary-900
+            border border-r-0 border-border-secondary dark:border-base-710
             group max-w-11 hover:max-w-32 overflow-hidden transition-[max-width] duration-300"
         >
           <PiCaretDoubleLeft size={14} className="flex-shrink-0" />
@@ -690,9 +690,9 @@ function DashboardControls(props: Props) {
     <div className="relative w-[400px] font-body h-full">
       <button
         type="button"
-        className="absolute z-10 top-12 rounded-full border border-[#E9ECEF] dark:border-[#3A3A38]
-          text-ink-400 bg-white dark:bg-[#252523]
-          hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26] hover:text-[#A308F0]
+        className="absolute z-10 top-12 rounded-full border border-border-secondary dark:border-base-710
+          text-ink-400 bg-white dark:bg-base-720
+          hover:bg-primary-tint-50 dark:hover:bg-primary-900 hover:text-primary
           w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2
           transition-colors duration-100"
         onClick={props.onClose}
@@ -702,19 +702,19 @@ function DashboardControls(props: Props) {
       </button>
 
       <div
-        className="bg-white dark:bg-[#252523] border-l border-[#E9ECEF] dark:border-[#2A2A28]
+        className="bg-white dark:bg-base-720 border-l border-border-secondary dark:border-base-700
           overflow-hidden relative h-full flex flex-col"
       >
-        <div className="flex-shrink-0 px-4 pt-4 pb-3 border-b border-[#F1F3F4] dark:border-[#2A2A28]">
+        <div className="flex-shrink-0 px-4 pt-4 pb-3 border-b border-base-300 dark:border-base-700">
           <h2 className="text-[13px] font-medium text-ink-100 dark:text-white mb-3">
             Blocks
           </h2>
           <div className="flex flex-col gap-2.5">
             <div
               className="flex items-center gap-2 px-2.5 py-1.5
-                bg-[#F1F3F4] dark:bg-[#2A2A28]
+                bg-base-300 dark:bg-base-700
                 border border-transparent
-                focus-within:border-[#D9A8F8] dark:focus-within:border-[#7A06B8]
+                focus-within:border-primary-200 dark:focus-within:border-primary-700
                 rounded-xl transition-colors duration-150"
             >
               <PiMagnifyingGlass
@@ -768,14 +768,14 @@ function DashboardControls(props: Props) {
           />
         </OverlayScrollbarsComponent>
 
-        <div className="flex-shrink-0 p-3 border-t border-[#F1F3F4] dark:border-[#2A2A28]">
+        <div className="flex-shrink-0 p-3 border-t border-base-300 dark:border-base-700">
           <button
             type="button"
             className="flex items-center justify-center gap-2 w-full rounded-xl px-3 py-2
               text-[12.5px] font-medium text-ink-500 dark:text-ink-200
-              border border-[#E9ECEF] dark:border-[#3A3A38]
-              bg-white dark:bg-[#1E1E1C]
-              hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26]
+              border border-border-secondary dark:border-base-710
+              bg-white dark:bg-base-750
+              hover:bg-primary-tint-50 dark:hover:bg-primary-900
               transition-colors duration-100"
             onClick={addHeading}
           >

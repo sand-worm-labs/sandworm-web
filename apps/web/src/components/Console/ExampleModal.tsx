@@ -148,7 +148,7 @@ export const ExamplesModal: React.FC<ExamplesModalProps> = ({
                 </CardHeader>
                 <CardFooter className="text-xs text-muted-foreground flex justify-between">
                   <span>Click to use</span>
-                  <span className="bg-[#1a1a1a] border border-[#333] px-2 py-0.5 rounded-full">
+                  <span className="bg-ink-100 border border-[#333] px-2 py-0.5 rounded-full">
                     {item.executionType === "rpc"
                       ? "live rpc"
                       : item.executionType}

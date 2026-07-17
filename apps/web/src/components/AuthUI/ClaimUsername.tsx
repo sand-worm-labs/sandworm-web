@@ -60,12 +60,12 @@ export const ClaimUsernameStep = ({
               value={username}
               onChange={e => setUsername(e.target.value)}
               placeholder="Enter username"
-              className="bg-[#F8F9FA] dark:bg-base-400 text-ink-500 dark:text-white border-[#DEE2E6] dark:border-border-tertiary dark:placeholder:text-ink-400 py-6 rounded-xl font-body font-medium text-base"
+              className="bg-inputBg dark:bg-base-400 text-ink-500 dark:text-white border-border dark:border-border-tertiary dark:placeholder:text-ink-400 py-6 rounded-xl font-body font-medium text-base"
             />
             <Button
               disabled={!isValid || isLoading}
               onClick={() => onSubmit(username)}
-              className="bg-black text-white rounded-lg ml-2 py-6 font-body disabled:bg-[#868E96] disabled:text-[#DEE2E6] disabled:opacity-1 flex items-center gap-2"
+              className="bg-black text-white rounded-lg ml-2 py-6 font-body disabled:bg-disabled disabled:text-border disabled:opacity-1 flex items-center gap-2"
             >
               {isLoading ? (
                 <>

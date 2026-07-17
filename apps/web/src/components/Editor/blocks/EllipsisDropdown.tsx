@@ -25,7 +25,7 @@ function MenuButton(props: MenuButtonProps) {
       as="button"
       onClick={props.onClick}
       type="button"
-      className="w-full flex items-center rounded-sm px-4 py-2 text-ink-400 dark:text-white text-sm gap-x-2 dark:hover:bg-[#181C21] hover:bg-[#F9F5FF]"
+      className="w-full flex items-center rounded-sm px-4 py-2 text-ink-400 dark:text-white text-sm gap-x-2 dark:hover:bg-editor-100 hover:bg-primary-tint-50"
     >
       <div className="flex justify-center w-6">{props.icon}</div>
       <span>{props.text}</span>

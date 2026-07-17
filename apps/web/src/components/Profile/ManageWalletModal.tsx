@@ -119,10 +119,10 @@ export const AddWalletModal = ({
                   }}
                   onKeyDown={handleKeyDown}
                   placeholder="0x... wallet address"
-                  className={`w-full px-4 py-2.5 rounded-xl border text-sm bg-[#F8F9FA] dark:bg-base-400 text-ink-100 dark:text-white placeholder:text-[#ADB5BD] dark:placeholder:text-ink-400 outline-none transition-colors font-body ${
+                  className={`w-full px-4 py-2.5 rounded-xl border text-sm bg-inputBg dark:bg-base-400 text-ink-100 dark:text-white placeholder:text-[#ADB5BD] dark:placeholder:text-ink-400 outline-none transition-colors font-body ${
                     addressError
                       ? "border-red-400 focus:border-red-400"
-                      : "border-[#DEE2E6] dark:border-border-tertiary focus:border-[#A308F0]"
+                      : "border-border dark:border-border-tertiary focus:border-primary"
                   }`}
                 />
                 {addressError && (
@@ -138,7 +138,7 @@ export const AddWalletModal = ({
                 onChange={e => setChain(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Chain"
-                className="w-full px-4 py-2.5 rounded-xl border border-[#DEE2E6] dark:border-border-tertiary dark:bg-base-400 text-sm bg-[#F8F9FA] text-ink-100 dark:text-white placeholder:text-[#ADB5BD] dark:placeholder:text-ink-400 focus:border-[#A308F0] outline-none transition-colors font-body"
+                className="w-full px-4 py-2.5 rounded-xl border border-border dark:border-border-tertiary dark:bg-base-400 text-sm bg-inputBg text-ink-100 dark:text-white placeholder:text-[#ADB5BD] dark:placeholder:text-ink-400 focus:border-primary outline-none transition-colors font-body"
               />
             </div>
 
@@ -147,14 +147,14 @@ export const AddWalletModal = ({
               <button
                 type="button"
                 onClick={handleConfirm}
-                className="w-[60%] py-2.5 rounded-xl bg-[#A308F0] text-white text-sm font-medium hover:bg-opacity-90 transition-colors"
+                className="w-[60%] py-2.5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-opacity-90 transition-colors"
               >
                 Add Wallet
               </button>
               <button
                 type="button"
                 onClick={handleClose}
-                className="w-[40%] py-2.5 rounded-xl border border-[#DEE2E6] dark:border-border-tertiary text-[#6C757D] dark:text-ink-400 text-sm font-medium hover:bg-[#F8F9FA] dark:hover:bg-base-500 transition-colors"
+                className="w-[40%] py-2.5 rounded-xl border border-border dark:border-border-tertiary text-ink-400 dark:text-ink-400 text-sm font-medium hover:bg-inputBg dark:hover:bg-base-500 transition-colors"
               >
                 Cancel
               </button>
@@ -224,7 +224,7 @@ export const ManageWalletsModal = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="absolute inset-0 bg-[#0000001A]" />
+            <div className="absolute inset-0 bg-black/[10.2%]" />
           </Transition.Child>
 
           <Transition.Child
@@ -260,15 +260,15 @@ export const ManageWalletsModal = ({
                         className={`flex items-center justify-between px-4 py-2 rounded-xl border transition-colors ${
                           hoveredIndex === index
                             ? " bg-[#EBF9FA] dark:bg-base-100"
-                            : "border-[#DEE2E6] dark:border-border-tertiary bg-[#F8F9FA] dark:bg-transparent"
+                            : "border-border dark:border-border-tertiary bg-inputBg dark:bg-transparent"
                         }`}
                       >
                         <div className="flex flex-col">
-                          <code className="text-sm font-medium text-[#6C757D] dark:text-white font-body">
+                          <code className="text-sm font-medium text-ink-400 dark:text-white font-body">
                             {truncateAddress(wallet.address)}
                           </code>
                           {wallet.chain && (
-                            <span className="text-xs text-[#6C757D] dark:text-ink-400 mt-0.5">
+                            <span className="text-xs text-ink-400 dark:text-ink-400 mt-0.5">
                               {wallet.chain}
                             </span>
                           )}
@@ -281,9 +281,9 @@ export const ManageWalletsModal = ({
                             className="p-1 rounded-lg transition-colors"
                           >
                             {copiedAddress === wallet.address ? (
-                              <Check className="w-4 h-4 text-[#A308F0]" />
+                              <Check className="w-4 h-4 text-primary" />
                             ) : (
-                              <Copy className="w-4 h-4 text-[#1C3B5A]  dark:text-ink-400" />
+                              <Copy className="w-4 h-4 text-ink-navy  dark:text-ink-400" />
                             )}
                           </button>
                           <button
@@ -291,7 +291,7 @@ export const ManageWalletsModal = ({
                             onClick={() => deleteWallet(index)}
                             className="p-1 rounded-lg  transition-colors group"
                           >
-                            <Trash className="w-4 h-4 text-[#1C3B5A] dark:text-ink-400 hover:text-error transition-colors" />
+                            <Trash className="w-4 h-4 text-ink-navy dark:text-ink-400 hover:text-error transition-colors" />
                           </button>
                         </div>
                       </div>
@@ -305,7 +305,7 @@ export const ManageWalletsModal = ({
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(true)}
-                  className="w-[60%] py-2.5 rounded-xl bg-[#A308F0] text-white text-sm font-medium hover:bg-opacity-90 transition-colors"
+                  className="w-[60%] py-2.5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-opacity-90 transition-colors"
                 >
                   Add wallet
                 </button>
@@ -313,7 +313,7 @@ export const ManageWalletsModal = ({
                   <button
                     type="button"
                     onClick={deleteAll}
-                    className=" bg-[#0F0F0F] text-[#E9ECEF] w-[40%] py-2.5 rounded-xl border border-[#DEE2E6] dark:border-border-tertiary text-[#6C757D] dark:text-ink-400 text-sm font-medium hover:bg-[#F8F9FA] dark:hover:bg-base-500 transition-colors"
+                    className=" bg-base-400 text-border-secondary w-[40%] py-2.5 rounded-xl border border-border dark:border-border-tertiary text-ink-400 dark:text-ink-400 text-sm font-medium hover:bg-inputBg dark:hover:bg-base-500 transition-colors"
                   >
                     Delete all
                   </button>

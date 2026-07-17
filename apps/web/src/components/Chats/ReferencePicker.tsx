@@ -72,14 +72,14 @@ function ReferenceRow({
       className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors duration-75
         ${
           isActive
-            ? "bg-[#F9F5FF] dark:bg-[#1A0D26]"
-            : "hover:bg-[#DEFCFE] dark:hover:bg-[#1C1C1A]"
+            ? "bg-primary-tint-50 dark:bg-primary-900"
+            : "hover:bg-[#DEFCFE] dark:hover:bg-base-730"
         }`}
     >
       <span
         className="flex-shrink-0 flex items-center justify-center w-[26px] h-[26px]
-        rounded-md border border-[#DEE2E6] dark:border-[#3A3A38]
-        bg-white dark:bg-[#252523] text-ink-400 dark:text-ink-400"
+        rounded-md border border-border dark:border-base-710
+        bg-white dark:bg-base-720 text-ink-400 dark:text-ink-400"
       >
         {isBlock ? (
           <BlockKindIcon
@@ -115,7 +115,7 @@ function ReferenceRow({
       )}
 
       {isSelected && (
-        <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[#A308F0]" />
+        <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-primary" />
       )}
     </button>
   );
@@ -136,7 +136,7 @@ function SectionHeader({ source }: { source: ReferenceSource }) {
       <span className="text-[10px] font-semibold uppercase tracking-wider text-ink-300 dark:text-ink-600">
         {source.label}
       </span>
-      <div className="flex-1 h-px bg-[#F1F3F4] dark:bg-[#2A2A28]" />
+      <div className="flex-1 h-px bg-base-300 dark:bg-base-700" />
       <span className="text-[10px] text-ink-300 dark:text-ink-600">
         {source.items.length}
       </span>
@@ -244,8 +244,8 @@ export function ReferencePicker({
       tabIndex={0}
       onKeyDown={handleKeyDown}
       className="absolute bottom-[calc(100%+6px)] left-0 right-0 z-50 flex flex-col
-        bg-white dark:bg-[#1C1C1A]
-        border border-border-tertiary dark:border-[#2E2E2C]
+        bg-white dark:bg-base-730
+        border border-border-tertiary dark:border-base-760
         rounded-2xl
         shadow-[0_-2px_16px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.10)]
         overflow-hidden"
@@ -253,7 +253,7 @@ export function ReferencePicker({
     >
       <div
         className="flex items-center gap-2 px-3 py-2.5
-        border-b border-[#F1F3F4] dark:border-[#2A2A28]"
+        border-b border-base-300 dark:border-base-700"
       >
         <PiMagnifyingGlass
           size={13}
@@ -310,7 +310,7 @@ export function ReferencePicker({
 
       <div
         className="flex items-center gap-3 px-3 py-2
-        border-t border-[#F1F3F4] dark:border-[#2A2A28]"
+        border-t border-base-300 dark:border-base-700"
       >
         {(["↑↓ navigate", "↵ select", "esc close"] as const).map(hint => (
           <span

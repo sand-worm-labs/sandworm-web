@@ -83,7 +83,7 @@ function AcceptInvitationContent() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <div className="max-w-md w-full text-center space-y-4">
-          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] dark:bg-base-100 flex items-center justify-center mb-4">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-primary-tint-100 dark:bg-base-100 flex items-center justify-center mb-4">
             <Cautious />
           </div>
           <h1 className="text-xl font-medium font-body text-ink-100 dark:text-white">
@@ -96,7 +96,7 @@ function AcceptInvitationContent() {
           <button
             type="button"
             onClick={() => router.push("/workspace")}
-            className="w-full text-sm font-body mt-6 px-6 py-3.5 rounded-[20px] bg-[#0F0F0F] text-white font-medium"
+            className="w-full text-sm font-body mt-6 px-6 py-3.5 rounded-[20px] bg-base-400 text-white font-medium"
           >
             Go to Workspace
           </button>
@@ -126,7 +126,7 @@ function AcceptInvitationContent() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <div className="max-w-md w-full text-center space-y-4">
-          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] dark:bg-base-100 flex items-center justify-center mb-4">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-primary-tint-100 dark:bg-base-100 flex items-center justify-center mb-4">
             <Cautious />
           </div>
           <h1 className="text-xl font-medium font-body text-ink-100 dark:text-white">
@@ -139,7 +139,7 @@ function AcceptInvitationContent() {
           <button
             type="button"
             onClick={() => router.push("/workspace")}
-            className="w-full text-sm font-body mt-6 px-6 py-3.5 rounded-[20px] bg-[#0F0F0F] text-white font-medium"
+            className="w-full text-sm font-body mt-6 px-6 py-3.5 rounded-[20px] bg-base-400 text-white font-medium"
           >
             Go to Workspace
           </button>
@@ -213,7 +213,7 @@ function AcceptInvitationContent() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <div className="max-w-md w-full text-center space-y-4">
-          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] dark:bg-base-100 flex items-center justify-center mb-4">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-primary-tint-100 dark:bg-base-100 flex items-center justify-center mb-4">
             <Cautious />
           </div>
           <h1 className="text-xl font-medium font-body text-ink-100">
@@ -227,7 +227,7 @@ function AcceptInvitationContent() {
             onClick={() =>
               router.push(error === "unauthorized" ? "/signin" : "/workspace")
             }
-            className="w-full text-sm font-body mt-6 px-6 py-3.5 rounded-[20px] bg-[#0F0F0F] text-white font-medium"
+            className="w-full text-sm font-body mt-6 px-6 py-3.5 rounded-[20px] bg-base-400 text-white font-medium"
           >
             {error === "unauthorized" ? "Sign In" : "Go to Workspace"}
           </button>
@@ -240,7 +240,7 @@ function AcceptInvitationContent() {
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
       <div className="max-w-lg w-full">
         <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#DEE2E6] dark:border-border-tertiary">
+          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-border dark:border-border-tertiary">
             <Image
               src={invitation.inviter.avatar}
               alt={invitation.inviter.name}
@@ -250,7 +250,7 @@ function AcceptInvitationContent() {
             />
           </div>
           <span className="text-ink-300 text-2xl font-light">+</span>
-          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#DEE2E6] dark:border-border-tertiary">
+          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-border dark:border-border-tertiary">
             <Image
               src={user?.avater || "/img/avatar/avatar3.svg"}
               alt="You"
@@ -275,14 +275,14 @@ function AcceptInvitationContent() {
           <button
             type="button"
             onClick={handleAccept}
-            className="px-5 py-2.5 text-sm font-body font-medium rounded-xl  bg-[#0F0F0F] ] text-white transition-colors"
+            className="px-5 py-2.5 text-sm font-body font-medium rounded-xl  bg-base-400 ] text-white transition-colors"
           >
             Accept invitation
           </button>
           <button
             type="button"
             onClick={handleDecline}
-            className="px-5 py-2.5 text-sm font-body font-medium rounded-xl   text-ink-100 dark:text-white hover:bg-gray-50 dark:hover:bg-[#1a1a1a] transition-colors"
+            className="px-5 py-2.5 text-sm font-body font-medium rounded-xl   text-ink-100 dark:text-white hover:bg-gray-50 dark:hover:bg-ink-100 transition-colors"
           >
             Decline invitation
           </button>

@@ -204,7 +204,7 @@ function DropDown(props: DropDownProps) {
       "w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg",
       "text-sm font-medium font-body transition-colors text-left",
       danger
-        ? "text-ink-400 hover:text-[#D85A30] hover:bg-[#FAECE7] dark:hover:bg-[#1A0D08]"
+        ? "text-ink-400 hover:text-warning hover:bg-error-tint dark:hover:bg-error-shade"
         : clsx(
             "text-menu-ink-200 dark:text-white",
             active ? "bg-primary/20 text-ink-100" : "hover:bg-primary/20"

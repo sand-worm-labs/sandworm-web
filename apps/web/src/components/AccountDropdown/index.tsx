@@ -91,12 +91,12 @@ const NavItem = ({
 }: NavItemProps) => {
   const cls =
     "flex items-center gap-3 w-full px-3 py-1.5 rounded-lg text-sm " +
-    "text-ink-500 dark:text-white hover:bg-[#F8F9FA] dark:hover:bg-[#ffffff08] " +
+    "text-ink-500 dark:text-white hover:bg-inputBg dark:hover:bg-white/[3.1%] " +
     "transition-colors cursor-pointer font-body font-medium text-start";
 
   const inner = (
     <>
-      <span className="text-[#1C3B5A] dark:text-ink-400 flex items-center justify-center">
+      <span className="text-ink-navy dark:text-ink-400 flex items-center justify-center">
         {icon}
       </span>
       <span className="flex-1 text-ink-100">{label}</span>
@@ -190,8 +190,8 @@ const DropdownBody = ({
         size="sm"
         variant="secondary"
         onClick={shareProfile}
-        className="bg-[#E2ECFF] dark:bg-[#A308F020] dark:text-primary
-          text-accent hover:bg-[#E2ECFF]/90 text-xs rounded-md
+        className="bg-link-tint dark:bg-primary/[12.5%] dark:text-primary
+          text-accent hover:bg-link-tint/90 text-xs rounded-md
           font-semibold h-[22px] gap-1 font-tertiary"
       >
         {copied ? "Copied!" : "Share"}
@@ -211,14 +211,14 @@ const DropdownBody = ({
       href={`/workspace/${workspaceId}/settings`}
     />
 
-    <DropdownMenuSeparator className="my-1 dark:bg-[#262A30]" />
+    <DropdownMenuSeparator className="my-1 dark:bg-editor-200" />
 
     <button
       type="button"
       onClick={signout}
       className="flex items-center gap-3 w-full px-3 py-1.5 rounded-lg
         text-sm font-medium font-body
-        text-white bg-[#ff0000]
+        text-white bg-error
         transition-colors"
     >
       <PiSignOut size={18} />
@@ -289,7 +289,7 @@ export const AccountDropdown = ({
                 type="button"
                 aria-label="Account menu"
                 className="flex items-center justify-center rounded-md p-1
-                  hover:bg-[#E8E8E6] dark:hover:bg-[#2A2A28] transition-all duration-100"
+                  hover:bg-base-350 dark:hover:bg-base-700 transition-all duration-100"
               >
                 <UserAvatar src={user.avater} name={user.firstName} size="sm" />
               </button>
@@ -314,7 +314,7 @@ export const AccountDropdown = ({
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="px-2 flex items-center gap-3 h-12 w-full justify-between hover:bg-[#E8E8E6] dark:hover:bg-[#2A2A28] transition-all duration-100"
+            className="px-2 flex items-center gap-3 h-12 w-full justify-between hover:bg-base-350 dark:hover:bg-base-700 transition-all duration-100"
           >
             <div className="flex items-center gap-3">
               <UserAvatar src={user.avater} name={user.firstName} />

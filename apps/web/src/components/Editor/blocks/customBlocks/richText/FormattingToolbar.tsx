@@ -251,7 +251,7 @@ const ColorTextButton = (props: {
         type="button"
         onMouseDown={stopBlur}
         onClick={props.onToggle}
-        className="h-full text-sm px-2.5 rounded-md ring-1 ring-inset ring-gray-200 dark:ring-[#262A30] relative"
+        className="h-full text-sm px-2.5 rounded-md ring-1 ring-inset ring-gray-200 dark:ring-editor-200 relative"
         style={{
           color: currentColor ?? "inherit",
           backgroundColor: currentBgColor ?? "inherit",
@@ -406,7 +406,7 @@ const AddLinkButton = (props: {
         onMouseDown={stopBlur}
         onClick={onClickLinkButton}
         className={clsx(
-          isActive ? "bg-gray-100 dark:bg-[#0C1015]" : "",
+          isActive ? "bg-gray-100 dark:bg-editor-400" : "",
           "h-full text-sm px-2.5 dark:hover:bg-base-600 hover:bg-primary/20 relative rounded-md group/toggle-button"
         )}
       >
@@ -419,7 +419,7 @@ const AddLinkButton = (props: {
       {showLinkForm && (
         <form
           onPointerDown={stopBlur}
-          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white dark:bg-[#0C1015] p-1.5 ring-1 ring-inset ring-gray-300 rounded-md dark:ring-[#262A30] flex items-center gap-x-1.5 h-8 shadow-md z-[9999]"
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white dark:bg-editor-400 p-1.5 ring-1 ring-inset ring-gray-300 rounded-md dark:ring-editor-200 flex items-center gap-x-1.5 h-8 shadow-md z-[9999]"
           onSubmit={onSubmit}
         >
           <input
@@ -431,7 +431,7 @@ const AddLinkButton = (props: {
           />
           <button
             type="submit"
-            className="bg-primary-100 hover:bg-[#A308F0] h-full px-2 ring-1 ring-primary-400 rounded-sm"
+            className="bg-primary-100 hover:bg-primary h-full px-2 ring-1 ring-primary-400 rounded-sm"
           >
             <CheckIcon className="h-4 w-4 text-gray-600" />
           </button>
@@ -445,7 +445,7 @@ const FormattingToolbar = ({ editor }: { editor: Editor }) => {
   const [openMenu, setOpenMenu] = useState<OpenMenu>(null);
 
   return (
-    <div className="bg-white dark:bg-[#0C1015] text-gray-600 py-1 text-xs flex divide-x divide-[#E9ECEF] dark:divide-border-tertiary w-fit">
+    <div className="bg-white dark:bg-editor-400 text-gray-600 py-1 text-xs flex divide-x divide-border-secondary dark:divide-border-tertiary w-fit">
       <div className="flex gap-x-1 items-center justify-center px-1">
         <NodeTypeDropdown
           editor={editor}

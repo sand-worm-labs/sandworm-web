@@ -37,11 +37,11 @@ export default function MultiSelect<T>(props: Props<T>) {
               className={clsx(
                 "flex items-center justify-between w-full min-h-[36px] gap-2",
                 "px-2.5 py-1.5 rounded-xl text-left transition-colors duration-150",
-                "bg-[#F1F3F4] dark:bg-[#2A2A28]",
+                "bg-base-300 dark:bg-base-700",
                 "border border-transparent",
                 open
-                  ? "border-[#D9A8F8] dark:border-[#7A06B8]"
-                  : "hover:border-[#E4E6E8] dark:hover:border-[#3A3A38]"
+                  ? "border-primary-200 dark:border-primary-700"
+                  : "hover:border-base-360 dark:hover:border-base-710"
               )}
             >
               {props.value.length > 0 ? (
@@ -50,8 +50,8 @@ export default function MultiSelect<T>(props: Props<T>) {
                     <span
                       key={String(value)}
                       className="inline-flex items-center gap-1 max-w-full
-                        bg-white dark:bg-[#252523]
-                        border border-[#E9ECEF] dark:border-[#3A3A38]
+                        bg-white dark:bg-base-720
+                        border border-border-secondary dark:border-base-710
                         px-1.5 py-0.5 rounded-md text-[11px] font-medium
                         text-ink-500 dark:text-ink-200"
                     >
@@ -65,8 +65,8 @@ export default function MultiSelect<T>(props: Props<T>) {
                           props.onToggle(value);
                         }}
                         className="flex-shrink-0 p-0.5 rounded-md
-                          text-ink-300 hover:text-ink-500 hover:bg-[#F1F3F4]
-                          dark:hover:bg-[#2A2A28] transition-colors"
+                          text-ink-300 hover:text-ink-500 hover:bg-base-300
+                          dark:hover:bg-base-700 transition-colors"
                         aria-label={`Remove ${props.getLabel(value)}`}
                       >
                         <PiX size={11} />
@@ -103,8 +103,8 @@ export default function MultiSelect<T>(props: Props<T>) {
                 <Menu.Items
                   as="div"
                   ref={menuContainerRef}
-                  className="w-full rounded-xl bg-white dark:bg-[#252523]
-                    shadow-lg border border-[#E9ECEF] dark:border-[#3A3A38]
+                  className="w-full rounded-xl bg-white dark:bg-base-720
+                    shadow-lg border border-border-secondary dark:border-base-710
                     focus:outline-none font-body flex flex-col py-1.5 overflow-hidden"
                 >
                   {props.options.map(option => {
@@ -123,15 +123,15 @@ export default function MultiSelect<T>(props: Props<T>) {
                           "w-full px-3 py-2 text-left flex items-center justify-between gap-2",
                           "transition-colors duration-100",
                           selected
-                            ? "bg-[#F9F5FF] dark:bg-[#1A0D26]"
-                            : "hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26]"
+                            ? "bg-primary-tint-50 dark:bg-primary-900"
+                            : "hover:bg-primary-tint-50 dark:hover:bg-primary-900"
                         )}
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           {props.getIcon?.(option) && (
                             <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-md
-                              border border-[#DEE2E6] dark:border-[#3A3A38]
-                              bg-white dark:bg-[#1E1E1C]">
+                              border border-border dark:border-base-710
+                              bg-white dark:bg-base-750">
                               {props.getIcon(option)}
                             </span>
                           )}
@@ -149,7 +149,7 @@ export default function MultiSelect<T>(props: Props<T>) {
                         {selected ? (
                           <PiCheck
                             size={14}
-                            className="flex-shrink-0 text-[#A308F0]"
+                            className="flex-shrink-0 text-primary"
                             aria-hidden
                           />
                         ) : null}

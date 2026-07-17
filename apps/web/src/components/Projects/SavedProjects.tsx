@@ -151,7 +151,7 @@ export const SavedProjects: React.FC = () => {
           <button
             type="button"
             onClick={() => router.push(`/workspace/${workspaceId}/projects`)}
-            className="px-4 py-2 bg-[#A308F020] hover:bg-[#A308F030] border-[#A308F0] border text-primary font-body font-medium rounded-lg transition-colors text-sm mt-6"
+            className="px-4 py-2 bg-primary/[12.5%] hover:bg-primary/[18.8%] border-primary border text-primary font-body font-medium rounded-lg transition-colors text-sm mt-6"
           >
             Browse All Projects
           </button>
@@ -164,14 +164,14 @@ export const SavedProjects: React.FC = () => {
     <div className="min-h-screen dark:bg-base-100  p-8">
       <div className="flex justify-between w-full">
         <div className="flex items-center gap-3 mb-0">
-          <span className="bg-[#A308F020] rounded-full p-2 flex items-center justify-center">
+          <span className="bg-primary/[12.5%] rounded-full p-2 flex items-center justify-center">
             <Bookmark className="w-4 h-4 text-primary" />
           </span>
           <h2 className="text-xl font-medium">Saved Projects</h2>
         </div>
         <button
           type="button"
-          className="px-3 bg-[#A308F020] hover:bg-[#A308F030] border-[#A308F0] border text-primary rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0"
+          className="px-3 bg-primary/[12.5%] hover:bg-primary/[18.8%] border-primary border text-primary rounded-lg transition-colors text-sm flex items-center gap-x-2 py-0"
           onClick={() =>
             router.push(`/workspace/${workspaceId}/documents/notebook`)
           }
@@ -206,7 +206,7 @@ export const SavedProjects: React.FC = () => {
             {filteredProjects.map(project => (
               <div
                 key={project.id}
-                className="bg-white dark:bg-base-100  rounded-3xl border border-[#CED4DA] dark:border-border-tertiary transition-all duration-200 p-4 py-3 relative group"
+                className="bg-white dark:bg-base-100  rounded-3xl border border-border-tertiary dark:border-border-tertiary transition-all duration-200 p-4 py-3 relative group"
               >
                 <div className="flex items-start justify-between mb-4">
                   <Link
@@ -227,7 +227,7 @@ export const SavedProjects: React.FC = () => {
                       <Star
                         className={`w-4 h-4 ${
                           project.isFavorite
-                            ? "fill-[#A308F0] text-primary"
+                            ? "fill-primary text-primary"
                             : "text-ink-400 hover:text-primary"
                         }`}
                       />
@@ -247,7 +247,7 @@ export const SavedProjects: React.FC = () => {
                       </button>
 
                       {openMenuId === project.id && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100  rounded-xl shadow-lg border border-[#CED4DA] dark:border-border-tertiary pb-1 z-10 text-ink-200 dark:text-white">
+                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100  rounded-xl shadow-lg border border-border-tertiary dark:border-border-tertiary pb-1 z-10 text-ink-200 dark:text-white">
                           <button
                             type="button"
                             onClick={() =>
@@ -295,7 +295,7 @@ export const SavedProjects: React.FC = () => {
                       type="button"
                       onMouseEnter={() => setHoveredUser(project.id)}
                       onMouseLeave={() => setHoveredUser(null)}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors dark:hover:bg-[#181C21]"
+                      className="p-2 hover:bg-gray-100 rounded-full transition-colors dark:hover:bg-editor-100"
                     >
                       <User className="w-4 h-4 text-ink-200" />
                     </button>
@@ -312,7 +312,7 @@ export const SavedProjects: React.FC = () => {
                       type="button"
                       onMouseEnter={() => setHoveredSave(project.id)}
                       onMouseLeave={() => setHoveredSave(null)}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors dark:hover:bg-[#181C21]"
+                      className="p-2 hover:bg-gray-100 rounded-full transition-colors dark:hover:bg-editor-100"
                     >
                       <Save className="w-4 h-4 text-ink-200" />
                     </button>

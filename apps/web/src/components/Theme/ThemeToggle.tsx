@@ -42,7 +42,7 @@ export function ThemeTogggle({ iconSize = 22 }: ThemeToggleProps) {
               >
                 <Sun
                   size={iconSize}
-                  className="text-[#1C3B5A] dark:text-ink-400 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+                  className="text-ink-navy dark:text-ink-400 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
                 />
                 <Moon
                   size={iconSize}
@@ -58,7 +58,7 @@ export function ThemeTogggle({ iconSize = 22 }: ThemeToggleProps) {
           align="end"
           aria-label="Theme options"
           className={clsx(
-            "flex flex-row gap-1 p-1 py-1.5 min-w-0 border-[#DEE2E6] bg-[#F8F9FA]",
+            "flex flex-row gap-1 p-1 py-1.5 min-w-0 border-border bg-inputBg",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
             "data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95",
@@ -75,7 +75,7 @@ export function ThemeTogggle({ iconSize = 22 }: ThemeToggleProps) {
                 onClick={() => setTheme("light")}
                 className="p-2 rounded-md text-ink-400 focus:bg-base-600 cursor-pointer"
               >
-                <Sun className="h-5 w-5 text-[#343A40]" aria-hidden="true" />
+                <Sun className="h-5 w-5 text-ink-500" aria-hidden="true" />
                 <span className="sr-only">Light</span>
               </DropdownMenuItem>
             )}
@@ -89,7 +89,7 @@ export function ThemeTogggle({ iconSize = 22 }: ThemeToggleProps) {
                 onClick={() => setTheme("dark")}
                 className="p-2 rounded-md text-ink-400 focus:bg-base-600 cursor-pointer"
               >
-                <Moon className="h-5 w-5 text-[#343A40]" aria-hidden="true" />
+                <Moon className="h-5 w-5 text-ink-500" aria-hidden="true" />
                 <span className="sr-only">Dark</span>
               </DropdownMenuItem>
             )}
@@ -104,7 +104,7 @@ export function ThemeTogggle({ iconSize = 22 }: ThemeToggleProps) {
                 className="p-2 rounded-md text-ink-400 focus:bg-base-600 cursor-pointer"
               >
                 <Desktop
-                  className="h-5 w-5 text-[#343A40]"
+                  className="h-5 w-5 text-ink-500"
                   aria-hidden="true"
                 />
                 <span className="sr-only">System</span>

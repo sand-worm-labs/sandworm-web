@@ -36,7 +36,7 @@ export default function CreateWorkspacePage() {
 
   return (
     <main className="min-h-screen bg-white dark:bg-base-100 flex items-center justify-center p-4 font-body">
-      <div className="w-full max-w-[31rem] transform overflow-hidden rounded-3xl bg-white dark:bg-base-400 transition-all border border-[#DEE2E6] dark:border-border-tertiary ">
+      <div className="w-full max-w-[31rem] transform overflow-hidden rounded-3xl bg-white dark:bg-base-400 transition-all border border-border dark:border-border-tertiary ">
         <div className="flex items-center justify-between px-6 py-6 border-b border-border-secondary">
           <h1 className="text-xl font-semibold text-ink-100 dark:text-white">
             Create New Team
@@ -48,7 +48,7 @@ export default function CreateWorkspacePage() {
           <div>
             <label
               htmlFor="team-name"
-              className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-2"
+              className="block text-sm font-medium text-ink-100 dark:text-gray-300 mb-2"
             >
               Team Name <span className="text-error">*</span>
             </label>
@@ -62,7 +62,7 @@ export default function CreateWorkspacePage() {
                 setFormData(prev => ({ ...prev, name: e.target.value }))
               }
               disabled={loading}
-              className="w-full px-4 py-3.5 rounded-xl bg-[#F8F9FA] dark:bg-[#262626] border border-[#DEE2E6] dark:border-[#363636] text-ink-100 dark:text-white placeholder:text-[#6C757D] dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
+              className="w-full px-4 py-3.5 rounded-xl bg-inputBg dark:bg-[#262626] border border-border dark:border-[#363636] text-ink-100 dark:text-white placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm font-medium"
             />
           </div>
 
@@ -83,7 +83,7 @@ export default function CreateWorkspacePage() {
             <button
               type="submit"
               disabled={loading || !formData.name.trim()}
-              className="w-full py-4 px-4 bg-[#A308F0] hover:bg-[#8a07c9] disabled:bg-[#868E96] text-white font-semibold rounded-xl transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base"
+              className="w-full py-4 px-4 bg-primary hover:bg-primary-720 disabled:bg-disabled text-white font-semibold rounded-xl transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base"
             >
               {loading ? (
                 <>

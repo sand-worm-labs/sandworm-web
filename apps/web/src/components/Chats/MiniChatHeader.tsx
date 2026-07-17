@@ -27,8 +27,8 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
   <header className="flex items-center gap-2 px-3 pt-3 pb-2.5 bg-white dark:bg-base-100 border-b border-border-secondary dark:border-border-secondary">
     <div
       className="flex-shrink-0 flex items-center justify-center w-7 h-7
-      rounded-lg border border-[#DEE2E6] dark:border-[#3A3A38]
-      bg-white dark:bg-[#252523]"
+      rounded-lg border border-border dark:border-base-710
+      bg-white dark:bg-base-720"
     >
       <AIChatIcon />
     </div>
@@ -56,7 +56,7 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
         aria-label="New thread"
         onClick={onNewThread}
         className="flex items-center justify-center w-7 h-7 rounded-lg
-          text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+          text-ink-400 hover:text-ink-500 hover:bg-base-300 dark:hover:bg-base-700
           transition-colors"
       >
         <PiPlus size={15} />
@@ -66,7 +66,7 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
         aria-label="Threads"
         onClick={onOpenThreads}
         className="flex items-center justify-center w-7 h-7 rounded-lg
-          text-ink-400 hover:text-ink-500 hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+          text-ink-400 hover:text-ink-500 hover:bg-base-300 dark:hover:bg-base-700
           transition-colors"
       >
         <PiClockCounterClockwise size={15} />

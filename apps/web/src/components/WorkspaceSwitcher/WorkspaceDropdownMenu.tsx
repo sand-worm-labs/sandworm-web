@@ -27,11 +27,11 @@ interface WorkspaceDropdownMenuProps {
 const ROW_OUTER =
   "flex w-[calc(100%-0.75rem)] mx-1.5 items-center gap-1.5 px-2 py-1.5 rounded-[10px] border border-transparent";
 const ROW_HOVER =
-  "transition-colors duration-100 hover:bg-[#F1F2F4] hover:border-[#E6E0F1]";
+  "transition-colors duration-100 hover:bg-hover-bg hover:border-hover-border";
 const ROW_MAIN =
   "flex flex-1 min-w-0 items-center gap-2.5 text-left disabled:opacity-50 disabled:cursor-not-allowed";
 const ACCENT_HOVER =
-  "border border-transparent transition-colors duration-100 hover:bg-[#F1F2F4] hover:border-primary";
+  "border border-transparent transition-colors duration-100 hover:bg-hover-bg hover:border-primary";
 
 // =====================================
 // ⬢ Settings Button
@@ -100,11 +100,11 @@ function WorkspaceMenuRow({
 
       {isActive && (
         <span
-          className="flex-shrink-0 w-5 h-5 rounded-full border border-[#7F56D9]
+          className="flex-shrink-0 w-5 h-5 rounded-full border border-accent-violet
             flex items-center justify-center"
           aria-hidden
         >
-          <PiCheck size={12} className="text-[#7F56D9]" />
+          <PiCheck size={12} className="text-accent-violet" />
         </span>
       )}
 
@@ -129,7 +129,7 @@ export function WorkspaceDropdownMenu({
     <div
       className={clsx(
         "z-50 bg-white dark:bg-base-400 min-w-[17rem]",
-        "border border-[#E9ECEF] dark:border-border-tertiary",
+        "border border-border-secondary dark:border-border-tertiary",
         "rounded-xl shadow-lg overflow-hidden relative",
         containerClassName
       )}

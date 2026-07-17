@@ -147,9 +147,9 @@ export const WorkspaceTabs = ({
       <Tabs
         value={activeTabId || undefined}
         onValueChange={handleTabChange}
-        className="flex flex-col h-full gap-0 border  border-[#FEFEFF] dark:border-border-tertiary "
+        className="flex flex-col h-full gap-0 border  border-base-200 dark:border-border-tertiary "
       >
-        <div className="flex-shrink-0 flex items-center bg-muted border-b  border-[#FEFEFF] dark:border-border-tertiary">
+        <div className="flex-shrink-0 flex items-center bg-muted border-b  border-base-200 dark:border-border-tertiary">
           <Button
             variant="ghost"
             className="rounded-none hover:bg-gray-100 hover:bg-black/20 h-8 px-2 sticky left-0 z-10"

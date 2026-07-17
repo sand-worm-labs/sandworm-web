@@ -115,7 +115,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
             >
               {query.title}
             </Link>
-            <p className="text-xs dark:text-[#ffffff90] capitalize">
+            <p className="text-xs dark:text-white/[56.5%] capitalize">
               created {new Date(query.updatedAt).toLocaleDateString("en-US")}
             </p>
             {query.description && (
@@ -137,7 +137,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
           </div>
         </div>
 
-        <div className="flex  gap-4 items-center dark:text-[#ffffff90] text-xs mt-3 md:mt-0">
+        <div className="flex  gap-4 items-center dark:text-white/[56.5%] text-xs mt-3 md:mt-0">
           <div className="flex items-center gap-1">
             <button
               type="button"
@@ -204,7 +204,7 @@ export const QueryCard = ({ query, liked }: QueryCardProps) => {
         {query.tags && query.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 text-xs text-orange-500 dark:text-orange-300 justify-end">
             {query.tags.map(tag => (
-              <span className="dark:bg-[#1a1a1a] border dark:border-[#333] border-black/10 px-2 py-0.5 rounded-full">
+              <span className="dark:bg-ink-100 border dark:border-[#333] border-black/10 px-2 py-0.5 rounded-full">
                 #{tag}
               </span>
             ))}

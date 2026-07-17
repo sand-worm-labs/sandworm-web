@@ -32,7 +32,7 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
                 className={`mt-2 h-[2.5px] w-40 rounded-full mb-2 ${
                   active
                     ? "bg-rainbow-gradient"
-                    : "dark:bg-[#E9ECEF] bg-[#E9ECEF] "
+                    : "dark:bg-border-secondary bg-border-secondary "
                 }`}
               />
               <div className="flex items-center gap-2 text-sm px-1">

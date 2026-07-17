@@ -31,7 +31,7 @@ function LiveButton(props: Props) {
         disabled={props.disabled}
         className="flex items-center justify-center
           border-none bg-transparent hover:bg-base-600 p-2 rounded-full
-          text-[#1C3B5A] dark:text-ink-400
+          text-ink-navy dark:text-ink-400
           disabled:cursor-not-allowed disabled:opacity-90"
       >
         <PiEye size={18} />

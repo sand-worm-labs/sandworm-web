@@ -57,7 +57,7 @@ function ExecutionStatusText({
   if (status === "running" || status === "enqueued" || status === "aborting") {
     return (
       <span className="text-xs text-ink-400 flex items-center gap-x-1.5">
-        <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#A308F0] animate-ping" />
+        <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
         {envStatus === "Starting" ? "Starting environment…" : "Running…"}
       </span>
     );
@@ -388,7 +388,7 @@ function AnalyticsBlock(props: Props) {
                     className={clsx(
                       "hidden sm:inline-flex items-center",
                       "text-[10px] font-medium px-1.5 py-0.5 rounded",
-                      "bg-[#A308F0]/10 text-[#A308F0]/70 border border-[#A308F0]/20",
+                      "bg-primary/10 text-primary/70 border border-primary/20",
                       "font-mono capitalize leading-none"
                     )}
                   >
@@ -548,7 +548,7 @@ function AnalyticsBlock(props: Props) {
                     !isRunButtonDisabled &&
                     (status === "enqueued" ||
                       (status === "running" && envStatus !== "Running")),
-                  "bg-[#A308F0]":
+                  "bg-primary":
                     !isRunButtonDisabled &&
                     (status === "idle" || status === "completed"),
                   "bg-amber-500":
@@ -560,11 +560,11 @@ function AnalyticsBlock(props: Props) {
               )}
             >
               {status === "enqueued" ? (
-                <ClockIcon className="w-3 h-3 text-[#F8F9FA]" />
+                <ClockIcon className="w-3 h-3 text-inputBg" />
               ) : status === "running" || status === "aborting" ? (
-                <StopIcon className="w-3 h-3 text-[#F8F9FA]" />
+                <StopIcon className="w-3 h-3 text-inputBg" />
               ) : (
-                <PlayIcon className="w-3 h-3 text-[#F8F9FA]" />
+                <PlayIcon className="w-3 h-3 text-inputBg" />
               )}
             </button>
           )}

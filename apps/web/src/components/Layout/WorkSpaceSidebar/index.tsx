@@ -120,8 +120,8 @@ export const WorkspaceSidebar = () => {
       ? "w-[30px] h-[30px] mx-auto justify-center"
       : "justify-start px-2 py-1";
     const activeClass = isActive
-      ? "bg-[#F1F2F4] dark:bg-base-600 dark:text-ink-100 border-[#E6E0F1]"
-      : "text-menu-ink dark:text-white border-transparent hover:bg-[#F1F2F4] dark:hover:bg-base-600 hover:border-[#E6E0F1] hover:dark:text-ink-100";
+      ? "bg-hover-bg dark:bg-base-600 dark:text-ink-100 border-hover-border"
+      : "text-menu-ink dark:text-white border-transparent hover:bg-hover-bg dark:hover:bg-base-600 hover:border-hover-border hover:dark:text-ink-100";
     return [
       "flex items-center gap-3 rounded-[10px] font-medium text-[13px] transition-colors border",
       sizeClass,
@@ -131,7 +131,7 @@ export const WorkspaceSidebar = () => {
 
   const iconClass = (href: string) => {
     const base = "flex-shrink-0 transition-colors";
-    if (collapsed) return `${base} text-[#1C3B5A] dark:text-[#1C3B5A]`;
+    if (collapsed) return `${base} text-ink-navy dark:text-ink-navy`;
     if (pathname === href) return `${base} dark:text-ink-100`;
     return `${base} text-ink-icon`;
   };
@@ -235,7 +235,7 @@ export const WorkspaceSidebar = () => {
     <>
       <aside
         className={`
-          bg-[#FEFFFF] dark:bg-base-500
+          bg-base-200 dark:bg-base-500
           border-r border-border-secondary dark:border-border-tertiary
           font-body flex flex-col justify-between
           transition-all duration-300 ease-in-out relative
@@ -253,7 +253,7 @@ export const WorkspaceSidebar = () => {
         `}
       >
         <div className="flex flex-col flex-1 min-h-0">
-          <div className="flex justify-between py-[0.50rem] px-3 bg-[#FFFFFF] dark:bg-base-500 items-center flex-shrink-0 border-b border-[#F1F3F4]">
+          <div className="flex justify-between py-[0.50rem] px-3 bg-base-100 dark:bg-base-500 items-center flex-shrink-0 border-b border-base-300">
             {!collapsed && (
               <Link href="/" className="flex items-center gap-2">
                 <SandwormLogo width="30" height="30" />
@@ -274,7 +274,7 @@ export const WorkspaceSidebar = () => {
                   aria-label={collapsed ? "Open sidebar" : "Close sidebar"}
                   aria-expanded={!collapsed}
                   onClick={handleToggle}
-                  className="p-1 rounded-[10px] hover:bg-[#F1F2F4]  hover:border-[#E6E0F1] border border-transparent dark:hover:bg-[#2A2A28]
+                  className="p-1 rounded-[10px] hover:bg-hover-bg  hover:border-hover-border border border-transparent dark:hover:bg-base-700
                     flex items-center justify-center
                     text-ink-400 dark:text-ink-400 transition-all duration-100"
                 >
@@ -317,7 +317,7 @@ export const WorkspaceSidebar = () => {
                 onClick={() => setIsToolsOpen(v => !v)}
                 aria-label="More"
                 aria-expanded={isToolsOpen}
-                className={`flex items-center gap-1 mb-1 mt-4 text-[#8C98A3] hover:text-[#8C98A3]
+                className={`flex items-center gap-1 mb-1 mt-4 text-ink-600 hover:text-ink-600
                   transition-colors font-body
                   ${
                     collapsed
@@ -326,9 +326,9 @@ export const WorkspaceSidebar = () => {
                   }`}
               >
                 {isToolsOpen ? (
-                  <PiCaretDown size={13} className="text-[#8C98A3]" />
+                  <PiCaretDown size={13} className="text-ink-600" />
                 ) : (
-                  <PiCaretRight size={13} className="text-[#8C98A3]" />
+                  <PiCaretRight size={13} className="text-ink-600" />
                 )}
                 {!collapsed && <span>More</span>}
               </button>
@@ -385,7 +385,7 @@ export const WorkspaceSidebar = () => {
                         flex items-center justify-center gap-1.5
                        border border-[#C44FFF] dark:border-[#A78BFA]
                         text-primary dark:text-[#A78BFA]
-                        hover:bg-primary/5 bg-[#F7E8FF] dark:hover:bg-primary/10
+                        hover:bg-primary/5 bg-primary-tint-75 dark:hover:bg-primary/10
                         transition-colors font-body font-medium text-sm
                         ${collapsed ? "w-8 h-8 rounded-[10px]" : "w-full px-4 py-2   rounded-xl"}
                       `}
@@ -455,7 +455,7 @@ export const WorkspaceSidebar = () => {
         <div
           className={`
           flex-shrink-0 border-t border-border-secondary dark:border-border-tertiary
-          bg-[#FEFFFF] dark:bg-base-500
+          bg-base-200 dark:bg-base-500
           ${collapsed ? "flex justify-center py-2 px-2" : "py-1.5 px-1.5"}
         `}
         >

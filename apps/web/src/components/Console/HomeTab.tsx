@@ -161,7 +161,7 @@ export const HomeTab = () => {
             transition={{ delay: index * 0.05 }}
           >
             <Card
-              className="hover:bg-accent/50 bg-transparent transition-colors rounded-3xl border-[#CED4DA] dark:border-border-tertiary"
+              className="hover:bg-accent/50 bg-transparent transition-colors rounded-3xl border-border-tertiary dark:border-border-tertiary"
               onClick={() => handleNewAction("sql", item.cleaned_query)}
             >
               <CardHeader>
@@ -213,7 +213,7 @@ export const HomeTab = () => {
           >
             <button
               type="button"
-              className="h-full p-4 py-8 flex flex-col items-start space-y-2 hover:bg-accent hover:text-accent-foreground group w-full overflow-hidden border-[#CED4DA] border rounded-2xl   dark:border-border-tertiary"
+              className="h-full p-4 py-8 flex flex-col items-start space-y-2 hover:bg-accent hover:text-accent-foreground group w-full overflow-hidden border-border-tertiary border rounded-2xl   dark:border-border-tertiary"
               onClick={() => handleNewAction(action.action)}
             >
               <div className="flex items-center space-x-2 dark:text-white text-black font-body  break-words">
@@ -276,7 +276,7 @@ export const HomeTab = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="hover:bg-accent/50 bg-transparent transition-colors rounded-3xl border-[#CED4DA] dark:border-border-tertiary">
+                <Card className="hover:bg-accent/50 bg-transparent transition-colors rounded-3xl border-border-tertiary dark:border-border-tertiary">
                   <CardHeader>
                     <CardTitle className="text-sm font-medium flex items-center space-x-2">
                       <div className="p-2 rounded-full bg-primary/10">

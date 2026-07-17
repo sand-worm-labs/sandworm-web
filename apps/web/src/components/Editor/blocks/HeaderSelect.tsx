@@ -48,7 +48,7 @@ export default function HeaderSelect(props: Props) {
             className={clsx(
               " py-1.5 h-full relative w-full rounded-lg pl-3 pr-10 text-left sm:text-xs flex items-center cursor-pointer",
               hasValue
-                ? "text-ink-400 dark:text-white bg-[#F1F2F4] dark:bg-base-100 hover:bg-gray-100/50"
+                ? "text-ink-400 dark:text-white bg-hover-bg dark:bg-base-100 hover:bg-gray-100/50"
                 : "text-error bg-red-50 hover:bg-red-100"
             )}
           >
@@ -118,7 +118,7 @@ export default function HeaderSelect(props: Props) {
                 <button
                   type="button"
                   onClick={props.onAdd}
-                  className="flex items-center w-full text-left py-2 pl-3 pr-9 text-ink-100 border-t border-border-secondary hover:bg-blue-50 space-x-1 h-10 dark:border-[#181C21]"
+                  className="flex items-center w-full text-left py-2 pl-3 pr-9 text-ink-100 border-t border-border-secondary hover:bg-blue-50 space-x-1 h-10 dark:border-editor-100"
                 >
                   <PlusIcon className="h-3 w-3" aria-hidden="true" />
                   <span>{props.onAddLabel ?? ""}</span>

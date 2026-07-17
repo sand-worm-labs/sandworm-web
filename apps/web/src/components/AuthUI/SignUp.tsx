@@ -32,9 +32,9 @@ export const SignUp = () => {
           <SocialLogin variant="signin" />
 
           <div className="flex items-center gap-3 w-full my-2.5">
-            <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1" />
+            <div className="h-px bg-border-secondary dark:bg-white/[18.8%] flex-1" />
             <span className="text-xs text-ink-400 font-body ">or</span>
-            <div className="h-px bg-[#E9ECEF] dark:bg-[#FFFFFF30] flex-1" />
+            <div className="h-px bg-border-secondary dark:bg-white/[18.8%] flex-1" />
           </div>
         </>
       )}

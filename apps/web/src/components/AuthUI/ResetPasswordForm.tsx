@@ -90,7 +90,7 @@ export const ResetPasswordForm = ({
         </label>
         <input
           type="password"
-          className="mt-1 w-full rounded-3xl bg-white dark:bg-base-100 p-2.5 px-5 border border-[#DEE2E6] dark:border-border-tertiary"
+          className="mt-1 w-full rounded-3xl bg-white dark:bg-base-100 p-2.5 px-5 border border-border dark:border-border-tertiary"
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
@@ -102,7 +102,7 @@ export const ResetPasswordForm = ({
         </label>
         <input
           type="password"
-          className="mt-1 w-full rounded-3xl bg-white dark:bg-base-100 p-2.5 px-5 border border-[#DEE2E6] dark:border-border-tertiary"
+          className="mt-1 w-full rounded-3xl bg-white dark:bg-base-100 p-2.5 px-5 border border-border dark:border-border-tertiary"
           value={confirmPassword}
           onChange={e => setConfirmPassword(e.target.value)}
         />
@@ -117,7 +117,7 @@ export const ResetPasswordForm = ({
       <button
         type="submit"
         disabled={state.loading}
-        className="w-full rounded-3xl bg-[#0F0F0F] dark:bg-white dark:text-black px-4 py-3.5 text-white text-sm font-medium disabled:bg-[#868E96]"
+        className="w-full rounded-3xl bg-base-400 dark:bg-white dark:text-black px-4 py-3.5 text-white text-sm font-medium disabled:bg-disabled"
       >
         {state.loading ? "Updating..." : "Update Password"}
       </button>

@@ -125,7 +125,7 @@
 
     /* Base surfaces */
     --base-100: 0 0% 100%; /* #FFFFFF */
-    --base-200: 240 100% 99%; /* #FEFEFF */
+    --base-200: 240 100% 99.8%;
     --base-300: 210 17% 96%; /* #F1F3F4 */
     --base-400: 0 0% 6%; /* #0F0F0F */
     --base-500: #fbfbfb;
@@ -152,6 +152,62 @@
     --ink-icon: #39414e;
     --menu-ink: #39414e;
     --menu-ink-200: #616a79;
+    --ink-navy: #1c3b5a;
+    --ink-700: #343330;
+
+    /* Extended surfaces (auto-extracted, same value in light/dark for now) */
+    --base-350: #e8e8e6;
+    --base-360: #e4e6e8;
+    --base-700: #2a2a28;
+    --base-710: #3a3a38;
+    --base-720: #252523;
+    --base-730: #1c1c1a;
+    --base-740: #30302e;
+    --base-750: #1e1e1c;
+    --base-760: #2e2e2c;
+    --base-770: #1a1a18;
+
+    /* Extended borders */
+    --border-quiet: #e3e5e8;
+    --border-faint: #d0d5dd;
+    --border-cool: #e7ebf0;
+
+    /* Always-dark editor/code surfaces (not theme-reactive) */
+    --editor-100: #181c21;
+    --editor-200: #262a30;
+    --editor-300: #161b22;
+    --editor-400: #0c1015;
+    --editor-500: #21262d;
+    --editor-600: #121417;
+
+    /* Hover states */
+    --hover-bg: #f1f2f4;
+    --hover-border: #e6e0f1;
+
+    /* Primary/purple tint-shade scale */
+    --primary-tint-50: #f9f5ff;
+    --primary-tint-75: #f7e8ff;
+    --primary-tint-100: #ede7ff;
+    --primary-200: #d9a8f8;
+    --primary-300: #c97ff5;
+    --primary-700: #7a06b8;
+    --primary-710: #8a06cc;
+    --primary-720: #8a07c9;
+    --primary-900: #1a0d26;
+    --primary-910: #2a1a3a;
+    --primary-920: #1f0a2e;
+
+    /* Standalone brand/status */
+    --warning: #d85a30;
+    --link: #005de7;
+    --link-tint: #e2ecff;
+    --accent-violet: #7f56d9;
+    --error-tint: #faece7;
+    --error-shade: #1a0d08;
+    --info-tint: #e7f3f6;
+    --icon-muted: #c2d1d8;
+    --teal: #01e3d4;
+
     --radius: 0.5rem;
   }
 
@@ -197,6 +253,61 @@
     --ink-400: #9C9A92;
     --ink-600: #fff;
     --ink-icon: #fff;
+    --ink-navy: #1c3b5a;
+    --ink-700: #343330;
+
+    /* Extended surfaces (auto-extracted, same value in light/dark for now) */
+    --base-350: #e8e8e6;
+    --base-360: #e4e6e8;
+    --base-700: #2a2a28;
+    --base-710: #3a3a38;
+    --base-720: #252523;
+    --base-730: #1c1c1a;
+    --base-740: #30302e;
+    --base-750: #1e1e1c;
+    --base-760: #2e2e2c;
+    --base-770: #1a1a18;
+
+    /* Extended borders */
+    --border-quiet: #e3e5e8;
+    --border-faint: #d0d5dd;
+    --border-cool: #e7ebf0;
+
+    /* Always-dark editor/code surfaces (not theme-reactive) */
+    --editor-100: #181c21;
+    --editor-200: #262a30;
+    --editor-300: #161b22;
+    --editor-400: #0c1015;
+    --editor-500: #21262d;
+    --editor-600: #121417;
+
+    /* Hover states */
+    --hover-bg: #f1f2f4;
+    --hover-border: #e6e0f1;
+
+    /* Primary/purple tint-shade scale */
+    --primary-tint-50: #f9f5ff;
+    --primary-tint-75: #f7e8ff;
+    --primary-tint-100: #ede7ff;
+    --primary-200: #d9a8f8;
+    --primary-300: #c97ff5;
+    --primary-700: #7a06b8;
+    --primary-710: #8a06cc;
+    --primary-720: #8a07c9;
+    --primary-900: #1a0d26;
+    --primary-910: #2a1a3a;
+    --primary-920: #1f0a2e;
+
+    /* Standalone brand/status */
+    --warning: #d85a30;
+    --link: #005de7;
+    --link-tint: #e2ecff;
+    --accent-violet: #7f56d9;
+    --error-tint: #faece7;
+    --error-shade: #1a0d08;
+    --info-tint: #e7f3f6;
+    --icon-muted: #c2d1d8;
+    --teal: #01e3d4;
 
     --radius: 0.5rem;
   }

@@ -48,8 +48,8 @@ function ApproveDiffButtons({
     return (
       <div
         className="print:hidden mx-auto mb-3 px-3 py-2 flex w-[96%] justify-start items-center gap-x-2.5
-        rounded-xl border border-border-secondary dark:border-[#2A2A28]
-        bg-white dark:bg-[#1C1C1A]"
+        rounded-xl border border-border-secondary dark:border-base-700
+        bg-white dark:bg-base-730"
       >
         <span
           className={clsx(
@@ -81,8 +81,8 @@ function ApproveDiffButtons({
   return (
     <div
       className="print:hidden mx-auto mb-3 px-3 py-2 flex w-[96%] justify-between items-center
-      rounded-xl border border-border-secondary dark:border-[#2A2A28]
-      bg-white dark:bg-[#1C1C1A]"
+      rounded-xl border border-border-secondary dark:border-base-700
+      bg-white dark:bg-base-730"
     >
       {/* ── Pending pill ── */}
       <span
@@ -102,8 +102,8 @@ function ApproveDiffButtons({
           onClick={onTry}
           disabled={!canTry}
           className="flex items-center gap-x-1.5 px-3 py-1 rounded-lg
-            border-none dark:border-[#2A2A28]
-            bg-transparent dark:bg-[#1C1C1A]
+            border-none dark:border-base-700
+            bg-transparent dark:bg-base-730
             text-ink-400 dark:text-ink-500
             hover:border-ink-300 hover:text-ink-500
             disabled:opacity-40 disabled:cursor-not-allowed
@@ -116,8 +116,8 @@ function ApproveDiffButtons({
           type="button"
           onClick={onReject}
           className="flex items-center gap-x-1.5 px-3 py-1 rounded-lg
-            border border-[#E6E0F1] dark:border-[#2A2A28]
-            bg-white dark:bg-[#1C1C1A]
+            border border-hover-border dark:border-base-700
+            bg-white dark:bg-base-730
             text-ink-400 dark:text-ink-500
             hover:border-red-400/50 hover:text-red-500
             text-[12px] transition-colors"
@@ -129,9 +129,9 @@ function ApproveDiffButtons({
           type="button"
           onClick={onAccept}
           className="flex items-center gap-x-1.5 px-3 py-1 rounded-lg
-            bg-[#A308F0] hover:bg-[#1A1A1A]
+            bg-primary hover:bg-ink-100
             dark:bg-white dark:hover:bg-gray-100
-            text-white dark:text-[#0F0F0F]
+            text-white dark:text-base-400
             text-[12px] transition-colors"
         >
           Accept <PiArrowBendDownLeft size={12} />

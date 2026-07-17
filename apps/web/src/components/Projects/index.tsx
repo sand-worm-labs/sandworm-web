@@ -291,7 +291,7 @@ export const Projects: React.FC = () => {
                         </button>
 
                         {openMenuId === project.id && (
-                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100 rounded-xl shadow-lg border border-[#CED4DA] dark:border-border-tertiary pb-1 z-10 text-ink-200 dark:text-white">
+                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100 rounded-xl shadow-lg border border-border-tertiary dark:border-border-tertiary pb-1 z-10 text-ink-200 dark:text-white">
                             <button
                               type="button"
                               onClick={() =>

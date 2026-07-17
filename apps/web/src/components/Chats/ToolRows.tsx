@@ -13,7 +13,7 @@ function IconBox({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{ width: 24, height: 24, minWidth: 24, minHeight: 24 }}
-      className="flex items-center justify-center rounded-lg bg-white dark:bg-[#252523] border border-[#B1DDE8] dark:border-[#1A3A52]"
+      className="flex items-center justify-center rounded-lg bg-white dark:bg-base-720 border border-[#B1DDE8] dark:border-[#1A3A52]"
     >
       {children}
     </div>
@@ -22,7 +22,7 @@ function IconBox({ children }: { children: React.ReactNode }) {
 
 function Pill({ children }: { children: React.ReactNode }) {
   return (
-    <span className="flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-white dark:bg-[#252523] border border-[#DEE2E6] dark:border-[#3A3A38] text-ink-400 dark:text-ink-500">
+    <span className="flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-white dark:bg-base-720 border border-border dark:border-base-710 text-ink-400 dark:text-ink-500">
       {children}
     </span>
   );
@@ -51,14 +51,14 @@ export function ToolCallRow({ part }: ToolCallRowProps) {
         (e.key === "Enter" || e.key === " ") &&
         setExpanded(v => !v)
       }
-      className={`px-3 py-1.5 rounded-xl bg-[#F1F3F4] dark:bg-[#1A1A18] w-full transition-all duration-150 ${hasParams ? "cursor-pointer hover:bg-[#EAECEE] dark:hover:bg-[#1F1F1D]" : ""}`}
+      className={`px-3 py-1.5 rounded-xl bg-base-300 dark:bg-base-770 w-full transition-all duration-150 ${hasParams ? "cursor-pointer hover:bg-[#EAECEE] dark:hover:bg-[#1F1F1D]" : ""}`}
     >
       {/* ─── Single line ─── */}
       <div className="flex items-center gap-3">
         <IconBox>
           <PiLightning
             size={16}
-            className="text-[#343330] dark:text-ink-200"
+            className="text-ink-700 dark:text-ink-200"
             style={{ display: "block", flexShrink: 0 }}
           />
         </IconBox>
@@ -117,25 +117,25 @@ export function ToolResultRow({ part }: ToolResultRowProps) {
   const isError = part.hasError;
 
   return (
-    <div className="flex items-center gap-3 px-3 py-1.5 rounded-xl bg-[#F1F3F4] dark:bg-[#1A1A18] w-full">
+    <div className="flex items-center gap-3 px-3 py-1.5 rounded-xl bg-base-300 dark:bg-base-770 w-full">
       <IconBox>
         {isError ? (
           <PiWarning
             size={16}
-            className="text-[#D85A30]"
+            className="text-warning"
             style={{ display: "block", flexShrink: 0 }}
           />
         ) : (
           <PiCheck
             size={16}
-            className="text-[#343330] dark:text-ink-200"
+            className="text-ink-700 dark:text-ink-200"
             style={{ display: "block", flexShrink: 0 }}
           />
         )}
       </IconBox>
 
       <span
-        className={`text-[12.5px] font-medium flex-1 min-w-0 truncate ${isError ? "text-[#D85A30]" : "text-ink-500 dark:text-ink-100"}`}
+        className={`text-[12.5px] font-medium flex-1 min-w-0 truncate ${isError ? "text-warning" : "text-ink-500 dark:text-ink-100"}`}
       >
         {part.summary}
       </span>

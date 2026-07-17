@@ -38,7 +38,7 @@ function ConfirmEmailContent() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4 relative">
         <div className="max-w-md w-full text-center space-y-4">
-          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] flex items-center justify-center mb-4">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-primary-tint-100 flex items-center justify-center mb-4">
             <Cautious />
           </div>
           <h1 className="text-xl font-medium font-body text-ink-100">
@@ -51,7 +51,7 @@ function ConfirmEmailContent() {
           <button
             type="button"
             onClick={() => router.push("/signup")}
-            className="w-full text-sm font-body mt-6 inline-block px-6 py-3.5 rounded-[20px] bg-[#0F0F0F] text-white font-medium"
+            className="w-full text-sm font-body mt-6 inline-block px-6 py-3.5 rounded-[20px] bg-base-400 text-white font-medium"
           >
             Back to Sign Up
           </button>
@@ -91,7 +91,7 @@ function ConfirmEmailContent() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4 relative">
         <div className="max-w-md w-full text-center gap-y-2 flex-col items-center justify-center">
-          <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] flex items-center justify-center mb-4">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-primary-tint-100 flex items-center justify-center mb-4">
             <Mail />
           </div>
           <h1 className="text-xl font-medium font-body text-ink-100">
@@ -104,7 +104,7 @@ function ConfirmEmailContent() {
           <button
             type="button"
             onClick={() => router.push("/signin")}
-            className="w-full text-sm font-body mt-6 inline-block px-6 py-3.5 rounded-[20px] bg-[#0F0F0F] text-white font-medium"
+            className="w-full text-sm font-body mt-6 inline-block px-6 py-3.5 rounded-[20px] bg-base-400 text-white font-medium"
           >
             Sign In Now
           </button>
@@ -143,7 +143,7 @@ function ConfirmEmailContent() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 relative">
       <div className="max-w-md w-full text-center gap-y-2 flex-col items-center justify-center">
-        <div className="w-12 h-12 mx-auto rounded-xl bg-[#EDE7FF] flex items-center justify-center mb-4">
+        <div className="w-12 h-12 mx-auto rounded-xl bg-primary-tint-100 flex items-center justify-center mb-4">
           {error.icon}
         </div>
         <h1 className="text-xl font-medium font-body text-ink-100">
@@ -157,7 +157,7 @@ function ConfirmEmailContent() {
             <button
               type="button"
               onClick={() => router.push("/signup")}
-              className="w-full text-sm font-body mt-6 inline-block px-6 py-3.5 rounded-[20px] bg-[#0F0F0F] text-white font-medium"
+              className="w-full text-sm font-body mt-6 inline-block px-6 py-3.5 rounded-[20px] bg-base-400 text-white font-medium"
             >
               Sign Up Again
             </button>

@@ -100,7 +100,7 @@ export const SimpleFilter = ({
         onKeyDown={handleKeyDown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        className="pl-10 pr-4 py-1 h-8 w-[22rem] rounded border border-[#ffffff60] focus:border-gray-500 focus:ring focus:ring-gray-300 md:text-[0.85rem]  bg-[#1A1A1A] border-none"
+        className="pl-10 pr-4 py-1 h-8 w-[22rem] rounded border border-white/[37.6%] focus:border-gray-500 focus:ring focus:ring-gray-300 md:text-[0.85rem]  bg-ink-100 border-none"
       />
 
       {filterText && (

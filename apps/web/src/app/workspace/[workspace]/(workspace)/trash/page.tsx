@@ -20,8 +20,8 @@ function EmptyTrash() {
     <div className="flex flex-col items-center justify-center py-16 gap-3">
       <div
         className="flex items-center justify-center w-12 h-12
-        rounded-xl border border-[#DEE2E6] dark:border-[#3A3A38]
-        bg-white dark:bg-[#252523] text-ink-300 dark:text-ink-500"
+        rounded-xl border border-border dark:border-base-710
+        bg-white dark:bg-base-720 text-ink-300 dark:text-ink-500"
       >
         <PiTrash size={20} />
       </div>
@@ -82,7 +82,7 @@ export default function TrashPage() {
         {/* ── Header ── */}
         <div
           className="flex items-center gap-2 mb-6
-          pb-4 border-b border-[#F1F3F4] dark:border-[#2A2A28]"
+          pb-4 border-b border-base-300 dark:border-base-700"
         >
           <PiTrash size={16} className="text-ink-400 dark:text-ink-500" />
           <h3 className="text-sm font-medium text-ink-100 dark:text-white">

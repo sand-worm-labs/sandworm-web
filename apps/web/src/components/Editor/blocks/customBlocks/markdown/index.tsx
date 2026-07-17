@@ -70,7 +70,7 @@ function countMarkdownLines(source: Y.Text): number {
 
 function CollapsedCodeSummary({ lineCount }: { lineCount: number }) {
   return (
-    <div className="flex items-center gap-x-2 px-4 py-1.5 text-xs bg-[#F8F9FA] dark:bg-base-200 border-t border-[#E6E0F1] dark:border-border-tertiary">
+    <div className="flex items-center gap-x-2 px-4 py-1.5 text-xs bg-inputBg dark:bg-base-200 border-t border-hover-border dark:border-border-tertiary">
       <span className="italic text-ink-400">{lineCount} lines hidden</span>
     </div>
   );
@@ -518,9 +518,9 @@ const MarkdownBlock = (props: Props) => {
           "rounded-2xl border-[1.5px]",
           props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
           {
-            "border-[#A308F0] block-focus-ring":
+            "border-primary block-focus-ring":
               props.isCursorWithin && props.isCursorInserting,
-            "border-[#E6E0F1] block-shadow-soft dark:border-border-tertiary":
+            "border-hover-border block-shadow-soft dark:border-border-tertiary":
               !props.isCursorWithin || !props.isCursorInserting,
           }
         )}
@@ -531,7 +531,7 @@ const MarkdownBlock = (props: Props) => {
             props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
             isSourceCollapsed
               ? "rounded-b-2xl"
-              : "border-b border-[#E6E0F1] dark:border-border-tertiary"
+              : "border-b border-hover-border dark:border-border-tertiary"
           )}
           ref={d => {
             props.dragPreview?.(d);
@@ -560,7 +560,7 @@ const MarkdownBlock = (props: Props) => {
               </div>
               <input
                 type="text"
-                className="text-sm font-body font-normal pl-1 block w-full border-0 border-b border-transparent focus:border-primary focus:outline-none text-ink-100 placeholder:text-[#868E96] py-0 h-2/3 bg-transparent focus:bg-base-100"
+                className="text-sm font-body font-normal pl-1 block w-full border-0 border-b border-transparent focus:border-primary focus:outline-none text-ink-100 placeholder:text-ink-300 py-0 h-2/3 bg-transparent focus:bg-base-100"
                 placeholder={props.isEditable ? "Add a title..." : "Markdown"}
                 value={title}
                 disabled={!props.isEditable}
@@ -606,7 +606,7 @@ const MarkdownBlock = (props: Props) => {
             />
           ) : (
             <div className="print:hidden px-3 pb-3">
-              <div className="flex justify-end text-xs pt-2 pb-3 px-3 -mx-3 -mb-3 bg-[#F8F9FA] dark:bg-base-200 border-t border-[#E6E0F1]">
+              <div className="flex justify-end text-xs pt-2 pb-3 px-3 -mx-3 -mb-3 bg-inputBg dark:bg-base-200 border-t border-hover-border">
                 {props.isEditable && !props.dashboardMode && (
                   <TooltipV2<HTMLButtonElement>
                     content={aiEditTooltipContent}
@@ -621,8 +621,8 @@ const MarkdownBlock = (props: Props) => {
                         className={clsx(
                           !hasOaiKey
                             ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                            : "cursor-pointer hover:bg-[#F1F2F4] hover:text-gray-700 hover:border-primary",
-                          "flex items-center border rounded-md border-[#E6E0F1] px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
+                            : "cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary",
+                          "flex items-center border rounded-md border-hover-border px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
                         )}
                       >
                         <PiCpu className="w-[11.5px] h-[11.5px] text-ink-300" />

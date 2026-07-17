@@ -99,9 +99,9 @@ export function MessageParts({ parts, isLoading = false }: MessagePartsProps) {
             <div
               key={idx}
               className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg
-                border border-[#FAECE7] dark:border-[#2A1510]
-                bg-white dark:bg-[#1C1C1A]
-                text-[11.5px] text-[#D85A30]"
+                border border-error-tint dark:border-[#2A1510]
+                bg-white dark:bg-base-730
+                text-[11.5px] text-warning"
             >
               {item.message}
               {item.retryable && (

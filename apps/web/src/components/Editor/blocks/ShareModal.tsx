@@ -94,9 +94,9 @@ function TagsInput({
     <div
       className="flex flex-wrap gap-1.5
       rounded-xl border border-transparent
-      bg-[#F1F3F4] dark:bg-[#1C1C1A]
-      hover:border-[#DEE2E6] dark:hover:border-[#3A3A38]
-      focus-within:border-[#D9A8F8] dark:focus-within:border-[#7A06B8]
+      bg-base-300 dark:bg-base-730
+      hover:border-border dark:hover:border-base-710
+      focus-within:border-primary-200 dark:focus-within:border-primary-700
       px-3 py-2 min-h-[40px] transition-colors duration-100"
     >
       {tags.map(tag => (
@@ -104,9 +104,9 @@ function TagsInput({
           key={tag}
           className="inline-flex items-center gap-1
             rounded-md px-2 py-0.5 text-[11px] font-medium
-            bg-[#F3E6FD] dark:bg-[#1F0A2E]
-            border border-[#D9A8F8] dark:border-[#7A06B8]
-            text-[#7A06B8] dark:text-[#C97FF5]"
+            bg-[#F3E6FD] dark:bg-primary-920
+            border border-primary-200 dark:border-primary-700
+            text-primary-700 dark:text-primary-300"
         >
           #{tag}
           <button
@@ -208,7 +208,7 @@ export default function ShareModal({
             type="button"
             onClick={openModal}
             aria-label="Share"
-            className="w-[30px] h-[30px] mx-auto mb-1.5 flex items-center justify-center rounded-[10px] border border-transparent text-[#1C3B5A] dark:text-[#1C3B5A] hover:bg-[#F1F2F4] hover:border-[#E6E0F1] dark:hover:bg-base-600 transition-colors duration-100"
+            className="w-[30px] h-[30px] mx-auto mb-1.5 flex items-center justify-center rounded-[10px] border border-transparent text-ink-navy dark:text-ink-navy hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors duration-100"
           >
             <PiShareNetwork size={16} />
           </button>
@@ -245,13 +245,13 @@ export default function ShareModal({
                 <Dialog.Panel
                   className="w-full max-w-md rounded-2xl overflow-hidden
                   bg-white dark:bg-base-400
-                  border border-[#F1F3F4] dark:border-[#2A2A28]
+                  border border-base-300 dark:border-base-700
                   shadow-[0_8px_32px_rgba(0,0,0,0.10)]"
                 >
                   {/* ── Header ── */}
                   <div
                     className="flex items-start justify-between px-5 pt-5 pb-4
-                    border-b border-[#F1F3F4] dark:border-[#2A2A28]"
+                    border-b border-base-300 dark:border-base-700"
                   >
                     <div>
                       <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
@@ -281,8 +281,8 @@ export default function ShareModal({
                               "relative flex items-center gap-3 rounded-xl px-4 py-3",
                               "cursor-pointer transition-all duration-150 border",
                               checked
-                                ? "border-[#D9A8F8] dark:border-[#7A06B8] bg-[#F3E6FD] dark:bg-[#1F0A2E]"
-                                : "border-[#DEE2E6] dark:border-[#3A3A38] hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26] hover:border-[#D9A8F8] dark:hover:border-[#7A06B8]",
+                                ? "border-primary-200 dark:border-primary-700 bg-[#F3E6FD] dark:bg-primary-920"
+                                : "border-border dark:border-base-710 hover:bg-primary-tint-50 dark:hover:bg-primary-900 hover:border-primary-200 dark:hover:border-primary-700",
                               isUpdating && "opacity-50 cursor-not-allowed"
                             )
                           }
@@ -294,8 +294,8 @@ export default function ShareModal({
                                 className={cn(
                                   "flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0 transition-colors",
                                   checked
-                                    ? "bg-[#E8D5FC] dark:bg-[#2E1040] text-[#7A06B8] dark:text-[#C97FF5]"
-                                    : "bg-[#F1F3F4] dark:bg-[#2A2A28] text-ink-400 dark:text-ink-500"
+                                    ? "bg-[#E8D5FC] dark:bg-[#2E1040] text-primary-700 dark:text-primary-300"
+                                    : "bg-base-300 dark:bg-base-700 text-ink-400 dark:text-ink-500"
                                 )}
                               >
                                 <option.icon size={16} />
@@ -308,7 +308,7 @@ export default function ShareModal({
                                   className={cn(
                                     "text-sm font-medium leading-tight",
                                     checked
-                                      ? "text-[#7A06B8] dark:text-[#C97FF5]"
+                                      ? "text-primary-700 dark:text-primary-300"
                                       : "text-ink-500 dark:text-ink-200"
                                   )}
                                 >
@@ -334,7 +334,7 @@ export default function ShareModal({
                               >
                                 <PiCheckCircle
                                   size={18}
-                                  className="text-[#A308F0] dark:text-[#C97FF5] flex-shrink-0"
+                                  className="text-primary dark:text-primary-300 flex-shrink-0"
                                 />
                               </Transition>
                             </>
@@ -355,7 +355,7 @@ export default function ShareModal({
                     leaveTo="opacity-0 -translate-y-2 max-h-0"
                   >
                     <div className="px-5 pb-4 space-y-3 overflow-hidden">
-                      <div className="h-px bg-[#F1F3F4] dark:bg-[#2A2A28]" />
+                      <div className="h-px bg-base-300 dark:bg-base-700" />
                       <div>
                         <label
                           className="block text-[11px] font-semibold
@@ -376,10 +376,10 @@ export default function ShareModal({
                           className="w-full rounded-xl text-sm
                             text-ink-500 dark:text-ink-200
                             placeholder:text-ink-300 dark:placeholder:text-ink-600
-                            bg-[#F1F3F4] dark:bg-[#1C1C1A]
+                            bg-base-300 dark:bg-base-730
                             border border-transparent
-                            hover:border-[#DEE2E6] dark:hover:border-[#3A3A38]
-                            focus:border-[#D9A8F8] dark:focus:border-[#7A06B8]
+                            hover:border-border dark:hover:border-base-710
+                            focus:border-primary-200 dark:focus:border-primary-700
                             px-3 py-2 resize-none outline-none
                             transition-colors duration-100"
                         />
@@ -413,8 +413,8 @@ export default function ShareModal({
                     <div className="px-5 pb-4 overflow-hidden">
                       <div
                         className="flex items-center gap-2
-                        rounded-xl border border-[#DEE2E6] dark:border-[#3A3A38]
-                        bg-[#F1F3F4] dark:bg-[#1C1C1A]
+                        rounded-xl border border-border dark:border-base-710
+                        bg-base-300 dark:bg-base-730
                         p-1.5 pl-3"
                       >
                         <input
@@ -431,7 +431,7 @@ export default function ShareModal({
                             "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-150",
                             copied
                               ? "bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 border border-green-100 dark:border-green-900"
-                              : "bg-white dark:bg-[#252523] text-ink-500 dark:text-ink-200 border border-[#DEE2E6] dark:border-[#3A3A38] hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26] hover:border-[#D9A8F8] dark:hover:border-[#7A06B8]"
+                              : "bg-white dark:bg-base-720 text-ink-500 dark:text-ink-200 border border-border dark:border-base-710 hover:bg-primary-tint-50 dark:hover:bg-primary-900 hover:border-primary-200 dark:hover:border-primary-700"
                           )}
                         >
                           {copied ? (
@@ -452,7 +452,7 @@ export default function ShareModal({
 
                   {onExportPDF && (
                     <div className="px-5 pb-4">
-                      <div className="h-px bg-[#F1F3F4] dark:bg-[#2A2A28] mb-4" />
+                      <div className="h-px bg-base-300 dark:bg-base-700 mb-4" />
                       <button
                         type="button"
                         onClick={handleExportPDF}
@@ -460,16 +460,16 @@ export default function ShareModal({
                         className={cn(
                           "w-full flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-150 border",
                           isExportingPDF
-                            ? "border-[#DEE2E6] dark:border-[#3A3A38] bg-[#F8F9FA] dark:bg-[#1C1C1A] text-ink-300 dark:text-ink-600 cursor-not-allowed"
-                            : "border-[#DEE2E6] dark:border-[#3A3A38] hover:bg-[#F9F5FF] dark:hover:bg-[#1A0D26] hover:border-[#D9A8F8] dark:hover:border-[#7A06B8] text-ink-500 dark:text-ink-200"
+                            ? "border-border dark:border-base-710 bg-inputBg dark:bg-base-730 text-ink-300 dark:text-ink-600 cursor-not-allowed"
+                            : "border-border dark:border-base-710 hover:bg-primary-tint-50 dark:hover:bg-primary-900 hover:border-primary-200 dark:hover:border-primary-700 text-ink-500 dark:text-ink-200"
                         )}
                       >
                         <div
                           className={cn(
                             "flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0",
                             isExportingPDF
-                              ? "bg-[#F1F3F4] dark:bg-[#2A2A28] text-ink-300 dark:text-ink-600"
-                              : "bg-[#F1F3F4] dark:bg-[#2A2A28] text-ink-400 dark:text-ink-500"
+                              ? "bg-base-300 dark:bg-base-700 text-ink-300 dark:text-ink-600"
+                              : "bg-base-300 dark:bg-base-700 text-ink-400 dark:text-ink-500"
                           )}
                         >
                           {isExportingPDF ? (
@@ -493,15 +493,15 @@ export default function ShareModal({
                   {/* ── Footer ── */}
                   <div
                     className="flex items-center justify-end gap-2 px-5 py-4
-                    border-t border-[#F1F3F4] dark:border-[#2A2A28]"
+                    border-t border-base-300 dark:border-base-700"
                   >
                     <button
                       type="button"
                       onClick={closeModal}
                       className="text-sm font-medium px-6 py-1.5 rounded-xl
                         text-ink-400 dark:text-ink-500
-                        border border-[#DEE2E6] dark:border-[#3A3A38] 
-                        hover:bg-[#F1F3F4] bg-[#F8F9FA] dark:hover:bg-[#2A2A28]
+                        border border-border dark:border-base-710 
+                        hover:bg-base-300 bg-inputBg dark:hover:bg-base-700
                         hover:text-ink-500 dark:hover:text-ink-300
                         transition-colors duration-100"
                     >
@@ -514,8 +514,8 @@ export default function ShareModal({
                       className={cn(
                         "flex items-center gap-1.5 px-6 py-1.5 rounded-xl text-sm font-medium transition-all duration-100",
                         isUpdating
-                          ? "bg-[#F1F3F4] dark:bg-[#2A2A28] text-ink-300 dark:text-ink-600 cursor-not-allowed"
-                          : "bg-[#A308F0] hover:bg-[#8A06CC] text-white active:scale-[0.98]"
+                          ? "bg-base-300 dark:bg-base-700 text-ink-300 dark:text-ink-600 cursor-not-allowed"
+                          : "bg-primary hover:bg-primary-710 text-white active:scale-[0.98]"
                       )}
                     >
                       {isUpdating ? "Saving…" : "Save changes"}

@@ -308,7 +308,7 @@ function PrivateDocumentPageInner(
                 ref={ref as React.RefObject<HTMLButtonElement>}
                 type="button"
                 onClick={onToggleComments}
-                className="w-[30px] h-[30px] mx-auto mb-1.5 flex items-center justify-center rounded-[10px] border border-transparent text-[#1C3B5A] dark:text-[#1C3B5A] hover:bg-[#F1F2F4] hover:border-[#E6E0F1] dark:hover:bg-base-600 transition-colors duration-100"
+                className="w-[30px] h-[30px] mx-auto mb-1.5 flex items-center justify-center rounded-[10px] border border-transparent text-ink-navy dark:text-ink-navy hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors duration-100"
               >
                 <PiChatCenteredText size={16} />
               </button>
@@ -323,7 +323,7 @@ function PrivateDocumentPageInner(
                   ref={ref as React.RefObject<HTMLButtonElement>}
                   type="button"
                   onClick={onToggleSchedules}
-                  className="w-[30px] h-[30px] mx-auto mb-1.5 flex items-center justify-center rounded-[10px] border border-transparent text-[#1C3B5A] dark:text-[#1C3B5A] hover:bg-[#F1F2F4] hover:border-[#E6E0F1] dark:hover:bg-base-600 transition-colors duration-100"
+                  className="w-[30px] h-[30px] mx-auto mb-1.5 flex items-center justify-center rounded-[10px] border border-transparent text-ink-navy dark:text-ink-navy hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors duration-100"
                 >
                   <PiClockCountdown size={16} />
                 </button>
@@ -345,7 +345,7 @@ function PrivateDocumentPageInner(
                   ref={ref as React.RefObject<HTMLButtonElement>}
                   type="button"
                   onClick={onToggleFullScreen}
-                  className="w-[30px] h-[30px] mx-auto flex items-center justify-center rounded-[10px] border border-transparent text-[#1C3B5A] dark:text-[#1C3B5A] hover:bg-[#F1F2F4] hover:border-[#E6E0F1] dark:hover:bg-base-600 transition-colors duration-100"
+                  className="w-[30px] h-[30px] mx-auto flex items-center justify-center rounded-[10px] border border-transparent text-ink-navy dark:text-ink-navy hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors duration-100"
                 >
                   <div className="flex items-center">
                     {isFullScreen ? (
@@ -414,11 +414,11 @@ function PrivateDocumentPageInner(
     <div className="flex items-center w-full justify-between gap-x-6">
       <div className="w-full min-w-0 overflow-hidden flex items-center gap-x-1.5 text-[13px] text-ink-400 dark:text-ink-400  font-body ">
         <span className="w-full min-w-0 flex gap-x-2 items-center ">
-          <span className="font-normal bg-[#EBF7F7] rounded-full px-3 py-0.5 text-ink-100 border border-[#E9ECEF] flex gap-x-2 w-[90px] shrink-0 items-center  ">
+          <span className="font-normal bg-base-600 rounded-full px-3 py-0.5 text-ink-100 border border-border-secondary flex gap-x-2 w-[90px] shrink-0 items-center  ">
             <span className="relative flex items-center justify-center w-[10px] h-[10px]">
-              <span className="absolute inline-flex w-full h-full rounded-full bg-[#A308F0]/15" />
-              <span className="absolute inline-flex w-full h-full animate-[ping_1.8s_cubic-bezier(0,0,0.2,1)_infinite] rounded-full bg-[#A308F0]/30" />
-              <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-[#A308F0]" />
+              <span className="absolute inline-flex w-full h-full rounded-full bg-primary/15" />
+              <span className="absolute inline-flex w-full h-full animate-[ping_1.8s_cubic-bezier(0,0,0.2,1)_infinite] rounded-full bg-primary/30" />
+              <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-primary" />
             </span>
             {props.isApp || isViewer ? (
               <span className="text-ink-100">Viewing</span>
@@ -426,7 +426,7 @@ function PrivateDocumentPageInner(
               "Editing"
             )}
           </span>{" "}
-          <span className="text-[#6C757D] truncate min-w-0">
+          <span className="text-ink-400 truncate min-w-0">
             / {documentTitle}
           </span>
         </span>
@@ -458,7 +458,7 @@ function PrivateDocumentPageInner(
           rounded-lg px-3 py-1 text-sm font-body
           bg-white dark:bg-base-100 dark:text-ink-100
           border border-primary dark:border-border-tertiary
-          hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+          hover:bg-base-300 dark:hover:bg-base-700
           disabled:cursor-not-allowed disabled:opacity-50"
             href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
           >

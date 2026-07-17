@@ -136,7 +136,7 @@ function DataframeNameInput(props: Props) {
         className={clsx(
           dataframeName.error
             ? "bg-red-50 group-hover:bg-red-100"
-            : "bg-[#F1F2F4] group-hover:bg-gray-100/50",
+            : "bg-hover-bg group-hover:bg-gray-100/50",
           "pl-2.5 pr-8 py-1.5 block w-full border border-transparent focus:border-primary text-ink-400 ring-0 focus:ring-0 placeholder:text-ink-400 text-[0.8rem] disabled:cursor-not-allowed h-full focus:!bg-white dark:focus:bg-base-100 font-body-mono font-normal rounded-lg"
         )}
         placeholder="DataFrame name"
@@ -174,7 +174,7 @@ function DataframeNameInput(props: Props) {
             {ref => (
               <span ref={ref} className="inline-flex">
                 <PiQuestionFill
-                  className="h-4 w-4 text-[#868E96]"
+                  className="h-4 w-4 text-ink-300"
                   aria-hidden="true"
                 />
               </span>

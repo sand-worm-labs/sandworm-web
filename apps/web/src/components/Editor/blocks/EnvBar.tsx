@@ -26,9 +26,9 @@ const EnvironmentButton = ({
   <Link
     href={`/workspace/${workspaceId}/environments/current`}
     className="flex items-center gap-2 px-2.5 py-1.5
-      border border-[#DEE2E6] dark:border-[#3A3A38]
+      border border-border dark:border-base-710
       rounded-lg text-sm text-ink-400 dark:text-ink-500
-      hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+      hover:bg-base-300 dark:hover:bg-base-700
       hover:text-ink-500 dark:hover:text-ink-300
       transition-colors duration-100"
   >
@@ -159,7 +159,7 @@ function EnvBar(props: Props) {
   return (
     <div
       className="flex items-center justify-between
-      border-t border-border-secondary dark:border-[#2A2A28]
+      border-t border-border-secondary dark:border-base-700
       py-2 px-3 font-body env-bar"
     >
       <div className="flex items-center gap-1.5">
@@ -176,9 +176,9 @@ function EnvBar(props: Props) {
               <Link
                 href={`/workspace/${workspaceId}/environments/current/variables`}
                 className="flex items-center gap-2 px-2.5 py-1.5
-                  border border-[#DEE2E6] dark:border-[#3A3A38]
+                  border border-border dark:border-base-710
                   rounded-lg text-sm text-ink-400 dark:text-ink-500
-                  hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+                  hover:bg-base-300 dark:hover:bg-base-700
                   hover:text-ink-500 dark:hover:text-ink-300
                   transition-colors duration-100"
               >
@@ -192,9 +192,9 @@ function EnvBar(props: Props) {
                 type="button"
                 onClick={props.onOpenFiles}
                 className="flex items-center gap-2 px-2.5 py-1.5
-                  border border-[#DEE2E6] dark:border-[#3A3A38]
+                  border border-border dark:border-base-710
                   rounded-lg text-sm text-ink-400 dark:text-ink-500
-                  hover:bg-[#F1F3F4] dark:hover:bg-[#2A2A28]
+                  hover:bg-base-300 dark:hover:bg-base-700
                   hover:text-ink-500 dark:hover:text-ink-300
                   transition-colors duration-100"
               >

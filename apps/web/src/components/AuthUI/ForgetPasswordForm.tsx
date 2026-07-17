@@ -54,7 +54,7 @@ export const ForgotPasswordForm = ({ onSuccess }: ForgotPasswordFormProps) => {
         <input
           type="email"
           name="email"
-          className="mt-1 w-full rounded-3xl dark:bg-base-100 bg-[#FFFFFF] p-2.5 px-5 text-black dark:text-white border border-[#DEE2E6] dark:border-border-tertiary focus:border-[#A308F0] focus:ring-1 focus:ring-[#A308F0] outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400 "
+          className="mt-1 w-full rounded-3xl dark:bg-base-100 bg-base-100 p-2.5 px-5 text-black dark:text-white border border-border dark:border-border-tertiary focus:border-primary focus:ring-1 focus:ring-primary outline-none font-medium text-[0.9rem] placeholder:text-muted-foreground dark:placeholder:text-ink-400 "
           placeholder="Enter your email"
           value={email}
           onChange={handleChange}
@@ -66,7 +66,7 @@ export const ForgotPasswordForm = ({ onSuccess }: ForgotPasswordFormProps) => {
       <button
         type="submit"
         disabled={state.loading || !email.trim()}
-        className="w-full rounded-3xl bg-[#0F0F0F] px-4 py-3.5 text-white font-medium disabled:bg-[#868E96] text-sm dark:bg-white dark:text-black"
+        className="w-full rounded-3xl bg-base-400 px-4 py-3.5 text-white font-medium disabled:bg-disabled text-sm dark:bg-white dark:text-black"
       >
         {state.loading ? "Sending..." : "Send Reset Email"}
       </button>

@@ -515,11 +515,11 @@ function PivotTableBlock(props: Props) {
           props.isBlockHiddenInPublished && "border-dashed",
           props.hasMultipleTabs ? "rounded-tl-none" : "rounded-tl-2xl",
           {
-            "border-[#A308F0] block-focus-ring":
+            "border-primary block-focus-ring":
               props.isCursorWithin && props.isCursorInserting,
-            "border-[#E6E0F1] shadow-none":
+            "border-hover-border shadow-none":
               props.isCursorWithin && !props.isCursorInserting,
-            "border-[#E6E0F1] block-shadow-soft dark:border-border-tertiary":
+            "border-hover-border block-shadow-soft dark:border-border-tertiary":
               !props.isCursorWithin,
           }
         )}
@@ -531,17 +531,17 @@ function PivotTableBlock(props: Props) {
           )}
         >
           <div
-            className="border-b border-[#E6E0F1] dark:border-border-tertiary rounded-t-2xl"
+            className="border-b border-hover-border dark:border-border-tertiary rounded-t-2xl"
             ref={d => {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body  h-10 divide-x divide-[#E9ECEF] dark:divide-border-tertiary">
+            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body  h-10 divide-x divide-border-secondary dark:divide-border-tertiary">
               <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5 px-4">
                 <input
                   type="text"
                   className={clsx(
-                    "text-sm font-body font-normal pl-1 block w-full border-0 border-b border-transparent focus:border-primary focus:outline-none text-ink-100 placeholder:text-[#868E96] py-0 h-2/3 bg-transparent focus:bg-base-100"
+                    "text-sm font-body font-normal pl-1 block w-full border-0 border-b border-transparent focus:border-primary focus:outline-none text-ink-100 placeholder:text-ink-300 py-0 h-2/3 bg-transparent focus:bg-base-100"
                   )}
                   placeholder={
                     props.isEditable
@@ -553,7 +553,7 @@ function PivotTableBlock(props: Props) {
                   disabled={!props.isEditable}
                 />
               </div>
-              <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-[#E9ECEF] dark:divide-border-tertiary">
+              <div className="print:hidden flex items-center gap-x-0 group-focus/block:opacity-100 h-full divide-x divide-border-secondary dark:divide-border-tertiary">
                 <HeaderSelect
                   value={dataframe?.name ?? ""}
                   onChange={onChangeDataframe}
@@ -624,9 +624,9 @@ function PivotTableBlock(props: Props) {
                     !isRunButtonDisabled &&
                     (status === "enqueued" ||
                       (status === "running" && envStatus !== "Running")),
-                  "bg-[#FEFEFF]": !isRunButtonDisabled && status === "idle",
+                  "bg-base-200": !isRunButtonDisabled && status === "idle",
                 },
-                "rounded-[5px] border-[#E6E0F1] border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-gray-50"
+                "rounded-[5px] border-hover-border border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-gray-50"
               )}
               onClick={onRunAbort}
               disabled={!dataframe || isRunButtonDisabled}
@@ -634,13 +634,13 @@ function PivotTableBlock(props: Props) {
               {isExecutionStatusLoading(execStatus) ? (
                 <div>
                   {execStatus === "enqueued" ? (
-                    <PiClock className="w-[13px] h-[13px] text-[#1C3B5A]" />
+                    <PiClock className="w-[13px] h-[13px] text-ink-navy" />
                   ) : (
-                    <PiStop className="w-[13px] h-[13px] text-[#1C3B5A]" />
+                    <PiStop className="w-[13px] h-[13px] text-ink-navy" />
                   )}
                 </div>
               ) : (
-                <PiPlayFill className="w-[13px] h-[13px] text-[#1C3B5A]" />
+                <PiPlayFill className="w-[13px] h-[13px] text-ink-navy" />
               )}
             </button>
           )}

@@ -25,7 +25,7 @@ function DashboardNotebookGroupButton(props: Props) {
     props.userRole === "viewer" && !props.isPublished;
 
   return (
-    <div className="flex items-center px-1 relative bg-[#EBF7F7] py-1 rounded-lg gap-x-1">
+    <div className="flex items-center px-1 relative bg-base-600 py-1 rounded-lg gap-x-1">
       <Link
         className={clsx(
           "flex gap-x-1.5 items-center px-2 py-0.5 text-[0.8rem] disabled:cursor-not-allowed disabled:opacity-50 hover:bg-white/70 dark:hover:bg-white/10 rounded-md font-medium",

@@ -130,7 +130,7 @@ function InfoIcon({ active }: { active: boolean }) {
       fill="none"
       className={clsx(
         "w-3.5 h-3.5 transition-colors duration-150",
-        active ? "text-[#A308F0]" : "text-ink-400 group-hover/info:text-ink-200"
+        active ? "text-primary" : "text-ink-400 group-hover/info:text-ink-200"
       )}
       aria-hidden="true"
     >
@@ -288,7 +288,7 @@ function ModelRow({
       className={clsx(
         "rounded-xl border transition-all duration-100",
         isSelected
-          ? "bg-[#A308F0]/10 border-[#A308F0]/40"
+          ? "bg-primary/10 border-primary/40"
           : isFocused
             ? "bg-white/[0.06] border-white/10"
             : "border-transparent hover:bg-white/[0.04] hover:border-white/[0.06]"
@@ -311,7 +311,7 @@ function ModelRow({
               <span
                 className={clsx(
                   "font-body text-[13px] font-medium truncate leading-tight",
-                  isSelected ? "text-[#A308F0]" : "text-ink-100"
+                  isSelected ? "text-primary" : "text-ink-100"
                 )}
               >
                 {model.name}
@@ -595,7 +595,7 @@ export const ModelPickerModal = ({
             <div
               className={clsx(
                 "flex items-center gap-2.5 px-3 py-2 rounded-lg bg-white/[0.04] border border-border-secondary",
-                "focus-within:border-[#A308F0]/50 transition-colors"
+                "focus-within:border-primary/50 transition-colors"
               )}
             >
               <svg
@@ -633,7 +633,7 @@ export const ModelPickerModal = ({
                     handleKeyDown(e as unknown as KeyboardEvent<HTMLElement>);
                   }
                 }}
-                className="flex-1 bg-transparent font-body text-sm text-ink-100 placeholder:text-ink-400 outline-none caret-[#A308F0]"
+                className="flex-1 bg-transparent font-body text-sm text-ink-100 placeholder:text-ink-400 outline-none caret-primary"
                 autoComplete="off"
                 spellCheck={false}
               />
@@ -665,7 +665,7 @@ export const ModelPickerModal = ({
                 className={clsx(
                   "shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full font-body text-[11px] font-medium border transition-all whitespace-nowrap",
                   activeProvider === p
-                    ? "bg-[#A308F0]/15 border-[#A308F0]/60 text-purple-400"
+                    ? "bg-primary/15 border-primary/60 text-purple-400"
                     : "bg-transparent border-border-tertiary text-ink-400 hover:border-ink-400"
                 )}
               >
@@ -806,7 +806,7 @@ export const ModelPickerModal = ({
                   {pendingModel ? "Selected" : "None selected"}
                 </span>
                 {pendingModel && (
-                  <span className="font-body text-[12px] font-medium text-[#A308F0] truncate max-w-[200px]">
+                  <span className="font-body text-[12px] font-medium text-primary truncate max-w-[200px]">
                     {pendingModel.name}
                   </span>
                 )}
@@ -825,7 +825,7 @@ export const ModelPickerModal = ({
                 type="button"
                 onClick={handleConfirm}
                 disabled={!pendingId || pendingId === selectedModelId}
-                className="px-5 py-2 rounded-lg font-body text-[13px] font-medium bg-[#A308F0] text-white hover:bg-[#8e07d4] disabled:bg-[#868E96] disabled:cursor-not-allowed transition-colors"
+                className="px-5 py-2 rounded-lg font-body text-[13px] font-medium bg-primary text-white hover:bg-[#8e07d4] disabled:bg-disabled disabled:cursor-not-allowed transition-colors"
               >
                 Confirm
               </button>

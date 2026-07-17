@@ -63,7 +63,7 @@ export default function EditWorkspaceProfileModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A]" />
+          <div className="fixed inset-0 bg-black/[10.2%]" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto font-body">
@@ -93,7 +93,7 @@ export default function EditWorkspaceProfileModal({
                     Workspace Icon
                   </label>
                   <div className="flex items-center gap-3">
-                    <div className="relative w-14 h-14 rounded-full border-2 border-[#DEE2E6] dark:border-border-tertiary flex items-center justify-center overflow-hidden mr-4">
+                    <div className="relative w-14 h-14 rounded-full border-2 border-border dark:border-border-tertiary flex items-center justify-center overflow-hidden mr-4">
                       {selectedIcon ? (
                         <WorkspaceIcon
                           icon={selectedIcon}
@@ -116,7 +116,7 @@ export default function EditWorkspaceProfileModal({
                           onClick={() => setSelectedIcon(colorKey)}
                           className={`relative w-8 h-8 rounded-full transition-all overflow-hidden ${
                             isSelected
-                              ? "ring-2 ring-[#A308F0] ring-offset-2 dark:ring-border-tertiary"
+                              ? "ring-2 ring-primary ring-offset-2 dark:ring-border-tertiary"
                               : "hover:scale-110"
                           }`}
                           aria-label={`${colorKey.replace(".png", "")} icon`}
@@ -134,7 +134,7 @@ export default function EditWorkspaceProfileModal({
                 </div>
 
                 <div className="mb-10">
-                  <label className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-3">
+                  <label className="block text-sm font-medium text-ink-100 dark:text-gray-300 mb-3">
                     Workspace Name
                   </label>
                   <input
@@ -142,17 +142,17 @@ export default function EditWorkspaceProfileModal({
                     value={workspaceName}
                     onChange={e => setWorkspaceName(e.target.value)}
                     placeholder="Enter workspace name"
-                    className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-base-100 border border-[#DEE2E6] dark:border-border-tertiary text-ink-100 placeholder:text-[#6C757D] dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
+                    className="w-full px-4 py-3 rounded-xl bg-inputBg dark:bg-base-100 border border-border dark:border-border-tertiary text-ink-100 placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm font-medium"
                   />
                   <ul className="mt-2 space-y-1 text-xs font-medium">
                     <li className="flex items-center gap-1">
-                      <span className="text-[#6C757D] dark:text-ink-400">
+                      <span className="text-ink-400 dark:text-ink-400">
                         ·
                       </span>
                       Workspace name should be less than 40 characters
                     </li>
                     <li className="flex items-center gap-1">
-                      <span className="text-[#6C757D] dark:text-ink-400">
+                      <span className="text-ink-400 dark:text-ink-400">
                         ·
                       </span>
                       Cannot contain punctuation/special marks
@@ -164,7 +164,7 @@ export default function EditWorkspaceProfileModal({
                   type="button"
                   onClick={handleSave}
                   disabled={!isNameValid || isLoading}
-                  className="w-full py-3.5 px-4 bg-[#A308F0] hover:bg-[#8a07c9] disabled:bg-[#868E96] dark:disabled:bg-[#4a4a48] text-[#E9ECEF] font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                  className="w-full py-3.5 px-4 bg-primary hover:bg-primary-720 disabled:bg-disabled dark:disabled:bg-[#4a4a48] text-border-secondary font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
                 >
                   {isLoading ? (
                     <>

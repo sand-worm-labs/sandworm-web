@@ -31,12 +31,12 @@ export function SortControl({
   return (
     <div className="flex flex-col gap-1 items-end">
       <Select value={sortBy} onValueChange={v => onSortChange(v as SortOption)}>
-        <SelectTrigger className="w-[180px] border-[#CED4DA] dark:border-border-tertiary bg-white dark:bg-base-100 text-ink-200 dark:text-white h-8 rounded-lg cursor-pointer text-[0.8rem]">
+        <SelectTrigger className="w-[180px] border-border-tertiary dark:border-border-tertiary bg-white dark:bg-base-100 text-ink-200 dark:text-white h-8 rounded-lg cursor-pointer text-[0.8rem]">
           <TrendingUp className="h-3 w-4 mr-2" />
           <SelectValue />
         </SelectTrigger>
 
-        <SelectContent className="bg-white dark:bg-base-100 border-[#CED4DA] font-body mt-2 text-ink-200 dark:text-ink-300 dark:border-border-tertiary rounded-xl">
+        <SelectContent className="bg-white dark:bg-base-100 border-border-tertiary font-body mt-2 text-ink-200 dark:text-ink-300 dark:border-border-tertiary rounded-xl">
           <SelectItem
             value="trending"
             className="hover:bg-primary/20 dark:hover:text-white"

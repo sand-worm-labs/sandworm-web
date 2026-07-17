@@ -71,7 +71,7 @@ export default function CreateTeamModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A]" />
+          <div className="fixed inset-0 bg-black/[10.2%]" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto font-body">
@@ -102,7 +102,7 @@ export default function CreateTeamModal({
                   <div>
                     <label
                       htmlFor="team-name"
-                      className="block text-sm font-medium text-[#1A1A1A] dark:text-gray-300 mb-1.5"
+                      className="block text-sm font-medium text-ink-100 dark:text-gray-300 mb-1.5"
                     >
                       Team Name <span className="text-red-500">*</span>
                     </label>
@@ -116,17 +116,17 @@ export default function CreateTeamModal({
                         setFormData(prev => ({ ...prev, name: e.target.value }))
                       }
                       disabled={loading}
-                      className="w-full px-4 py-3 rounded-xl bg-[#F8F9FA] dark:bg-[#262626] border border-[#DEE2E6] dark:border-[#363636] text-ink-100 dark:text-white placeholder:text-[#6C757D] dark:placeholder:text-ink-400  focus:outline-none focus:ring-2 focus:ring-[#A308F0] focus:border-transparent transition-all text-sm font-medium"
+                      className="w-full px-4 py-3 rounded-xl bg-inputBg dark:bg-[#262626] border border-border dark:border-[#363636] text-ink-100 dark:text-white placeholder:text-ink-400 dark:placeholder:text-ink-400  focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm font-medium"
                     />
                   </div>
 
                   <ul className="mt-2 space-y-1 text-xs font-medium">
                     <li className="flex items-center gap-1">
-                      <span className="text-[#6C757D]">·</span>
+                      <span className="text-ink-400">·</span>
                       Workspace name should be less than 40 characters
                     </li>
                     <li className="flex items-center gap-1">
-                      <span className="text-[#6C757D]">·</span>
+                      <span className="text-ink-400">·</span>
                       Cannot contain punctuation/special marks
                     </li>
                   </ul>
@@ -135,7 +135,7 @@ export default function CreateTeamModal({
                     <button
                       type="submit"
                       disabled={loading || !formData.name.trim()}
-                      className="w-full py-3.5 px-4 bg-[#A308F0] hover:bg-[#8a07c9] disabled:bg-[#868E96] text-[#E9ECEF] font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                      className="w-full py-3.5 px-4 bg-primary hover:bg-primary-720 disabled:bg-disabled text-border-secondary font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
                     >
                       {loading ? (
                         <>

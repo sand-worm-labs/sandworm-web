@@ -305,7 +305,7 @@ function ModelPill({
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-1.5 rounded-full px-2.5 py-1 bg-white dark:bg-transparent hover:bg-[#F1F2F4] hover:border-primary border-[#F6F5F7] transition-colors duration-100 border"
+      className="flex items-center gap-1.5 rounded-full px-2.5 py-1 bg-white dark:bg-transparent hover:bg-hover-bg hover:border-primary border-[#F6F5F7] transition-colors duration-100 border"
     >
       <ProviderIcon provider={model.provider} size={15} />
       <span className="font-body text-[13px] font-medium text-ink-100 truncate max-w-[110px]">
@@ -320,7 +320,7 @@ function AutoPill({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-1.5 rounded-full px-2.5 py-1 bg-white dark:bg-transparent hover:bg-[#F1F2F4] hover:border-primary border-[#F6F5F7] transition-colors duration-100 border"
+      className="flex items-center gap-1.5 rounded-full px-2.5 py-1 bg-white dark:bg-transparent hover:bg-hover-bg hover:border-primary border-[#F6F5F7] transition-colors duration-100 border"
     >
       <AutoIcon size={14} />
       <span className="font-body text-[13px] font-medium text-ink-100">
@@ -363,7 +363,7 @@ function EffortSelector({
               className={clsx(
                 "flex-1 rounded-lg px-1.5 py-1 font-body text-[11.5px] font-medium",
                 "transition-all duration-100 whitespace-nowrap",
-                active ? "text-[#A308F0]" : "hover:text-ink-100"
+                active ? "text-primary" : "hover:text-ink-100"
               )}
               style={
                 active
@@ -462,18 +462,18 @@ export function ModelQuickSelect({
           "font-body font-medium border transition-all duration-200",
           isCompact
             ? clsx(
-                "gap-1 rounded-full px-2 py-1 text-[11px] bg-[#FEFEFF] dark:bg-transparent",
+                "gap-1 rounded-full px-2 py-1 text-[11px] bg-base-200 dark:bg-transparent",
                 open
                   ? "border-primary"
-                  : "border-[#E6E0F1] dark:border-border-tertiary"
+                  : "border-hover-border dark:border-border-tertiary"
               )
             : clsx(
                 "gap-1.5 rounded-full px-3 py-2 text-xs",
                 open
                   ? "bg-[rgba(207,211,222,0.6)]"
-                  : "bg-[#E7EBF0] dark:bg-transparent border-transparent",
+                  : "bg-border-cool dark:bg-transparent border-transparent",
                 !open &&
-                  "text-ink-100 hover:bg-[#E7EBF0] hover:border-primary dark:hover:bg-[rgba(255,255,255,0.08)]"
+                  "text-ink-100 hover:bg-border-cool hover:border-primary dark:hover:bg-[rgba(255,255,255,0.08)]"
               )
         )}
       >

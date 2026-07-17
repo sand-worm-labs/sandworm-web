@@ -40,7 +40,7 @@ export const WorkSpace = ({ initialQuery, currentUserId }: WorkSpaceProps) => {
 
   return (
     <div className="flex w-full h-[calc(100vh-3.4rem)] overflow-hidden md:flex-row relative">
-      <div className="flex-1 h-full overflow-x-hidden border-t border-[#FEFEFF] dark:border-border-tertiary">
+      <div className="flex-1 h-full overflow-x-hidden border-t border-base-200 dark:border-border-tertiary">
         <ResizablePanelGroup direction="horizontal">
           {isMobile && (
             <ResizablePanel

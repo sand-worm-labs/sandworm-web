@@ -63,13 +63,13 @@ const MdCode: NonNullable<MDComponents>["code"] = ({ className, children }) => {
       {children}
     </code>
   ) : (
-    <code className="text-[#A308F0] dark:text-[#C97FF5] bg-[#F5E6FD] dark:bg-[#1F0A2E] px-1 py-0.5 rounded-[4px] text-[0.82em] font-mono">
+    <code className="text-primary dark:text-primary-300 bg-[#F5E6FD] dark:bg-primary-920 px-1 py-0.5 rounded-[4px] text-[0.82em] font-mono">
       {children}
     </code>
   );
 };
 const MdPre: NonNullable<MDComponents>["pre"] = ({ children }) => (
-  <pre className="bg-[#F1F3F4] dark:bg-[#1E1E1C] border border-[#DEE2E6] dark:border-[#2A2A28] rounded-lg p-3 overflow-x-auto mb-3 last:mb-0 text-xs leading-relaxed">
+  <pre className="bg-base-300 dark:bg-base-750 border border-border dark:border-base-700 rounded-lg p-3 overflow-x-auto mb-3 last:mb-0 text-xs leading-relaxed">
     {children}
   </pre>
 );
@@ -102,12 +102,12 @@ const MdH3: NonNullable<MDComponents>["h3"] = ({ children }) => (
 const MdBlockquote: NonNullable<MDComponents>["blockquote"] = ({
   children,
 }) => (
-  <blockquote className="border-l-2 border-[#DEE2E6] dark:border-[#3A3A38] pl-3 italic text-ink-400 dark:text-ink-500 mb-3 last:mb-0">
+  <blockquote className="border-l-2 border-border dark:border-base-710 pl-3 italic text-ink-400 dark:text-ink-500 mb-3 last:mb-0">
     {children}
   </blockquote>
 );
 const MdHr: NonNullable<MDComponents>["hr"] = () => (
-  <hr className="border-[#DEE2E6] dark:border-[#3A3A38] mb-3" />
+  <hr className="border-border dark:border-base-710 mb-3" />
 );
 
 const MD_COMPONENTS: MDComponents = {
@@ -150,8 +150,8 @@ function FileBubbleChip({ fileRef }: { fileRef: UploadedFileRef }) {
     <span
       className="inline-flex items-center gap-1 text-[10.5px] font-medium
         px-1.5 py-[3px] rounded-md leading-none
-        bg-[#F1F3F4] dark:bg-[#2A2A28]
-        border border-[#DEE2E6] dark:border-[#3A3A38]
+        bg-base-300 dark:bg-base-700
+        border border-border dark:border-base-710
         text-ink-500 dark:text-ink-300"
     >
       <Icon size={11} className="flex-shrink-0 opacity-60" />
@@ -192,8 +192,8 @@ function RatingButton({ type, active, onClick }: RatingButtonProps) {
               active
                 ? type === "up"
                   ? "text-[#185FA5] bg-[#E6F1FB] dark:bg-[#0C1824] dark:text-[#85B7EB]"
-                  : "text-[#D85A30] bg-[#FAECE7] dark:bg-[#1A0D08] dark:text-[#F0997B]"
-                : "text-ink-300 dark:text-ink-600 hover:text-ink-400 hover:bg-[#F1F3F4] dark:hover:bg-[#252523]"
+                  : "text-warning bg-error-tint dark:bg-error-shade dark:text-[#F0997B]"
+                : "text-ink-300 dark:text-ink-600 hover:text-ink-400 hover:bg-base-300 dark:hover:bg-base-720"
             }`}
         >
           <Icon size={13} />
@@ -245,7 +245,7 @@ export function ChatBubble({
 
       {isUser ? (
         <div
-          className="bg-[#DEFCFE] dark:bg-[#121417] rounded-2xl rounded-br-sm
+          className="bg-[#DEFCFE] dark:bg-editor-600 rounded-2xl rounded-br-sm
             text-ink-500 dark:text-ink-400
             px-4 py-2.5 max-w-[78%] text-sm leading-relaxed
            break-words whitespace-pre-wrap min-w-[80px]"

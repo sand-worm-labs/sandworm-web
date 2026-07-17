@@ -137,7 +137,7 @@ export const QueryEditor: React.FC<SqlEditorProps> = ({
             <Button
               onClick={() => setIsSaveModalOpen(true)}
               variant="outline"
-              className="flex items-center gap-2 min-w-[100px] text-sm font-medium  h-[2.2rem] rounded-lg bg-[#F8F9FA] border-[#DEE2E6] dark:text-black dark:hover:bg-white/90 "
+              className="flex items-center gap-2 min-w-[100px] text-sm font-medium  h-[2.2rem] rounded-lg bg-inputBg border-border dark:text-black dark:hover:bg-white/90 "
             >
               Save
             </Button>

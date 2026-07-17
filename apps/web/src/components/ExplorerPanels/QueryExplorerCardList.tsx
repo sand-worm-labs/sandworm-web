@@ -46,7 +46,7 @@ export const QueryExplorerCardList: React.FC<IQueryExplorerCardListProps> = ({
         <Input
           type="text"
           placeholder="Search Queries"
-          className="pl-10 pr-4 py-1.5 border border-[#ffffff60] focus:border-gray-500 focus:ring focus:ring-gray-300 md:text-[0.85rem] bg-[#1A1A1A] border-none w-full rounded-none"
+          className="pl-10 pr-4 py-1.5 border border-white/[37.6%] focus:border-gray-500 focus:ring focus:ring-gray-300 md:text-[0.85rem] bg-ink-100 border-none w-full rounded-none"
           value={search}
           onChange={e => setSearch(e.target.value)}
         />

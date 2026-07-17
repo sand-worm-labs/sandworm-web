@@ -136,7 +136,7 @@ export const UserConnectionsModal = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-[#0000001A]" />
+          <div className="fixed inset-0 bg-black/[10.2%]" />
         </TransitionChild>
 
         <div className="fixed inset-0 overflow-y-auto font-body">

@@ -455,7 +455,7 @@ function Tab(props: TabProps) {
           show={contextMenu !== null}
           ref={contextMenuRef}
         >
-          <div className="rounded-md bg-white dark:bg-base-100  ring-1 ring-gray-100 focus:outline-none font-body  flex flex-col text-xs text-ink-200 border border-[#CED4DA]">
+          <div className="rounded-md bg-white dark:bg-base-100  ring-1 ring-gray-100 focus:outline-none font-body  flex flex-col text-xs text-ink-200 border border-border-tertiary">
             <div className="flex flex-col ">
               <div className="py-0.5 px-0.5">
                 <button

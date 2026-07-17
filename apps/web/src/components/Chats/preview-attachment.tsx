@@ -65,13 +65,13 @@ export const PreviewAttachment = ({
           border-2
           ${
             isUploading
-              ? "border-dashed border-gray-300 dark:border-border-tertiary bg-gray-50 dark:bg-[#121417]"
-              : "border-border-secondary dark:border-border-tertiary  bg-white dark:bg-[#121417]"
+              ? "border-dashed border-gray-300 dark:border-border-tertiary bg-gray-50 dark:bg-editor-600"
+              : "border-border-secondary dark:border-border-tertiary  bg-white dark:bg-editor-600"
           }
           overflow-hidden
           transition-all
-          hover:border-[#A308F0]
-          dark:hover:border-[#A308F0]
+          hover:border-primary
+          dark:hover:border-primary
         `}
       >
         {isUploading ? (
@@ -81,7 +81,7 @@ export const PreviewAttachment = ({
               <div className="w-full px-2">
                 <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-[#A308F0] transition-all duration-300 ease-out"
+                    className="h-full bg-primary transition-all duration-300 ease-out"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
