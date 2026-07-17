@@ -6,7 +6,6 @@ import {
   PiX,
   PiFileCsv,
   PiFileText,
-  PiSpinner,
   PiStop,
 } from "react-icons/pi";
 
@@ -16,6 +15,7 @@ import { ModelPickerModal } from "@/components/Editor/blocks/ModelPicker";
 import type { NormalizedModel } from "@/components/Editor/hooks/useOpenRouterModel";
 
 import { AddMenu } from "./AddMenu";
+import RotatingGradientRing from "./RotatingGradientRing";
 import {
   InputReferencePill,
   PILL_BASE,
@@ -98,11 +98,7 @@ function FileIcon({ file }: { file: File }) {
 
 function FileStatusIndicator({ status }: { status: TrackedFile["status"] }) {
   if (status === "uploading") {
-    return (
-      <span className="text-primary animate-spin">
-        <PiSpinner size={12} />
-      </span>
-    );
+    return <RotatingGradientRing size={12} />;
   }
   return null;
 }
@@ -186,22 +182,15 @@ function PillStrip({
 
 function AbortButton({ onAbort }: { onAbort?: () => void }) {
   return (
-    <div className="relative w-8 h-8 flex-shrink-0">
-      <div
-        className="absolute inset-0 rounded-xl animate-spin"
-        style={{
-          background:
-            "conic-gradient(#A308F0 0deg 90deg, transparent 90deg 360deg)",
-        }}
-      />
+    <div className="relative w-8 h-8 flex-shrink-0 flex items-center justify-center">
+      <RotatingGradientRing size={32} />
       <button
         type="button"
         onClick={onAbort}
         aria-label="Stop generation"
-        className="absolute inset-[2px] rounded-[10px] flex items-center justify-center
-          bg-base-200 dark:bg-base-200"
+        className="absolute inset-0 flex items-center justify-center rounded-full"
       >
-        <PiStop size={14} className="text-ink-navy dark:text-ink-300" />
+        <PiStop size={13} className="text-ink-navy dark:text-ink-300" />
       </button>
     </div>
   );
@@ -516,7 +505,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
                     }`}
                   >
                     {isUploading ? (
-                      <PiSpinner size={13} className="animate-spin" />
+                      <RotatingGradientRing size={13} />
                     ) : (
                       <PiPaperPlaneTilt size={13} />
                     )}
