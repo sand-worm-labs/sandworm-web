@@ -1,12 +1,14 @@
-import {
-  CalendarIcon,
-  Cog6ToothIcon,
-  InformationCircleIcon,
-} from "@heroicons/react/24/solid";
 import clsx from "clsx";
-import { CheckIcon } from "lucide-react";
+import {
+  PiCalendar,
+  PiCalendarBold,
+  PiGearSix,
+  PiInfo,
+  PiCheckBold,
+  PiClock,
+  PiClockBold,
+} from "react-icons/pi";
 import { useCallback, useMemo } from "react";
-import { ClockIcon } from "@heroicons/react/24/outline";
 import tzList from "timezones-list";
 
 import Dropdown from "../../Dropdown";
@@ -44,7 +46,7 @@ export default function DateSettings(props: Props) {
     <div className="bg-gray-50 px-3 py-3 border border-border-secondary flex flex-col gap-y-2 rounded-md shadow-sm">
       <div className="flex items-center justify-between w-full">
         <span className="text-xs font-semibold py-1 flex gap-x-1 text-ink-400 w-full">
-          <Cog6ToothIcon className="w-4 h-4" />
+          <PiGearSix className="w-4 h-4" />
           Date input settings
         </span>
 
@@ -56,7 +58,7 @@ export default function DateSettings(props: Props) {
             position="top"
             active
           >
-            <InformationCircleIcon className="w-4 h-4 text-ink-400" />
+            <PiInfo className="w-4 h-4 text-ink-400" />
           </Tooltip>
         </div>
       </div>
@@ -74,14 +76,15 @@ export default function DateSettings(props: Props) {
           disabled={props.dateType === "date" || props.disabled}
         >
           <span className="flex gap-x-2 items-center">
-            <CalendarIcon
-              strokeWidth={props.dateType === "date" ? 2 : 1}
-              className="w-4 h-4"
-            />
+            {props.dateType === "date" ? (
+              <PiCalendarBold className="w-4 h-4" />
+            ) : (
+              <PiCalendar className="w-4 h-4" />
+            )}
             Date
           </span>
           {props.dateType === "date" && (
-            <CheckIcon strokeWidth={3} className="w-4 h-4 text-ceramic-400" />
+            <PiCheckBold className="w-4 h-4 text-ceramic-400" />
           )}
         </button>
         <button
@@ -96,14 +99,15 @@ export default function DateSettings(props: Props) {
           disabled={props.dateType === "datetime" || props.disabled}
         >
           <span className="flex gap-x-2 items-center">
-            <ClockIcon
-              strokeWidth={props.dateType === "datetime" ? 2 : 1}
-              className="w-4 h-4"
-            />
+            {props.dateType === "datetime" ? (
+              <PiClockBold className="w-4 h-4" />
+            ) : (
+              <PiClock className="w-4 h-4" />
+            )}
             Date and time
           </span>
           {props.dateType === "datetime" && (
-            <CheckIcon strokeWidth={3} className="w-4 h-4 text-ceramic-400" />
+            <PiCheckBold className="w-4 h-4 text-ceramic-400" />
           )}
         </button>
       </span>

@@ -8,8 +8,7 @@ import {
   dateInputValueFromString,
   formatDateInputValue,
 } from "@sandworm/editor";
-import { CalendarIcon, ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import { ClockIcon } from "@heroicons/react/20/solid";
+import { PiCalendar, PiWarningCircle, PiClock } from "react-icons/pi";
 
 import Spin from "../../Spin";
 import useYTextInput from "../../../hooks/useYTextInput";
@@ -188,11 +187,11 @@ function DateInputBlockInput(props: Props) {
         {props.isSaving ? (
           <Spin className="w-4 h-4 text-gray-300" />
         ) : props.isEnqueued ? (
-          <ClockIcon className="w-4 h-4 text-gray-300" />
+          <PiClock className="w-4 h-4 text-gray-300" />
         ) : props.error && !isLoading ? (
           <>
             <button type="button" onClick={props.onSave}>
-              <ExclamationCircleIcon
+              <PiWarningCircle
                 className="h-4 w-4 text-red-300"
                 aria-hidden="true"
               />
@@ -204,7 +203,7 @@ function DateInputBlockInput(props: Props) {
             </div>
           </>
         ) : (
-          <CalendarIcon className="w-4 h-4 text-ink-400" />
+          <PiCalendar className="w-4 h-4 text-ink-400" />
         )}
       </div>
     </div>

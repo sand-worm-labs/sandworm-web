@@ -1,4 +1,3 @@
-import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import type * as Y from "yjs";
 import {
   type YBlock,
@@ -13,7 +12,7 @@ import {
 import clsx from "clsx";
 import { useCallback, useEffect, useRef } from "react";
 import type { ConnectDragPreview } from "react-dnd";
-import { ClockIcon } from "@heroicons/react/20/solid";
+import { PiTextbox, PiTrash, PiClock, PiWarningCircle } from "react-icons/pi";
 import { head } from "ramda";
 
 import Spin from "../../Spin";
@@ -21,6 +20,7 @@ import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
 import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
 import type { DashboardMode } from "../../Dashboard";
+import { BlockTypePill } from "../../BlockTypePill";
 
 function errorMessage(
   error: InputBlock["variable"]["error"],
@@ -216,16 +216,24 @@ function InputBlock(props: Props) {
   return (
     <div
       className={clsx(
-        "w-full",
-        props.belongsToMultiTabGroup && "border p-4 rounded-tr-md rounded-b-md",
-        props.isCursorWithin && !props.isCursorInserting
-          ? "border-blue-400"
-          : "border-border-secondary"
+        "relative group/block mt-6",
+        !props.dashboardMode ? "w-1/2" : "w-full"
       )}
       data-block-id={blockId}
     >
       <div
-        className={!props.dashboardMode ? "w-1/2" : ""}
+        className={clsx(
+          "rounded-2xl border-[1.5px] px-4 py-3",
+          props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
+          {
+            "border-primary block-focus-ring":
+              props.isCursorWithin && props.isCursorInserting,
+            "border-hover-border shadow-none":
+              props.isCursorWithin && !props.isCursorInserting,
+            "border-hover-border block-shadow-soft dark:border-border-tertiary":
+              !props.isCursorWithin,
+          }
+        )}
         ref={d => {
           if (props.dragPreview) {
             props.dragPreview(d);
@@ -236,7 +244,7 @@ function InputBlock(props: Props) {
           <div className="flex-grow">
             <input
               data-bounding-rect="true"
-              className="ring-0 text-sm font-medium leading-6 text-ink-100 w-full focus:ring-0 border-0 p-0 bg-transparent"
+              className="ring-0 text-sm font-medium leading-6 text-ink-100 w-full focus:ring-0 border-0 border-b border-transparent hover:border-hover-border focus:border-primary focus:outline-none p-0 bg-transparent"
               type="text"
               value={attrs.label}
               onChange={onChangeLabel}
@@ -277,7 +285,7 @@ function InputBlock(props: Props) {
               {(attrs.variable.error ||
                 isExecutionStatusLoading(variableStatus._tag)) &&
                 (variableStatus._tag === "enqueued" ? (
-                  <ClockIcon className="w-4 h-4 text-gray-300" />
+                  <PiClock className="w-4 h-4 text-gray-300" />
                 ) : isExecutionStatusLoading(variableStatus._tag) ? (
                   <Spin />
                 ) : attrs.variable.error ? (
@@ -287,7 +295,7 @@ function InputBlock(props: Props) {
                       disabled={attrs.variable.error === null}
                       onClick={onRunValue}
                     >
-                      <ExclamationCircleIcon
+                      <PiWarningCircle
                         className="h-3 w-3 text-red-300"
                         aria-hidden="true"
                       />
@@ -331,7 +339,7 @@ function InputBlock(props: Props) {
             {(attrs.value.error ||
               isExecutionStatusLoading(valueStatus._tag)) &&
               (valueStatus._tag === "enqueued" ? (
-                <ClockIcon className="w-4 h-4 text-gray-300" />
+                <PiClock className="w-4 h-4 text-gray-300" />
               ) : isExecutionStatusLoading(valueStatus._tag) ? (
                 <Spin />
               ) : attrs.value.error ? (
@@ -341,7 +349,7 @@ function InputBlock(props: Props) {
                     disabled={attrs.value.error === null}
                     onClick={onSaveValue}
                   >
-                    <ExclamationCircleIcon
+                    <PiWarningCircle
                       className="h-4 w-4 text-red-300"
                       aria-hidden="true"
                     />
@@ -357,6 +365,24 @@ function InputBlock(props: Props) {
               ) : null)}
           </div>
         </div>
+      </div>
+
+      <div className="absolute left-0 top-0 -translate-y-full pb-2">
+        <BlockTypePill label="Input" icon={<PiTextbox className="w-3 h-3" />} />
+      </div>
+
+      <div
+        className={clsx(
+          "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-2 flex flex-row gap-x-1",
+          !props.isEditable ? "hidden" : "flex"
+        )}
+      >
+        <button
+          type="button"
+          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+        >
+          <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
+        </button>
       </div>
     </div>
   );

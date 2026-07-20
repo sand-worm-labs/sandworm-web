@@ -14,17 +14,20 @@ import {
 } from "@sandworm/editor";
 import clsx from "clsx";
 import { useCallback } from "react";
-import {
-  Cog6ToothIcon,
-  ExclamationCircleIcon,
-} from "@heroicons/react/24/solid";
-import { ClockIcon } from "@heroicons/react/20/solid";
 import { head } from "ramda";
+import {
+  PiCalendarDots,
+  PiTrash,
+  PiGearSix,
+  PiWarningCircle,
+  PiClock,
+} from "react-icons/pi";
 
 import Spin from "../../Spin";
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
 import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
 import type { DashboardMode } from "../../Dashboard";
+import { BlockTypePill } from "../../BlockTypePill";
 
 import DateSettings from "./DateSettings";
 import DateInputBlockInput from "./DateInputBlockInput";
@@ -147,16 +150,24 @@ function DateInput(props: Props) {
   return (
     <div
       className={clsx(
-        "w-full",
-        props.belongsToMultiTabGroup && "border p-4 rounded-tr-md rounded-b-md",
-        props.isCursorWithin && !props.isCursorInserting
-          ? "border-blue-400"
-          : "border-border-secondary"
+        "relative group/block mt-6",
+        !props.dashboardMode ? "w-1/2" : "w-full"
       )}
       data-block-id={blockId}
     >
       <div
-        className={!props.dashboardMode ? "w-1/2" : ""}
+        className={clsx(
+          "rounded-2xl border-[1.5px] px-4 py-3",
+          props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
+          {
+            "border-primary block-focus-ring":
+              props.isCursorWithin && props.isCursorInserting,
+            "border-hover-border shadow-none":
+              props.isCursorWithin && !props.isCursorInserting,
+            "border-hover-border block-shadow-soft dark:border-border-tertiary":
+              !props.isCursorWithin,
+          }
+        )}
         ref={d => {
           if (props.dragPreview) {
             props.dragPreview(d);
@@ -168,7 +179,7 @@ function DateInput(props: Props) {
             {/* TODO: use Y.Text the right way */}
             <input
               data-bounding-rect="true"
-              className="block ring-0 text-sm font-medium leading-6 text-ink-100 w-full focus:ring-0 border-0 p-0 bg-transparent"
+              className="block ring-0 text-sm font-medium leading-6 text-ink-100 w-full focus:ring-0 border-0 border-b border-transparent hover:border-hover-border focus:border-primary focus:outline-none p-0 bg-transparent"
               type="text"
               value={attrs.label.toString()}
               onChange={onChangeLabel}
@@ -178,7 +189,7 @@ function DateInput(props: Props) {
             {!props.isApp && props.isEditable && (
               <div className="flex items-center space-x-1">
                 <button type="button" onClick={toggleConfigOpen}>
-                  <Cog6ToothIcon className="h-4 w-4 text-ink-400 hover:text-gray-600" />
+                  <PiGearSix className="h-4 w-4 text-ink-400 hover:text-gray-600" />
                 </button>
                 <div
                   className={clsx(!props.isEditable && "hidden", "relative")}
@@ -210,7 +221,7 @@ function DateInput(props: Props) {
                       status._tag === "aborting" ? (
                         <Spin />
                       ) : status._tag === "enqueued" ? (
-                        <ClockIcon className="w-4 h-4 text-gray-300" />
+                        <PiClock className="w-4 h-4 text-gray-300" />
                       ) : attrs.error && attrs.error !== "invalid-value" ? (
                         <>
                           <button
@@ -218,7 +229,7 @@ function DateInput(props: Props) {
                             disabled={attrs.error !== "invalid-variable"}
                             onClick={onRun}
                           >
-                            <ExclamationCircleIcon
+                            <PiWarningCircle
                               className="h-3 w-3 text-red-300"
                               aria-hidden="true"
                             />
@@ -262,6 +273,27 @@ function DateInput(props: Props) {
             />
           )}
         </div>
+      </div>
+
+      <div className="absolute left-0 top-0 -translate-y-full pb-2">
+        <BlockTypePill
+          label="Date"
+          icon={<PiCalendarDots className="w-3 h-3" />}
+        />
+      </div>
+
+      <div
+        className={clsx(
+          "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-2 flex flex-row gap-x-1",
+          !props.isEditable ? "hidden" : "flex"
+        )}
+      >
+        <button
+          type="button"
+          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+        >
+          <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
+        </button>
       </div>
     </div>
   );
