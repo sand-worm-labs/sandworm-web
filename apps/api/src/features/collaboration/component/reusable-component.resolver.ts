@@ -17,7 +17,6 @@ import {
 } from './dto/reusable-component.dto';
 
 
-
 @Resolver(() => ReusableComponent)
 export class ReusableComponentResolver {
     constructor(
