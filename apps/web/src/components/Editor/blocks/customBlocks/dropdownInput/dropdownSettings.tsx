@@ -8,9 +8,16 @@ import {
   setDropdownDataFrameName,
   setDropdownType,
 } from "@sandworm/editor";
-import { Cog6ToothIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
-import { CheckIcon, DatabaseZapIcon, KeyboardIcon } from "lucide-react";
+import {
+  PiGearSix,
+  PiX,
+  PiCheckBold,
+  PiDatabase,
+  PiDatabaseBold,
+  PiKeyboard,
+  PiKeyboardBold,
+} from "react-icons/pi";
 import { useCallback, useEffect, useState } from "react";
 import type { DataFrame } from "@sandworm/types";
 
@@ -86,7 +93,7 @@ const StaticInput = (props: StaticInputProps) => {
                   onClick={() => onRemoveOption(option)}
                   className="rounded-full mt-0.5 p-0.5 hover:bg-gray-200"
                 >
-                  <XMarkIcon className="w-3 h-3" />
+                  <PiX className="w-3 h-3" />
                 </button>
               </div>
             </div>
@@ -239,7 +246,7 @@ export default function DropdownSettings(props: Props) {
   return (
     <div className="bg-gray-50 px-3 py-3 border border-border-secondary flex flex-col gap-y-2 rounded-md shadow-sm">
       <span className="text-xs font-semibold py-1 flex gap-x-1 text-ink-400">
-        <Cog6ToothIcon className="w-4 h-4" />
+        <PiGearSix className="w-4 h-4" />
         Dropdown settings
       </span>
 
@@ -256,14 +263,15 @@ export default function DropdownSettings(props: Props) {
           disabled={attrs.dropdownType === "static"}
         >
           <span className="flex gap-x-2 items-center">
-            <KeyboardIcon
-              strokeWidth={attrs.dropdownType === "static" ? 2 : 1}
-              className="w-4 h-4"
-            />
+            {attrs.dropdownType === "static" ? (
+              <PiKeyboardBold className="w-4 h-4" />
+            ) : (
+              <PiKeyboard className="w-4 h-4" />
+            )}
             Static
           </span>
           {attrs.dropdownType === "static" && (
-            <CheckIcon strokeWidth={3} className="w-4 h-4 text-ceramic-400" />
+            <PiCheckBold className="w-4 h-4 text-ceramic-400" />
           )}
         </button>
         <button
@@ -278,14 +286,15 @@ export default function DropdownSettings(props: Props) {
           disabled={attrs.dropdownType === "dynamic"}
         >
           <span className="flex gap-x-2 items-center">
-            <DatabaseZapIcon
-              strokeWidth={attrs.dropdownType === "dynamic" ? 2 : 1}
-              className="w-4 h-4"
-            />
+            {attrs.dropdownType === "dynamic" ? (
+              <PiDatabaseBold className="w-4 h-4" />
+            ) : (
+              <PiDatabase className="w-4 h-4" />
+            )}
             Dynamic
           </span>
           {attrs.dropdownType === "dynamic" && (
-            <CheckIcon strokeWidth={3} className="w-4 h-4 text-ceramic-400" />
+            <PiCheckBold className="w-4 h-4 text-ceramic-400" />
           )}
         </button>
       </span>

@@ -1,5 +1,4 @@
-import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { CheckIcon } from "lucide-react";
+import { PiCaretUpDown, PiCheck } from "react-icons/pi";
 import { Listbox } from "@headlessui/react";
 import { useMemo } from "react";
 import clsx from "clsx";
@@ -54,7 +53,7 @@ function Dropdown(props: Props) {
                   {currentValueLabel ?? props.placeholder}
                 </span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                  <ChevronUpDownIcon
+                  <PiCaretUpDown
                     className="h-5 w-5 text-ink-400"
                     aria-hidden="true"
                   />
@@ -104,7 +103,7 @@ function Dropdown(props: Props) {
                               "absolute inset-y-0 right-0 flex items-center pr-4"
                             )}
                           >
-                            <CheckIcon className="h-3 w-3" aria-hidden="true" />
+                            <PiCheck className="h-3 w-3" aria-hidden="true" />
                           </span>
                         ) : null}
                       </div>
