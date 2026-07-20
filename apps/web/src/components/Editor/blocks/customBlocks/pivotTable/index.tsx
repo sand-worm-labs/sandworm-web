@@ -20,7 +20,7 @@ import clsx from "clsx";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { equals, head } from "ramda";
-import { PiPlayFill, PiStop, PiClock, PiTable } from "react-icons/pi";
+import { PiPlayFill, PiStop, PiClock, PiTable, PiTrash } from "react-icons/pi";
 
 import { BlockTypePill } from "../../BlockTypePill";
 
@@ -653,6 +653,12 @@ function PivotTableBlock(props: Props) {
             isOutputHidden={false}
           />
         )}
+        <button
+          type="button"
+          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+        >
+          <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
+        </button>
       </div>
     </button>
   );

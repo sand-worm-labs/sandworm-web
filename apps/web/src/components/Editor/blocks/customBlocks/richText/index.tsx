@@ -16,10 +16,14 @@ import type { RichTextBlock } from "@sandworm/editor";
 import clsx from "clsx";
 import { useCallback, useEffect, useState } from "react";
 import type { ConnectDragPreview } from "react-dnd";
+import { PiTrash } from "react-icons/pi";
 
 import "katex/dist/katex.min.css";
+import { TextIcon } from "@/components/Assets/Blocks/TextIcon";
+
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import type { DashboardMode } from "../../Dashboard";
+import { BlockTypePill } from "../../BlockTypePill";
 
 import ImageExtension from "./ImageExtension";
 import FormattingToolbar from "./FormattingToolbar";
@@ -190,50 +194,27 @@ const RichTextBlock = (props: Props) => {
     };
   }, [editor, id, editorAPI.insert, editorAPI.blur]);
 
-  const ringColor = (() => {
-    if (editor?.isFocused && !props.belongsToMultiTabGroup && props.isEditable)
-      return "border border-border-focus dark:border-border-tertiary";
-
-    if (
-      !editor?.isFocused &&
-      !props.belongsToMultiTabGroup &&
-      props.isEditable &&
-      props.isCursorWithin &&
-      !props.isCursorInserting
-    )
-      return "border border-border-tertiary";
-
-    if (
-      props.dashboardMode?._tag === "editing" &&
-      props.dashboardMode.position === "expanded"
-    )
-      return "border border-border-focus";
-
-    return "";
-  })();
-
   return (
     <div
       data-testid={`RichTextBlock-${id}`}
-      ref={d => {
-        props.dragPreview?.(d);
-      }}
       data-block-id={id}
-      className="flex flex-col"
+      className="relative group/block mt-6"
     >
       <div
+        ref={d => {
+          props.dragPreview?.(d);
+        }}
         className={clsx(
-          "ring-border-focus ring-offset-4",
+          "rounded-2xl border-[1.5px]",
           props.dashboardMode ? "h-full overflow-y-auto" : "",
-          ringColor,
+          props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
           {
-            "rounded-tl-none rounded-lg border border-border-tertiary":
-              props.belongsToMultiTabGroup,
-            "rounded-tl-none rounded-lg border border-border-secondary":
-              props.belongsToMultiTabGroup &&
-              props.isCursorWithin &&
-              !props.isCursorInserting,
-            "rounded-lg": !props.belongsToMultiTabGroup,
+            "border-primary block-focus-ring":
+              props.isCursorWithin && props.isCursorInserting,
+            "border-hover-border shadow-none":
+              props.isCursorWithin && !props.isCursorInserting,
+            "border-hover-border block-shadow-soft dark:border-border-tertiary":
+              !props.isCursorWithin,
           }
         )}
       >
@@ -264,6 +245,24 @@ const RichTextBlock = (props: Props) => {
         >
           <EditorContent editor={editor} />
         </div>
+      </div>
+
+      <div className="absolute left-0 top-0 -translate-y-full pb-2">
+        <BlockTypePill label="Text" icon={<TextIcon className="w-3 h-3" />} />
+      </div>
+
+      <div
+        className={clsx(
+          "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-2 flex flex-row gap-x-1",
+          !props.isEditable ? "hidden" : "flex"
+        )}
+      >
+        <button
+          type="button"
+          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+        >
+          <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
+        </button>
       </div>
     </div>
   );

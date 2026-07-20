@@ -148,7 +148,7 @@ function Title(props: Props) {
           level: 1,
           HTMLAttributes: {
             style: `font-weight: 700; font-size: 2.5rem; line-height: 1.1;  ${props.style ?? ""}`,
-            class: "font-body text-[#050818]",
+            class: "font-body text-[#050818] dark:text-ink-100",
           },
         }),
         Placeholder.configure({

@@ -235,7 +235,7 @@ export const WorkspaceSidebar = () => {
     <>
       <aside
         className={`
-          bg-base-200 dark:bg-base-500
+          bg-base-200 dark:bg-base-200
           border-r border-border-secondary dark:border-border-tertiary
           font-body flex flex-col justify-between
           transition-all duration-300 ease-in-out relative
@@ -253,7 +253,7 @@ export const WorkspaceSidebar = () => {
         `}
       >
         <div className="flex flex-col flex-1 min-h-0">
-          <div className="flex justify-between py-[0.50rem] px-3 bg-base-100 dark:bg-base-500 items-center flex-shrink-0 border-b border-base-300">
+          <div className="flex justify-between py-[0.50rem] px-3 bg-base-100 dark:bg-base-500 items-center flex-shrink-0 border-b border-base-300 dark:border-border-tertiary">
             {!collapsed && (
               <Link href="/" className="flex items-center gap-2">
                 <SandwormLogo width="30" height="30" />

@@ -8,7 +8,6 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
 import {
   PiPencilSimple,
-  PiFloppyDisk,
   PiClockCountdown,
   PiChatCenteredText,
 } from "react-icons/pi";

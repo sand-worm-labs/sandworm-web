@@ -5,6 +5,7 @@ import {
   PencilSquareIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/20/solid";
+import { PiTrash } from "react-icons/pi";
 import type * as Y from "yjs";
 import {
   type YBlock,
@@ -33,6 +34,7 @@ import type { DashboardMode } from "../../Dashboard";
 import { dashboardModeHasControls } from "../../Dashboard/dashboard-types";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 import ScrollBar from "../../ScrollBar";
+import { BlockTypePill } from "../../BlockTypePill";
 import { PythonOutputs } from "../python/PythonOutput";
 
 import { AnalyticsParamForm } from "./AnalyticsparamForm";
@@ -122,12 +124,16 @@ function ParamSummaryPill({
   );
 }
 
-function BlockIcon() {
+function BlockIcon({
+  className = "w-4 h-4 text-ink-400",
+}: {
+  className?: string;
+}) {
   return (
     <svg
       viewBox="0 0 16 16"
       fill="none"
-      className="w-4 h-4 text-ink-400"
+      className={className}
       aria-hidden="true"
     >
       <path
@@ -330,21 +336,34 @@ function AnalyticsBlock(props: Props) {
   return (
     <div
       role="presentation"
-      className="bg-base-100 relative group/block"
+      className="relative group/block mt-6"
       onClick={onClickWithin}
       data-block-id={blockId}
     >
       <div
         className={clsx(
-          "rounded-2xl border border-border-focus",
+          "relative rounded-2xl border-[1.5px]",
           props.isBlockHiddenInPublished && "border-dashed",
-          props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-xl",
-          isEditorFocused && editorState.mode === "insert" && "shadow-sm"
+          props.hasMultipleTabs ? "rounded-tl-2xl" : "rounded-tl-2xl",
+          {
+            "border-primary block-focus-ring":
+              !statusIsDisabled &&
+              isEditorFocused &&
+              editorState.mode === "insert",
+            "border-hover-border block-focus-ring dark:border-border-tertiary":
+              statusIsDisabled,
+            "border-hover-border shadow-none":
+              !statusIsDisabled &&
+              isEditorFocused &&
+              editorState.mode === "normal",
+            "border-hover-border block-shadow-soft dark:border-border-tertiary":
+              !statusIsDisabled && !isEditorFocused,
+          }
         )}
       >
         <div
           className={clsx(
-            "rounded-2xl",
+            "rounded-2xl overflow-hidden",
             statusIsDisabled ? "" : "bg-white dark:bg-base-100",
             props.hasMultipleTabs ? "rounded-tl-none" : ""
           )}
@@ -366,14 +385,11 @@ function AnalyticsBlock(props: Props) {
                 <input
                   type="text"
                   className={clsx(
-                    "text-base font-body font-medium pl-1 ring-border-tertiary focus:ring-border-tertiary",
-                    "block w-full rounded-md border-0 text-ink-100 hover:ring-1 focus:ring-1",
-                    "ring-inset focus:ring-inset placeholder:text-ink-400",
-                    "py-0 disabled:ring-0 h-2/3 bg-transparent focus:bg-white"
+                    "text-sm font-body font-normal pl-1 block w-full border-0 border-b border-transparent focus:border-primary focus:outline-none text-ink-100 placeholder:text-ink-300 py-0 h-2/3 bg-transparent focus:bg-base-100"
                   )}
                   placeholder={
                     props.isEditable
-                      ? `${attrs.toolLabel ?? "PowerToolBox"} (click to add a title)`
+                      ? "Add a title..."
                       : (attrs.toolLabel ?? "PowerToolBox")
                   }
                   value={title}
@@ -518,14 +534,17 @@ function AnalyticsBlock(props: Props) {
         </Transition>
       </div>
 
+      <div className="absolute left-0 top-0 -translate-y-full pb-2">
+        <BlockTypePill
+          label="Analytics"
+          icon={<BlockIcon className="w-3 h-3" />}
+        />
+      </div>
       <div
         className={clsx(
-          "absolute h-full transition-opacity pl-1.5 right-0 top-0 translate-x-full",
-          "flex flex-col gap-y-1 z-20",
-          isEditorFocused || statusIsDisabled
-            ? "opacity-100"
-            : "opacity-0 group-hover/block:opacity-100",
-          !props.isEditable ? "hidden" : "block"
+          "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-2 flex flex-row gap-x-1",
+          isEditorFocused || statusIsDisabled ? "opacity-100" : "opacity-0",
+          !props.isEditable ? "hidden" : "flex"
         )}
       >
         <TooltipV2<HTMLButtonElement>
@@ -539,8 +558,7 @@ function AnalyticsBlock(props: Props) {
               onClick={onRunAbort}
               disabled={isRunButtonDisabled}
               className={clsx(
-                "rounded-sm h-6 min-w-6 flex items-center justify-center relative",
-                "disabled:cursor-not-allowed",
+                "rounded-[5px] border-hover-border border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-hover-bg hover:border-primary",
                 {
                   "bg-gray-200": isRunButtonDisabled,
                   "bg-red-200": status === "running" && envStatus === "Running",
@@ -560,11 +578,11 @@ function AnalyticsBlock(props: Props) {
               )}
             >
               {status === "enqueued" ? (
-                <ClockIcon className="w-3 h-3 text-inputBg" />
+                <ClockIcon className="w-[13px] h-[13px] text-inputBg" />
               ) : status === "running" || status === "aborting" ? (
-                <StopIcon className="w-3 h-3 text-inputBg" />
+                <StopIcon className="w-[13px] h-[13px] text-inputBg" />
               ) : (
-                <PlayIcon className="w-3 h-3 text-inputBg" />
+                <PlayIcon className="w-[13px] h-[13px] text-inputBg" />
               )}
             </button>
           )}
@@ -583,6 +601,13 @@ function AnalyticsBlock(props: Props) {
             }
           />
         )}
+
+        <button
+          type="button"
+          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+        >
+          <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
+        </button>
       </div>
     </div>
   );

@@ -228,8 +228,8 @@
     --error: 0 100% 50%; /* #FF0000 */
 
     /* Base surfaces */
-    --base-100: 60 2% 15%; /* #272726 */
-    --base-200: 60 4% 15%; /* #282825 */
+    --base-100: 0 0% 7%; /* #272726 */
+    --base-200: 180 4% 14%; /* #282825 */
     --base-300: 210 17% 96%; /* #F1F3F4 */
     --base-400: 60 3% 18%; /* #2F2F2C */
     --base-500: #232322;
@@ -242,7 +242,7 @@
     --input: 210 14% 89%; /* #DEE2E6 */
     --border: 210 14% 89%; /* #DEE2E6 */
     --border-secondary: 60 2% 28%; /* #494946 */
-    --border-tertiary: 60 2% 28%; /* #494946 */
+    --border-tertiary: 210 11% 15%; 
     --border-focus: 60 2% 42%; /* #6C6C69 */
 
     /* Disabled */
@@ -251,11 +251,12 @@
     /* Text */
     --ink-100: #ffffff;
     --ink-200: #9C9A92;
+    --ink-300: #868E96;
     --ink-400: #9C9A92;
     --ink-450: #6d6c7d;
     --ink-600: #fff;
     --ink-icon: #fff;
-    --ink-navy: #1c3b5a;
+    --ink-navy: #F8F9FA;
     --ink-700: #343330;
 
     /* Extended surfaces (auto-extracted, same value in light/dark for now) */
@@ -285,7 +286,7 @@
 
     /* Hover states */
     --hover-bg: #f1f2f4;
-    --hover-border: #e6e0f1;
+    --hover-border: #343A40;
 
     /* Primary/purple tint-shade scale */
     --primary-tint-50: #f9f5ff;

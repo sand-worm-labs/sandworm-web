@@ -31,7 +31,7 @@ import {
   setTitle,
 } from "@sandworm/editor";
 import { tags as t } from "@lezer/highlight";
-import { PiMarkdownLogo, PiCpu } from "react-icons/pi";
+import { PiMarkdownLogo, PiCpu, PiTrash } from "react-icons/pi";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 import { useWorkspaces } from "@/components/Editor/hooks/useWorkspaces";
@@ -658,6 +658,20 @@ const MarkdownBlock = (props: Props) => {
           label="Markdown"
           icon={<PiMarkdownLogo className="w-3 h-3" />}
         />
+      </div>
+
+      <div
+        className={clsx(
+          "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-2 flex flex-row gap-x-1",
+          !props.isEditable ? "hidden" : "flex"
+        )}
+      >
+        <button
+          type="button"
+          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+        >
+          <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
+        </button>
       </div>
     </div>
   );
