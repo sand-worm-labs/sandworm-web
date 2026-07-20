@@ -47,6 +47,9 @@ export class ChatService implements OnModuleInit {
   private readonly logger        = new Logger(ChatService.name);
   private readonly aiBaseUrl:      string;
   private readonly handshakeToken: string;
+  private readonly chatStream:      boolean;
+  private readonly chatTemperature: number;
+  private readonly chatMaxTokens:   number;
 
   private readonly chatStreams = new Map<string, ReplaySubject<SseEvent>>();
 
@@ -67,8 +70,11 @@ export class ChatService implements OnModuleInit {
     private readonly httpService: HttpService,
     private readonly workspaceService: WorkspaceService,
   ) {
-    this.aiBaseUrl      = this.configService.getOrThrow('ai.url',            { infer: true });
-    this.handshakeToken = this.configService.getOrThrow('ai.handshakeToken', { infer: true });
+    this.aiBaseUrl        = this.configService.getOrThrow('ai.url',             { infer: true });
+    this.handshakeToken   = this.configService.getOrThrow('ai.handshakeToken',  { infer: true });
+    this.chatStream       = this.configService.getOrThrow('ai.chatStream',      { infer: true });
+    this.chatTemperature  = this.configService.getOrThrow('ai.chatTemperature', { infer: true });
+    this.chatMaxTokens    = this.configService.getOrThrow('ai.chatMaxTokens',   { infer: true });
   }
 
   onModuleInit(): void {
@@ -112,10 +118,9 @@ export class ChatService implements OnModuleInit {
         focused_block_ids: focusedBlockIds,
         chat_id:           chat.id,
       },
-      derived_context: '',
-      stream:          false,
-      temperature:     0.7,
-      max_tokens:      4000,
+      stream:          this.chatStream,
+      temperature:     this.chatTemperature,
+      max_tokens:      this.chatMaxTokens,
     };
 
     this.httpService
