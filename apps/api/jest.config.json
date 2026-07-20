@@ -9,8 +9,14 @@
   "transform": {
     "^.+\\.(t|j)s$": [
       "@swc/jest"
+    ],
+    "^.+\\.mjs$": [
+      "@swc/jest"
     ]
   },
+  "transformIgnorePatterns": [
+    "/node_modules/.pnpm/(?!(p-queue|p-limit|p-timeout|eventemitter3|yocto-queue)@)"
+  ],
   "collectCoverageFrom": [
     "**/*.(t|j)s",
     "!**/*.spec.(t|j)s"
@@ -27,7 +33,7 @@
     "^@/core(.*)$": "<rootDir>/core$1",
     "^@/features(.*)$": "<rootDir>/features$1",
     "^@/infrastructure(.*)$": "<rootDir>/infrastructure$1",
-    "^@/events(.*)$": "<rootDir>/events$1",
+    "^@/events(.*)$": "<rootDir>/core/events$1",
     "^@/generated(.*)$": "<rootDir>/generated$1",
     "^@/i18n(.*)$": "<rootDir>/i18n$1",
     "^@/config(.*)$": "<rootDir>/core/config$1",
