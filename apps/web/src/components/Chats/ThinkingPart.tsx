@@ -8,6 +8,7 @@ import { BlockType } from "@sandworm/editor";
 
 import { BlockKindIcon } from "./icons";
 import type { ThinkingPart as ThinkingPartType } from "./parts.types";
+import { useTypewriter } from "./useTypewriter";
 
 // =====================================
 // ⬢ Constants
@@ -86,6 +87,7 @@ interface ThinkingPartProps {
 
 export function ThinkingPart({ part, isActive = false }: ThinkingPartProps) {
   const [open, setOpen] = useState(isActive);
+  const displayedThinking = useTypewriter(part.thinking, isActive);
 
   const seconds = Math.round(part.duration_ms / 1000);
   const label = seconds >= 1 ? `Thought for ${seconds}s` : "Thought";
@@ -215,7 +217,7 @@ export function ThinkingPart({ part, isActive = false }: ThinkingPartProps) {
               )}
 
               <p className="text-[12.5px] text-ink-400 dark:text-ink-500 leading-relaxed">
-                {part.thinking}
+                {displayedThinking}
               </p>
             </div>
           </motion.div>

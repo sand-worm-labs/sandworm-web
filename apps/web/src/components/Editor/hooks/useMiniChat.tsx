@@ -45,6 +45,15 @@ interface UseMiniChatParams {
   yDoc: Y.Doc;
 }
 
+// A follow-up "text" step routes its answer through the main chat input
+// instead of an embedded box, so the input needs to know what to prompt for
+// and where the typed answer should go.
+export interface ActiveFollowUpStep {
+  prompt: string;
+  placeholder?: string;
+  onAnswer: (value: string) => void;
+}
+
 // =====================================
 // ⬢ useMiniChat
 // =====================================
@@ -80,6 +89,8 @@ export function useMiniChat({
   const [activeThreadTitle, setActiveThreadTitle] = useState<
     string | undefined
   >(undefined);
+  const [activeFollowUpStep, setActiveFollowUpStep] =
+    useState<ActiveFollowUpStep | null>(null);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const promptFiredRef = useRef(false);
@@ -173,6 +184,7 @@ export function useMiniChat({
         onToken: chunk => appendToMessage(loadingId, chunk),
         onPart: part => appendPartToMessage(loadingId, part),
         onComplete: () => {
+          replaceMessage(loadingId, { isLoading: false });
           setIsLoading(false);
         },
         onError: err => {
@@ -301,9 +313,14 @@ export function useMiniChat({
       fileRefs?: UploadedFileRef[];
       references: AttachedReference[];
     }) => {
+      if (activeFollowUpStep) {
+        if (!data.message.trim()) return;
+        activeFollowUpStep.onAnswer(data.message);
+        return;
+      }
       handleSendSafe(data.message, data.references, data.fileRefs);
     },
-    [handleSendSafe]
+    [handleSendSafe, activeFollowUpStep]
   );
 
   const handleVote = useCallback(
@@ -393,6 +410,7 @@ export function useMiniChat({
       modelsError,
       selectedModelId,
       isModelPickerOpen,
+      activeFollowUpStep,
     },
     handlers: {
       setView,
@@ -408,6 +426,7 @@ export function useMiniChat({
       selectModel,
       openModelPicker,
       closeModelPicker,
+      setActiveFollowUpStep,
     },
   };
 }

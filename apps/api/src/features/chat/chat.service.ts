@@ -34,9 +34,10 @@ import type { FastifyRequest } from 'fastify/types/request';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AiJobEvent, AiJobEventNames } from '@/core/events/ai-job.events';
 import { MessageCreatedEvent, MessageEventNames } from '@/core/events/message.events';
+import { AiStreamEvent } from './types/stream.types';
 
 export interface SseEvent {
-  event?: 'part' | 'token';
+  event?: AiStreamEvent['type'];
   data: string;
 }
 
@@ -47,6 +48,9 @@ export class ChatService implements OnModuleInit {
   private readonly logger        = new Logger(ChatService.name);
   private readonly aiBaseUrl:      string;
   private readonly handshakeToken: string;
+  private readonly chatStream:      boolean;
+  private readonly chatTemperature: number;
+  private readonly chatMaxTokens:   number;
 
   private readonly chatStreams = new Map<string, ReplaySubject<SseEvent>>();
 
@@ -67,8 +71,11 @@ export class ChatService implements OnModuleInit {
     private readonly httpService: HttpService,
     private readonly workspaceService: WorkspaceService,
   ) {
-    this.aiBaseUrl      = this.configService.getOrThrow('ai.url',            { infer: true });
-    this.handshakeToken = this.configService.getOrThrow('ai.handshakeToken', { infer: true });
+    this.aiBaseUrl        = this.configService.getOrThrow('ai.url',             { infer: true });
+    this.handshakeToken   = this.configService.getOrThrow('ai.handshakeToken',  { infer: true });
+    this.chatStream       = this.configService.getOrThrow('ai.chatStream',      { infer: true });
+    this.chatTemperature  = this.configService.getOrThrow('ai.chatTemperature', { infer: true });
+    this.chatMaxTokens    = this.configService.getOrThrow('ai.chatMaxTokens',   { infer: true });
   }
 
   onModuleInit(): void {
@@ -112,10 +119,9 @@ export class ChatService implements OnModuleInit {
         focused_block_ids: focusedBlockIds,
         chat_id:           chat.id,
       },
-      derived_context: '',
-      stream:          false,
-      temperature:     0.7,
-      max_tokens:      4000,
+      stream:          this.chatStream,
+      temperature:     this.chatTemperature,
+      max_tokens:      this.chatMaxTokens,
     };
 
     this.httpService
@@ -132,43 +138,26 @@ export class ChatService implements OnModuleInit {
 
   }
 
+  // The AI sidecar (apps/ai/src/util/stream_events.py) constructs the full
+  // Claude-Messages-API-style envelope — this just relays it onto the SSE
+  // subject and handles the two terminal event types.
   private handleAiJobEvent(event: AiJobEvent): void {
     this.logger.log(`[ai-job] chatId=${event.chatId} type=${event.type}`);
 
     const subject = this.chatStreams.get(event.chatId);
     if (!subject) return;
 
-    switch (event.type) {
-      case 'started':
-        subject.next({ event: 'part', data: JSON.stringify({ type: 'started' }) });
-        break;
-      case 'plan_ready':
-        subject.next({ event: 'part', data: JSON.stringify({ type: 'thinking', thinking: event.payload.thinking, duration_ms: event.payload.duration_ms }) });
-        break;
-      case 'generating_block':
-        subject.next({ event: 'part', data: JSON.stringify({ type: 'block_action', action: 'generating', blockId: event.payload.block_id, blockType: event.payload.block_type, blockTitle: event.payload.block_title }) });
-        break;
-      case 'block_ready':
-        subject.next({ event: 'part', data: JSON.stringify({ type: 'block_action', action: 'ran', blockId: event.payload.block_id, blockType: event.payload.block_type, blockTitle: event.payload.block_title }) });
-        break;
-      case 'generating_response':
-        subject.next({ event: 'token', data: event.payload.token as string });
-        break;
-      case 'follow_up':
-        subject.next({ event: 'part', data: JSON.stringify({ type: 'follow_up', message: event.payload.message, questions: event.payload.questions }) });
-        break;
-      case 'completed':
-        subject.complete();
-        this.chatStreams.delete(event.chatId);
-        break;
-      case 'error':
-        subject.error(new Error((event.payload.message as string) ?? 'AI job failed'));
-        this.chatStreams.delete(event.chatId);
-        break;
-      case 'intent_error':
-        subject.error(new Error((event.payload.message as string) ?? 'Intent error'));
-        this.chatStreams.delete(event.chatId);
-        break;
+    if (event.type === 'intent_classified' || event.type === 'intent_parsed') return;
+
+    const payload = { type: event.type, ...event.payload } as AiStreamEvent;
+    subject.next({ event: payload.type, data: JSON.stringify(payload) });
+
+    if (payload.type === 'message_stop') {
+      subject.complete();
+      this.chatStreams.delete(event.chatId);
+    } else if (payload.type === 'error') {
+      subject.error(new Error(payload.error.message));
+      this.chatStreams.delete(event.chatId);
     }
   }
 
@@ -390,6 +379,34 @@ export class ChatService implements OnModuleInit {
   }
 
 
+  // The next turn's intent parsing (apps/ai/src/services/intent/service.py —
+  // _is_followup_clarification / _intent_class_from_history /
+  // _references_block_from_history) reads THIS message's `content` back out
+  // of history and expects the raw intent shape when the turn was a
+  // clarifying question. Without it, a follow-up answer looks like a brand
+  // new question every time — the model never learns it already asked
+  // something, and the conversation can't progress past clarification.
+  private buildAssistantContent(parts: unknown[]): string {
+    const events = parts as Array<Record<string, any>>;
+    const intentClassified = events.find(p => p.type === 'intent_classified');
+    const followUp = events.find(p => p.type === 'message_delta' && p.delta?.follow_up);
+
+    if (followUp) {
+      return JSON.stringify({
+        intent_class:      intentClassified?.intent_class ?? null,
+        intent_status:     'clarify',
+        references_block:  intentClassified?.references_block ?? false,
+        message:           followUp.delta.follow_up.message,
+        questions:         followUp.delta.follow_up.questions,
+      });
+    }
+
+    return events
+      .filter(p => p.type === 'content_block_delta' && p.delta?.type === 'text_delta')
+      .map(p => p.delta.text ?? '')
+      .join('');
+  }
+
   async createOrAppendMessageByJobId(chatId: string, jobId: string, data: any): Promise<void> {
     const existing = await this.messageRepository.findOne({
       where: { jobId, chat: { id: chatId } },
@@ -398,13 +415,18 @@ export class ChatService implements OnModuleInit {
 
     if (existing) {
       const currentParts = Array.isArray(existing.parts) ? existing.parts : [];
-      await this.messageRepository.update(existing.id, { parts: [...currentParts, ...incoming] });
+      const allParts = [...currentParts, ...incoming];
+      await this.messageRepository.update(existing.id, {
+        parts:   allParts,
+        content: this.buildAssistantContent(allParts),
+      });
     } else {
       await this.messageRepository.save({
         chat: { id: chatId },
         role: MessageRole.ASSISTANT,
         jobId,
         parts: incoming,
+        content: this.buildAssistantContent(incoming),
       });
     }
   }

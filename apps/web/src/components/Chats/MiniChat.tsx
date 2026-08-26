@@ -129,7 +129,8 @@ export const MiniChat: React.FC<MiniChatProps> = ({
                 onSelectPrompt={handlers.sendSafe}
                 onVote={handlers.vote}
                 onRemoveVote={handlers.removeVote}
-                onFollowUpSubmit={() => {}}
+                onFollowUpSubmit={handlers.followUpSubmit}
+                onActiveFollowUpStepChange={handlers.setActiveFollowUpStep}
               />
 
               <div className="pb-4 md:px-2">
@@ -138,6 +139,10 @@ export const MiniChat: React.FC<MiniChatProps> = ({
                   onUploadFile={handleUploadFile}
                   disabled={false}
                   isGenerating={state.isLoading}
+                  placeholder={
+                    state.activeFollowUpStep?.placeholder ??
+                    state.activeFollowUpStep?.prompt
+                  }
                   referenceSources={state.referenceSources}
                   pendingReview={pendingReview}
                   onAcceptAll={() => handlers.acceptAll("")}
