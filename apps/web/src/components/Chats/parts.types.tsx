@@ -56,8 +56,11 @@ export interface PendingReviewPart {
 export interface FollowUpQuestion {
   id: string;
   text: string;
-  inputType: "radio" | "text";
-  options?: Array<{ value: string; label: string }>;
+  input_type: "radio" | "text";
+  // An option with free_text is an escape hatch ("Something else — I'll
+  // describe it") — picking it prompts the user to type their own answer
+  // instead of accepting the option's value verbatim.
+  options?: Array<{ value: string; label: string; free_text?: boolean }>;
   placeholder?: string;
   required?: boolean;
 }

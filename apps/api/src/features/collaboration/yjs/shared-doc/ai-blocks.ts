@@ -1,11 +1,15 @@
 import {
   addBlockGroup,
+  appendDropdownInputOptions,
   BlockType,
+  dateInputValueFromString,
+  formatDateInputValue,
   getBlocks,
   getLayout,
   setTitle,
+  updateInputValue,
 } from '@sandworm/editor'
-import type { PowerToolboxInputs, YBlock, YBlockGroup } from '@sandworm/editor'
+import type { DashboardHeaderBlock, DateInputBlock, DropdownInputBlock, InputBlock, PowerToolboxInputs, YBlock, YBlockGroup } from '@sandworm/editor'
 import * as Y from 'yjs'
 
 function add(
@@ -122,6 +126,37 @@ export function addDashboardHeaderBlock(doc: Y.Doc, content = '') {
   )
 }
 
+function findDashboardHeaderBlockId(blocks: Y.Map<YBlock>): string | undefined {
+  let existingId: string | undefined
+  blocks.forEach((block, id) => {
+    if (!existingId && block.getAttribute('type') === BlockType.DashboardHeader) {
+      existingId = id
+    }
+  })
+  return existingId
+}
+
+// The notebook has at most one dashboard header — re-generating it should
+// update the existing one in place rather than adding a duplicate.
+export function upsertDashboardHeaderBlock(doc: Y.Doc, content: string, title?: string): void {
+  const blocks = getBlocks(doc)
+  const layout = getLayout(doc)
+
+  doc.transact(() => {
+    const existingId = findDashboardHeaderBlockId(blocks)
+
+    if (existingId) {
+      const block = blocks.get(existingId) as Y.XmlElement<DashboardHeaderBlock> | undefined
+      block?.setAttribute('content', content)
+      applyTitle(blocks, existingId, title)
+      return
+    }
+
+    const id = addBlockGroup(layout, blocks, { type: BlockType.DashboardHeader, content }, layout.length)
+    applyTitle(blocks, id, title)
+  })
+}
+
 export function addPivotTableBlock(doc: Y.Doc, dataframeName: string | null = null,) {
   add(doc, (layout, blocks, idx) =>
     addBlockGroup(layout, blocks, {
@@ -152,9 +187,9 @@ export type BlockSpec = WithTitle & (
   | { type: BlockType.RichText }
   | { type: BlockType.Markdown;        source?: string }
   | { type: BlockType.VisualizationV2; dataframeName?: string | null }
-  | { type: BlockType.Input }
-  | { type: BlockType.DropdownInput }
-  | { type: BlockType.DateInput }
+  | { type: BlockType.Input;          source?: string }
+  | { type: BlockType.DropdownInput;  source?: string }
+  | { type: BlockType.DateInput;      source?: string }
   | { type: BlockType.FileUpload }
   | { type: BlockType.DashboardHeader; content?: string }
   | { type: BlockType.PivotTable;      dataframeName?: string | null }
@@ -217,18 +252,45 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): void {
         case BlockType.Input: {
           const id = addBlockGroup(layout, blocks, { type: BlockType.Input }, idx, true)
           applyTitle(blocks, id, spec.title)
+
+          const value = spec.source?.trim()
+          if (value) {
+            const block = blocks.get(id) as Y.XmlElement<InputBlock> | undefined
+            if (block) updateInputValue(block, { value, newValue: value })
+          }
           break
         }
 
         case BlockType.DropdownInput: {
           const id = addBlockGroup(layout, blocks, { type: BlockType.DropdownInput }, idx, true)
           applyTitle(blocks, id, spec.title)
+
+          const options = (spec.source ?? '')
+            .split('\n')
+            .map(o => o.trim())
+            .filter(Boolean)
+          if (options.length > 0) {
+            const block = blocks.get(id) as Y.XmlElement<DropdownInputBlock> | undefined
+            if (block) appendDropdownInputOptions(block, blocks, options, true)
+          }
           break
         }
 
         case BlockType.DateInput: {
           const id = addBlockGroup(layout, blocks, { type: BlockType.DateInput }, idx, true)
           applyTitle(blocks, id, spec.title)
+
+          const dateStr = spec.source?.trim()
+          if (dateStr) {
+            const block = blocks.get(id) as Y.XmlElement<DateInputBlock> | undefined
+            if (block) {
+              const current = block.getAttribute('value')
+              const dateType = block.getAttribute('dateType') ?? 'date'
+              const parsed = dateInputValueFromString(dateStr, current)
+              block.setAttribute('value', parsed)
+              block.setAttribute('newValue', new Y.Text(formatDateInputValue(parsed, dateType)))
+            }
+          }
           break
         }
 

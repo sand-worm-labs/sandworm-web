@@ -19,6 +19,7 @@ import {
 } from "./ReferencePill";
 import type { AttachedReference } from "./types";
 import type { UploadedFileRef } from "./MiniChatInput";
+import { useTypewriter } from "./useTypewriter";
 
 // =====================================
 // ⬢ Types
@@ -29,6 +30,7 @@ type Rating = "up" | "down" | null;
 interface ChatBubbleProps {
   text: string;
   isUser: boolean;
+  isStreaming?: boolean;
   references?: AttachedReference[];
   fileRefs?: UploadedFileRef[];
   createdAt?: string;
@@ -211,13 +213,15 @@ function RatingButton({ type, active, onClick }: RatingButtonProps) {
 export function ChatBubble({
   text,
   isUser,
+  isStreaming = false,
   references = [],
   fileRefs = [],
   createdAt,
   onRate,
 }: ChatBubbleProps) {
   const [rating, setRating] = useState<Rating>(null);
-  console.log(text);
+  const displayedText = useTypewriter(text, isStreaming);
+  const stillTyping = isStreaming || displayedText.length < text.length;
 
   function handleRate(value: "up" | "down") {
     const next = rating === value ? null : value;
@@ -259,7 +263,13 @@ export function ChatBubble({
             text-ink-500 dark:text-ink-400
             [overflow-wrap:anywhere]"
         >
-          <MarkdownMessage text={text} />
+          <MarkdownMessage text={displayedText} />
+          {stillTyping && (
+            <span
+              className="inline-block w-[2px] h-[1em] -mb-[2px] ml-0.5
+                bg-ink-400 dark:bg-ink-300 animate-pulse align-middle"
+            />
+          )}
         </div>
       )}
 

@@ -4,10 +4,11 @@ import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ChatEntity } from '@sandworm/postgresql-typeorm';
 import { BlockType } from '@sandworm/editor';
+import type { PowerToolboxInputs } from '@sandworm/editor';
 import { BlockActionEvent, BlockActionEventNames } from '@/core/events/block-action.events';
 import { YjsDocumentService } from '../../collaboration/yjs/yjs-document.service';
 import { PersistorFactory } from '../../collaboration/yjs/persistors/persistor.factory';
-import { addBlocks, BlockSpec } from '../../collaboration/yjs/shared-doc/ai-blocks';
+import { addBlocks, BlockSpec, upsertDashboardHeaderBlock } from '../../collaboration/yjs/shared-doc/ai-blocks';
 
 const BLOCK_TYPE_MAP: Partial<Record<string, BlockType>> = {
   sql:              BlockType.SQL,
@@ -64,6 +65,27 @@ export class AiBlockEventService implements OnModuleInit {
     const docId     = this.yjsDocumentService.getDocId(chat.documentId, null);
     const persistor = this.persistorFactory.createDocumentPersistor(chat.documentId);
     const sharedDoc = await this.yjsDocumentService.getYDoc(docId, chat.documentId, chat.workspaceId, persistor);
+
+    if (blockType === BlockType.DashboardHeader) {
+      upsertDashboardHeaderBlock(sharedDoc.ydoc, event.content, event.blockTitle);
+      this.logger.log(`[block-action] updated dashboard header → doc ${chat.documentId}`);
+      return;
+    }
+
+    if (blockType === BlockType.PowerToolbox) {
+      let toolId = '';
+      let inputs: PowerToolboxInputs = {};
+      try {
+        const parsed = JSON.parse(event.content);
+        toolId = parsed.tool_id ?? '';
+        inputs = parsed.inputs ?? {};
+      } catch {
+        this.logger.warn(`[block-action] failed to parse power_toolbox content for chat ${event.chatId}`);
+      }
+      addBlocks(sharedDoc.ydoc, [{ type: BlockType.PowerToolbox, toolId, inputs, title: event.blockTitle }]);
+      this.logger.log(`[block-action] inserted power_toolbox block (tool=${toolId || '(none)'}) → doc ${chat.documentId}`);
+      return;
+    }
 
     addBlocks(sharedDoc.ydoc, [{ type: blockType, source: event.content, title: event.blockTitle } as BlockSpec]);
 

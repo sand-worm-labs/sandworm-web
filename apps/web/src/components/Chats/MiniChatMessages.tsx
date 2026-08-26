@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PiArrowDown } from "react-icons/pi";
 
-import type { LocalMessage } from "../Editor/hooks/useMiniChat";
+import type { ActiveFollowUpStep, LocalMessage } from "../Editor/hooks/useMiniChat";
 
 import { MessageParts } from "./MessageParts";
 import { FollowUpCard } from "./FollowUpCard";
@@ -24,6 +24,7 @@ interface MiniChatMessagesProps {
   onVote: (messageId: string, isUpvoted: boolean) => void;
   onRemoveVote: (messageId: string) => void;
   onFollowUpSubmit: (answers: Record<string, string>) => void;
+  onActiveFollowUpStepChange: (step: ActiveFollowUpStep | null) => void;
 }
 
 export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
@@ -33,6 +34,7 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
   onVote,
   onRemoveVote,
   onFollowUpSubmit,
+  onActiveFollowUpStepChange,
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef(true);
@@ -76,12 +78,13 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
           <MiniChatEmptyState onSelectPrompt={onSelectPrompt} />
         ) : (
           <div className="flex flex-col w-full gap-4">
-            {messages.map(msg => {
+            {messages.map((msg, msgIdx) => {
               const streamParts = (msg.streamParts ?? []) as PartPayload[];
               const hasParts = streamParts.length > 0;
               const followUp = streamParts.find(p => p.type === "follow_up") as
                 | FollowUpPart
                 | undefined;
+              const isLastMessage = msgIdx === messages.length - 1;
 
               if (msg.isLoading && !msg.text && !hasParts) {
                 return <RotatingGradientRing showLabel />;
@@ -122,6 +125,7 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
                     <ChatBubble
                       text={msg.text}
                       isUser={msg.isUser}
+                      isStreaming={!msg.isUser && !!msg.isLoading}
                       references={msg.references}
                       fileRefs={msg.fileRefs}
                       createdAt={msg.createdAt}
@@ -138,6 +142,10 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
                       <FollowUpCard
                         part={followUp}
                         onSubmit={onFollowUpSubmit}
+                        isStreaming={!!msg.isLoading}
+                        onActiveTextStepChange={
+                          isLastMessage ? onActiveFollowUpStepChange : undefined
+                        }
                       />
                     </div>
                   )}

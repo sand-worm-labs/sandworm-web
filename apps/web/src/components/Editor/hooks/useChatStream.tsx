@@ -3,7 +3,7 @@
 import { useCallback, useRef } from "react";
 
 import { NEXT_PUBLIC_API_URL } from "../../../utils/env";
-import type { PartPayload } from "../../Chats/parts.types";
+import type { PartPayload, FollowUpQuestion } from "../../Chats/parts.types";
 
 // =====================================
 // ⬢ Types
@@ -27,18 +27,112 @@ type UseChatStream = {
   isStreaming: boolean;
 };
 
+// Wire shapes emitted by the backend — mirrors the Claude Messages API
+// streaming envelope (message_start / content_block_* / message_delta / message_stop).
+interface ContentBlock {
+  type: "thinking" | "block_action" | "text";
+  block_id?: string;
+  block_type?: string;
+  block_title?: string;
+}
+
+interface ContentDelta {
+  type: "thinking_delta" | "block_action_delta" | "text_delta";
+  thinking?: string;
+  duration_ms?: number;
+  text?: string;
+  block_id?: string;
+  block_type?: string;
+  block_title?: string;
+}
+
+type AiStreamEvent =
+  | { type: "message_start" }
+  | { type: "content_block_start"; index: number; content_block: ContentBlock }
+  | { type: "content_block_delta"; index: number; delta: ContentDelta }
+  | { type: "content_block_stop"; index: number }
+  | {
+      type: "message_delta";
+      delta: { stop_reason?: string; follow_up?: { message: string; questions: FollowUpQuestion[] } };
+    }
+  | { type: "message_stop" }
+  | { type: "error"; error: { type: string; message: string } };
+
 // =====================================
 // ⬢ Utils
 // =====================================
+
+function handleStreamEvent(
+  streamEvent: AiStreamEvent,
+  onToken: (chunk: string) => void,
+  onPart?: (part: PartPayload) => void
+): Error | null {
+  switch (streamEvent.type) {
+    case "content_block_start":
+      if (streamEvent.content_block.type === "block_action") {
+        onPart?.({
+          type: "block_action",
+          action: "generating",
+          blockId: streamEvent.content_block.block_id ?? "",
+          blockType: streamEvent.content_block.block_type ?? "",
+          blockTitle: streamEvent.content_block.block_title ?? "",
+        });
+      }
+      return null;
+
+    case "content_block_delta":
+      switch (streamEvent.delta.type) {
+        case "thinking_delta":
+          onPart?.({
+            type: "thinking",
+            thinking: streamEvent.delta.thinking ?? "",
+            duration_ms: streamEvent.delta.duration_ms ?? 0,
+          });
+          break;
+        case "block_action_delta":
+          onPart?.({
+            type: "block_action",
+            action: "ran",
+            blockId: streamEvent.delta.block_id ?? "",
+            blockType: streamEvent.delta.block_type ?? "",
+            blockTitle: streamEvent.delta.block_title ?? "",
+          });
+          break;
+        case "text_delta":
+          onToken(streamEvent.delta.text ?? "");
+          break;
+      }
+      return null;
+
+    case "message_delta":
+      if (streamEvent.delta.follow_up) {
+        onPart?.({
+          type: "follow_up",
+          message: streamEvent.delta.follow_up.message,
+          questions: streamEvent.delta.follow_up.questions,
+        });
+      }
+      return null;
+
+    case "error":
+      return new Error(streamEvent.error.message);
+
+    case "message_start":
+    case "content_block_stop":
+    case "message_stop":
+      return null;
+  }
+}
 
 function processLines(
   lines: string[],
   currentEvent: string,
   onToken: (chunk: string) => void,
   onPart?: (part: PartPayload) => void
-): { event: string; done: boolean } {
+): { event: string; done: boolean; error: Error | null } {
   let event = currentEvent;
   let done = false;
+  let error: Error | null = null;
 
   lines.forEach(line => {
     if (done) return;
@@ -65,20 +159,20 @@ function processLines(
     }
     if (!trimmed) return;
 
-    if (event === "part") {
+    if (event === "token") {
+      onToken(data);
+    } else {
       try {
-        onPart?.(JSON.parse(trimmed) as PartPayload);
+        const streamEvent = JSON.parse(trimmed) as AiStreamEvent;
+        const streamError = handleStreamEvent(streamEvent, onToken, onPart);
+        if (streamError) error = streamError;
       } catch {
         /* skip */
       }
-    } else {
-      onToken(data);
     }
-
-    event = "token";
   });
 
-  return { event, done };
+  return { event, done, error };
 }
 
 // =====================================
@@ -133,8 +227,9 @@ export function useChatStream(): UseChatStream {
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
-        let currentEvent = "token";
+        let currentEvent = "message_start";
         let isDone = false;
+        let streamError: Error | null = null;
 
         const pump = async (): Promise<void> => {
           if (isDone) return;
@@ -142,24 +237,20 @@ export function useChatStream(): UseChatStream {
           if (done) return;
 
           const chunk = decoder.decode(value, { stream: true });
-          console.log("[useChatStream] raw stuffs:", chunk);
           buffer += chunk;
           const raw = buffer.split("\n");
           buffer = raw.pop() ?? "";
 
-          const { event, done: streamDone } = processLines(
-            raw,
-            currentEvent,
-            onToken,
-            onPart
-          );
-          currentEvent = event;
+          const result = processLines(raw, currentEvent, onToken, onPart);
+          currentEvent = result.event;
+          if (result.error) streamError = result.error;
 
-          if (streamDone) {
+          if (result.done) {
             isDone = true;
             reader.cancel();
             isStreamingRef.current = false;
-            onComplete();
+            if (streamError) onError(streamError);
+            else onComplete();
             return;
           }
 
@@ -169,7 +260,8 @@ export function useChatStream(): UseChatStream {
         await pump();
         if (!isDone) {
           isStreamingRef.current = false;
-          onComplete();
+          if (streamError) onError(streamError);
+          else onComplete();
         }
       } catch (err) {
         isStreamingRef.current = false;
