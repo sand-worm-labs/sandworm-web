@@ -13,7 +13,7 @@ import { useTypewriter } from "./useTypewriter";
 
 interface FollowUpCardProps {
   part: FollowUpPart;
-  onSubmit: (answers: Record<string, string>) => void;
+  onSubmit: (summary: string) => void;
   disabled?: boolean;
   isStreaming?: boolean;
   // "text" steps route their answer through the main chat input instead of
@@ -78,6 +78,23 @@ export function FollowUpCard({
     setAnswers(prev => ({ ...prev, [id]: value }));
   }, []);
 
+  // Turn the raw {questionId: value} map into something readable to send as
+  // a chat message — the option's label when one was picked, the typed text
+  // otherwise. Never expose internal question ids/values verbatim.
+  const buildSummary = useCallback(
+    (finalAnswers: Record<string, string>) =>
+      part.questions
+        .map(q => {
+          const value = finalAnswers[q.id];
+          if (!value) return null;
+          const opt = q.options?.find(o => o.value === value);
+          return opt && !opt.free_text ? opt.label : value;
+        })
+        .filter((v): v is string => !!v)
+        .join(", "),
+    [part.questions]
+  );
+
   const handleBack = useCallback(() => {
     setStep(s => Math.max(0, s - 1));
   }, []);
@@ -89,8 +106,8 @@ export function FollowUpCard({
 
   const handleSubmit = useCallback(() => {
     if (!allAnswered || disabled) return;
-    onSubmit(answers);
-  }, [answers, allAnswered, disabled, onSubmit]);
+    onSubmit(buildSummary(answers));
+  }, [answers, allAnswered, disabled, onSubmit, buildSummary]);
 
   // Answers typed into the main input arrive here — computed synchronously
   // (rather than relying on the `answers` state that setAnswers just queued)
@@ -104,12 +121,21 @@ export function FollowUpCard({
         const complete = part.questions.every(
           q => q.required === false || !!next[q.id]?.trim()
         );
-        if (complete) onSubmit(next);
+        if (complete) onSubmit(buildSummary(next));
       } else {
         setStep(s => Math.min(total - 1, s + 1));
       }
     },
-    [question, disabled, answers, isLastStep, part.questions, onSubmit, total]
+    [
+      question,
+      disabled,
+      answers,
+      isLastStep,
+      part.questions,
+      onSubmit,
+      total,
+      buildSummary,
+    ]
   );
 
   useEffect(() => {

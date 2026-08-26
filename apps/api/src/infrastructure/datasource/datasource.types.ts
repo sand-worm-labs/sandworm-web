@@ -52,6 +52,17 @@ export interface SandwormCloudDataSource extends BaseDataSource {
     apiEndpoint?: string;
 }
 
+export interface DuneDataSource extends BaseDataSource {
+    host: string;
+    port: string;
+    catalog: string;
+    username: string;
+    password: string | null;
+    notes: string;
+    readOnly: boolean;
+}
+
 export type DataSource =
     | { type: 'sandwormcloud'; data: SandwormCloudDataSource }
+    | { type: 'dune'; data: DuneDataSource }
     | { type: 'duckdb'; data: DuckDBDataSource };

@@ -52,7 +52,13 @@ export class SqlBlockExecutorService {
         source,
         configuration,
         dataframeName,
+        dataSourceId,
       } = getSQLAttributes(block, ctx.blocks);
+
+      // Only "dune-datasource" is Trino-backed today; everything else (the
+      // local duckdb source, file-backed blocks, unset) runs against the
+      // DuckDB session, matching prior behavior.
+      const datasource = dataSourceId === 'dune-datasource' ? 'trino' : 'duckdb';
 
       if (!dataframeName) {
         executionItem.setCompleted('error');
@@ -84,7 +90,7 @@ export class SqlBlockExecutorService {
           ctx.execution.sessionId,
           blockId,
           dataframeName.value,
-          'duckdb',
+          datasource,
           actualSource,
           {
             pageSize: 50,
