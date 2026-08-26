@@ -379,6 +379,34 @@ export class ChatService implements OnModuleInit {
   }
 
 
+  // The next turn's intent parsing (apps/ai/src/services/intent/service.py —
+  // _is_followup_clarification / _intent_class_from_history /
+  // _references_block_from_history) reads THIS message's `content` back out
+  // of history and expects the raw intent shape when the turn was a
+  // clarifying question. Without it, a follow-up answer looks like a brand
+  // new question every time — the model never learns it already asked
+  // something, and the conversation can't progress past clarification.
+  private buildAssistantContent(parts: unknown[]): string {
+    const events = parts as Array<Record<string, any>>;
+    const intentClassified = events.find(p => p.type === 'intent_classified');
+    const followUp = events.find(p => p.type === 'message_delta' && p.delta?.follow_up);
+
+    if (followUp) {
+      return JSON.stringify({
+        intent_class:      intentClassified?.intent_class ?? null,
+        intent_status:     'clarify',
+        references_block:  intentClassified?.references_block ?? false,
+        message:           followUp.delta.follow_up.message,
+        questions:         followUp.delta.follow_up.questions,
+      });
+    }
+
+    return events
+      .filter(p => p.type === 'content_block_delta' && p.delta?.type === 'text_delta')
+      .map(p => p.delta.text ?? '')
+      .join('');
+  }
+
   async createOrAppendMessageByJobId(chatId: string, jobId: string, data: any): Promise<void> {
     const existing = await this.messageRepository.findOne({
       where: { jobId, chat: { id: chatId } },
@@ -387,13 +415,18 @@ export class ChatService implements OnModuleInit {
 
     if (existing) {
       const currentParts = Array.isArray(existing.parts) ? existing.parts : [];
-      await this.messageRepository.update(existing.id, { parts: [...currentParts, ...incoming] });
+      const allParts = [...currentParts, ...incoming];
+      await this.messageRepository.update(existing.id, {
+        parts:   allParts,
+        content: this.buildAssistantContent(allParts),
+      });
     } else {
       await this.messageRepository.save({
         chat: { id: chatId },
         role: MessageRole.ASSISTANT,
         jobId,
         parts: incoming,
+        content: this.buildAssistantContent(incoming),
       });
     }
   }

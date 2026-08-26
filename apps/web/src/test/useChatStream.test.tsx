@@ -120,7 +120,7 @@ describe("useChatStream", () => {
   });
 
   it("surfaces follow_up carried on message_delta", async () => {
-    const questions = [{ id: "q1", text: "Which chain?", inputType: "text" as const }];
+    const questions = [{ id: "q1", text: "Which chain?", input_type: "text" as const }];
     const text =
       sse("message_delta", {
         type: "message_delta",
