@@ -34,9 +34,10 @@ import type { FastifyRequest } from 'fastify/types/request';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AiJobEvent, AiJobEventNames } from '@/core/events/ai-job.events';
 import { MessageCreatedEvent, MessageEventNames } from '@/core/events/message.events';
+import { AiStreamEvent } from './types/stream.types';
 
 export interface SseEvent {
-  event?: 'part' | 'token';
+  event?: AiStreamEvent['type'];
   data: string;
 }
 
@@ -137,43 +138,26 @@ export class ChatService implements OnModuleInit {
 
   }
 
+  // The AI sidecar (apps/ai/src/util/stream_events.py) constructs the full
+  // Claude-Messages-API-style envelope — this just relays it onto the SSE
+  // subject and handles the two terminal event types.
   private handleAiJobEvent(event: AiJobEvent): void {
     this.logger.log(`[ai-job] chatId=${event.chatId} type=${event.type}`);
 
     const subject = this.chatStreams.get(event.chatId);
     if (!subject) return;
 
-    switch (event.type) {
-      case 'started':
-        subject.next({ event: 'part', data: JSON.stringify({ type: 'started' }) });
-        break;
-      case 'plan_ready':
-        subject.next({ event: 'part', data: JSON.stringify({ type: 'thinking', thinking: event.payload.thinking, duration_ms: event.payload.duration_ms }) });
-        break;
-      case 'generating_block':
-        subject.next({ event: 'part', data: JSON.stringify({ type: 'block_action', action: 'generating', blockId: event.payload.block_id, blockType: event.payload.block_type, blockTitle: event.payload.block_title }) });
-        break;
-      case 'block_ready':
-        subject.next({ event: 'part', data: JSON.stringify({ type: 'block_action', action: 'ran', blockId: event.payload.block_id, blockType: event.payload.block_type, blockTitle: event.payload.block_title }) });
-        break;
-      case 'generating_response':
-        subject.next({ event: 'token', data: event.payload.token as string });
-        break;
-      case 'follow_up':
-        subject.next({ event: 'part', data: JSON.stringify({ type: 'follow_up', message: event.payload.message, questions: event.payload.questions }) });
-        break;
-      case 'completed':
-        subject.complete();
-        this.chatStreams.delete(event.chatId);
-        break;
-      case 'error':
-        subject.error(new Error((event.payload.message as string) ?? 'AI job failed'));
-        this.chatStreams.delete(event.chatId);
-        break;
-      case 'intent_error':
-        subject.error(new Error((event.payload.message as string) ?? 'Intent error'));
-        this.chatStreams.delete(event.chatId);
-        break;
+    if (event.type === 'intent_classified' || event.type === 'intent_parsed') return;
+
+    const payload = { type: event.type, ...event.payload } as AiStreamEvent;
+    subject.next({ event: payload.type, data: JSON.stringify(payload) });
+
+    if (payload.type === 'message_stop') {
+      subject.complete();
+      this.chatStreams.delete(event.chatId);
+    } else if (payload.type === 'error') {
+      subject.error(new Error(payload.error.message));
+      this.chatStreams.delete(event.chatId);
     }
   }
 

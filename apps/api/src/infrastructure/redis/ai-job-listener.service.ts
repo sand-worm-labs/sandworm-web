@@ -58,7 +58,7 @@ export class AiJobListenerService implements OnModuleInit {
     this.enqueue(jobId, raw);
     this.emitJobEvent(jobId, raw);
 
-    if (raw.type === 'completed' || raw.type === 'error') {
+    if (raw.type === 'message_stop' || raw.type === 'error') {
       await this.flush(jobId, raw.chat_id!, eventsKey);
     }
   };
@@ -73,13 +73,15 @@ export class AiJobListenerService implements OnModuleInit {
     };
     this.eventEmitter.emit(AiJobEventNames.AI_JOB_EVENT, event);
 
-    if (type === 'block_ready') {
+    // A block finished generating (envelope: content_block_delta / block_action_delta / action=ran)
+    const delta = type === 'content_block_delta' ? (rest as any).delta : undefined;
+    if (delta?.type === 'block_action_delta' && delta?.action === 'ran') {
       const blockEvent: BlockActionEvent = {
         action: 'created',
-        blockId: (rest as any).block_id ?? '',
-        blockType: (rest as any).block_type ?? '',
-        blockTitle: (rest as any).block_title ?? '',
-        content: (rest as any).content ?? '',
+        blockId: delta.block_id ?? '',
+        blockType: delta.block_type ?? '',
+        blockTitle: delta.block_title ?? '',
+        content: delta.content ?? '',
         chatId: chat_id!,
       };
       this.eventEmitter.emit(BlockActionEventNames.BLOCK_ACTION, blockEvent);
