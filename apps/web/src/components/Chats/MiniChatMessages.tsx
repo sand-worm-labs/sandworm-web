@@ -122,6 +122,7 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
                     <ChatBubble
                       text={msg.text}
                       isUser={msg.isUser}
+                      isStreaming={!msg.isUser && !!msg.isLoading}
                       references={msg.references}
                       fileRefs={msg.fileRefs}
                       createdAt={msg.createdAt}
@@ -138,6 +139,7 @@ export const MiniChatMessages: React.FC<MiniChatMessagesProps> = ({
                       <FollowUpCard
                         part={followUp}
                         onSubmit={onFollowUpSubmit}
+                        isStreaming={!!msg.isLoading}
                       />
                     </div>
                   )}

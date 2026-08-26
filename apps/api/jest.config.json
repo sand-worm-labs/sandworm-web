@@ -15,7 +15,7 @@
     ]
   },
   "transformIgnorePatterns": [
-    "/node_modules/.pnpm/(?!(p-queue|p-limit|p-timeout|eventemitter3|yocto-queue)@)"
+    "/node_modules/.pnpm/(?!(p-queue|p-limit|p-timeout|p-all|p-map|eventemitter3|yocto-queue)@)"
   ],
   "collectCoverageFrom": [
     "**/*.(t|j)s",
@@ -29,6 +29,7 @@
   "coverageDirectory": "../coverage",
   "testEnvironment": "node",
   "moduleNameMapper": {
+    "^(\\.{1,2}/.*)\\.js$": "$1",
     "^@/common(.*)$": "<rootDir>/common$1",
     "^@/core(.*)$": "<rootDir>/core$1",
     "^@/features(.*)$": "<rootDir>/features$1",

@@ -4,6 +4,7 @@ import React, { useState, useCallback } from "react";
 import { PiArrowRight } from "react-icons/pi";
 
 import type { FollowUpPart } from "./parts.types";
+import { useTypewriter } from "./useTypewriter";
 
 // =====================================
 // ⬢ Types
@@ -13,13 +14,20 @@ interface FollowUpCardProps {
   part: FollowUpPart;
   onSubmit: (answers: Record<string, string>) => void;
   disabled?: boolean;
+  isStreaming?: boolean;
 }
 
 // =====================================
 // ⬢ FollowUpCard
 // =====================================
 
-export function FollowUpCard({ part, onSubmit, disabled }: FollowUpCardProps) {
+export function FollowUpCard({
+  part,
+  onSubmit,
+  disabled,
+  isStreaming = false,
+}: FollowUpCardProps) {
+  const displayedMessage = useTypewriter(part.message, isStreaming);
   const [answers, setAnswers] = useState<Record<string, string>>(
     () =>
       Object.fromEntries(
@@ -49,7 +57,7 @@ export function FollowUpCard({ part, onSubmit, disabled }: FollowUpCardProps) {
     >
       <div className="px-3 py-2.5 border-b border-border-secondary dark:border-base-700">
         <p className="text-[12px] text-ink-400 dark:text-ink-400 leading-relaxed">
-          {part.message}
+          {displayedMessage}
         </p>
       </div>
 
