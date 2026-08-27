@@ -182,6 +182,7 @@ export class AiBlockEventService implements OnModuleInit {
       if (!fixed?.trim()) return;
 
       updateYText(source, fixed);
+      previousResult = result;
       ExecutionQueue.fromYjs(ydoc).enqueueBlock(blockId, userId, null, {
         _tag: 'sql',
         isSuggestion: false,
@@ -190,9 +191,13 @@ export class AiBlockEventService implements OnModuleInit {
     }
   }
 
-  // Resolves once the block's `result` attribute is set (or after a timeout,
-  // to avoid hanging forever if execution stalls for some other reason).
-  private waitForSQLResult(block: Y.XmlElement<SQLBlock>): Promise<RunQueryResult | null> {
+  // Resolves once the block's `result` attribute holds a new, non-null value
+  // that differs from previousResult (or after a timeout, to avoid hanging
+  // forever if execution stalls for some other reason).
+  private waitForSQLResult(
+    block: Y.XmlElement<SQLBlock>,
+    previousResult: RunQueryResult | null,
+  ): Promise<RunQueryResult | null> {
     return new Promise(resolve => {
       let settled = false;
       const timeout = setTimeout(() => finish(null), 5 * 60 * 1000);
@@ -207,7 +212,7 @@ export class AiBlockEventService implements OnModuleInit {
 
       const check = () => {
         const result = block.getAttribute('result') as RunQueryResult | null | undefined;
-        if (result !== null && result !== undefined) finish(result);
+        if (result !== null && result !== undefined && result !== previousResult) finish(result);
       };
 
       block.observe(check);
