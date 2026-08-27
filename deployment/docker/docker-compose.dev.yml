@@ -136,6 +136,8 @@ services:
       - ./jupyterfiles:/home/sandwormuser/files
     networks:
       - sandworm-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command: >
       jupyter server --ip=0.0.0.0
       --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=1.0e10

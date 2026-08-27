@@ -7,7 +7,12 @@ import {
 } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 
-type Option = { value: string; label: string };
+type Option = {
+  value: string;
+  label: string;
+  icon?: React.ReactNode;
+  disabled?: boolean;
+};
 
 interface Props {
   options: Option[];
@@ -25,10 +30,14 @@ export default function HeaderSelect(props: Props) {
   const hasOptions = options.length > 0;
   const isDisabled = disabled || !hasOptions;
   const hasValue = options.some(option => option.value === value);
-  const selectedOptionContent = hasOptions
-    ? options.find(option => option.value === value)?.label ||
-      (props.placeholders?.[0] ?? "No data frames selected")
-    : (props.placeholders?.[1] ?? "No data frames");
+  const selectedOption = hasOptions
+    ? options.find(option => option.value === value)
+    : undefined;
+  const selectedOptionContent =
+    selectedOption?.label ??
+    (hasOptions
+      ? (props.placeholders?.[0] ?? "No data frames selected")
+      : (props.placeholders?.[1] ?? "No data frames"));
 
   const onChange = useCallback(
     (newValue: string) => {
@@ -53,6 +62,11 @@ export default function HeaderSelect(props: Props) {
             )}
           >
             <div className="flex gap-x-3 items-center font-body overflow-hidden">
+              {selectedOption?.icon && (
+                <span className="flex-shrink-0 flex items-center">
+                  {selectedOption.icon}
+                </span>
+              )}
               <span className="block truncate">{selectedOptionContent}</span>
             </div>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -78,16 +92,25 @@ export default function HeaderSelect(props: Props) {
                 <Listbox.Option
                   key={option.value}
                   as="div"
+                  disabled={option.disabled}
                   className={({ active }) =>
                     clsx(
-                      active ? "bg-blue-50 dark:bg-base-500" : "",
-                      "relative select-none pl-3 pr-9 text-ink-100 dark:text-white hover:cursor-pointer py-3"
+                      active && !option.disabled ? "bg-blue-50 dark:bg-base-500" : "",
+                      option.disabled
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:cursor-pointer",
+                      "relative select-none pl-3 pr-9 text-ink-100 dark:text-white py-3"
                     )
                   }
                   value={option.value}
                 >
                   {({ selected, active }) => (
                     <div className="flex gap-x-3 items-center font-mono overflow-hidden">
+                      {option.icon && (
+                        <span className="flex-shrink-0 flex items-center">
+                          {option.icon}
+                        </span>
+                      )}
                       <span
                         className={clsx(
                           selected ? "font-semibold" : "font-normal",
@@ -96,6 +119,11 @@ export default function HeaderSelect(props: Props) {
                       >
                         {option.label}
                       </span>
+                      {option.disabled && (
+                        <span className="text-[10px] text-ink-300 dark:text-ink-600 ml-1">
+                          (unavailable)
+                        </span>
+                      )}
 
                       {selected ? (
                         <span

@@ -19,11 +19,12 @@ export class TrinoQueryService {
   ) { }
 
   private buildConnectionUrl(): string {
-    const { host, port, catalog, user, password } = this.configService.getOrThrow('trino', { infer: true });
+    const { host, port, catalog, schema, user, password } = this.configService.getOrThrow('trino', { infer: true });
     const auth = password
       ? `${encodeURIComponent(user)}:${encodeURIComponent(password)}`
       : encodeURIComponent(user);
-    return `trino://${auth}@${host}:${port}/${catalog}`;
+    const path = schema ? `${catalog}/${schema}` : catalog;
+    return `trino://${auth}@${host}:${port}/${path}`;
   }
 
   async execute(
@@ -78,10 +79,27 @@ def _sandworm_make_trino_query():
     page_size = ${resultOptions.pageSize}
     dashboard_page_size = ${resultOptions.dashboardPageSize}
 
+    def hexlify_binary_columns(df):
+        # Trino VARBINARY columns (hashes, addresses, raw calldata) come back
+        # as raw bytes — pandas' to_json can't encode those as UTF-8. Hex
+        # them, matching how blockchain data is normally displayed.
+        for column in df.columns:
+            if df[column].dtype != "object":
+                continue
+            sample = df[column].dropna()
+            if len(sample) == 0 or not isinstance(sample.iloc[0], (bytes, bytearray, memoryview)):
+                continue
+            df[column] = df[column].apply(
+                lambda v: ("0x" + bytes(v).hex()) if isinstance(v, (bytes, bytearray, memoryview)) else v
+            )
+        return df
+
     engine = create_engine(${JSON.stringify(databaseUrl)})
     try:
         with engine.connect() as conn:
             df = pd.read_sql_query(text(${JSON.stringify(sql)}), con=conn)
+
+        df = hexlify_binary_columns(df)
 
         rows = json.loads(df.head(max(page_size, dashboard_page_size)).to_json(orient="records", date_format="iso"))
         for r in rows:
@@ -172,12 +190,17 @@ _sandworm_make_trino_query()
 import json
 from sqlalchemy import create_engine, text
 
+def hexlify(v):
+    if isinstance(v, (bytes, bytearray, memoryview)):
+        return "0x" + bytes(v).hex()
+    return v
+
 engine = create_engine(${JSON.stringify(databaseUrl)})
 try:
     with engine.connect() as conn:
         result = conn.execute(text(${JSON.stringify(sql)}))
         columns = list(result.keys())
-        rows = [list(row) for row in result.fetchall()]
+        rows = [[hexlify(v) for v in row] for row in result.fetchall()]
         print(json.dumps({"type": "success", "columns": columns, "rows": rows}, default=str))
 except Exception as e:
     print(json.dumps({"type": "error", "message": str(e)}))

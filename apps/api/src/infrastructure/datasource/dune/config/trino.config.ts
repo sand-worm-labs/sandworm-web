@@ -9,6 +9,7 @@ export default registerAs<TrinoConfig>('trino', () => ({
   host:     process.env.TRINO_HOST ?? '',
   port:     process.env.TRINO_PORT ? parseInt(process.env.TRINO_PORT, 10) : 443,
   catalog:  process.env.TRINO_CATALOG ?? '',
+  schema:   process.env.TRINO_SCHEMA || null,
   user:     process.env.TRINO_USER ?? '',
   password: process.env.TRINO_PASSWORD ?? null,
 }));
