@@ -13,7 +13,7 @@ import { useTypewriter } from "./useTypewriter";
 
 interface FollowUpCardProps {
   part: FollowUpPart;
-  onSubmit: (answers: Record<string, string>) => void;
+  onSubmit: (summary: string) => void;
   disabled?: boolean;
   isStreaming?: boolean;
   // "text" steps route their answer through the main chat input instead of
@@ -35,6 +35,8 @@ export function FollowUpCard({
 }: FollowUpCardProps) {
   const displayedMessage = useTypewriter(part.message, isStreaming);
   const [step, setStep] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
+  const isDisabled = disabled || submitted;
   const [answers, setAnswers] = useState<Record<string, string>>(
     () =>
       Object.fromEntries(
@@ -78,42 +80,77 @@ export function FollowUpCard({
     setAnswers(prev => ({ ...prev, [id]: value }));
   }, []);
 
+  // Turn the raw {questionId: value} map into something readable to send as
+  // a chat message — the option's label when one was picked, the typed text
+  // otherwise. Never expose internal question ids/values verbatim.
+  const buildSummary = useCallback(
+    (finalAnswers: Record<string, string>) =>
+      part.questions
+        .map(q => {
+          const value = finalAnswers[q.id];
+          if (!value) return null;
+          const opt = q.options?.find(o => o.value === value);
+          return opt && !opt.free_text ? opt.label : value;
+        })
+        .filter((v): v is string => !!v)
+        .join(", "),
+    [part.questions]
+  );
+
   const handleBack = useCallback(() => {
     setStep(s => Math.max(0, s - 1));
   }, []);
 
   const handleNext = useCallback(() => {
-    if (!currentAnswered || disabled) return;
+    if (!currentAnswered || isDisabled) return;
     setStep(s => Math.min(total - 1, s + 1));
-  }, [currentAnswered, disabled, total]);
+  }, [currentAnswered, isDisabled, total]);
 
   const handleSubmit = useCallback(() => {
-    if (!allAnswered || disabled) return;
-    onSubmit(answers);
-  }, [answers, allAnswered, disabled, onSubmit]);
+    if (!allAnswered || isDisabled) return;
+    setSubmitted(true);
+    onSubmit(buildSummary(answers));
+  }, [answers, allAnswered, isDisabled, onSubmit, buildSummary]);
 
   // Answers typed into the main input arrive here — computed synchronously
   // (rather than relying on the `answers` state that setAnswers just queued)
   // so a last-step answer can be checked and submitted in the same call.
   const submitTextAnswer = useCallback(
     (value: string) => {
-      if (!question || disabled) return;
+      if (!question || isDisabled) return;
       const next = { ...answers, [question.id]: value };
       setAnswers(next);
       if (isLastStep) {
         const complete = part.questions.every(
           q => q.required === false || !!next[q.id]?.trim()
         );
-        if (complete) onSubmit(next);
+        if (complete) {
+          setSubmitted(true);
+          onSubmit(buildSummary(next));
+        }
       } else {
         setStep(s => Math.min(total - 1, s + 1));
       }
     },
-    [question, disabled, answers, isLastStep, part.questions, onSubmit, total]
+    [
+      question,
+      isDisabled,
+      answers,
+      isLastStep,
+      part.questions,
+      onSubmit,
+      total,
+      buildSummary,
+    ]
   );
 
   useEffect(() => {
     if (!onActiveTextStepChange) return undefined;
+
+    if (submitted) {
+      onActiveTextStepChange(null);
+      return () => onActiveTextStepChange(null);
+    }
 
     if (question?.input_type === "text") {
       onActiveTextStepChange({
@@ -136,6 +173,7 @@ export function FollowUpCard({
     question,
     pendingElaboration,
     selectedOption,
+    submitted,
     onActiveTextStepChange,
     submitTextAnswer,
   ]);
@@ -202,7 +240,7 @@ export function FollowUpCard({
                     checked={answers[question.id] === opt.value}
                     onChange={() => handleChange(question.id, opt.value)}
                     className="accent-primary flex-shrink-0"
-                    disabled={disabled}
+                    disabled={isDisabled}
                   />
                   <span className="text-[11.5px] text-ink-500 dark:text-ink-200">
                     {opt.label}
@@ -241,7 +279,7 @@ export function FollowUpCard({
             <button
               type="button"
               onClick={handleBack}
-              disabled={disabled}
+              disabled={isDisabled}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg
                 text-[12px] font-medium transition-colors
                 text-ink-400 dark:text-ink-300
@@ -260,7 +298,7 @@ export function FollowUpCard({
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={!allAnswered || disabled}
+                disabled={!allAnswered || isDisabled}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg
                   text-[12px] font-medium transition-colors
                   bg-primary hover:bg-primary-710 text-white
@@ -274,7 +312,7 @@ export function FollowUpCard({
               <button
                 type="button"
                 onClick={handleNext}
-                disabled={!currentAnswered || disabled}
+                disabled={!currentAnswered || isDisabled}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg
                   text-[12px] font-medium transition-colors
                   bg-primary hover:bg-primary-710 text-white

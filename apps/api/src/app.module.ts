@@ -34,6 +34,7 @@ import authConfig from './features/auth/core/config/auth.config';
 import { ApiModule } from './api.module';
 import { WebsocketModule } from './infrastructure/websocket/websocket.module';
 import openrouterConfig from './infrastructure/openrouter/config/openrouter.config';
+import trinoConfig from './infrastructure/datasource/dune/config/trino.config';
 
 const configModule = ConfigModule.forRoot({
   isGlobal: true,
@@ -46,6 +47,7 @@ const configModule = ConfigModule.forRoot({
     githubConfig,
     mailConfig,
     openrouterConfig,
+    trinoConfig,
   ],
   envFilePath: ['.env'],
 });

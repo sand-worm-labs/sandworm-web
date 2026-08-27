@@ -60,6 +60,7 @@ export type AddBlockGroupBlock =
       dataSourceId: string | null
       isFileDataSource: boolean
       source?: string
+      dataframeName?: string
     }
   | {
       type:
@@ -94,6 +95,7 @@ const createBlock = (block: AddBlockGroupBlock, yBlockDefs: Y.Map<YBlock>, isAiI
         dataSourceId: block.dataSourceId,
         isFileDataSource: block.isFileDataSource,
         source: block.source,
+        dataframeName: block.dataframeName,
       }, isAiInput);
       break;
     case BlockType.Visualization:

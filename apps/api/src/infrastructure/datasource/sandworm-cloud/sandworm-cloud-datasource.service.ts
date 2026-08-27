@@ -10,9 +10,13 @@ export class SandwormCloudDataSourceService {
                 id: 'sandwormcloud-datasource',
                 workspaceId: workspaceId,
                 name: 'Sandworm Cloud',
-                connStatus: 'online',
-                lastConnection: new Date().toISOString(),
-                connError: null,
+                // Disabled for now — SandwormCloudQueryService is still a
+                // mock (fake schema, no real query execution wired up), so
+                // this stays visible but unselectable until it's real.
+                disabled: true,
+                connStatus: 'offline',
+                lastConnection: null,
+                connError: { name: 'NotAvailable', message: 'Sandworm Cloud is not available yet' },
                 isDefault: false,
                 isDemo: false,
                 createdAt: new Date(0).toISOString(),

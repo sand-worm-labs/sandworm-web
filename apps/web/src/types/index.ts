@@ -315,53 +315,23 @@ export type CreateSchedulePayload = {
   scheduleParams: ScheduleParams;
 };
 
-export type TrinoDataSource = {
+export type DataSourceStatus = {
   id: string;
   name: string;
-  host: string;
-  port: number;
-  user: string;
-  catalog: string;
-  schema: string;
+  connStatus: "online" | "offline" | "checking";
+  lastConnection: string | null;
   createdAt: string;
   updatedAt: string;
-  lastConnection: string | null;
-};
-
-export type PostgreSQLDataSource = {
-  id: string;
-  name: string;
-  host: string;
-  port: number;
-  user: string;
-  database: string;
-  ssl: boolean;
-  createdAt: string;
-  updatedAt: string;
-  lastConnection: string | null;
+  disabled?: boolean;
 };
 
 export type DataSource =
-  | { type: "psql"; data: PostgreSQLDataSource }
-  | { type: "trino"; data: TrinoDataSource };
+  | { type: "duckdb"; data: DataSourceStatus }
+  | { type: "sandwormcloud"; data: DataSourceStatus }
+  | { type: "dune"; data: DataSourceStatus };
 
 export type DataSourceType = DataSource["type"];
 
-export const DataSourceType = z.enum(["psql", "trino"] as const);
-
 export type APIDataSource = DataSource & {
   structure: DataSourceStructureStateV3;
-};
-
-export const databaseImages = (t: DataSourceType): string => {
-  switch (t) {
-    case "psql":
-      return "/icons/postgres.png";
-
-    case "trino":
-      return "/icons/trino.png";
-
-    default:
-      return "";
-  }
 };

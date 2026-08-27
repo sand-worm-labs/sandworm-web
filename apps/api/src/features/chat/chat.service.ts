@@ -202,7 +202,7 @@ export class ChatService implements OnModuleInit {
       reply.raw.write(line);
     };
 
-    await new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve) => {
       this.streamResponse(userId, chatId, messageId).subscribe({
         next: write,
         error: (err) => {
@@ -211,7 +211,12 @@ export class ChatService implements OnModuleInit {
             reply.raw.write('data: [ERROR]\n\n');
             reply.raw.end();
           }
-          reject(err);
+          // Resolve, not reject — the client was already told about the
+          // failure over the SSE stream itself. Rejecting here makes the
+          // route handler's promise reject too, and Fastify then tries to
+          // send its own error response on a reply we already ended
+          // manually, crashing with "Reply was already sent".
+          resolve();
         },
         complete: () => {
           if (!reply.raw.writableEnded) {

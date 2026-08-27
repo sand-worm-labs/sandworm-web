@@ -1804,7 +1804,6 @@ const Editor = (props: Props) => {
                   <RunAllV2
                     disabled={false}
                     yDoc={props.yDoc}
-                    primary={props.isApp}
                     userId={props.userId}
                     executionQueue={props.executionQueue}
                   />
