@@ -322,7 +322,7 @@ function TeamPlanSection({
         <button
           type="button"
           onClick={() => {
-            router.push(`/workspace/${workspaceId}/settings/billing`);
+            router.push(`/workspace/${workspaceId}/settings/plan`);
             onClose();
           }}
           className="px-2.5 py-1 border border-border dark:border-gray-700 dark:text-black bg-inputBg rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 text-xs"

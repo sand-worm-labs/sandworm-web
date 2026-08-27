@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserRound, ChevronLeft } from "lucide-react";
+import { UserRound, ChevronLeft, CreditCard } from "lucide-react";
 import { Button } from "@sandworm/ui/components/button";
 
 import { User } from "@/components/Assets/User";
@@ -40,6 +40,11 @@ export default function SettingsLayout({
       name: "Users",
       href: `/workspace/${workspaceId}/settings/users`,
       icon: <User size={18} />,
+    },
+    {
+      name: "Plan",
+      href: `/workspace/${workspaceId}/settings/plan`,
+      icon: <CreditCard size={18} />,
     },
   ];
 
