@@ -183,7 +183,7 @@ type WithTitle = { title?: string }
 
 export type BlockSpec = WithTitle & (
   | { type: BlockType.Python;          source?: string }
-  | { type: BlockType.SQL;             source?: string; dataSourceId?: string | null; isFileDataSource?: boolean }
+  | { type: BlockType.SQL;             source?: string; dataSourceId?: string | null; isFileDataSource?: boolean; dataframeName?: string }
   | { type: BlockType.RichText }
   | { type: BlockType.Markdown;        source?: string }
   | { type: BlockType.VisualizationV2; dataframeName?: string | null }
@@ -226,6 +226,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
             dataSourceId: spec.dataSourceId ?? null,
             isFileDataSource: spec.isFileDataSource ?? false,
             source: spec.source ?? '',
+            dataframeName: spec.dataframeName,
           }, idx, true)
           applyTitle(blocks, id, spec.title)
           break

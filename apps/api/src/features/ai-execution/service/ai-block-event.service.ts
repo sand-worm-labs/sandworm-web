@@ -88,7 +88,15 @@ export class AiBlockEventService implements OnModuleInit {
     }
 
     const [blockId] = addBlocks(sharedDoc.ydoc, [
-      { type: blockType, source: event.content, title: event.blockTitle } as BlockSpec,
+      blockType === BlockType.SQL
+        ? {
+            type: blockType,
+            source: event.content,
+            title: event.blockTitle,
+            dataSourceId: event.dataSourceId ?? null,
+            dataframeName: event.dataframeName ?? undefined,
+          }
+        : { type: blockType, source: event.content, title: event.blockTitle } as BlockSpec,
     ]);
 
     this.logger.log(`[block-action] inserted ${event.blockType} block "${event.blockTitle}" → doc ${chat.documentId}`);

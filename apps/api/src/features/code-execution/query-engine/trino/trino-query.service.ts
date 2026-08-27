@@ -128,7 +128,7 @@ def _sandworm_make_trino_query():
         df.to_csv(csv, index=False)
 
     except Exception as e:
-        print(json.dumps({"type": "syntax-error", "message": str(e)}))
+        print(json.dumps({"type": "syntax-error", "message": f"[Trino] {e}"}))
     finally:
         engine.dispose()
 
@@ -181,7 +181,7 @@ _sandworm_make_trino_query()
     await promise;
 
     if (error) throw new Error(error);
-    if (!output) throw new Error('No result returned from Trino query');
+    if (!output) throw new Error('[Trino] No result returned from query');
     return output;
   }
 
@@ -203,7 +203,7 @@ try:
         rows = [[hexlify(v) for v in row] for row in result.fetchall()]
         print(json.dumps({"type": "success", "columns": columns, "rows": rows}, default=str))
 except Exception as e:
-    print(json.dumps({"type": "error", "message": str(e)}))
+    print(json.dumps({"type": "error", "message": f"[Trino] {e}"}))
 finally:
     engine.dispose()
 `;

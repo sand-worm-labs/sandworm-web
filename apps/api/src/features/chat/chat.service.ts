@@ -202,7 +202,7 @@ export class ChatService implements OnModuleInit {
       reply.raw.write(line);
     };
 
-    await new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve) => {
       this.streamResponse(userId, chatId, messageId).subscribe({
         next: write,
         error: (err) => {

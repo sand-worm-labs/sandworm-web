@@ -69,6 +69,7 @@ export const makeSQLBlock = (
     dataSourceId?: string | null;
     isFileDataSource?: boolean;
     source?: string;
+    dataframeName?: string;
   },
   isAiInput?: boolean
 ): Y.XmlElement<SQLBlock> => {
@@ -79,7 +80,9 @@ export const makeSQLBlock = (
     type: BlockType.SQL,
     title: "",
     source: new Y.Text(opts?.source ?? ""),
-    dataframeName: getDataframeName(blocks, "query_1"),
+    dataframeName: opts?.dataframeName
+      ? { value: opts.dataframeName, newValue: opts.dataframeName }
+      : getDataframeName(blocks, "query_1"),
     dataSourceId: opts?.dataSourceId ?? null,
     isFileDataSource: opts?.isFileDataSource ?? false,
     result: null,
