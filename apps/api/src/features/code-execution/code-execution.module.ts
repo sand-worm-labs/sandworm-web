@@ -7,6 +7,7 @@ import { JupyterCompletionService } from './jupyter-session/jupyter-completion.s
 import { PythonExecutorService } from './python-executor.service';
 import { DataFrameService } from './query-engine/dataframe/dataframe.service';
 import { DuckDBQueryService } from './query-engine/duckdb/duckdb-query.service';
+import { TrinoQueryService } from './query-engine/trino/trino-query.service';
 import { PythonQueryRunnerService } from './query-engine/python/python-query-runner.service';
 import { QueryExecutionService } from './query-engine/query-execution.service';
 import { VisualizationService } from './visualization/visualization.service';
@@ -27,6 +28,7 @@ import { PythonCompletionService } from './python-completion.service';
       PythonExecutorService,
       DataFrameService,
       DuckDBQueryService,
+      TrinoQueryService,
       PythonQueryRunnerService,
       QueryExecutionService,
       VisualizationService,
@@ -35,9 +37,10 @@ import { PythonCompletionService } from './python-completion.service';
   ],
   exports: [
       JupyterSessionService,
-      JupyterCompletionService,  
+      JupyterCompletionService,
       PythonExecutorService,
       QueryExecutionService,
+      TrinoQueryService,
       DataFrameService,
       VisualizationService,
       PivotTableService,

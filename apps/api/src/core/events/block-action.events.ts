@@ -7,6 +7,8 @@ export class BlockActionEvent {
   blockTitle: string;
   action: BlockActionType;
   content?: string;
+  dataSourceId?: string | null;
+  dataframeName?: string | null;
 }
 
 export const BlockActionEventNames = {

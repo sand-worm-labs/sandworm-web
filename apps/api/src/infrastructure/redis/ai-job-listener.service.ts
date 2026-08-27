@@ -76,12 +76,19 @@ export class AiJobListenerService implements OnModuleInit {
     // A block finished generating (envelope: content_block_delta / block_action_delta / action=ran)
     const delta = type === 'content_block_delta' ? (rest as any).delta : undefined;
     if (delta?.type === 'block_action_delta' && delta?.action === 'ran') {
+      // The AI sidecar names data sources by their Dune-facing identity
+      // ("dune"); map that onto the fixed synthetic id the SQL block
+      // executor and the Dune data source itself are keyed by.
+      const dataSourceId = delta.data_source === 'dune' ? 'dune-datasource' : null;
+
       const blockEvent: BlockActionEvent = {
         action: 'created',
         blockId: delta.block_id ?? '',
         blockType: delta.block_type ?? '',
         blockTitle: delta.block_title ?? '',
         content: delta.content ?? '',
+        dataSourceId,
+        dataframeName: delta.dataframe_name ?? null,
         chatId: chat_id!,
       };
       this.eventEmitter.emit(BlockActionEventNames.BLOCK_ACTION, blockEvent);

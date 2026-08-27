@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ChatEntity } from '@sandworm/postgresql-typeorm';
-import { BlockType } from '@sandworm/editor';
+import { BlockType, ExecutionQueue } from '@sandworm/editor';
 import type { PowerToolboxInputs } from '@sandworm/editor';
 import { BlockActionEvent, BlockActionEventNames } from '@/core/events/block-action.events';
 import { YjsDocumentService } from '../../collaboration/yjs/yjs-document.service';
@@ -49,7 +49,7 @@ export class AiBlockEventService implements OnModuleInit {
 
     const chat = await this.chatRepository.findOne({
       where: { id: event.chatId },
-      select: ['documentId', 'workspaceId'],
+      select: ['documentId', 'workspaceId', 'userId'],
     });
     if (!chat) {
       this.logger.warn(`[block-action] chat not found: ${event.chatId}`);
@@ -87,8 +87,30 @@ export class AiBlockEventService implements OnModuleInit {
       return;
     }
 
-    addBlocks(sharedDoc.ydoc, [{ type: blockType, source: event.content, title: event.blockTitle } as BlockSpec]);
+    const [blockId] = addBlocks(sharedDoc.ydoc, [
+      blockType === BlockType.SQL
+        ? {
+            type: blockType,
+            source: event.content,
+            title: event.blockTitle,
+            dataSourceId: event.dataSourceId ?? null,
+            dataframeName: event.dataframeName ?? undefined,
+          }
+        : { type: blockType, source: event.content, title: event.blockTitle } as BlockSpec,
+    ]);
 
     this.logger.log(`[block-action] inserted ${event.blockType} block "${event.blockTitle}" → doc ${chat.documentId}`);
+
+    // SQL/Python are the block types the AI can generate that are meant to
+    // be "run" — insert them already executed instead of leaving them dead
+    // until a human happens to click Run.
+    if (blockId && (blockType === BlockType.SQL || blockType === BlockType.Python)) {
+      const metadata = blockType === BlockType.SQL
+        ? { _tag: 'sql' as const, isSuggestion: false, selectedCode: null }
+        : { _tag: 'python' as const, isSuggestion: false };
+
+      ExecutionQueue.fromYjs(sharedDoc.ydoc).enqueueBlock(blockId, chat.userId, null, metadata);
+      this.logger.log(`[block-action] enqueued ${event.blockType} block ${blockId} for execution`);
+    }
   }
 }

@@ -124,6 +124,35 @@ function handleStreamEvent(
   }
 }
 
+// Reconstructs a message's display text + parts from its persisted raw
+// envelope events (MessageEntity.parts) — used when loading a historical
+// thread, so a follow-up/thinking/block-action message renders the same way
+// it did live instead of falling back to raw internal JSON. The stored
+// events also include a few event types outside AiStreamEvent (e.g.
+// intent_classified) — handleStreamEvent's switch simply ignores those.
+export function deriveMessageDisplay(rawEvents: unknown[]): {
+  text: string;
+  parts: PartPayload[];
+} {
+  let text = "";
+  const parts: PartPayload[] = [];
+
+  for (const raw of rawEvents) {
+    if (!raw || typeof raw !== "object" || !("type" in raw)) continue;
+    handleStreamEvent(
+      raw as AiStreamEvent,
+      chunk => {
+        text += chunk;
+      },
+      part => {
+        parts.push(part);
+      }
+    );
+  }
+
+  return { text, parts };
+}
+
 function processLines(
   lines: string[],
   currentEvent: string,

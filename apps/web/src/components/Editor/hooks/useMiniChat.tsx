@@ -9,11 +9,24 @@ import type { AttachedReference, BlockKind } from "../../Chats/types";
 import type { UploadedFileRef } from "../../Chats/MiniChatInput";
 
 import { useChat } from "./useChat";
-import { useChatStream } from "./useChatStream";
+import { useChatStream, deriveMessageDisplay } from "./useChatStream";
 import { useNotebookBlocks } from "./useNotebookBlocks";
 import { useWorkspace } from "./useWorkspaces";
 import { useOpenRouterModels } from "./useOpenRouterModel";
 import useSideBar from "./useSideBar";
+
+// Surfaces the real cause in the chat itself instead of only console.error —
+// the generic "Something went wrong" text alone gave no way to diagnose a
+// failure without digging through server logs.
+function errorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (typeof err === "string") return err;
+  try {
+    return JSON.stringify(err);
+  } catch {
+    return String(err);
+  }
+}
 
 // =====================================
 // ⬢ Types
@@ -149,28 +162,40 @@ export function useMiniChat({
       setActiveChatId(chat.id);
       setActiveThreadTitle(chat.title);
       setMessages(
-        (chat.messages ?? []).map((m: any) => ({
-          id: crypto.randomUUID(),
-          messageId: m.id,
-          text: m.content,
-          isUser: m.role === "user",
-          role: m.role,
-          model: m.model ?? undefined,
-          finishReason: m.finishReason ?? null,
-          parts: m.parts ?? null,
-          attachments: m.attachments ?? null,
-          usage: m.usage ?? null,
-          createdAt: m.createdAt ?? undefined,
-          fileRefs: (m.fileRefs ?? []) satisfies UploadedFileRef[],
-          references: (m.focusedBlocks ?? []).map(
-            (b: { id: string; title: string; type: string }) => ({
-              id: b.id,
-              label: b.title,
-              sourceKind: "block" as const,
-              blockKind: b.type as BlockKind,
-            })
-          ),
-        }))
+        (chat.messages ?? []).map((m: any) => {
+          // Assistant messages store their raw envelope events in `parts` —
+          // replay them the same way the live stream did, rather than
+          // showing `content` (which may just be internal clarify-detection
+          // JSON) directly as the message text.
+          const { text, parts: streamParts } =
+            m.role === "assistant" && Array.isArray(m.parts)
+              ? deriveMessageDisplay(m.parts)
+              : { text: m.content ?? "", parts: [] as PartPayload[] };
+
+          return {
+            id: crypto.randomUUID(),
+            messageId: m.id,
+            text,
+            isUser: m.role === "user",
+            role: m.role,
+            model: m.model ?? undefined,
+            finishReason: m.finishReason ?? null,
+            parts: m.parts ?? null,
+            streamParts: streamParts.length > 0 ? streamParts : undefined,
+            attachments: m.attachments ?? null,
+            usage: m.usage ?? null,
+            createdAt: m.createdAt ?? undefined,
+            fileRefs: (m.fileRefs ?? []) satisfies UploadedFileRef[],
+            references: (m.focusedBlocks ?? []).map(
+              (b: { id: string; title: string; type: string }) => ({
+                id: b.id,
+                label: b.title,
+                sourceKind: "block" as const,
+                blockKind: b.type as BlockKind,
+              })
+            ),
+          };
+        })
       );
     },
     [chatApi]
@@ -189,7 +214,7 @@ export function useMiniChat({
         },
         onError: err => {
           replaceMessage(loadingId, {
-            text: "Something went wrong. Please try again.",
+            text: `Something went wrong. Please try again.\n\n\`${errorMessage(err)}\``,
             isLoading: false,
           });
           console.error("[MiniChat] stream error:", err);
@@ -273,7 +298,7 @@ export function useMiniChat({
         await streamMessage(chatId, message.id, loadingId);
       } catch (err) {
         replaceMessage(loadingId, {
-          text: "Something went wrong. Please try again.",
+          text: `Something went wrong. Please try again.\n\n\`${errorMessage(err)}\``,
           isLoading: false,
         });
         console.error("[MiniChat] handleSend error:", err);
@@ -338,11 +363,8 @@ export function useMiniChat({
   );
 
   const handleFollowUpSubmit = useCallback(
-    (answers: Record<string, string>) => {
-      const text = Object.entries(answers)
-        .map(([k, v]) => `${k}: ${v}`)
-        .join(", ");
-      handleSendSafe(text);
+    (summary: string) => {
+      handleSendSafe(summary);
     },
     [handleSendSafe]
   );
@@ -379,12 +401,15 @@ export function useMiniChat({
   useEffect(() => {
     if (promptFiredRef.current) return;
     const prompt = searchParams.get("prompt");
+    if (!prompt) return;
+    // The workspace's default model loads asynchronously — firing before it
+    // resolves sends model: "" and fails validation server-side. Wait for a
+    // real model rather than racing it.
+    if (!currentModel) return;
     const updateDocumentTitle = searchParams.get("updateTitle") === "true";
-    if (prompt) {
-      promptFiredRef.current = true;
-      handleSendSafe(prompt, [], [], updateDocumentTitle);
-    }
-  }, [searchParams]);
+    promptFiredRef.current = true;
+    handleSendSafe(prompt, [], [], updateDocumentTitle);
+  }, [searchParams, currentModel]);
 
   useEffect(() => {
     const chatId = sidebarState.rightPanelMeta?.chatId;

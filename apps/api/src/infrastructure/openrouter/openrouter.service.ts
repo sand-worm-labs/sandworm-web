@@ -49,6 +49,16 @@ export class OpenRouterService {
     });
   }
 
+  // Any OpenRouter SDK failure (bad/expired provisioning key, network error,
+  // rate limit, ...) otherwise surfaces as a bare "API key not found"-style
+  // message with no indication of which integration it came from — tag it.
+  private tagOpenRouterError(err: unknown): never {
+    const message = err instanceof Error ? err.message : String(err);
+    const tagged = new Error(`[OpenRouter] ${message}`);
+    if (err instanceof Error) tagged.stack = err.stack;
+    throw tagged;
+  }
+
   async provisionKey(workspaceId: string, limitUsd?: number) {
     const { defaultCap, limitReset } = this.configService.get('openrouter', { infer: true });
     const limit = limitUsd ?? defaultCap ?? 2.0;
@@ -60,17 +70,29 @@ export class OpenRouterService {
         limitReset: limitResetType,
       },
     };
-    return this.client.apiKeys.create(request);
+    try {
+      return await this.client.apiKeys.create(request);
+    } catch (err) {
+      this.tagOpenRouterError(err);
+    }
   }
 
   async getKey(keyHash: string) {
     const request: GetKeyRequest = { hash: keyHash };
-    return this.client.apiKeys.get(request);
+    try {
+      return await this.client.apiKeys.get(request);
+    } catch (err) {
+      this.tagOpenRouterError(err);
+    }
   }
 
   async listKeys(offset?: string) {
     const request: ListRequest = { offset };
-    return this.client.apiKeys.list(request);
+    try {
+      return await this.client.apiKeys.list(request);
+    } catch (err) {
+      this.tagOpenRouterError(err);
+    }
   }
 
   async updateKey(
@@ -87,7 +109,11 @@ export class OpenRouterService {
       hash: keyHash,
       requestBody: data,
     };
-    return this.client.apiKeys.update(request);
+    try {
+      return await this.client.apiKeys.update(request);
+    } catch (err) {
+      this.tagOpenRouterError(err);
+    }
   }
 
   async revokeKey(keyHash: string): Promise<void> {
@@ -122,21 +148,28 @@ export class OpenRouterService {
   async getAccountCredits(workspaceId: string, userId:string): Promise<AccountCredits> {
     await this.workspaceMembershipService.assertActiveMember(workspaceId, userId);
     const workspaceHash = await this.getWorkspaceAiHash(workspaceId);
-    const { data } = await this.client.apiKeys.get({ hash: workspaceHash });
-
-    return {
-      totalCredits: data.limit,
-      usedCredits: data.usage,
-      availableCredits: data.limitRemaining,
-    };
+    try {
+      const { data } = await this.client.apiKeys.get({ hash: workspaceHash });
+      return {
+        totalCredits: data.limit,
+        usedCredits: data.usage,
+        availableCredits: data.limitRemaining,
+      };
+    } catch (err) {
+      this.tagOpenRouterError(err);
+    }
   }
 
   async getModels(): Promise<OpenRouterModel[]> {
-    const { data } = await this.client.models.list();
-    return data.map(model => {
-      const { id, name, ...details } = model;
-      return {id: model.id,name: model.name,details }
-    });
+    try {
+      const { data } = await this.client.models.list();
+      return data.map(model => {
+        const { id, name, ...details } = model;
+        return {id: model.id,name: model.name,details }
+      });
+    } catch (err) {
+      this.tagOpenRouterError(err);
+    }
   }
 
   async getModel(modelId: string): Promise<OpenRouterModel| null> {

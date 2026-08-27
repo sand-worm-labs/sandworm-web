@@ -183,7 +183,7 @@ type WithTitle = { title?: string }
 
 export type BlockSpec = WithTitle & (
   | { type: BlockType.Python;          source?: string }
-  | { type: BlockType.SQL;             source?: string; dataSourceId?: string | null; isFileDataSource?: boolean }
+  | { type: BlockType.SQL;             source?: string; dataSourceId?: string | null; isFileDataSource?: boolean; dataframeName?: string }
   | { type: BlockType.RichText }
   | { type: BlockType.Markdown;        source?: string }
   | { type: BlockType.VisualizationV2; dataframeName?: string | null }
@@ -202,40 +202,44 @@ function applyTitle(blocks: Y.Map<YBlock>, blockId: string, title: string | unde
   if (block) setTitle(block, title)
 }
 
-export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): void {
+export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
   const blocks = getBlocks(doc)
   const layout = getLayout(doc)
+  const ids: string[] = []
 
   doc.transact(() => {
     let idx = layout.length
 
     for (const spec of specs) {
+      let id: string | undefined
+
       switch (spec.type) {
         case BlockType.Python: {
-          const id = addBlockGroup(layout, blocks, { type: BlockType.Python, source: spec.source ?? '' }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.Python, source: spec.source ?? '' }, idx, true)
           applyTitle(blocks, id, spec.title)
           break
         }
 
         case BlockType.SQL: {
-          const id = addBlockGroup(layout, blocks, {
+          id = addBlockGroup(layout, blocks, {
             type: BlockType.SQL,
             dataSourceId: spec.dataSourceId ?? null,
             isFileDataSource: spec.isFileDataSource ?? false,
             source: spec.source ?? '',
+            dataframeName: spec.dataframeName,
           }, idx, true)
           applyTitle(blocks, id, spec.title)
           break
         }
 
         case BlockType.RichText: {
-          const id = addBlockGroup(layout, blocks, { type: BlockType.RichText }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.RichText }, idx, true)
           applyTitle(blocks, id, spec.title)
           break
         }
 
         case BlockType.Markdown: {
-          const id = addBlockGroup(layout, blocks, { type: BlockType.Markdown }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.Markdown }, idx, true)
           applyTitle(blocks, id, spec.title)
           if (spec.source) {
             ;(blocks.get(id) as any)?.getAttribute('source')?.insert(0, spec.source)
@@ -244,13 +248,13 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): void {
         }
 
         case BlockType.VisualizationV2: {
-          const id = addBlockGroup(layout, blocks, { type: BlockType.VisualizationV2, dataframeName: spec.dataframeName ?? null }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.VisualizationV2, dataframeName: spec.dataframeName ?? null }, idx, true)
           applyTitle(blocks, id, spec.title)
           break
         }
 
         case BlockType.Input: {
-          const id = addBlockGroup(layout, blocks, { type: BlockType.Input }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.Input }, idx, true)
           applyTitle(blocks, id, spec.title)
 
           const value = spec.source?.trim()
@@ -262,7 +266,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): void {
         }
 
         case BlockType.DropdownInput: {
-          const id = addBlockGroup(layout, blocks, { type: BlockType.DropdownInput }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.DropdownInput }, idx, true)
           applyTitle(blocks, id, spec.title)
 
           const options = (spec.source ?? '')
@@ -277,7 +281,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): void {
         }
 
         case BlockType.DateInput: {
-          const id = addBlockGroup(layout, blocks, { type: BlockType.DateInput }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.DateInput }, idx, true)
           applyTitle(blocks, id, spec.title)
 
           const dateStr = spec.source?.trim()
@@ -295,31 +299,34 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): void {
         }
 
         case BlockType.FileUpload: {
-          const id = addBlockGroup(layout, blocks, { type: BlockType.FileUpload }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.FileUpload }, idx, true)
           applyTitle(blocks, id, spec.title)
           break
         }
 
         case BlockType.DashboardHeader: {
-          const id = addBlockGroup(layout, blocks, { type: BlockType.DashboardHeader, content: spec.content ?? '' }, idx)
+          id = addBlockGroup(layout, blocks, { type: BlockType.DashboardHeader, content: spec.content ?? '' }, idx)
           applyTitle(blocks, id, spec.title)
           break
         }
 
         case BlockType.PivotTable: {
-          const id = addBlockGroup(layout, blocks, { type: BlockType.PivotTable, dataframeName: spec.dataframeName ?? null }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.PivotTable, dataframeName: spec.dataframeName ?? null }, idx, true)
           applyTitle(blocks, id, spec.title)
           break
         }
 
         case BlockType.PowerToolbox: {
-          const id = addBlockGroup(layout, blocks, { type: BlockType.PowerToolbox, toolId: spec.toolId ?? '', inputs: spec.inputs ?? null }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.PowerToolbox, toolId: spec.toolId ?? '', inputs: spec.inputs ?? null }, idx, true)
           applyTitle(blocks, id, spec.title)
           break
         }
       }
 
+      if (id) ids.push(id)
       idx++
     }
   })
+
+  return ids
 }

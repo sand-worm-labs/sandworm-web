@@ -8,6 +8,7 @@ import {
 import { SandwormCloudDataSourceService } from './sandworm-cloud/sandworm-cloud-datasource.service';
 import { SandwormCloudQueryService } from './sandworm-cloud/sandworm-cloud-query.service';
 import { DuckDBDataSourceService } from './duck-db/duckdb-datasource.service';
+import { DuneDataSourceService } from './dune/dune-datasource.service';
 
 @Controller('v1/workspaces/:workspaceId/data-sources')
 export class DataSourcesController {
@@ -15,6 +16,7 @@ export class DataSourcesController {
         private readonly queryService: SandwormCloudQueryService,
         private readonly dataSourceService: SandwormCloudDataSourceService,
         private readonly duckdbDataSourceService: DuckDBDataSourceService,
+        private readonly duneDataSourceService: DuneDataSourceService,
     ) {}
 
     @Get()
@@ -22,7 +24,7 @@ export class DataSourcesController {
         return [
             this.duckdbDataSourceService.getDataSource(workspaceId),
             this.dataSourceService.getDataSource(workspaceId),
-            
+            this.duneDataSourceService.getDataSource(workspaceId),
         ];
     }
 
@@ -36,6 +38,9 @@ export class DataSourcesController {
         }
         if (dataSourceId === 'duckdb-datasource') {
             return this.duckdbDataSourceService.getDataSource(workspaceId);
+        }
+        if (dataSourceId === 'dune-datasource') {
+            return this.duneDataSourceService.getDataSource(workspaceId);
         }
         throw new ForbiddenException('Unknown datasource');
     }
@@ -61,6 +66,9 @@ export class DataSourcesController {
         }
         if (dataSourceId === 'duckdb-datasource') {
             return this.duckdbDataSourceService.ping();
+        }
+        if (dataSourceId === 'dune-datasource') {
+            return this.duneDataSourceService.ping();
         }
         throw new ForbiddenException('Unknown datasource');
     }

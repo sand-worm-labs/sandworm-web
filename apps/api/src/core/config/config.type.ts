@@ -9,6 +9,7 @@ import { BlockExecutorConfig } from '@/features/block-executor/config/block-exec
 import { OpenRouterConfig } from "@/infrastructure/openrouter/config/openrouter-config.type";
 import { AiServiceConfig } from '@/infrastructure/ai/config/ai-service-config.type';
 import { RedisConfig } from '@/infrastructure/redis/redis.config';
+import { TrinoConfig } from '@/infrastructure/datasource/dune/config/trino-config.type';
 
 export type AllConfigType = {
   app: AppConfig;
@@ -22,4 +23,5 @@ export type AllConfigType = {
   github: GithubConfig,
   blockExecutor: BlockExecutorConfig
   openrouter: OpenRouterConfig
+  trino: TrinoConfig
 };

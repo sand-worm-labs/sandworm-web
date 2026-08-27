@@ -51,6 +51,7 @@ import { TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
 import { dashboardModeHasControls } from "../../Dashboard/dashboard-types";
 import HeaderSelect from "../../HeaderSelect";
+import { DataSourceIcon } from "./dataSourceIcons";
 import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
 import {
   LoadingEnvText,
@@ -590,10 +591,10 @@ function SQLBlock(props: Props) {
   }, [router, props.document.workspaceId]);
 
   const onToggleFormatSQLCode = useCallback(() => {
-    const sqlCodeFormatted = getSQLCodeFormatted(
-      source,
-      dataSource?.type ?? null
-    );
+    // Our data source identity ("duckdb"/"sandwormcloud"/"dune") isn't a
+    // sql-formatter dialect name — there's no meaningful mapping, so format
+    // generically rather than pass through a value that was never valid here.
+    const sqlCodeFormatted = getSQLCodeFormatted(source, null);
 
     if (!sqlCodeFormatted) {
       return;
@@ -621,6 +622,8 @@ function SQLBlock(props: Props) {
           value: d.data.id,
           label: d.data.name,
           type: d.type,
+          icon: <DataSourceIcon type={d.type} />,
+          disabled: d.data.disabled,
         }))
         .toArray(),
     [props.dataSources]

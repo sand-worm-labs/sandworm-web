@@ -23,7 +23,7 @@ interface MiniChatMessagesProps {
   onSelectPrompt: (prompt: string) => void;
   onVote: (messageId: string, isUpvoted: boolean) => void;
   onRemoveVote: (messageId: string) => void;
-  onFollowUpSubmit: (answers: Record<string, string>) => void;
+  onFollowUpSubmit: (summary: string) => void;
   onActiveFollowUpStepChange: (step: ActiveFollowUpStep | null) => void;
 }
 
