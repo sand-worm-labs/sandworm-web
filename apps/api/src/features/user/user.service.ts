@@ -56,7 +56,9 @@ export class UserService {
   async create(
     input: CreateUserInput | Partial<UserEntity>,
   ): Promise<UserEntity> {
-    const { username, email, password } = input;
+    const { email, password } = input;
+
+    const username = input.username || (await this.generateUsername());
 
     if (username || email) {
       const existingUser = await this.userRepository.findOne({
@@ -70,6 +72,7 @@ export class UserService {
 
     const newUser = this.userRepository.create({
       ...input,
+      username,
       password: password,
     });
     const savedUser = await this.userRepository.save(newUser);
@@ -82,6 +85,18 @@ export class UserService {
     return savedUser;
   }
 
+
+  private async generateUsername(): Promise<string> {
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const candidate = `user${Math.floor(10000000 + Math.random() * 89999999)}`;
+      const existing = await this.userRepository.findOne({
+        where: { username: candidate },
+      });
+      if (!existing) return candidate;
+    }
+    return `user${Date.now().toString(36)}`;
+  }
+
   async update(
     userId: string,
     input: UpdateUserInput | Partial<UserEntity>,
@@ -90,6 +105,15 @@ export class UserService {
 
     if (!user) {
       throw new ValidationException(ErrorCode.E002);
+    }
+
+    if (input.username && input.username !== user.username) {
+      const existingUser = await this.userRepository.findOne({
+        where: { username: input.username },
+      });
+      if (existingUser) {
+        throw new ValidationException(ErrorCode.E001);
+      }
     }
 
     const updatedUser = await this.userRepository.save({

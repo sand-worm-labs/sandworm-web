@@ -147,7 +147,7 @@ const ProfileComponent = ({
           lastName: user.lastName,
           username: user.username,
           email: user.email,
-          avater: user.avatar,
+          avater: user.avater,
           fullName: user.fullName,
           settings: user.settings,
         }
@@ -174,11 +174,11 @@ const ProfileComponent = ({
                   <div className="flex flex-col gap-6">
                     <div className="flex gap-x-5 ">
                       <div className="flex-shrink-0">
-                        {user.avatar ? (
+                        {user.avater ? (
                           <Image
                             width={96}
                             height={96}
-                            src={user.avatar}
+                            src={user.avater}
                             alt={user.username}
                             className="w-[6rem] h-[6rem] rounded-full border-border-secondary  border-[2.5px]"
                           />

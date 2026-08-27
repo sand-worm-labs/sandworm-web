@@ -35,9 +35,15 @@ export class AuthGithubService {
     const githubConfig = this.configService.getOrThrow('github', { infer: true });
 
     try {
+      const accessToken = await this.exchangeCodeForToken(
+        loginDto.code,
+        githubConfig.clientId,
+        githubConfig.clientSecret,
+      );
+
       const userResponse = await fetch('https://api.github.com/user', {
         headers: {
-          Authorization: `Bearer ${loginDto.accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
           Accept: 'application/vnd.github.v3+json',
         },
       });
@@ -60,7 +66,7 @@ export class AuthGithubService {
 
       let email = userData.email;
       if (!email) {
-        email = await this.fetchPrimaryEmail(loginDto.accessToken);
+        email = await this.fetchPrimaryEmail(accessToken);
       }
 
       const nameParts = userData.name?.split(' ') || [];
@@ -72,6 +78,7 @@ export class AuthGithubService {
         email,
         firstName,
         lastName,
+        avatar: userData.avatar_url,
       };
     } catch (error) {
       if (error instanceof UnprocessableEntityException) throw error;
@@ -81,6 +88,43 @@ export class AuthGithubService {
         errors: { user: 'wrongToken' },
       });
     }
+  }
+
+  private async exchangeCodeForToken(
+    code: string,
+    clientId: string,
+    clientSecret: string,
+  ): Promise<string> {
+    const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        client_id: clientId,
+        client_secret: clientSecret,
+        code,
+      }),
+    });
+
+    if (!tokenResponse.ok) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: { user: 'wrongToken' },
+      });
+    }
+
+    const data = await tokenResponse.json();
+
+    if (!data?.access_token) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: { user: 'wrongToken' },
+      });
+    }
+
+    return data.access_token as string;
   }
 
   private async fetchPrimaryEmail(accessToken: string): Promise<string | null> {

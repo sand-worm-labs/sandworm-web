@@ -29,7 +29,7 @@ export const SignUp = () => {
             Sign up in 3 steps
           </p>
 
-          <SocialLogin variant="signin" />
+          <SocialLogin variant="signup" />
 
           <div className="flex items-center gap-3 w-full my-2.5">
             <div className="h-px bg-border-secondary dark:bg-white/[18.8%] flex-1" />

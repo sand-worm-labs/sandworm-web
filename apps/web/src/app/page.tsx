@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useSession } from "@/components/Editor/hooks/useAuth";
+import { Loader } from "@/components/Loader";
 
 export default function RootPage() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function RootPage() {
 
   return (
     <div className="loader-container h-screen">
-      <div className="bar-loader" />
+      <Loader />
     </div>
   );
 }

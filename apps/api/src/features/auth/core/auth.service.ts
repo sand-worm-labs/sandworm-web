@@ -138,14 +138,27 @@ export class AuthService {
       if (socialEmail && !userByEmail) {
         user.email = socialEmail;
       }
+      if (socialData.avatar && !user.avatar) {
+
+        await this.usersService.update(user.id, { avater: socialData.avatar });
+        user.avatar = socialData.avatar;
+      }
       await this.usersService.update(user.id, user);
     } else if (userByEmail) {
+
+      if (socialData.avatar && !userByEmail.avatar) {
+        await this.usersService.update(userByEmail.id, {
+          avater: socialData.avatar,
+        });
+        userByEmail.avatar = socialData.avatar;
+      }
       user = userByEmail;
     } else if (socialData.id) {
       user = await this.usersService.create({
         email: socialEmail ?? null,
         firstName: socialData.firstName ?? null,
         lastName: socialData.lastName ?? null,
+        avater: socialData.avatar ?? null,
         socialId: socialData.id,
         provider: authProvider,
       });
