@@ -124,8 +124,19 @@ export class WorkspaceService {
 
     await this.workspaceMembersRepository.save(userWorkspace);
     await this.environmentService.getEnvironment(savedWorkspace.id);
-    await this.setupAIKey(savedWorkspace.id, AIProvider.OPENROUTER);
- 
+
+    try {
+      await this.setupAIKey(savedWorkspace.id, AIProvider.OPENROUTER);
+    } catch (error) {
+      // AI key provisioning is best-effort — a missing/invalid OpenRouter
+      // provisioning key (or any other failure here) must not block
+      // workspace creation, since this runs on every user's first login
+      // and a failure here was taking down the whole signup/signin flow.
+      this.logger.warn(
+        `Failed to provision AI key for workspace ${savedWorkspace.id}: ${error instanceof Error ? error.message : error}`,
+      );
+    }
+
     return Workspace.fromEntity(savedWorkspace);
   }
  
@@ -359,11 +370,20 @@ export class WorkspaceService {
       throw new NotFoundException('Workspace not found');
     }
     const foundKey = await this.environmentService.getEnvironmentVariable(workspace.id, AI_ENV_KEYS[AIProvider.OPENROUTER]);
-    if (!foundKey) {
-      await this.setupAIKey(workspace.id, AIProvider.OPENROUTER);
+    if (foundKey) {
       return true;
     }
-    return true;
+
+    try {
+      await this.setupAIKey(workspace.id, AIProvider.OPENROUTER);
+      return true;
+    } catch (error) {
+   
+      this.logger.warn(
+        `Failed to provision AI key for workspace ${workspace.id}: ${error instanceof Error ? error.message : error}`,
+      );
+      return false;
+    }
   }
 
   async getWorkspaceAiKey(workspaceId: string): Promise<string | null> {

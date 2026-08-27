@@ -71,6 +71,7 @@ interface Props {
   workspaceId: string;
   userId: string | null;
   executionQueue: ExecutionQueue;
+  onDeleteBlock: () => void;
 }
 function DateInput(props: Props) {
   const blockId = props.block.getAttribute("id");

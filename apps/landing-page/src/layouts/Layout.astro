@@ -1,3 +1,19 @@
+---
+interface Props {
+	title?: string;
+	description?: string;
+	path?: string;
+}
+
+const {
+	title = "Sandworm — Collaborative Blockchain Analytics",
+	description = "Real-time collaborative notebooks for blockchain data analysis. Write SQL, run Python, build dashboards — all in one place.",
+	path = "/",
+} = Astro.props;
+
+const pageUrl = `https://sandwormlabs.xyz${path}`;
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -6,25 +22,25 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		
-		<title>Sandworm — Collaborative Blockchain Analytics</title>
-		<meta name="description" content="Real-time collaborative notebooks for blockchain data analysis. Write SQL, run Python, build dashboards — all in one place." />
-		
+
+		<title>{title}</title>
+		<meta name="description" content={description} />
+
 		<!-- Open Graph -->
-		<meta property="og:title" content="Sandworm Labs — Collaborative Blockchain Analytics" />
-		<meta property="og:description" content="Real-time collaborative notebooks for blockchain data analysis. Write SQL, run Python, build dashboards — all in one place." />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content="https://sandwormlabs.xyz/" />
+		<meta property="og:url" content={pageUrl} />
 		<meta property="og:image" content="https://imgur.com/a/3T5hFMD.png" />
-		
+
 		<!-- Twitter -->
 		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:title" content="Sandworm Labs — Collaborative Blockchain Analytics" />
-		<meta name="twitter:description" content="Real-time collaborative notebooks for blockchain data analysis. Write SQL, run Python, build dashboards — all in one place." />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content=" https://imgur.com/a/3T5hFMD.png" />
-		
+
 		<!-- Canonical -->
-		<link rel="canonical" href="https://sandwormlabs.xyz/" />
+		<link rel="canonical" href={pageUrl} />
 	</head>
 	<body>
 		<slot />

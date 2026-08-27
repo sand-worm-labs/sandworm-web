@@ -1,5 +1,5 @@
 import { registerAs } from '@nestjs/config';
-import { IsBooleanString, IsNumberString, IsString, IsUrl } from 'class-validator';
+import { IsBooleanString, IsNumberString, IsOptional, IsString, IsUrl } from 'class-validator';
 import validateConfig from '@/common/utils/validate-config';
 import { AiServiceConfig } from './ai-service-config.type';
 
@@ -11,12 +11,15 @@ class EnvironmentVariablesValidator {
   @IsString()
   AI_HANDSHAKE_TOKEN: string;
 
+  @IsOptional()
   @IsBooleanString()
   AI_CHAT_STREAM: string;
 
+  @IsOptional()
   @IsNumberString()
   AI_CHAT_TEMPERATURE: string;
 
+  @IsOptional()
   @IsNumberString()
   AI_CHAT_MAX_TOKENS: string;
 }

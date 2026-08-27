@@ -2,9 +2,10 @@ import type * as Y from "yjs";
 import { useCallback, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import * as R from "ramda";
-import { Squares2X2Icon } from "@heroicons/react/24/outline";
 import type { RemoveBlockGroupDashboardConflictResult } from "@sandworm/editor";
 import { removeBlockGroup } from "@sandworm/editor";
+
+import { Cautious } from "@/components/Assets/Cautious";
 
 interface Props {
   yDoc: Y.Doc;
@@ -39,7 +40,7 @@ function RemoveBlockDashboardConflictDialog(props: Props) {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-black/[10.2%] transition-opacity" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -53,41 +54,34 @@ function RemoveBlockDashboardConflictDialog(props: Props) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left transition-all w-[532px] font-body">
                 <div>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
-                    <Squares2X2Icon
-                      aria-hidden="true"
-                      className="h-6 w-6 text-blue-600"
-                    />
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full">
+                    <Cautious />
                   </div>
-                  <div className="mt-3 text-center sm:mt-5">
-                    <div className="mt-2 text-sm text-ink-100">
-                      {state?.tabRefs.length === 1 ? (
-                        <span>
-                          <span className="font-bold">
-                            This block is in your dashboard.
-                          </span>{" "}
-                          Removing it from the notebook will remove it from the
-                          dashboard too.
-                        </span>
-                      ) : (
-                        <span>
-                          <span className="font-semibold">
-                            This block contain tabs that are in your dashboard.
-                          </span>{" "}
-                          Removing those tabs will remove them from the
-                          dashboard too.
-                        </span>
-                      )}
+                  <div className="mt-1 text-center sm:mt-1 mb-5">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-base font-semibold leading-6 text-ink-100"
+                    >
+                      {state?.tabRefs.length === 1
+                        ? "Remove block from dashboard?"
+                        : "Remove tabs from dashboard?"}
+                    </Dialog.Title>
+                    <div className="mt-2 flex flex-col items-center gap-y-2">
+                      <p className="text-sm text-ink-100 font-medium">
+                        {state?.tabRefs.length === 1
+                          ? "This block is in your dashboard. Removing it from the notebook will remove it from the dashboard too."
+                          : "This block contains tabs that are in your dashboard. Removing those tabs will remove them from the dashboard too."}
+                      </p>
                     </div>
                   </div>
                 </div>
-                <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3 px-5">
                   <button
                     type="button"
                     onClick={onConfirm}
-                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-primary px-3 py-2 text-sm text-ink-100 font-medium hover:bg-primary-300 sm:col-start-1 sm:mt-0"
+                    className="inline-flex w-full justify-center rounded-xl bg-primary px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:col-start-2"
                   >
                     Continue
                   </button>
@@ -95,7 +89,7 @@ function RemoveBlockDashboardConflictDialog(props: Props) {
                     type="button"
                     data-autofocus
                     onClick={props.onClose}
-                    className="mt-3 inline-flex w-full justify-center rounded-sm bg-white px-3 py-2 text-sm text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-2 sm:mt-0"
+                    className="mt-3 inline-flex w-full justify-center rounded-xl bg-inputBg px-3 py-2 text-sm font-medium text-ink-100 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0 dark:text-black"
                   >
                     Cancel
                   </button>

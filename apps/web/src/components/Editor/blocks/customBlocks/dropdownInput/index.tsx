@@ -89,6 +89,7 @@ interface Props {
   userId: string | null;
   workspaceId: string;
   executionQueue: ExecutionQueue;
+  onDeleteBlock: () => void;
 }
 function DropdownInputBlock(props: Props) {
   const attrs = getDropdownInputAttributes(props.block, props.blocks);
