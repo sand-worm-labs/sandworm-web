@@ -356,6 +356,26 @@ export class ChatService implements OnModuleInit {
     return Message.fromEntity(message);
   }
 
+  // For out-of-band status updates that happen after the AI's own turn is
+  // done (e.g. a block auto-retrying in the background) — a plain assistant
+  // message, saved directly with no MESSAGE_CREATED emission so it doesn't
+  // trigger another AI turn. Note this chat's SSE stream has virtually
+  // always already closed (message_stop) by the time block execution
+  // retries run, so this surfaces on the chat's next load/refetch rather
+  // than live in an already-open panel — there's no live channel for that
+  // today.
+  async postAutomatedMessage(chatId: string, content: string): Promise<Message> {
+    const message = await this.messageRepository.save(
+      this.messageRepository.create({
+        chat: { id: chatId },
+        role: MessageRole.ASSISTANT,
+        content,
+      }),
+    );
+
+    return Message.fromEntity(message);
+  }
+
 
   async voteMessage(userId: string, input: VoteMessageInput): Promise<Vote> {
     const message = await this.messageRepository.findOne({ where: { id: input.messageId } });
