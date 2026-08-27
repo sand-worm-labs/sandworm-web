@@ -75,3 +75,76 @@ export function getRichTextBlockExecStatus(
 ): ExecutionStatus {
   return "completed";
 }
+
+// Turns plain text (optionally with "# "/"## "/"### " heading lines and
+// "- "/"* " bullet lines, blank-line-separated paragraphs otherwise) into the
+// same node shape @tiptap/extension-collaboration expects in this fragment —
+// StarterKit's default schema, where a Y.XmlElement's tag name is the
+// ProseMirror node name (paragraph/heading/bulletList/listItem) and text is
+// plain Y.XmlText (no marks). No inline formatting (bold/italic/links) is
+// attempted — only block structure.
+export function appendRichTextContent(
+  fragment: Y.XmlFragment,
+  text: string
+): void {
+  const lines = text.split("\n");
+  const isHeading = (line: string) => /^(#{1,3})\s+(.*)$/.exec(line);
+  const isBullet = (line: string) => /^[-*]\s+(.*)$/.exec(line);
+
+  let i = 0;
+  while (i < lines.length) {
+    const line = (lines[i] ?? "").trim();
+    if (!line) {
+      i++;
+      continue;
+    }
+
+    const heading = isHeading(line);
+    if (heading) {
+      const el = new Y.XmlElement("heading");
+      // ProseMirror's heading node expects a numeric `level` attr — Yjs's
+      // setAttribute type is string-only, but the runtime stores whatever
+      // value is given (see duplicateYXmlFragment's cloneElement above).
+      // @ts-ignore
+      el.setAttribute("level", heading[1]!.length);
+      el.insert(0, [new Y.XmlText(heading[2] ?? "")]);
+      fragment.insert(fragment.length, [el]);
+      i++;
+      continue;
+    }
+
+    if (isBullet(line)) {
+      const items: Y.XmlElement[] = [];
+      while (i < lines.length) {
+        const bulletLine = (lines[i] ?? "").trim();
+        const bullet = isBullet(bulletLine);
+        if (!bullet) break;
+
+        const item = new Y.XmlElement("listItem");
+        const para = new Y.XmlElement("paragraph");
+        para.insert(0, [new Y.XmlText(bullet[1] ?? "")]);
+        item.insert(0, [para]);
+        items.push(item);
+        i++;
+      }
+      const list = new Y.XmlElement("bulletList");
+      list.insert(0, items);
+      fragment.insert(fragment.length, [list]);
+      continue;
+    }
+
+    // Plain paragraph — join contiguous non-blank, non-heading, non-bullet
+    // lines into one block, the same way a markdown paragraph wraps.
+    const paraLines: string[] = [line];
+    i++;
+    while (i < lines.length) {
+      const next = (lines[i] ?? "").trim();
+      if (!next || isHeading(next) || isBullet(next)) break;
+      paraLines.push(next);
+      i++;
+    }
+    const para = new Y.XmlElement("paragraph");
+    para.insert(0, [new Y.XmlText(paraLines.join(" "))]);
+    fragment.insert(fragment.length, [para]);
+  }
+}

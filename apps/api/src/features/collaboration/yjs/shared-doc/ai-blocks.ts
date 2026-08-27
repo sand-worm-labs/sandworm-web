@@ -1,6 +1,7 @@
 import {
   addBlockGroup,
   appendDropdownInputOptions,
+  appendRichTextContent,
   BlockType,
   dateInputValueFromString,
   formatDateInputValue,
@@ -9,7 +10,7 @@ import {
   setTitle,
   updateInputValue,
 } from '@sandworm/editor'
-import type { DashboardHeaderBlock, DateInputBlock, DropdownInputBlock, InputBlock, PowerToolboxInputs, YBlock, YBlockGroup } from '@sandworm/editor'
+import type { DashboardHeaderBlock, DateInputBlock, DropdownInputBlock, InputBlock, PowerToolboxInputs, RichTextBlock, YBlock, YBlockGroup } from '@sandworm/editor'
 import * as Y from 'yjs'
 
 function add(
@@ -184,7 +185,7 @@ type WithTitle = { title?: string }
 export type BlockSpec = WithTitle & (
   | { type: BlockType.Python;          source?: string }
   | { type: BlockType.SQL;             source?: string; dataSourceId?: string | null; isFileDataSource?: boolean; dataframeName?: string }
-  | { type: BlockType.RichText }
+  | { type: BlockType.RichText;        source?: string }
   | { type: BlockType.Markdown;        source?: string }
   | { type: BlockType.VisualizationV2; dataframeName?: string | null }
   | { type: BlockType.Input;          source?: string }
@@ -235,6 +236,11 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
         case BlockType.RichText: {
           id = addBlockGroup(layout, blocks, { type: BlockType.RichText }, idx, true)
           applyTitle(blocks, id, spec.title)
+          if (spec.source) {
+            const block = blocks.get(id) as Y.XmlElement<RichTextBlock> | undefined
+            const content = block?.getAttribute('content')
+            if (content) appendRichTextContent(content, spec.source)
+          }
           break
         }
 
