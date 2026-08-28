@@ -13,7 +13,7 @@ import {
   updateInputValue,
   updateYText,
 } from '@sandworm/editor'
-import type { DashboardHeaderBlock, DateInputBlock, DropdownInputBlock, InputBlock, PowerToolboxInputs, RichTextBlock, YBlock, YBlockGroup } from '@sandworm/editor'
+import type { DateInputBlock, DropdownInputBlock, InputBlock, PowerToolboxInputs, RichTextBlock, YBlock, YBlockGroup } from '@sandworm/editor'
 import * as Y from 'yjs'
 
 function add(
@@ -130,34 +130,17 @@ export function addDashboardHeaderBlock(doc: Y.Doc, content = '') {
   )
 }
 
-function findDashboardHeaderBlockId(blocks: Y.Map<YBlock>): string | undefined {
-  let existingId: string | undefined
-  blocks.forEach((block, id) => {
-    if (!existingId && block.getAttribute('type') === BlockType.DashboardHeader) {
-      existingId = id
-    }
-  })
-  return existingId
-}
-
-// The notebook has at most one dashboard header — re-generating it should
-// update the existing one in place rather than adding a duplicate.
-export function upsertDashboardHeaderBlock(doc: Y.Doc, content: string, title?: string): void {
-  const blocks = getBlocks(doc)
-  const layout = getLayout(doc)
-
+// "The header" is the document's own title — same thing
+// TitleAiExecutorService._writeDocTitle sets on an AI rename. Reuse that
+// exact mechanism instead of a separate dashboard-grid block.
+export function upsertDashboardHeaderBlock(doc: Y.Doc, content: string): void {
   doc.transact(() => {
-    const existingId = findDashboardHeaderBlockId(blocks)
+    const fragment = doc.getXmlFragment('title')
+    fragment.delete(0, fragment.length)
 
-    if (existingId) {
-      const block = blocks.get(existingId) as Y.XmlElement<DashboardHeaderBlock> | undefined
-      block?.setAttribute('content', content)
-      applyTitle(blocks, existingId, title)
-      return
-    }
-
-    const id = addBlockGroup(layout, blocks, { type: BlockType.DashboardHeader, content }, layout.length)
-    applyTitle(blocks, id, title)
+    const titleEl = new Y.XmlElement('doc-title')
+    titleEl.insert(0, [new Y.XmlText(content)])
+    fragment.insert(0, [titleEl])
   })
 }
 

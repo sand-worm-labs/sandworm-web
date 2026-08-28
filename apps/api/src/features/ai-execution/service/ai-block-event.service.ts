@@ -86,8 +86,8 @@ export class AiBlockEventService implements OnModuleInit {
     const sharedDoc = await this.yjsDocumentService.getYDoc(docId, chat.documentId, chat.workspaceId, persistor);
 
     if (blockType === BlockType.DashboardHeader) {
-      upsertDashboardHeaderBlock(sharedDoc.ydoc, event.content, event.blockTitle);
-      this.logger.log(`[block-action] updated dashboard header → doc ${chat.documentId}`);
+      upsertDashboardHeaderBlock(sharedDoc.ydoc, event.content);
+      this.logger.log(`[block-action] updated document title → doc ${chat.documentId}`);
       return;
     }
 
