@@ -28,6 +28,11 @@ const BLOCK_TYPE_META: Record<string, { label: string; kind: BlockType }> = {
   POWER_TOOLBOX: { label: "Power Toolbox", kind: BlockType.PowerToolbox },
   RICH_TEXT: { label: "Rich Text", kind: BlockType.RichText },
   PIVOT_TABLE: { label: "Pivot Table", kind: BlockType.PivotTable },
+  DASHBOARD_HEADER: { label: "Dashboard Header", kind: BlockType.DashboardHeader },
+  DROPDOWN_INPUT: { label: "Dropdown Input", kind: BlockType.DropdownInput },
+  DATE_INPUT: { label: "Date Input", kind: BlockType.DateInput },
+  INPUT: { label: "Input", kind: BlockType.Input },
+  FILE_UPLOAD: { label: "File Upload", kind: BlockType.FileUpload },
 };
 
 function Pill({

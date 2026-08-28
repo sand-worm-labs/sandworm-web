@@ -60,7 +60,11 @@ export class AiBlockEventService implements OnModuleInit {
   }
 
   private async handleBlockReady(event: BlockActionEvent): Promise<void> {
-    if (event.action !== 'created' || !event.content) return;
+    // action is "ran" for sql/python, "edited" for dashboard_header (always
+    // upserts the notebook's single header), "created" for everything else
+    // — see BlockActionService.generate_blocks on the Python side. All three
+    // land here; "generating"/"deleted" don't apply to this handler.
+    if (!['created', 'edited', 'ran'].includes(event.action) || !event.content) return;
 
     const chat = await this.chatRepository.findOne({
       where: { id: event.chatId },

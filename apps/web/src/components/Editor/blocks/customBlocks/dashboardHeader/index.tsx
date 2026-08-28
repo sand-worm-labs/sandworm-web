@@ -1,7 +1,7 @@
 import type * as Y from "yjs";
 import type { DashboardHeaderBlock } from "@sandworm/editor";
 import clsx from "clsx";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface Props {
   block: Y.XmlElement<DashboardHeaderBlock>;
@@ -12,6 +12,17 @@ interface Props {
 }
 function DashboardHeader(props: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
+  // `content` is a plain string attribute (not a Y.Text bound to an editor),
+  // so unlike markdown/pivot_table it never re-renders on its own when
+  // changed from elsewhere (e.g. the AI regenerating it via
+  // upsertDashboardHeaderBlock) — force one on every Yjs change to this block.
+  const [, forceRerender] = useState(0);
+
+  useEffect(() => {
+    const onUpdate = () => forceRerender(v => v + 1);
+    props.block.observe(onUpdate);
+    return () => props.block.unobserve(onUpdate);
+  }, [props.block]);
 
   const onEdit = useCallback(() => {
     props.block.setAttribute("content", inputRef.current?.value ?? "");
