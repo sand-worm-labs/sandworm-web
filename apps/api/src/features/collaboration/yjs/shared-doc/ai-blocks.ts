@@ -8,7 +8,10 @@ import {
   getBlocks,
   getLayout,
   setTitle,
+  updateDropdownInputLabel,
+  updateInputLabel,
   updateInputValue,
+  updateYText,
 } from '@sandworm/editor'
 import type { DashboardHeaderBlock, DateInputBlock, DropdownInputBlock, InputBlock, PowerToolboxInputs, RichTextBlock, YBlock, YBlockGroup } from '@sandworm/editor'
 import * as Y from 'yjs'
@@ -180,7 +183,7 @@ export function addPowerToolboxBlock(doc: Y.Doc, toolId: string, inputs: PowerTo
 // ─── Batch ────────────────────────────────────────────────────────────────────
 // All blocks in a single transaction — single broadcast to clients.
 
-type WithTitle = { title?: string }
+type WithTitle = { title?: string; id?: string }
 
 export type BlockSpec = WithTitle & (
   | { type: BlockType.Python;          source?: string }
@@ -216,7 +219,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
 
       switch (spec.type) {
         case BlockType.Python: {
-          id = addBlockGroup(layout, blocks, { type: BlockType.Python, source: spec.source ?? '' }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.Python, source: spec.source ?? '' }, idx, true, spec.id)
           applyTitle(blocks, id, spec.title)
           break
         }
@@ -228,7 +231,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
             isFileDataSource: spec.isFileDataSource ?? false,
             source: spec.source ?? '',
             dataframeName: spec.dataframeName,
-          }, idx, true)
+          }, idx, true, spec.id)
           applyTitle(blocks, id, spec.title)
           break
         }
@@ -261,7 +264,14 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
 
         case BlockType.Input: {
           id = addBlockGroup(layout, blocks, { type: BlockType.Input }, idx, true)
-          applyTitle(blocks, id, spec.title)
+
+          // Input's visible block name is the `label` attribute, not `title`
+          // (unlike SQL/Python/Markdown/etc) — the block component only ever
+          // reads/writes `label`, so setting `title` here would be silently inert.
+          if (spec.title) {
+            const block = blocks.get(id) as Y.XmlElement<InputBlock> | undefined
+            if (block) updateInputLabel(block, spec.title)
+          }
 
           const value = spec.source?.trim()
           if (value) {
@@ -273,7 +283,12 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
 
         case BlockType.DropdownInput: {
           id = addBlockGroup(layout, blocks, { type: BlockType.DropdownInput }, idx, true)
-          applyTitle(blocks, id, spec.title)
+
+          // Same as Input above: DropdownInput's visible name is `label`, not `title`.
+          if (spec.title) {
+            const block = blocks.get(id) as Y.XmlElement<DropdownInputBlock> | undefined
+            if (block) updateDropdownInputLabel(block, spec.title)
+          }
 
           const options = (spec.source ?? '')
             .split('\n')
@@ -288,7 +303,14 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
 
         case BlockType.DateInput: {
           id = addBlockGroup(layout, blocks, { type: BlockType.DateInput }, idx, true)
-          applyTitle(blocks, id, spec.title)
+
+          // Same again: DateInput's visible name is `label` (a Y.Text here,
+          // unlike the plain-string `label` on Input/DropdownInput), not `title`.
+          if (spec.title) {
+            const block = blocks.get(id) as Y.XmlElement<DateInputBlock> | undefined
+            const label = block?.getAttribute('label')
+            if (label) updateYText(label, spec.title)
+          }
 
           const dateStr = spec.source?.trim()
           if (dateStr) {
