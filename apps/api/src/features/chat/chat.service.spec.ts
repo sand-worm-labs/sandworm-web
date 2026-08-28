@@ -25,6 +25,7 @@ function makeService(): ChatService {
     { on: jest.fn(), emit: jest.fn() } as any, // eventEmitter
     {} as any, // httpService
     {} as any, // workspaceService
+    {} as any, // redisService
   );
 }
 

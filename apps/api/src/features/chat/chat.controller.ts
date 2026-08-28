@@ -23,4 +23,14 @@ export class ChatController {
   ) {
     await this.chatService.streamToReply(userId, chatId, messageId, req, reply);
   }
+
+  @Post(':chatId/abort')
+  @ApiAuth({ summary: 'Abort the in-flight AI turn for a chat' })
+  async abortChat(
+    @Param('chatId') chatId: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    await this.chatService.abort(chatId, userId);
+    return { aborted: true };
+  }
 }

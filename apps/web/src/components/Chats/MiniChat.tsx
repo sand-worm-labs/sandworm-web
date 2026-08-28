@@ -139,6 +139,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
                   onUploadFile={handleUploadFile}
                   disabled={false}
                   isGenerating={state.isLoading}
+                  onAbort={handlers.abort}
                   placeholder={
                     state.activeFollowUpStep?.placeholder ??
                     state.activeFollowUpStep?.prompt
