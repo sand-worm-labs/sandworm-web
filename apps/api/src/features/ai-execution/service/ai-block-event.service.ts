@@ -22,6 +22,13 @@ import { addBlocks, BlockSpec, upsertDashboardHeaderBlock } from '../../collabor
 const MAX_SQL_RUN_ATTEMPTS = 3;
 const MAX_PYTHON_RUN_ATTEMPTS = 3;
 
+// Same key ChatService.abort() sets and the sidecar's is_job_cancelled()
+// checks (src/util/cache.py) — the one thing all three have to agree on
+// across the language boundary.
+function cancelJobKey(chatId: string): string {
+  return `cancel_job:${chatId}`;
+}
+
 const BLOCK_TYPE_MAP: Partial<Record<string, BlockType>> = {
   sql:              BlockType.SQL,
   python:           BlockType.Python,
@@ -179,6 +186,11 @@ export class AiBlockEventService implements OnModuleInit {
       const block = blocks.get(blockId) as Y.XmlElement<SQLBlock> | undefined;
       if (!block) return;
 
+      if (await this.isJobCancelled(ctx.chat_id)) {
+        this.logger.log(`[block-action] SQL auto-fix loop for ${blockId} stopped — job cancelled`);
+        return;
+      }
+
       const result = await this.waitForSQLResult(block, previousQueryTime);
       previousQueryTime = (block.getAttribute('lastQueryTime') as string | null | undefined) ?? previousQueryTime;
       if (!result) return;
@@ -195,6 +207,11 @@ export class AiBlockEventService implements OnModuleInit {
       if (attempt === MAX_SQL_RUN_ATTEMPTS) {
         this.logger.warn(`[block-action] SQL block ${blockId} still failing after ${MAX_SQL_RUN_ATTEMPTS} attempts, giving up`);
         await this.publishBlockResult(blockId, 'error', result.message);
+        return;
+      }
+
+      if (await this.isJobCancelled(ctx.chat_id)) {
+        this.logger.log(`[block-action] SQL auto-fix loop for ${blockId} stopped before generating a fix — job cancelled`);
         return;
       }
 
@@ -276,6 +293,11 @@ export class AiBlockEventService implements OnModuleInit {
       const block = blocks.get(blockId) as Y.XmlElement<PythonBlock> | undefined;
       if (!block) return;
 
+      if (await this.isJobCancelled(ctx.chat_id)) {
+        this.logger.log(`[block-action] Python auto-fix loop for ${blockId} stopped — job cancelled`);
+        return;
+      }
+
       const result = await this.waitForPythonResult(block, previousQueryTime);
       previousQueryTime = (block.getAttribute('lastQueryTime') as string | null | undefined) ?? previousQueryTime;
       if (!result) return;
@@ -290,6 +312,11 @@ export class AiBlockEventService implements OnModuleInit {
       if (attempt === MAX_PYTHON_RUN_ATTEMPTS) {
         this.logger.warn(`[block-action] Python block ${blockId} still failing after ${MAX_PYTHON_RUN_ATTEMPTS} attempts, giving up`);
         await this.publishBlockResult(blockId, 'error', `${errorOutput.ename}: ${errorOutput.evalue}`);
+        return;
+      }
+
+      if (await this.isJobCancelled(ctx.chat_id)) {
+        this.logger.log(`[block-action] Python auto-fix loop for ${blockId} stopped before generating a fix — job cancelled`);
         return;
       }
 
@@ -362,6 +389,19 @@ export class AiBlockEventService implements OnModuleInit {
       await this.redisService.rpush(`block:result:${blockId}`, JSON.stringify({ outcome, summary }));
     } catch (err) {
       this.logger.warn({ blockId, err }, '[block-action] failed to publish block result for sidecar handoff');
+    }
+  }
+
+  // Set by ChatService.abort() — checked between attempts so a user hitting
+  // Stop actually halts the auto-fix loop, not just whichever single query
+  // was running at that instant. Best-effort: a Redis error here shouldn't
+  // block the block from running, so treat it as "not cancelled".
+  private async isJobCancelled(chatId: string): Promise<boolean> {
+    try {
+      return (await this.redisService.get(cancelJobKey(chatId))) !== null;
+    } catch (err) {
+      this.logger.warn({ chatId, err }, '[block-action] failed to check job-cancelled flag');
+      return false;
     }
   }
 

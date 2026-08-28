@@ -24,6 +24,7 @@ interface StartStreamParams extends StreamCallbacks {
 type UseChatStream = {
   startStream: (params: StartStreamParams) => Promise<void>;
   stopStream: () => void;
+  abortChat: (chatId: string) => Promise<void>;
   isStreaming: boolean;
 };
 
@@ -302,5 +303,30 @@ export function useChatStream(): UseChatStream {
     [stopStream]
   );
 
-  return { startStream, stopStream, isStreaming: isStreamingRef.current };
+  // Stops the local stream read immediately (for responsive UI) and tells
+  // the backend to cancel the whole in-flight pipeline — not just this
+  // connection. Without the server-side call, the sidecar and Node's
+  // per-block auto-fix loops keep running (and keep mutating the notebook)
+  // even after the frontend stops watching.
+  const abortChat = useCallback(
+    async (chatId: string) => {
+      stopStream();
+      try {
+        await fetch(`${NEXT_PUBLIC_API_URL()}/chat/${chatId}/abort`, {
+          method: "POST",
+          credentials: "include",
+        });
+      } catch (err) {
+        console.error("[useChatStream] failed to abort chat:", err);
+      }
+    },
+    [stopStream]
+  );
+
+  return {
+    startStream,
+    stopStream,
+    abortChat,
+    isStreaming: isStreamingRef.current,
+  };
 }
