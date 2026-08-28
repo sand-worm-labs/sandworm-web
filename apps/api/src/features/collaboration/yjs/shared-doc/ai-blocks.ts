@@ -1,15 +1,19 @@
 import {
   addBlockGroup,
   appendDropdownInputOptions,
+  appendRichTextContent,
   BlockType,
   dateInputValueFromString,
   formatDateInputValue,
   getBlocks,
   getLayout,
   setTitle,
+  updateDropdownInputLabel,
+  updateInputLabel,
   updateInputValue,
+  updateYText,
 } from '@sandworm/editor'
-import type { DashboardHeaderBlock, DateInputBlock, DropdownInputBlock, InputBlock, PowerToolboxInputs, YBlock, YBlockGroup } from '@sandworm/editor'
+import type { DateInputBlock, DropdownInputBlock, InputBlock, PowerToolboxInputs, RichTextBlock, YBlock, YBlockGroup } from '@sandworm/editor'
 import * as Y from 'yjs'
 
 function add(
@@ -126,34 +130,17 @@ export function addDashboardHeaderBlock(doc: Y.Doc, content = '') {
   )
 }
 
-function findDashboardHeaderBlockId(blocks: Y.Map<YBlock>): string | undefined {
-  let existingId: string | undefined
-  blocks.forEach((block, id) => {
-    if (!existingId && block.getAttribute('type') === BlockType.DashboardHeader) {
-      existingId = id
-    }
-  })
-  return existingId
-}
-
-// The notebook has at most one dashboard header — re-generating it should
-// update the existing one in place rather than adding a duplicate.
-export function upsertDashboardHeaderBlock(doc: Y.Doc, content: string, title?: string): void {
-  const blocks = getBlocks(doc)
-  const layout = getLayout(doc)
-
+// "The header" is the document's own title — same thing
+// TitleAiExecutorService._writeDocTitle sets on an AI rename. Reuse that
+// exact mechanism instead of a separate dashboard-grid block.
+export function upsertDashboardHeaderBlock(doc: Y.Doc, content: string): void {
   doc.transact(() => {
-    const existingId = findDashboardHeaderBlockId(blocks)
+    const fragment = doc.getXmlFragment('title')
+    fragment.delete(0, fragment.length)
 
-    if (existingId) {
-      const block = blocks.get(existingId) as Y.XmlElement<DashboardHeaderBlock> | undefined
-      block?.setAttribute('content', content)
-      applyTitle(blocks, existingId, title)
-      return
-    }
-
-    const id = addBlockGroup(layout, blocks, { type: BlockType.DashboardHeader, content }, layout.length)
-    applyTitle(blocks, id, title)
+    const titleEl = new Y.XmlElement('doc-title')
+    titleEl.insert(0, [new Y.XmlText(content)])
+    fragment.insert(0, [titleEl])
   })
 }
 
@@ -179,12 +166,12 @@ export function addPowerToolboxBlock(doc: Y.Doc, toolId: string, inputs: PowerTo
 // ─── Batch ────────────────────────────────────────────────────────────────────
 // All blocks in a single transaction — single broadcast to clients.
 
-type WithTitle = { title?: string }
+type WithTitle = { title?: string; id?: string }
 
 export type BlockSpec = WithTitle & (
   | { type: BlockType.Python;          source?: string }
   | { type: BlockType.SQL;             source?: string; dataSourceId?: string | null; isFileDataSource?: boolean; dataframeName?: string }
-  | { type: BlockType.RichText }
+  | { type: BlockType.RichText;        source?: string }
   | { type: BlockType.Markdown;        source?: string }
   | { type: BlockType.VisualizationV2; dataframeName?: string | null }
   | { type: BlockType.Input;          source?: string }
@@ -215,7 +202,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
 
       switch (spec.type) {
         case BlockType.Python: {
-          id = addBlockGroup(layout, blocks, { type: BlockType.Python, source: spec.source ?? '' }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.Python, source: spec.source ?? '' }, idx, true, spec.id)
           applyTitle(blocks, id, spec.title)
           break
         }
@@ -227,7 +214,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
             isFileDataSource: spec.isFileDataSource ?? false,
             source: spec.source ?? '',
             dataframeName: spec.dataframeName,
-          }, idx, true)
+          }, idx, true, spec.id)
           applyTitle(blocks, id, spec.title)
           break
         }
@@ -235,6 +222,11 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
         case BlockType.RichText: {
           id = addBlockGroup(layout, blocks, { type: BlockType.RichText }, idx, true)
           applyTitle(blocks, id, spec.title)
+          if (spec.source) {
+            const block = blocks.get(id) as Y.XmlElement<RichTextBlock> | undefined
+            const content = block?.getAttribute('content')
+            if (content) appendRichTextContent(content, spec.source)
+          }
           break
         }
 
@@ -255,7 +247,14 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
 
         case BlockType.Input: {
           id = addBlockGroup(layout, blocks, { type: BlockType.Input }, idx, true)
-          applyTitle(blocks, id, spec.title)
+
+          // Input's visible block name is the `label` attribute, not `title`
+          // (unlike SQL/Python/Markdown/etc) — the block component only ever
+          // reads/writes `label`, so setting `title` here would be silently inert.
+          if (spec.title) {
+            const block = blocks.get(id) as Y.XmlElement<InputBlock> | undefined
+            if (block) updateInputLabel(block, spec.title)
+          }
 
           const value = spec.source?.trim()
           if (value) {
@@ -267,7 +266,12 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
 
         case BlockType.DropdownInput: {
           id = addBlockGroup(layout, blocks, { type: BlockType.DropdownInput }, idx, true)
-          applyTitle(blocks, id, spec.title)
+
+          // Same as Input above: DropdownInput's visible name is `label`, not `title`.
+          if (spec.title) {
+            const block = blocks.get(id) as Y.XmlElement<DropdownInputBlock> | undefined
+            if (block) updateDropdownInputLabel(block, spec.title)
+          }
 
           const options = (spec.source ?? '')
             .split('\n')
@@ -282,7 +286,14 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
 
         case BlockType.DateInput: {
           id = addBlockGroup(layout, blocks, { type: BlockType.DateInput }, idx, true)
-          applyTitle(blocks, id, spec.title)
+
+          // Same again: DateInput's visible name is `label` (a Y.Text here,
+          // unlike the plain-string `label` on Input/DropdownInput), not `title`.
+          if (spec.title) {
+            const block = blocks.get(id) as Y.XmlElement<DateInputBlock> | undefined
+            const label = block?.getAttribute('label')
+            if (label) updateYText(label, spec.title)
+          }
 
           const dateStr = spec.source?.trim()
           if (dateStr) {

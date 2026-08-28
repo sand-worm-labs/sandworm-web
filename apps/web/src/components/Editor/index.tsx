@@ -80,6 +80,7 @@ import type { ApiDocument, UserWorkspaceRole } from "@/types";
 import VisualizationV2Block from "../Visualization";
 import VisualizationBlock from "../Visualization";
 
+import DashboardHeader from "./blocks/customBlocks/dashboardHeader";
 import DateInputBlock from "./blocks/customBlocks/dateInput";
 import DropdownInputBlock from "./blocks/customBlocks/dropdownInput";
 import FileUploadBlock from "./blocks/customBlocks/fileUpload";
@@ -1922,6 +1923,7 @@ interface TabRefProps {
 }
 function TabRef(props: TabRefProps) {
   const [editorState] = useEditorAwareness();
+  const [isEditingHeader, setIsEditingHeader] = useState(false);
 
   const blockData = props.blocks.get(props.tab.blockId);
   if (!blockData) {
@@ -2128,7 +2130,15 @@ function TabRef(props: TabRefProps) {
         isCursorInserting={isCursorInserting}
       />
     ),
-    onDashboardHeader: (): JSX.Element | null => null,
+    onDashboardHeader: block => (
+      <DashboardHeader
+        block={block}
+        isEditing={isEditingHeader}
+        onFinishedEditing={() => setIsEditingHeader(false)}
+        dashboardMode={props.isEditable ? "editing" : "live"}
+        onStartEditing={() => setIsEditingHeader(true)}
+      />
+    ),
     onPivotTable: block => (
       <PivotTableBlock
         workspaceId={props.document.workspaceId}
