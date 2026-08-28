@@ -107,6 +107,14 @@ export function useMiniChat({
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const promptFiredRef = useRef(false);
+  // Mirrors of the in-flight request's chatId/loadingId, readable
+  // synchronously from handleAbort. activeChatId (React state) lags behind
+  // during a brand-new chat's first message — it's only set after
+  // chatApi.createChat() resolves, but isLoading (and so the abort button)
+  // is already true before that, so abort needs a value it can read right
+  // away, not one that arrives on a later render.
+  const currentChatIdRef = useRef<string | null>(null);
+  const currentLoadingMessageIdRef = useRef<string | null>(null);
 
   const notebookBlocks = useNotebookBlocks(yDoc);
 
@@ -116,7 +124,7 @@ export function useMiniChat({
   );
 
   const { api: chatApi } = useChat(workspaceId, documentId);
-  const { startStream, stopStream } = useChatStream();
+  const { startStream, stopStream, abortChat } = useChatStream();
 
   const addMessage = useCallback((msg: Omit<LocalMessage, "id">) => {
     const id = crypto.randomUUID();
@@ -203,6 +211,9 @@ export function useMiniChat({
 
   const streamMessage = useCallback(
     async (chatId: string, msgId: string, loadingId: string) => {
+      currentChatIdRef.current = chatId;
+      currentLoadingMessageIdRef.current = loadingId;
+
       await startStream({
         chatId,
         messageId: msgId,
@@ -211,6 +222,8 @@ export function useMiniChat({
         onComplete: () => {
           replaceMessage(loadingId, { isLoading: false });
           setIsLoading(false);
+          currentChatIdRef.current = null;
+          currentLoadingMessageIdRef.current = null;
         },
         onError: err => {
           replaceMessage(loadingId, {
@@ -219,6 +232,8 @@ export function useMiniChat({
           });
           console.error("[MiniChat] stream error:", err);
           setIsLoading(false);
+          currentChatIdRef.current = null;
+          currentLoadingMessageIdRef.current = null;
         },
       });
     },
@@ -377,8 +392,25 @@ export function useMiniChat({
     console.log("[MiniChat] reject all blocks for message:", _messageId);
   }, []);
 
+  const handleAbort = useCallback(() => {
+    const chatId = currentChatIdRef.current ?? activeChatId;
+    const loadingId = currentLoadingMessageIdRef.current;
+
+    setIsLoading(false);
+    if (loadingId) {
+      replaceMessage(loadingId, { text: "Stopped.", isLoading: false });
+    }
+    currentChatIdRef.current = null;
+    currentLoadingMessageIdRef.current = null;
+
+    if (chatId) void abortChat(chatId);
+  }, [activeChatId, abortChat, replaceMessage]);
+
   const handleNewThread = useCallback(() => {
     stopStream();
+    setIsLoading(false);
+    currentChatIdRef.current = null;
+    currentLoadingMessageIdRef.current = null;
     setMessages([]);
     setActiveChatId(null);
     setActiveThreadTitle(undefined);
@@ -389,6 +421,9 @@ export function useMiniChat({
     async (id: string) => {
       try {
         stopStream();
+        setIsLoading(false);
+        currentChatIdRef.current = null;
+        currentLoadingMessageIdRef.current = null;
         await loadThread(id);
         setView("chat");
       } catch (err) {
@@ -443,6 +478,7 @@ export function useMiniChat({
       selectThread: handleSelectThread,
       sendSafe: handleSendSafe,
       inputSend: handleInputSend,
+      abort: handleAbort,
       vote: handleVote,
       removeVote: handleRemoveVote,
       followUpSubmit: handleFollowUpSubmit,

@@ -73,6 +73,18 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     await this.client.del(key);
   }
 
+  async set(key: string, value: string, ttlSeconds?: number): Promise<void> {
+    if (ttlSeconds) {
+      await this.client.set(key, value, 'EX', ttlSeconds);
+    } else {
+      await this.client.set(key, value);
+    }
+  }
+
+  async get(key: string): Promise<string | null> {
+    return this.client.get(key);
+  }
+
   // Pushes onto a Redis list and TTLs it — used for the block-result handoff
   // (Node → sidecar): the sidecar BLPOPs the same key, which survives even
   // if it starts waiting slightly after this push (unlike pub/sub).
