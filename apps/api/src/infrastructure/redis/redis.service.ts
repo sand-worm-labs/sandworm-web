@@ -73,6 +73,14 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     await this.client.del(key);
   }
 
+  // Pushes onto a Redis list and TTLs it — used for the block-result handoff
+  // (Node → sidecar): the sidecar BLPOPs the same key, which survives even
+  // if it starts waiting slightly after this push (unlike pub/sub).
+  async rpush(key: string, value: string, ttlSeconds = 300): Promise<void> {
+    await this.client.rpush(key, value);
+    await this.client.expire(key, ttlSeconds);
+  }
+
   unsubscribe(channel: string, handler: MessageHandler): void {
     const set = this.handlers.get(channel);
     if (!set) return;

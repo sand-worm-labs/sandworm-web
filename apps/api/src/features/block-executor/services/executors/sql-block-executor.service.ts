@@ -85,6 +85,14 @@ export class SqlBlockExecutorService {
       let resultType: RunQueryResult['type'] | 'empty-query' = 'empty-query';
 
       if (actualSource !== '') {
+        // Other blocks' dataframes referenced by name in this query (DuckDB's
+        // replacement scan) may not actually be loaded in this kernel yet —
+        // pass what we know so the query can self-heal by reloading from
+        // disk instead of depending on run/kernel-lifetime ordering.
+        const knownDataframes = Array.from(ctx.dataframes.entries())
+          .filter(([name, df]) => name !== dataframeName.value && df.blockId)
+          .map(([name, df]) => ({ name, queryId: df.blockId! }));
+
         const [promise, abort] = await this.queryExecutionService.makeSQLQuery(
           ctx.execution.workspaceId,
           ctx.execution.sessionId,
@@ -98,6 +106,7 @@ export class SqlBlockExecutorService {
           },
           (result) => block.setAttribute('result', result),
           configuration,
+          knownDataframes,
         );
         cleanup();
 

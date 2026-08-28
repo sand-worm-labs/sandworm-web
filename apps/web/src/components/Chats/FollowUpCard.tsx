@@ -41,7 +41,11 @@ export function FollowUpCard({
     () =>
       Object.fromEntries(
         part.questions
-          .filter(q => q.input_type === "radio" && q.options?.[0])
+          .filter(
+            q =>
+              (q.input_type === "option" || q.input_type === "select") &&
+              q.options?.[0]
+          )
           .map(q => [q.id, q.options?.[0]?.value])
       ) as Record<string, string>
   );
@@ -72,7 +76,7 @@ export function FollowUpCard({
   );
   const pendingElaboration = selectedOption?.free_text === true;
   const isElaboratedText =
-    question?.input_type === "radio" &&
+    (question?.input_type === "option" || question?.input_type === "select") &&
     !!answers[question.id] &&
     !question.options?.some(o => o.value === answers[question.id]);
 
@@ -220,7 +224,7 @@ export function FollowUpCard({
             {question.text}
           </p>
 
-          {question.input_type === "radio" && question.options && (
+          {question.input_type === "option" && question.options && (
             <div className="flex flex-col gap-1">
               {question.options.map(opt => (
                 <label
@@ -248,6 +252,28 @@ export function FollowUpCard({
                 </label>
               ))}
             </div>
+          )}
+
+          {question.input_type === "select" && question.options && (
+            <select
+              value={answers[question.id] ?? ""}
+              onChange={e => handleChange(question.id, e.target.value)}
+              disabled={isDisabled}
+              className="w-full px-2.5 py-1.5 rounded-lg text-[11.5px]
+                border border-border-secondary dark:border-base-700
+                bg-white dark:bg-base-730 text-ink-500 dark:text-ink-200
+                disabled:opacity-50 disabled:cursor-not-allowed
+                focus:outline-none focus:border-primary"
+            >
+              <option value="" disabled>
+                Select an option...
+              </option>
+              {question.options.map(opt => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
           )}
 
           {(question.input_type === "text" ||

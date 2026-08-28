@@ -4,7 +4,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ChatService } from '@/features/chat/chat.service';
 import { RedisService } from './redis.service';
 import { AiJobEvent, AiJobEventNames } from '@/core/events/ai-job.events';
-import { BlockActionEvent, BlockActionEventNames } from '@/core/events/block-action.events';
+import { BlockActionEvent, BlockActionEventNames, BlockActionType } from '@/core/events/block-action.events';
 import pLimit from 'p-limit';
 
 interface RawAiJobEvent {
@@ -73,16 +73,19 @@ export class AiJobListenerService implements OnModuleInit {
     };
     this.eventEmitter.emit(AiJobEventNames.AI_JOB_EVENT, event);
 
-    // A block finished generating (envelope: content_block_delta / block_action_delta / action=ran)
+    // A block finished generating (envelope: content_block_delta / block_action_delta).
+    // action is "ran" for sql/python, "edited" for dashboard_header (single
+    // header, upserted in place), "created" for everything else — see
+    // BlockActionService.generate_blocks on the Python side.
     const delta = type === 'content_block_delta' ? (rest as any).delta : undefined;
-    if (delta?.type === 'block_action_delta' && delta?.action === 'ran') {
+    if (delta?.type === 'block_action_delta') {
       // The AI sidecar names data sources by their Dune-facing identity
       // ("dune"); map that onto the fixed synthetic id the SQL block
       // executor and the Dune data source itself are keyed by.
       const dataSourceId = delta.data_source === 'dune' ? 'dune-datasource' : null;
 
       const blockEvent: BlockActionEvent = {
-        action: 'created',
+        action: (delta.action as BlockActionType) ?? 'created',
         blockId: delta.block_id ?? '',
         blockType: delta.block_type ?? '',
         blockTitle: delta.block_title ?? '',

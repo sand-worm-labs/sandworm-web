@@ -41,6 +41,7 @@ interface ContentDelta {
   thinking?: string;
   duration_ms?: number;
   text?: string;
+  action?: "created" | "edited" | "ran" | "deleted";
   block_id?: string;
   block_type?: string;
   block_title?: string;
@@ -92,7 +93,7 @@ function handleStreamEvent(
         case "block_action_delta":
           onPart?.({
             type: "block_action",
-            action: "ran",
+            action: streamEvent.delta.action ?? "ran",
             blockId: streamEvent.delta.block_id ?? "",
             blockType: streamEvent.delta.block_type ?? "",
             blockTitle: streamEvent.delta.block_title ?? "",

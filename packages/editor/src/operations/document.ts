@@ -74,8 +74,8 @@ export type AddBlockGroupBlock =
       content: string
     }
 
-const createBlock = (block: AddBlockGroupBlock, yBlockDefs: Y.Map<YBlock>, isAiInput?: boolean) => {
-  const blockId = uuidv4();
+const createBlock = (block: AddBlockGroupBlock, yBlockDefs: Y.Map<YBlock>, isAiInput?: boolean, explicitId?: string) => {
+  const blockId = explicitId ?? uuidv4();
   let yBlock: YBlock;
 
   switch (block.type) {
@@ -185,9 +185,10 @@ export const addBlockGroup = (
   yBlockDefs: Y.Map<YBlock>,
   block: AddBlockGroupBlock,
   index: number,
-  isAiInput?: boolean
+  isAiInput?: boolean,
+  explicitId?: string
 ) => {
-  const blockId = createBlock(block, yBlockDefs, isAiInput);
+  const blockId = createBlock(block, yBlockDefs, isAiInput, explicitId);
 
   const blockGroupId = uuidv4();
   const yBlockGroup: YBlockGroup = new Y.XmlElement("block-group");
