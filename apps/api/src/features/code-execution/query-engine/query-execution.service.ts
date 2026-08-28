@@ -24,6 +24,7 @@ export class QueryExecutionService {
         resultOptions: { pageSize: number; dashboardPageSize: number },
         onProgress: (result: SuccessRunQueryResult) => void,
         configuration: SQLQueryConfiguration | null,
+        knownDataframes: { name: string; queryId: string }[] = [],
     ): Promise<[Promise<RunQueryResult>, () => Promise<void>]> {
         if (datasource === 'trino') {
             return this.trinoQueryService.execute(
@@ -49,6 +50,7 @@ export class QueryExecutionService {
             sql,
             resultOptions,
             onProgress,
+            knownDataframes,
         );
     }
 }

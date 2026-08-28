@@ -18,6 +18,7 @@ export class DuckDBQueryService {
     sql: string,
     resultOptions: { pageSize: number; dashboardPageSize: number },
     onProgress: (result: SuccessRunQueryResult) => void,
+    knownDataframes: { name: string; queryId: string }[] = [],
   ): Promise<[Promise<RunQueryResult>, () => Promise<void>]> {
     const rendered = await this.pythonExecutor.renderJinja({ workspaceId, sessionId }, sql);
 
@@ -28,7 +29,7 @@ export class DuckDBQueryService {
       ];
     }
 
-    const queryCode = this.buildQueryCode(queryId, rendered, resultOptions);
+    const queryCode = this.buildQueryCode(queryId, rendered, resultOptions, knownDataframes);
 
     const loadCode = this.buildLoadDataframeCode(queryId, dataframeName);
 
@@ -48,7 +49,25 @@ export class DuckDBQueryService {
     queryId: string,
     sql: string,
     resultOptions: { pageSize: number; dashboardPageSize: number },
+    knownDataframes: { name: string; queryId: string }[] = [],
   ): string {
+    // Any dataframe this query references by name should already be a
+    // variable in this kernel — a preceding block's own run loads it there
+    // (see buildLoadDataframeCode). But that only holds if this exact kernel
+    // has been alive since that block last ran; a kernel restart (idle
+    // cull, redeploy) or simply querying before re-running the source block
+    // wipes it while its parquet file on disk survives. Reload anything
+    // that's currently missing from globals so `SELECT * FROM <name>` is
+    // self-sufficient instead of depending on kernel/run ordering.
+    const preload = knownDataframes
+      .map(({ name, queryId: sourceQueryId }) => `
+    if "${name}" not in globals():
+        try:
+            globals()["${name}"] = pd.read_parquet("/home/sandwormuser/.sandworm/query-${sourceQueryId}.parquet.gzip")
+        except Exception:
+            pass`)
+      .join("\n");
+
     return `
 def _sandworm_make_duckdb_query():
     import duckdb, json, pandas as pd, os
@@ -60,6 +79,7 @@ def _sandworm_make_duckdb_query():
 
     page_size = ${resultOptions.pageSize}
     dashboard_page_size = ${resultOptions.dashboardPageSize}
+${preload}
 
     try:
         query = duckdb.query(${JSON.stringify(sql)})

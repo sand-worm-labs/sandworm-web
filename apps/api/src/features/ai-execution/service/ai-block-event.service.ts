@@ -165,19 +165,22 @@ export class AiBlockEventService implements OnModuleInit {
     ctx: GeneratorContext,
   ): Promise<void> {
     const blocks = getBlocks(ydoc);
-    // A freshly-created block's `result` starts out null (see makeSQLBlock).
-    // Tracking the previous value lets waitForSQLResult tell "the retry
-    // finished" apart from "the block still has last attempt's result
-    // because the executor hasn't picked up the new run yet" — enqueueBlock
-    // only pushes onto the queue; the executor clears/sets `result` later,
-    // asynchronously.
-    let previousResult: RunQueryResult | null = null;
+    // Track `lastQueryTime`, not `result` — the executor's onProgress sets
+    // `result` as soon as the query itself finishes, which is BEFORE the
+    // dataframe-load step that assigns this block's dataframeName variable
+    // in the shared Python session (see buildLoadDataframeCode). Waiting on
+    // `result` let the dependent block start querying that variable before
+    // it existed ("Table with name aiq_... does not exist!"). `lastQueryTime`
+    // is only stamped after the query AND the dataframe load both finish
+    // (sql-block-executor.service.ts), same as waitForPythonResult below.
+    let previousQueryTime: string | null = null;
 
     for (let attempt = 1; attempt <= MAX_SQL_RUN_ATTEMPTS; attempt++) {
       const block = blocks.get(blockId) as Y.XmlElement<SQLBlock> | undefined;
       if (!block) return;
 
-      const result = await this.waitForSQLResult(block, previousResult);
+      const result = await this.waitForSQLResult(block, previousQueryTime);
+      previousQueryTime = (block.getAttribute('lastQueryTime') as string | null | undefined) ?? previousQueryTime;
       if (!result) return;
       if (result.type !== 'syntax-error') {
         if (result.type === 'success') {
@@ -215,7 +218,6 @@ export class AiBlockEventService implements OnModuleInit {
       }
 
       updateYText(source, fixed);
-      previousResult = result;
       ExecutionQueue.fromYjs(ydoc).enqueueBlock(blockId, userId, null, {
         _tag: 'sql',
         isSuggestion: false,
@@ -224,12 +226,13 @@ export class AiBlockEventService implements OnModuleInit {
     }
   }
 
-  // Resolves once the block's `result` attribute holds a new, non-null value
-  // that differs from previousResult (or after a timeout, to avoid hanging
-  // forever if execution stalls for some other reason).
+  // Resolves once the block's `lastQueryTime` moves past previousQueryTime —
+  // stamped only after the query AND its dataframe load both finish (see the
+  // comment on runSqlWithAutoFix) — returning the `result` at that point.
+  // Times out to avoid hanging forever if execution stalls for some other reason.
   private waitForSQLResult(
     block: Y.XmlElement<SQLBlock>,
-    previousResult: RunQueryResult | null,
+    previousQueryTime: string | null,
   ): Promise<RunQueryResult | null> {
     return new Promise(resolve => {
       let settled = false;
@@ -244,8 +247,10 @@ export class AiBlockEventService implements OnModuleInit {
       };
 
       const check = () => {
-        const result = block.getAttribute('result') as RunQueryResult | null | undefined;
-        if (result !== null && result !== undefined && result !== previousResult) finish(result);
+        const lastQueryTime = block.getAttribute('lastQueryTime') as string | null | undefined;
+        if (lastQueryTime && lastQueryTime !== previousQueryTime) {
+          finish((block.getAttribute('result') as RunQueryResult | null | undefined) ?? null);
+        }
       };
 
       block.observe(check);
