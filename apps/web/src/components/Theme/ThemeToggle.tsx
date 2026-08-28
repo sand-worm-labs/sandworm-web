@@ -19,6 +19,12 @@ interface ThemeToggleProps {
   iconSize?: number;
 }
 
+const THEME_OPTIONS = [
+  { value: "light", label: "Light", Icon: Sun },
+  { value: "dark", label: "Dark", Icon: Moon },
+  { value: "system", label: "System", Icon: Desktop },
+] as const;
+
 export function ThemeTogggle({ iconSize = 22 }: ThemeToggleProps) {
   const { setTheme } = useTheme();
   const [open, setOpen] = useState(false);
@@ -37,7 +43,7 @@ export function ThemeTogggle({ iconSize = 22 }: ThemeToggleProps) {
                 ref={ref}
                 variant="outline"
                 aria-label="Toggle theme"
-                className="border-none bg-transparent hover:bg-base-600 p-2 rounded-full"
+                className="border border-transparent bg-transparent hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 p-2 rounded-[10px] transition-colors"
                 size="icon"
               >
                 <Sun
@@ -58,7 +64,7 @@ export function ThemeTogggle({ iconSize = 22 }: ThemeToggleProps) {
           align="end"
           aria-label="Theme options"
           className={clsx(
-            "flex flex-row gap-1 p-1 py-1.5 min-w-0 border-border bg-inputBg",
+            "flex flex-col gap-0.5 p-1 min-w-[9rem] border-border bg-inputBg",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
             "data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95",
@@ -67,47 +73,17 @@ export function ThemeTogggle({ iconSize = 22 }: ThemeToggleProps) {
             "duration-150"
           )}
         >
-          <TooltipV2<HTMLDivElement> title="Light" active position="bottom">
-            {ref => (
-              <DropdownMenuItem
-                ref={ref}
-                aria-label="Light theme"
-                onClick={() => setTheme("light")}
-                className="p-2 rounded-md text-ink-400 focus:bg-base-600 cursor-pointer"
-              >
-                <Sun className="h-5 w-5 text-ink-500" aria-hidden="true" />
-                <span className="sr-only">Light</span>
-              </DropdownMenuItem>
-            )}
-          </TooltipV2>
-
-          <TooltipV2<HTMLDivElement> title="Dark" active position="bottom">
-            {ref => (
-              <DropdownMenuItem
-                ref={ref}
-                aria-label="Dark theme"
-                onClick={() => setTheme("dark")}
-                className="p-2 rounded-md text-ink-400 focus:bg-base-600 cursor-pointer"
-              >
-                <Moon className="h-5 w-5 text-ink-500" aria-hidden="true" />
-                <span className="sr-only">Dark</span>
-              </DropdownMenuItem>
-            )}
-          </TooltipV2>
-
-          <TooltipV2<HTMLDivElement> title="System" active position="bottom">
-            {ref => (
-              <DropdownMenuItem
-                ref={ref}
-                aria-label="System theme"
-                onClick={() => setTheme("system")}
-                className="p-2 rounded-md text-ink-400 focus:bg-base-600 cursor-pointer"
-              >
-                <Desktop className="h-5 w-5 text-ink-500" aria-hidden="true" />
-                <span className="sr-only">System</span>
-              </DropdownMenuItem>
-            )}
-          </TooltipV2>
+          {THEME_OPTIONS.map(({ value, label, Icon }) => (
+            <DropdownMenuItem
+              key={value}
+              aria-label={`${label} theme`}
+              onClick={() => setTheme(value)}
+              className="flex items-center gap-2 px-2 py-1.5 rounded-[10px] border border-transparent text-ink-400 hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 hover:dark:text-ink-100 cursor-pointer transition-colors"
+            >
+              <Icon className="h-5 w-5 text-ink-500" aria-hidden="true" />
+              <span className="text-sm">{label}</span>
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

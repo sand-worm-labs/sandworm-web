@@ -206,7 +206,7 @@ const ProfileComponent = ({
                           <button
                             type="button"
                             onClick={() => setIsModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-0.5 rounded-lg transition-colors text-sm border border-border dark:border-border-tertiary text-ink-400 dark:text-black hover:bg-inputBg bg-inputBg"
+                            className="flex items-center gap-2 px-4 py-0.5 rounded-lg transition-colors text-sm border border-border dark:border-border-tertiary text-ink-400 dark:text-black hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700 bg-inputBg"
                           >
                             Edit
                           </button>
@@ -333,7 +333,7 @@ const ProfileComponent = ({
                                       ? undefined
                                       : "noopener noreferrer"
                                   }
-                                  className="p-2.5 rounded-xl border border-border dark:border-border-tertiary hover:bg-primary/20 hover:border-primary/20 hover:text-white transition-colors text-ink-300 dark:text-ink-400 bg-inputBg dark:bg-transparent"
+                                  className="p-2.5 rounded-xl border border-border dark:border-border-tertiary hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700 transition-colors text-ink-300 dark:text-ink-400 bg-inputBg dark:bg-transparent"
                                 >
                                   {getSocialIcon(platform)}
                                 </a>
@@ -371,7 +371,7 @@ const ProfileComponent = ({
                             <button
                               type="button"
                               onClick={() => copyToClipboard(wallet.address)}
-                              className="p-2 rounded-full hover:bg-border-secondary dark:hover:bg-editor-200 transition-colors"
+                              className="p-2 rounded-full border border-border-cool hover:border-primary hover:bg-hover-bg dark:hover:bg-base-700 transition-colors"
                             >
                               {copiedWallet === wallet.address ? (
                                 <Check className="w-4 h-4 text-primary" />

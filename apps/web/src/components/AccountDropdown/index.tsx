@@ -90,8 +90,8 @@ const NavItem = ({
   suffix,
 }: NavItemProps) => {
   const cls =
-    "flex items-center gap-3 w-full px-3 py-1.5 rounded-lg text-sm " +
-    "text-ink-500 dark:text-white hover:bg-inputBg dark:hover:bg-white/[3.1%] " +
+    "flex items-center gap-3 w-full px-3 py-1.5 rounded-[10px] border border-transparent text-sm " +
+    "text-ink-500 dark:text-white hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 " +
     "transition-colors cursor-pointer font-body font-medium text-start";
 
   const inner = (
@@ -191,7 +191,7 @@ const DropdownBody = ({
         variant="secondary"
         onClick={shareProfile}
         className="bg-link-tint dark:bg-primary/[12.5%] dark:text-primary
-          text-accent hover:bg-link-tint/90 text-xs rounded-md
+          text-accent hover:bg-link-tint/90 text-xs rounded-md border border-transparent hover:border-primary
           font-semibold h-[22px] gap-1 font-tertiary"
       >
         {copied ? "Copied!" : "Share"}
@@ -288,8 +288,8 @@ export const AccountDropdown = ({
                 ref={ref}
                 type="button"
                 aria-label="Account menu"
-                className="flex items-center justify-center rounded-md p-1
-                  hover:bg-base-350 dark:hover:bg-base-700 transition-all duration-100"
+                className="flex items-center justify-center rounded-[10px] border border-transparent p-1
+                  hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors duration-100"
               >
                 <UserAvatar src={user.avater} name={user.firstName} size="sm" />
               </button>
@@ -314,7 +314,7 @@ export const AccountDropdown = ({
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="px-2 flex items-center gap-3 h-12 w-full justify-between hover:bg-base-350 dark:hover:bg-base-700 transition-all duration-100"
+            className="px-2 flex items-center gap-3 h-12 w-full justify-between rounded-[10px] border border-transparent hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors duration-100"
           >
             <div className="flex items-center gap-3">
               <UserAvatar src={user.avater} name={user.firstName} />
