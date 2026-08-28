@@ -152,7 +152,11 @@ function WorkspaceRow({
         disabled={isSwitching || isCurrentWorkspace}
         className="flex-1 flex items-center gap-4 text-left cursor-pointer min-w-0"
       >
-        <WorkspaceIconAvatar icon={workspace?.icon} />
+        <WorkspaceIconAvatar
+          icon={workspace?.icon}
+          size={40}
+          className="rounded-full shrink-0"
+        />
 
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">

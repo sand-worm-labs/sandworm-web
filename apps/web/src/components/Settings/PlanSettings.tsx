@@ -14,6 +14,8 @@ import {
   useWorkspaces,
 } from "../Editor/hooks/useWorkspaces";
 
+import PlanFaq from "./PlanFaq";
+
 // =====================================
 // ⬢ Constants
 // =====================================
@@ -59,8 +61,10 @@ const plans: PlanOption[] = [
     badge: "Beta access",
     features: [
       "1 workspace, up to 3 members",
-      "Unlimited public notebooks",
-      "50 AI credits / month",
+      "Up to 5 notebooks",
+      "250 MB file & image storage",
+      "50 AI credits / month via OpenRouter",
+      "Manual notebook runs only",
       "Core chains: Base & Ethereum",
       "Public gist sharing & forking",
       "Community support on Discord",
@@ -79,12 +83,14 @@ const plans: PlanOption[] = [
     highlight: true,
     features: [
       "Everything in Trial, plus:",
-      "Unlimited private notebooks",
+      "Unlimited notebooks",
       "Unlimited team workspaces",
+      "10 GB file & image storage",
+      "Scheduled notebook runs (hourly to monthly)",
       "All supported chains",
       "CSV, PDF & custom data uploads",
-      "500 AI credits / month",
-      "Priority query execution & support",
+      "500 AI credits / month via OpenRouter",
+      "Priority support",
     ],
     cta: "Upgrade to Pro",
     ctaKind: "wallet",
@@ -98,9 +104,10 @@ const plans: PlanOption[] = [
     priceSuffix: "",
     features: [
       "Everything in Pro, plus:",
+      "Custom storage limits",
+      "Custom cron scheduling & SLA",
       "SSO / SAML",
-      "Dedicated infrastructure & SLA",
-      "Custom data connectors",
+      "Dedicated infrastructure",
       "Dedicated success manager",
       "Custom AI credit limits",
     ],
@@ -463,6 +470,8 @@ export default function PlanSettings() {
             />
           ))}
         </div>
+
+        <PlanFaq />
       </div>
 
       <WalletPaymentModal
