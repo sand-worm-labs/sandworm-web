@@ -142,12 +142,17 @@ export class OpenRouterService {
     }
     const envKey = AI_ENV_KEYS[AIProvider.OPENROUTER];
     const aiEnvKey = await this.environmentService.getEnvironmentVariable(workspaceId, envKey);
-    return aiEnvKey.value || null;
+    return aiEnvKey?.value || null;
   }
 
   async getAccountCredits(workspaceId: string, userId:string): Promise<AccountCredits> {
     await this.workspaceMembershipService.assertActiveMember(workspaceId, userId);
     const workspaceHash = await this.getWorkspaceAiHash(workspaceId);
+
+    if (!workspaceHash) {
+      return { totalCredits: 0, usedCredits: 0, availableCredits: 0 };
+    }
+
     try {
       const { data } = await this.client.apiKeys.get({ hash: workspaceHash });
       return {

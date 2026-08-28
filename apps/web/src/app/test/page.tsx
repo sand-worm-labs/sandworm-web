@@ -1,9 +1,11 @@
 import React from "react";
 
+import { Loader } from "@/components/Loader";
+
 const GoogleLoader = () => {
   return (
     <div className="loader-container">
-      <div className="bar-loader" />
+      <Loader />
     </div>
   );
 };

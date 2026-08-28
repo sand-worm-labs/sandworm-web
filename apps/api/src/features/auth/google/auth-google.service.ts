@@ -25,8 +25,35 @@ export class AuthGoogleService {
     loginDto: AuthGoogleLoginDto,
   ): Promise<SocialInterface> {
     const googleService = this.configService.getOrThrow("google", { infer: true });
+
+    let idToken: string | null | undefined;
+    try {
+      
+      const { tokens } = await this.google.getToken({
+        code: loginDto.code,
+        redirect_uri: 'postmessage',
+      });
+      idToken = tokens.id_token;
+    } catch {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          user: 'wrongToken',
+        },
+      });
+    }
+
+    if (!idToken) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          user: 'wrongToken',
+        },
+      });
+    }
+
     const ticket = await this.google.verifyIdToken({
-      idToken: loginDto.idToken,
+      idToken,
       audience: [googleService.clientId],
     });
 
@@ -46,6 +73,7 @@ export class AuthGoogleService {
       email: data.email,
       firstName: data.given_name,
       lastName: data.family_name,
+      avatar: data.picture,
     };
   }
 }

@@ -738,6 +738,17 @@ file`;
     [layout, blocks, props.isApp]
   );
 
+  const onDeleteBlock = useCallback(
+    (blockId: string) => {
+      if (hasMultipleTabs) {
+        props.onRemoveBlock(props.id, blockId);
+      } else {
+        props.onRemoveBlockGroup(props.id);
+      }
+    },
+    [hasMultipleTabs, props.id, props.onRemoveBlock, props.onRemoveBlockGroup]
+  );
+
   const nodes = useMemo(() => {
     if (tabRefs.length === 0) {
       return <div>Block group is empty</div>;
@@ -755,6 +766,7 @@ file`;
         document={props.document}
         dataSources={props.dataSources}
         onToggleIsBlockHiddenInPublished={onToggleIsBlockHiddenInPublished}
+        onDeleteBlock={onDeleteBlock}
         onSchemaExplorer={props.onSchemaExplorer}
         insertBelow={props.insertBelow}
         isPDF={props.isPDF}
@@ -782,6 +794,7 @@ file`;
     props.document,
     props.dataSources,
     onToggleIsBlockHiddenInPublished,
+    onDeleteBlock,
     props.onSchemaExplorer,
     props.insertBelow,
     props.isPDF,
@@ -1880,6 +1893,7 @@ interface TabRefProps {
   document: ApiDocument;
   dataSources: APIDataSources;
   onToggleIsBlockHiddenInPublished: (blockId: string) => void;
+  onDeleteBlock: (blockId: string) => void;
   onSchemaExplorer: (dataSourceId: string | null) => void;
   insertBelow: () => void;
   isPDF: boolean;
@@ -1928,6 +1942,7 @@ function TabRef(props: TabRefProps) {
         dashboardMode={null}
         isCursorWithin={isCursorWithin}
         isCursorInserting={isCursorInserting}
+        onDeleteBlock={() => props.onDeleteBlock(props.tab.blockId)}
       />
     ),
     onMarkdown: block => (
@@ -1941,6 +1956,7 @@ function TabRef(props: TabRefProps) {
         isCursorWithin={isCursorWithin}
         isCursorInserting={isCursorInserting}
         workspaceId={props.workspaceId}
+        onDeleteBlock={() => props.onDeleteBlock(props.tab.blockId)}
       />
     ),
     onSQL: block => (
@@ -1965,6 +1981,7 @@ function TabRef(props: TabRefProps) {
         executionQueue={props.executionQueue}
         aiTasks={props.aiTasks}
         isFullScreen={props.isFullScreen}
+        onDeleteBlock={() => props.onDeleteBlock(props.tab.blockId)}
       />
     ),
     onPython: block => (
@@ -1989,6 +2006,7 @@ function TabRef(props: TabRefProps) {
         isFullScreen={props.isFullScreen}
         workspaceId={props.workspaceId}
         modelId="gpt-40"
+        onDeleteBlock={() => props.onDeleteBlock(props.tab.blockId)}
       />
     ),
     onVisualization: block => (
@@ -2051,6 +2069,7 @@ function TabRef(props: TabRefProps) {
         userId={props.userId}
         workspaceId={props.document.workspaceId}
         executionQueue={props.executionQueue}
+        onDeleteBlock={() => props.onDeleteBlock(props.tab.blockId)}
       />
     ),
     onDropdownInput: block => (
@@ -2068,6 +2087,7 @@ function TabRef(props: TabRefProps) {
         userId={props.userId}
         workspaceId={props.document.workspaceId}
         executionQueue={props.executionQueue}
+        onDeleteBlock={() => props.onDeleteBlock(props.tab.blockId)}
       />
     ),
     onDateInput: block => (
@@ -2084,6 +2104,7 @@ function TabRef(props: TabRefProps) {
         userId={props.userId}
         workspaceId={props.document.workspaceId}
         executionQueue={props.executionQueue}
+        onDeleteBlock={() => props.onDeleteBlock(props.tab.blockId)}
       />
     ),
     onFileUpload: block => (
@@ -2138,6 +2159,7 @@ function TabRef(props: TabRefProps) {
         userId={props.userId}
         executionQueue={props.executionQueue}
         isFullScreen={props.isFullScreen}
+        onDeleteBlock={() => props.onDeleteBlock(props.tab.blockId)}
       />
     ),
     onPowerToolbox: block => (
@@ -2159,6 +2181,7 @@ function TabRef(props: TabRefProps) {
         userId={props.userId}
         executionQueue={props.executionQueue}
         isFullScreen={props.isFullScreen}
+        onDeleteBlock={() => props.onDeleteBlock(props.tab.blockId)}
       />
     ),
   });

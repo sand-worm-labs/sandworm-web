@@ -28,6 +28,7 @@ import { AllConfigType } from './core/config/config.type';
 import { TypeOrmConfigService } from './infrastructure/database/typeorm-config.service';
 import { RedisModule } from './infrastructure/redis/redis.module';
 import googleConfig from './features/auth/google/config/google.config';
+import githubConfig from './features/auth/github/config/github.config';
 import mailConfig from './infrastructure/mail/config/mail.config';
 import authConfig from './features/auth/core/config/auth.config';
 import { ApiModule } from './api.module';
@@ -43,6 +44,7 @@ const configModule = ConfigModule.forRoot({
     authConfig,
     jupyterConfig,
     googleConfig,
+    githubConfig,
     mailConfig,
     openrouterConfig,
     trinoConfig,

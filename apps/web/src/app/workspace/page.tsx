@@ -7,6 +7,7 @@ import { toast, Toaster } from "sonner";
 
 import { useSession, useSignout } from "@/components/Editor/hooks/useAuth";
 import { useCurrentWorkspaceInfo } from "@/components/Editor/hooks/useWorkspaces";
+import { Loader } from "@/components/Loader";
 
 export default function WorkspaceRedirectPage() {
   const router = useRouter();
@@ -97,7 +98,7 @@ export default function WorkspaceRedirectPage() {
   return (
     <div className="loader-container h-screen">
       <Toaster position="bottom-right" />
-      <div className="bar-loader" />
+      <Loader />
     </div>
   );
 }

@@ -18,6 +18,12 @@ type SocialLoginProps = {
   variant?: "signup" | "signin";
 };
 
+// Matches the placeholder username the backend generates for accounts
+// created via social login (UserService.generateUsername) — used to decide
+// whether this user still needs to claim a real handle, independent of
+// which button (signup/signin) they actually clicked.
+const PLACEHOLDER_USERNAME = /^user\d{8}$/;
+
 // =====================================
 // ⬢ Social Login
 // =====================================
@@ -48,7 +54,10 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
       const data = await res.json();
       setSession(data);
 
-      router.push(variant === "signup" ? "/claim" : "/workspace");
+      const needsUsernameClaim =
+        !data?.user?.username || PLACEHOLDER_USERNAME.test(data.user.username);
+
+      router.push(needsUsernameClaim ? "/claim" : "/workspace");
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || "Authentication failed");
@@ -77,7 +86,11 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
     const left = window.screen.width / 2 - width / 2;
     const top = window.screen.height / 2 - height / 2;
 
-    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID()}&redirect_uri=${REDIRECT_URI()}&scope=read:user`;
+    // `user:email` is required in addition to `read:user` — without it,
+    // GitHub's /user endpoint omits email for anyone who hasn't made theirs
+    // public, and the backend's /user/emails fallback 403s silently.
+    const githubScope = encodeURIComponent("read:user user:email");
+    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID()}&redirect_uri=${REDIRECT_URI()}&scope=${githubScope}`;
 
     const popup = window.open(
       githubAuthUrl,

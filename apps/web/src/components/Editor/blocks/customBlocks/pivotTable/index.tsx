@@ -63,6 +63,7 @@ interface Props {
   userId: string | null;
   executionQueue: ExecutionQueue;
   isFullScreen: boolean;
+  onDeleteBlock: () => void;
 }
 
 // =====================================
@@ -655,6 +656,8 @@ function PivotTableBlock(props: Props) {
         )}
         <button
           type="button"
+          onClick={props.onDeleteBlock}
+          aria-label="Delete block"
           className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
         >
           <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />

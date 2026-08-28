@@ -1,0 +1,75 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css'
+---
+
+<Layout
+	title="Privacy Policy – Sandworm"
+	description="Read the privacy policy for the Sandworm platform."
+	path="/privacy"
+>
+	<Header />
+	<main class="bg-black text-[#7D8791] min-h-screen p-8 font-body pt-28 lg:pt-36 pb-20">
+		<div class="max-w-4xl mx-auto space-y-4">
+			<h1 class="lg:text-4xl text-3xl font-bold mb-4 text-[#C7C2FF] font-mono uppercase">
+				Privacy Policy
+			</h1>
+
+			<h2 class="text-2xl font-medium mt-6 mb-4 text-white">1. Information We Collect</h2>
+			<ul class="list-disc pl-6 space-y-2">
+				<li>
+					<strong>Authentication Data:</strong> When users log in via
+					Firebase (including Google, GitHub, or other social logins),
+					authentication tokens are stored.
+				</li>
+				<li>
+					<strong>Usage Data:</strong> We collect anonymous usage analytics
+					to improve the platform.
+				</li>
+				<li>
+					<strong>Cookies:</strong> Cookies are used for authentication,
+					session management, and performance tracking.
+				</li>
+			</ul>
+
+			<h2 class="text-2xl font-medium mt-6 mb-4 text-white">2. How We Use Your Data</h2>
+			<p>
+				Authentication data is used solely for managing user access. Usage
+				analytics help optimize the tool but do not personally identify
+				users. Public queries shared in the gist are visible to all users.
+			</p>
+
+			<h2 class="text-2xl font-medium mt-6 mb-4 text-white">3. Data Sharing and Security</h2>
+			<p>
+				We <strong>do not sell or share personal data</strong> with third
+				parties. We take reasonable measures to secure user data but cannot
+				guarantee complete security.
+			</p>
+
+			<h2 class="text-2xl font-medium mt-6 mb-4 text-white">4. Third-Party Services</h2>
+			<p>
+				Firebase authentication follows <strong>Google's Privacy Policy</strong>.
+				Queries may interact with third-party APIs (e.g., blockchain
+				explorers), which have their own privacy policies.
+			</p>
+
+			<h2 class="text-2xl font-medium mt-6 mb-4 text-white">5. Blockchain and Public Data</h2>
+			<p>
+				Queries return <strong>publicly available</strong> blockchain data;
+				we do not control blockchain records. Users should not store
+				sensitive data in public queries.
+			</p>
+
+			<h2 class="text-2xl font-medium mt-6 mb-4 text-white">6. Your Choices</h2>
+			<ul class="list-disc pl-6 space-y-2">
+				<li>Users can manage authentication settings via Firebase.</li>
+				<li>Clearing cookies may impact authentication and performance.</li>
+			</ul>
+
+		
+		</div>
+	</main>
+	<Footer />
+</Layout>

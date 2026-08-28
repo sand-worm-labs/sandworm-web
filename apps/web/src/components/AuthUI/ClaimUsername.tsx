@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@sandworm/ui/components/input";
 import { Button } from "@sandworm/ui/components/button";
 
+import { useCurrentUser } from "@/components/Editor/hooks/useCurrentUser";
+
 import { Username } from "../Assets/Username";
 import { Spinner } from "../Spinner/Spinner";
 
@@ -25,20 +27,23 @@ const usernameSchema = z
 interface ClaimUsernameStepProps {
   onSubmit: (username: string) => void;
   isLoading?: boolean;
+  error?: string | null;
 }
 
 export const ClaimUsernameStep = ({
   onSubmit,
   isLoading,
+  error: submitError,
 }: ClaimUsernameStepProps) => {
   const [username, setUsername] = useState("");
 
   const validation = usernameSchema.safeParse(username);
   const isValid = validation.success;
-  const error =
+  const validationError =
     !isValid && username.length > 0
       ? (validation.error.errors[0]?.message ?? "Invalid username")
       : null;
+  const error = validationError ?? submitError ?? null;
 
   return (
     <div className="flex flex-col items-center justify-center px-4 py-12 w-full">
@@ -143,10 +148,30 @@ export const ClaimUsernameStep = ({
 // =====================================
 export const ClaimUsername = () => {
   const router = useRouter();
+  const { updateUser } = useCurrentUser();
+  const [isClaiming, setIsClaiming] = useState(false);
+  const [claimError, setClaimError] = useState<string | null>(null);
+
+  const onSubmit = async (username: string) => {
+    setIsClaiming(true);
+    setClaimError(null);
+    try {
+      await updateUser({ username });
+      router.push("/workspace");
+    } catch {
+      setClaimError("That username is taken. Try another one.");
+    } finally {
+      setIsClaiming(false);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 py-12 w-full">
-      <ClaimUsernameStep onSubmit={() => router.push("/check-mail")} />
+      <ClaimUsernameStep
+        onSubmit={onSubmit}
+        isLoading={isClaiming}
+        error={claimError}
+      />
 
       <div className="flex-col gap-2 absolute bottom-[4rem] w-full flex items-center justify-center">
         <p className="font-body  text-center text-xs text-ink-400 md:max-w-[300px] mt-6">

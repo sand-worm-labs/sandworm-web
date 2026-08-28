@@ -1,7 +1,3 @@
-import {
-  Cog6ToothIcon,
-  ExclamationCircleIcon,
-} from "@heroicons/react/24/solid";
 import type * as Y from "yjs";
 import {
   type YBlock,
@@ -17,21 +13,26 @@ import {
 import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ConnectDragPreview } from "react-dnd";
-import {
-  ClockIcon,
-  CheckIcon,
-  ChevronDownIcon,
-} from "@heroicons/react/20/solid";
 import type { DataFrame } from "@sandworm/types";
 import { Combobox } from "@headlessui/react";
 import ReactDOM from "react-dom";
 import { head } from "ramda";
+import {
+  PiListPlus,
+  PiTrash,
+  PiGearSix,
+  PiWarningCircle,
+  PiClock,
+  PiCheck,
+  PiCaretDown,
+} from "react-icons/pi";
 
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
 import Spin from "../../Spin";
 import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
 import type { DashboardMode } from "../../Dashboard";
+import { BlockTypePill } from "../../BlockTypePill";
 
 import DropdownSettings from "./dropdownSettings";
 
@@ -88,6 +89,7 @@ interface Props {
   userId: string | null;
   workspaceId: string;
   executionQueue: ExecutionQueue;
+  onDeleteBlock: () => void;
 }
 function DropdownInputBlock(props: Props) {
   const attrs = getDropdownInputAttributes(props.block, props.blocks);
@@ -256,16 +258,24 @@ function DropdownInputBlock(props: Props) {
   return (
     <div
       className={clsx(
-        "w-full",
-        props.belongsToMultiTabGroup && "border p-4 rounded-tr-md rounded-b-md",
-        props.isCursorWithin && !props.isCursorInserting
-          ? "border-blue-400"
-          : "border-border-secondary"
+        "relative group/block mt-6",
+        !props.dashboardMode ? "w-1/2" : "w-full"
       )}
       data-block-id={blockId}
     >
       <div
-        className={!props.dashboardMode ? "w-1/2" : ""}
+        className={clsx(
+          "rounded-2xl border-[1.5px] px-4 py-3",
+          props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
+          {
+            "border-primary block-focus-ring":
+              props.isCursorWithin && props.isCursorInserting,
+            "border-hover-border shadow-none":
+              props.isCursorWithin && !props.isCursorInserting,
+            "border-hover-border block-shadow-soft dark:border-border-tertiary":
+              !props.isCursorWithin,
+          }
+        )}
         ref={d => {
           if (props.dragPreview) {
             props.dragPreview(d);
@@ -276,7 +286,7 @@ function DropdownInputBlock(props: Props) {
           <div className="flex items-center flex-grow space-x-1">
             <input
               data-bounding-rect="true"
-              className="block ring-0 text-sm font-medium leading-6 text-ink-100 w-full focus:ring-0 border-0 p-0 bg-transparent"
+              className="block ring-0 text-sm font-medium leading-6 text-ink-100 w-full focus:ring-0 border-0 border-b border-transparent hover:border-hover-border focus:border-primary focus:outline-none p-0 bg-transparent"
               type="text"
               value={attrs.label}
               onChange={onChangeLabel}
@@ -285,7 +295,7 @@ function DropdownInputBlock(props: Props) {
             {!props.isApp && props.isEditable && (
               <div className="flex items-center space-x-1">
                 <button type="button" onClick={toggleConfigOpen}>
-                  <Cog6ToothIcon className="h-4 w-4 text-ink-400 hover:text-gray-600" />
+                  <PiGearSix className="h-4 w-4 text-ink-400 hover:text-gray-600" />
                 </button>
                 <div
                   className={clsx(!props.isEditable && "hidden", "relative")}
@@ -318,7 +328,7 @@ function DropdownInputBlock(props: Props) {
                       variableStatus === "aborting" ? (
                         <Spin />
                       ) : variableStatus === "enqueued" ? (
-                        <ClockIcon className="w-4 h-4 text-gray-300" />
+                        <PiClock className="w-4 h-4 text-gray-300" />
                       ) : attrs.variable.error ? (
                         <>
                           <button
@@ -326,7 +336,7 @@ function DropdownInputBlock(props: Props) {
                             disabled={attrs.variable.error === null}
                             onClick={onRetryVariable}
                           >
-                            <ExclamationCircleIcon
+                            <PiWarningCircle
                               className="h-3 w-3 text-red-300"
                               aria-hidden="true"
                             />
@@ -384,7 +394,7 @@ function DropdownInputBlock(props: Props) {
                     className="inline-block absolute inset-y-0 right-0 px-2.5 bottom-1/2 transform translate-y-1/2"
                     onClick={() => setQuery("")}
                   >
-                    <ChevronDownIcon className="w-5 h-5 text-ink-400" />
+                    <PiCaretDown className="w-5 h-5 text-ink-400" />
                   </button>
                 </div>
               </Combobox.Button>
@@ -430,7 +440,7 @@ function DropdownInputBlock(props: Props) {
                                 active ? "text-white" : "text-blue-600"
                               )}
                             >
-                              <CheckIcon
+                              <PiCheck
                                 className="w-4 h-4"
                                 aria-hidden="true"
                                 color="black"
@@ -450,11 +460,11 @@ function DropdownInputBlock(props: Props) {
                 (valueStatus === "running" || valueStatus === "aborting" ? (
                   <Spin />
                 ) : valueStatus === "enqueued" ? (
-                  <ClockIcon className="w-4 h-4 text-gray-300" />
+                  <PiClock className="w-4 h-4 text-gray-300" />
                 ) : attrs.value.error ? (
                   <>
                     <button type="button" onClick={onRetryValue}>
-                      <ExclamationCircleIcon
+                      <PiWarningCircle
                         className="h-4 w-4 text-red-300"
                         aria-hidden="true"
                       />
@@ -479,6 +489,27 @@ function DropdownInputBlock(props: Props) {
             />
           )}
         </div>
+      </div>
+
+      <div className="absolute left-0 top-0 -translate-y-full pb-2">
+        <BlockTypePill
+          label="Dropdown"
+          icon={<PiListPlus className="w-3 h-3" />}
+        />
+      </div>
+
+      <div
+        className={clsx(
+          "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-2 flex flex-row gap-x-1",
+          !props.isEditable ? "hidden" : "flex"
+        )}
+      >
+        <button
+          type="button"
+          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+        >
+          <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
+        </button>
       </div>
     </div>
   );
