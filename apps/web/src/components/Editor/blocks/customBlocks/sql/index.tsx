@@ -51,7 +51,6 @@ import { TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
 import { dashboardModeHasControls } from "../../Dashboard/dashboard-types";
 import HeaderSelect from "../../HeaderSelect";
-import { DataSourceIcon } from "./dataSourceIcons";
 import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
 import {
   LoadingEnvText,
@@ -74,6 +73,7 @@ import ApproveDiffButons from "../../ApproveDiffButtons";
 import EditWithAIForm from "../../EditWithAIForm";
 import { RunningBorderBar } from "../../RunningBorderBar";
 
+import { DataSourceIcon } from "./dataSourceIcons";
 import DataframeNameInput from "./DataframeNameInput";
 import SQLResult from "./SQLResult";
 
@@ -1348,7 +1348,7 @@ function SQLBlock(props: Props) {
                     status._tag !== "running" &&
                     status._tag !== "enqueued",
                 },
-                "rounded-[5px] border-hover-border border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-hover-bg hover:border-primary"
+                "rounded-[5px] border-hover-border border  dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-hover-bg hover:border-primary"
               )}
             >
               {status._tag !== "idle" ? (

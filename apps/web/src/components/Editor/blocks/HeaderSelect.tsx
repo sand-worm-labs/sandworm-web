@@ -86,7 +86,7 @@ export default function HeaderSelect(props: Props) {
           >
             <Listbox.Options
               as="div"
-              className="mt-[1px] absolute z-10 max-h-60 overflow-auto bg-white dark:bg-base-100 text-base shadow-lg ring-1 ring-gray-200 dark:ring-border-tertiary focus:outline-none sm:text-xs w-[calc(100%-1px)]"
+              className="px-1 py-1 pb-0 mt-[7px] absolute z-[90] max-h-60 overflow-auto rounded-lg border border-border-tertiary bg-white dark:border-border-tertiary dark:bg-base-400 text-base focus:outline-none sm:text-xs font-body w-[calc(100%-1px)]"
             >
               {options.map(option => (
                 <Listbox.Option
@@ -95,17 +95,19 @@ export default function HeaderSelect(props: Props) {
                   disabled={option.disabled}
                   className={({ active }) =>
                     clsx(
-                      active && !option.disabled ? "bg-blue-50 dark:bg-base-500" : "",
+                      active && !option.disabled
+                        ? "bg-primary/20 dark:bg-editor-100"
+                        : "",
                       option.disabled
                         ? "opacity-50 cursor-not-allowed"
                         : "hover:cursor-pointer",
-                      "relative select-none pl-3 pr-9 text-ink-100 dark:text-white py-3"
+                      "relative select-none rounded-md pl-3 pr-9 text-ink-100 dark:text-white py-1.5 mb-1"
                     )
                   }
                   value={option.value}
                 >
-                  {({ selected, active }) => (
-                    <div className="flex gap-x-3 items-center font-mono overflow-hidden">
+                  {({ selected }) => (
+                    <div className="flex gap-x-3 items-center overflow-hidden">
                       {option.icon && (
                         <span className="flex-shrink-0 flex items-center">
                           {option.icon}
@@ -113,29 +115,21 @@ export default function HeaderSelect(props: Props) {
                       )}
                       <span
                         className={clsx(
-                          selected ? "font-semibold" : "font-normal",
+                          selected ? "font-normal" : "font-normal",
                           "block truncate"
                         )}
                       >
                         {option.label}
                       </span>
                       {option.disabled && (
-                        <span className="text-[10px] text-ink-300 dark:text-ink-600 ml-1">
+                        <span className="text-[11px] text-ink-300 dark:text-ink-600 ml-1">
                           (unavailable)
                         </span>
                       )}
 
                       {selected ? (
-                        <span
-                          className={clsx(
-                            active ? "text-white" : "text-primary-200",
-                            "absolute inset-y-0 right-0 flex items-center pr-4"
-                          )}
-                        >
-                          <CheckIcon
-                            className="text-ink-100 h-3 w-3"
-                            aria-hidden="true"
-                          />
+                        <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-primary">
+                          <CheckIcon className="h-4 w-4" aria-hidden="true" />
                         </span>
                       ) : null}
                     </div>
@@ -146,7 +140,7 @@ export default function HeaderSelect(props: Props) {
                 <button
                   type="button"
                   onClick={props.onAdd}
-                  className="flex items-center w-full text-left py-2 pl-3 pr-9 text-ink-100 border-t border-border-secondary hover:bg-blue-50 space-x-1 h-10 dark:border-editor-100"
+                  className="flex items-center w-full text-left py-2 pl-3 pr-9 text-ink-100 dark:text-white border-t border-border-tertiary dark:border-border-tertiary hover:bg-primary/20 dark:hover:bg-editor-100 space-x-1 h-10"
                 >
                   <PlusIcon className="h-3 w-3" aria-hidden="true" />
                   <span>{props.onAddLabel ?? ""}</span>
