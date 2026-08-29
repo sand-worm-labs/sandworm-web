@@ -165,6 +165,16 @@ export class DocumentResolver {
     return this.documentService.deleteDocument(input);
   }
 
+  @Mutation(() => Boolean, {
+    name: 'emptyTrash',
+    description: 'Permanently delete all trashed documents in a workspace',
+  })
+  async emptyTrash(
+    @Args('workspaceId') workspaceId: string,
+  ): Promise<Boolean> {
+    return this.documentService.emptyTrash(workspaceId);
+  }
+
   @Mutation(() => Document, {
     name: 'restoreDocument',
     description: 'Restore a previously deleted document',

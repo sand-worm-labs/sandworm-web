@@ -533,6 +533,9 @@ type Mutation {
   """Soft delete or permanently delete a document"""
   deleteDocument(input: DeleteDocumentInput!): Boolean!
 
+  """Permanently delete all trashed documents in a workspace"""
+  emptyTrash(workspaceId: String!): Boolean!
+
   """Restore a previously deleted document"""
   restoreDocument(input: RestoreDocumentInput!): Document!
 
