@@ -65,6 +65,10 @@ mutation DeleteDocument($input: DeleteDocumentInput!) {
   deleteDocument(input: $input)
 }
 
+mutation EmptyTrash($workspaceId: String!) {
+  emptyTrash(workspaceId: $workspaceId)
+}
+
 mutation RestoreDocument($input: RestoreDocumentInput!) {
   restoreDocument(input: $input) {
     id

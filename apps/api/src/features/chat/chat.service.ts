@@ -119,8 +119,12 @@ export class ChatService implements OnModuleInit {
     const subject = new ReplaySubject<SseEvent>(Infinity, 5 * 60 * 1000);
     this.chatStreams.set(chat.id, subject);
 
+    // `messages` is fetched DESC (newest-first) so `lastUserMessage` above is
+    // cheap to find; the AI sidecar's pipeline (apps/ai .../pipeline/service.py)
+    // expects chronological order to locate the current turn via
+    // reversed(messages) + messages[:-1], so reverse it back here.
     const payload = {
-      messages:           messages.map(m => ({ role: m.role, content: m.content ?? '' })),
+      messages:           [...messages].reverse().map(m => ({ role: m.role, content: m.content ?? '' })),
       model:              lastUserMessage?.model ?? '',
       openrouter_api_key: openrouterApiKey,
       context: {

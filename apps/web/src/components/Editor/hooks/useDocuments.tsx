@@ -15,6 +15,7 @@ import {
   useCreateDocumentMutation,
   useDeleteDocumentMutation,
   useDuplicateDocumentMutation,
+  useEmptyTrashMutation,
   useRestoreDocumentMutation,
   useUpdateDocumentMutation,
   usePublishDocumentMutation,
@@ -133,6 +134,7 @@ type API = {
   duplicateDocument: (id: string) => Promise<ApiDocument>;
   deleteDocument: (id: string, isPermanent?: boolean) => Promise<void>;
   restoreDocument: (id: string) => Promise<void>;
+  emptyTrash: () => Promise<void>;
   updateParent: (
     id: string,
     parentId: string | null,
@@ -272,6 +274,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
   const [deleteDocumentMutation] = useDeleteDocumentMutation();
   const [duplicateDocumentMutation] = useDuplicateDocumentMutation();
   const [restoreDocumentMutation] = useRestoreDocumentMutation();
+  const [emptyTrashMutation] = useEmptyTrashMutation();
   const [updateDocumentMutation] = useUpdateDocumentMutation();
   const [publishDocumentMutation] = usePublishDocumentMutation();
 
@@ -472,6 +475,47 @@ export function useDocuments(workspaceId: string): UseDocuments {
     },
     [workspaceId, loading, restoreDocumentMutation]
   );
+
+  // ⬢ Empty Trash
+  // =====================================
+  const emptyTrash = useCallback(async () => {
+    if (loading) {
+      throw new Error("Cannot empty trash while loading");
+    }
+
+    const previousStateValue = state.get(workspaceId);
+
+    setState(prev => {
+      const { loading: prevLoading, documents: prevDocuments } = prev.get(
+        workspaceId
+      ) ?? {
+        loading: true,
+        documents: List(),
+      };
+      return prev.set(workspaceId, {
+        loading: prevLoading,
+        documents: prevDocuments.filter(d => !d.deletedAt),
+      });
+    });
+
+    try {
+      const result = await emptyTrashMutation({
+        variables: { workspaceId },
+      });
+
+      if (!result.data?.emptyTrash) {
+        throw new Error("Failed to empty trash");
+      }
+    } catch (e) {
+      if (previousStateValue) {
+        setState(s => s.set(workspaceId, previousStateValue));
+      } else {
+        setState(s => s.delete(workspaceId));
+      }
+      toast.error("Something went wrong");
+      throw e;
+    }
+  }, [workspaceId, loading, state, setState, emptyTrashMutation]);
 
   // ⬢ Update Parent
   // =====================================
@@ -706,6 +750,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
         duplicateDocument,
         deleteDocument,
         restoreDocument,
+        emptyTrash,
         updateParent,
         publish,
         updateDocumentSettings,
@@ -718,6 +763,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
       duplicateDocument,
       deleteDocument,
       restoreDocument,
+      emptyTrash,
       updateParent,
       publish,
       updateDocumentSettings,

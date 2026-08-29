@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { DataSource, EntityManager, IsNull, Not, Repository } from 'typeorm';
 import { DocumentEntity, YjsDocumentEntity } from '@sandworm/postgresql-typeorm';
 import PQueue from 'p-queue';
 import { Doc, encodeStateAsUpdate } from 'yjs';
@@ -361,6 +361,17 @@ export class DocumentTreeService {
             };
 
             return manager ? run(manager) : this.dataSource.transaction(run);
+        });
+    }
+
+    async emptyTrash(workspaceId: string): Promise<number> {
+        return this.wrapInQueue(workspaceId, async () => {
+            const result = await this.documentRepository.delete({
+                workspaceId,
+                deletedAt: Not(IsNull()),
+            });
+
+            return result.affected ?? 0;
         });
     }
 

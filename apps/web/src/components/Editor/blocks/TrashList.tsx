@@ -14,6 +14,8 @@ import { timeAgo } from "@/lib";
 type TrashListProps = {
   workspaceId: string;
   documents: List<ApiDeletedDocument>;
+  selectedIds: Set<string>;
+  onToggleSelect: (id: string) => void;
   onRestore: (id: string) => void;
   onPermanentDelete: (id: string) => void;
 };
@@ -68,6 +70,8 @@ function ActionBtn({ icon, label, onClick, danger }: ActionBtnProps) {
 export default function TrashList({
   workspaceId,
   documents,
+  selectedIds,
+  onToggleSelect,
   onRestore,
   onPermanentDelete,
 }: TrashListProps) {
@@ -105,6 +109,17 @@ export default function TrashList({
               rounded-xl transition-colors duration-100
               hover:bg-primary-tint-50 dark:hover:bg-primary-900"
           >
+            {/* ── Checkbox ── */}
+            <input
+              type="checkbox"
+              checked={selectedIds.has(doc.id)}
+              onChange={() => onToggleSelect(doc.id)}
+              aria-label={`Select ${doc.title || "Untitled"}`}
+              className="flex-shrink-0 h-4 w-4 rounded border-border-faint
+                dark:border-border-tertiary text-primary
+                focus:border-primary cursor-pointer"
+            />
+
             {/* ── Icon ── */}
             <div
               className="flex-shrink-0 flex items-center justify-center w-8 h-8

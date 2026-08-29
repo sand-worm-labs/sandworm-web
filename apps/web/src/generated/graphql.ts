@@ -320,6 +320,8 @@ export type Mutation = {
   editSqlWithAi: AiResult;
   editTextWithAi: AiResult;
   editTitleWithAi: Scalars['String']['output'];
+  /** Permanently delete all trashed documents in a workspace */
+  emptyTrash: Scalars['Boolean']['output'];
   fixPythonWithAi: AiResult;
   fixSqlWithAi: AiResult;
   /** Follow User */
@@ -538,6 +540,11 @@ export type MutationEditTextWithAiArgs = {
 
 export type MutationEditTitleWithAiArgs = {
   documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationEmptyTrashArgs = {
   workspaceId: Scalars['String']['input'];
 };
 
@@ -1505,6 +1512,13 @@ export type DeleteDocumentMutationVariables = Exact<{
 
 
 export type DeleteDocumentMutation = { __typename?: 'Mutation', deleteDocument: boolean };
+
+export type EmptyTrashMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type EmptyTrashMutation = { __typename?: 'Mutation', emptyTrash: boolean };
 
 export type RestoreDocumentMutationVariables = Exact<{
   input: RestoreDocumentInput;
@@ -3214,6 +3228,37 @@ export function useDeleteDocumentMutation(baseOptions?: Apollo.MutationHookOptio
 export type DeleteDocumentMutationHookResult = ReturnType<typeof useDeleteDocumentMutation>;
 export type DeleteDocumentMutationResult = Apollo.MutationResult<DeleteDocumentMutation>;
 export type DeleteDocumentMutationOptions = Apollo.BaseMutationOptions<DeleteDocumentMutation, DeleteDocumentMutationVariables>;
+export const EmptyTrashDocument = gql`
+    mutation EmptyTrash($workspaceId: String!) {
+  emptyTrash(workspaceId: $workspaceId)
+}
+    `;
+export type EmptyTrashMutationFn = Apollo.MutationFunction<EmptyTrashMutation, EmptyTrashMutationVariables>;
+
+/**
+ * __useEmptyTrashMutation__
+ *
+ * To run a mutation, you first call `useEmptyTrashMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEmptyTrashMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [emptyTrashMutation, { data, loading, error }] = useEmptyTrashMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useEmptyTrashMutation(baseOptions?: Apollo.MutationHookOptions<EmptyTrashMutation, EmptyTrashMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EmptyTrashMutation, EmptyTrashMutationVariables>(EmptyTrashDocument, options);
+      }
+export type EmptyTrashMutationHookResult = ReturnType<typeof useEmptyTrashMutation>;
+export type EmptyTrashMutationResult = Apollo.MutationResult<EmptyTrashMutation>;
+export type EmptyTrashMutationOptions = Apollo.BaseMutationOptions<EmptyTrashMutation, EmptyTrashMutationVariables>;
 export const RestoreDocumentDocument = gql`
     mutation RestoreDocument($input: RestoreDocumentInput!) {
   restoreDocument(input: $input) {
