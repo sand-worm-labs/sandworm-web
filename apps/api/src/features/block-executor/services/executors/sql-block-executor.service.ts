@@ -20,8 +20,6 @@ import { getQueryDuration } from '@/common/utils/validation';
 export class SqlBlockExecutorService {
   private readonly logger = new Logger(SqlBlockExecutorService.name);
 
-
-
   constructor(
     private readonly dataFrameService: DataFrameService,
     private readonly queryExecutionService: QueryExecutionService,

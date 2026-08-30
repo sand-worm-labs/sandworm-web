@@ -54,6 +54,7 @@ import {
   RunningQueryText,
   LoadingEnvText,
   PythonSucceededText,
+  ExecutionFailedText,
 } from "../../ExecutionStatusText";
 import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
 import CodeEditor from "../CodeEditor";
@@ -538,7 +539,23 @@ function PythonBlock(props: Props) {
     switch (status) {
       case "idle":
       case "completed":
+        console.log("vava");
         if (source?.toJSON() === lastQuery && lastQueryTime) {
+          // eslint-disable-next-line no-console
+          console.log("[DEBUG python queryStatusText]", {
+            results,
+            hasError: results.some(r => r.type === "error"),
+            status,
+          });
+          if (results.some(r => r.type === "error")) {
+            return (
+              <ExecutionFailedText
+                lastExecutionTime={lastQueryTime}
+                isResultHidden={isResultHidden ?? false}
+                onToggleResultHidden={toggleResultHidden}
+              />
+            );
+          }
           return (
             <PythonSucceededText
               lastExecutionTime={lastQueryTime}
@@ -569,6 +586,7 @@ function PythonBlock(props: Props) {
     envStatus,
     isResultHidden,
     toggleResultHidden,
+    results,
   ]);
 
   const runTooltipContent = useMemo(() => {

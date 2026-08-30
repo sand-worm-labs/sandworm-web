@@ -56,6 +56,7 @@ import {
   LoadingEnvText,
   RunningQueryText,
   QuerySucceededText,
+  ExecutionFailedText,
 } from "../../ExecutionStatusText";
 import LargeSpinner from "../../LargeSpinner";
 import type { APIDataSources } from "../../../hooks/useDataSources";
@@ -490,8 +491,23 @@ function SQLBlock(props: Props) {
       case "idle":
       case "completed": {
         if (source?.toJSON() === lastQuery && lastQueryTime) {
+          // eslint-disable-next-line no-console
+          console.log("[DEBUG queryStatusText]", {
+            resultType: result?.type,
+            result,
+            statusTag: status._tag,
+          });
+          if (result?.type === "success") {
+            return (
+              <QuerySucceededText
+                lastExecutionTime={lastQueryTime}
+                isResultHidden={isResultHidden}
+                onToggleResultHidden={toggleResultHidden}
+              />
+            );
+          }
           return (
-            <QuerySucceededText
+            <ExecutionFailedText
               lastExecutionTime={lastQueryTime}
               isResultHidden={isResultHidden}
               onToggleResultHidden={toggleResultHidden}
@@ -520,6 +536,7 @@ function SQLBlock(props: Props) {
     lastQueryTime,
     source.toJSON(),
     envStatus,
+    result,
   ]);
   const onSubmitEditWithAI = useCallback(async () => {
     const editResult = await editSqlWithAi({
