@@ -36,15 +36,6 @@ const TRANSITION_DROPDOWN = {
   leaveTo: "scale-95 -translate-y-1",
 } as const;
 
-const TRANSITION_COLLAPSE = {
-  enter: "transition ease-out duration-150",
-  enterFrom: "scale-y-95 -translate-y-0.5 origin-top",
-  enterTo: "scale-y-100 translate-y-0",
-  leave: "transition ease-in duration-100",
-  leaveFrom: "scale-y-100 translate-y-0",
-  leaveTo: "scale-y-95 -translate-y-0.5 origin-top",
-} as const;
-
 // =====================================
 // ⬢ Use Workspace Switcher Hook
 // =====================================
@@ -251,31 +242,36 @@ function ExpandedSwitcher({
       </button>
 
       {/* ✦ Current Workspace Switcher ✦ */}
-      <Transition show={treeOpen} {...TRANSITION_COLLAPSE}>
-        <button
-          type="button"
-          onClick={() => setOpen(o => !o)}
-          className={clsx(
-            "w-full flex items-center gap-3 px-3 py-1.5 rounded-[10px] border-none transition-all",
-            "bg-base-100 dark:bg-base-100 dark:border-border-tertiary",
-            "shadow-[0_1px_5.5px_6px_#A9A9D41A]"
-          )}
-        >
-          <div className="flex-shrink-0">
-            <WorkspaceIcon
-              icon={workspaceInfo.icon}
-              size={22}
-              className="rounded-lg"
-            />
-          </div>
-          <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100 truncate capitalize">
-            {workspaceInfo.name}
-          </span>
+      <div
+        className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+        style={{ gridTemplateRows: treeOpen ? "1fr" : "0fr" }}
+      >
+        <div className="overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setOpen(o => !o)}
+            className={clsx(
+              "w-full flex items-center gap-3 px-3 py-1.5 rounded-[10px] border-none transition-all",
+              "bg-base-100 dark:bg-transparent dark:border-border-tertiary",
+              "shadow-[0_1px_5.5px_6px_#A9A9D41A] dark:shadow-none"
+            )}
+          >
+            <div className="flex-shrink-0">
+              <WorkspaceIcon
+                icon={workspaceInfo.icon}
+                size={22}
+                className="rounded-lg"
+              />
+            </div>
+            <span className="flex-1 text-left xl:text-sm text-[13px] font-medium text-ink-100 truncate capitalize">
+              {workspaceInfo.name}
+            </span>
 
-          {/* ✦ Chevron Up Down ✦ */}
-          <CaretUpDown />
-        </button>
-      </Transition>
+            {/* ✦ Chevron Up Down ✦ */}
+            <CaretUpDown className="text-[#1C3B5A] dark:text-white" />
+          </button>
+        </div>
+      </div>
 
       {/* ✦ Dropdown ✦ */}
       <Transition show={open && treeOpen} {...TRANSITION_DROPDOWN}>

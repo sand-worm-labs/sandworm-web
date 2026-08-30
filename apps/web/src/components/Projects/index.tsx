@@ -174,7 +174,7 @@ export const Projects: React.FC = () => {
   // =====================================
   if (allCount === 0) {
     return (
-      <div className="h-full flex items-center justify-center p-8">
+      <div className="h-full flex items-center justify-center bg-page-surface p-8">
         <div className="text-center flex items-center flex-col">
           <UploadIcon />
           <h2 className="text-2xl font-medium text-ink-100 font-body mb-2 mt-3">
@@ -197,7 +197,7 @@ export const Projects: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen dark:bg-base-200 p-8">
+    <div className="min-h-screen bg-page-surface p-8">
       <div className="flex justify-between w-full container mx-auto">
         <div className="flex items-center gap-3 mb-0">
           <span className="rounded-full flex items-center justify-center">

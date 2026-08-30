@@ -177,6 +177,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
               type="button"
               className={cn(
                 iconButtonMdClassName,
+                "border border-transparent rounded-[10px] hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600",
                 activeView === "grid" &&
                   "text-primary hover:text-primary dark:hover:text-primary"
               )}
@@ -190,6 +191,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
               type="button"
               className={cn(
                 iconButtonMdClassName,
+                "border border-transparent rounded-[10px] hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600",
                 activeView === "table" &&
                   "text-primary hover:text-primary dark:hover:text-primary"
               )}

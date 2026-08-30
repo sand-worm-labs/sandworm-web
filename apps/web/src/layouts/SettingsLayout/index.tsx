@@ -50,7 +50,7 @@ export default function SettingsLayout({
 
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-base-200">
-      <header className="flex shrink-0 items-center gap-2 border-b border-base-300 bg-base-500 px-10 py-3 text-[1.1rem] dark:border-border-tertiary dark:bg-base-500">
+      <header className="flex shrink-0 items-center gap-2 border-b border-base-300 bg-header-surface px-10 py-3 text-[1.1rem] dark:border-border-tertiary">
         <Link
           href="/workspace"
           className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md text-ink-400 hover:bg-base-350 hover:text-ink-500 dark:text-ink-400 dark:hover:bg-base-700 dark:hover:text-ink-200 transition-all duration-100"
@@ -71,10 +71,10 @@ export default function SettingsLayout({
               <li key={tab.href}>
                 <Link
                   href={tab.href}
-                  className={`mb-1.5 flex items-center space-x-2 rounded-xl border-l-4 px-4 py-1.5 text-sm font-medium ${
+                  className={`mb-1.5 flex items-center space-x-2 rounded-[10px] border px-4 py-1.5 text-sm font-medium transition-colors ${
                     pathname === tab.href
-                      ? "bg-base-600 text-primary dark:bg-editor-100"
-                      : "text-text-gray hover:bg-dark-translucent"
+                      ? "bg-hover-bg border-hover-border dark:bg-base-600 dark:text-ink-100"
+                      : "text-menu-ink border-transparent hover:bg-hover-bg hover:border-hover-border dark:text-white dark:hover:bg-base-600 hover:dark:text-ink-100"
                   }`}
                 >
                   <span className="hidden flex-shrink-0 md:block">

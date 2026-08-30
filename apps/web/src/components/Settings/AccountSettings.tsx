@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { PiCheckCircle, PiGear, PiUsers } from "react-icons/pi";
 
 import type { ApiWorkspace } from "@/types";
-import { iconButtonSmClassName } from "@/styles/interactive";
 
 import {
   useCurrentWorkspaceInfo,
@@ -152,7 +151,11 @@ function WorkspaceRow({
         disabled={isSwitching || isCurrentWorkspace}
         className="flex-1 flex items-center gap-4 text-left cursor-pointer min-w-0"
       >
-        <WorkspaceIconAvatar icon={workspace?.icon} />
+        <WorkspaceIconAvatar
+          icon={workspace?.icon}
+          size={40}
+          className="rounded-full shrink-0"
+        />
 
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -203,7 +206,7 @@ function WorkspaceRow({
         }
         className={clsx(
           canManage
-            ? iconButtonSmClassName
+            ? "flex-shrink-0 flex items-center justify-center rounded-md w-6 h-6 text-ink-300 hover:text-ink-500 dark:hover:text-ink-200 border border-border-cool hover:border-primary hover:bg-hover-bg dark:hover:bg-base-700 transition-all duration-100"
             : "flex items-center justify-center w-6 h-6 text-ink-300 dark:text-ink-400 cursor-not-allowed opacity-40"
         )}
       >

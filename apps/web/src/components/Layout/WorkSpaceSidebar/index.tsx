@@ -13,10 +13,6 @@ import {
   PiBinoculars,
   PiStar,
   PiStarThin,
-  PiTerminal,
-  PiTerminalThin,
-  PiSquaresFour,
-  PiSquaresFourThin,
   PiTrash,
   PiTrashThin,
   PiToolbox,
@@ -93,18 +89,6 @@ export const WorkspaceSidebar = () => {
       href: `/workspace/${workspaceId}/favorites`,
       icon: PiStar,
       iconThin: PiStarThin,
-    },
-    {
-      name: "Console",
-      href: `/workspace/${workspaceId}/console`,
-      icon: PiTerminal,
-      iconThin: PiTerminalThin,
-    },
-    {
-      name: "All tools",
-      href: `/workspace/${workspaceId}/tools`,
-      icon: PiSquaresFour,
-      iconThin: PiSquaresFourThin,
     },
     {
       name: "Trash",
@@ -253,7 +237,7 @@ export const WorkspaceSidebar = () => {
         `}
       >
         <div className="flex flex-col flex-1 min-h-0">
-          <div className="flex justify-between py-[0.50rem] px-3 bg-base-100 dark:bg-base-500 items-center flex-shrink-0 border-b border-base-300 dark:border-border-tertiary">
+          <div className="flex justify-between py-[0.50rem] px-3 bg-header-surface items-center flex-shrink-0 border-b border-base-300 dark:border-border-tertiary">
             {!collapsed && (
               <Link href="/" className="flex items-center gap-2">
                 <SandwormLogo width="30" height="30" />
@@ -333,39 +317,44 @@ export const WorkspaceSidebar = () => {
                 {!collapsed && <span>More</span>}
               </button>
 
-              {isToolsOpen && (
-                <ul className="space-y-1.5">
-                  {toolsNav.map(item => {
-                    const ItemIcon = collapsed
-                      ? (item.iconThin ?? item.icon)
-                      : item.icon;
-                    return (
-                      <li key={item.name}>
-                        <TooltipV2<HTMLAnchorElement>
-                          title={item.name.trim()}
-                          active={collapsed}
-                          position="right"
-                        >
-                          {ref => (
-                            <Link
-                              ref={ref}
-                              href={item.href}
-                              aria-label={item.name.trim()}
-                              className={linkClasses(item.href)}
-                            >
-                              <ItemIcon
-                                size={16}
-                                className={iconClass(item.href)}
-                              />
-                              {!collapsed && item.name}
-                            </Link>
-                          )}
-                        </TooltipV2>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+              <div
+                className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+                style={{ gridTemplateRows: isToolsOpen ? "1fr" : "0fr" }}
+              >
+                <div className="overflow-hidden">
+                  <ul className="space-y-1.5">
+                    {toolsNav.map(item => {
+                      const ItemIcon = collapsed
+                        ? (item.iconThin ?? item.icon)
+                        : item.icon;
+                      return (
+                        <li key={item.name}>
+                          <TooltipV2<HTMLAnchorElement>
+                            title={item.name.trim()}
+                            active={collapsed}
+                            position="right"
+                          >
+                            {ref => (
+                              <Link
+                                ref={ref}
+                                href={item.href}
+                                aria-label={item.name.trim()}
+                                className={linkClasses(item.href)}
+                              >
+                                <ItemIcon
+                                  size={16}
+                                  className={iconClass(item.href)}
+                                />
+                                {!collapsed && item.name}
+                              </Link>
+                            )}
+                          </TooltipV2>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </div>
             </div>
 
             {isEditor && (
@@ -383,9 +372,9 @@ export const WorkspaceSidebar = () => {
                       onClick={onCreateDocumentHandler}
                       className={`
                         flex items-center justify-center gap-1.5
-                       border border-[#C44FFF] dark:border-[#A78BFA]
-                        text-primary dark:text-[#A78BFA]
-                        hover:bg-primary/5 bg-primary-tint-75 dark:hover:bg-primary/10
+                       border border-[#C44FFF] dark:border-white/15
+                        text-[#C44FFF] dark:text-white
+                        hover:bg-primary/5 bg-primary-tint-75 dark:bg-base-700 dark:hover:bg-base-600
                         transition-colors font-body font-medium text-sm
                         ${collapsed ? "w-8 h-8 rounded-[10px]" : "w-full px-4 py-2   rounded-xl"}
                       `}
@@ -415,38 +404,44 @@ export const WorkspaceSidebar = () => {
                   <span>Recent Projects</span>
                 </button>
 
-                {isSectionOpen &&
-                  (documentsState.loading ? (
-                    <div
-                      className="flex flex-col gap-1 mt-1 px-1"
-                      aria-busy="true"
-                      aria-label="Loading projects"
-                    >
-                      {(["w-28", "w-36", "w-24", "w-32"] as const).map(w => (
-                        <div
-                          key={w}
-                          className="flex items-center gap-2 px-2 py-1.5"
-                        >
-                          <Shimmer className="h-2.5 w-2.5 rounded-sm shrink-0" />
-                          <Shimmer className={`h-3 ${w}`} />
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <DocumentTree
-                      workspaceId={workspaceId}
-                      current={documentId}
-                      documents={documents}
-                      onDuplicate={onDuplicateDocument}
-                      onDelete={onDeleteDocument}
-                      onFavorite={onFavoriteDocument}
-                      onUnfavorite={onUnfavoriteDocument}
-                      role={userRole}
-                      onCreate={onCreateDocument}
-                      onUpdateParent={onUpdateDocumentParent}
-                      onBeforeNavigate={onBeforeNavigate}
-                    />
-                  ))}
+                <div
+                  className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+                  style={{ gridTemplateRows: isSectionOpen ? "1fr" : "0fr" }}
+                >
+                  <div className="overflow-hidden">
+                    {documentsState.loading ? (
+                      <div
+                        className="flex flex-col gap-1 mt-1 px-1"
+                        aria-busy="true"
+                        aria-label="Loading projects"
+                      >
+                        {(["w-28", "w-36", "w-24", "w-32"] as const).map(w => (
+                          <div
+                            key={w}
+                            className="flex items-center gap-2 px-2 py-1.5"
+                          >
+                            <Shimmer className="h-2.5 w-2.5 rounded-sm shrink-0" />
+                            <Shimmer className={`h-3 ${w}`} />
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <DocumentTree
+                        workspaceId={workspaceId}
+                        current={documentId}
+                        documents={documents}
+                        onDuplicate={onDuplicateDocument}
+                        onDelete={onDeleteDocument}
+                        onFavorite={onFavoriteDocument}
+                        onUnfavorite={onUnfavoriteDocument}
+                        role={userRole}
+                        onCreate={onCreateDocument}
+                        onUpdateParent={onUpdateDocumentParent}
+                        onBeforeNavigate={onBeforeNavigate}
+                      />
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </nav>

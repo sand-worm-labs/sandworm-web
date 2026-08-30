@@ -305,7 +305,7 @@ export function MiniUsersList({
                 className={clsx(
                   "flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium",
                   "bg-inputBg dark:bg-base-100  border border-border dark:border-border-tertiary",
-                  "text-primary dark:text-white hover:bg-inputBg dark:hover:bg-editor-200 transition-colors"
+                  "text-primary dark:text-white hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700 transition-colors"
                 )}
               >
                 <PlusIcon className="w-4 h-4" /> Invite

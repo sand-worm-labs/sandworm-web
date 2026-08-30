@@ -325,7 +325,7 @@ function TeamPlanSection({
             router.push(`/workspace/${workspaceId}/settings/plan`);
             onClose();
           }}
-          className="px-2.5 py-1 border border-border dark:border-gray-700 dark:text-black bg-inputBg rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 text-xs"
+          className="px-2.5 py-1 border border-border dark:border-gray-700 dark:text-black bg-inputBg rounded-lg font-medium hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700 transition-colors duration-100 text-xs"
         >
           Change Plan
         </button>
@@ -493,7 +493,7 @@ function DangerZoneSection({ onDelete }: { onDelete: () => void }) {
         <button
           type="button"
           onClick={onDelete}
-          className={`bg-inputBg dark:bg-base-400 text-[12px] py-1 px-2 rounded-lg border border-border dark:border-border-tertiary text-error dark:text-[#ff6b6b] font-medium inline-block ${surfaceHoverClassName}`}
+          className="bg-inputBg dark:bg-base-400 text-[12px] py-1 px-2 rounded-lg border border-border dark:border-border-tertiary text-error dark:text-[#ff6b6b] font-medium inline-block hover:bg-hover-bg hover:border-error dark:hover:bg-base-700 transition-colors duration-100"
         >
           Delete Workspace
         </button>
@@ -565,7 +565,7 @@ function SettingsHeader({
           <button
             type="button"
             onClick={onManageInvites}
-            className={`flex items-center gap-2 px-2.5 py-0.5 border bg-inputBg border-border dark:text-black dark:border-border-tertiary rounded-lg text-xs font-medium ${surfaceHoverClassName}`}
+            className="flex items-center gap-2 px-2.5 py-0.5 border bg-inputBg border-border dark:text-black dark:border-border-tertiary rounded-lg text-xs font-medium hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700 transition-colors duration-100"
           >
             Manage Invites
           </button>

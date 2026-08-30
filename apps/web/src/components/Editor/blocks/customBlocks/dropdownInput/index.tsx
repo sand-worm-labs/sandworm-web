@@ -23,7 +23,7 @@ import {
   PiGearSix,
   PiWarningCircle,
   PiClock,
-  PiCheck,
+  PiCheckCircleLight,
   PiCaretDown,
 } from "react-icons/pi";
 
@@ -373,7 +373,7 @@ function DropdownInputBlock(props: Props) {
                     onFocus={onFocus}
                     onBlur={editorAPI.blur}
                     className={clsx(
-                      "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white",
+                      "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white px-1",
                       attrs.value.error
                         ? "ring-red-200 focus:ring-red-200"
                         : "focus:ring-primary-200",
@@ -410,7 +410,7 @@ function DropdownInputBlock(props: Props) {
                       dropdownWrapperRef.current?.getBoundingClientRect().width,
                   }}
                   onKeyDown={unfocusOnEscape}
-                  className="absolute mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm z-40"
+                  className="absolute mt-1 w-full max-h-60 overflow-auto rounded-lg border border-border-tertiary bg-white dark:bg-base-400 dark:border-border-tertiary py-1 text-base focus:outline-none sm:text-sm z-40 px-1"
                 >
                   {filteredOptions.map(option => (
                     <Combobox.Option
@@ -418,32 +418,21 @@ function DropdownInputBlock(props: Props) {
                       value={option}
                       className={({ active }) =>
                         clsx(
-                          "cursor-default select-none relative py-2 pl-10 pr-4",
-                          active ? "bg-ceramic-100 text-black" : "text-ink-100"
+                          "cursor-default select-none relative rounded-md py-2 pl-10 pr-4 text-ink-100 dark:text-white font-body",
+                          active && "bg-primary/20 dark:bg-editor-100"
                         )
                       }
                     >
-                      {({ selected: isSelected, active }) => (
+                      {({ selected: isSelected }) => (
                         <>
-                          <span
-                            className={clsx(
-                              "block truncate",
-                              isSelected ? "font-medium" : "font-normal"
-                            )}
-                          >
+                          <span className="block truncate font-normal">
                             {option}
                           </span>
                           {isSelected ? (
-                            <span
-                              className={clsx(
-                                "absolute inset-y-0 left-0 flex items-center pl-3",
-                                active ? "text-white" : "text-blue-600"
-                              )}
-                            >
-                              <PiCheck
-                                className="w-4 h-4"
+                            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary">
+                              <PiCheckCircleLight
+                                className="h-3.5 w-3.5"
                                 aria-hidden="true"
-                                color="black"
                               />
                             </span>
                           ) : null}

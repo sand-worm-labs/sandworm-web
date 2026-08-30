@@ -1,4 +1,4 @@
-import { PiCaretUpDown, PiCheck } from "react-icons/pi";
+import { PiCaretUpDown, PiCheckCircleLight } from "react-icons/pi";
 import { Listbox } from "@headlessui/react";
 import { useMemo } from "react";
 import clsx from "clsx";
@@ -35,10 +35,10 @@ function Dropdown(props: Props) {
             <div className="relative pt-0.5">
               <Listbox.Button
                 className={clsx(
-                  "flex items-center relative w-full cursor-default rounded-md py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-600 sm:text-sm sm:leading-6 focus:bg-white",
+                  "flex items-center relative w-full cursor-default rounded-md py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-border dark:ring-border-tertiary focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6",
                   props.disabled
-                    ? "bg-gray-100 cursor-not-allowed text-ink-400"
-                    : "bg-white cursor-pointer text-ink-100"
+                    ? "bg-gray-100 dark:bg-base-100 cursor-not-allowed text-ink-400"
+                    : "bg-white dark:bg-base-400 cursor-pointer text-ink-100 dark:text-white"
                 )}
               >
                 {props.value && props.icon && (
@@ -60,50 +60,43 @@ function Dropdown(props: Props) {
                 </span>
               </Listbox.Button>
 
-              <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm">
+              <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-border-tertiary bg-white dark:bg-base-400 dark:border-border-tertiary py-1 text-base focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm">
                 {props.options.map(option => (
                   <Listbox.Option
                     key={option.value}
                     className={({ active }) =>
                       clsx(
                         active
-                          ? clsx(
-                              props.bg ?? "bg-primary-600",
-                              props.fg ?? "text-white"
-                            )
+                          ? (props.bg ?? "bg-primary/20 dark:bg-editor-100")
                           : "",
-                        !active ? "text-ink-100" : "",
-                        "relative cursor-default select-none py-2 pl-3 pr-9"
+                        "text-ink-100 dark:text-white",
+                        "relative cursor-default select-none rounded-md py-2 pl-3 pr-9"
                       )
                     }
                     value={option.value}
                   >
-                    {({ selected, active }) => (
+                    {({ selected }) => (
                       <div className="flex items-center">
                         {props.icon && (
                           <span className="mr-2">
                             {props.icon(option.value)}
                           </span>
                         )}
-                        <span
-                          className={clsx(
-                            selected ? "font-semibold" : "font-normal",
-                            "block truncate"
-                          )}
-                        >
+                        <span className="block truncate font-normal">
                           {option.label}
                         </span>
 
                         {selected ? (
                           <span
                             className={clsx(
-                              active
-                                ? (props.fg ?? "text-white")
-                                : (props.fg ?? "text-primary-600"),
+                              props.fg ?? "text-primary",
                               "absolute inset-y-0 right-0 flex items-center pr-4"
                             )}
                           >
-                            <PiCheck className="h-3 w-3" aria-hidden="true" />
+                            <PiCheckCircleLight
+                              className="h-3.5 w-3.5"
+                              aria-hidden="true"
+                            />
                           </span>
                         ) : null}
                       </div>

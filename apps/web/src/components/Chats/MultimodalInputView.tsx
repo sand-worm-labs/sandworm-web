@@ -1,6 +1,6 @@
 "use client";
 
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { PiPaperPlaneTilt, PiPlus, PiX } from "react-icons/pi";
 import { Button } from "@sandworm/ui/components/button";
 import TextareaAutosize from "react-textarea-autosize";
@@ -13,6 +13,69 @@ import { ModelPickerModal } from "../Editor/blocks/ModelPicker";
 
 import { StopIcon, LoaderIcon } from "./icons";
 import { PreviewAttachment } from "./preview-attachment";
+import { examplePrompts } from "./example-prompts";
+
+// =====================================
+// ⬢ Typewriter placeholder
+// Types each prompt out in full (never cuts one short), holds, backspaces
+// it out, then moves on to the next one.
+// =====================================
+const ROTATING_PLACEHOLDERS = examplePrompts.map(({ prompt }) => prompt);
+const TYPING_SPEED_MS = 35;
+const DELETING_SPEED_MS = 20;
+const HOLD_MS = 1400;
+const PAUSE_BEFORE_NEXT_MS = 400;
+
+type TypewriterMode = "typing" | "deleting";
+
+function useTypewriterPlaceholder(active: boolean): {
+  text: string;
+  isTyping: boolean;
+} {
+  const [promptIndex, setPromptIndex] = useState(0);
+  const [text, setText] = useState("");
+  const [mode, setMode] = useState<TypewriterMode>("typing");
+
+  const fullText = ROTATING_PLACEHOLDERS[promptIndex] ?? "";
+  const isTyping = mode === "typing" && text.length < fullText.length;
+
+  useEffect(() => {
+    if (!active) return undefined;
+
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    if (mode === "typing") {
+      if (text.length < fullText.length) {
+        timeoutId = setTimeout(() => {
+          setText(fullText.slice(0, text.length + 1));
+        }, TYPING_SPEED_MS);
+      } else {
+        timeoutId = setTimeout(() => setMode("deleting"), HOLD_MS);
+      }
+    } else if (text.length > 0) {
+      timeoutId = setTimeout(() => {
+        setText(text.slice(0, -1));
+      }, DELETING_SPEED_MS);
+    } else {
+      timeoutId = setTimeout(() => {
+        setPromptIndex(i => (i + 1) % ROTATING_PLACEHOLDERS.length);
+        setMode("typing");
+      }, PAUSE_BEFORE_NEXT_MS);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [active, text, fullText, mode]);
+
+  useEffect(() => {
+    if (!active) {
+      setText("");
+      setPromptIndex(0);
+      setMode("typing");
+    }
+  }, [active]);
+
+  return { text, isTyping };
+}
 
 export interface Attachment {
   name?: string;
@@ -78,6 +141,8 @@ export const MultimodalInputView = forwardRef<
     } = useOpenRouterModels(workspaceId, currentModel);
 
     const isInputLocked = disabled || isCreatingNotebook;
+    const isEmpty = input.length === 0;
+    const { text: typedPlaceholder } = useTypewriterPlaceholder(isEmpty);
 
     return (
       <>
@@ -88,7 +153,7 @@ export const MultimodalInputView = forwardRef<
     w-full min-h-[120px]
     rounded-3xl
     border-[1.5px] border-hover-border
-    bg-base-100 dark:border-border-tertiary dark:bg-base-740
+    bg-header-surface dark:border-border-tertiary
     shadow-[0_3.5px_24px_rgba(120,147,208,0.09)] dark:shadow-none
 
     transition-all duration-300 ease-in-out font-tertiary text-[13px] 
@@ -96,7 +161,7 @@ export const MultimodalInputView = forwardRef<
           >
             {isCreatingNotebook && (
               <div
-                className="absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-base-100/85 dark:bg-base-740/85 backdrop-blur-[1px]"
+                className="absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-header-surface/85 backdrop-blur-[1px]"
                 aria-busy="true"
                 aria-label="Creating notebook"
               >
@@ -106,9 +171,18 @@ export const MultimodalInputView = forwardRef<
               </div>
             )}
 
+            {isEmpty && (
+              <div className="pointer-events-none absolute left-5 right-5 top-4">
+                <span className="block whitespace-pre-wrap break-words font-body text-sm text-ink-300 dark:text-ink-400">
+                  {typedPlaceholder}
+                  <span className="inline-block w-[1px] h-[13px] align-middle ml-0.5 bg-ink-300 dark:bg-ink-400 animate-pulse" />
+                </span>
+              </div>
+            )}
+
             <TextareaAutosize
               ref={ref}
-              placeholder="Start a query..."
+              placeholder=""
               value={input}
               onChange={onInputChange}
               disabled={isInputLocked}
@@ -133,7 +207,7 @@ export const MultimodalInputView = forwardRef<
         placeholder:text-ink-300 dark:placeholder:text-ink-400
         scrollbar-thin
         outline-none
-    focus:outline-none  placeholder:[font-family:'Azeret_Mono',sans-serif] placeholder:text-[13px]
+    focus:outline-none  placeholder:font-body placeholder:text-[13px]
       "
             />
 

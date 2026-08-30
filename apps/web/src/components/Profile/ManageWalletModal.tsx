@@ -259,7 +259,7 @@ export const ManageWalletsModal = ({
                         onMouseLeave={() => setHoveredIndex(null)}
                         className={`flex items-center justify-between px-4 py-2 rounded-xl border transition-colors ${
                           hoveredIndex === index
-                            ? " bg-[#EBF9FA] dark:bg-base-100"
+                            ? "border-primary bg-hover-bg dark:bg-base-700"
                             : "border-border dark:border-border-tertiary bg-inputBg dark:bg-transparent"
                         }`}
                       >
