@@ -7,6 +7,7 @@ import { NEXT_PUBLIC_API_URL } from "@/utils/env";
 
 import { ThemeProvider } from "./ThemeProvider";
 import AppProvider from "./AppProvider";
+import { PowerToolsBootstrap } from "./PowerToolsBootstrap";
 
 const GRAPHQL_URL = `${NEXT_PUBLIC_API_URL()}/graphql`;
 console.log("[RootProvider] GRAPHQL_URL resolved to:", GRAPHQL_URL);
@@ -34,6 +35,7 @@ export function RootProvider({ children }: { children: ReactNode }) {
         graphqlUrl={GRAPHQL_URL}
         refreshAccessToken={refreshAccessToken}
       >
+        <PowerToolsBootstrap />
         <AppProvider>{children}</AppProvider>
       </GraphQLProvider>
     </ThemeProvider>

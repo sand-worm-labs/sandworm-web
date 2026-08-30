@@ -803,6 +803,10 @@ export type Query = {
   getPendingInvites: Array<WorkspaceMember>;
   /** Get pending role requests for a workspace */
   getPendingRoleRequests: Array<WorkspaceMember>;
+  /** Get the power tool category taxonomy */
+  getToolCategories: Array<ToolCategory>;
+  /** Get the full power tool catalog (SQL/Python analytics tools available to the notebook) */
+  getTools: Array<Tool>;
   /** Get trending published documents across all workspaces */
   getTrendingPublishedDocuments: Array<Document>;
   /** Get user by id */
@@ -1118,6 +1122,30 @@ export type SocialLinksInput = {
   telegram?: InputMaybe<Scalars['String']['input']>;
   twitter?: InputMaybe<Scalars['String']['input']>;
   warpcast?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Tool = {
+  __typename?: 'Tool';
+  categoryId: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  g1?: Maybe<Scalars['String']['output']>;
+  g2?: Maybe<Scalars['String']['output']>;
+  g3?: Maybe<Scalars['String']['output']>;
+  g4?: Maybe<Scalars['String']['output']>;
+  g5?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  params: Scalars['JSON']['output'];
+  returns: Scalars['JSON']['output'];
+  scope?: Maybe<Scalars['String']['output']>;
+  tags: Array<Scalars['String']['output']>;
+  toolId: Scalars['String']['output'];
+};
+
+export type ToolCategory = {
+  __typename?: 'ToolCategory';
+  categoryId: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type UpdateChatInput = {
@@ -1917,6 +1945,16 @@ export type GetScheduleQueryVariables = Exact<{
 
 
 export type GetScheduleQuery = { __typename?: 'Query', schedule: { __typename?: 'Schedule', id: string, documentId: string, cron?: string | null, type: ExecutionScheduleType, isActive: boolean, hour?: number | null, minute?: number | null, timezone?: string | null, days?: string | null, weekdays?: string | null, lastExecutedAt?: any | null, nextExecutionAt?: any | null } };
+
+export type GetToolCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetToolCategoriesQuery = { __typename?: 'Query', getToolCategories: Array<{ __typename?: 'ToolCategory', categoryId: string, name: string, description: string }> };
+
+export type GetToolsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetToolsQuery = { __typename?: 'Query', getTools: Array<{ __typename?: 'Tool', toolId: string, categoryId: string, name: string, description: string, tags: Array<string>, params: any }> };
 
 export type GetUserQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -5558,6 +5596,91 @@ export type GetScheduleQueryHookResult = ReturnType<typeof useGetScheduleQuery>;
 export type GetScheduleLazyQueryHookResult = ReturnType<typeof useGetScheduleLazyQuery>;
 export type GetScheduleSuspenseQueryHookResult = ReturnType<typeof useGetScheduleSuspenseQuery>;
 export type GetScheduleQueryResult = Apollo.QueryResult<GetScheduleQuery, GetScheduleQueryVariables>;
+export const GetToolCategoriesDocument = gql`
+    query GetToolCategories {
+  getToolCategories {
+    categoryId
+    name
+    description
+  }
+}
+    `;
+
+/**
+ * __useGetToolCategoriesQuery__
+ *
+ * To run a query within a React component, call `useGetToolCategoriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetToolCategoriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetToolCategoriesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetToolCategoriesQuery(baseOptions?: Apollo.QueryHookOptions<GetToolCategoriesQuery, GetToolCategoriesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetToolCategoriesQuery, GetToolCategoriesQueryVariables>(GetToolCategoriesDocument, options);
+      }
+export function useGetToolCategoriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetToolCategoriesQuery, GetToolCategoriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetToolCategoriesQuery, GetToolCategoriesQueryVariables>(GetToolCategoriesDocument, options);
+        }
+export function useGetToolCategoriesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetToolCategoriesQuery, GetToolCategoriesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetToolCategoriesQuery, GetToolCategoriesQueryVariables>(GetToolCategoriesDocument, options);
+        }
+export type GetToolCategoriesQueryHookResult = ReturnType<typeof useGetToolCategoriesQuery>;
+export type GetToolCategoriesLazyQueryHookResult = ReturnType<typeof useGetToolCategoriesLazyQuery>;
+export type GetToolCategoriesSuspenseQueryHookResult = ReturnType<typeof useGetToolCategoriesSuspenseQuery>;
+export type GetToolCategoriesQueryResult = Apollo.QueryResult<GetToolCategoriesQuery, GetToolCategoriesQueryVariables>;
+export const GetToolsDocument = gql`
+    query GetTools {
+  getTools {
+    toolId
+    categoryId
+    name
+    description
+    tags
+    params
+  }
+}
+    `;
+
+/**
+ * __useGetToolsQuery__
+ *
+ * To run a query within a React component, call `useGetToolsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetToolsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetToolsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetToolsQuery(baseOptions?: Apollo.QueryHookOptions<GetToolsQuery, GetToolsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetToolsQuery, GetToolsQueryVariables>(GetToolsDocument, options);
+      }
+export function useGetToolsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetToolsQuery, GetToolsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetToolsQuery, GetToolsQueryVariables>(GetToolsDocument, options);
+        }
+export function useGetToolsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetToolsQuery, GetToolsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetToolsQuery, GetToolsQueryVariables>(GetToolsDocument, options);
+        }
+export type GetToolsQueryHookResult = ReturnType<typeof useGetToolsQuery>;
+export type GetToolsLazyQueryHookResult = ReturnType<typeof useGetToolsLazyQuery>;
+export type GetToolsSuspenseQueryHookResult = ReturnType<typeof useGetToolsSuspenseQuery>;
+export type GetToolsQueryResult = Apollo.QueryResult<GetToolsQuery, GetToolsQueryVariables>;
 export const GetUserDocument = gql`
     query GetUser($userId: String!) {
   getUser(userId: $userId) {

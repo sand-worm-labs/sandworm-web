@@ -6,36 +6,9 @@ import type {
     GenerateResult,
     SelectOption,
   } from "./types.js";
-  
+
   import { renderTool } from "./renderer.js";
-  import { TOOL_CATEGORIES } from "./categories.js";
-  
-  // ─── Definition imports ───────────────────────────────────────────────────────
-  
-  import { PRIMITIVE_DEFINITIONS } from "./definitions/primitives.js";
-  import { WALLET_DEFINITIONS } from "./definitions/wallet.js";
-  import { DEFI_DEFINITIONS } from "./definitions/defi.js";
-  import { NFT_DEFINITIONS } from "./definitions/nft.js";
-  import { STAKING_DEFINITIONS } from "./definitions/staking.js";
-  import { BRIDGE_DEFINITIONS } from "./definitions/bridges.js";
-  import { ATTESTATION_DEFINITIONS } from "./definitions/attestation.js";
-  import { FORENSICS_DEFINITIONS } from "./definitions/forensis.js";
-  import { CONTRACT_DEFINITIONS } from "./definitions/contracts.js";
-  import { CHAIN_DEFINITIONS } from "./definitions/chains.js";
-  
-  // ─── Template imports ─────────────────────────────────────────────────────────
-  
-  import { PRIMITIVES_TEMPLATES } from "./templates/primitives.templates.js";
-  import { WALLET_TEMPLATES } from "./templates/wallets.templates.js";
-  import { DEFI_TEMPLATES } from "./templates/defi.templates.js"
-  import { NFT_TEMPLATES } from "./templates/nft.templates.js";
-  import { STAKING_TEMPLATES } from "./templates/staking.templates.js";
-  import { BRIDGE_TEMPLATES } from "./templates/bridges.templates.js";
-  import { ATTESTATION_TEMPLATES } from "./templates/attestation.templates.js";
-  import { FORENSICS_TEMPLATES } from "./templates/forensis.templates.js";
-  import { CONTRACT_TEMPLATES } from "./templates/contracts.templates.js";
-  import { CHAIN_TEMPLATES } from "./templates/chains.templates.js";
-  
+
   // ─── Options registry ─────────────────────────────────────────────────────────
   
   /**
@@ -77,73 +50,62 @@ import type {
   
   export const OptionsRegistry = new OptionsRegistryClass();
   
-  // ─── Build master maps ────────────────────────────────────────────────────────
-  
-  const ALL_DEFINITIONS: ToolDefinition[] = [
-    ...PRIMITIVE_DEFINITIONS,
-    ...WALLET_DEFINITIONS,
-    ...DEFI_DEFINITIONS,
-    ...NFT_DEFINITIONS,
-    ...STAKING_DEFINITIONS,
-    ...BRIDGE_DEFINITIONS,
-    ...ATTESTATION_DEFINITIONS,
-    ...FORENSICS_DEFINITIONS,
-    ...CONTRACT_DEFINITIONS,
-    ...CHAIN_DEFINITIONS,
-  ];
-  
-  const ALL_TEMPLATES: TemplateMap = {
-    ...PRIMITIVES_TEMPLATES,
-    ...WALLET_TEMPLATES,
-    ...DEFI_TEMPLATES,
-    ...NFT_TEMPLATES,
-    ...STAKING_TEMPLATES,
-    ...BRIDGE_TEMPLATES,
-    ...ATTESTATION_TEMPLATES,
-    ...FORENSICS_TEMPLATES,
-    ...CONTRACT_TEMPLATES,
-    ...CHAIN_TEMPLATES,
-  };
-  
+  // ─── Master maps ──────────────────────────────────────────────────────────────
+  //
+  // No static tool data lives here anymore — the catalog starts empty and is
+  // populated exclusively via registerTool(), normally driven by
+  // loadToolsFromApi() fetching the DB-backed catalog at app startup. This
+  // keeps every function below (getAllTools, searchTools, renderToolById, …)
+  // working exactly as before; only how the maps get filled has changed.
+
+  const ALL_DEFINITIONS: ToolDefinition[] = [];
+
+  const ALL_TEMPLATES: TemplateMap = {};
+
+  const ALL_CATEGORIES: ToolCategory[] = [];
+
   /** toolId → ToolDefinition */
   const DEFINITION_MAP = new Map<string, ToolDefinition>(
     ALL_DEFINITIONS.map(d => [d.id, d])
   );
-  
+
   /** categoryId → ToolCategory */
-  const CATEGORY_MAP = new Map<string, ToolCategory>(
-    TOOL_CATEGORIES.map(c => [c.id, c])
-  );
-  
+  const CATEGORY_MAP = new Map<string, ToolCategory>();
+
   // ─── Integrity check (dev only) ───────────────────────────────────────────────
-  
+  //
+  // Runs once loadToolsFromApi() finishes (see below) rather than at module
+  // load, since the catalog is empty until then.
+
   const _isDev =
     typeof process !== "undefined" &&
     process.env["NODE_ENV"] !== "production";
-  
-  if (_isDev) {
+
+  function _runIntegrityCheck(): void {
+    if (!_isDev) return;
+
     const missingTemplates: string[] = [];
     const missingDefinitions: string[] = [];
-  
+
     for (const def of ALL_DEFINITIONS) {
       if (!ALL_TEMPLATES[def.templateId]) {
         missingTemplates.push(def.templateId);
       }
     }
-  
+
     for (const templateId of Object.keys(ALL_TEMPLATES)) {
       if (!DEFINITION_MAP.has(templateId)) {
         missingDefinitions.push(templateId);
       }
     }
-  
+
     if (missingTemplates.length > 0) {
       console.warn(
         `[PowerToolbox] ${missingTemplates.length} definition(s) have no matching template:\n` +
         missingTemplates.map(id => `  - ${id}`).join("\n")
       );
     }
-  
+
     if (missingDefinitions.length > 0) {
       console.warn(
         `[PowerToolbox] ${missingDefinitions.length} template(s) have no matching definition:\n` +
@@ -185,7 +147,7 @@ import type {
    * All categories in display order.
    */
   export function getAllCategories(): ToolCategory[] {
-    return TOOL_CATEGORIES;
+    return ALL_CATEGORIES;
   }
   
   /**
@@ -356,7 +318,7 @@ import type {
     ALL_DEFINITIONS.push(definition);
     ALL_TEMPLATES[definition.templateId] = template;
     DEFINITION_MAP.set(definition.id, definition);
-  
+
     // Update search index.
     SEARCH_INDEX.set(definition.id, [
       ...definition.name.toLowerCase().split(/\s+/),
@@ -364,4 +326,118 @@ import type {
       ...definition.tags.map(t => t.toLowerCase()),
       definition.categoryId.toLowerCase(),
     ]);
+  }
+
+  /**
+   * Phase 2 extension point: register a category at runtime (e.g. from a
+   * DB-backed category loader). Throws if the categoryId is already
+   * registered (no silent overwrites).
+   */
+  export function registerCategory(category: ToolCategory): void {
+    if (CATEGORY_MAP.has(category.id)) {
+      throw new Error(
+        `[PowerToolbox] Category "${category.id}" is already registered.`
+      );
+    }
+
+    ALL_CATEGORIES.push(category);
+    CATEGORY_MAP.set(category.id, category);
+  }
+
+  // ─── DB-backed catalog load ───────────────────────────────────────────────────
+
+  let _toolsLoaded = false;
+  let _loadPromise: Promise<void> | null = null;
+
+  let _categoriesLoaded = false;
+  let _categoriesLoadPromise: Promise<void> | null = null;
+
+  /**
+   * Fetches the tool catalog and registers every tool via registerTool().
+   *
+   * Call once, early in the app lifecycle — every read function above
+   * (getAllTools, getToolsByCategory, searchTools, renderToolById, …) reads
+   * synchronously from the in-memory maps, which start empty until this
+   * resolves. Consumers that render before load completes should gate on
+   * isToolsLoaded().
+   *
+   * Safe to call more than once — later calls reuse the same in-flight or
+   * completed load instead of re-fetching/re-registering.
+   *
+   * The fetch itself is injected rather than performed here so this package
+   * doesn't need a hard dependency on any particular GraphQL client — the
+   * caller (e.g. apps/web) supplies a function that runs the GetTools query
+   * and shapes the response into ToolDefinition + template pairs.
+   */
+  export function loadToolsFromApi(
+    fetchTools: () => Promise<Array<ToolDefinition & { template: string }>>
+  ): Promise<void> {
+    if (_loadPromise) return _loadPromise;
+
+    _loadPromise = fetchTools()
+      .then(tools => {
+        for (const { template, ...definition } of tools) {
+          try {
+            registerTool(definition, template);
+          } catch (err) {
+            console.error(`[PowerToolbox] failed to register tool "${definition.id}":`, err);
+          }
+        }
+        _runIntegrityCheck();
+      })
+      .catch(err => {
+        console.error("[PowerToolbox] failed to load tool catalog:", err);
+      })
+      .finally(() => {
+        _toolsLoaded = true;
+      });
+
+    return _loadPromise;
+  }
+
+  /**
+   * Fetches the category taxonomy and registers every category via
+   * registerCategory(). Same shape/contract as loadToolsFromApi() — safe to
+   * call more than once, the fetch is injected to keep this package free of
+   * a hard GraphQL client dependency.
+   */
+  export function loadCategoriesFromApi(
+    fetchCategories: () => Promise<ToolCategory[]>
+  ): Promise<void> {
+    if (_categoriesLoadPromise) return _categoriesLoadPromise;
+
+    _categoriesLoadPromise = fetchCategories()
+      .then(categories => {
+        for (const category of categories) {
+          try {
+            registerCategory(category);
+          } catch (err) {
+            console.error(`[PowerToolbox] failed to register category "${category.id}":`, err);
+          }
+        }
+      })
+      .catch(err => {
+        console.error("[PowerToolbox] failed to load category taxonomy:", err);
+      })
+      .finally(() => {
+        _categoriesLoaded = true;
+      });
+
+    return _categoriesLoadPromise;
+  }
+
+  /**
+   * True once loadCategoriesFromApi() has settled — successfully or not.
+   */
+  export function isCategoriesLoaded(): boolean {
+    return _categoriesLoaded;
+  }
+
+  /**
+   * True once loadToolsFromApi() has settled — successfully or not. A failed
+   * load still flips this to true (with an empty catalog) rather than
+   * leaving consumers waiting forever on a request that already failed.
+   */
+  export function isToolsLoaded(): boolean {
+    return _toolsLoaded;
   }

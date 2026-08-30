@@ -200,4 +200,9 @@ export {
   getToolCountByCategory,
   renderToolById,
   registerTool,
+  registerCategory,
+  loadToolsFromApi,
+  isToolsLoaded,
+  loadCategoriesFromApi,
+  isCategoriesLoaded,
 } from "./registory.js";

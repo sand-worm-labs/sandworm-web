@@ -26,3 +26,5 @@ export * from './pub-sub-payload.entity';
 export * from './socket-io-attachments.entity';
 export * from "./user-workspace.entity";
 export * from "./lock.entity";
+export * from "./tool.entity";
+export * from "./tool-category.entity";

@@ -1,0 +1,7 @@
+query GetToolCategories {
+  getToolCategories {
+    categoryId
+    name
+    description
+  }
+}
