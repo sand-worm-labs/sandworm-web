@@ -1,3 +1,6 @@
 [submodule "apps/ai"]
 	path = apps/ai
 	url = https://github.com/sand-worm-labs/sandworm-ai-service
+[submodule "apps/api/src/features/tool/seed/tools"]
+	path = apps/api/src/features/tool/seed/tools
+	url = https://github.com/sand-worm-labs/tools.git
