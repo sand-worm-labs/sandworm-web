@@ -4,22 +4,25 @@ import clsx from "clsx";
 // ⬢ Constants
 // =====================================
 export const examplePrompts = [
-  { id: "eliza", prompt: "How many farcaster handles have a premium badge?" },
   {
-    id: "agent",
+    id: "farcaster-premium-badges",
+    prompt: "How many farcaster handles have a premium badge?",
+  },
+  {
+    id: "top-defi-protocols",
     prompt: "Top 10 DeFi protocols on Ethereum ranked by total value",
   },
   {
-    id: "create-agent",
+    id: "gas-fee-comparison",
     prompt:
-      "average gas fee on Linea compared to Ethereum in the last 24 hours?",
+      "Average gas fee on Linea compared to Ethereum in the last 24 hours?",
   },
   {
-    id: "analytics",
+    id: "daily-active-wallets",
     prompt: "What’s the Daily active wallets (7d) on Base?",
   },
   {
-    id: "transaction",
+    id: "dex-volume-comparison",
     prompt:
       "Compare the transaction volume of Uniswap to Aerodrome (30d) on Base",
   },
