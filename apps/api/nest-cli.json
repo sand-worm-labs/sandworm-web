@@ -8,8 +8,7 @@
     "deleteOutDir": true,
     "assets": [
       { "include": "i18n/**/*", "watchAssets": true },
-      { "include": "**/*.hbs", "watchAssets": true },
-      { "include": "features/tool/seed/tools/**/*.yaml", "watchAssets": true }
+      { "include": "**/*.hbs", "watchAssets": true }
     ]
   }
 }

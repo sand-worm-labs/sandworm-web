@@ -1,23 +1,18 @@
-import { globSync, readFileSync } from 'fs';
-import { join } from 'path';
+import { createGunzip } from 'zlib';
 
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ToolCategoryEntity, ToolEntity } from '@sandworm/postgresql-typeorm';
+import axios from 'axios';
 import { load } from 'js-yaml';
+import { extract } from 'tar-stream';
 import { Repository } from 'typeorm';
 
-// git submodule pointing at https://github.com/sand-worm-labs/tools —
-// its own repo (schema-validated in CI), vendored in here rather than read
-// across the ai submodule so apps/api can seed on its own regardless of how
-// each service is deployed/containerized. One file per tool under catalog/
-// <category>/, already normalized (clean param types, paired date ranges).
-// Pinned to a submodule commit rather than fetched live so every boot —
-// local, CI, prod — seeds the exact same catalog and files stay inspectable
-// on disk instead of only visible mid-fetch.
-const TOOLS_ROOT = join(__dirname, 'seed', 'tools');
-const TOOLS_DIR = join(TOOLS_ROOT, 'catalog');
-const CATEGORIES_FILE = join(TOOLS_ROOT, 'categories.yaml');
+// Fetched live over HTTP on every boot rather than vendored on disk (no git
+// submodule, no local copy) — sand-worm-labs/tools is the single source of
+// truth. Mirrors apps/ai's seed_tools.py. One request for the whole catalog,
+// parsed entirely in memory.
+const CATALOG_TARBALL_URL = 'https://codeload.github.com/sand-worm-labs/tools/tar.gz/refs/heads/main';
 
 interface CategoryYaml {
   category_id: string;
@@ -44,6 +39,11 @@ interface ToolYaml {
   }>;
 }
 
+interface FetchedCatalog {
+  categories: CategoryYaml[];
+  tools: ToolYaml[];
+}
+
 function deriveName(toolId: string): string {
   const lastSegment = toolId.split('.').pop() ?? toolId;
   return lastSegment
@@ -65,14 +65,57 @@ export class ToolSeedService implements OnModuleInit {
   ) { }
 
   async onModuleInit(): Promise<void> {
-    await this.seedCategories();
-    await this.seedTools();
+    const catalog = await this.fetchCatalog();
+    await this.seedCategories(catalog.categories);
+    await this.seedTools(catalog.tools);
+  }
+
+  // Streams the repo's tarball straight into a gunzip + tar extractor —
+  // nothing ever touches disk. Every *.yaml under catalog/ is a tool;
+  // categories.yaml (repo root) is the taxonomy.
+  private async fetchCatalog(): Promise<FetchedCatalog> {
+    const response = await axios.get<NodeJS.ReadableStream>(CATALOG_TARBALL_URL, {
+      responseType: 'stream',
+    });
+
+    const categories: CategoryYaml[] = [];
+    const tools: ToolYaml[] = [];
+
+    await new Promise<void>((resolve, reject) => {
+      const extractor = extract();
+
+      extractor.on('entry', (header, stream, next) => {
+        const chunks: Buffer[] = [];
+        stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+        stream.on('end', () => {
+          try {
+            if (header.name.endsWith('/categories.yaml')) {
+              categories.push(...(load(Buffer.concat(chunks).toString('utf-8')) as CategoryYaml[]));
+            } else if (header.name.includes('/catalog/') && header.name.endsWith('.yaml')) {
+              tools.push(load(Buffer.concat(chunks).toString('utf-8')) as ToolYaml);
+            }
+          } catch (err) {
+            this.logger.warn(`skipping ${header.name}: ${(err as Error).message}`);
+          }
+          next();
+        });
+        stream.on('error', reject);
+        stream.resume();
+      });
+
+      extractor.on('finish', resolve);
+      extractor.on('error', reject);
+
+      response.data.pipe(createGunzip()).pipe(extractor);
+    });
+
+    this.logger.log(`fetched ${categories.length} categories and ${tools.length} tools from ${CATALOG_TARBALL_URL}`);
+    return { categories, tools };
   }
 
   // Small, fixed list — cheap enough to upsert every startup so it always
   // matches categories.yaml exactly (picks up additions/edits for free).
-  private async seedCategories(): Promise<void> {
-    const categories = load(readFileSync(CATEGORIES_FILE, 'utf-8')) as CategoryYaml[];
+  private async seedCategories(categories: CategoryYaml[]): Promise<void> {
     await this.toolCategoryRepository.save(
       categories.map((category) =>
         this.toolCategoryRepository.create({
@@ -85,58 +128,43 @@ export class ToolSeedService implements OnModuleInit {
     this.logger.log(`upserted ${categories.length} tool categories`);
   }
 
-  // The catalog is ~1400 files and static, so mirror apps/ai's seed_tools.py:
+  // The catalog is ~1400 tools and static, so mirror apps/ai's seed_tools.py:
   // skip entirely once the table has data rather than upserting every boot.
-  private async seedTools(): Promise<void> {
+  private async seedTools(tools: ToolYaml[]): Promise<void> {
     const existing = await this.toolRepository.count();
     if (existing > 0) {
       this.logger.log('tools already seeded, skipping');
       return;
     }
 
-    const entities = this.loadTools();
-    if (entities.length === 0) {
-      this.logger.warn(`no tools loaded from ${TOOLS_DIR}`);
+    if (tools.length === 0) {
+      this.logger.warn('no tools fetched from catalog tarball');
       return;
     }
 
-    this.logger.log(`seeding ${entities.length} tools from ${TOOLS_DIR}`);
+    const entities = tools.map((tool) =>
+      this.toolRepository.create({
+        toolId: tool.tool_id,
+        categoryId: tool.g1,
+        name: deriveName(tool.tool_id),
+        description: tool.description ?? '',
+        tags: [],
+        params: tool.inputs ?? [],
+        g1: tool.g1,
+        g2: tool.g2,
+        g3: tool.g3,
+        g4: tool.g4,
+        g5: tool.g5,
+        scope: tool.scope || 'generic',
+        returns: tool.returns ?? [],
+      }),
+    );
+
+    this.logger.log(`seeding ${entities.length} tools`);
     const batchSize = 200;
     for (let i = 0; i < entities.length; i += batchSize) {
       await this.toolRepository.save(entities.slice(i, i + batchSize));
     }
     this.logger.log('tool seeding complete');
-  }
-
-  private loadTools(): ToolEntity[] {
-    const files = globSync(`${TOOLS_DIR}/*/*.yaml`);
-    const entities: ToolEntity[] = [];
-
-    for (const file of files) {
-      try {
-        const tool = load(readFileSync(file, 'utf-8')) as ToolYaml;
-        entities.push(
-          this.toolRepository.create({
-            toolId: tool.tool_id,
-            categoryId: tool.g1,
-            name: deriveName(tool.tool_id),
-            description: tool.description ?? '',
-            tags: [],
-            params: tool.inputs ?? [],
-            g1: tool.g1,
-            g2: tool.g2,
-            g3: tool.g3,
-            g4: tool.g4,
-            g5: tool.g5,
-            scope: tool.scope || 'generic',
-            returns: tool.returns ?? [],
-          }),
-        );
-      } catch (err) {
-        this.logger.warn(`skipping ${file}: ${(err as Error).message}`);
-      }
-    }
-
-    return entities;
   }
 }
