@@ -186,7 +186,7 @@ export function AnalyticsParamForm({
       <div className="px-4 py-4 flex flex-col gap-4">
         {tool.params.length === 0 ? (
           <p className="text-sm text-ink-400  italic">
-            No configuration required for this tool.
+            This tool runs with no inputs — just hit Run.
           </p>
         ) : (
           tool.params.map(param => (

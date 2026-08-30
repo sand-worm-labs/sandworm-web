@@ -6,7 +6,7 @@ import { AddressField } from "./fields/AddressField";
 import { AddressListField } from "./fields/AddressListField";
 import { SelectField, ChainMultiSelect } from "./fields/SelectField";
 import { TextField, NumberField } from "./fields/TextNumberField";
-import { DateRangeField, type DateRange } from "./fields/DateRangeField";
+import { DateRangeField, DateField, type DateRange } from "./fields/DateRangeField";
 
 // ─── Field value types ────────────────────────────────────────────────────────
 
@@ -135,6 +135,16 @@ const FIELD_REGISTRY: Record<ParamType, FieldRenderer> = {
       param={param}
       value={(value as DateRange) ?? { from: "", to: "" }}
       onChange={onChange as (v: DateRange) => void}
+      error={error}
+    />
+  ),
+
+  date: ({ param, value, onChange, onBlur, error }) => (
+    <DateField
+      param={param}
+      value={value as string}
+      onChange={onChange as (v: string) => void}
+      onBlur={onBlur as (v: string) => void}
       error={error}
     />
   ),
