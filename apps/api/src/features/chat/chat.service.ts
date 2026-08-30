@@ -34,7 +34,17 @@ import type { FastifyRequest } from 'fastify/types/request';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AiJobEvent, AiJobEventNames } from '@/core/events/ai-job.events';
 import { MessageCreatedEvent, MessageEventNames } from '@/core/events/message.events';
+import { RedisService } from '@/infrastructure/redis/redis.service';
 import { AiStreamEvent } from './types/stream.types';
+
+// Same key the sidecar checks (src/util/cache.py: request_job_cancel /
+// is_job_cancelled) — this is the one thing Node and the sidecar agree on
+// across the language boundary, so the literal format has to stay in sync
+// with that file if it ever changes.
+const CANCEL_JOB_TTL_SECONDS = 5 * 60;
+function cancelJobKey(chatId: string): string {
+  return `cancel_job:${chatId}`;
+}
 
 export interface SseEvent {
   event?: AiStreamEvent['type'];
@@ -70,6 +80,7 @@ export class ChatService implements OnModuleInit {
     private readonly eventEmitter: EventEmitter2,
     private readonly httpService: HttpService,
     private readonly workspaceService: WorkspaceService,
+    private readonly redisService: RedisService,
   ) {
     this.aiBaseUrl        = this.configService.getOrThrow('ai.url',             { infer: true });
     this.handshakeToken   = this.configService.getOrThrow('ai.handshakeToken',  { infer: true });
@@ -108,8 +119,12 @@ export class ChatService implements OnModuleInit {
     const subject = new ReplaySubject<SseEvent>(Infinity, 5 * 60 * 1000);
     this.chatStreams.set(chat.id, subject);
 
+    // `messages` is fetched DESC (newest-first) so `lastUserMessage` above is
+    // cheap to find; the AI sidecar's pipeline (apps/ai .../pipeline/service.py)
+    // expects chronological order to locate the current turn via
+    // reversed(messages) + messages[:-1], so reverse it back here.
     const payload = {
-      messages:           messages.map(m => ({ role: m.role, content: m.content ?? '' })),
+      messages:           [...messages].reverse().map(m => ({ role: m.role, content: m.content ?? '' })),
       model:              lastUserMessage?.model ?? '',
       openrouter_api_key: openrouterApiKey,
       context: {
@@ -231,6 +246,30 @@ export class ChatService implements OnModuleInit {
     });
   }
 
+
+  // Cancels the whole in-flight AI turn for this chat — not just the current
+  // execution of one block, the entire pipeline (intent parsing, planning,
+  // block generation, final completion). Two halves: the sidecar (which owns
+  // most of that pipeline) polls the same Redis flag at its own checkpoints
+  // and stops there; this half ends the SSE stream immediately so the
+  // frontend isn't left waiting on the sidecar to notice.
+  async abort(chatId: string, userId: string): Promise<void> {
+    const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
+    if (!chat) throw new NotFoundException('Chat not found');
+
+    await this.redisService.set(cancelJobKey(chatId), '1', CANCEL_JOB_TTL_SECONDS);
+
+    const subject = this.chatStreams.get(chatId);
+    if (subject) {
+      subject.next({
+        event: 'message_delta',
+        data: JSON.stringify({ type: 'message_delta', delta: { stop_reason: 'cancelled' } }),
+      });
+      subject.next({ event: 'message_stop', data: JSON.stringify({ type: 'message_stop' }) });
+      subject.complete();
+      this.chatStreams.delete(chatId);
+    }
+  }
 
   async chatExists(chatId: string): Promise<boolean> {
     return this.chatRepository.existsBy({ id: chatId });

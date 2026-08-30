@@ -172,6 +172,12 @@ export class DocumentService {
     return true;
   }
 
+  async emptyTrash(workspaceId: string): Promise<boolean> {
+    await this.documentTreeService.emptyTrash(workspaceId);
+    await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
+    return true;
+  }
+
   async restoreDocument(input: RestoreDocumentInput): Promise<Document> {
     const { documentId, workspaceId } = input;
 
