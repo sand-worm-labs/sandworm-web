@@ -83,26 +83,11 @@ export function Chat({
     ]
   );
 
-  // ⬢ Handle Prompt click and create new Project
+  // ⬢ Handle Prompt click — just fill the input, don't auto-send
   // =====================================
-  const handlePromptSelect = useCallback(
-    async (prompt: string, parentId: string | null = null) => {
-      if (documentsState.loading || isCreatingNotebook) return;
-
-      setIsCreatingNotebook(true);
-      try {
-        const doc = await createDocument({ parentId, version: 2 });
-        await demoDelay(NOTEBOOK_CREATE_DEMO_DELAY_MS);
-        router.push(
-          `/workspace/${workspaceId}/documents/${doc.id}/notebook/edit?prompt=${encodeURIComponent(prompt)}&panel=ai&updateTitle=true`
-        );
-      } catch (err) {
-        console.error(err);
-        setIsCreatingNotebook(false);
-      }
-    },
-    [documentsState, createDocument, router, workspaceId, isCreatingNotebook]
-  );
+  const handlePromptSelect = useCallback((prompt: string) => {
+    setInput(prompt);
+  }, []);
 
   const append = async () => {
     return null;
@@ -114,12 +99,14 @@ export function Chat({
 
   return (
     <div className="flex flex-row justify-center pb-4 md:pb-8 h-full bg-page-surface min-h-[90vh] items-center ">
-      <div className="flex flex-col items-center gap-2">
-        <h1 className="text-2xl lg:text-3xl font-medium text-center tracking-tighter font-body ">
-          What do you want to explore onchain today?
-        </h1>
+      <div className="flex flex-col items-center gap-1">
+        <div className="flex flex-col items-center gap-1 px-4 pb-5 text-center">
+          <h1 className="text-2xl lg:text-3xl font-medium tracking-tighter font-body ">
+            What do you want to explore onchain today?
+          </h1>
 
-        <p className="text-ink-400">Search the blockchain for information</p>
+          <p className="text-ink-400">Search the blockchain for information</p>
+        </div>
 
         <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[700px] max-w-[calc(100dvw-32px)] md:px-4 px-0 md:min-w-[660px]">
           <MultimodalInput

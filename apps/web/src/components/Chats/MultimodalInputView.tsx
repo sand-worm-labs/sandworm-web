@@ -17,12 +17,16 @@ import { examplePrompts } from "./example-prompts";
 
 // =====================================
 // ⬢ Typewriter placeholder
-// Types each prompt out in full (never cuts one short), holds, then
-// clears and moves on to the next one.
+// Types each prompt out in full (never cuts one short), holds, backspaces
+// it out, then moves on to the next one.
 // =====================================
 const ROTATING_PLACEHOLDERS = examplePrompts.map(({ prompt }) => prompt);
 const TYPING_SPEED_MS = 35;
+const DELETING_SPEED_MS = 20;
 const HOLD_MS = 1400;
+const PAUSE_BEFORE_NEXT_MS = 400;
+
+type TypewriterMode = "typing" | "deleting";
 
 function useTypewriterPlaceholder(active: boolean): {
   text: string;
@@ -30,32 +34,43 @@ function useTypewriterPlaceholder(active: boolean): {
 } {
   const [promptIndex, setPromptIndex] = useState(0);
   const [text, setText] = useState("");
+  const [mode, setMode] = useState<TypewriterMode>("typing");
 
   const fullText = ROTATING_PLACEHOLDERS[promptIndex] ?? "";
-  const isTyping = text.length < fullText.length;
+  const isTyping = mode === "typing" && text.length < fullText.length;
 
   useEffect(() => {
     if (!active) return undefined;
 
-    const timeoutId = setTimeout(
-      () => {
-        if (isTyping) {
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    if (mode === "typing") {
+      if (text.length < fullText.length) {
+        timeoutId = setTimeout(() => {
           setText(fullText.slice(0, text.length + 1));
-        } else {
-          setText("");
-          setPromptIndex(i => (i + 1) % ROTATING_PLACEHOLDERS.length);
-        }
-      },
-      isTyping ? TYPING_SPEED_MS : HOLD_MS
-    );
+        }, TYPING_SPEED_MS);
+      } else {
+        timeoutId = setTimeout(() => setMode("deleting"), HOLD_MS);
+      }
+    } else if (text.length > 0) {
+      timeoutId = setTimeout(() => {
+        setText(text.slice(0, -1));
+      }, DELETING_SPEED_MS);
+    } else {
+      timeoutId = setTimeout(() => {
+        setPromptIndex(i => (i + 1) % ROTATING_PLACEHOLDERS.length);
+        setMode("typing");
+      }, PAUSE_BEFORE_NEXT_MS);
+    }
 
     return () => clearTimeout(timeoutId);
-  }, [active, text, fullText, isTyping]);
+  }, [active, text, fullText, mode]);
 
   useEffect(() => {
     if (!active) {
       setText("");
       setPromptIndex(0);
+      setMode("typing");
     }
   }, [active]);
 
@@ -157,8 +172,8 @@ export const MultimodalInputView = forwardRef<
             )}
 
             {isEmpty && (
-              <div className="pointer-events-none absolute left-6 right-6 top-5 overflow-hidden">
-                <span className="block truncate text-sm text-ink-300 dark:text-ink-400 [font-family:'Azeret_Mono',sans-serif] text-[13px]">
+              <div className="pointer-events-none absolute left-5 right-5 top-4">
+                <span className="block whitespace-pre-wrap break-words font-body text-sm text-ink-300 dark:text-ink-400">
                   {typedPlaceholder}
                   <span className="inline-block w-[1px] h-[13px] align-middle ml-0.5 bg-ink-300 dark:bg-ink-400 animate-pulse" />
                 </span>
@@ -187,7 +202,7 @@ export const MultimodalInputView = forwardRef<
         border-none
         focus:ring-0
         resize-none
-        pt-5 px-6 pb-3
+        pt-4 px-5 pb-2
         font-body text-sm text-black dark:text-white
         placeholder:text-ink-300 dark:placeholder:text-ink-400
         scrollbar-thin
