@@ -252,8 +252,8 @@ function ExpandedSwitcher({
             onClick={() => setOpen(o => !o)}
             className={clsx(
               "w-full flex items-center gap-3 px-3 py-1.5 rounded-[10px] border-none transition-all",
-              "bg-base-100 dark:bg-base-100 dark:border-border-tertiary",
-              "shadow-[0_1px_5.5px_6px_#A9A9D41A]"
+              "bg-base-100 dark:bg-transparent dark:border-border-tertiary",
+              "shadow-[0_1px_5.5px_6px_#A9A9D41A] dark:shadow-none"
             )}
           >
             <div className="flex-shrink-0">
@@ -268,7 +268,7 @@ function ExpandedSwitcher({
             </span>
 
             {/* ✦ Chevron Up Down ✦ */}
-            <CaretUpDown />
+            <CaretUpDown className="text-[#1C3B5A] dark:text-white" />
           </button>
         </div>
       </div>

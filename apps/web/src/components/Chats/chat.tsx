@@ -113,7 +113,7 @@ export function Chat({
   };
 
   return (
-    <div className="flex flex-row justify-center pb-4 md:pb-8 h-full bg-base-100 min-h-[90vh] items-center ">
+    <div className="flex flex-row justify-center pb-4 md:pb-8 h-full bg-page-surface min-h-[90vh] items-center ">
       <div className="flex flex-col items-center gap-2">
         <h1 className="text-2xl lg:text-3xl font-medium text-center tracking-tighter font-body ">
           What do you want to explore onchain today?

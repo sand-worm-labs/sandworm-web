@@ -144,7 +144,7 @@ export default function PlanFaq() {
               href={DISCORD_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-border dark:border-border-tertiary px-4 py-2 text-sm font-medium text-ink-100 dark:text-white hover:bg-inputBg dark:hover:bg-base-500 transition-colors"
+              className="inline-flex items-center gap-2 rounded-full border border-border dark:border-border-tertiary px-4 py-2 text-sm font-medium text-ink-100 dark:text-white hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700 transition-colors"
             >
               <PiDiscordLogo className="h-4 w-4" />
               Community Support
@@ -153,7 +153,7 @@ export default function PlanFaq() {
               href={DOCS_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-border dark:border-border-tertiary px-4 py-2 text-sm font-medium text-ink-100 dark:text-white hover:bg-inputBg dark:hover:bg-base-500 transition-colors"
+              className="inline-flex items-center gap-2 rounded-full border border-border dark:border-border-tertiary px-4 py-2 text-sm font-medium text-ink-100 dark:text-white hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700 transition-colors"
             >
               <PiBookOpen className="h-4 w-4" />
               Documentation

@@ -88,7 +88,7 @@ export const MultimodalInputView = forwardRef<
     w-full min-h-[120px]
     rounded-3xl
     border-[1.5px] border-hover-border
-    bg-base-100 dark:border-border-tertiary dark:bg-base-740
+    bg-header-surface dark:border-border-tertiary
     shadow-[0_3.5px_24px_rgba(120,147,208,0.09)] dark:shadow-none
 
     transition-all duration-300 ease-in-out font-tertiary text-[13px] 
@@ -96,7 +96,7 @@ export const MultimodalInputView = forwardRef<
           >
             {isCreatingNotebook && (
               <div
-                className="absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-base-100/85 dark:bg-base-740/85 backdrop-blur-[1px]"
+                className="absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-header-surface/85 backdrop-blur-[1px]"
                 aria-busy="true"
                 aria-label="Creating notebook"
               >

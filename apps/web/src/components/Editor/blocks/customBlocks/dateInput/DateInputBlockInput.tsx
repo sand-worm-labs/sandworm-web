@@ -136,7 +136,7 @@ function DateInputBlockInput(props: Props) {
   return (
     <div className="relative">
       <IMaskInput
-        mask={props.dateType === "date" ? "9999/99/99" : "9999/99/99 99:99:99"}
+        mask={props.dateType === "date" ? "0000/00/00" : "0000/00/00 00:00:00"}
         value={newTextValue}
         unmask={false}
         inputRef={inputRef}
@@ -149,16 +149,16 @@ function DateInputBlockInput(props: Props) {
         onBlur={editorAPI.blur}
         onKeyDown={unfocusOnEscape}
         className={clsx(
-          "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white appearance-none",
+          "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white appearance-none px-2",
           props.error
             ? "ring-red-200 focus:ring-red-200"
             : "focus:ring-primary-200",
           props.isCursorWithin &&
             !props.isCursorInserting &&
             !props.belongsToMultiTabGroup
-            ? "ring-blue-400"
+            ? "ring-primary "
             : "ring-gray-200",
-          (isLoading || props.error) && "bg-none" // this removes the caret
+          (isLoading || props.error) && "bg-none" 
         )}
       />
 

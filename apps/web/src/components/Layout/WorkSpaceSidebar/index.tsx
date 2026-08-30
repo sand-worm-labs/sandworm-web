@@ -253,7 +253,7 @@ export const WorkspaceSidebar = () => {
         `}
       >
         <div className="flex flex-col flex-1 min-h-0">
-          <div className="flex justify-between py-[0.50rem] px-3 bg-base-100 dark:bg-base-500 items-center flex-shrink-0 border-b border-base-300 dark:border-border-tertiary">
+          <div className="flex justify-between py-[0.50rem] px-3 bg-header-surface items-center flex-shrink-0 border-b border-base-300 dark:border-border-tertiary">
             {!collapsed && (
               <Link href="/" className="flex items-center gap-2">
                 <SandwormLogo width="30" height="30" />
@@ -388,9 +388,9 @@ export const WorkspaceSidebar = () => {
                       onClick={onCreateDocumentHandler}
                       className={`
                         flex items-center justify-center gap-1.5
-                       border border-[#C44FFF] dark:border-[#A78BFA]
-                        text-primary dark:text-[#A78BFA]
-                        hover:bg-primary/5 bg-primary-tint-75 dark:hover:bg-primary/10
+                       border border-[#C44FFF] dark:border-white/15
+                        text-[#C44FFF] dark:text-white
+                        hover:bg-primary/5 bg-primary-tint-75 dark:bg-base-700 dark:hover:bg-base-600
                         transition-colors font-body font-medium text-sm
                         ${collapsed ? "w-8 h-8 rounded-[10px]" : "w-full px-4 py-2   rounded-xl"}
                       `}

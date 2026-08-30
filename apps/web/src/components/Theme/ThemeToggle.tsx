@@ -48,11 +48,11 @@ export function ThemeTogggle({ iconSize = 22 }: ThemeToggleProps) {
               >
                 <Sun
                   size={iconSize}
-                  className="text-ink-navy dark:text-ink-400 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+                  className="text-ink-navy dark:text-white rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
                 />
                 <Moon
                   size={iconSize}
-                  className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+                  className="absolute text-ink-navy dark:text-white rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
                 />
                 <span className="sr-only">Toggle theme</span>
               </Button>
@@ -80,7 +80,10 @@ export function ThemeTogggle({ iconSize = 22 }: ThemeToggleProps) {
               onClick={() => setTheme(value)}
               className="flex items-center gap-2 px-2 py-1.5 rounded-[10px] border border-transparent text-ink-400 hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 hover:dark:text-ink-100 cursor-pointer transition-colors"
             >
-              <Icon className="h-5 w-5 text-ink-500" aria-hidden="true" />
+              <Icon
+                className="h-5 w-5 text-ink-500 dark:text-white"
+                aria-hidden="true"
+              />
               <span className="text-sm">{label}</span>
             </DropdownMenuItem>
           ))}

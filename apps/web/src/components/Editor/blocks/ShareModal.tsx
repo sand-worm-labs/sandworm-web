@@ -281,8 +281,8 @@ export default function ShareModal({
                               "relative flex items-center gap-3 rounded-xl px-4 py-3",
                               "cursor-pointer transition-all duration-150 border",
                               checked
-                                ? "border-primary-200 dark:border-primary-700 bg-[#F3E6FD] dark:bg-primary-920"
-                                : "border-border dark:border-base-710 hover:bg-primary-tint-50 dark:hover:bg-primary-900 hover:border-primary-200 dark:hover:border-primary-700",
+                                ? "border-hover-border bg-hover-bg dark:bg-base-600 dark:text-ink-100"
+                                : "border-border dark:border-base-710 hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700",
                               isUpdating && "opacity-50 cursor-not-allowed"
                             )
                           }

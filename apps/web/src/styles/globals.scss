@@ -130,6 +130,8 @@
     --base-400: 0 0% 6%; /* #0F0F0F */
     --base-500: #fbfbfb;
     --base-600: 180 43% 95%; /* #EBF7F7 */
+    --header-surface: 0 0% 100%; /* #FFFFFF */
+    --page-surface: 0 0% 100%; /* #FFFFFF */
 
     /* Inputs */
     --bg-input: 210 17% 98%; /* #F8F9FA */
@@ -234,6 +236,8 @@
     --base-400: 60 3% 18%; /* #2F2F2C */
     --base-500: #232322;
     --base-600: 60 5% 7%; /* #131311 */
+    --header-surface: 0 0% 10.2%; /* #1A1A1A */
+    --page-surface: 0 0% 7.1%; /* #121212 */
 
     --gray-100: #363c46;
 
@@ -251,8 +255,8 @@
     /* Text */
     --ink-100: #ffffff;
     --ink-200: #9C9A92;
-    --ink-300: #868E96;
-    --ink-400: #9C9A92;
+    --ink-300: #ADB5BD;
+    --ink-400: #868E96;
     --ink-450: #6d6c7d;
     --ink-600: #fff;
     --ink-icon: #fff;
@@ -274,7 +278,7 @@
     /* Extended borders */
     --border-quiet: #e3e5e8;
     --border-faint: #d0d5dd;
-    --border-cool: #e7ebf0;
+    --border-cool: #343a40;
 
     /* Always-dark editor/code surfaces (not theme-reactive) */
     --editor-100: #181c21;

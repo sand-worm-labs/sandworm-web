@@ -26,9 +26,9 @@ const EnvironmentButton = ({
   <Link
     href={`/workspace/${workspaceId}/environments/current`}
     className="flex items-center gap-2 px-2.5 py-1.5
-      border border-border dark:border-base-710
-      rounded-lg text-sm text-ink-400 dark:text-ink-500
-      hover:bg-base-300 dark:hover:bg-base-700
+      border border-border dark:border-border-tertiary bg-transparent dark:bg-header-surface
+      rounded-lg text-sm text-ink-400 dark:text-ink-300
+      hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700
       hover:text-ink-500 dark:hover:text-ink-300
       transition-colors duration-100"
   >
@@ -176,9 +176,9 @@ function EnvBar(props: Props) {
               <Link
                 href={`/workspace/${workspaceId}/environments/current/variables`}
                 className="flex items-center gap-2 px-2.5 py-1.5
-                  border border-border dark:border-base-710
-                  rounded-lg text-sm text-ink-400 dark:text-ink-500
-                  hover:bg-base-300 dark:hover:bg-base-700
+                  border border-border dark:border-border-tertiary bg-transparent dark:bg-header-surface
+                  rounded-lg text-sm text-ink-400 dark:text-ink-300
+                  hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700
                   hover:text-ink-500 dark:hover:text-ink-300
                   transition-colors duration-100"
               >
@@ -192,9 +192,9 @@ function EnvBar(props: Props) {
                 type="button"
                 onClick={props.onOpenFiles}
                 className="flex items-center gap-2 px-2.5 py-1.5
-                  border border-border dark:border-base-710
-                  rounded-lg text-sm text-ink-400 dark:text-ink-500
-                  hover:bg-base-300 dark:hover:bg-base-700
+                  border border-border dark:border-border-tertiary bg-transparent dark:bg-header-surface
+                  rounded-lg text-sm text-ink-400 dark:text-ink-300
+                  hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700
                   hover:text-ink-500 dark:hover:text-ink-300
                   transition-colors duration-100"
               >

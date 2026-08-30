@@ -50,7 +50,7 @@ export default function SettingsLayout({
 
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-base-200">
-      <header className="flex shrink-0 items-center gap-2 border-b border-base-300 bg-base-500 px-10 py-3 text-[1.1rem] dark:border-border-tertiary dark:bg-base-500">
+      <header className="flex shrink-0 items-center gap-2 border-b border-base-300 bg-header-surface px-10 py-3 text-[1.1rem] dark:border-border-tertiary">
         <Link
           href="/workspace"
           className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md text-ink-400 hover:bg-base-350 hover:text-ink-500 dark:text-ink-400 dark:hover:bg-base-700 dark:hover:text-ink-200 transition-all duration-100"
