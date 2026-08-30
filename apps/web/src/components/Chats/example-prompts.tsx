@@ -3,7 +3,7 @@ import clsx from "clsx";
 // =====================================
 // ⬢ Constants
 // =====================================
-const examplePrompts = [
+export const examplePrompts = [
   { id: "eliza", prompt: "How many farcaster handles have a premium badge?" },
   {
     id: "agent",
