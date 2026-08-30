@@ -69,6 +69,42 @@ export function DateRangeField({
 }
 
 // =====================================
+// ⬢ Date Field (single date)
+// =====================================
+interface DateFieldProps {
+  param: ParamDefinition;
+  value: string;
+  onChange: (value: string) => void;
+  onBlur: (value: string) => void;
+  error?: string;
+}
+
+export function DateField({ param, value, onChange, onBlur, error }: DateFieldProps) {
+  const today = new Date().toISOString().split("T")[0];
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <FieldLabel param={param} />
+      <input
+        type="date"
+        value={value}
+        max={today}
+        onChange={e => onChange(e.target.value)}
+        onBlur={() => onBlur(value)}
+        className={clsx(
+          "w-full px-3 py-2.5 rounded-lg text-sm",
+          "bg-white/[0.04] border border-border-tertiary transition-colors outline-none",
+          "text-ink-100 ",
+          "focus:border-primary/50 focus:bg-white/[0.05]",
+          "[color-scheme:dark]"
+        )}
+      />
+      {error && <FieldError message={error} />}
+    </div>
+  );
+}
+
+// =====================================
 // ⬢  Single date input
 // =====================================
 function DateInput({

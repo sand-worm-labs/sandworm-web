@@ -1,0 +1,10 @@
+query GetTools {
+  getTools {
+    toolId
+    categoryId
+    name
+    description
+    tags
+    params
+  }
+}

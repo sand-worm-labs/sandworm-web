@@ -14,6 +14,7 @@ export type ParamType =
   | "token_address"// address with token metadata resolution attempt
   | "text"         // free-text input
   | "number"       // numeric with optional min/max
+  | "date"         // single date picker
   | "date_range";  // from/to date picker pair
 
 /**

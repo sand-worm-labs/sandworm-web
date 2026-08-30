@@ -2,6 +2,7 @@
 
 import { Fragment, useState, useEffect, useRef, useCallback } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { useApolloClient } from "@apollo/client";
 import clsx from "clsx";
 import {
   getAllCategories,
@@ -9,10 +10,16 @@ import {
   getToolCountByCategory,
   getToolCount,
   searchTools,
+  loadToolsFromApi,
+  isToolsLoaded,
+  loadCategoriesFromApi,
+  isCategoriesLoaded,
 } from "@sandworm/editor";
 import type { ToolCategory, ToolDefinition } from "@sandworm/editor";
 
 import { BoltIcon as PowerToolBoxIcon } from "@/components/Assets/BoltIcon";
+import { fetchCategoriesForRegistry } from "@/graphql/loaders/tool-categories";
+import { fetchToolsForRegistry } from "@/graphql/loaders/tools";
 
 import { usePowerToolboxKeyboard } from "../../../hooks/usePowertoolboxKeyboard";
 
@@ -328,9 +335,32 @@ export function PowerToolboxModal({
     null
   );
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [toolsReady, setToolsReady] = useState(isToolsLoaded());
+  const [categoriesReady, setCategoriesReady] = useState(isCategoriesLoaded());
 
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const client = useApolloClient();
+
+  // The registry is populated asynchronously (see PowerToolsBootstrap) —
+  // loadToolsFromApi/loadCategoriesFromApi are idempotent, so calling them
+  // again here just awaits the same in-flight/completed load if the
+  // bootstrap already kicked it off, and forces this component to re-render
+  // once they resolve so the getAllTools()/getAllCategories()/etc. reads
+  // below pick up the now-populated catalog.
+  useEffect(() => {
+    if (toolsReady) return;
+    loadToolsFromApi(() => fetchToolsForRegistry(client)).then(() =>
+      setToolsReady(true)
+    );
+  }, [client, toolsReady]);
+
+  useEffect(() => {
+    if (categoriesReady) return;
+    loadCategoriesFromApi(() => fetchCategoriesForRegistry(client)).then(() =>
+      setCategoriesReady(true)
+    );
+  }, [client, categoriesReady]);
 
   const categories = getAllCategories();
   const toolCountByCategory = getToolCountByCategory();

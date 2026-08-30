@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthGraphqlModule } from '@/features/auth/graphql/auth-graphql.module';
 import { ProfileModule } from '@/features/profile/profile.module';
 import { TagModule } from '@/features/tag/tag.module';
+import { ToolModule } from '@/features/tool/tool.module';
 import { UserModule } from '@/features/user/user.module';
 import { WorkspaceModule } from '@/features/workspace/workspace.module';
 import { DocumentModule } from '@/features/document/document.module';
@@ -51,6 +52,7 @@ import { AiExecutionModule } from './features/ai-execution/ai-execution.module';
         EnvironmentModule,
         FileModule,
         TagModule,
+        ToolModule,
         ScheduleModule,
 
         // Websocket
