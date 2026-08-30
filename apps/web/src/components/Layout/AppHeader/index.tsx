@@ -43,7 +43,7 @@ export const AppHeader: FC = () => {
   return (
     <header className="bg-header-surface px-8 py-[5.3px] flex justify-between items-center border-b border-border-secondary  dark:border-border-tertiary">
       <div className="hidden md:flex items-center gap-4">
-        <span className="text-sm font-medium text-ink-400">{title}</span>
+        <span className="text-sm font-medium text-ink-400 dark:text-ink-100">{title}</span>
       </div>
 
       <div className="flex items-center lg:justify-normal justify-between w-full md:w-auto">

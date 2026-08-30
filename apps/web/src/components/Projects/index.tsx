@@ -186,7 +186,7 @@ export const Projects: React.FC = () => {
           <button
             type="button"
             onClick={onCreateDocumentHandler}
-            className="py-2 px-6 bg-base-200 dark:bg-base-200 rounded-xl hover:cursor-pointer text-sm border mt-6 flex  items-center w-full border-[#D000FF] dark:border-primary text-primary mb-3 font-body font-medium gap-2"
+            className="py-2 px-6 bg-base-200 dark:bg-create-project-tint/[0.16] rounded-xl hover:cursor-pointer text-sm border mt-6 flex  items-center w-full border-[#D000FF] dark:border-border-tertiary text-primary dark:text-white mb-3 font-body font-medium gap-2 shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.04),0px_4px_4px_-2px_rgba(0,0,0,0.02)] dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]"
           >
             <PiPlus className="mr-3 h-4 w-4" />
             <span>Create Project</span>
@@ -208,7 +208,7 @@ export const Projects: React.FC = () => {
         <div>
           <button
             type="button"
-            className="py-2 px-6 bg-primary/5 dark:bg-base-200 rounded-xl hover:cursor-pointer text-sm border mt-6 flex  items-center w-full border-[#D000FF] dark:border-primary text-primary mb-3 font-body font-medium gap-2"
+            className="py-2 px-6 bg-primary/5 dark:bg-create-project-tint/[0.16] rounded-xl hover:cursor-pointer text-sm border mt-6 flex  items-center w-full border-[#D000FF] dark:border-border-tertiary text-primary dark:text-white mb-3 font-body font-medium gap-2 shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.04),0px_4px_4px_-2px_rgba(0,0,0,0.02)] dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]"
             onClick={onCreateDocumentHandler}
           >
             <PiPlus className=" h-4 w-4" />
@@ -252,7 +252,7 @@ export const Projects: React.FC = () => {
               {projects.map(project => (
                 <div
                   key={project.id}
-                  className="bg-base-100 rounded-3xl border border-border-tertiary transition-all duration-200 p-4 py-3 relative group flex flex-col hover:shadow-[0_1px_3px_rgba(208,0,255,0.08)]"
+                  className="bg-page-surface rounded-3xl border border-border-tertiary transition-all duration-200 p-4 py-3 relative group flex flex-col hover:shadow-[0_1px_3px_rgba(208,0,255,0.08)]"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <Link
@@ -273,7 +273,7 @@ export const Projects: React.FC = () => {
                         {project.isFavorite ? (
                           <PiStarFill className="w-4 h-4 text-primary" />
                         ) : (
-                          <PiStarLight className="w-4 h-4 text-ink-400 hover:text-primary" />
+                          <PiStarLight className="w-4 h-4 text-ink-400 dark:text-placeholder-muted hover:text-primary" />
                         )}
                       </button>
 
@@ -287,19 +287,19 @@ export const Projects: React.FC = () => {
                           }
                           className="p-1 rounded transition-colors"
                         >
-                          <PiDotsThreeLight className="w-4 h-4 text-ink-200" />
+                          <PiDotsThreeLight className="w-4 h-4 text-ink-200 dark:text-placeholder-muted" />
                         </button>
 
                         {openMenuId === project.id && (
-                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100 rounded-xl shadow-lg border border-border-tertiary dark:border-border-tertiary pb-1 z-10 text-ink-200 dark:text-white">
+                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-dropdown-bg rounded-xl shadow-lg border border-border-tertiary dark:border-border-tertiary pb-1  text-ink-200 dark:text-white z-[99]">
                             <button
                               type="button"
                               onClick={() =>
                                 handleMenuAction("duplicate", project.id)
                               }
-                              className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20"
+                              className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20 dark:hover:bg-[#2F2F2F]"
                             >
-                              <PiCopyLight className="w-3.5 h-3.5" />
+                              <PiCopyLight className="w-3.5 h-3.5 dark:text-placeholder-muted" />
                               Duplicate
                             </button>
                             <button
@@ -307,9 +307,9 @@ export const Projects: React.FC = () => {
                               onClick={() =>
                                 handleMenuAction("newTab", project.id)
                               }
-                              className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20"
+                              className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20 dark:hover:bg-[#2F2F2F]"
                             >
-                              <PiArrowSquareOutLight className="w-3.5 h-3.5" />
+                              <PiArrowSquareOutLight className="w-3.5 h-3.5 dark:text-placeholder-muted" />
                               Open in new tab
                             </button>
                             <button
@@ -317,9 +317,9 @@ export const Projects: React.FC = () => {
                               onClick={() =>
                                 handleMenuAction("trash", project.id)
                               }
-                              className="w-full px-4 py-2 text-left text-sm hover:bg-primary/20 flex items-center gap-2"
+                              className="w-full px-4 py-2 text-left text-sm hover:bg-primary/20 dark:hover:bg-[#2F2F2F] flex items-center gap-2"
                             >
-                              <PiTrashLight className="w-3.5 h-3.5" />
+                              <PiTrashLight className="w-3.5 h-3.5 dark:text-placeholder-muted" />
                               Move to trash
                             </button>
                           </div>
@@ -328,7 +328,7 @@ export const Projects: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="bg-base-100 rounded-lg h-10 mb-4 flex items-center justify-center" />
+                  <div className="bg-page-surface rounded-lg h-10 mb-4 flex items-center justify-center" />
 
                   <div className="flex items-center justify-between mt-auto relative z-[1]">
                     <div className="relative">
@@ -338,7 +338,7 @@ export const Projects: React.FC = () => {
                         onMouseLeave={() => setHoveredUser(null)}
                         className={iconButtonSmClassName}
                       >
-                        <PiUserLight className="w-4 h-4" />
+                        <PiUserLight className="w-4 h-4 dark:text-placeholder-muted" />
                       </button>
 
                       {hoveredUser === project.id && (
@@ -348,14 +348,14 @@ export const Projects: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="relative">
+                    <div >
                       <button
                         type="button"
                         onMouseEnter={() => setHoveredSave(project.id)}
                         onMouseLeave={() => setHoveredSave(null)}
                         className={iconButtonSmClassName}
                       >
-                        <PiFloppyDiskLight className="w-4 h-4" />
+                        <PiFloppyDiskLight className="w-4 h-4 dark:text-placeholder-muted" />
                       </button>
 
                       {hoveredSave === project.id && (

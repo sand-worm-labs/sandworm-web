@@ -49,6 +49,11 @@ const config: Config = {
 
         "header-surface": "hsl(var(--header-surface))",
         "page-surface": "hsl(var(--page-surface))",
+        "sidebar-surface": "hsl(var(--sidebar-surface))",
+        "sidebar-hover": "hsl(var(--sidebar-hover))",
+        "placeholder-muted": "var(--placeholder-muted)",
+        "dropdown-bg": "hsl(var(--dropdown-bg))",
+        "create-project-tint": "hsl(var(--create-project-tint) / <alpha-value>)",
 
         base: {
           100: "hsl(var(--base-100))",

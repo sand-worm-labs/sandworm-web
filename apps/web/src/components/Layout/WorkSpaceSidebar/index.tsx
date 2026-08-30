@@ -104,8 +104,8 @@ export const WorkspaceSidebar = () => {
       ? "w-[30px] h-[30px] mx-auto justify-center"
       : "justify-start px-2 py-1";
     const activeClass = isActive
-      ? "bg-hover-bg dark:bg-base-600 dark:text-ink-100 border-hover-border"
-      : "text-menu-ink dark:text-white border-transparent hover:bg-hover-bg dark:hover:bg-base-600 hover:border-hover-border hover:dark:text-ink-100";
+      ? "bg-hover-bg dark:bg-white/[0.08] dark:text-white border-hover-border dark:border-transparent"
+      : "text-menu-ink dark:text-white border-transparent hover:bg-hover-bg dark:hover:bg-sidebar-hover hover:border-hover-border hover:dark:text-white";
     return [
       "flex items-center gap-3 rounded-[10px] font-medium text-[13px] transition-colors border",
       sizeClass,
@@ -117,7 +117,7 @@ export const WorkspaceSidebar = () => {
     const base = "flex-shrink-0 transition-colors";
     if (collapsed) return `${base} text-ink-navy dark:text-ink-navy`;
     if (pathname === href) return `${base} dark:text-ink-100`;
-    return `${base} text-ink-icon`;
+    return `${base} text-ink-icon dark:text-placeholder-muted`;
   };
 
   const [
@@ -219,7 +219,7 @@ export const WorkspaceSidebar = () => {
     <>
       <aside
         className={`
-          bg-base-200 dark:bg-base-200
+          bg-base-200 dark:bg-sidebar-surface
           border-r border-border-secondary dark:border-border-tertiary
           font-body flex flex-col justify-between
           transition-all duration-300 ease-in-out relative
@@ -450,7 +450,7 @@ export const WorkspaceSidebar = () => {
         <div
           className={`
           flex-shrink-0 border-t border-border-secondary dark:border-border-tertiary
-          bg-base-200 dark:bg-base-500
+          bg-base-200 dark:bg-sidebar-surface
           ${collapsed ? "flex justify-center py-2 px-2" : "py-1.5 px-1.5"}
         `}
         >

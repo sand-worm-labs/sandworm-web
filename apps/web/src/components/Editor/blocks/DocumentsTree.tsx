@@ -203,11 +203,14 @@ function DropDown(props: DropDownProps) {
     clsx(
       "w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg",
       "text-sm font-medium font-body transition-colors text-left",
+      "dark:[&_svg]:text-placeholder-muted",
       danger
         ? "text-ink-400 hover:text-warning hover:bg-error-tint dark:hover:bg-error-shade"
         : clsx(
             "text-menu-ink-200 dark:text-white",
-            active ? "bg-primary/20 text-ink-100" : "hover:bg-primary/20"
+            active
+              ? "bg-primary/20 text-ink-100 dark:bg-[#2F2F2F]"
+              : "hover:bg-primary/20 dark:hover:bg-[#2F2F2F]"
           )
     );
 
@@ -259,7 +262,7 @@ function DropDown(props: DropDownProps) {
           >
             <Menu.Items
               className="absolute left-2 -top-2 z-20 w-44 origin-top-right
-                bg-white dark:bg-base-100
+                bg-white dark:bg-dropdown-bg
                 border border-border-tertiary dark:border-border-tertiary
                 rounded-2xl
                 shadow-sm dark:shadow-none
@@ -546,7 +549,7 @@ function NodeComponent(props: NodeComponentProps) {
             className={clsx(
               props.document.id === props.current
                 ? "text-ink-100 bg-ceramic-100/50"
-                : "text-ink-400 hover:bg-ceramic-100/80",
+                : "text-ink-400 dark:text-placeholder-muted hover:bg-ceramic-100/80",
               isDropping &&
                 dropHoverState === "center" &&
                 "bg-ceramic-200 border-ceramic-200",

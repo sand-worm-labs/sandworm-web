@@ -27,11 +27,11 @@ interface WorkspaceDropdownMenuProps {
 const ROW_OUTER =
   "flex w-[calc(100%-0.75rem)] mx-1.5 items-center gap-1.5 px-2 py-1.5 rounded-[10px] border border-transparent";
 const ROW_HOVER =
-  "transition-colors duration-100 hover:bg-hover-bg hover:border-hover-border";
+  "transition-colors duration-100 hover:bg-hover-bg dark:hover:bg-[#2F2F2F] hover:border-hover-border";
 const ROW_MAIN =
   "flex flex-1 min-w-0 items-center gap-2.5 text-left disabled:opacity-50 disabled:cursor-not-allowed";
 const ACCENT_HOVER =
-  "border border-transparent transition-colors duration-100 hover:bg-hover-bg hover:border-primary";
+  "border border-transparent transition-colors duration-100 hover:bg-hover-bg dark:hover:bg-[#2F2F2F] hover:border-primary";
 
 // =====================================
 // ⬢ Settings Button
@@ -53,7 +53,7 @@ function SettingsButton({
       aria-label={label}
       title={label}
       className={clsx(
-        "flex-shrink-0 flex items-center justify-center rounded-md w-6 h-6 text-ink-300 hover:text-ink-500 dark:hover:text-ink-200",
+        "flex-shrink-0 flex items-center justify-center rounded-md w-6 h-6 text-ink-300 dark:text-placeholder-muted hover:text-ink-500 dark:hover:text-ink-200",
         ACCENT_HOVER
       )}
     >
@@ -128,7 +128,7 @@ export function WorkspaceDropdownMenu({
   return (
     <div
       className={clsx(
-        "z-50 bg-white dark:bg-base-400 min-w-[17rem]",
+        "z-50 bg-white dark:bg-dropdown-bg min-w-[17rem]",
         "border border-border-secondary dark:border-border-tertiary",
         "rounded-xl shadow-lg overflow-hidden relative",
         containerClassName
@@ -169,7 +169,7 @@ export function WorkspaceDropdownMenu({
           </span>
           <span
             className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-md
-              text-ink-300"
+              text-ink-300 dark:text-placeholder-muted"
             aria-hidden
           >
             <PiPlus size={14} />

@@ -83,7 +83,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
                 placeholder="Search projects..."
                 value={searchValue ?? ""}
                 onChange={e => onSearchChange?.(e.target.value)}
-                className="w-52 pl-10 pr-4 py-1 h-8 rounded-lg dark:bg-base-400 dark:text-white placeholder:dark:text-ink-300 placeholder-[#868E96] focus:outline-none focus:ring focus:ring-primary transition text-xs md:text-sm bg-base-600 placeholder:text-ink-300"
+                className="w-52 pl-10 pr-4 py-1 h-8 rounded-lg border border-transparent dark:border-border-tertiary dark:bg-base-400 dark:text-white placeholder:dark:text-placeholder-muted focus:outline-none focus:ring focus:ring-primary transition text-xs md:text-sm bg-base-600 placeholder:text-ink-300"
               />
             </div>
 
@@ -146,7 +146,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
                   type="button"
                   className={cn(
                     iconButtonClassName,
-                    "h-7 px-2 text-sm gap-1.5"
+                    "h-7 px-2 text-sm gap-1.5 text-placeholder-muted hover:text-placeholder-muted dark:hover:text-placeholder-muted"
                   )}
                 >
                   <span>Sort by</span>
@@ -179,7 +179,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
                 iconButtonMdClassName,
                 "border border-transparent rounded-[10px] hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600",
                 activeView === "grid" &&
-                  "text-primary hover:text-primary dark:hover:text-primary"
+                  "text-primary hover:text-primary dark:text-white dark:hover:text-white dark:bg-base-400 dark:border-border-tertiary"
               )}
               onClick={() => handleViewChange("grid")}
               title="Grid view"
@@ -193,7 +193,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
                 iconButtonMdClassName,
                 "border border-transparent rounded-[10px] hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600",
                 activeView === "table" &&
-                  "text-primary hover:text-primary dark:hover:text-primary"
+                  "text-primary hover:text-primary dark:text-white dark:hover:text-white dark:bg-base-400 dark:border-border-tertiary"
               )}
               onClick={() => handleViewChange("table")}
               title="Table view"

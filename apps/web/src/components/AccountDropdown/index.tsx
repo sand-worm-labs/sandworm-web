@@ -91,12 +91,12 @@ const NavItem = ({
 }: NavItemProps) => {
   const cls =
     "flex items-center gap-3 w-full px-3 py-1.5 rounded-[10px] border border-transparent text-sm " +
-    "text-ink-500 dark:text-white hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 " +
+    "text-ink-500 dark:text-white hover:bg-hover-bg hover:border-hover-border dark:hover:bg-[#2F2F2F] " +
     "transition-colors cursor-pointer font-body font-medium text-start";
 
   const inner = (
     <>
-      <span className="text-ink-navy dark:text-ink-400 flex items-center justify-center">
+      <span className="text-ink-navy dark:text-placeholder-muted flex items-center justify-center">
         {icon}
       </span>
       <span className="flex-1 text-ink-100">{label}</span>
@@ -298,7 +298,7 @@ export const AccountDropdown = ({
         </TooltipV2>
         <DropdownMenuContent
           className="w-64 rounded-2xl border border-border-tertiary dark:border-border-tertiary
-            dark:bg-base-400 shadow-md p-2 ml-2"
+            dark:bg-dropdown-bg shadow-md p-2 ml-2"
           align="start"
           side="right"
         >
@@ -332,7 +332,7 @@ export const AccountDropdown = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           className="w-64 rounded-2xl border border-border-tertiary dark:border-border-tertiary
-            dark:bg-base-400 shadow-md border p-2 ml-6"
+            dark:bg-dropdown-bg shadow-md border p-2 ml-6"
           align="start"
         >
           {dropdownBody}

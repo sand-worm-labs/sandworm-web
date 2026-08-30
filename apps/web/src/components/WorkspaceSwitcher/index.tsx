@@ -153,7 +153,7 @@ function CollapsedSwitcher({
           "transition-colors duration-100 shadow-[0px_1px_12px_1px_#A9A9D44D] dark:shadow-none",
           open
             ? "bg-primary-tint-50 dark:bg-primary-900"
-            : " dark:hover:bg-primary-900"
+            : " dark:hover:bg-sidebar-hover"
         )}
       >
         <WorkspaceIcon
@@ -228,7 +228,7 @@ function ExpandedSwitcher({
       >
         <svg
           className={clsx(
-            "w-3 h-3 text-ink-300 dark:text-ink-400 transition-transform duration-200",
+            "w-3 h-3 text-ink-300 dark:text-placeholder-muted transition-transform duration-200",
             treeOpen ? "rotate-90" : "rotate-0"
           )}
           viewBox="0 0 24 24"
