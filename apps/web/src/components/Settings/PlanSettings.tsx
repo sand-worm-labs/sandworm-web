@@ -8,6 +8,7 @@ import { Check, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { socialLinks } from "@/data/socialLinks";
 import { CloseIconButton } from "@/components/CloseIconButton";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 import {
   useCurrentWorkspaceInfo,
@@ -127,7 +128,7 @@ function BillingToggle({
   onChange: (nextCycle: BillingCycle) => void;
 }) {
   return (
-    <div className="inline-flex items-center gap-1 rounded-full border border-border-secondary dark:border-border-tertiary bg-base-300/50 dark:bg-base-200 p-1 shrink-0">
+    <div className="inline-flex items-center gap-1 rounded-full border border-border-secondary dark:border-border-tertiary bg-base-300/50 dark:bg-[#252524] p-1 shrink-0">
       {(
         [
           { id: "monthly", label: "Monthly" },
@@ -139,9 +140,9 @@ function BillingToggle({
           type="button"
           onClick={() => onChange(option.id)}
           className={cn(
-            "rounded-full px-4 py-1.5 text-sm font-medium font-body transition-colors",
+            "rounded-full px-4 py-1.5 text-sm font-medium font-body transition-colors border border-transparent",
             cycle === option.id
-              ? "bg-base-400 text-white dark:bg-white dark:text-black"
+              ? `bg-base-400 text-white ${tintPillDarkClassName}`
               : "text-ink-400 hover:text-ink-100 dark:hover:text-white"
           )}
         >
@@ -260,10 +261,9 @@ function CardCta({
   onWalletUpgrade: () => void;
 }) {
   const className = cn(
-    "w-full text-center rounded-3xl px-4 py-3 text-sm font-medium mb-6 transition-opacity hover:opacity-85",
-    plan.highlight
-      ? "bg-white text-primary"
-      : "bg-base-400 text-white dark:bg-white dark:text-black"
+    "w-full text-center rounded-3xl px-4 py-3 text-sm font-medium mb-6 transition-opacity hover:opacity-85 border border-transparent",
+    plan.highlight ? "bg-white text-primary" : "bg-base-400 text-white",
+    tintPillDarkClassName
   );
 
   if (plan.ctaKind === "wallet") {
@@ -314,10 +314,10 @@ function PricingCard({
   return (
     <div
       className={cn(
-        "flex flex-col rounded-3xl p-6 border font-body",
+        "flex flex-col rounded-3xl p-6 border font-body dark:bg-dropdown-bg dark:border-border-tertiary",
         plan.highlight
           ? "bg-primary border-primary text-white"
-          : "bg-[#F2F3FB] dark:bg-base-100 border-teal/[20%] dark:border-border-tertiary"
+          : "bg-[#F2F3FB] border-teal/[20%]"
       )}
     >
       <div className="flex items-center justify-between mb-3 min-h-[1.5rem] gap-2">
@@ -332,9 +332,9 @@ function PricingCard({
         {(isCurrent || plan.badge) && (
           <span
             className={cn(
-              "text-xs font-medium px-2 py-0.5 rounded-md whitespace-nowrap",
+              "text-xs font-medium px-2 py-0.5 rounded-md whitespace-nowrap border border-transparent",
               plan.highlight
-                ? "bg-[#F3F3FA] text-ink-400"
+                ? `bg-[#F3F3FA] text-ink-400 ${tintPillDarkClassName}`
                 : "bg-primary-tint-75 dark:bg-primary-910 text-primary"
             )}
           >

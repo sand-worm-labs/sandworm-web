@@ -11,7 +11,10 @@ import {
 } from "@headlessui/react";
 
 import { useProfileForm } from "@/hooks/useProfileSettings";
-import { surfaceHoverClassName } from "@/styles/interactive";
+import {
+  surfaceHoverClassName,
+  tintPillDarkClassName,
+} from "@/styles/interactive";
 
 import { ProfileCardIcon } from "../Assets/ProfileCardIcon";
 import ScrollBar from "../Editor/blocks/ScrollBar";
@@ -48,7 +51,7 @@ interface ProfileSettingsModalProps {
 // ⬢ Constants
 // =====================================
 const inputClassName =
-  "w-full px-3 md:py-2.5 py-1.5 rounded-lg bg-base-300 dark:bg-base-400 border border-hover-border dark:border-border-tertiary text-ink-100 dark:text-white placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition md:text-sm text-[13px] disabled:bg-input disabled:border-border disabled:text-ink-300 ";
+  "w-full px-3 md:py-2.5 py-1.5 rounded-lg bg-base-300 dark:bg-[#262625] border border-hover-border dark:border-border-tertiary text-ink-100 dark:text-white placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition md:text-sm text-[13px] disabled:bg-input disabled:border-border disabled:text-ink-300 ";
 
 const labelClassName =
   "block text-xs font-bold text-ink-400 dark:text-gray-300 mb-2 uppercase font-bold";
@@ -110,7 +113,7 @@ export function ProfileSettingsModal({
               leaveFrom="opacity-100 translate-y-0 md:scale-100"
               leaveTo="opacity-0 translate-y-full md:translate-y-4 md:scale-95"
             >
-              <DialogPanel className="w-full md:max-w-4xl transform overflow-hidden rounded-t-2xl rounded-b-none md:rounded-[32px] bg-white dark:bg-base-100 dark:border dark:border-border-tertiary transition-all max-h-[92dvh] md:max-h-none flex flex-col pt-0 md:pt-5">
+              <DialogPanel className="w-full md:max-w-4xl transform overflow-hidden rounded-t-2xl rounded-b-none md:rounded-[32px] bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary transition-all max-h-[92dvh] md:max-h-none flex flex-col pt-0 md:pt-5">
                 <div className="md:hidden flex justify-center pt-3 pb-1 flex-shrink-0">
                   <div className="w-9 h-[4px] rounded-full bg-gray-200 dark:bg-gray-700" />
                 </div>
@@ -206,7 +209,7 @@ export function ProfileSettingsModal({
                                   type="email"
                                   value={user?.email || ""}
                                   disabled
-                                  className={`${inputClassName} bg-input dark:bg-[#0D0F11] cursor-not-allowed `}
+                                  className={`${inputClassName} bg-input dark:bg-base-400 cursor-not-allowed `}
                                 />
                                 <p className="text-xs text-ink-400  dark:text-ink-400 mt-1">
                                   Email cannot be changed
@@ -351,7 +354,7 @@ export function ProfileSettingsModal({
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="px-7 py-2 text-sm font-medium text-white bg-base-400 dark:bg-white dark:text-black rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className={`px-7 py-2 text-sm font-medium text-white bg-base-400 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-transparent ${tintPillDarkClassName}`}
                       >
                         {isSubmitting ? "Saving..." : "Save"}
                       </button>

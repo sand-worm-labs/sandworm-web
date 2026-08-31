@@ -7,6 +7,7 @@ import clsx from "clsx";
 import Image from "next/image";
 
 import { AIChatIcon } from "@/components/Assets/AIChatIcon";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 import type { NormalizedModel } from "../hooks/useOpenRouterModel";
 
@@ -566,7 +567,7 @@ export const ModelPickerModal = ({
           aria-label={title}
           tabIndex={-1}
           onKeyDown={handleKeyDown}
-          className="relative w-full max-w-[620px] max-h-[80vh] flex flex-col bg-base-100 border border-border-secondary rounded-2xl shadow-2xl animate-in slide-in-from-bottom-2 duration-200 outline-none pointer-events-auto"
+          className="relative w-full max-w-[620px] max-h-[80vh] flex flex-col bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary rounded-2xl shadow-2xl animate-in slide-in-from-bottom-2 duration-200 outline-none pointer-events-auto"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-border-secondary shrink-0">
@@ -594,7 +595,7 @@ export const ModelPickerModal = ({
           <div className="px-4 pt-3 pb-0 shrink-0">
             <div
               className={clsx(
-                "flex items-center gap-2.5 px-3 py-2 rounded-lg bg-white/[0.04] border border-border-secondary",
+                "flex items-center gap-2.5 px-3 py-2 rounded-lg bg-white/[0.04] dark:bg-base-400 border border-border-secondary dark:border-border-tertiary",
                 "focus-within:border-primary/50 transition-colors"
               )}
             >
@@ -665,8 +666,8 @@ export const ModelPickerModal = ({
                 className={clsx(
                   "shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full font-body text-[11px] font-medium border transition-all whitespace-nowrap",
                   activeProvider === p
-                    ? "bg-primary/15 border-primary/60 text-purple-400"
-                    : "bg-transparent border-border-tertiary text-ink-400 hover:border-ink-400"
+                    ? "bg-primary/15 border-primary/60 text-purple-400 dark:bg-create-project-tint/[0.16] dark:border-border-tertiary dark:text-white"
+                    : "bg-transparent border-border-tertiary text-ink-400 hover:border-ink-400 dark:hover:bg-dropdown-hover"
                 )}
               >
                 {p !== ALL && <ProviderIcon provider={p} size={13} />}
@@ -825,7 +826,7 @@ export const ModelPickerModal = ({
                 type="button"
                 onClick={handleConfirm}
                 disabled={!pendingId || pendingId === selectedModelId}
-                className="px-5 py-2 rounded-lg font-body text-[13px] font-medium bg-primary text-white hover:bg-[#8e07d4] disabled:bg-disabled disabled:cursor-not-allowed transition-colors"
+                className={`px-5 py-2 rounded-lg font-body text-[13px] font-medium bg-primary text-white hover:bg-[#8e07d4] disabled:bg-disabled disabled:cursor-not-allowed transition-colors border border-transparent ${tintPillDarkClassName}`}
               >
                 Confirm
               </button>

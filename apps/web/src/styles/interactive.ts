@@ -5,7 +5,7 @@ export const iconButtonSmClassName = `${iconButtonClassName} w-6 h-6`;
 export const iconButtonMdClassName = `${iconButtonClassName} w-8 h-8`;
 
 export const surfaceHoverClassName =
-  "transition-colors duration-100 hover:bg-primary-tint-50 dark:hover:bg-primary-900";
+  "transition-colors duration-100 hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover";
 
 // Dark-mode-only "tinted pill" treatment shared by primary action buttons
 // (Create Project, Restore, Run All) — keeps their dark styling in sync.

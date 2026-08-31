@@ -15,6 +15,7 @@ import type { UserWorkspaceRole } from "@/types";
 import {
   iconButtonSmClassName,
   surfaceHoverClassName,
+  tintPillDarkClassName,
 } from "@/styles/interactive";
 import { CloseIconButton } from "@/components/CloseIconButton";
 
@@ -325,7 +326,7 @@ function TeamPlanSection({
             router.push(`/workspace/${workspaceId}/settings/plan`);
             onClose();
           }}
-          className="px-2.5 py-1 border border-border dark:border-gray-700 dark:text-black bg-inputBg rounded-lg font-medium hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700 transition-colors duration-100 text-xs"
+          className={`px-2.5 py-1 border border-border bg-inputBg rounded-lg font-medium hover:bg-hover-bg hover:border-primary transition-colors duration-100 text-xs ${tintPillDarkClassName}`}
         >
           Change Plan
         </button>
@@ -405,7 +406,7 @@ function AIConfigSection({
       <button
         type="button"
         onClick={onOpenPicker}
-        className="flex items-center justify-between w-full rounded-[10px] xl:py-2 py-1.5 pl-4 pr-3 ring-1 ring-inset ring-border-tertiary dark:ring-border-tertiary focus:ring-primary dark:bg-base-400 text-sm font-medium text-ink-100 dark:text-white transition-colors hover:ring-primary/50"
+        className="flex items-center justify-between w-full rounded-[10px] xl:py-2 py-1.5 pl-4 pr-3 ring-1 ring-inset ring-border-tertiary dark:ring-border-tertiary focus:ring-primary dark:bg-dropdown-bg text-sm font-medium text-ink-100 dark:text-white transition-colors hover:ring-primary/50"
       >
         <span className="text-ink-400 dark:text-ink-400">
           {selectedModelId ?? assistantModel}
@@ -565,7 +566,7 @@ function SettingsHeader({
           <button
             type="button"
             onClick={onManageInvites}
-            className="flex items-center gap-2 px-2.5 py-0.5 border bg-inputBg border-border dark:text-black dark:border-border-tertiary rounded-lg text-xs font-medium hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700 transition-colors duration-100"
+            className={`flex items-center gap-2 px-2.5 py-0.5 border bg-inputBg border-border rounded-lg text-xs font-medium hover:bg-hover-bg hover:border-primary transition-colors duration-100 ${tintPillDarkClassName}`}
           >
             Manage Invites
           </button>

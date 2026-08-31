@@ -1,66 +1,12 @@
 "use client";
 
 import clsx from "clsx";
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Avatar } from "@sandworm/ui/components/avatar";
 
 import { Trash } from "@/components/Assets/Trash";
+import { StyledCheckbox } from "@/components/StyledCheckbox";
 import type { UserWorkspaceRole, WorkspaceUser } from "@/types";
-
-interface StyledCheckboxProps {
-  checked: boolean;
-  indeterminate?: boolean;
-  onChange: () => void;
-  "aria-label": string;
-}
-
-const StyledCheckbox = forwardRef<HTMLInputElement, StyledCheckboxProps>(
-  ({ checked, indeterminate, onChange, ...rest }, ref) => {
-    const active = checked || indeterminate;
-    return (
-      <label className="relative inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center">
-        <input
-          ref={ref}
-          type="checkbox"
-          checked={checked}
-          onChange={onChange}
-          className="peer absolute inset-0 h-4 w-4 cursor-pointer opacity-0"
-          {...rest}
-        />
-        <span
-          aria-hidden="true"
-          className={clsx(
-            "flex h-4 w-4 items-center justify-center rounded-[4px] border bg-base-100 transition-colors",
-            "peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#7F56D9]",
-            active ? "border-[#7F56D9]" : "border-[#D0D5DD]"
-          )}
-        >
-          {indeterminate ? (
-            <span className="h-[2px] w-2 rounded-full bg-[#7F56D9]" />
-          ) : checked ? (
-            <svg viewBox="0 0 12 12" fill="none" className="h-3.5 w-3.5">
-              <path
-                d="M2.5 6.2L4.8 8.5L9.5 3.5"
-                stroke="#7F56D9"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          ) : null}
-        </span>
-      </label>
-    );
-  }
-);
-StyledCheckbox.displayName = "StyledCheckbox";
 
 interface BadgeProps {
   className?: string;
@@ -132,7 +78,7 @@ function UserItem(props: UserItemProps) {
         </span>
       </td>
       <td className="whitespace-nowrap p-4 text-sm text-ink-100">
-        <span className="bg-inputBg border border-border dark:bg-base-100  dark:border-border-tertiary rounded-md px-3 py-1">
+        <span className="bg-inputBg border border-border dark:bg-[#2E2E2C]  dark:border-border-tertiary rounded-md px-3 py-1">
           {props.user.workspaceName || "—"} workspace
         </span>
       </td>
@@ -252,7 +198,7 @@ function UsersList(props: Props) {
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-bold text-ink-400 sticky left-0 min-w-[250px] uppercase bg-base-100"
+                  className="text-left p-4 text-xs font-bold text-ink-400 sticky left-0 min-w-[250px] uppercase bg-base-100 dark:bg-page-surface"
                 >
                   user
                 </th>
@@ -307,18 +253,17 @@ function UsersList(props: Props) {
         className={clsx(
           "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",
           "flex items-center gap-4 px-3 py-3",
-          "bg-base-400 dark:bg-[#1A1D21] border border-border-secondary  dark:border-border-tertiary",
+          "bg-base-400 dark:bg-dropdown-bg border border-border-secondary  dark:border-border-tertiary",
           "rounded-[14px]",
+          "shadow-lg",
           "transition-all duration-200 ease-out",
           selectionCount > 0
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 translate-y-4 pointer-events-none"
         )}
       >
-        <span className="text-[13px] text-inputBg dark:text-ink-300 whitespace-nowrap">
-          <span className=" text-inputBg dark:text-white">
-            {selectionCount}
-          </span>{" "}
+        <span className="text-[13px] text-white/70 whitespace-nowrap">
+          <span className="text-white font-medium">{selectionCount}</span>{" "}
           {selectionCount === 1 ? "user" : "users"} selected
         </span>
 

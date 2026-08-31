@@ -100,9 +100,9 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
         className={clsx(
           "flex items-center gap-1.5 px-3 py-0.5 rounded-lg border text-sm font-medium transition-colors min-w-[70px]",
           "border-border dark:border-border-tertiary",
-          "bg-inputBg dark:bg-base-100 ",
+          "bg-inputBg dark:bg-dropdown-bg ",
           "text-ink-500 dark:text-white",
-          "hover:bg-inputBg dark:hover:bg-editor-200",
+          "hover:bg-inputBg dark:hover:bg-dropdown-hover",
           disabled && "cursor-not-allowed"
         )}
       >
@@ -133,7 +133,7 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
               zIndex: 9999,
             }}
             className={clsx(
-              "bg-inputBg dark:bg-[#1A1D21]",
+              "bg-inputBg dark:bg-dropdown-bg",
               "border border-border dark:border-border-tertiary",
               "rounded-lg py-0"
             )}
@@ -147,8 +147,8 @@ function RoleDropdown({ role, onChange, disabled }: RoleDropdownProps) {
                   setOpen(false);
                 }}
                 className={clsx(
-                  "w-full text-left px-3 py-1.5 hover:bg-[#EAECEF] dark:hover:bg-editor-200 transition-colors font-body",
-                  r.value === role && "bg-inputBg dark:bg-editor-200"
+                  "w-full text-left px-3 py-1.5 hover:bg-[#EAECEF] dark:hover:bg-dropdown-hover transition-colors font-body",
+                  r.value === role && "bg-inputBg dark:bg-dropdown-hover"
                 )}
               >
                 <p className="text-xs font-medium text-ink-500 dark:text-white">
