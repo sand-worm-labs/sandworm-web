@@ -196,7 +196,7 @@ function SQLSuccess(props: SQLSuccessProps) {
       ref={containerRef}
     >
       {props.loadingPage && (
-        <div className="absolute top-0 left-0 bottom-8 right-0 bg-white opacity-50 z-10 flex items-center justify-center">
+        <div className="absolute top-0 left-0 bottom-8 right-0 bg-white dark:bg-sql-block-surface opacity-50 z-10 flex items-center justify-center">
           <LargeSpinner color="#deff80" />
         </div>
       )}
@@ -213,11 +213,11 @@ function SQLSuccess(props: SQLSuccessProps) {
       >
         <div
           className={clsx(
-            "max-w-full ph-no-capture bg-white font-body ",
+            "max-w-full ph-no-capture bg-white dark:bg-sql-block-surface font-body ",
             tableTopBorder === "rounded" && "rounded-md",
             (!props.dashboardMode ||
               dashboardModeHasControls(props.dashboardMode)) &&
-              "border-b"
+              "border-b dark:border-sql-block-surface"
           )}
         >
           <Table
@@ -244,12 +244,12 @@ function SQLSuccess(props: SQLSuccessProps) {
 
       <div
         className={clsx(
-          "flex w-full items-center justify-between border-hover-border px-3 h-10  text-xs rounded-b-xl text-ink-400 bg-inputBg",
+          "flex w-full items-center justify-between border-hover-border dark:border-sql-block-surface px-3 h-10  text-xs rounded-b-xl text-ink-400 bg-inputBg dark:bg-sql-block-surface",
           ((props.dashboardMode &&
             (props.dashboardMode._tag === "live" ||
               props.dashboardMode.position !== "expanded")) ||
             props.isResultHidden) &&
-            "border-t"
+            "border-t dark:border-sql-block-surface"
         )}
       >
         <div className="flex-1">

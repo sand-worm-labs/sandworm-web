@@ -61,15 +61,15 @@ function Table(props: Props) {
         className="!w-full text-xs text-left table-auto border-spacing-0 border-separate font-body "
         contentEditable={false}
       >
-        <thead className="bg-[#F9FAFB] sticky top-0">
-          <tr className="divide-x h-10 divide-hover-border">
+        <thead className="bg-[#F9FAFB] dark:bg-table-header-surface sticky top-0">
+          <tr className="divide-x h-10 divide-hover-border dark:divide-sql-block-surface">
             {props.columns.map(column => {
               const Icon = getColumnTypeIcon(column.type);
               return (
                 <th
                   scope="col"
                   className={clsx(
-                    "p-2 text-ink-400  whitespace-nowrap font-bold border-b hover:bg-gray-100 cursor-pointer",
+                    "p-2 text-ink-400  whitespace-nowrap font-bold border-b dark:border-sql-block-surface hover:bg-gray-100 dark:hover:bg-base-200 cursor-pointer",
                     props.sort && props.sort.column === column.name
                       ? "border-t border-l !border-t-[#A308F0] !border-l-[#A308F0]"
                       : props.topBorder && "border-t"
@@ -96,9 +96,12 @@ function Table(props: Props) {
             })}
           </tr>
         </thead>
-        <tbody className="bg-white overflow-y-scroll">
+        <tbody className="bg-white dark:bg-sql-block-surface overflow-y-scroll">
           {props.rows.map((row, rowIndex) => (
-            <tr key={rowIndex} className="divide-x divide-hover-border ">
+            <tr
+              key={rowIndex}
+              className="divide-x divide-hover-border dark:divide-sql-block-surface "
+            >
               {props.columns.map((column, cellIndex) => {
                 const cell = row[column.name];
 
@@ -109,7 +112,7 @@ function Table(props: Props) {
                       rowIndex === props.rows.length - 1 && !props.isDashboard
                         ? "border-b-0"
                         : "border-b",
-                      "px-3 py-2 dark:text-ink-400 text-ink-500 whitespace-nowrap border-hover-border font-medium "
+                      "px-3 py-2 dark:text-ink-400 text-ink-500 whitespace-nowrap border-hover-border dark:border-sql-block-surface font-medium "
                     )}
                   >
                     {cell === null ? (

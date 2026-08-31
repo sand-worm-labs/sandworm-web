@@ -125,6 +125,10 @@ const config: Config = {
         "hover-bg": "var(--hover-bg)",
         "hover-border": "var(--hover-border)",
 
+        "sql-block-surface": "var(--sql-block-surface)",
+        "sql-divider-line": "var(--sql-divider-line)",
+        "table-header-surface": "var(--table-header-surface)",
+
         warning: "var(--warning)",
         link: "var(--link)",
         "link-tint": "var(--link-tint)",

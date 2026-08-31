@@ -216,6 +216,8 @@
     --teal: #01e3d4;
 
     --radius: 0.5rem;
+    --icon-bg: #f5f7fa;
+    --icon-stroke: #1c3b5a;
   }
 
   .dark {
@@ -328,6 +330,14 @@
     --teal: #01e3d4;
 
     --radius: 0.5rem;
+    --icon-bg: #1c1f26;
+    --icon-stroke: #e6eaf0;
+
+    /* SQL block chrome (dark-mode specific, no light equivalent needed) */
+    --sql-block-surface: #1a1a1a;
+    --sql-block-border: #212529;
+    --sql-divider-line: #455768;
+    --table-header-surface: #0f0f0f;
   }
 }
 
@@ -339,6 +349,16 @@
   box-shadow:
     0px 7.5px 8px 0px #8497c30a,
     0px 0px 1px 4px #8b74ff33;
+}
+
+.hatch-bg {
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Cline x1='0' y1='8' x2='8' y2='0' stroke='%23E7E1F0' stroke-width='1'/%3E%3C/svg%3E");
+}
+
+.dark .hatch-bg {
+  background-color: var(--sql-block-surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='%231A1A1A'/%3E%3Cline x1='0' y1='8' x2='8' y2='0' stroke='%23455768' stroke-width='1'/%3E%3C/svg%3E");
 }
 
 /* ╔════════════════════════════════════════════╗

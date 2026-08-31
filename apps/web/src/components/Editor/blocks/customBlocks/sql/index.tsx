@@ -167,13 +167,7 @@ function CollapsedCodeSummary({
 
 function HatchBackground() {
   return (
-    <div
-      className="border border-[#E7E1F0] h-2"
-      style={{
-        backgroundColor: "white",
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Cline x1='0' y1='8' x2='8' y2='0' stroke='%23E7E1F0' stroke-width='1'/%3E%3C/svg%3E")`,
-      }}
-    />
+    <div className="hatch-bg border border-[#E7E1F0] dark:border-sql-divider-line h-2" />
   );
 }
 
@@ -955,13 +949,13 @@ function SQLBlock(props: Props) {
                 aiSuggestions !== null),
             "border-hover-border block-focus-ring dark:border-border-tertiary":
               statusIsDisabled,
-            "border-hover-border shadow-none":
+            "border-hover-border dark:border-sql-block-surface shadow-none":
               !statusIsDisabled &&
               !isAIEditing &&
               aiSuggestions === null &&
               isEditorFocused &&
               editorState.mode === "normal",
-            "border-hover-border block-shadow-soft dark:border-border-tertiary":
+            "border-hover-border block-shadow-soft dark:border-sql-block-surface":
               !statusIsDisabled &&
               !isAIEditing &&
               aiSuggestions === null &&
@@ -973,7 +967,9 @@ function SQLBlock(props: Props) {
         <div
           className={clsx(
             "rounded-2xl overflow-hidden",
-            statusIsDisabled ? "bg-gray-100" : "bg-white dark:bg-base-100 ",
+            statusIsDisabled
+              ? "bg-gray-100"
+              : "bg-white dark:bg-sql-block-surface ",
             props.hasMultipleTabs ? "rounded-tl-none" : "",
             !(isResultHidden || !result) &&
               !isCodeHidden &&
@@ -984,7 +980,7 @@ function SQLBlock(props: Props) {
         >
           <div
             className={clsx(
-              "rounded-t-2xl dark:bg-base-100  ",
+              "rounded-t-2xl dark:bg-sql-block-surface  ",
               props.hasMultipleTabs ? "rounded-tl-none" : "",
               isCodeHidden && (isResultHidden || !result) ? "rounded-b-2xl" : ""
             )}

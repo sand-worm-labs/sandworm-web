@@ -7,10 +7,7 @@ interface BlockTypePillProps {
 
 export function BlockTypePill({ label, icon }: BlockTypePillProps) {
   return (
-    <div
-      className="flex items-center gap-x-1.5 px-2 py-1 rounded-md text-xs font-normal font-body select-none"
-      style={{ backgroundColor: "#F7E8FF", color: "#A308F0" }}
-    >
+    <div className="flex items-center gap-x-1.5 px-2 py-1 rounded-md text-xs font-normal font-body select-none bg-[#F7E8FF] text-[#A308F0] dark:bg-[#7104A8] dark:text-[#F7E8FF]">
       <span className="flex items-center">{icon}</span>
       <span>{label}</span>
     </div>

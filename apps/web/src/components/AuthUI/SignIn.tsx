@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 import { SandwormLogo } from "../Assets";
-import { PartnersSection } from "../Partners";
 
 import { SocialLogin } from "./SocialLogin";
 import { SignInForm } from "./SignInForm";
@@ -65,7 +64,10 @@ export const SignIn = () => {
         <PartnersSection />
       </div> */}
       <p className="font-body font-medium text-center text-xs text-ink-400 mt-6 absolute bottom-4 max-w-[19rem]">
-        By continuing, you agree to the <span className="underline">Terms</span>{" "}
+        By continuing, you agree to the{" "}
+        <Link href="/terms" className="underline">
+          Terms
+        </Link>{" "}
         and confirm that you have read the{" "}
         <span className="underline">Privacy Policy</span>.
       </p>
