@@ -106,7 +106,7 @@ export const NotebookPanel = ({
     <aside
       className={cn(
         "flex flex-col items-center py-4 pb-0 px-0 h-[100%]",
-        "bg-white dark:bg-base-500",
+        "bg-white dark:bg-sidebar-surface",
         "border-l border-border-quiet dark:border-border-tertiary",
         "w-[56px] z-[50] print:hidden"
       )}

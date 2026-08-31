@@ -155,13 +155,13 @@ function ScheduleConfigForm({
           <button
             onClick={onClose}
             type="button"
-            className="flex-1 flex items-center text-center justify-center  rounded-full px-3 py-1.5 text-ink-400  text-sm hover:bg-gray-100 border border-border-secondary"
+            className="flex-1 flex items-center text-center justify-center  rounded-full px-3 py-1.5 text-ink-400  text-sm hover:bg-gray-100 dark:hover:bg-dropdown-hover border border-border-secondary dark:border-border-tertiary"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="flex-1 flex items-center text-center justify-center  rounded-full bg-base-400 px-3 py-1.5 text-sm hover:bg-primary-300 text-white"
+            className="flex-1 flex items-center text-center justify-center  rounded-full bg-base-400 px-3 py-1.5 text-sm hover:bg-primary-300 text-white dark:bg-create-project-tint/[0.16] dark:border dark:border-border-tertiary dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]"
           >
             Schedule run
           </button>

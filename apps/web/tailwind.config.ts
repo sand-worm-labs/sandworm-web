@@ -7,6 +7,7 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/layouts/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -53,6 +54,7 @@ const config: Config = {
         "sidebar-hover": "hsl(var(--sidebar-hover))",
         "placeholder-muted": "var(--placeholder-muted)",
         "dropdown-bg": "hsl(var(--dropdown-bg))",
+        "dropdown-hover": "hsl(var(--dropdown-hover))",
         "create-project-tint": "hsl(var(--create-project-tint) / <alpha-value>)",
 
         base: {

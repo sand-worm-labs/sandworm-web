@@ -21,7 +21,7 @@ export default function Snapshots(props: Props) {
   return (
     <>
       {props.visible && (
-        <div className="w-full flex flex-col  h-full bg-white dark:bg-base-100 relative">
+        <div className="w-full flex flex-col  h-full bg-white dark:bg-page-surface relative">
           <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
             <div className="flex items-start justify-between">
               <div>

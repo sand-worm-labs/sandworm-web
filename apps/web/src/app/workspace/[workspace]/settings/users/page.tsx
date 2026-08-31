@@ -21,6 +21,7 @@ import {
   useBatchRemoveUsersFromWorkspace,
 } from "@/components/Editor/hooks/useWorkspaces";
 import { Loader } from "@/components/Loader";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 export default function UsersPage() {
   const workspaceId = useStringQuery("workspace");
@@ -236,7 +237,8 @@ export default function UsersPage() {
                 isAdmin
                   ? "bg-primary hover:bg-primary-300"
                   : "bg-primary/[86.7%] cursor-not-allowed",
-                "px-6 py-2 text-white rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                "px-6 py-2 text-white rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 border border-transparent",
+                tintPillDarkClassName
               )}
             >
               <UserPlusIcon className="h-4 w-4" /> Invite user

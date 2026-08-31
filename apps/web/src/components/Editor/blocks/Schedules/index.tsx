@@ -213,7 +213,7 @@ interface ScheduleListProps {
 }
 function ScheduleList(props: ScheduleListProps) {
   return (
-    <div className="relative w-full h-full flex flex-col overflow-y-auto font-body dark:bg-base-100 ">
+    <div className="relative w-full h-full flex flex-col overflow-y-auto font-body dark:bg-page-surface ">
       <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
         <div className="flex items-start justify-between">
           <div>

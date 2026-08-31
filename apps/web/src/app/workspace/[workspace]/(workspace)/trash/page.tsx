@@ -35,7 +35,7 @@ function EmptyTrash() {
       <div
         className="flex items-center justify-center w-12 h-12
         rounded-xl border border-border dark:border-base-710
-        bg-white dark:bg-base-720 text-ink-300 dark:text-ink-500"
+        bg-white dark:bg-base-720 text-ink-300 dark:text-placeholder-muted"
       >
         <PiTrash size={20} />
       </div>
@@ -43,7 +43,7 @@ function EmptyTrash() {
         <p className="text-[15px] font-medium text-ink-500 dark:text-ink-200">
           Trash is empty
         </p>
-        <p className="text-sm text-ink-300 dark:text-ink-500 text-center max-w-[240px]">
+        <p className="text-sm text-ink-300 dark:text-placeholder-muted text-center max-w-[240px]">
           Deleted notebooks sit here for 30 days before they're gone for good.
         </p>
       </div>
@@ -114,7 +114,7 @@ function ConfirmDialog({
             <DialogTitle className="text-base font-medium text-ink-100 dark:text-white">
               {title}
             </DialogTitle>
-            <p className="text-sm text-ink-300 dark:text-ink-500 mt-2">
+            <p className="text-sm text-ink-300 dark:text-placeholder-muted mt-2">
               {message}
             </p>
 
@@ -125,7 +125,7 @@ function ConfirmDialog({
                 disabled={isBusy}
                 className="flex-1 py-2.5 rounded-xl border border-border
                   dark:border-border-tertiary text-ink-400 dark:text-ink-400
-                  text-sm font-medium hover:bg-inputBg dark:hover:bg-base-500
+                  text-sm font-medium hover:bg-inputBg dark:hover:bg-dropdown-hover
                   transition-colors disabled:opacity-50"
               >
                 Cancel
@@ -376,14 +376,14 @@ export default function TrashPage() {
   }
 
   return (
-    <ScrollBar className="w-full bg-white dark:bg-base-100 h-full overflow-auto font-body">
+    <ScrollBar className="w-full bg-white dark:bg-page-surface h-full overflow-auto font-body">
       <div className="px-4 sm:px-6 lg:px-8 py-6">
         {/* ── Header ── */}
         <div
           className="flex items-center gap-2 mb-6
           pb-4 border-b border-base-300 dark:border-base-700"
         >
-          <PiTrash size={16} className="text-ink-400 dark:text-ink-500" />
+          <PiTrash size={16} className="text-ink-400 dark:text-placeholder-muted" />
           <h3 className="text-sm font-medium text-ink-100 dark:text-white">
             Trash
           </h3>
@@ -394,7 +394,7 @@ export default function TrashPage() {
           <div className="flex items-center justify-between gap-3 mb-4">
             <label
               className="flex items-center gap-2 text-sm text-ink-300
-              dark:text-ink-500 cursor-pointer select-none"
+              dark:text-placeholder-muted cursor-pointer select-none"
             >
               <input
                 ref={selectAllRef}
@@ -417,9 +417,10 @@ export default function TrashPage() {
                     type="button"
                     onClick={onRestoreSelected}
                     disabled={isRestoringSelected}
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium
-                      text-primary bg-primary-tint-50 dark:bg-primary-900
-                      dark:text-primary-300 hover:bg-primary hover:text-white
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium border border-transparent
+                      text-primary bg-primary-tint-50 dark:bg-create-project-tint/[0.16]
+                      dark:border-border-tertiary dark:text-white hover:bg-primary hover:text-white
+                      dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]
                       transition-colors duration-100 disabled:opacity-50"
                   >
                     {isRestoringSelected ? "Restoring…" : "Restore selected"}
@@ -429,9 +430,10 @@ export default function TrashPage() {
                     onClick={() =>
                       setPendingAction({ kind: "delete", scope: "selected" })
                     }
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium
-                      text-error bg-error-tint dark:bg-error-shade
-                      hover:bg-error hover:text-white
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium border border-transparent
+                      text-error bg-error-tint dark:bg-error/[0.16]
+                      dark:border-error/30 hover:bg-error hover:text-white
+                      dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]
                       transition-colors duration-100"
                   >
                     Delete selected
@@ -443,9 +445,10 @@ export default function TrashPage() {
                     type="button"
                     onClick={onRestoreAll}
                     disabled={isRestoringAll}
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium
-                      text-primary bg-primary-tint-50 dark:bg-primary-900
-                      dark:text-primary-300 hover:bg-primary hover:text-white
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium border border-transparent
+                      text-primary bg-primary-tint-50 dark:bg-create-project-tint/[0.16]
+                      dark:border-border-tertiary dark:text-white hover:bg-primary hover:text-white
+                      dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]
                       transition-colors duration-100 disabled:opacity-50"
                   >
                     {isRestoringAll ? "Restoring…" : "Restore all"}
@@ -455,9 +458,10 @@ export default function TrashPage() {
                     onClick={() =>
                       setPendingAction({ kind: "delete", scope: "all" })
                     }
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium
-                      text-error bg-error-tint dark:bg-error-shade
-                      hover:bg-error hover:text-white
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium border border-transparent
+                      text-error bg-error-tint dark:bg-error/[0.16]
+                      dark:border-error/30 hover:bg-error hover:text-white
+                      dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]
                       transition-colors duration-100"
                   >
                     Delete all

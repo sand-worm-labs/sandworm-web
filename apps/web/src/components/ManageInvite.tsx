@@ -6,6 +6,7 @@ import { Dialog, Transition } from "@headlessui/react";
 
 import type { UserWorkspaceRole } from "@/types";
 import { CloseIconButton } from "@/components/CloseIconButton";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 import { User } from "./Assets/Avatar/User";
 import { useInviteUserToWorkspace } from "./Editor/hooks/useWorkspaces";
@@ -131,7 +132,7 @@ const InviteForm: React.FC<InviteFormProps> = ({ onSendInvite }) => {
         <button
           type="submit"
           disabled={isLoading || !email.trim()}
-          className="px-6 py-2.5 bg-primary text-white disabled:text-border-secondary font-medium font-body rounded-xl disabled:bg-disabled dark:disabled:bg-[#4a4a48] disabled:cursor-not-allowed transition-colors text-sm"
+          className={`px-6 py-2.5 bg-primary text-white disabled:text-border-secondary font-medium font-body rounded-xl disabled:bg-disabled dark:disabled:bg-[#4a4a48] disabled:cursor-not-allowed transition-colors text-sm border border-transparent ${tintPillDarkClassName}`}
         >
           {isLoading ? "Sending..." : "Send invite"}
         </button>
@@ -279,7 +280,7 @@ const PendingInviteItem: React.FC<PendingInviteItemProps> = ({
           type="button"
           onClick={handleCancel}
           disabled={isCancelling}
-          className="px-2.5 py-1 text-xs font-medium border border-border bg-inputBg rounded-md hover:bg-gray-50 disabled:opacity-50 transition-colors"
+          className="px-2.5 py-1 text-xs font-medium border border-border bg-inputBg rounded-md hover:bg-gray-50 disabled:opacity-50 transition-colors dark:text-ink-100"
         >
           Cancel Invite
         </button>
@@ -500,7 +501,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-hidden mx-4 transition-all">
+              <Dialog.Panel className="relative bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-hidden mx-4 transition-all">
                 <div className="flex h-full">
                   <div className="flex-1 p-8 overflow-y-auto">
                     <div className="flex items-center justify-between mb-6">

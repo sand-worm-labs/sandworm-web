@@ -746,7 +746,7 @@ export default function WorkspaceSettingsModal({
             leaveTo="opacity-0 scale-95"
             className="flex h-full w-full min-h-0"
           >
-            <div className="relative flex h-full w-full min-h-0 flex-col overflow-hidden rounded-2xl bg-white  px-20 shadow-none dark:border dark:border-border-tertiary dark:bg-base-400">
+            <div className="relative flex h-full w-full min-h-0 flex-col overflow-hidden rounded-2xl bg-white  px-20 shadow-none dark:border dark:border-border-tertiary dark:bg-dropdown-bg">
               <SettingsHeader
                 workspace={activeWorkspace}
                 isMembersLoading={isMembersLoading}

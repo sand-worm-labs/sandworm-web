@@ -5,6 +5,7 @@ import { Check } from "lucide-react";
 import { Dialog, Transition } from "@headlessui/react";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 import { Copy } from "../Assets/Copy";
 import { Trash } from "../Assets/Trash";
@@ -97,7 +98,7 @@ export const AddWalletModal = ({
           leaveFrom="opacity-100 scale-100 translate-y-0"
           leaveTo="opacity-0 scale-95 translate-y-1"
         >
-          <Dialog.Panel className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-2xl shadow-xl w-full max-w-sm mx-4 p-6 font-body">
+          <Dialog.Panel className="relative bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-2xl shadow-xl w-full max-w-sm mx-4 p-6 font-body">
             {/* Header */}
             <div className="flex items-center justify-between mb-5">
               <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
@@ -147,14 +148,14 @@ export const AddWalletModal = ({
               <button
                 type="button"
                 onClick={handleConfirm}
-                className="w-[60%] py-2.5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-opacity-90 transition-colors"
+                className={`w-[60%] py-2.5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-opacity-90 transition-colors border border-transparent ${tintPillDarkClassName}`}
               >
                 Add Wallet
               </button>
               <button
                 type="button"
                 onClick={handleClose}
-                className="w-[40%] py-2.5 rounded-xl border border-border dark:border-border-tertiary text-ink-400 dark:text-ink-400 text-sm font-medium hover:bg-inputBg dark:hover:bg-base-500 transition-colors"
+                className="w-[40%] py-2.5 rounded-xl border border-border dark:border-border-tertiary text-ink-400 dark:text-ink-100 text-sm font-medium hover:bg-inputBg dark:hover:bg-base-500 transition-colors"
               >
                 Cancel
               </button>
@@ -236,7 +237,7 @@ export const ManageWalletsModal = ({
             leaveFrom="opacity-100 scale-100 translate-y-0"
             leaveTo="opacity-0 scale-95 translate-y-1"
           >
-            <Dialog.Panel className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-3xl shadow-xl w-full max-w-md mx-4 px-8 py-8 font-body">
+            <Dialog.Panel className="relative bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-3xl shadow-xl w-full max-w-md mx-4 px-8 py-8 font-body">
               <div className="flex items-center justify-between mb-5">
                 <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
                   Manage Wallets
@@ -305,7 +306,7 @@ export const ManageWalletsModal = ({
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(true)}
-                  className="w-[60%] py-2.5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-opacity-90 transition-colors"
+                  className={`w-[60%] py-2.5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-opacity-90 transition-colors border border-transparent ${tintPillDarkClassName}`}
                 >
                   Add wallet
                 </button>
@@ -313,7 +314,7 @@ export const ManageWalletsModal = ({
                   <button
                     type="button"
                     onClick={deleteAll}
-                    className=" bg-base-400 text-border-secondary w-[40%] py-2.5 rounded-xl border border-border dark:border-border-tertiary text-ink-400 dark:text-ink-400 text-sm font-medium hover:bg-inputBg dark:hover:bg-base-500 transition-colors"
+                    className=" bg-base-400 text-border-secondary w-[40%] py-2.5 rounded-xl border border-border dark:border-border-tertiary text-ink-400 dark:text-ink-100 text-sm font-medium hover:bg-inputBg dark:hover:bg-base-500 transition-colors"
                   >
                     Delete all
                   </button>

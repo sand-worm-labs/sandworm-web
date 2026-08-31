@@ -133,6 +133,7 @@
     --header-surface: 0 0% 100%; /* #FFFFFF */
     --page-surface: 0 0% 100%; /* #FFFFFF */
     --dropdown-bg: 0 0% 100%; /* #FFFFFF */
+    --dropdown-hover: 210 17% 96%; /* light default; components keep their own light hover for now */
     --sidebar-surface: 240 100% 99.8%;
     --sidebar-hover: 180 43% 95%; /* #EBF7F7 */
     --create-project-tint: 60 3% 46%; /* oklch(56.74% .009 106.68) */
@@ -225,7 +226,7 @@
     --foreground: 0 0% 9%; /* #171717 */
 
     /* Brand */
-    --primary: 263 90% 76%; /* #B58BF9 */
+    --primary: 279 100% 95.5%; /* #F7E8FF */
     --primary-foreground: 0 0% 98%; /* #FAFAFA */
 
     --accent: 258 98% 66%; /* #8053FE */
@@ -244,6 +245,7 @@
     --header-surface: 0 0% 10.2%; /* #1A1A1A */
     --page-surface: 60 2% 13%; /* #212120 */
     --dropdown-bg: 60 1% 15%; /* oklch(27.2% .002 107) ≈ #272726 */
+    --dropdown-hover: 0 0% 18%; /* #2F2F2F */
     --sidebar-surface: 60 2% 9%; /* #171716 */
     --sidebar-hover: 60 1% 19%; /* #313130 */
     --create-project-tint: 60 3% 46%; /* oklch(56.74% .009 106.68) */
@@ -265,7 +267,7 @@
     --ink-100: #ffffff;
     --ink-200: #9C9A92;
     --ink-300: #ADB5BD;
-    --ink-400: #868E96;
+    --ink-400: #A5A5A4; /* oklch(72.34% .002 107) */;
     --placeholder-muted: #A5A5A4; /* oklch(72.34% .002 107) */
     --ink-450: #6d6c7d;
     --ink-600: #fff;

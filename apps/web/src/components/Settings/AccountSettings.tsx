@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { PiCheckCircle, PiGear, PiUsers } from "react-icons/pi";
 
 import type { ApiWorkspace } from "@/types";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 import {
   useCurrentWorkspaceInfo,
@@ -358,7 +359,7 @@ export default function WorkspaceSettings() {
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
-            className="mt-4 md:mt-0 text-white px-5 py-1.5 rounded-xl text-sm bg-primary hover:bg-primary-720 transition-colors duration-100"
+            className={`mt-4 md:mt-0 text-white px-5 py-1.5 rounded-xl text-sm bg-primary hover:bg-primary-720 transition-colors duration-100 border border-transparent ${tintPillDarkClassName}`}
           >
             Create New Team
           </button>

@@ -16,6 +16,7 @@ import {
 import { cn } from "@sandworm/ui/lib/utils";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 import { TooltipV2 } from "./ToolTips";
 
@@ -95,8 +96,8 @@ function TagsInput({
       className="flex flex-wrap gap-1.5
       rounded-xl border border-transparent
       bg-base-300 dark:bg-base-730
-      hover:border-border dark:hover:border-base-710
-      focus-within:border-primary-200 dark:focus-within:border-primary-700
+      hover:border-border dark:hover:border-border-tertiary
+      focus-within:border-primary-200 dark:focus-within:border-border-focus
       px-3 py-2 min-h-[40px] transition-colors duration-100"
     >
       {tags.map(tag => (
@@ -104,9 +105,9 @@ function TagsInput({
           key={tag}
           className="inline-flex items-center gap-1
             rounded-md px-2 py-0.5 text-[11px] font-medium
-            bg-[#F3E6FD] dark:bg-primary-920
-            border border-primary-200 dark:border-primary-700
-            text-primary-700 dark:text-primary-300"
+            bg-[#F3E6FD] dark:bg-create-project-tint/[0.16]
+            border border-primary-200 dark:border-border-tertiary
+            text-primary-700 dark:text-white"
         >
           #{tag}
           <button
@@ -136,7 +137,7 @@ function TagsInput({
           placeholder={tags.length === 0 ? "defi, ethereum, nft..." : ""}
           className="flex-1 min-w-[80px] bg-transparent text-sm
             text-ink-500 dark:text-ink-200
-            placeholder:text-ink-300 dark:placeholder:text-ink-600
+            placeholder:text-ink-300 dark:placeholder:text-placeholder-muted
             outline-none"
         />
       )}
@@ -244,20 +245,20 @@ export default function ShareModal({
               >
                 <Dialog.Panel
                   className="w-full max-w-md rounded-2xl overflow-hidden
-                  bg-white dark:bg-base-400
-                  border border-base-300 dark:border-base-700
+                  bg-white dark:bg-dropdown-bg
+                  border border-base-300 dark:border-border-tertiary
                   shadow-[0_8px_32px_rgba(0,0,0,0.10)]"
                 >
                   {/* ── Header ── */}
                   <div
                     className="flex items-start justify-between px-5 pt-5 pb-4
-                    border-b border-base-300 dark:border-base-700"
+                    border-b border-base-300 dark:border-border-tertiary"
                   >
                     <div>
                       <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
                         Share notebook
                       </Dialog.Title>
-                      <p className="text-[12.5px] text-ink-400 dark:text-ink-500 mt-0.5">
+                      <p className="text-[12.5px] text-ink-400 dark:text-placeholder-muted mt-0.5">
                         Choose who can access this notebook
                       </p>
                     </div>
@@ -281,8 +282,8 @@ export default function ShareModal({
                               "relative flex items-center gap-3 rounded-xl px-4 py-3",
                               "cursor-pointer transition-all duration-150 border",
                               checked
-                                ? "border-hover-border bg-hover-bg dark:bg-base-600 dark:text-ink-100"
-                                : "border-border dark:border-base-710 hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700",
+                                ? "border-hover-border bg-hover-bg dark:bg-base-600 dark:text-ink-100 dark:border-border-tertiary"
+                                : "border-border dark:border-border-tertiary hover:bg-hover-bg hover:border-primary dark:hover:bg-dropdown-hover",
                               isUpdating && "opacity-50 cursor-not-allowed"
                             )
                           }
@@ -294,8 +295,8 @@ export default function ShareModal({
                                 className={cn(
                                   "flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0 transition-colors",
                                   checked
-                                    ? "bg-[#E8D5FC] dark:bg-[#2E1040] text-primary-700 dark:text-primary-300"
-                                    : "bg-base-300 dark:bg-base-700 text-ink-400 dark:text-ink-500"
+                                    ? "bg-[#E8D5FC] dark:bg-create-project-tint/[0.16] text-primary-700 dark:text-white"
+                                    : "bg-base-300 dark:bg-base-700 text-ink-400 dark:text-placeholder-muted"
                                 )}
                               >
                                 <option.icon size={16} />
@@ -308,7 +309,7 @@ export default function ShareModal({
                                   className={cn(
                                     "text-sm font-medium leading-tight",
                                     checked
-                                      ? "text-primary-700 dark:text-primary-300"
+                                      ? "text-primary-700 dark:text-white"
                                       : "text-ink-500 dark:text-ink-200"
                                   )}
                                 >
@@ -316,7 +317,7 @@ export default function ShareModal({
                                 </RadioGroup.Label>
                                 <RadioGroup.Description
                                   as="p"
-                                  className="text-[12px] text-ink-300 dark:text-ink-600 mt-0.5"
+                                  className="text-[12px] text-ink-300 dark:text-placeholder-muted mt-0.5"
                                 >
                                   {option.description}
                                 </RadioGroup.Description>
@@ -334,7 +335,7 @@ export default function ShareModal({
                               >
                                 <PiCheckCircle
                                   size={18}
-                                  className="text-primary dark:text-primary-300 flex-shrink-0"
+                                  className="text-primary dark:text-white flex-shrink-0"
                                 />
                               </Transition>
                             </>
@@ -359,7 +360,7 @@ export default function ShareModal({
                       <div>
                         <label
                           className="block text-[11px] font-semibold
-                          text-ink-300 dark:text-ink-600
+                          text-ink-300 dark:text-placeholder-muted
                           uppercase tracking-wider mb-1.5"
                         >
                           Description{" "}
@@ -375,11 +376,11 @@ export default function ShareModal({
                           maxLength={280}
                           className="w-full rounded-xl text-sm
                             text-ink-500 dark:text-ink-200
-                            placeholder:text-ink-300 dark:placeholder:text-ink-600
+                            placeholder:text-ink-300 dark:placeholder:text-placeholder-muted
                             bg-base-300 dark:bg-base-730
                             border border-transparent
-                            hover:border-border dark:hover:border-base-710
-                            focus:border-primary-200 dark:focus:border-primary-700
+                            hover:border-border dark:hover:border-border-tertiary
+                            focus:border-primary-200 dark:focus:border-border-focus
                             px-3 py-2 resize-none outline-none
                             transition-colors duration-100"
                         />
@@ -387,7 +388,7 @@ export default function ShareModal({
                       <div>
                         <label
                           className="block text-[11px] font-semibold
-                          text-ink-300 dark:text-ink-600
+                          text-ink-300 dark:text-placeholder-muted
                           uppercase tracking-wider mb-1.5"
                         >
                           Tags{" "}
@@ -413,7 +414,7 @@ export default function ShareModal({
                     <div className="px-5 pb-4 overflow-hidden">
                       <div
                         className="flex items-center gap-2
-                        rounded-xl border border-border dark:border-base-710
+                        rounded-xl border border-border dark:border-border-tertiary
                         bg-base-300 dark:bg-base-730
                         p-1.5 pl-3"
                       >
@@ -422,7 +423,7 @@ export default function ShareModal({
                           readOnly
                           value={link}
                           className="flex-1 min-w-0 bg-transparent text-sm
-                            text-ink-400 dark:text-ink-500 outline-none truncate"
+                            text-ink-400 dark:text-placeholder-muted outline-none truncate"
                         />
                         <button
                           type="button"
@@ -431,7 +432,7 @@ export default function ShareModal({
                             "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-150",
                             copied
                               ? "bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 border border-green-100 dark:border-green-900"
-                              : "bg-white dark:bg-base-720 text-ink-500 dark:text-ink-200 border border-border dark:border-base-710 hover:bg-primary-tint-50 dark:hover:bg-primary-900 hover:border-primary-200 dark:hover:border-primary-700"
+                              : "bg-white dark:bg-base-720 text-ink-500 dark:text-ink-200 border border-border dark:border-border-tertiary hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover hover:border-primary-200 dark:hover:border-border-tertiary"
                           )}
                         >
                           {copied ? (
@@ -460,16 +461,16 @@ export default function ShareModal({
                         className={cn(
                           "w-full flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-150 border",
                           isExportingPDF
-                            ? "border-border dark:border-base-710 bg-inputBg dark:bg-base-730 text-ink-300 dark:text-ink-600 cursor-not-allowed"
-                            : "border-border dark:border-base-710 hover:bg-primary-tint-50 dark:hover:bg-primary-900 hover:border-primary-200 dark:hover:border-primary-700 text-ink-500 dark:text-ink-200"
+                            ? "border-border dark:border-border-tertiary bg-inputBg dark:bg-base-730 text-ink-300 dark:text-placeholder-muted cursor-not-allowed"
+                            : "border-border dark:border-border-tertiary hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover hover:border-primary-200 dark:hover:border-border-tertiary text-ink-500 dark:text-ink-200"
                         )}
                       >
                         <div
                           className={cn(
                             "flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0",
                             isExportingPDF
-                              ? "bg-base-300 dark:bg-base-700 text-ink-300 dark:text-ink-600"
-                              : "bg-base-300 dark:bg-base-700 text-ink-400 dark:text-ink-500"
+                              ? "bg-base-300 dark:bg-base-700 text-ink-300 dark:text-placeholder-muted"
+                              : "bg-base-300 dark:bg-base-700 text-ink-400 dark:text-placeholder-muted"
                           )}
                         >
                           {isExportingPDF ? (
@@ -484,7 +485,7 @@ export default function ShareModal({
                               ? "Preparing PDF…"
                               : "Download as PDF"}
                           </p>
-                          <p className="text-[12px] text-ink-300 dark:text-ink-600 mt-0.5">
+                          <p className="text-[12px] text-ink-300 dark:text-placeholder-muted mt-0.5">
                             Export this notebook as a printable PDF
                           </p>
                         </div>
@@ -495,15 +496,16 @@ export default function ShareModal({
                   {/* ── Footer ── */}
                   <div
                     className="flex items-center justify-end gap-2 px-5 py-4
-                    border-t border-base-300 dark:border-base-700"
+                    border-t border-base-300 dark:border-border-tertiary"
                   >
                     <button
                       type="button"
                       onClick={closeModal}
                       className="text-sm font-medium px-6 py-1.5 rounded-xl
-                        text-ink-400 dark:text-ink-500
-                        border border-border dark:border-base-710 
-                        hover:bg-base-300 bg-inputBg dark:hover:bg-base-700
+                        text-ink-400 dark:text-placeholder-muted
+                        border border-border dark:border-border-tertiary
+                        bg-inputBg dark:bg-transparent
+                        hover:bg-base-300 dark:hover:bg-dropdown-hover
                         hover:text-ink-500 dark:hover:text-ink-300
                         transition-colors duration-100"
                     >
@@ -516,8 +518,8 @@ export default function ShareModal({
                       className={cn(
                         "flex items-center gap-1.5 px-6 py-1.5 rounded-xl text-sm font-medium transition-all duration-100",
                         isUpdating
-                          ? "bg-base-300 dark:bg-base-700 text-ink-300 dark:text-ink-600 cursor-not-allowed"
-                          : "bg-primary hover:bg-primary-710 text-white active:scale-[0.98]"
+                          ? "bg-base-300 dark:bg-base-700 text-ink-300 dark:text-placeholder-muted cursor-not-allowed"
+                          : `bg-primary hover:bg-primary-710 text-white active:scale-[0.98] ${tintPillDarkClassName}`
                       )}
                     >
                       {isUpdating ? "Saving…" : "Save changes"}

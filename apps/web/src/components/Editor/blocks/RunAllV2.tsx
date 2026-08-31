@@ -8,6 +8,7 @@ import clsx from "clsx";
 import useEditorAwareness from "../hooks/useEditorAwareness";
 import useRunAll from "../hooks/useRunAll";
 import usePreviousEffect from "../hooks/usePreviousEffect";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 // =====================================
 // ⬢ Types
@@ -68,7 +69,7 @@ export default function RunAllV2(props: Props) {
           "bg-base-300 dark:bg-base-700 text-ink-300 dark:text-ink-600 cursor-not-allowed":
             props.disabled || isAborting,
 
-          "bg-base-200 dark:bg-base-730 text-ink-100 dark:text-ink-200 border border-border dark:border-base-710 hover:bg-base-400 hover:text-white hover:border-transparent dark:hover:bg-base-400 dark:hover:text-white":
+          [`bg-base-200 text-ink-100 border border-border hover:bg-base-400 hover:text-white hover:border-transparent dark:hover:bg-base-400 dark:hover:text-white ${tintPillDarkClassName}`]:
             !props.disabled && !loading && !isAborting,
 
           "bg-[#FEE2E2] dark:bg-[#2A0A0A] text-[#DC2626] dark:text-[#F87171] hover:bg-[#FECACA] dark:hover:bg-[#3A0F0F] border border-[#FECACA] dark:border-[#7F1D1D]":

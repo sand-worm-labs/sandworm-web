@@ -72,7 +72,7 @@ export default function Comments({
   if (!visible) return null;
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-base-100">
+    <div className="flex flex-col h-full bg-white dark:bg-page-surface">
       <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
         <div className="flex items-start justify-between">
           <div>

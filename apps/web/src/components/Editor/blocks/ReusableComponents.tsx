@@ -60,7 +60,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left transition-all w-[532px] font-body">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-page-surface px-4 pb-4 pt-5 text-left transition-all w-[532px] font-body">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full ">
                     <ScheduleIcon />
@@ -252,7 +252,7 @@ export default function ReusableComponents(props: Props) {
   return (
     <>
       {props.visible && (
-        <div className="relative w-full flex flex-col  h-full bg-white dark:bg-base-100 font-body dark:border-border-tertiary">
+        <div className="relative w-full flex flex-col  h-full bg-white dark:bg-page-surface font-body dark:border-border-tertiary">
           <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
             <div className="flex items-start justify-between">
               <div>
@@ -302,7 +302,7 @@ export default function ReusableComponents(props: Props) {
             </>
           ) : (
             <div className="flex-1 p-4">
-              <div className="flex items-center justify-center h-full text-ink-300 dark:text-ink-400 rounded-lg border border-dashed border-border-secondary dark:border-border-tertiary p-8 text-center font-body font-medium flex-col bg-base-500 dark:bg-base-100">
+              <div className="flex items-center justify-center h-full text-ink-300 dark:text-ink-400 rounded-lg border border-dashed border-border-secondary dark:border-border-tertiary p-8 text-center font-body font-medium flex-col bg-base-500 dark:bg-page-surface">
                 <ScheduleIcon />
                 <p className="mt-2 text-[0.9rem]">
                   You have no reusable components. Save a block to create one.

@@ -5,6 +5,7 @@ import { Dialog, Transition } from "@headlessui/react";
 
 import { useCreateWorkspaceMutation } from "@/generated/graphql";
 import { CloseIconButton } from "@/components/CloseIconButton";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 interface CreateTeamModalProps {
   isOpen: boolean;
@@ -86,7 +87,7 @@ export default function CreateTeamModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-[31rem] transform overflow-hidden rounded-3xl bg-white  dark:bg-base-400 transition-all dark:border-border-tertiary dark:border ">
+              <Dialog.Panel className="w-full max-w-[31rem] transform overflow-hidden rounded-3xl bg-white  dark:bg-dropdown-bg transition-all dark:border-border-tertiary dark:border ">
                 <div className="flex items-center justify-between  px-6 py-4">
                   <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
                     Create New Team
@@ -136,7 +137,7 @@ export default function CreateTeamModal({
                     <button
                       type="submit"
                       disabled={loading || !formData.name.trim()}
-                      className="w-full py-3.5 px-4 bg-primary hover:bg-primary-720 disabled:bg-disabled text-border-secondary font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                      className={`w-full py-3.5 px-4 bg-primary hover:bg-primary-720 disabled:bg-disabled text-border-secondary font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm border border-transparent ${tintPillDarkClassName}`}
                     >
                       {loading ? (
                         <>

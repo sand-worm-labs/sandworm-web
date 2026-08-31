@@ -27,11 +27,11 @@ interface WorkspaceDropdownMenuProps {
 const ROW_OUTER =
   "flex w-[calc(100%-0.75rem)] mx-1.5 items-center gap-1.5 px-2 py-1.5 rounded-[10px] border border-transparent";
 const ROW_HOVER =
-  "transition-colors duration-100 hover:bg-hover-bg dark:hover:bg-[#2F2F2F] hover:border-hover-border";
+  "transition-colors duration-100 hover:bg-hover-bg dark:hover:bg-dropdown-hover hover:border-hover-border";
 const ROW_MAIN =
   "flex flex-1 min-w-0 items-center gap-2.5 text-left disabled:opacity-50 disabled:cursor-not-allowed";
 const ACCENT_HOVER =
-  "border border-transparent transition-colors duration-100 hover:bg-hover-bg dark:hover:bg-[#2F2F2F] hover:border-primary";
+  "border border-transparent transition-colors duration-100 hover:bg-hover-bg dark:hover:bg-dropdown-hover hover:border-primary";
 
 // =====================================
 // ⬢ Settings Button

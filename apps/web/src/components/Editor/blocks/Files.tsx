@@ -61,7 +61,7 @@ function DragOverlay({ isDragActive }: { isDragActive: boolean }) {
       )}
     >
       <div className="absolute top-0 left-0 h-full w-full bg-base-500 dark:bg-editor-400 opacity-70" />
-      <div className="flex flex-col items-center justify-center gap-y-2 rounded-md bg-gray-50 dark:bg-base-100 p-4 relative border-2 border-dashed border-gray-300 dark:border-border-tertiary">
+      <div className="flex flex-col items-center justify-center gap-y-2 rounded-md bg-gray-50 dark:bg-page-surface p-4 relative border-2 border-dashed border-gray-300 dark:border-border-tertiary">
         <DocumentPlusIcon className="w-10 h-10 text-ink-400" />
         <span className="text-center text-ink-400 font-semibold text-xs">
           Drop files here to upload
@@ -89,7 +89,7 @@ function UploadPlaceholder({
     >
       <div
         className={clsx(
-          "bg-base-500 rounded-2xl border-2 border-dashed border-border-secondary  dark:text-ink-400 text-ink-300 dark:bg-base-100  dark:border-border-tertiary",
+          "bg-base-500 rounded-2xl border-2 border-dashed border-border-secondary  dark:text-ink-400 text-ink-300 dark:bg-page-surface  dark:border-border-tertiary",
           compact
             ? "flex items-center justify-between px-2 py-2 text-sm  "
             : "flex flex-col items-center justify-center h-full p-8 text-center"
@@ -270,7 +270,7 @@ function ReplaceDialog(props: ReplaceDialogProps) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left  transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 border-border-secondary  font-body font-medium">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-xl bg-white dark:bg-page-surface px-4 pb-4 pt-5 text-left  transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 border-border-secondary  font-body font-medium">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full ">
                     <Cautious />
@@ -341,7 +341,7 @@ function FileItem(props: FileItemProps) {
   }, [props.onDelete, props.file]);
 
   return (
-    <div className="px-4 py-3 font-body  border border-border-secondary  rounded-xl my-2  dark:bg-base-100 dark:border-border-tertiary">
+    <div className="px-4 py-3 font-body  border border-border-secondary  rounded-xl my-2  dark:bg-page-surface dark:border-border-tertiary">
       <div>
         <div className="flex justify-between pb-0.5">
           <div
@@ -379,7 +379,7 @@ function FileItem(props: FileItemProps) {
         >
           <button
             type="button"
-            className="text-ink-400 hover:text-ink-400 disabled:hover:text-ink-400  disabled:cursor-not-allowed bg-primary-tint-75 dark:text-ink-100 dark:bg-primary-910
+            className="text-ink-400 hover:text-ink-400 disabled:hover:text-ink-400  disabled:cursor-not-allowed bg-primary-tint-75 dark:text-white dark:bg-create-project-tint/[0.16]
  rounded-md px-1.5 py-0.5"
             onClick={onUseInPython}
             disabled={props.isDeleting || !props.canUse}
@@ -395,7 +395,7 @@ function FileItem(props: FileItemProps) {
         >
           <button
             type="button"
-            className="text-ink-400 hover:text-ink-400 disabled:hover:text-ink-400  disabled:cursor-not-allowed  bg-primary-tint-75 dark:text-ink-100 dark:bg-primary-910 rounded-md px-1.5 py-0.5"
+            className="text-ink-400 hover:text-ink-400 disabled:hover:text-ink-400  disabled:cursor-not-allowed  bg-primary-tint-75 dark:text-white dark:bg-create-project-tint/[0.16] rounded-md px-1.5 py-0.5"
             onClick={onUseInSQL}
             disabled={props.isDeleting || !props.canUse}
           >
@@ -404,7 +404,7 @@ function FileItem(props: FileItemProps) {
         </Tooltip>
         <div
           className={clsx(
-            "text-ink-400  bg-primary-tint-75 dark:text-ink-100 dark:bg-primary-910 rounded-md px-1.5 py-0.5",
+            "text-ink-400  bg-primary-tint-75 dark:text-white dark:bg-create-project-tint/[0.16] rounded-md px-1.5 py-0.5",
             props.isDeleting ? "cursor-not-allowed" : "hover:text-ink-400"
           )}
         >
@@ -440,7 +440,7 @@ function FolderItem({ file, onNavigate }: FolderItemProps) {
     <button
       type="button"
       onClick={onClick}
-      className="w-full text-left px-4 py-3 font-body border border-border-secondary  rounded-xl my-2 dark:bg-base-100 dark:border-border-tertiary  transition-colors group"
+      className="w-full text-left px-4 py-3 font-body border border-border-secondary  rounded-xl my-2 dark:bg-page-surface dark:border-border-tertiary  transition-colors group"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-2 min-w-0">
@@ -694,7 +694,7 @@ file`;
 
       {props.visible && (
         <div
-          className="relative w-full flex flex-col  h-full bg-white dark:bg-base-100"
+          className="relative w-full flex flex-col  h-full bg-white dark:bg-page-surface"
           {...getRootProps()}
         >
           <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
@@ -719,7 +719,7 @@ file`;
 
           {(upload._tag === "uploading" || results.length > 0) && (
             <>
-              <div className="relative flex px-4 py-2 text-xs font-medium border-b dark:border-border-tertiary border-base-200 bg-gray-50 dark:bg-base-100 text-gray-600 justify-between">
+              <div className="relative flex px-4 py-2 text-xs font-medium border-b dark:border-border-tertiary border-base-200 bg-gray-50 dark:bg-page-surface text-gray-600 justify-between">
                 <div className="flex gap-x-1">
                   <CloudArrowUpIconSolid className="w-4 h-4 text-ink-400" />
                   Uploading
@@ -751,7 +751,7 @@ file`;
 
           {(actualFiles.length > 0 || upload._tag === "idle") && (
             <>
-              <div className="relative flex items-center px-4 py-2 text-xs font-medium border-b border-border-secondary dark:bg-base-100 dark:border-border-tertiary text-ink-400 justify-between gap-x-2">
+              <div className="relative flex items-center px-4 py-2 text-xs font-medium border-b border-border-secondary dark:bg-page-surface dark:border-border-tertiary text-ink-400 justify-between gap-x-2">
                 <div className="flex items-center gap-x-1 overflow-hidden flex-1 font-mono min-w-0">
                   {breadcrumbs.map((crumb, i) => (
                     <React.Fragment key={crumb.path}>
@@ -780,7 +780,7 @@ file`;
                   className={clsx(
                     "flex items-center gap-x-1 flex-shrink-0 text-[0.65rem] font-medium px-1.5 py-0.5 rounded-md transition-colors",
                     showHidden
-                      ? "bg-primary-tint-75 text-primary dark:bg-primary-910 dark:text-primary"
+                      ? "bg-primary-tint-75 text-primary dark:bg-create-project-tint/[0.16] dark:text-white"
                       : "text-ink-400 hover:text-ink-100"
                   )}
                   title={showHidden ? "Hide dotfiles" : "Show dotfiles"}
@@ -829,7 +829,7 @@ file`;
               ) : (
                 !isDragActive && (
                   <div className="flex-1 p-4">
-                    <div className="flex items-center flex-col justify-center h-full text-ink-400 bg-base-500 rounded-lg border-2 border-dashed border-border-secondary p-8 text-center dark:bg-base-100 dark:border-border-tertiary">
+                    <div className="flex items-center flex-col justify-center h-full text-ink-400 bg-base-500 rounded-lg border-2 border-dashed border-border-secondary p-8 text-center dark:bg-page-surface dark:border-border-tertiary">
                       <UploadIcon />
                       <span className="mt-2 text-sm">
                         Click or drag and drop files here to upload them

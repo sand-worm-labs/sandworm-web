@@ -297,7 +297,7 @@ export const Projects: React.FC = () => {
                               onClick={() =>
                                 handleMenuAction("duplicate", project.id)
                               }
-                              className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20 dark:hover:bg-[#2F2F2F]"
+                              className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20 dark:hover:bg-dropdown-hover"
                             >
                               <PiCopyLight className="w-3.5 h-3.5 dark:text-placeholder-muted" />
                               Duplicate
@@ -307,7 +307,7 @@ export const Projects: React.FC = () => {
                               onClick={() =>
                                 handleMenuAction("newTab", project.id)
                               }
-                              className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20 dark:hover:bg-[#2F2F2F]"
+                              className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20 dark:hover:bg-dropdown-hover"
                             >
                               <PiArrowSquareOutLight className="w-3.5 h-3.5 dark:text-placeholder-muted" />
                               Open in new tab
@@ -317,7 +317,7 @@ export const Projects: React.FC = () => {
                               onClick={() =>
                                 handleMenuAction("trash", project.id)
                               }
-                              className="w-full px-4 py-2 text-left text-sm hover:bg-primary/20 dark:hover:bg-[#2F2F2F] flex items-center gap-2"
+                              className="w-full px-4 py-2 text-left text-sm hover:bg-primary/20 dark:hover:bg-dropdown-hover flex items-center gap-2"
                             >
                               <PiTrashLight className="w-3.5 h-3.5 dark:text-placeholder-muted" />
                               Move to trash
@@ -348,7 +348,7 @@ export const Projects: React.FC = () => {
                       )}
                     </div>
 
-                    <div >
+                    <div>
                       <button
                         type="button"
                         onMouseEnter={() => setHoveredSave(project.id)}

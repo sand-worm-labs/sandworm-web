@@ -42,8 +42,8 @@ function ActionBtn({ icon, label, onClick, danger }: ActionBtnProps) {
           transition-colors duration-100
           ${
             danger
-              ? "text-ink-300 hover:text-warning hover:bg-error-tint dark:hover:bg-error-shade"
-              : "text-ink-300 hover:text-ink-500 dark:hover:text-ink-200 hover:bg-base-300 dark:hover:bg-base-700"
+              ? "text-ink-300 dark:text-placeholder-muted hover:text-warning hover:bg-error-tint dark:hover:bg-error-shade"
+              : "text-ink-300 dark:text-placeholder-muted hover:text-ink-500 dark:hover:text-ink-200 hover:bg-base-300 dark:hover:bg-dropdown-hover"
           }`}
       >
         {icon}
@@ -107,7 +107,7 @@ export default function TrashList({
             key={doc.id}
             className="group flex items-center gap-3 px-3 py-3.5
               rounded-xl transition-colors duration-100
-              hover:bg-primary-tint-50 dark:hover:bg-primary-900"
+              hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover"
           >
             {/* ── Checkbox ── */}
             <input
@@ -124,7 +124,7 @@ export default function TrashList({
             <div
               className="flex-shrink-0 flex items-center justify-center w-8 h-8
               rounded-lg border border-border dark:border-base-710
-              bg-white dark:bg-base-720 text-ink-300 dark:text-ink-500"
+              bg-white dark:bg-base-720 text-ink-300 dark:text-placeholder-muted"
             >
               <PiNotebook size={15} />
             </div>
@@ -140,13 +140,13 @@ export default function TrashList({
                 {doc.title || "Untitled"}
               </Link>
               <div className="flex items-center gap-1.5 mt-1">
-                <span className="text-sm text-ink-300 dark:text-ink-600 truncate">
+                <span className="text-sm text-ink-300 dark:text-placeholder-muted truncate">
                   {displayPath}
                 </span>
-                <span className="text-sm text-ink-300 dark:text-ink-600">
+                <span className="text-sm text-ink-300 dark:text-placeholder-muted">
                   ·
                 </span>
-                <span className="text-sm text-ink-300 dark:text-ink-600 flex-shrink-0 tabular-nums">
+                <span className="text-sm text-ink-300 dark:text-placeholder-muted flex-shrink-0 tabular-nums">
                   Deleted {timeAgo(new Date(doc.deletedAt))}
                 </span>
               </div>

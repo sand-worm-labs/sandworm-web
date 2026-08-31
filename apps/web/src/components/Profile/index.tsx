@@ -19,6 +19,7 @@ import Image from "next/image";
 import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
 
 import type { ApiDocument } from "@/types";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 import { Copy } from "../Assets/Copy";
 import { useCurrentUser } from "../Editor/hooks/useCurrentUser";
@@ -206,7 +207,7 @@ const ProfileComponent = ({
                           <button
                             type="button"
                             onClick={() => setIsModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-0.5 rounded-lg transition-colors text-sm border border-border dark:border-border-tertiary text-ink-400 dark:text-black hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700 bg-inputBg"
+                            className={`flex items-center gap-2 px-4 py-0.5 rounded-lg transition-colors text-sm border border-border dark:border-border-tertiary text-ink-400 hover:bg-hover-bg hover:border-primary bg-inputBg dark:hover:bg-create-project-tint/[0.24] ${tintPillDarkClassName}`}
                           >
                             Edit
                           </button>
@@ -346,7 +347,7 @@ const ProfileComponent = ({
 
                 <div className="w-full flex-1 py-12 md:py-0">
                   {displayWallets && displayWallets.length > 0 ? (
-                    <div className="bg-white dark:bg-base-200 rounded-2xl md:p-6">
+                    <div className="bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-2xl md:p-6">
                       <h2 className="px-2 py-0.5 font-medium text-ink-100 mb-4 bg-border-secondary dark:bg-base-100 inline-block text-sm rounded-lg">
                         Main Wallets
                       </h2>
@@ -354,7 +355,7 @@ const ProfileComponent = ({
                         {displayWallets.slice(0, 2).map((wallet: any) => (
                           <div
                             key={wallet.address}
-                            className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-border-tertiary transition-colors bg-inputBg dark:bg-base-200 border border-border"
+                            className="flex items-center justify-between p-4 py-2 rounded-xl dark:border-border-tertiary transition-colors bg-inputBg dark:bg-transparent border border-border"
                           >
                             <div className="flex-1">
                               <div className="flex flex-col">
@@ -388,7 +389,7 @@ const ProfileComponent = ({
                           <button
                             type="button"
                             onClick={() => setIsAddWalletOpen(true)}
-                            className="bg-primary py-3 px-5 rounded-xl mt-6 text-border-secondary xl:text-sm w-full text-start text-[13px] font-medium"
+                            className={`bg-primary py-3 px-5 rounded-xl mt-6 text-border-secondary xl:text-sm w-full text-start text-[13px] font-medium border border-transparent ${tintPillDarkClassName}`}
                           >
                             Add Wallet
                           </button>
@@ -409,7 +410,7 @@ const ProfileComponent = ({
                       <button
                         type="button"
                         onClick={() => setIsAddWalletOpen(true)}
-                        className="relative z-[10] bg-primary py-3 px-6 rounded-xl text-border-secondary xl:text-sm w-full text-start text-[13px] font-medium"
+                        className={`relative z-[10] bg-primary py-3 px-6 rounded-xl text-border-secondary xl:text-sm w-full text-start text-[13px] font-medium border border-transparent ${tintPillDarkClassName}`}
                       >
                         Add Wallet
                       </button>

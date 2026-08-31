@@ -209,8 +209,8 @@ function DropDown(props: DropDownProps) {
         : clsx(
             "text-menu-ink-200 dark:text-white",
             active
-              ? "bg-primary/20 text-ink-100 dark:bg-[#2F2F2F]"
-              : "hover:bg-primary/20 dark:hover:bg-[#2F2F2F]"
+              ? "bg-primary/20 text-ink-100 dark:bg-dropdown-hover"
+              : "hover:bg-primary/20 dark:hover:bg-dropdown-hover"
           )
     );
 

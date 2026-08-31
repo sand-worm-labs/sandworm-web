@@ -91,7 +91,7 @@ const NavItem = ({
 }: NavItemProps) => {
   const cls =
     "flex items-center gap-3 w-full px-3 py-1.5 rounded-[10px] border border-transparent text-sm " +
-    "text-ink-500 dark:text-white hover:bg-hover-bg hover:border-hover-border dark:hover:bg-[#2F2F2F] " +
+    "text-ink-500 dark:text-white hover:bg-hover-bg hover:border-hover-border dark:hover:bg-dropdown-hover " +
     "transition-colors cursor-pointer font-body font-medium text-start";
 
   const inner = (

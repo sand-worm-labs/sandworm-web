@@ -41,7 +41,7 @@ export function PageSettingToggle(props: PageSettingToggleProps) {
             aria-hidden="true"
             className={clsx(
               props.enabled ? "translate-x-5" : "translate-x-0",
-              "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-base-100  shadow ring-0 transition duration-200 ease-in-out"
+              "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-page-surface  shadow ring-0 transition duration-200 ease-in-out"
             )}
           />
         </Switch>
@@ -73,7 +73,7 @@ export default function PageSettingsPanel(props: Props) {
       leaveFrom="w-[354px]"
       leaveTo="w-0"
     >
-      <div className="w-[324px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white font-body dark:bg-base-100 ">
+      <div className="w-[324px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white font-body dark:bg-page-surface ">
         <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
           <div className="flex items-start justify-between">
             <div>

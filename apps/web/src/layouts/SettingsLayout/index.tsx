@@ -63,7 +63,7 @@ export default function SettingsLayout({
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
         <aside
-          className="flex shrink-0 flex-col justify-between border-r border-border-secondary bg-base-200 p-6 px-3 dark:border-borderLight dark:border-border-tertiary dark:bg-base-500 md:h-full md:overflow-hidden"
+          className="flex shrink-0 flex-col justify-between border-r border-border-secondary bg-base-200 p-6 px-3 dark:border-borderLight dark:border-border-tertiary dark:bg-[#1D1D1C] md:h-full md:overflow-hidden"
           style={{ minWidth: 250 }}
         >
           <ul className="mt-4 flex w-full flex-col">
@@ -73,11 +73,17 @@ export default function SettingsLayout({
                   href={tab.href}
                   className={`mb-1.5 flex items-center space-x-2 rounded-[10px] border px-4 py-1.5 text-sm font-medium transition-colors ${
                     pathname === tab.href
-                      ? "bg-hover-bg border-hover-border dark:bg-base-600 dark:text-ink-100"
-                      : "text-menu-ink border-transparent hover:bg-hover-bg hover:border-hover-border dark:text-white dark:hover:bg-base-600 hover:dark:text-ink-100"
+                      ? "bg-hover-bg dark:bg-white/[0.08] dark:text-white border-hover-border dark:border-transparent"
+                      : "text-menu-ink dark:text-white border-transparent hover:bg-hover-bg dark:hover:bg-sidebar-hover hover:border-hover-border hover:dark:text-white"
                   }`}
                 >
-                  <span className="hidden flex-shrink-0 md:block">
+                  <span
+                    className={`hidden flex-shrink-0 md:block ${
+                      pathname === tab.href
+                        ? "dark:text-ink-100"
+                        : "dark:text-placeholder-muted"
+                    }`}
+                  >
                     {tab.icon}
                   </span>
                   <span>{tab.name}</span>
@@ -99,8 +105,10 @@ export default function SettingsLayout({
 
         <hr className="md:hidden" />
 
-        <main className="min-h-0 flex-1 overflow-y-auto bg-base-200 p-6 px-2 dark:bg-base-100 md:px-6  ">
-          <div className="ml-4 border-l-8 border-t-8">{children}</div>
+        <main className="min-h-0 flex-1 overflow-y-auto bg-base-200 p-6 px-2 dark:bg-page-surface md:px-6  ">
+          <div className="ml-4 border-l-8 border-t-8 border-transparent">
+            {children}
+          </div>
         </main>
       </div>
     </div>

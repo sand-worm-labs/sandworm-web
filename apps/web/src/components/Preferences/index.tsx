@@ -42,16 +42,30 @@ const ThemeCard: React.FC<{
   onClick: () => void;
 }> = ({ option, selected, onClick }) => {
   const bgMap: Record<string, string> = {
-    light: "bg-white",
-    dark: "bg-base-600",
-    default: "bg-base-600",
+    light: "bg-[#FDFDFD]",
+    dark: "bg-[#09091B]",
+    default: "bg-[#FDFDFD]",
   };
+
+  const dotClass =
+    option.id === "light"
+      ? "bg-[#E7F3F6]"
+      : option.id === "dark"
+        ? "bg-[#352F37]"
+        : "bg-[#E7F3F6]";
+
+  const barClass =
+    option.id === "light"
+      ? "bg-[#E7F3F6]"
+      : option.id === "dark"
+        ? "bg-[#352F37]"
+        : "bg-[#E7F3F6]";
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`relative w-full p-6  border border-border-secondary  dark:border-border-tertiary transition-all text-left  rounded-3xl ${
+      className={`relative w-full p-6  border border-border-secondary  dark:border-border-tertiary transition-all text-left  rounded-3xl dark:bg-dropdown-bg ${
         selected ? "" : "border-border-secondary    dark:border-border-tertiary"
       }`}
     >
@@ -79,42 +93,18 @@ const ThemeCard: React.FC<{
       <div className="mt-4 rounded-2xl overflow-hidden border border-border-secondary dark:border-border-tertiary">
         <div className={`h-32 p-3 ${bgMap[option.id] ?? bgMap.default}`}>
           <div className="flex gap-2 mb-2">
-            <div
-              className={`w-2 h-2 rounded-full ${
-                option.id === "light" ? "bg-info-tint" : "bg-gray-600"
-              }`}
-            />
-            <div
-              className={`w-2 h-2 rounded-full ${
-                option.id === "light" ? "bg-info-tint" : "bg-gray-600"
-              }`}
-            />
-            <div
-              className={`w-2 h-2 rounded-full ${
-                option.id === "light" ? "bg-info-tint" : "bg-gray-600"
-              }`}
-            />
+            <div className={`w-2 h-2 rounded-full ${dotClass}`} />
+            <div className={`w-2 h-2 rounded-full ${dotClass}`} />
+            <div className={`w-2 h-2 rounded-full ${dotClass}`} />
           </div>
           <div
             className={`space-y-2 ${
-              option.id === "light" ? "opacity-20" : "opacity-30"
+              option.id === "light" ? "opacity-95" : "opacity-95"
             }`}
           >
-            <div
-              className={`h-10 rounded-xl ${
-                option.id === "light" ? "bg-info-tint" : "bg-info-tint"
-              }`}
-            />
-            <div
-              className={`h-2 w-3/4 rounded ${
-                option.id === "light" ? "bg-info-tint" : "bg-info-tint"
-              }`}
-            />
-            <div
-              className={`h-2 w-1/2 rounded ${
-                option.id === "light" ? "bg-info-tint" : "bg-info-tint"
-              }`}
-            />
+            <div className={`h-10 rounded-xl ${barClass}`} />
+            <div className={`h-2 w-3/4 rounded ${barClass}`} />
+            <div className={`h-2 w-1/2 rounded ${barClass}`} />
           </div>
         </div>
       </div>
@@ -135,7 +125,7 @@ const AIEditCard: React.FC<{
     <button
       type="button"
       onClick={onClick}
-      className={`relative w-full p-5 py-4 border rounded-xl transition-all text-left ${
+      className={`relative w-full p-5 py-4 border rounded-xl transition-all text-left dark:bg-dropdown-bg ${
         selected
           ? "border-primary dark:border-primary"
           : "border-border-secondary dark:border-border-tertiary"
@@ -184,7 +174,7 @@ const EditorThemeCard: React.FC<{
     <button
       type="button"
       onClick={onClick}
-      className={`relative p-4 rounded-3xl border transition-all text-left ${
+      className={`relative p-4 rounded-3xl border transition-all text-left dark:bg-dropdown-bg ${
         selected
           ? "border-primary    dark:border-primary"
           : "border-border-secondary  dark:border-border-tertiary hover:border-gray-300 dark:hover:border-border-tertiary font-body"
@@ -199,14 +189,18 @@ const EditorThemeCard: React.FC<{
         style={{ backgroundColor: theme.bg, color: theme.text }}
       >
         <div>
-          <span style={{ color: theme.accent }}>const</span> data = analyze()
+          <span style={{ color: theme.accent }}>SELECT</span> wallet,
+          SUM(volume)
         </div>
         <div>
-          <span style={{ color: theme.accent }}>if</span> (data.length {">"} 0){" "}
-          {"{"}
+          <span style={{ color: theme.accent }}>FROM</span> transactions
         </div>
-        <div className="pl-4">console.log(data)</div>
-        <div>{"}"}</div>
+        <div>
+          <span style={{ color: theme.accent }}>WHERE</span> chain = 'ethereum'
+        </div>
+        <div className="pl-4">
+          <span style={{ color: theme.accent }}>GROUP BY</span> wallet
+        </div>
       </div>
     </button>
   );
@@ -327,7 +321,7 @@ const Preferences: React.FC = () => {
                 <select
                   value={dateFormat}
                   onChange={e => setDateFormat(e.target.value as DateFormat)}
-                  className=" text-sm  w-full px-5 py-2 rounded-xl border border-border-tertiary  bg-white dark:bg-base-200 dark:border-border-tertiary text-ink-100 focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className=" text-sm  w-full px-5 py-2 rounded-xl border border-border-tertiary  bg-white dark:bg-dropdown-bg dark:border-border-tertiary text-ink-100 focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   <option value="us">US (MM/DD/YYYY)</option>
                   <option value="eu">European (DD/MM/YYYY)</option>
@@ -344,7 +338,7 @@ const Preferences: React.FC = () => {
                 <select
                   value={dateFormat}
                   onChange={e => setDateFormat(e.target.value as DateFormat)}
-                  className="text-sm w-full px-5 py-2 rounded-xl border border-border-tertiary  bg-white dark:bg-base-200 dark:border-border-tertiary text-ink-100 focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="text-sm w-full px-5 py-2 rounded-xl border border-border-tertiary  bg-white dark:bg-dropdown-bg dark:border-border-tertiary text-ink-100 focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   <option value="us">USD($)</option>
                   <option value="eu">European (DD/MM/YYYY)</option>

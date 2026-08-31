@@ -3,6 +3,7 @@ import { CheckIcon } from "@heroicons/react/24/outline";
 import { useState, Fragment } from "react";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 import { WorkspaceIcon } from "./WorkspaceIcon";
 
@@ -77,7 +78,7 @@ export default function EditWorkspaceProfileModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-3xl w-full max-w-md  mx-4 p-6 py-10 px-10">
+              <Dialog.Panel className="relative bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-3xl w-full max-w-md  mx-4 p-6 py-10 px-10">
                 <div className="flex items-center justify-between mb-6">
                   <Dialog.Title
                     as="h2"
@@ -142,7 +143,7 @@ export default function EditWorkspaceProfileModal({
                     value={workspaceName}
                     onChange={e => setWorkspaceName(e.target.value)}
                     placeholder="Enter workspace name"
-                    className="w-full px-4 py-3 rounded-xl bg-inputBg dark:bg-base-100 border border-border dark:border-border-tertiary text-ink-100 placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm font-medium"
+                    className="w-full px-4 py-3 rounded-xl bg-inputBg dark:bg-base-400 border border-border dark:border-border-tertiary text-ink-100 placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm font-medium"
                   />
                   <ul className="mt-2 space-y-1 text-xs font-medium">
                     <li className="flex items-center gap-1">
@@ -160,7 +161,7 @@ export default function EditWorkspaceProfileModal({
                   type="button"
                   onClick={handleSave}
                   disabled={!isNameValid || isLoading}
-                  className="w-full py-3.5 px-4 bg-primary hover:bg-primary-720 disabled:bg-disabled dark:disabled:bg-[#4a4a48] text-border-secondary font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                  className={`w-full py-3.5 px-4 bg-primary hover:bg-primary-720 disabled:bg-disabled dark:disabled:bg-[#4a4a48] text-border-secondary font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm border border-transparent ${tintPillDarkClassName}`}
                 >
                   {isLoading ? (
                     <>

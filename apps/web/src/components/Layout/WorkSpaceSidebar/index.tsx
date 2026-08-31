@@ -237,7 +237,7 @@ export const WorkspaceSidebar = () => {
         `}
       >
         <div className="flex flex-col flex-1 min-h-0">
-          <div className="flex justify-between py-[0.50rem] px-3 bg-header-surface items-center flex-shrink-0 border-b border-base-300 dark:border-border-tertiary">
+          <div className="flex justify-between py-[0.50rem] px-3 bg-header-surface items-center flex-shrink-0 border-b border-base-300 dark:border-border-tertiary dark:bg-sidebar-surface">
             {!collapsed && (
               <Link href="/" className="flex items-center gap-2">
                 <SandwormLogo width="30" height="30" />
