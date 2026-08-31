@@ -121,7 +121,7 @@ export function ExploreClient({
   return (
     <div>
       <div className="flex justify-between">
-        <p className="text-ink-200 dark:text-ink-300 text-sm mb-6 mt-4">
+        <p className="text-ink-200 dark:text-placeholder-muted text-sm mb-6 mt-4">
           Discover the latest trends in the crypto ecosystem.
         </p>
       </div>

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { ForkToWorkspaceModal } from "@/components/Explore/ForkToWorkspaceModal";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/date";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 import { useForkDocument } from "../Editor/hooks/usePublicDocuments";
@@ -123,10 +124,10 @@ export function FeaturedExploreCard({
       <div
         onClick={() => router.push(`/p/${id}`)}
         className={cn(
-          "flex flex-col rounded-3xl py-5 border px-6 cursor-pointer transition-shadow font-body group/card",
+          "flex flex-col rounded-3xl py-5 border px-6 cursor-pointer transition-shadow font-body group/card dark:bg-dropdown-bg dark:border-border-tertiary",
           isPurple
             ? "bg-primary border-teal/[20%] text-white"
-            : "bg-[#F2F3FB] dark:bg-base-100 border-teal/[20%] dark:border-border-tertiary"
+            : "bg-[#F2F3FB] border-teal/[20%]"
         )}
         role="button"
         tabIndex={0}
@@ -138,10 +139,10 @@ export function FeaturedExploreCard({
           <div className="flex items-center gap-3">
             <span
               className={cn(
-                "text-xs font-medium px-2 py-0.5 rounded-md",
+                "text-xs font-medium px-2 py-0.5 rounded-md border border-transparent",
                 isPurple
-                  ? "bg-[#F3F3FA] text-ink-400"
-                  : "text-ink-400 bg-[#CDCDE2]"
+                  ? `bg-[#F3F3FA] text-ink-400 ${tintPillDarkClassName}`
+                  : `text-ink-400 bg-[#CDCDE2] ${tintPillDarkClassName}`
               )}
             >
               {tagLabels[tag]}
@@ -161,7 +162,7 @@ export function FeaturedExploreCard({
             onClick={handleSaveClick}
             aria-label="Save to workspace"
             className={cn(
-              "transition-colors rounded-full w-6 h-6 flex justify-center items-center",
+              "transition-colors rounded-full w-6 h-6 flex justify-center items-center dark:bg-create-project-tint/[0.16] dark:text-white",
               isPurple
                 ? "bg-[#F3F3FA] text-ink-400 hover:bg-[#AFA9EC]"
                 : "text-ink-400 hover:text-menu-ink bg-[#CDCDE2]"

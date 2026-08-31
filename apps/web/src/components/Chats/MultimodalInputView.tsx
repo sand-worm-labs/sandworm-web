@@ -6,6 +6,7 @@ import { Button } from "@sandworm/ui/components/button";
 import TextareaAutosize from "react-textarea-autosize";
 
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 import { ModelQuickSelect } from "../Editor/blocks/ModelQuickSelect";
 import { useOpenRouterModels } from "../Editor/hooks/useOpenRouterModel";
@@ -153,7 +154,7 @@ export const MultimodalInputView = forwardRef<
     w-full min-h-[120px]
     rounded-3xl
     border-[1.5px] border-hover-border
-    bg-header-surface dark:border-border-tertiary
+    bg-header-surface dark:bg-dropdown-bg dark:border-border-tertiary
     shadow-[0_3.5px_24px_rgba(120,147,208,0.09)] dark:shadow-none
 
     transition-all duration-300 ease-in-out font-tertiary text-[13px] 
@@ -161,7 +162,7 @@ export const MultimodalInputView = forwardRef<
           >
             {isCreatingNotebook && (
               <div
-                className="absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-header-surface/85 backdrop-blur-[1px]"
+                className="absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-header-surface/85 dark:bg-dropdown-bg/85 backdrop-blur-[1px]"
                 aria-busy="true"
                 aria-label="Creating notebook"
               >
@@ -245,7 +246,7 @@ export const MultimodalInputView = forwardRef<
                 {isLoading ? (
                   <Button
                     type="button"
-                    className="rounded-full p-2.5 h-fit text-white bg-primary"
+                    className={`rounded-full p-2.5 h-fit text-white bg-primary border border-transparent ${tintPillDarkClassName}`}
                     onClick={onStop}
                     disabled={isInputLocked}
                   >
@@ -254,9 +255,9 @@ export const MultimodalInputView = forwardRef<
                 ) : (
                   <Button
                     type="button"
-                    className={`rounded-full p-2.5 h-fit font-light transition-colors ${
+                    className={`rounded-full p-2.5 h-fit font-light transition-colors border border-transparent ${
                       input.trim() && !isInputLocked
-                        ? "text-white bg-primary"
+                        ? `text-white bg-primary ${tintPillDarkClassName}`
                         : "text-white bg-disabled cursor-not-allowed"
                     }`}
                     onClick={() =>
