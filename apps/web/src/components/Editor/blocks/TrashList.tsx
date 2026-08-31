@@ -6,6 +6,7 @@ import { PiArrowCounterClockwise, PiTrash, PiNotebook } from "react-icons/pi";
 
 import type { ApiDeletedDocument } from "@/types";
 import { timeAgo } from "@/lib";
+import { StyledCheckbox } from "@/components/StyledCheckbox";
 
 // =====================================
 // ⬢ Types
@@ -110,14 +111,10 @@ export default function TrashList({
               hover:bg-primary-tint-50 dark:hover:bg-white/10"
           >
             {/* ── Checkbox ── */}
-            <input
-              type="checkbox"
+            <StyledCheckbox
               checked={selectedIds.has(doc.id)}
               onChange={() => onToggleSelect(doc.id)}
               aria-label={`Select ${doc.title || "Untitled"}`}
-              className="flex-shrink-0 h-4 w-4 rounded border-border-faint
-                dark:border-border-tertiary text-primary
-                focus:border-primary cursor-pointer"
             />
 
             {/* ── Icon ── */}

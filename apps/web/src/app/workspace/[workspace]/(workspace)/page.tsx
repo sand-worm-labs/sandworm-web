@@ -6,9 +6,5 @@ import { generateUUID } from "@/lib/utils";
 export default function WorkspacePage() {
   const id = generateUUID();
 
-  return (
-    <div>
-      <Chat key={id} initialMessages={[]} />
-    </div>
-  );
+  return <Chat key={id} initialMessages={[]} />;
 }

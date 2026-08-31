@@ -24,6 +24,7 @@ import ScrollBar from "@/components/Editor/blocks/ScrollBar";
 import { useDocuments } from "@/components/Editor/hooks/useDocuments";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import { Loader } from "@/components/Loader";
+import { StyledCheckbox } from "@/components/StyledCheckbox";
 
 // =====================================
 // ⬢ Empty State
@@ -107,7 +108,7 @@ function ConfirmDialog({
           leaveTo="opacity-0 scale-95 translate-y-1"
         >
           <DialogPanel
-            className="relative bg-white dark:bg-base-400 dark:border
+            className="relative bg-white dark:bg-dropdown-bg dark:border
             dark:border-border-tertiary rounded-2xl shadow-xl w-full max-w-sm
             mx-4 p-6 font-body"
           >
@@ -395,23 +396,21 @@ export default function TrashPage() {
         {/* ── Bulk toolbar ── */}
         {documents.size > 0 && (
           <div className="flex items-center justify-between gap-3 mb-4">
-            <label
+            <div
               className="flex items-center gap-2 text-sm text-ink-300
-              dark:text-placeholder-muted cursor-pointer select-none"
+              dark:text-placeholder-muted select-none"
             >
-              <input
+              <StyledCheckbox
                 ref={selectAllRef}
-                type="checkbox"
                 checked={allSelected}
+                indeterminate={someSelected}
                 onChange={onToggleSelectAll}
-                className="h-4 w-4 rounded border-border-faint
-                  dark:border-border-tertiary text-primary
-                  focus:border-primary cursor-pointer"
+                aria-label="Select all"
               />
               {selectedIds.size > 0
                 ? `${selectedIds.size} selected`
                 : "Select all"}
-            </label>
+            </div>
 
             <div className="flex items-center gap-2">
               {selectedIds.size > 0 ? (
