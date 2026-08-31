@@ -41,6 +41,8 @@ import { PublishBlinkingSignal } from "./BlinkingSignal";
 import ShortcutsModal from "./ShortcutsModal";
 import ReusableComponents from "./ReusableComponents";
 import PageSettingsPanel from "./PageSettingsPanel";
+import EnvironmentPanel from "./EnvironmentPanel";
+import EnvVariablesPanel from "./EnvVariablesPanel";
 import { Tooltip, TooltipV2 } from "./ToolTips";
 import ShareModal from "./ShareModal";
 
@@ -95,6 +97,8 @@ function PrivateDocumentPageInner(
     | { _tag: "reusableComponents" }
     | { _tag: "pageSettings" }
     | { _tag: "chat" }
+    | { _tag: "environment" }
+    | { _tag: "envVariables" }
     | null
   >(null);
 
@@ -158,6 +162,18 @@ function PrivateDocumentPageInner(
 
   const onToggleFiles = useCallback(() => {
     setSelectedSidebar(v => (v?._tag === "files" ? null : { _tag: "files" }));
+  }, [setSelectedSidebar]);
+
+  const onToggleEnvironment = useCallback(() => {
+    setSelectedSidebar(v =>
+      v?._tag === "environment" ? null : { _tag: "environment" }
+    );
+  }, [setSelectedSidebar]);
+
+  const onToggleEnvVariables = useCallback(() => {
+    setSelectedSidebar(v =>
+      v?._tag === "envVariables" ? null : { _tag: "envVariables" }
+    );
   }, [setSelectedSidebar]);
 
   const onTogglePageSettings = useCallback(() => {
@@ -378,6 +394,8 @@ function PrivateDocumentPageInner(
           onToggleComments={onToggleComments}
           onToggleFullScreen={onToggleFullScreen}
           onToggleFiles={onToggleFiles}
+          onToggleEnvironment={onToggleEnvironment}
+          onToggleEnvVariables={onToggleEnvVariables}
           onToggleSchemaExplorer={onToggleSchemaExplorerEllipsis}
           onToggleReusableComponents={onToggleReusableComponents}
           onToggleShortcuts={onToggleShortcuts}
@@ -394,6 +412,8 @@ function PrivateDocumentPageInner(
       onToggleComments,
       onToggleFullScreen,
       onToggleFiles,
+      onToggleEnvironment,
+      onToggleEnvVariables,
       onToggleSchemaExplorerEllipsis,
       onToggleReusableComponents,
       onToggleShortcuts,
@@ -530,6 +550,8 @@ function PrivateDocumentPageInner(
             provider={provider}
             isSyncing={syncing}
             onOpenFiles={onToggleFiles}
+            onOpenEnvironment={onToggleEnvironment}
+            onOpenEnvVariables={onToggleEnvVariables}
             onSchemaExplorer={onToggleSchemaExplorerSQLBlock}
             workspaceId={props.workspaceId}
           />
@@ -548,8 +570,18 @@ function PrivateDocumentPageInner(
             onHide={onHideSidebar}
           />
 
+          <EnvironmentPanel
+            visible={selectedSidebar?._tag === "environment"}
+            onHide={onHideSidebar}
+          />
+
           {!isViewer && !isDeleted && (
             <>
+              <EnvVariablesPanel
+                workspaceId={props.workspaceId}
+                visible={selectedSidebar?._tag === "envVariables"}
+                onHide={onHideSidebar}
+              />
               <Schedules
                 workspaceId={props.workspaceId}
                 documentId={props.documentId}

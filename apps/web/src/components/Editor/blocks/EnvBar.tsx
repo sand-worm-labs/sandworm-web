@@ -1,41 +1,10 @@
-import {
-  PiArrowsClockwise,
-  PiCode,
-  PiCpuLight,
-  PiFolder,
-  PiNewspaper,
-} from "react-icons/pi";
-import Link from "next/link";
+import { PiArrowsClockwise, PiNewspaper } from "react-icons/pi";
 import * as dfns from "date-fns";
 
 import type { EnvironmentStatus } from "@/types";
 
 import { useStringQuery } from "../hooks/useQueryArgs";
 import { useEnvironmentStatus } from "../hooks/useEnvironmentStatus";
-
-// =====================================
-// ⬢ Environment Button
-// =====================================
-const EnvironmentButton = ({
-  name,
-  workspaceId,
-}: {
-  name: string;
-  workspaceId: string;
-}) => (
-  <Link
-    href={`/workspace/${workspaceId}/environments/current`}
-    className="flex items-center gap-2 px-2.5 py-1.5
-      border border-border dark:border-border-tertiary bg-transparent dark:bg-header-surface
-      rounded-lg text-sm text-ink-400 dark:text-ink-300
-      hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700
-      hover:text-ink-500 dark:hover:text-ink-300
-      transition-colors duration-100"
-  >
-    <PiCpuLight size={14} />
-    <span>{name}</span>
-  </Link>
-);
 
 // =====================================
 // ⬢ Status Badge
@@ -82,7 +51,10 @@ function DotBadge({ color, children, onRestart, canRestart }: DotBadgeProps) {
           <div className="relative group">
             <button
               type="button"
-              onClick={onRestart}
+              onClick={e => {
+                e.stopPropagation();
+                onRestart();
+              }}
               aria-label="Restart environment"
               className="flex items-center opacity-70 hover:opacity-100 transition-opacity"
             >
@@ -139,7 +111,6 @@ function StatusBadge({
 // ⬢ EnvBar
 // =====================================
 interface Props {
-  onOpenFiles: () => void;
   publishedAt: string | null;
   lastUpdatedAt: string | null;
   isViewer: boolean;
@@ -163,46 +134,11 @@ function EnvBar(props: Props) {
       py-2 px-3 font-body env-bar"
     >
       <div className="flex items-center gap-1.5">
-        {props.publishedAt ? (
+        {props.publishedAt && (
           <div className="flex items-center gap-1.5 text-sm text-ink-400 dark:text-ink-500">
             <PiNewspaper size={14} />
             <span>{`Saved ${publishedAtDisplay} ago. ${lastUpdatedAt}`}</span>
           </div>
-        ) : (
-          <>
-            <EnvironmentButton name="Python 3.9" workspaceId={workspaceId} />
-
-            {!props.isViewer && (
-              <Link
-                href={`/workspace/${workspaceId}/environments/current/variables`}
-                className="flex items-center gap-2 px-2.5 py-1.5
-                  border border-border dark:border-border-tertiary bg-transparent dark:bg-header-surface
-                  rounded-lg text-sm text-ink-400 dark:text-ink-300
-                  hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700
-                  hover:text-ink-500 dark:hover:text-ink-300
-                  transition-colors duration-100"
-              >
-                <PiCode size={14} />
-                <span>Env variables</span>
-              </Link>
-            )}
-
-            {!props.isViewer && (
-              <button
-                type="button"
-                onClick={props.onOpenFiles}
-                className="flex items-center gap-2 px-2.5 py-1.5
-                  border border-border dark:border-border-tertiary bg-transparent dark:bg-header-surface
-                  rounded-lg text-sm text-ink-400 dark:text-ink-300
-                  hover:bg-hover-bg hover:border-primary dark:hover:bg-base-700
-                  hover:text-ink-500 dark:hover:text-ink-300
-                  transition-colors duration-100"
-              >
-                <PiFolder size={14} />
-                <span>Files</span>
-              </button>
-            )}
-          </>
         )}
       </div>
 

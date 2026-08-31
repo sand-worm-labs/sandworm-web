@@ -40,6 +40,8 @@ import Snapshots from "../Snapshots";
 import LiveButton from "../LiveButton";
 import EnvBar from "../EnvBar";
 import Files from "../Files";
+import EnvironmentPanel from "../EnvironmentPanel";
+import EnvVariablesPanel from "../EnvVariablesPanel";
 import { PublishBlinkingSignal } from "../BlinkingSignal";
 import { Tooltip } from "../ToolTips";
 import { SQLExtensionProvider } from "../customBlocks/CodeEditor/sql";
@@ -503,6 +505,8 @@ export default function Dashboard(props: Props) {
     | { _tag: "shortcuts" }
     | { _tag: "reusableComponents" }
     | { _tag: "pageSettings" }
+    | { _tag: "environment" }
+    | { _tag: "envVariables" }
     | null
   >(null);
 
@@ -530,6 +534,18 @@ export default function Dashboard(props: Props) {
 
   const onToggleFiles = useCallback(() => {
     setSelectedSidebar(v => (v?._tag === "files" ? null : { _tag: "files" }));
+  }, [setSelectedSidebar]);
+
+  const onToggleEnvironment = useCallback(() => {
+    setSelectedSidebar(v =>
+      v?._tag === "environment" ? null : { _tag: "environment" }
+    );
+  }, [setSelectedSidebar]);
+
+  const onToggleEnvVariables = useCallback(() => {
+    setSelectedSidebar(v =>
+      v?._tag === "envVariables" ? null : { _tag: "envVariables" }
+    );
   }, [setSelectedSidebar]);
 
   const onToggleSchemaExplorer = useCallback(
@@ -596,6 +612,8 @@ export default function Dashboard(props: Props) {
           onToggleSnapshots={onToggleSnapshots}
           onToggleComments={onToggleComments}
           onToggleFiles={onToggleFiles}
+          onToggleEnvironment={onToggleEnvironment}
+          onToggleEnvVariables={onToggleEnvVariables}
           onToggleSchemaExplorer={onToggleSchemaExplorer}
           isViewer={props.role === "viewer"}
           isDeleted={isDeleted}
@@ -608,6 +626,8 @@ export default function Dashboard(props: Props) {
       onToggleSnapshots,
       onToggleComments,
       onToggleFiles,
+      onToggleEnvironment,
+      onToggleEnvVariables,
       isDeleted,
     ]
   );
@@ -725,6 +745,8 @@ export default function Dashboard(props: Props) {
         <div className="w-full fixed bottom-0 bg-white dark:bg-base-100  z-20">
           <EnvBar
             onOpenFiles={onToggleFiles}
+            onOpenEnvironment={onToggleEnvironment}
+            onOpenEnvVariables={onToggleEnvVariables}
             publishedAt={!props.isEditing ? props.document.publishedAt : null}
             lastUpdatedAt={lastUpdatedAt}
             isViewer={props.role === "viewer"}
@@ -737,8 +759,17 @@ export default function Dashboard(props: Props) {
           visible={selectedSidebar?._tag === "comments"}
           onHide={onHideSidebar}
         />
+        <EnvironmentPanel
+          visible={selectedSidebar?._tag === "environment"}
+          onHide={onHideSidebar}
+        />
         {props.role !== "viewer" && !isDeleted && (
           <>
+            <EnvVariablesPanel
+              workspaceId={props.document.workspaceId}
+              visible={selectedSidebar?._tag === "envVariables"}
+              onHide={onHideSidebar}
+            />
             <Schedules
               workspaceId={props.document.workspaceId}
               documentId={props.document.id}

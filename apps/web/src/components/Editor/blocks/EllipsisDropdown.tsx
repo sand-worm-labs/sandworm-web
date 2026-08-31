@@ -1,7 +1,9 @@
 import {
   PiBookOpen,
   PiClock,
+  PiCode,
   PiCodeBlock,
+  PiCpuLight,
   PiGear,
   PiMapTrifold,
   PiDotsThree,
@@ -39,6 +41,8 @@ interface Props {
   onToggleComments: () => void;
   onToggleFullScreen?: () => void;
   onToggleFiles?: () => void;
+  onToggleEnvironment?: () => void;
+  onToggleEnvVariables?: () => void;
   onToggleSchemaExplorer?: () => void;
   onToggleShortcuts?: () => void;
   onTogglePageSettings?: () => void;
@@ -75,6 +79,23 @@ function EllipsisDropdown(props: Props) {
               onClick={props.onToggleFiles}
             />
           )}
+
+          {props.onToggleEnvironment && (
+            <MenuButton
+              icon={<PiCpuLight className="h-4 w-4" />}
+              text="Python 3.9"
+              onClick={props.onToggleEnvironment}
+            />
+          )}
+
+          {!props.isViewer && props.onToggleEnvVariables && (
+            <MenuButton
+              icon={<PiCode className="h-4 w-4" />}
+              text="Env variables"
+              onClick={props.onToggleEnvVariables}
+            />
+          )}
+
           {!props.isViewer && !props.isDeleted && (
             <>
               <MenuButton

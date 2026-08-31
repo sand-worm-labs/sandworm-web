@@ -75,7 +75,7 @@ export default function CurrentEnvironmentPage() {
   }
 
   return (
-    <ScrollBar className="w-full bg-base-100 h-full overflow-auto">
+    <ScrollBar className="w-full bg-page-surface h-full overflow-auto">
       <div className="px-4 sm:p-6 lg:p-8">
         <div className="border-b border-border-secondary  pb-4 flex items-center justify-between">
           <div>
@@ -98,8 +98,8 @@ export default function CurrentEnvironmentPage() {
         </div>
 
         <div className="py-6">
-          <div className="bg-base-100 border border-border-secondary  rounded-xl overflow-hidden">
-            <div className="px-4 py-5 sm:px-6 bg-ceramic-50/60">
+          <div className="bg-page-surface border border-border-secondary  rounded-xl overflow-hidden">
+            <div className="px-4 py-5 sm:px-6 bg-page-surface">
               <h2
                 id="applicant-information-title"
                 className="text-md font-medium leading-6 text-ink-100 "
@@ -150,8 +150,8 @@ export default function CurrentEnvironmentPage() {
         </div>
 
         <div className="py-6">
-          <div className="bg-base-100 border border-border-secondary  rounded-xl overflow-hidden">
-            <div className="px-4 py-5 sm:px-6 bg-ceramic-50/60">
+          <div className="bg-page-surface border border-border-secondary  rounded-xl overflow-hidden">
+            <div className="px-4 py-5 sm:px-6 bg-page-surface">
               <h2
                 id="applicant-information-title"
                 className="text-md font-medium leading-6 text-ink-100 "
@@ -182,7 +182,7 @@ export default function CurrentEnvironmentPage() {
                     </span>
                   </dt>
                   <dd className="mt-1 text-xs text-ink-100 marker:py-1">
-                    <pre className="bg-base-200 rounded-xl max-h-96 p-4 overflow-y-scroll overflow-x-auto border border-border-secondary ">
+                    <pre className="bg-page-surface rounded-xl max-h-96 p-4 overflow-y-scroll overflow-x-auto border border-border-secondary ">
                       {requirements}
                     </pre>
                   </dd>

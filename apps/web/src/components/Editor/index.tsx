@@ -1247,6 +1247,8 @@ interface Props {
   provider: IProvider;
   isSyncing: boolean;
   onOpenFiles: () => void;
+  onOpenEnvironment: () => void;
+  onOpenEnvVariables: () => void;
   onSchemaExplorer: (dataSourceId: string | null) => void;
   scrollViewRef: React.MutableRefObject<HTMLDivElement | null>;
   executionQueue: ExecutionQueue;
@@ -1874,6 +1876,8 @@ const Editor = (props: Props) => {
       {!props.isPublicViewer && !props.isPDF && (
         <EnvBar
           onOpenFiles={props.onOpenFiles}
+          onOpenEnvironment={props.onOpenEnvironment}
+          onOpenEnvVariables={props.onOpenEnvVariables}
           publishedAt={props.isApp ? props.document.publishedAt : null}
           lastUpdatedAt={lastUpdatedAt}
           isViewer={props.role === "viewer"}

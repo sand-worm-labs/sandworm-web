@@ -1,25 +1,19 @@
-"use client";
-
 import { v4 as uuidv4 } from "uuid";
 import { useCallback, useState } from "react";
 import { uniq } from "ramda";
 import clsx from "clsx";
-import { useRouter } from "next/navigation";
+import { Transition } from "@headlessui/react";
 import { toast } from "sonner";
-import { PiPlus, PiTrash, PiEye, PiEyeSlash } from "react-icons/pi";
+import { PiPlus, PiTrash, PiEye, PiEyeSlash, PiCode } from "react-icons/pi";
 
+import { CloseIconButton } from "@/components/CloseIconButton";
+import ScrollBar from "@/components/Editor/blocks/ScrollBar";
+import FormError from "@/components/Editor/blocks/forms/formError";
+import Spin from "@/components/Editor/blocks/Spin";
 import {
   useEnvironmentVariables,
   type EnvVar,
 } from "@/components/Editor/hooks/useEnvironmentVariables";
-import FormError from "@/components/Editor/blocks/forms/formError";
-import { useSession } from "@/components/Editor/hooks/useAuth";
-import ScrollBar from "@/components/Editor/blocks/ScrollBar";
-import Files from "@/components/Editor/blocks/Files";
-import { useEnvironmentStatus } from "@/components/Editor/hooks/useEnvironmentStatus";
-import EnvBar from "@/components/Editor/blocks/EnvBar";
-import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
-import Spin from "@/components/Editor/blocks/Spin";
 
 // =====================================
 // ⬢ Constants
@@ -40,10 +34,6 @@ function errorToMessage(error: ErrorType): string {
       return "An unexpected error occurred. Please try again.";
   }
 }
-
-// =====================================
-// ⬢ Input shared classes
-// =====================================
 
 const inputCls =
   "w-full px-3 py-2 rounded-lg font-body text-sm " +
@@ -89,30 +79,44 @@ function EnvVarInput(props: EnvVarInputProps) {
   }, [props.variable, props.onRemove]);
 
   return (
-    <div className="flex gap-4 items-start">
-      {/* ── Name ── */}
-      <div className="flex-1">
-        <label
-          htmlFor={`name-${props.variable.id}`}
-          className="block text-xs font-medium text-ink-300 dark:text-ink-600
-            uppercase tracking-wider mb-1.5"
+    <div className="flex flex-col gap-2.5 py-3 border-b border-border-secondary dark:border-border-tertiary last:border-b-0">
+      <div className="flex items-start gap-2">
+        <div className="flex-1 min-w-0">
+          <label
+            htmlFor={`name-${props.variable.id}`}
+            className="block text-xs font-medium text-ink-300 dark:text-ink-600
+              uppercase tracking-wider mb-1.5"
+          >
+            Name
+          </label>
+          <input
+            id={`name-${props.variable.id}`}
+            type="text"
+            value={props.variable.name}
+            placeholder="MY_VARIABLE_NAME"
+            className={clsx(inputCls, props.error && "ring-1 ring-red-500")}
+            onChange={onChangeName}
+            disabled={!props.onChange || props.disabled}
+          />
+          {props.error && <FormError msg={errorToMessage(props.error)} />}
+        </div>
+
+        <button
+          type="button"
+          onClick={onRemove}
+          disabled={props.disabled}
+          aria-label="Remove variable"
+          className="flex items-center justify-center w-8 h-8 mt-[22px] rounded-lg flex-shrink-0
+            text-ink-300 hover:text-warning hover:bg-error-tint
+            dark:text-white dark:bg-error/40 dark:hover:bg-error/80
+            transition-colors duration-100
+            disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Name
-        </label>
-        <input
-          id={`name-${props.variable.id}`}
-          type="text"
-          value={props.variable.name}
-          placeholder="MY_VARIABLE_NAME"
-          className={clsx(inputCls, props.error && "ring-1 ring-red-500")}
-          onChange={onChangeName}
-          disabled={!props.onChange || props.disabled}
-        />
-        {props.error && <FormError msg={errorToMessage(props.error)} />}
+          <PiTrash size={16} />
+        </button>
       </div>
 
-      {/* ── Value ── */}
-      <div className="flex-1">
+      <div>
         <label
           htmlFor={`val-${props.variable.id}`}
           className="block text-xs font-medium text-ink-300 dark:text-ink-600
@@ -142,55 +146,35 @@ function EnvVarInput(props: EnvVarInputProps) {
           </button>
         </div>
       </div>
-
-      {/* ── Remove ── */}
-      <div className="pt-7">
-        <button
-          type="button"
-          onClick={onRemove}
-          disabled={props.disabled}
-          aria-label="Remove variable"
-          className="flex items-center justify-center w-8 h-8 rounded-lg
-            text-ink-300 hover:text-warning hover:bg-error-tint
-            dark:text-white dark:bg-error/40 dark:hover:bg-error/80
-            transition-colors duration-100
-            disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <PiTrash size={16} />
-        </button>
-      </div>
     </div>
   );
 }
 
 // =====================================
-// ⬢ EnvironmentVariablesPage
+// ⬢ EnvVariablesPanel
 // =====================================
 
-export default function EnvironmentVariablesPage() {
-  const session = useSession({ redirectToLogin: true });
-  const router = useRouter();
-  const workspaceId = useStringQuery("workspace");
+interface Props {
+  workspaceId: string;
+  visible: boolean;
+  onHide: () => void;
+}
 
+export default function EnvVariablesPanel(props: Props) {
   const {
     variables: fetchedVariables,
     loading,
     saving,
     save,
-  } = useEnvironmentVariables(workspaceId);
-  const environment = useEnvironmentStatus(workspaceId);
+  } = useEnvironmentVariables(props.workspaceId);
 
   const [errors, setErrors] = useState<Record<string, ErrorType>>({});
   const [added, setAdded] = useState<EnvVar[]>([]);
   const [removed, setRemoved] = useState<string[]>([]);
 
   const variables = fetchedVariables.filter(v => !removed.includes(v.id));
-  const isViewer =
-    session?.user?.role?.find(r => r[workspaceId])?.[workspaceId] === "viewer";
-
   const isDirty = added.length > 0 || removed.length > 0;
 
-  // ── Handlers ──
   const onAdd = useCallback(() => {
     setAdded(prev => [...prev, { id: uuidv4(), name: "", value: "" }]);
   }, []);
@@ -232,17 +216,13 @@ export default function EnvironmentVariablesPage() {
           toast.error("Something went wrong");
         });
     },
-    [save, added, removed, variables, environment.status]
+    [save, added, removed, variables]
   );
 
   const onCancel = useCallback(() => {
-    if (!isDirty) {
-      router.back();
-      return;
-    }
     setAdded([]);
     setRemoved([]);
-  }, [isDirty, router]);
+  }, []);
 
   const onChange = useCallback(
     (v: EnvVar) => setAdded(prev => prev.map(x => (x.id === v.id ? v : x))),
@@ -259,35 +239,45 @@ export default function EnvironmentVariablesPage() {
     []
   );
 
-  const [filesOpen, setFilesOpen] = useState(false);
-
-  if (!session.user) return null;
-
   return (
-    <div className="flex flex-col flex-grow h-full">
-      <ScrollBar className="w-full bg-page-surface h-full overflow-auto font-body">
-        <div className="px-4 sm:px-6 lg:px-8 py-6">
-          {/* ── Header ── */}
-          <div className="mb-6 pb-5 border-b border-base-300 dark:border-base-700">
-            <h2 className="text-lg font-semibold text-ink-100 dark:text-white">
-              Environment variables
-            </h2>
-            <p className="mt-1 text-sm text-ink-400 dark:text-ink-100/80">
-              Available in Python blocks via{" "}
-              <code
-                className="font-mono text-[0.8125em] px-1.5 py-0.5
-                bg-base-300
-                border border-border dark:border-base-710
-                text-ink-500 dark:text-ink-300 rounded-md"
-              >
-                os.getenv("VAR_NAME")
-              </code>
-            </p>
+    <Transition
+      as="div"
+      show={props.visible}
+      className="h-full overflow-hidden flex-shrink-0 font-body"
+      enter="transition-[width] duration-300 ease-in-out"
+      enterFrom="w-0"
+      enterTo="w-[354px]"
+      leave="transition-[width] duration-300 ease-in-out"
+      leaveFrom="w-[354px]"
+      leaveTo="w-0"
+    >
+      <div className="w-[324px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-page-surface font-body">
+        <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="flex items-center gap-x-1.5 text-base font-medium leading-6 dark:text-white text-ink-100">
+                <PiCode size={18} className="flex-shrink-0" />
+                Environment variables
+              </h3>
+              <p className="text-[12.5px] text-ink-400 mt-0.5">
+                Available via{" "}
+                <code className="font-mono text-[0.85em] px-1 py-0.5 bg-base-300 rounded">
+                  os.getenv(&quot;VAR_NAME&quot;)
+                </code>
+              </p>
+            </div>
+            <CloseIconButton
+              size="sm"
+              round
+              onClick={props.onHide}
+              aria-label="Close environment variables"
+            />
           </div>
+        </div>
 
-          <form onSubmit={onSave}>
-            {/* ── Variable rows ── */}
-            <div className="flex flex-col gap-4">
+        <form onSubmit={onSave} className="flex flex-col flex-1 min-h-0">
+          <ScrollBar className="flex-1 min-h-0 px-4 xl:px-6">
+            <div className="flex flex-col">
               {variables.map(v => (
                 <EnvVarInput
                   key={v.id}
@@ -308,12 +298,11 @@ export default function EnvironmentVariablesPage() {
               ))}
             </div>
 
-            {/* ── Add variable ── */}
-            <div className="mt-4">
+            <div className="my-4">
               <button
                 type="button"
                 onClick={onAdd}
-                className="flex items-center gap-2 text-sm font-medium
+                className="flex items-center gap-2 text-sm font-medium w-full justify-center
                   text-ink-500 dark:text-ink-200
                   bg-base-300 dark:bg-base-700
                   border border-border dark:border-base-710
@@ -325,57 +314,43 @@ export default function EnvironmentVariablesPage() {
                 New variable
               </button>
             </div>
+          </ScrollBar>
 
-            {/* ── Actions ── */}
-            <div className="mt-8 flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={onCancel}
-                disabled={saving}
-                className="text-sm font-medium
-                  text-ink-500 dark:text-ink-200
-                  bg-base-300 dark:bg-base-700
-                  border border-border dark:border-base-710
-                  px-5 py-2 rounded-lg
-                  hover:bg-base-350 dark:hover:bg-base-710
-                  transition-colors duration-100
-                  disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isDirty ? "Cancel" : "Back"}
-              </button>
+          <div className="flex-shrink-0 flex items-center justify-end gap-2 px-4 xl:px-6 py-4 border-t border-border-secondary dark:border-border-tertiary">
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={saving || !isDirty}
+              className="text-sm font-medium
+                text-ink-500 dark:text-ink-200
+                bg-base-300 dark:bg-base-700
+                border border-border dark:border-base-710
+                px-4 py-2 rounded-lg
+                hover:bg-base-350 dark:hover:bg-base-710
+                transition-colors duration-100
+                disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Cancel
+            </button>
 
-              <button
-                type="submit"
-                disabled={!isDirty || loading}
-                className="flex items-center gap-2
-                  text-sm font-medium text-white
-                  bg-primary hover:bg-primary-710
-                  px-5 py-2 rounded-lg
-                  transition-colors duration-100
-                  disabled:bg-input dark:disabled:bg-base-700
-                  disabled:text-ink-300 dark:disabled:text-ink-600
-                  disabled:cursor-not-allowed"
-              >
-                {saving && <Spin />}
-                Save changes
-              </button>
-            </div>
-          </form>
-        </div>
-      </ScrollBar>
-
-      <Files
-        workspaceId={workspaceId}
-        visible={filesOpen}
-        onHide={() => setFilesOpen(false)}
-        userId={session.user?.id ?? null}
-      />
-      <EnvBar
-        isViewer={isViewer}
-        onOpenFiles={() => setFilesOpen(prev => !prev)}
-        publishedAt={null}
-        lastUpdatedAt={null}
-      />
-    </div>
+            <button
+              type="submit"
+              disabled={!isDirty || loading}
+              className="flex items-center gap-2
+                text-sm font-medium text-white
+                bg-primary hover:bg-primary-710
+                px-4 py-2 rounded-lg
+                transition-colors duration-100
+                disabled:bg-input dark:disabled:bg-base-700
+                disabled:text-ink-300 dark:disabled:text-ink-600
+                disabled:cursor-not-allowed"
+            >
+              {saving && <Spin />}
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </Transition>
   );
 }
