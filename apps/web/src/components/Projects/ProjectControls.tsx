@@ -32,6 +32,7 @@ interface ProjectControlProps {
   onFilterChange?: (filter: FilterOption) => void;
   activeSort?: SortOption;
   onSortChange?: (sort: SortOption) => void;
+  hideFilter?: boolean;
 }
 
 const FILTER_OPTIONS: FilterOption[] = [
@@ -58,6 +59,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
   onFilterChange,
   activeSort = "Last Modified",
   onSortChange,
+  hideFilter = false,
 }) => {
   const [activeView, setActiveView] = useState<ViewType>("grid");
 
@@ -88,53 +90,57 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
             </div>
 
             {/* ✦ Filter Dropdown ✦ */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="gap-2 outline-none border-none text-sm bg-transparent text-ink-200 hover:bg-[rgba(177,182,196,0.1)] h-7"
-                >
-                  <IoFilterOutline className="w-4 h-4" />
-                  <span>Filter</span>
-                  {activeFilter !== "All" && (
-                    <Badge variant="secondary" className="ml-1 px-1 py-0.5">
-                      1
-                    </Badge>
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
-                {FILTER_OPTIONS.map(filter => (
-                  <DropdownMenuItem
-                    key={filter}
-                    onClick={() => handleFilterSelect(filter)}
-                    className="flex items-center justify-between cursor-pointer"
-                  >
-                    <span>{filter}</span>
-                    {activeFilter === filter && filter !== "All" && (
-                      <div className="w-4 h-4 bg-primary rounded flex items-center justify-center">
-                        <Check className="w-3 h-3 text-white" />
-                      </div>
-                    )}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {!hideFilter && (
+              <>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="gap-2 outline-none border-none text-sm bg-transparent text-ink-200 hover:bg-[rgba(177,182,196,0.1)] h-7"
+                    >
+                      <IoFilterOutline className="w-4 h-4" />
+                      <span>Filter</span>
+                      {activeFilter !== "All" && (
+                        <Badge variant="secondary" className="ml-1 px-1 py-0.5">
+                          1
+                        </Badge>
+                      )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56">
+                    {FILTER_OPTIONS.map(filter => (
+                      <DropdownMenuItem
+                        key={filter}
+                        onClick={() => handleFilterSelect(filter)}
+                        className="flex items-center justify-between cursor-pointer"
+                      >
+                        <span>{filter}</span>
+                        {activeFilter === filter && filter !== "All" && (
+                          <div className="w-4 h-4 bg-primary rounded flex items-center justify-center">
+                            <Check className="w-3 h-3 text-white" />
+                          </div>
+                        )}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
-            {activeFilter !== "All" && (
-              <Badge
-                variant="secondary"
-                className="gap-1 px-2 py-0.5 bg-[rgba(177,182,196,0.1)] text-ink-400 font-medium"
-              >
-                <span>{activeFilter}</span>
-                <button
-                  type="button"
-                  onClick={() => onFilterChange?.("All")}
-                  className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </Badge>
+                {activeFilter !== "All" && (
+                  <Badge
+                    variant="secondary"
+                    className="gap-1 px-2 py-0.5 bg-[rgba(177,182,196,0.1)] text-ink-400 font-medium"
+                  >
+                    <span>{activeFilter}</span>
+                    <button
+                      type="button"
+                      onClick={() => onFilterChange?.("All")}
+                      className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </Badge>
+                )}
+              </>
             )}
           </div>
 

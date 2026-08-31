@@ -43,7 +43,7 @@ function ActionBtn({ icon, label, onClick, danger }: ActionBtnProps) {
           ${
             danger
               ? "text-ink-300 dark:text-placeholder-muted hover:text-warning hover:bg-error-tint dark:hover:bg-error-shade"
-              : "text-ink-300 dark:text-placeholder-muted hover:text-ink-500 dark:hover:text-ink-200 hover:bg-base-300 dark:hover:bg-dropdown-hover"
+              : "text-ink-300 dark:text-placeholder-muted hover:text-ink-500 dark:hover:text-ink-200 hover:bg-base-300 dark:hover:bg-white/10"
           }`}
       >
         {icon}
@@ -107,7 +107,7 @@ export default function TrashList({
             key={doc.id}
             className="group flex items-center gap-3 px-3 py-3.5
               rounded-xl transition-colors duration-100
-              hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover"
+              hover:bg-primary-tint-50 dark:hover:bg-white/10"
           >
             {/* ── Checkbox ── */}
             <input
@@ -134,34 +134,34 @@ export default function TrashList({
               <Link
                 href={`/workspace/${workspaceId}/documents/${doc.id}`}
                 className="text-[15px] font-medium text-ink-500 dark:text-ink-200
-                  hover:text-primary dark:hover:text-primary-300
+                  hover:text-primary dark:hover:text-white
                   transition-colors duration-100 truncate block leading-tight"
               >
                 {doc.title || "Untitled"}
               </Link>
               <div className="flex items-center gap-1.5 mt-1">
-                <span className="text-sm text-ink-300 dark:text-placeholder-muted truncate">
-                  {displayPath}
-                </span>
-                <span className="text-sm text-ink-300 dark:text-placeholder-muted">
-                  ·
-                </span>
+                {path.length > 1 && (
+                  <>
+                    <span className="text-sm text-ink-300 dark:text-placeholder-muted truncate">
+                      {displayPath}
+                    </span>
+                    <span className="text-sm text-ink-300 dark:text-placeholder-muted">
+                      ·
+                    </span>
+                  </>
+                )}
                 <span className="text-sm text-ink-300 dark:text-placeholder-muted flex-shrink-0 tabular-nums">
                   Deleted {timeAgo(new Date(doc.deletedAt))}
                 </span>
               </div>
             </div>
-
-            {/* ── Actions — always visible ── */}
             <div className="flex-shrink-0 flex items-center gap-0.5">
               <ActionBtn
                 icon={<PiArrowCounterClockwise size={15} />}
-                label="Restore"
                 onClick={() => onRestore(doc.id)}
               />
               <ActionBtn
                 icon={<PiTrash size={15} />}
-                label="Delete permanently"
                 onClick={() => onPermanentDelete(doc.id)}
                 danger
               />

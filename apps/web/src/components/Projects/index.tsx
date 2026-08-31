@@ -12,6 +12,7 @@ import {
   PiCopyLight,
   PiTrashLight,
   PiFolderLight,
+  PiBookmarkSimpleLight,
 } from "react-icons/pi";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -70,7 +71,12 @@ function formatDate(dateString: string | Date): string {
 // =====================================
 // ⬢ Projects
 // =====================================
-export const Projects: React.FC = () => {
+interface ProjectsProps {
+  variant?: "all" | "favorites";
+}
+
+export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
+  const isFavorites = variant === "favorites";
   const workspaceId = useStringQuery("workspace");
   const router = useRouter();
   const { user } = useSession({});
@@ -90,7 +96,9 @@ export const Projects: React.FC = () => {
     useFavorites(workspaceId);
 
   const [searchValue, setSearchValue] = useState("");
-  const [activeFilter, setActiveFilter] = useState<FilterOption>("All");
+  const [activeFilter, setActiveFilter] = useState<FilterOption>(
+    isFavorites ? "Favorites" : "All"
+  );
   const [activeSort, setActiveSort] = useState<SortOption>("Last Modified");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [hoveredUser, setHoveredUser] = useState<string | null>(null);
@@ -201,20 +209,28 @@ export const Projects: React.FC = () => {
       <div className="flex justify-between w-full container mx-auto">
         <div className="flex items-center gap-3 mb-0">
           <span className="rounded-full flex items-center justify-center">
-            <UploadIcon />
+            {isFavorites ? (
+              <PiBookmarkSimpleLight className="w-6 h-6 text-primary" />
+            ) : (
+              <UploadIcon />
+            )}
           </span>
-          <h2 className="text-xl font-medium">Projects</h2>
+          <h2 className="text-xl font-medium">
+            {isFavorites ? "Saved Projects" : "Projects"}
+          </h2>
         </div>
-        <div>
-          <button
-            type="button"
-            className="py-2 px-6 bg-primary/5 dark:bg-create-project-tint/[0.16] rounded-xl hover:cursor-pointer text-sm border mt-6 flex  items-center w-full border-[#D000FF] dark:border-border-tertiary text-primary dark:text-white mb-3 font-body font-medium gap-2 shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.04),0px_4px_4px_-2px_rgba(0,0,0,0.02)] dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]"
-            onClick={onCreateDocumentHandler}
-          >
-            <PiPlus className=" h-4 w-4" />
-            <span className="inline-block"> Create Project</span>
-          </button>
-        </div>
+        {!isFavorites && (
+          <div>
+            <button
+              type="button"
+              className="py-2 px-6 bg-primary/5 dark:bg-create-project-tint/[0.16] rounded-xl hover:cursor-pointer text-sm border mt-6 flex  items-center w-full border-[#D000FF] dark:border-border-tertiary text-primary dark:text-white mb-3 font-body font-medium gap-2 shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.04),0px_4px_4px_-2px_rgba(0,0,0,0.02)] dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]"
+              onClick={onCreateDocumentHandler}
+            >
+              <PiPlus className=" h-4 w-4" />
+              <span className="inline-block"> Create Project</span>
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="mx-auto container">
@@ -229,6 +245,7 @@ export const Projects: React.FC = () => {
           onFilterChange={setActiveFilter}
           activeSort={activeSort}
           onSortChange={setActiveSort}
+          hideFilter={isFavorites}
         />
 
         {activeView === "grid" ? (
@@ -241,10 +258,14 @@ export const Projects: React.FC = () => {
               <p className="text-sm font-medium text-ink-200 dark:text-ink-400">
                 {searchValue
                   ? `No projects matching "${searchValue}"`
-                  : `No ${activeFilter === "All" ? "" : `${activeFilter.toLowerCase()} `}projects found`}
+                  : isFavorites
+                    ? "No favorite projects yet"
+                    : `No ${activeFilter === "All" ? "" : `${activeFilter.toLowerCase()} `}projects found`}
               </p>
               <p className="text-xs text-ink-300 dark:text-ink-500">
-                Try adjusting or clearing your filters to see all Projects.
+                {isFavorites && !searchValue
+                  ? "Star a project to see it here."
+                  : "Try adjusting or clearing your filters to see all Projects."}
               </p>
             </div>
           ) : (

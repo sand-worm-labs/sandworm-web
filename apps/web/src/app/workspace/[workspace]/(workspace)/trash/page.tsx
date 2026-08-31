@@ -383,7 +383,10 @@ export default function TrashPage() {
           className="flex items-center gap-2 mb-6
           pb-4 border-b border-base-300 dark:border-base-700"
         >
-          <PiTrash size={16} className="text-ink-400 dark:text-placeholder-muted" />
+          <PiTrash
+            size={16}
+            className="text-ink-400 dark:text-placeholder-muted"
+          />
           <h3 className="text-sm font-medium text-ink-100 dark:text-white">
             Trash
           </h3>
@@ -419,7 +422,7 @@ export default function TrashPage() {
                     disabled={isRestoringSelected}
                     className="px-3 py-1.5 rounded-lg text-sm font-medium border border-transparent
                       text-primary bg-primary-tint-50 dark:bg-create-project-tint/[0.16]
-                      dark:border-border-tertiary dark:text-white hover:bg-primary hover:text-white
+                      dark:border-border-tertiary dark:text-white hover:bg-primary hover:text-white dark:hover:bg-white/10
                       dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]
                       transition-colors duration-100 disabled:opacity-50"
                   >
@@ -447,7 +450,7 @@ export default function TrashPage() {
                     disabled={isRestoringAll}
                     className="px-3 py-1.5 rounded-lg text-sm font-medium border border-transparent
                       text-primary bg-primary-tint-50 dark:bg-create-project-tint/[0.16]
-                      dark:border-border-tertiary dark:text-white hover:bg-primary hover:text-white
+                      dark:border-border-tertiary dark:text-white hover:bg-primary hover:text-white dark:hover:bg-white/10
                       dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]
                       transition-colors duration-100 disabled:opacity-50"
                   >

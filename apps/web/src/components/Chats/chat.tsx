@@ -98,7 +98,7 @@ export function Chat({
   };
 
   return (
-    <div className="flex flex-row justify-center pb-4 md:pb-8 h-full bg-page-surface dark:bg-sidebar-surface min-h-[90vh] items-center ">
+    <div className="flex flex-row justify-center pb-4 md:pb-8 h-full bg-page-surface min-h-[90vh] items-center ">
       <div className="flex flex-col items-center gap-1">
         <div className="flex flex-col items-center gap-1 px-4 pb-5 text-center">
           <h1 className="text-2xl lg:text-3xl font-medium tracking-tighter font-body ">
@@ -108,7 +108,7 @@ export function Chat({
           <p className="text-ink-400">Search the blockchain for information</p>
         </div>
 
-        <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[700px] max-w-[calc(100dvw-32px)] md:px-4 px-0 md:min-w-[660px]">
+        <form className="flex flex-row gap-2 relative items-end w-full md:max-w-[850px] max-w-[calc(100dvw-32px)] md:px-4 px-0">
           <MultimodalInput
             input={input}
             setInput={setInput}
