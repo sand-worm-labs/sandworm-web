@@ -196,7 +196,7 @@ function SQLSuccess(props: SQLSuccessProps) {
       ref={containerRef}
     >
       {props.loadingPage && (
-        <div className="absolute top-0 left-0 bottom-8 right-0 bg-white dark:bg-sql-block-surface opacity-50 z-10 flex items-center justify-center">
+        <div className="absolute top-0 left-0 bottom-8 right-0 bg-white dark:bg-header-surface opacity-50 z-10 flex items-center justify-center">
           <LargeSpinner color="#deff80" />
         </div>
       )}
@@ -213,11 +213,11 @@ function SQLSuccess(props: SQLSuccessProps) {
       >
         <div
           className={clsx(
-            "max-w-full ph-no-capture bg-white dark:bg-sql-block-surface font-body ",
+            "max-w-full ph-no-capture bg-white dark:bg-header-surface font-body ",
             tableTopBorder === "rounded" && "rounded-md",
             (!props.dashboardMode ||
               dashboardModeHasControls(props.dashboardMode)) &&
-              "border-b dark:border-sql-block-surface"
+              "border-b dark:border-border-dark"
           )}
         >
           <Table
@@ -244,12 +244,12 @@ function SQLSuccess(props: SQLSuccessProps) {
 
       <div
         className={clsx(
-          "flex w-full items-center justify-between border-hover-border dark:border-sql-block-surface px-3 h-10  text-xs rounded-b-xl text-ink-400 bg-inputBg dark:bg-sql-block-surface",
+          "flex w-full items-center justify-between border-hover-border dark:border-border-dark px-3 h-10  text-xs rounded-b-xl text-ink-400 bg-inputBg dark:bg-header-surface",
           ((props.dashboardMode &&
             (props.dashboardMode._tag === "live" ||
               props.dashboardMode.position !== "expanded")) ||
             props.isResultHidden) &&
-            "border-t dark:border-sql-block-surface"
+            "border-t dark:border-border-dark"
         )}
       >
         <div className="flex-1">
@@ -299,12 +299,12 @@ function SQLSuccess(props: SQLSuccessProps) {
                   props.isAddVisualizationDisabled
                     ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
                     : "cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary",
-                  "flex items-center h-full border rounded-full border-hover-border px-2 gap-x-1 text-ink-300 group relative font-body bg-base-200 py-0.5"
+                  "flex items-center h-full border rounded-full border-hover-border px-2 gap-x-1 text-ink-300 dark:text-ink-400 group relative font-body bg-base-200 dark:bg-header-surface py-0.5"
                 )}
                 disabled={props.isAddVisualizationDisabled}
                 onClick={props.onAddVisualization}
               >
-                <PiChartPie className="w-[11.5px] h-[11.5px] shrink-0 text-ink-300" />
+                <PiChartPie className="w-[11.5px] h-[11.5px] shrink-0 text-ink-300 dark:text-ink-400" />
                 <span>Visualize</span>
               </button>
             </Tooltip>
@@ -326,8 +326,8 @@ function SQLSuccess(props: SQLSuccessProps) {
                 className={clsx(
                   csvRes.loading
                     ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                    : "cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary bg-base-200",
-                  "flex items-center h-full border rounded-full border-hover-border px-2 gap-x-1 text-ink-300 group relative font-body"
+                    : "cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary bg-base-200 dark:bg-header-surface",
+                  "flex items-center h-full border rounded-full border-hover-border px-2 gap-x-1 text-ink-300 dark:text-ink-400 group relative font-body"
                 )}
                 onClick={onDownloadCSV}
               >
@@ -335,7 +335,7 @@ function SQLSuccess(props: SQLSuccessProps) {
                   <Spin />
                 ) : (
                   <>
-                    <PiFileCsvLight className="w-[11.5px] h-[11.5px] shrink-0 text-ink-300" />
+                    <PiFileCsvLight className="w-[11.5px] h-[11.5px] shrink-0 text-ink-300 dark:text-ink-400" />
                     <span>CSV</span>
                   </>
                 )}

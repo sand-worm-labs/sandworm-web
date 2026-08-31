@@ -76,6 +76,7 @@ const config: Config = {
           750: "var(--base-750)",
           760: "var(--base-760)",
           770: "var(--base-770)",
+          800: "var(--base-800)",
         },
 
         gray: {
@@ -91,6 +92,7 @@ const config: Config = {
           500: "var(--ink-500)",
           600: "var(--ink-600)",
           700: "var(--ink-700)",
+          800: "var(--ink-800)",
           icon: "var(--ink-icon)",
           navy: "var(--ink-navy)",
         },
@@ -107,6 +109,7 @@ const config: Config = {
         "border-quiet": "var(--border-quiet)",
         "border-faint": "var(--border-faint)",
         "border-cool": "var(--border-cool)",
+        "border-dark": "var(--border-dark)",
 
         input: "hsl(var(--input))",
         inputBg: "hsl(var(--bg-input))",
@@ -124,10 +127,6 @@ const config: Config = {
 
         "hover-bg": "var(--hover-bg)",
         "hover-border": "var(--hover-border)",
-
-        "sql-block-surface": "var(--sql-block-surface)",
-        "sql-divider-line": "var(--sql-divider-line)",
-        "table-header-surface": "var(--table-header-surface)",
 
         warning: "var(--warning)",
         link: "var(--link)",

@@ -33,29 +33,30 @@ const LIGHT = {
 };
 
 const DARK = {
-  bg: "#272726",
-  bgDisabled: "#2E2E2C",
-  bgGutter: "#222221",
-  border: "#3a3a38",
+  bg: "#1A1A1A",
+  bgDisabled: "#232323",
+  bgGutter: "#1A1A1A",
+  border: "#303030",
   text: "#d4d4d4",
-  textMuted: "#4e4e4c",
-  textActive: "#9cdcfe",
+  textMuted: "#5a5a58",
+  textActive: "#8fc5d6",
   cursor: "#d4d4d4",
-  selection: "#264f78",
-  selectionMatch: "#1e3a5f",
+  selection: "#33344a",
+  selectionMatch: "#24263a",
 
-  keyword: "#0000FF",
-  keywordModifier: "#A308F1",
-  variable: "#1f1f1f",
-  string: "#A31515",
-  number: "#098658",
-  comment: "#008000",
-  operator: "#000000",
-  type: "#267F99",
-  builtin: "#795E26",
-  decorator: "#795E26",
-  escape: "#EE0000",
-  regexp: "#811F3F",
+  keyword: "#E100FF",
+  keywordModifier: "#B65FD1",
+  variable: "#6EA6B7",
+  string: "#C4AD7A",
+  number: "#8FD693",
+  comment: "#6A9955",
+  operator: "#C9C9C9",
+  type: "#4EC9B0",
+  builtin: "#D988F9",
+  decorator: "#D988F9",
+  escape: "#D16969",
+  regexp: "#DB6C79",
+  bracket: "#C9C9C9",
 };
 
 // =====================================
@@ -239,7 +240,7 @@ const darkHighlightStyle = HighlightStyle.define([
 
   // — decorators / annotations
   { tag: t.annotation, color: DARK.decorator },
-  { tag: t.modifier, color: DARK.keyword },
+  { tag: t.modifier, color: DARK.keywordModifier },
 
   // — comments
   { tag: t.comment, color: DARK.comment, fontStyle: "italic" },

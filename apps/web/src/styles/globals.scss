@@ -275,6 +275,7 @@
     --ink-icon: #fff;
     --ink-navy: #f8f9fa;
     --ink-700: #343330;
+    --ink-800: #e9ecef;
 
     /* Extended surfaces (auto-extracted, same value in light/dark for now) */
     --base-350: #e8e8e6;
@@ -287,11 +288,13 @@
     --base-750: #1e1e1c;
     --base-760: #2e2e2c;
     --base-770: #1a1a18;
+    --base-800: #0f0f0f;
 
     /* Extended borders */
     --border-quiet: #e3e5e8;
     --border-faint: #d0d5dd;
     --border-cool: #343a40;
+    --border-dark: #212529;
 
     /* Always-dark editor/code surfaces (not theme-reactive) */
     --editor-100: #181c21;
@@ -332,12 +335,6 @@
     --radius: 0.5rem;
     --icon-bg: #1c1f26;
     --icon-stroke: #e6eaf0;
-
-    /* SQL block chrome (dark-mode specific, no light equivalent needed) */
-    --sql-block-surface: #1a1a1a;
-    --sql-block-border: #212529;
-    --sql-divider-line: #455768;
-    --table-header-surface: #0f0f0f;
   }
 }
 
@@ -357,7 +354,7 @@
 }
 
 .dark .hatch-bg {
-  background-color: var(--sql-block-surface);
+  background-color: hsl(var(--header-surface)); /* #1A1A1A */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='%231A1A1A'/%3E%3Cline x1='0' y1='8' x2='8' y2='0' stroke='%23455768' stroke-width='1'/%3E%3C/svg%3E");
 }
 

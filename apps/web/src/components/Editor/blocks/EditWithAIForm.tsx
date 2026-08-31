@@ -152,7 +152,7 @@ function EditWithAIForm(props: Props) {
             props.loading ? "rainbow-border-top" : "rainbow-border-top-static",
             "border-b border-x border-border dark:border-border-dark",
             !props.hasOutput && "rounded-b-xl",
-            "bg-inputBg dark:bg-surface-dark",
+            "bg-inputBg dark:bg-header-surface",
             "transition-colors duration-150"
           )}
         >
@@ -197,7 +197,7 @@ function EditWithAIForm(props: Props) {
                         "relative overflow-hidden cursor-not-allowed",
                         "bg-transparent border border-transparent",
                         "before:absolute before:inset-[1px] before:rounded-[7px]",
-                        "before:bg-surface dark:before:bg-surface-dark",
+                        "before:bg-surface dark:before:bg-header-surface",
                       ]
                     : "bg-base-200 hover:bg-primary-710 text-white border border-hover-border"
                 )}

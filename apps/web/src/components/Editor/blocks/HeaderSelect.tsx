@@ -57,7 +57,7 @@ export default function HeaderSelect(props: Props) {
             className={clsx(
               " py-1.5 h-full relative w-full rounded-lg pl-3 pr-10 text-left sm:text-xs flex items-center cursor-pointer",
               hasValue
-                ? "text-ink-400 dark:text-white bg-hover-bg dark:bg-base-100 hover:bg-gray-100/50"
+                ? "text-ink-400 dark:text-white bg-hover-bg dark:bg-header-surface hover:bg-gray-100/50"
                 : "text-error bg-red-50 hover:bg-red-100"
             )}
           >
