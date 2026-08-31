@@ -95,7 +95,7 @@ function ConfirmDialog({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="absolute inset-0 bg-black/[10.2%]" />
+          <div className="absolute inset-0 bg-black/30" />
         </TransitionChild>
 
         <TransitionChild
@@ -138,7 +138,11 @@ function ConfirmDialog({
                 className={`flex-1 py-2.5 rounded-xl text-white text-sm
                   font-medium hover:bg-opacity-90 transition-colors
                   disabled:opacity-50
-                  ${variant === "danger" ? "bg-error" : "bg-primary"}`}
+                  ${
+                    variant === "danger"
+                      ? "bg-error"
+                      : "bg-primary dark:bg-base-400 dark:hover:bg-base-500"
+                  }`}
               >
                 {isBusy ? busyLabel : confirmLabel}
               </button>
@@ -432,10 +436,8 @@ export default function TrashPage() {
                     onClick={() =>
                       setPendingAction({ kind: "delete", scope: "selected" })
                     }
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium border border-transparent
-                      text-error bg-error-tint dark:bg-error/[0.16]
-                      dark:border-error/30 hover:bg-error hover:text-white
-                      dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium
+                      bg-error text-white hover:bg-error/90
                       transition-colors duration-100"
                   >
                     Delete selected
@@ -460,10 +462,8 @@ export default function TrashPage() {
                     onClick={() =>
                       setPendingAction({ kind: "delete", scope: "all" })
                     }
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium border border-transparent
-                      text-error bg-error-tint dark:bg-error/[0.16]
-                      dark:border-error/30 hover:bg-error hover:text-white
-                      dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium
+                      bg-error text-white hover:bg-error/90
                       transition-colors duration-100"
                   >
                     Delete all
