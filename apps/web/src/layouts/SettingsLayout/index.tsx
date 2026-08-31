@@ -63,7 +63,7 @@ export default function SettingsLayout({
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
         <aside
-          className="flex shrink-0 flex-col justify-between border-r border-border-secondary bg-base-200 p-6 px-3 dark:border-borderLight dark:border-border-tertiary dark:bg-[#1D1D1C] md:h-full md:overflow-hidden"
+          className="flex shrink-0 flex-col justify-between border-r border-border-secondary bg-base-200 p-6 px-3 dark:border-borderLight dark:border-border-tertiary dark:bg-sidebar-surface md:h-full md:overflow-hidden"
           style={{ minWidth: 250 }}
         >
           <ul className="mt-4 flex w-full flex-col">

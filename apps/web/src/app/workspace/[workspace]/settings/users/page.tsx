@@ -216,7 +216,7 @@ export default function UsersPage() {
   return (
     <>
       <ScrollBar className="w-full h-full overflow-auto font-body">
-        <div className="px-4 sm:p-6 lg:p-8 min-h-[100vh]">
+        <div className="px-4 sm:p-6 lg:p-8 min-h-full">
           <div className="dark:border-gray-800 pb-4 mb-6 flex flex-col md:flex-row justify-between md:items-center items-start">
             <div>
               <h2 className="text-xl font-medium text-ink-100 dark:text-white mb-1">
