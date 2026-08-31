@@ -73,7 +73,7 @@ export default function PageSettingsPanel(props: Props) {
       leaveFrom="w-[354px]"
       leaveTo="w-0"
     >
-      <div className="w-[324px] flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white font-body dark:bg-page-surface ">
+      <div className="w-full flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-white font-body dark:bg-page-surface ">
         <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
           <div className="flex items-start justify-between">
             <div>
