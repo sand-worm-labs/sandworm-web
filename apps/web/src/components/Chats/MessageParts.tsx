@@ -66,8 +66,8 @@ export function MessageParts({ parts, isLoading = false }: MessagePartsProps) {
 
   return (
     <div
-      className="chat-bubble-in flex flex-col gap-1.5 max-w-[96%] rounded-2xl rounded-bl-sm
-        border border-border-secondary dark:border-border-tertiary
+      className="chat-bubble-in flex flex-col gap-1.5 max-w-full rounded-2xl rounded-bl-sm
+        dark:border dark:border-border-tertiary
         bg-white dark:bg-chat-assistant-surface px-3 py-2.5"
     >
       {grouped.map((item, idx) => {

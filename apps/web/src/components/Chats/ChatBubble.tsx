@@ -250,17 +250,17 @@ export function ChatBubble({
 
       {isUser ? (
         <div
-          className="bg-[#eaedef] dark:bg-base-200 rounded-2xl rounded-br-sm border border-border-secondary dark:border-border-tertiary
+          className="bg-[#eaedef] dark:bg-base-200 rounded-2xl rounded-br-sm dark:border dark:border-border-tertiary
             text-ink-500 dark:text-ink-100
-            px-4 py-2.5 max-w-[78%] text-[13px] leading-relaxed
-           break-words whitespace-pre-wrap min-w-[80px]"
+            px-4 py-2.5 max-w-full text-[13px] leading-relaxed
+            break-words whitespace-pre-wrap w-fit"
         >
           {text}
         </div>
       ) : (
         <div
-          className="max-w-[96%] bg-white dark:bg-chat-assistant-surface
-            border border-border-secondary dark:border-border-tertiary
+          className="max-w-full bg-white dark:bg-chat-assistant-surface
+            dark:border dark:border-border-tertiary
             rounded-2xl rounded-bl-sm px-4 py-2.5
             text-[13px] leading-relaxed
             text-ink-500 dark:text-ink-400

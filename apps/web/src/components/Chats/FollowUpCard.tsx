@@ -190,7 +190,7 @@ export function FollowUpCard({
 
   return (
     <div
-      className="chat-bubble-in max-w-[96%] rounded-2xl rounded-bl-sm
+      className="chat-bubble-in max-w-full rounded-2xl rounded-bl-sm
         border border-border-secondary dark:border-border-tertiary
         bg-white dark:bg-chat-assistant-surface overflow-hidden"
     >
