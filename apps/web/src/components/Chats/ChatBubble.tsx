@@ -234,7 +234,7 @@ export function ChatBubble({
 
   return (
     <div
-      className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start w-full"}`}
+      className={`chat-bubble-in flex flex-col gap-1 ${isUser ? "items-end" : "items-start w-full"}`}
     >
       {hasAttachments && (
         <div className="flex flex-wrap gap-1 max-w-[78%] justify-end mb-0.5">
@@ -250,8 +250,8 @@ export function ChatBubble({
 
       {isUser ? (
         <div
-          className="bg-[#eaedef] dark:bg-dropdown-bg rounded-2xl rounded-br-sm border border-border-secondary dark:border-border-tertiary
-            text-ink-500 dark:text-ink-400
+          className="bg-[#eaedef] dark:bg-base-200 rounded-2xl rounded-br-sm border border-border-secondary dark:border-border-tertiary
+            text-ink-500 dark:text-ink-100
             px-4 py-2.5 max-w-[78%] text-[13px] leading-relaxed
            break-words whitespace-pre-wrap min-w-[80px]"
         >
@@ -259,7 +259,10 @@ export function ChatBubble({
         </div>
       ) : (
         <div
-          className="w-full text-[13px] leading-relaxed
+          className="max-w-[96%] bg-white dark:bg-chat-assistant-surface
+            border border-border-secondary dark:border-border-tertiary
+            rounded-2xl rounded-bl-sm px-4 py-2.5
+            text-[13px] leading-relaxed
             text-ink-500 dark:text-ink-400
             [overflow-wrap:anywhere]"
         >

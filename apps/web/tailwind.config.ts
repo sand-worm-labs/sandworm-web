@@ -55,7 +55,9 @@ const config: Config = {
         "placeholder-muted": "var(--placeholder-muted)",
         "dropdown-bg": "hsl(var(--dropdown-bg))",
         "dropdown-hover": "hsl(var(--dropdown-hover))",
-        "create-project-tint": "hsl(var(--create-project-tint) / <alpha-value>)",
+        "chat-assistant-surface": "hsl(var(--chat-assistant-surface))",
+        "create-project-tint":
+          "hsl(var(--create-project-tint) / <alpha-value>)",
 
         base: {
           100: "hsl(var(--base-100))",

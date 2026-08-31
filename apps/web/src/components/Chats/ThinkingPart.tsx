@@ -125,7 +125,7 @@ export function ThinkingPart({ part, isActive = false }: ThinkingPartProps) {
           <PiBrain size={13} className="text-[#7F77DD]" />
         </motion.span>
 
-        <span className="text-[12.5px] text-ink-400 dark:text-ink-500 flex-1 font-semibold flex items-center">
+        <span className="text-[12.5px] text-ink-400 dark:text-ink-300 flex-1 font-semibold flex items-center">
           <AnimatePresence mode="wait" initial={false}>
             {isActive ? (
               <motion.span
@@ -216,7 +216,7 @@ export function ThinkingPart({ part, isActive = false }: ThinkingPartProps) {
                 </div>
               )}
 
-              <p className="text-[12.5px] text-ink-400 dark:text-ink-500 leading-relaxed">
+              <p className="text-[12.5px] text-ink-400 dark:text-ink-300 leading-relaxed">
                 {displayedThinking}
               </p>
             </div>

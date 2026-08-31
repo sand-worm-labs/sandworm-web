@@ -190,11 +190,12 @@ export function FollowUpCard({
 
   return (
     <div
-      className="rounded-xl border border-border-secondary dark:border-base-700
-        bg-white dark:bg-base-730 overflow-hidden"
+      className="chat-bubble-in max-w-[96%] rounded-2xl rounded-bl-sm
+        border border-border-secondary dark:border-border-tertiary
+        bg-white dark:bg-chat-assistant-surface overflow-hidden"
     >
-      <div className="px-3 py-2.5 border-b border-border-secondary dark:border-base-700 space-y-1.5">
-        <p className="text-[12px] text-ink-400 dark:text-ink-400 leading-relaxed">
+      <div className="px-3 py-2.5 border-b border-border-secondary dark:border-border-tertiary space-y-1.5">
+        <p className="text-[12px] text-ink-400 dark:text-ink-300 leading-relaxed">
           {displayedMessage}
         </p>
         {total > 1 && (
@@ -220,7 +221,7 @@ export function FollowUpCard({
 
       <div className="px-3 py-2">
         <div key={question.id}>
-          <p className="text-[11.5px] font-medium text-ink-500 dark:text-ink-200 mb-1.5">
+          <p className="text-[11.5px] font-medium text-ink-500 dark:text-ink-100 mb-1.5">
             {question.text}
           </p>
 
@@ -246,7 +247,7 @@ export function FollowUpCard({
                     className="accent-primary flex-shrink-0"
                     disabled={isDisabled}
                   />
-                  <span className="text-[11.5px] text-ink-500 dark:text-ink-200">
+                  <span className="text-[11.5px] text-ink-500 dark:text-ink-100">
                     {opt.label}
                   </span>
                 </label>
@@ -259,9 +260,9 @@ export function FollowUpCard({
               value={answers[question.id] ?? ""}
               onChange={e => handleChange(question.id, e.target.value)}
               disabled={isDisabled}
-              className="w-full px-2.5 py-1.5 rounded-lg text-[11.5px]
+              className="w-full px-3 py-1.5 rounded-lg text-[11.5px]
                 border border-border-secondary dark:border-base-700
-                bg-white dark:bg-base-730 text-ink-500 dark:text-ink-200
+                bg-white dark:bg-base-730 text-ink-500 dark:text-ink-100
                 disabled:opacity-50 disabled:cursor-not-allowed
                 focus:outline-none focus:border-primary"
             >
@@ -282,10 +283,10 @@ export function FollowUpCard({
             <div className={pendingElaboration ? "mt-2" : undefined}>
               {answers[question.id] && !pendingElaboration ? (
                 <div
-                  className="px-2.5 py-1.5 rounded-lg text-[12px]
+                  className="px-3 py-1.5 rounded-lg text-[12px] break-words
                     border border-border-secondary dark:border-base-700
                     bg-base-300 dark:bg-base-700
-                    text-ink-500 dark:text-ink-200"
+                    text-ink-500 dark:text-ink-100"
                 >
                   {answers[question.id]}
                 </div>

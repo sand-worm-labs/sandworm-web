@@ -28,7 +28,10 @@ const BLOCK_TYPE_META: Record<string, { label: string; kind: BlockType }> = {
   POWER_TOOLBOX: { label: "Power Toolbox", kind: BlockType.PowerToolbox },
   RICH_TEXT: { label: "Rich Text", kind: BlockType.RichText },
   PIVOT_TABLE: { label: "Pivot Table", kind: BlockType.PivotTable },
-  DASHBOARD_HEADER: { label: "Dashboard Header", kind: BlockType.DashboardHeader },
+  DASHBOARD_HEADER: {
+    label: "Dashboard Header",
+    kind: BlockType.DashboardHeader,
+  },
   DROPDOWN_INPUT: { label: "Dropdown Input", kind: BlockType.DropdownInput },
   DATE_INPUT: { label: "Date Input", kind: BlockType.DateInput },
   INPUT: { label: "Input", kind: BlockType.Input },
@@ -44,7 +47,7 @@ function Pill({
 }) {
   return (
     <span
-      className={`flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-white dark:bg-base-720 border border-border dark:border-base-710 tabular-nums ${error ? "text-warning" : "text-ink-400 dark:text-ink-500"}`}
+      className={`flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-white dark:bg-base-720 border border-border dark:border-base-710 tabular-nums ${error ? "text-warning" : "text-ink-400 dark:text-ink-300"}`}
     >
       {children}
     </span>
@@ -78,11 +81,11 @@ export function BlockActionRow({ part, onLocate }: BlockActionRowProps) {
             kind={meta.kind}
             size={16}
             weight="bold"
-            className="text-ink-700 dark:text-ink-200"
+            className="text-ink-700 dark:text-ink-100"
             style={{ display: "block", flexShrink: 0 }}
           />
         ) : (
-          <span className="text-ink-700 dark:text-ink-200">
+          <span className="text-ink-700 dark:text-ink-100">
             <PiOctagon size={16} />
           </span>
         )}
@@ -107,7 +110,7 @@ export function BlockActionRow({ part, onLocate }: BlockActionRowProps) {
         ))}
 
       {isClickable && (
-        <span className="flex-shrink-0 text-[10px] text-ink-200 dark:text-ink-700 opacity-0 group-hover:opacity-100 transition-opacity">
+        <span className="flex-shrink-0 text-[10px] text-ink-200 dark:text-ink-300 opacity-0 group-hover:opacity-100 transition-opacity">
           ↗
         </span>
       )}

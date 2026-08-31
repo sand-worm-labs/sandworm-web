@@ -91,7 +91,7 @@ export function BlockActionGroup({ parts }: BlockActionGroupProps) {
             animate="visible"
             exit="exit"
             className="text-[10.5px] text-ink-300 dark:text-ink-600
-              hover:text-ink-400 dark:hover:text-ink-500
+              hover:text-ink-400 dark:hover:text-ink-100
               text-left px-1 transition-colors duration-150"
           >
             +{hidden} more
@@ -109,7 +109,7 @@ export function BlockActionGroup({ parts }: BlockActionGroupProps) {
             animate="visible"
             exit="exit"
             className="text-[10.5px] text-ink-300 dark:text-ink-600
-              hover:text-ink-400 dark:hover:text-ink-500
+              hover:text-ink-400 dark:hover:text-ink-100
               text-left px-1 transition-colors duration-150"
           >
             show less

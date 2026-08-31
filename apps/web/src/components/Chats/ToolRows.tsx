@@ -22,7 +22,7 @@ function IconBox({ children }: { children: React.ReactNode }) {
 
 function Pill({ children }: { children: React.ReactNode }) {
   return (
-    <span className="flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-white dark:bg-base-720 border border-border dark:border-base-710 text-ink-400 dark:text-ink-500">
+    <span className="flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-white dark:bg-base-720 border border-border dark:border-base-710 text-ink-400 dark:text-ink-300">
       {children}
     </span>
   );
@@ -58,7 +58,7 @@ export function ToolCallRow({ part }: ToolCallRowProps) {
         <IconBox>
           <PiLightning
             size={16}
-            className="text-ink-700 dark:text-ink-200"
+            className="text-ink-700 dark:text-ink-100"
             style={{ display: "block", flexShrink: 0 }}
           />
         </IconBox>
@@ -128,7 +128,7 @@ export function ToolResultRow({ part }: ToolResultRowProps) {
         ) : (
           <PiCheck
             size={16}
-            className="text-ink-700 dark:text-ink-200"
+            className="text-ink-700 dark:text-ink-100"
             style={{ display: "block", flexShrink: 0 }}
           />
         )}

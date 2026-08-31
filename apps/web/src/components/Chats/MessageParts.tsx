@@ -65,7 +65,11 @@ export function MessageParts({ parts, isLoading = false }: MessagePartsProps) {
   let flatCursor = 0;
 
   return (
-    <div className="flex flex-col gap-1.5 w-full max-w-[98%]">
+    <div
+      className="chat-bubble-in flex flex-col gap-1.5 max-w-[96%] rounded-2xl rounded-bl-sm
+        border border-border-secondary dark:border-border-tertiary
+        bg-white dark:bg-chat-assistant-surface px-3 py-2.5"
+    >
       {grouped.map((item, idx) => {
         if (Array.isArray(item)) {
           const groupStart = flatCursor;
