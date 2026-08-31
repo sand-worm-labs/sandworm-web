@@ -55,7 +55,7 @@ export function RightSidebarPanel({ visible, children }: Props) {
     <div
       style={{ width: visible ? width : 0 }}
       className={cn(
-        "h-full overflow-hidden flex-shrink-0 relative flex print:hidden",
+        "h-full overflow-hidden flex-shrink-0 relative flex print:hidden dark:bg-page-surface",
         !isResizing && "transition-[width] duration-300 ease-in-out"
       )}
     >

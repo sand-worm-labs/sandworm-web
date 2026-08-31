@@ -250,7 +250,7 @@ export function ChatBubble({
 
       {isUser ? (
         <div
-          className="bg-[#eaedef] dark:bg-editor-600 rounded-2xl rounded-br-sm border border-border-secondary
+          className="bg-[#eaedef] dark:bg-dropdown-bg rounded-2xl rounded-br-sm border border-border-secondary dark:border-border-tertiary
             text-ink-500 dark:text-ink-400
             px-4 py-2.5 max-w-[78%] text-[13px] leading-relaxed
            break-words whitespace-pre-wrap min-w-[80px]"

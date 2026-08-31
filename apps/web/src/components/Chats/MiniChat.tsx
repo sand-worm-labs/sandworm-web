@@ -106,7 +106,7 @@ export const MiniChat: React.FC<MiniChatProps> = ({
   return (
     <>
       {visible && (
-        <div className="relative w-full flex flex-col h-full bg-white dark:bg-base-100 overflow-hidden">
+        <div className="relative w-full flex flex-col h-full bg-white dark:bg-[#1D1D1C] overflow-hidden">
           {state.view === "threads" ? (
             <ThreadList
               workspaceId={workspaceId}

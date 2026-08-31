@@ -449,6 +449,10 @@ code, kbd, samp, pre{
   pointer-events: none;
 }
 
+.dark .tiptap h1.is-empty::before {
+  color: var(--placeholder-muted);
+}
+
 /* ── Markdown preview code blocks ─────────────────────────────── */
 .sw-code-block {
   @apply rounded-lg overflow-hidden border border-border-secondary dark:border-border-tertiary my-4;

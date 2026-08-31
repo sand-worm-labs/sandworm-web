@@ -187,7 +187,9 @@ function CategoryRow({
       className={clsx(
         "w-full flex items-center gap-3 px-4 py-3 text-left",
         "transition-colors duration-75 rounded-lg",
-        isActive ? "bg-base-600" : "hover:bg-base-600"
+        isActive
+          ? "bg-base-600 dark:bg-dropdown-hover"
+          : "hover:bg-base-600 dark:hover:bg-dropdown-hover"
       )}
     >
       <span
@@ -249,7 +251,8 @@ function ToolRow({
       className={clsx(
         "w-full flex items-center gap-3 px-4 py-3 text-left",
         "transition-colors duration-75 rounded-lg",
-        isActive ? "hover:bg-base-600" : "hover:bg-base-600"
+        "hover:bg-base-600 dark:hover:bg-dropdown-hover",
+        isActive && "dark:bg-dropdown-hover"
       )}
     >
       <span
@@ -473,7 +476,7 @@ export function PowerToolboxModal({
             <Dialog.Panel
               className={clsx(
                 "w-full max-w-[655px] rounded-2xl overflow-hidden",
-                "bg-base-100 border border-border-secondary"
+                "bg-base-100 border border-border-secondary dark:bg-dropdown-bg dark:border-border-tertiary"
               )}
             >
               <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-border-secondary">
@@ -513,7 +516,7 @@ export function PowerToolboxModal({
                 <div
                   className={clsx(
                     "flex items-center gap-2.5 px-3 py-1.5 rounded-lg",
-                    "bg-white/[0.04] border border-border-secondary",
+                    "bg-white/[0.04] border border-border-secondary dark:bg-[#262625] dark:border-border-tertiary",
                     "focus-within:border-primary/40 ",
                     "transition-colors"
                   )}

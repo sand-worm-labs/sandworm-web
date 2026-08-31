@@ -58,7 +58,7 @@ interface OverflowItem {
 // ⬢ Utils
 // =====================================
 const TriangleUp = () => (
-  <div className="h-3 w-3 bg-white dark:bg-base-100 border-t border-l border-border-secondary rotate-45 translate-y-1/2" />
+  <div className="h-3 w-3 bg-white dark:bg-sidebar-surface border-t border-l border-border-secondary rotate-45 translate-y-1/2" />
 );
 
 function pillToOverflowItems(pill: PillDef): OverflowItem[] {
@@ -110,7 +110,7 @@ function BlockSuggestion({ id, icon, text, onAdd }: BlockSuggestionProps) {
     <div id={id} className="w-full text-sm px-1 relative z-30">
       <button
         type="button"
-        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-ink-400 dark:text-ink-400 bg-white dark:bg-base-100 hover:border-primary border border-border-secondary dark:border-border-tertiary font-body font-normal text-sm"
+        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-ink-400 dark:text-ink-400 bg-white dark:bg-sidebar-surface hover:border-primary border border-border-secondary dark:border-border-tertiary font-body font-normal text-sm"
         onClick={onClick}
       >
         {icon}
@@ -138,7 +138,7 @@ function MultiBlockSuggestion({
 }: MultiBlockSuggestionProps) {
   return (
     <Menu as="div" id={id} className="w-full text-sm px-1 relative z-30">
-      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-ink-400 dark:text-ink-400 bg-white dark:bg-base-100 hover:text-gray-700 relative border border-border-secondary dark:border-border-tertiary py-2.5 hover:border-primary">
+      <Menu.Button className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 rounded-full text-ink-400 dark:text-ink-400 bg-white dark:bg-sidebar-surface hover:text-gray-700 relative border border-border-secondary dark:border-border-tertiary py-2.5 hover:border-primary">
         {icon}
         <span>{text}</span>
         <PiCaretDown size={14} />
@@ -155,7 +155,7 @@ function MultiBlockSuggestion({
       >
         <Menu.Items
           as="div"
-          className="w-44 mt-2 rounded-2xl bg-white dark:bg-base-100 shadow-sm ring-1 ring-border-secondary dark:ring-border-tertiary focus:outline-none font-body px-1.5 py-1.5"
+          className="w-44 mt-2 rounded-2xl bg-white dark:bg-sidebar-surface shadow-sm ring-1 ring-border-secondary dark:ring-border-tertiary focus:outline-none font-body px-1.5 py-1.5"
         >
           {options.map((option, index) => (
             <Menu.Item key={option.text}>
@@ -163,10 +163,10 @@ function MultiBlockSuggestion({
                 <button
                   type="button"
                   className={clsx(
-                    active ? "bg-primary/20 text-ink-100" : "text-ink-400",
+                    active ? "bg-primary/20 dark:bg-dropdown-hover text-ink-100" : "text-ink-400",
                     index === 0 ? "rounded-lg" : "",
                     index === options.length - 1 ? "rounded-lg" : "",
-                    "flex items-center gap-x-2 w-full text-sm px-2 py-1.5 mb-0.5 hover:bg-primary/20 rounded-lg"
+                    "flex items-center gap-x-2 w-full text-sm px-2 py-1.5 mb-0.5 hover:bg-primary/20 dark:hover:bg-dropdown-hover rounded-lg"
                   )}
                   onClick={option.onClick}
                 >
@@ -191,7 +191,7 @@ function OverflowMenu({ items }: { items: OverflowItem[] }) {
     <Menu as="div" className="w-auto min-w-[120px] text-sm px-1 relative z-30">
       <Menu.Button
         aria-label="More block types"
-        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-ink-400 dark:text-ink-400 bg-white dark:bg-base-100 border border-border-secondary dark:border-border-tertiary hover:border-primary"
+        className="w-full transition-colors transition-100 flex items-center justify-center gap-x-2 p-2 py-2.5 rounded-full text-ink-400 dark:text-ink-400 bg-white dark:bg-sidebar-surface border border-border-secondary dark:border-border-tertiary hover:border-primary"
       >
         <PiDotsThree size={16} />
         <span>More</span>
@@ -208,7 +208,7 @@ function OverflowMenu({ items }: { items: OverflowItem[] }) {
       >
         <Menu.Items
           as="div"
-          className="w-44 mt-2 rounded-2xl bg-white dark:bg-base-100 shadow-sm ring-1 ring-border-secondary dark:ring-border-tertiary focus:outline-none font-body px-1.5 py-1.5"
+          className="w-44 mt-2 rounded-2xl bg-white dark:bg-sidebar-surface shadow-sm ring-1 ring-border-secondary dark:ring-border-tertiary focus:outline-none font-body px-1.5 py-1.5"
         >
           {items.map((item, index) => (
             <Menu.Item key={item.text}>
@@ -216,11 +216,11 @@ function OverflowMenu({ items }: { items: OverflowItem[] }) {
                 <button
                   type="button"
                   className={clsx(
-                    active ? "bg-primary/20 text-ink-100" : "text-ink-400",
+                    active ? "bg-primary/20 dark:bg-dropdown-hover text-ink-100" : "text-ink-400",
                     index === 0 || index === items.length - 1
                       ? "rounded-lg"
                       : "",
-                    "flex items-center gap-x-2 w-full text-sm px-2 py-1.5 mb-0.5 hover:bg-primary/20 rounded-lg"
+                    "flex items-center gap-x-2 w-full text-sm px-2 py-1.5 mb-0.5 hover:bg-primary/20 dark:hover:bg-dropdown-hover rounded-lg"
                   )}
                   onClick={item.onClick}
                 >
@@ -396,7 +396,7 @@ function BlockList(props: BlockListProps) {
 
       <div
         ref={containerRef}
-        className="w-full py-1 flex items-center justify-center bg-base-100"
+        className="w-full py-1 flex items-center justify-center bg-white dark:bg-sidebar-surface"
       >
         {visiblePills.map(pill =>
           pill.kind === "single" ? (

@@ -403,7 +403,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
         />
       )}
 
-      <div className="bg-base-100 dark:bg-base-740 border border-border-secondary dark:border-border-tertiary rounded-2xl shadow-sm">
+      <div className="bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary rounded-2xl shadow-sm">
         {pendingChanges && pendingChanges.length > 0 && (
           <div className="px-0 pt-0 border-b border-border dark:border-border-tertiary">
             <ChangesPanelCompact

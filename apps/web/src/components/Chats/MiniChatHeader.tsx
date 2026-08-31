@@ -22,7 +22,7 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
   onNewThread,
   activeThreadTitle,
 }) => (
-  <header className="flex items-start gap-2 px-3 pt-3 pb-2.5 bg-white dark:bg-base-100 border-b border-border-secondary dark:border-border-secondary">
+  <header className="flex items-start gap-2 px-3 pt-3 pb-2.5 bg-white dark:bg-[#1D1D1C] border-b border-border-secondary dark:border-border-tertiary">
     <PiSparkle
       size={18}
       className="flex-shrink-0 mt-0.5 text-ink-500 dark:text-ink-300"
