@@ -30,6 +30,7 @@ import {
 } from "react-icons/pi";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import clsx from "clsx";
 
 import { iconButtonSmClassName } from "@/styles/interactive";
 import { useFavorites } from "@/components/Editor/hooks/useFavorites";
@@ -424,18 +425,6 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
                 ? `${selectedIds.size} selected`
                 : "Select all"}
             </div>
-
-            {selectedIds.size > 0 && (
-              <button
-                type="button"
-                onClick={() => setConfirmingDelete(true)}
-                className="px-3 py-1.5 rounded-lg text-sm font-medium
-                  bg-error text-white hover:bg-error/90
-                  transition-colors duration-100"
-              >
-                Delete selected
-              </button>
-            )}
           </div>
         )}
 
@@ -632,6 +621,34 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
             onToggleSelectAll={onToggleSelectAll}
           />
         )}
+      </div>
+
+      {/* ── Floating selection pill ── */}
+      <div
+        className={clsx(
+          "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",
+          "flex items-center gap-4 px-3 py-3",
+          "bg-base-400 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary",
+          "rounded-[14px]",
+          "shadow-lg",
+          "transition-all duration-200 ease-out",
+          selectedIds.size > 0
+            ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 translate-y-4 pointer-events-none"
+        )}
+      >
+        <span className="text-[13px] text-white/70 whitespace-nowrap">
+          <span className="text-white font-medium">{selectedIds.size}</span>{" "}
+          {selectedIds.size === 1 ? "project" : "projects"} selected
+        </span>
+
+        <button
+          type="button"
+          onClick={() => setConfirmingDelete(true)}
+          className="flex items-center gap-1.5 text-xs font-medium transition-colors text-red-400 hover:text-red-300 rounded-lg px-2 py-1.5"
+        >
+          Delete selected
+        </button>
       </div>
 
       <ConfirmDialog
