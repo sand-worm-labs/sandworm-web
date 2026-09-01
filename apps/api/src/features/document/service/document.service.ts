@@ -365,7 +365,7 @@ export class DocumentService {
     const candidate = `${base}-${suffix}`;
 
     const existing = await this.documentRepository.findOne({
-      where: { publishedSlug: candidate },
+      where: { slug: candidate },
     });
 
     return existing ? `${candidate}-${Date.now()}` : candidate;
@@ -387,8 +387,8 @@ export class DocumentService {
 
     if (!yjsDoc) throw new ValidationException(ErrorCode.E003);
 
-    if (!document.publishedSlug) {
-      document.publishedSlug = await this.generateUniqueSlug(document.title, documentId);
+    if (!document.slug) {
+      document.slug = await this.generateUniqueSlug(document.title, documentId);
     }
 
     document.publishedAt = new Date();
@@ -518,9 +518,9 @@ export class DocumentService {
     return documents.map(Document.fromEntity);
   }
 
-  async getPublishedDocumentBySlug(slug: string): Promise<Document> {
+  private async findPublishedDocumentEntity(slug: string): Promise<DocumentEntity> {
     const document = await this.documentRepository.findOne({
-      where: { publishedSlug: slug },
+      where: { slug },
     });
 
     if (!document || !document.publishedAt) {
@@ -531,7 +531,23 @@ export class DocumentService {
       throw new ValidationException("Document is not published", ErrorCode.E003);
     }
 
+    return document;
+  }
+
+  async getPublishedDocumentBySlug(slug: string): Promise<Document> {
+    const document = await this.findPublishedDocumentEntity(slug);
     return Document.fromEntity(document);
+  }
+
+  async getPublishedDocumentState(slug: string): Promise<string> {
+    const document = await this.findPublishedDocumentEntity(slug);
+    const state = await this.yjsDocumentService.getYDocState(document.id, false);
+
+    if (!state) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+    return state;
   }
 
   async getDocumentForkCount(documentId: string): Promise<number> {

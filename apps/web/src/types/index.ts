@@ -166,6 +166,7 @@ export interface IconProps {
 
 export type Document = {
   id: string;
+  slug?: string | null;
   title: string;
   icon?: string;
   orderIndex: number;

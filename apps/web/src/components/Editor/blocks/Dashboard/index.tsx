@@ -458,7 +458,8 @@ export default function Dashboard(props: Props) {
     props.user.id,
     props.document.publishedAt,
     true,
-    null
+    null,
+    props.user.token
   );
 
   useHotkeys("mod+z", undo);

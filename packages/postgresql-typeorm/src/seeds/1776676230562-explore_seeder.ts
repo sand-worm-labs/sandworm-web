@@ -11,7 +11,7 @@ import {
     getRichTextAttributes,
     writeDocTitle,
 } from '@sandworm/editor';
-import { DocumentEntity, DocumentVisibility, FavoriteEntity, UserEntity, WorkspaceEntity, YjsDocumentEntity } from '../entities';
+import { DocumentEntity, DocumentVisibility, FavoriteEntity, UserEntity, WorkspaceEntity, YjsDocumentEntity, YjsAppDocumentEntity } from '../entities';
 import { fake, slugify } from '../utils';
 import { NOTEBOOK_TITLES, SAMPLE_QUERIES } from './data/explore-seed-data';
 
@@ -67,6 +67,7 @@ export class ExploreSeeder1776676230562 implements Seeder {
         const documentRepository = dataSource.getRepository(DocumentEntity);
         const favoriteRepository = dataSource.getRepository(FavoriteEntity);
         const yjsDocumentRepository = dataSource.getRepository(YjsDocumentEntity);
+        const yjsAppDocumentRepository = dataSource.getRepository(YjsAppDocumentEntity);
 
         const users = await userRepository.find();
         const workspaces = await workspaceRepository.find();
@@ -81,9 +82,9 @@ export class ExploreSeeder1776676230562 implements Seeder {
         // catches lorem-ipsum rows from an older version of this seeder.
         await documentRepository.delete([
             { title: In([...NOTEBOOK_TITLES, 'Sandworm Demo']) },
-            { publishedSlug: Like('explore-%') },
-            { publishedSlug: Like('featured-%') },
-            { publishedSlug: 'sandworm-demo' },
+            { slug: Like('explore-%') },
+            { slug: Like('featured-%') },
+            { slug: 'sandworm-demo' },
         ]);
 
         const admin = await userRepository.findOneBy({ username: 'admin' });
@@ -110,7 +111,7 @@ export class ExploreSeeder1776676230562 implements Seeder {
                 workspaceId: spec.workspaceId,
                 visibility: DocumentVisibility.PUBLIC,
                 publishedAt: spec.publishedAt,
-                publishedSlug: publishedSlugFor(spec.title, spec.id),
+                slug: publishedSlugFor(spec.title, spec.id),
                 runUnexecutedBlocks: false,
                 runSQLSelection: true,
                 shareLinksWithoutSidebar: true,
@@ -121,11 +122,32 @@ export class ExploreSeeder1776676230562 implements Seeder {
         console.log(`✓ ${saved.filter((d) => d.featuredDocument).length} featured + ${saved.filter((d) => !d.featuredDocument).length} public explore documents`);
 
         // Every seeded document needs a Yjs doc with real starter content —
-        // not just an empty one — so opening or forking it isn't blank.
+        // not just an empty one — so opening or forking it isn't blank. One
+        // state per document, reused for both rows below (mirroring
+        // YjsDocumentService.publishDocument, which re-encodes the same live
+        // edit doc as the app/view copy) — NOT two separate
+        // starterYjsState() calls, which would produce divergent content
+        // (a different random sample query each call) between edit and view.
+        const states = new Map(saved.map((doc) => [doc.id, starterYjsState(doc.title)]));
+
         await yjsDocumentRepository.save(
             saved.map((doc) => yjsDocumentRepository.create({
                 documentId: doc.id,
-                state: starterYjsState(doc.title),
+                state: states.get(doc.id)!,
+                clock: 0,
+                clockUpdatedAt: new Date(),
+            })),
+            { chunk: 20 },
+        );
+
+        // Also seed the "app" (published/view-mode) copy — without this,
+        // the view-mode Yjs websocket handshake is rejected server-side
+        // (no yjs_app_document row for the document) and the notebook
+        // renders blank until you switch to edit mode.
+        await yjsAppDocumentRepository.save(
+            saved.map((doc) => yjsAppDocumentRepository.create({
+                documentId: doc.id,
+                state: states.get(doc.id)!,
                 clock: 0,
                 clockUpdatedAt: new Date(),
             })),
@@ -154,17 +176,26 @@ export class ExploreSeeder1776676230562 implements Seeder {
                 workspaceId: adminWorkspace ? adminWorkspace.id : workspaces[0]!.id,
                 visibility: DocumentVisibility.PUBLIC,
                 publishedAt: new Date(),
-                publishedSlug: publishedSlugFor(demoTitle, demoId),
+                slug: publishedSlugFor(demoTitle, demoId),
                 runUnexecutedBlocks: false,
                 runSQLSelection: true,
                 shareLinksWithoutSidebar: true,
                 featuredDocument: false,
             }),
         );
+        const demoState = starterYjsState(demoDoc.title);
         await yjsDocumentRepository.save(
             yjsDocumentRepository.create({
                 documentId: demoDoc.id,
-                state: starterYjsState(demoDoc.title),
+                state: demoState,
+                clock: 0,
+                clockUpdatedAt: new Date(),
+            }),
+        );
+        await yjsAppDocumentRepository.save(
+            yjsAppDocumentRepository.create({
+                documentId: demoDoc.id,
+                state: demoState,
                 clock: 0,
                 clockUpdatedAt: new Date(),
             }),

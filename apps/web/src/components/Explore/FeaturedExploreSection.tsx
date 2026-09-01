@@ -13,6 +13,7 @@ type CardTag = "featured" | "popular" | "trending" | "new";
 
 interface FeaturedQuery {
   id: string;
+  slug: string;
   tag: CardTag;
   title: string;
   createdAt: Date;
@@ -39,6 +40,7 @@ const PLACEHOLDER_AVATAR = "/img/avatar/avatar1.svg";
 function toFeaturedQuery(doc: ApiDocument): FeaturedQuery {
   return {
     id: doc.id,
+    slug: doc.slug ?? doc.id,
     tag: "featured",
     title: doc.title || "Untitled",
     createdAt: new Date(doc.createdAt),
@@ -83,6 +85,7 @@ export function FeaturedExploreSection() {
         <FeaturedExploreCard
           key={query.id}
           id={query.id}
+          slug={query.slug}
           tag={query.tag}
           title={query.title}
           createdAt={query.createdAt}

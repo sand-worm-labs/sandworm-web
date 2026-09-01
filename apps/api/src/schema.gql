@@ -83,7 +83,7 @@ type Vote {
 
 type Document {
   id: String!
-  slug: String!
+  slug: String
   title: String!
   authorId: String!
   workspaceId: String!

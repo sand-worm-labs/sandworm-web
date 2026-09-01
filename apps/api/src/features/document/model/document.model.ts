@@ -2,6 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import {
   BooleanField,
   StringField,
+  StringFieldOptional,
   UUIDField,
   NumberField,
   DateField,
@@ -16,8 +17,8 @@ export class Document {
   @UUIDField()
   id!: string;
 
-  @StringField()
-  slug!: string;
+  @StringFieldOptional()
+  slug!: string | null;
 
   @StringField()
   title!: string;

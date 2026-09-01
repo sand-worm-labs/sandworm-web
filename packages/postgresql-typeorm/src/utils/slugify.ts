@@ -1,4 +1,4 @@
-/** Derives a URL-safe slug from a real title (e.g. for a document's `slug`/`publishedSlug`). */
+/** Derives a URL-safe slug from a real title (e.g. for a document's `slug`). */
 export function slugify(title: string): string {
   return title
     .toLowerCase()
