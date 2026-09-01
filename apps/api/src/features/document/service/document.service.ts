@@ -541,7 +541,7 @@ export class DocumentService {
 
   async getPublishedDocumentState(slug: string): Promise<string> {
     const document = await this.findPublishedDocumentEntity(slug);
-    const state = await this.yjsDocumentService.getYDocState(document.id, false);
+    const state = await this.yjsDocumentService.getYDocState(document.id, true);
 
     if (!state) {
       throw new ValidationException(ErrorCode.E003);

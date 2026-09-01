@@ -131,6 +131,28 @@ export class DocumentResolver {
     return this.documentService.getUserPublicDocuments(userId, limit, offset);
   }
 
+  @Public()
+  @Query(() => Document, {
+    name: 'getPublishedDocumentBySlug',
+    description: 'Get a published document by its public slug (unauthenticated)',
+  })
+  async getPublishedDocumentBySlug(
+    @Args('slug') slug: string,
+  ): Promise<Document> {
+    return this.documentService.getPublishedDocumentBySlug(slug);
+  }
+
+  @Public()
+  @Query(() => String, {
+    name: 'getPublishedDocumentState',
+    description: 'Get the base64-encoded Yjs state of a published document by its public slug (unauthenticated)',
+  })
+  async getPublishedDocumentState(
+    @Args('slug') slug: string,
+  ): Promise<string> {
+    return this.documentService.getPublishedDocumentState(slug);
+  }
+
   @Mutation(() => Document, {
     name: 'createDocument',
     description: 'Create a new document in a workspace',

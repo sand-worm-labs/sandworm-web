@@ -260,8 +260,10 @@ export class YjsDocumentService implements OnModuleDestroy {
         isApp: boolean,
         userId?: string,
     ): Promise<string | null> {
-        if (isApp && userId) {
-            const result = await this.loadAppYDoc(documentId, userId);
+        if (isApp) {
+            const result = userId
+                ? await this.loadAppYDoc(documentId, userId)
+                : await this.loadAppYDoc(documentId, '', true);
             return result.state.toString("base64");
         }
 

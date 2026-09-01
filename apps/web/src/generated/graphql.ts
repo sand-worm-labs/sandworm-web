@@ -150,7 +150,7 @@ export type Document = {
   favoriteCount: Scalars['Int']['output'];
   forkCount: Scalars['Int']['output'];
   hasDashboard: Scalars['Boolean']['output'];
-  icon: Scalars['String']['output'];
+  icon?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   isDataApp: Scalars['Boolean']['output'];
   isFavorite: Scalars['Boolean']['output'];
@@ -803,6 +803,10 @@ export type Query = {
   getPendingInvites: Array<WorkspaceMember>;
   /** Get pending role requests for a workspace */
   getPendingRoleRequests: Array<WorkspaceMember>;
+  /** Get a published document by its public slug (unauthenticated) */
+  getPublishedDocumentBySlug: Document;
+  /** Get the base64-encoded Yjs state of a published document by its public slug (unauthenticated) */
+  getPublishedDocumentState: Scalars['String']['output'];
   /** Get the power tool category taxonomy */
   getToolCategories: Array<ToolCategory>;
   /** Get the full power tool catalog (SQL/Python analytics tools available to the notebook) */
@@ -943,6 +947,16 @@ export type QueryGetPendingInvitesArgs = {
 
 export type QueryGetPendingRoleRequestsArgs = {
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryGetPublishedDocumentBySlugArgs = {
+  slug: Scalars['String']['input'];
+};
+
+
+export type QueryGetPublishedDocumentStateArgs = {
+  slug: Scalars['String']['input'];
 };
 
 
@@ -1835,7 +1849,21 @@ export type GetDocumentQueryVariables = Exact<{
 }>;
 
 
-export type GetDocumentQuery = { __typename?: 'Query', getDocument: { __typename?: 'Document', id: string, title: string, slug?: string | null, icon: string, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null } };
+export type GetDocumentQuery = { __typename?: 'Query', getDocument: { __typename?: 'Document', id: string, title: string, slug?: string | null, icon?: string | null, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null } };
+
+export type GetPublishedDocumentBySlugQueryVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type GetPublishedDocumentBySlugQuery = { __typename?: 'Query', getPublishedDocumentBySlug: { __typename?: 'Document', id: string, title: string, slug?: string | null, icon?: string | null, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null } };
+
+export type GetPublishedDocumentStateQueryVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type GetPublishedDocumentStateQuery = { __typename?: 'Query', getPublishedDocumentState: string };
 
 export type GetExplorerDocumentsQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Float']['input']>;
@@ -1973,7 +2001,7 @@ export type GetUserProfileQuery = { __typename?: 'Query', isFollowing: boolean, 
 export type GetForkedDocumentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetForkedDocumentsQuery = { __typename?: 'Query', getForkedDocuments: Array<{ __typename?: 'Document', id: string, slug?: string | null, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, icon: string, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, children: Array<{ __typename?: 'Document', id: string, slug?: string | null, title: string, icon: string, orderIndex: number, createdAt: any, updatedAt: any }>, parent?: { __typename?: 'Document', id: string, slug?: string | null, title: string, icon: string } | null }> };
+export type GetForkedDocumentsQuery = { __typename?: 'Query', getForkedDocuments: Array<{ __typename?: 'Document', id: string, slug?: string | null, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, icon?: string | null, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, children: Array<{ __typename?: 'Document', id: string, slug?: string | null, title: string, icon?: string | null, orderIndex: number, createdAt: any, updatedAt: any }>, parent?: { __typename?: 'Document', id: string, slug?: string | null, title: string, icon?: string | null } | null }> };
 
 export type GetUserPublicDocumentsQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -4871,6 +4899,112 @@ export type GetDocumentQueryHookResult = ReturnType<typeof useGetDocumentQuery>;
 export type GetDocumentLazyQueryHookResult = ReturnType<typeof useGetDocumentLazyQuery>;
 export type GetDocumentSuspenseQueryHookResult = ReturnType<typeof useGetDocumentSuspenseQuery>;
 export type GetDocumentQueryResult = Apollo.QueryResult<GetDocumentQuery, GetDocumentQueryVariables>;
+export const GetPublishedDocumentBySlugDocument = gql`
+    query GetPublishedDocumentBySlug($slug: String!) {
+  getPublishedDocumentBySlug(slug: $slug) {
+    id
+    title
+    slug
+    icon
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
+    author {
+      username
+      firstName
+      lastName
+      avater
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetPublishedDocumentBySlugQuery__
+ *
+ * To run a query within a React component, call `useGetPublishedDocumentBySlugQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPublishedDocumentBySlugQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPublishedDocumentBySlugQuery({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *   },
+ * });
+ */
+export function useGetPublishedDocumentBySlugQuery(baseOptions: Apollo.QueryHookOptions<GetPublishedDocumentBySlugQuery, GetPublishedDocumentBySlugQueryVariables> & ({ variables: GetPublishedDocumentBySlugQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPublishedDocumentBySlugQuery, GetPublishedDocumentBySlugQueryVariables>(GetPublishedDocumentBySlugDocument, options);
+      }
+export function useGetPublishedDocumentBySlugLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPublishedDocumentBySlugQuery, GetPublishedDocumentBySlugQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPublishedDocumentBySlugQuery, GetPublishedDocumentBySlugQueryVariables>(GetPublishedDocumentBySlugDocument, options);
+        }
+export function useGetPublishedDocumentBySlugSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPublishedDocumentBySlugQuery, GetPublishedDocumentBySlugQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPublishedDocumentBySlugQuery, GetPublishedDocumentBySlugQueryVariables>(GetPublishedDocumentBySlugDocument, options);
+        }
+export type GetPublishedDocumentBySlugQueryHookResult = ReturnType<typeof useGetPublishedDocumentBySlugQuery>;
+export type GetPublishedDocumentBySlugLazyQueryHookResult = ReturnType<typeof useGetPublishedDocumentBySlugLazyQuery>;
+export type GetPublishedDocumentBySlugSuspenseQueryHookResult = ReturnType<typeof useGetPublishedDocumentBySlugSuspenseQuery>;
+export type GetPublishedDocumentBySlugQueryResult = Apollo.QueryResult<GetPublishedDocumentBySlugQuery, GetPublishedDocumentBySlugQueryVariables>;
+export const GetPublishedDocumentStateDocument = gql`
+    query GetPublishedDocumentState($slug: String!) {
+  getPublishedDocumentState(slug: $slug)
+}
+    `;
+
+/**
+ * __useGetPublishedDocumentStateQuery__
+ *
+ * To run a query within a React component, call `useGetPublishedDocumentStateQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPublishedDocumentStateQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPublishedDocumentStateQuery({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *   },
+ * });
+ */
+export function useGetPublishedDocumentStateQuery(baseOptions: Apollo.QueryHookOptions<GetPublishedDocumentStateQuery, GetPublishedDocumentStateQueryVariables> & ({ variables: GetPublishedDocumentStateQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPublishedDocumentStateQuery, GetPublishedDocumentStateQueryVariables>(GetPublishedDocumentStateDocument, options);
+      }
+export function useGetPublishedDocumentStateLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPublishedDocumentStateQuery, GetPublishedDocumentStateQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPublishedDocumentStateQuery, GetPublishedDocumentStateQueryVariables>(GetPublishedDocumentStateDocument, options);
+        }
+export function useGetPublishedDocumentStateSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPublishedDocumentStateQuery, GetPublishedDocumentStateQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPublishedDocumentStateQuery, GetPublishedDocumentStateQueryVariables>(GetPublishedDocumentStateDocument, options);
+        }
+export type GetPublishedDocumentStateQueryHookResult = ReturnType<typeof useGetPublishedDocumentStateQuery>;
+export type GetPublishedDocumentStateLazyQueryHookResult = ReturnType<typeof useGetPublishedDocumentStateLazyQuery>;
+export type GetPublishedDocumentStateSuspenseQueryHookResult = ReturnType<typeof useGetPublishedDocumentStateSuspenseQuery>;
+export type GetPublishedDocumentStateQueryResult = Apollo.QueryResult<GetPublishedDocumentStateQuery, GetPublishedDocumentStateQueryVariables>;
 export const GetExplorerDocumentsDocument = gql`
     query GetExplorerDocuments($limit: Float = 20, $offset: Float = 0) {
   getExplorerDocuments(limit: $limit, offset: $offset) {

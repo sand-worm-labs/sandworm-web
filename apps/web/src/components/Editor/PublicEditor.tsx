@@ -33,6 +33,7 @@ import PythonBlock from "./blocks/customBlocks/python";
 import RichTextBlock from "./blocks/customBlocks/richText";
 import AnalyticsBlock from "./blocks/customBlocks/PowerToolbox/AnalyticsBlock";
 import SQLBlock from "./blocks/customBlocks/sql";
+import { PublicSQLExtensionProvider } from "./blocks/customBlocks/CodeEditor/sql";
 import PivotTableBlock from "./blocks/customBlocks/pivotTable";
 import { useYDocState } from "./hooks/useYDocs";
 import useEditorAwareness, {
@@ -60,13 +61,27 @@ const dataframesGetter = (yDoc: Y.Doc) => yDoc.getMap<DataFrame>("dataframes");
 // ─────────────────────────────────────────────────────────────
 
 const NOOP_EXECUTION_QUEUE = {
+  getCurrentBatch: () => null,
+  advance: () => {},
   enqueueBlock: () => {},
   enqueueBlockOnwards: () => {},
   enqueueBlockGroup: () => {},
+  enqueueRunAll: () => {},
+  getBlockExecutions: () => [],
+  observe: () => () => {},
+  toJSON: () => [],
+  getRunAllBatches: () => [],
   getExecutionQueueMetadataForBlock: () => null,
+  length: 0,
 } as unknown as ExecutionQueue;
 
-const NOOP_AI_TASKS = {} as unknown as AITasks;
+const NOOP_AI_TASKS = {
+  enqueue: () => {},
+  next: () => null,
+  getBlockTasks: () => [],
+  observe: () => () => {},
+  size: () => 0,
+} as unknown as AITasks;
 
 // ─────────────────────────────────────────────────────────────
 // ⬢ TAB HEADER (read-only, no drag/drop/context menu)
@@ -605,10 +620,16 @@ export default function PublicEditor(props: PublicEditorProps) {
     // EditorAwarenessProvider is kept because PublicTabRef calls
     // useEditorAwareness() for isCursorWithin/isCursorInserting.
     // Cost is negligible — it's just a context with no socket wiring.
-    // SQLExtensionProvider intentionally omitted.
+    // The real SQLExtensionProvider needs an authenticated workspace
+    // (useDataSources), which public viewers don't have — SQL blocks
+    // still call useSQLExtension() on mount regardless of isEditable,
+    // so a no-op PublicSQLExtensionProvider is required to avoid a
+    // "Called getExtension outside of provider" crash.
     <EditorAwarenessProvider scrollViewRef={scrollViewRef} yDoc={props.yDoc}>
-      <PublicEditorInner {...props} scrollViewRef={scrollViewRef} />
-      {props.children}
+      <PublicSQLExtensionProvider>
+        <PublicEditorInner {...props} scrollViewRef={scrollViewRef} />
+        {props.children}
+      </PublicSQLExtensionProvider>
     </EditorAwarenessProvider>
   );
 }

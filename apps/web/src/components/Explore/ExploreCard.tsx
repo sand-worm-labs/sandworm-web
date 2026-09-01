@@ -125,7 +125,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                     @{query.author?.username}
                   </Link>
                   <Link
-                    href={`/p/${query.slug ?? query.id}`}
+                    href={`/notebooks/${query.slug ?? query.id}`}
                     className="text-[0.95rem] font-medium break-words cursor-pointer hover:underline block"
                   >
                     {query.title}

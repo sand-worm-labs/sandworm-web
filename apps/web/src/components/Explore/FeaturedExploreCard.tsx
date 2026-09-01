@@ -124,7 +124,7 @@ export function FeaturedExploreCard({
   return (
     <>
       <div
-        onClick={() => router.push(`/p/${slug}`)}
+        onClick={() => router.push(`/notebooks/${slug}`)}
         className={cn(
           "flex flex-col rounded-3xl py-5 border px-6 cursor-pointer transition-shadow font-body group/card dark:bg-dropdown-bg dark:border-border-tertiary",
           isPurple
@@ -134,7 +134,7 @@ export function FeaturedExploreCard({
         role="button"
         tabIndex={0}
         onKeyDown={e =>
-          (e.key === "Enter" || e.key === " ") && router.push(`/p/${slug}`)
+          (e.key === "Enter" || e.key === " ") && router.push(`/notebooks/${slug}`)
         }
       >
         <div className="flex items-center justify-between mb-3">

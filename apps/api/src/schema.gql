@@ -91,7 +91,7 @@ type Document {
   runUnexecutedBlocks: Boolean!
   runSQLSelection: Boolean!
   shareLinksWithoutSidebar: Boolean!
-  icon: String!
+  icon: String
   orderIndex: Float!
   deletedAt: DateTime
   createdAt: DateTime!
@@ -412,6 +412,14 @@ type Query {
 
   """Get public documents by a specific user"""
   getUserPublicDocuments(userId: String!, limit: Float = 20, offset: Float = 0): [Document!]!
+
+  """Get a published document by its public slug (unauthenticated)"""
+  getPublishedDocumentBySlug(slug: String!): Document!
+
+  """
+  Get the base64-encoded Yjs state of a published document by its public slug (unauthenticated)
+  """
+  getPublishedDocumentState(slug: String!): String!
 
   """Get a reusable component by ID"""
   getComponent(componentId: String!, workspaceId: String!): ReusableComponent!

@@ -41,8 +41,8 @@ export class Document {
   @BooleanField()
   shareLinksWithoutSidebar!: boolean;
 
-  @StringField()
-  icon!: string;
+  @StringFieldOptional()
+  icon!: string | null;
 
   @NumberField()
   orderIndex!: number;
@@ -100,6 +100,7 @@ export class Document {
     document.createdAt = entity.createdAt;
     document.updatedAt = entity.updatedAt;
     document.version = entity.version;
+    document.icon = null;
 
     // Publish feature defaults
     document.publishedAt = (entity as any).publishedAt ?? null;
