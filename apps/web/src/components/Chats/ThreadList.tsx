@@ -251,7 +251,7 @@ function EmptyState({ query }: { query: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-12 gap-2">
       <PiClock size={20} className="text-ink-200 dark:text-ink-600" />
-      <p className="text-[12px] text-ink-300 dark:text-ink-500 text-center">
+      <p className="text-[12px] text-ink-300 dark:text-ink-400 text-center">
         {query ? `No threads matching "${query}"` : "No threads yet"}
       </p>
     </div>

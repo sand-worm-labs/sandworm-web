@@ -87,7 +87,7 @@ export default function RotatingGradientRing({
       </svg>
 
       {showLabel && (
-        <span className="text-[12.5px] text-ink-400 dark:text-ink-500 font-semibold overflow-hidden">
+        <span className="text-[12.5px] text-ink-400 dark:text-ink-400 font-semibold overflow-hidden">
           <AnimatePresence mode="wait" initial={false}>
             <motion.span
               key={verb}

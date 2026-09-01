@@ -109,7 +109,7 @@ const MdH3: NonNullable<MDComponents>["h3"] = ({ children }) => (
 const MdBlockquote: NonNullable<MDComponents>["blockquote"] = ({
   children,
 }) => (
-  <blockquote className="border-l-2 border-border dark:border-base-710 pl-3 italic text-ink-400 dark:text-ink-500 mb-3 last:mb-0">
+  <blockquote className="border-l-2 border-border dark:border-base-710 pl-3 italic text-ink-400 dark:text-ink-400 mb-3 last:mb-0">
     {children}
   </blockquote>
 );

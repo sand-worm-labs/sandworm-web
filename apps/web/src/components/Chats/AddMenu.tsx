@@ -51,7 +51,7 @@ function AddMenuRow({
       disabled={disabled}
       className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-colors duration-75
         disabled:opacity-40 disabled:cursor-not-allowed
-        hover:bg-primary-tint-50 dark:hover:bg-primary-900"
+        hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover"
     >
       <span
         className="flex-shrink-0 flex items-center justify-center w-[26px] h-[26px]
@@ -81,8 +81,8 @@ function DataConnectionPanel() {
   return (
     <div
       className="absolute bottom-[calc(100%+6px)] left-0 right-0 z-50 flex flex-col
-        bg-white dark:bg-base-730
-        border border-border-tertiary dark:border-base-760
+        bg-white dark:bg-dropdown-bg
+        border border-border-tertiary
         rounded-2xl
         shadow-[0_-2px_16px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.10)]
         overflow-hidden"
@@ -100,7 +100,7 @@ function DataConnectionPanel() {
         </span>
       </div>
       <div className="flex flex-col items-center justify-center py-8 gap-2">
-        <p className="text-[11.5px] text-ink-300 dark:text-ink-500 text-center px-6">
+        <p className="text-[11.5px] text-ink-300 dark:text-ink-400 text-center px-6">
           Connecting external data sources is coming soon.
         </p>
       </div>

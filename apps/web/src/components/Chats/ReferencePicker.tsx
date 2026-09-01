@@ -102,7 +102,7 @@ function ReferenceRow({
           </span>
         </span>
         {item.preview && (
-          <span className="block text-[11px] text-ink-300 dark:text-ink-500 truncate mt-[1px] font-mono leading-tight">
+          <span className="block text-[11px] text-ink-300 dark:text-ink-400 truncate mt-[1px] font-mono leading-tight">
             {item.preview}
           </span>
         )}
@@ -151,7 +151,7 @@ function EmptyState({ query }: { query: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-8 gap-2">
       <PiHash size={18} className="text-ink-200 dark:text-ink-600" />
-      <p className="text-[11.5px] text-ink-300 dark:text-ink-500 text-center">
+      <p className="text-[11.5px] text-ink-300 dark:text-ink-400 text-center">
         {query ? `No results for "${query}"` : "Nothing to reference yet"}
       </p>
     </div>
@@ -244,8 +244,8 @@ export function ReferencePicker({
       tabIndex={0}
       onKeyDown={handleKeyDown}
       className="absolute bottom-[calc(100%+6px)] left-0 right-0 z-50 flex flex-col
-        bg-white dark:bg-base-730
-        border border-border-tertiary dark:border-base-760
+        bg-white dark:bg-dropdown-bg
+        border border-border-tertiary
         rounded-2xl
         shadow-[0_-2px_16px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.10)]
         overflow-hidden"

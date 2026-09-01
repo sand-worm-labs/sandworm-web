@@ -455,7 +455,7 @@ export const MiniChatInput: React.FC<MiniChatInputProps> = ({
                     ${
                       addMenuOpen || references.length > 0
                         ? "bg-[#F3E6FD] border-primary-300 text-primary-700 dark:bg-primary-920 dark:border-primary-700 dark:text-primary-300"
-                        : "bg-white dark:bg-base-740 border-border-cool dark:border-transparent text-ink-400 dark:text-ink-500 hover:bg-gray-50 dark:hover:bg-base-710"
+                        : "bg-white dark:bg-base-740 border-border-cool dark:border-transparent text-ink-400 dark:text-ink-400 hover:bg-gray-50 dark:hover:bg-base-710"
                     }`}
                 >
                   <PiPlus

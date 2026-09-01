@@ -143,7 +143,7 @@ export default function ChangesPanelCompact({
             type="button"
             onClick={handleUndo}
             className="px-2 py-1 rounded-lg text-[11px] font-medium
-              text-ink-400 dark:text-ink-500
+              text-ink-400 dark:text-ink-400
               border border-border-secondary dark:border-base-700
               hover:bg-base-300 dark:hover:bg-base-700
               transition-colors"

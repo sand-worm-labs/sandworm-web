@@ -199,7 +199,7 @@ export function ThinkingPart({ part, isActive = false }: ThinkingPartProps) {
                           px-1.5 py-[2px] rounded-md
                           bg-base-300 dark:bg-base-700
                           border border-border dark:border-base-710
-                          text-ink-400 dark:text-ink-500"
+                          text-ink-400 dark:text-ink-400"
                       >
                         {kind && (
                           <BlockKindIcon

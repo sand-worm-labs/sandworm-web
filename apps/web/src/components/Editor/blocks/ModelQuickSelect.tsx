@@ -93,14 +93,6 @@ const EFFORT_LABELS: Record<EffortLevel, string> = {
 const RECENT_STORAGE_KEY = "sandworm:recent-models";
 const MAX_RECENT = 4;
 
-const C = {
-  border: "#E6E0F1",
-  lightBlue: "#EBF7F7",
-  purple: "#A308F0",
-  ink400: "#6D6C7D",
-  pillInner: "#FEFEFF",
-} as const;
-
 // =====================================
 // ⬢ Types
 // =====================================
@@ -266,10 +258,7 @@ function SelectedModelCard({ model }: { model: ModelWithCaps | undefined }) {
   const isAuto = !model || model.id === AUTO_MODEL_ID;
 
   return (
-    <div
-      className="mx-1.5 mt-1.5 mb-2 flex items-center gap-3 rounded-xl px-3 py-1.5"
-      style={{ background: C.lightBlue }}
-    >
+    <div className="mx-1.5 mt-1.5 mb-2 flex items-center gap-3 rounded-xl px-3 py-1.5 bg-sidebar-hover dark:bg-base-720">
       {isAuto ? (
         <AutoIcon size={26} />
       ) : (
@@ -279,10 +268,7 @@ function SelectedModelCard({ model }: { model: ModelWithCaps | undefined }) {
         <div className="font-body text-[12.5px] font-medium text-ink-100 truncate leading-tight">
           {isAuto ? "Auto" : stripProviderPrefix(model.name)}
         </div>
-        <div
-          className="font-body text-[12px] font-medium truncate"
-          style={{ color: C.ink400 }}
-        >
+        <div className="font-body text-[12px] font-medium truncate text-ink-400">
           {isAuto ? "OpenRouter" : model.provider}
         </div>
       </div>
@@ -305,7 +291,7 @@ function ModelPill({
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-1.5 rounded-full px-2.5 py-1 bg-white dark:bg-transparent hover:bg-hover-bg hover:border-primary border-[#F6F5F7] transition-colors duration-100 border"
+      className="flex items-center gap-1.5 rounded-full px-2.5 py-1 bg-white dark:bg-transparent hover:bg-hover-bg dark:hover:bg-base-710 hover:border-primary border-border dark:border-base-710 transition-colors duration-100 border"
     >
       <ProviderIcon provider={model.provider} size={15} />
       <span className="font-body text-[13px] font-medium text-ink-100 truncate max-w-[110px]">
@@ -320,7 +306,7 @@ function AutoPill({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-1.5 rounded-full px-2.5 py-1 bg-white dark:bg-transparent hover:bg-hover-bg hover:border-primary border-[#F6F5F7] transition-colors duration-100 border"
+      className="flex items-center gap-1.5 rounded-full px-2.5 py-1 bg-white dark:bg-transparent hover:bg-hover-bg dark:hover:bg-base-710 hover:border-primary border-border dark:border-base-710 transition-colors duration-100 border"
     >
       <AutoIcon size={14} />
       <span className="font-body text-[13px] font-medium text-ink-100">
@@ -343,16 +329,10 @@ function EffortSelector({
 }) {
   return (
     <div className="px-3 pt-2 pb-1">
-      <div
-        className="font-body text-[10.5px] font-semibold uppercase tracking-wider mb-1.5"
-        style={{ color: C.ink400 }}
-      >
+      <div className="font-body text-[10.5px] font-semibold uppercase tracking-wider mb-1.5 text-ink-400">
         Effort
       </div>
-      <div
-        className="flex items-center gap-0.5 rounded-xl p-1"
-        style={{ background: C.lightBlue }}
-      >
+      <div className="flex items-center gap-0.5 rounded-xl p-1 bg-sidebar-hover dark:bg-base-720">
         {EFFORT_LEVELS.map(level => {
           const active = level === effort;
           return (
@@ -361,18 +341,12 @@ function EffortSelector({
               type="button"
               onClick={() => onChange(level)}
               className={clsx(
-                "flex-1 rounded-lg px-1.5 py-1 font-body text-[11.5px] font-medium",
+                "flex-1 rounded-lg px-1.5 py-1 font-body text-[11.5px] font-medium border",
                 "transition-all duration-100 whitespace-nowrap",
-                active ? "text-primary" : "hover:text-ink-100"
-              )}
-              style={
                 active
-                  ? {
-                      background: C.pillInner,
-                      border: `1px solid ${C.purple}`,
-                    }
-                  : { color: C.ink400, border: "1px solid transparent" }
-              }
+                  ? "text-primary bg-base-100 border-primary"
+                  : "text-ink-400 border-transparent hover:text-ink-100"
+              )}
             >
               {EFFORT_LABELS[level]}
             </button>
@@ -462,15 +436,15 @@ export function ModelQuickSelect({
           "font-body font-medium border transition-all duration-200",
           isCompact
             ? clsx(
-                "gap-1 rounded-full px-2 py-1 text-[11px] bg-base-200 dark:bg-transparent",
+                "gap-1 rounded-full px-2 py-1 text-[11px] bg-base-200 dark:bg-base-720 text-ink-100 dark:text-ink-200",
                 open
                   ? "border-primary"
-                  : "border-hover-border dark:border-border-tertiary"
+                  : "border-hover-border dark:border-base-710"
               )
             : clsx(
                 "gap-1.5 rounded-full px-3 py-2 text-xs",
                 open
-                  ? "bg-[rgba(207,211,222,0.6)]"
+                  ? "bg-[rgba(207,211,222,0.6)] dark:bg-white/10"
                   : "bg-border-cool dark:bg-transparent border-transparent",
                 !open &&
                   "text-ink-100 hover:bg-border-cool hover:border-primary dark:hover:bg-[rgba(255,255,255,0.08)]"
@@ -500,11 +474,10 @@ export function ModelQuickSelect({
       >
         <div
           className={clsx(
-            "absolute w-[300px] z-50 bg-base-100 rounded-2xl shadow-[0px_1.5px_13px_3px_#526A9F1F] pb-1.5 overflow-hidden",
+            "absolute w-[300px] z-50 bg-base-100 dark:bg-dropdown-bg border border-border-tertiary rounded-2xl shadow-[0px_1.5px_13px_3px_#526A9F1F] pb-1.5 overflow-hidden",
             dropdownPosition === "top" ? "bottom-full mb-2" : "top-[3rem] mb-2",
             dropdownAlign === "right" ? "right-0" : "left-0"
           )}
-          style={{ border: `1px solid ${C.border}` }}
         >
           <SelectedModelCard model={isAutoSelected ? undefined : activeModel} />
 
@@ -532,13 +505,10 @@ export function ModelQuickSelect({
               onClick={handleBrowseAll}
               className="w-full flex items-center gap-2 px-3 py-2 mt-0.5 text-left hover:bg-primary/15 transition-colors duration-100 group justify-between"
             >
-              <span
-                className="font-body text-[12px] group-hover:text-ink-200 transition-colors"
-                style={{ color: C.ink400 }}
-              >
+              <span className="font-body text-[12px] group-hover:text-ink-200 transition-colors text-ink-400">
                 Browse all models
               </span>
-              <PiArrowRightLight style={{ color: C.ink400 }} />
+              <PiArrowRightLight className="text-ink-400" />
             </button>
           )}
         </div>
