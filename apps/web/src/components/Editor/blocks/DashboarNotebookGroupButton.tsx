@@ -25,12 +25,12 @@ function DashboardNotebookGroupButton(props: Props) {
     props.userRole === "viewer" && !props.isPublished;
 
   return (
-    <div className="flex items-center px-1 relative bg-base-600 py-1 rounded-lg gap-x-1">
+    <div className="flex items-center px-1 relative bg-base-600 dark:bg-border-dark py-1 rounded-lg gap-x-1 dark:border dark:border-hover-border">
       <Link
         className={clsx(
           "border border-transparent  flex gap-x-1.5 items-center px-2 py-0.5 text-[0.8rem] disabled:cursor-not-allowed disabled:opacity-50 hover:bg-white dark:hover:bg-white/10 rounded-md font-medium hover:border-primary hover:border hover:text-primary",
           props.current === "notebook"
-            ? "bg-white  dark:bg-base-600 dark:text-[#9D8FF0] border border-primary text-primary -mr-px"
+            ? "bg-white  dark:bg-base-600 dark:text-primary-tint-75 border border-primary dark:border-primary-tint-75 text-primary -mr-px"
             : "bg-transparent text-ink-400 dark:bg-transparent dark:text-ink-400"
         )}
         href={`/workspace/${props.workspaceId}/documents/${props.documentId}/notebook${props.isEditing ? "/edit" : ""}`}
@@ -52,7 +52,7 @@ function DashboardNotebookGroupButton(props: Props) {
           className={clsx(
             "border border-transparent flex gap-x-1.5 items-center px-2 py-0.5 text-[0.8rem] disabled:cursor-not-allowed disabled:opacity-50 hover:bg-white dark:hover:bg-white/10 rounded-md font-medium  hover:border-primary hover:border hover:text-primary",
             props.current === "dashboard"
-              ? "bg-white dark:bg-base-600 dark:text-[#9D8FF0]   border border-primary text-primary -ml-px"
+              ? "bg-white dark:bg-base-600 dark:text-primary-tint-75   border border-primary dark:border-primary-tint-75 text-primary -ml-px"
               : "bg-transparent text-ink-400 dark:bg-transparent dark:text-ink-400"
           )}
           disabled={isDashboardButtonDisabled}
