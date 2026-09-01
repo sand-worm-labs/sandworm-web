@@ -148,7 +148,7 @@ function ThreadRow({
       tabIndex={0}
       className={`group relative flex items-center gap-2.5 px-3 py-2.5
         rounded-xl mx-1.5 transition-colors duration-100 cursor-pointer
-        ${hovered ? "bg-primary-tint-50 dark:bg-primary-900" : ""}`}
+        ${hovered ? "bg-primary-tint-50 dark:bg-dropdown-hover" : ""}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={() => !isRenamingThis && onSelect(item.id)}
@@ -393,10 +393,10 @@ export function ThreadList({
   }
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-base-100">
+    <div className="flex flex-col h-full bg-white dark:bg-[#1D1D1C]">
       <header
         className="flex items-center gap-2 px-3 pt-3 pb-2.5
-          border-b border-border-secondary dark:border-border-secondary"
+          border-b border-border-secondary"
       >
         <button
           type="button"
