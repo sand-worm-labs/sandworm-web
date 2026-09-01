@@ -1,4 +1,4 @@
-import { Dialog, Transition } from "@headlessui/react";
+import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
 import clsx from "clsx";
 import { Fragment } from "react";
 
@@ -77,7 +77,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
   return (
     <Transition show={props.visible}>
       <Dialog onClose={props.onHide} className="relative z-[1000]">
-        <Transition.Child
+        <TransitionChild
           enter="ease-out duration-300"
           enterFrom="opacity-0"
           enterTo="opacity-100"
@@ -86,11 +86,11 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
           leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-[#161633] dark:bg-black/[12.5%] bg-opacity-20 transition-opacity font-body" />
-        </Transition.Child>
+        </TransitionChild>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto font-body ">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <Transition.Child
+            <TransitionChild
               as="div"
               enter="ease-out duration-300"
               enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -99,18 +99,18 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-y-auto rounded-2xl bg-white dark:bg-page-surface  dark:border-border-tertiary dark:border text-left  transition-all sm:my-8 px-8 py-6 w-[600px] max-h-[90vh] shadow-xl">
+              <DialogPanel className="relative transform overflow-y-auto rounded-2xl bg-white dark:bg-page-surface  dark:border-border-tertiary dark:border text-left  transition-all sm:my-8 px-8 py-6 w-[600px] max-h-[90vh] shadow-xl">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/[12.5%]">
                     <ScheduleIcon />
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
-                    <Dialog.Title
+                    <DialogTitle
                       as="h3"
                       className="text-sm font-bold font-body leading-6 text-ink-100"
                     >
                       Keyboard shortcuts
-                    </Dialog.Title>
+                    </DialogTitle>
 
                     <div className="mt-2 flex flex-col gap-y-2">
                       <p className="text-sm text-ink-400 font-body">
@@ -158,8 +158,8 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                     Close
                   </button>
                 </div>
-              </Dialog.Panel>
-            </Transition.Child>
+              </DialogPanel>
+            </TransitionChild>
           </div>
         </div>
       </Dialog>

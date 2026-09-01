@@ -2,7 +2,7 @@
 
 import { Fragment, useMemo, useState } from "react";
 import Link from "next/link";
-import { Dialog, Transition } from "@headlessui/react";
+import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
 import { Check, Wallet } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -184,7 +184,7 @@ function WalletPaymentModal({
         className="fixed inset-0 z-[60] flex items-center justify-center"
         onClose={onClose}
       >
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-200"
           enterFrom="opacity-0"
@@ -194,9 +194,9 @@ function WalletPaymentModal({
           leaveTo="opacity-0"
         >
           <div className="absolute inset-0 bg-black/20" />
-        </Transition.Child>
+        </TransitionChild>
 
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-200"
           enterFrom="opacity-0 scale-95 translate-y-1"
@@ -205,11 +205,11 @@ function WalletPaymentModal({
           leaveFrom="opacity-100 scale-100 translate-y-0"
           leaveTo="opacity-0 scale-95 translate-y-1"
         >
-          <Dialog.Panel className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-2xl shadow-xl w-full max-w-sm mx-4 p-6 font-body">
+          <DialogPanel className="relative bg-white dark:bg-base-400 dark:border dark:border-border-tertiary rounded-2xl shadow-xl w-full max-w-sm mx-4 p-6 font-body">
             <div className="flex items-center justify-between mb-4">
-              <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
+              <DialogTitle className="text-base font-medium text-ink-100 dark:text-white">
                 Upgrade to {planName}
-              </Dialog.Title>
+              </DialogTitle>
               <CloseIconButton size="sm" onClick={onClose} />
             </div>
 
@@ -241,8 +241,8 @@ function WalletPaymentModal({
                 Message us on Discord
               </a>
             </div>
-          </Dialog.Panel>
-        </Transition.Child>
+          </DialogPanel>
+        </TransitionChild>
       </Dialog>
     </Transition>
   );

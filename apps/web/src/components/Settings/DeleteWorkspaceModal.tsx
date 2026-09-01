@@ -1,4 +1,4 @@
-import { Dialog, Transition } from "@headlessui/react";
+import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
 import { Fragment } from "react";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
@@ -25,7 +25,7 @@ export function DeleteWorkspaceModal({
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-200"
           enterFrom="opacity-0"
@@ -35,10 +35,10 @@ export function DeleteWorkspaceModal({
           leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-black/[10.2%]" />
-        </Transition.Child>
+        </TransitionChild>
 
         <div className="fixed inset-0 flex items-center justify-center p-4 font-body">
-          <Transition.Child
+          <TransitionChild
             as={Fragment}
             enter="ease-out duration-200"
             enterFrom="opacity-0 scale-95"
@@ -47,10 +47,10 @@ export function DeleteWorkspaceModal({
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="w-full max-w-md rounded-xl bg-white p-6 py-8 shadow-xl relative dark:bg-dropdown-bg  border dark:border-border-tertiary ">
-              <Dialog.Title className="text-lg font-medium text-ink-100">
+            <DialogPanel className="w-full max-w-md rounded-xl bg-white p-6 py-8 shadow-xl relative dark:bg-dropdown-bg  border dark:border-border-tertiary ">
+              <DialogTitle className="text-lg font-medium text-ink-100">
                 Delete Workspace
-              </Dialog.Title>
+              </DialogTitle>
 
               <CloseIconButton
                 onClick={onClose}
@@ -80,8 +80,8 @@ export function DeleteWorkspaceModal({
                   Cancel
                 </button>
               </div>
-            </Dialog.Panel>
-          </Transition.Child>
+            </DialogPanel>
+          </TransitionChild>
         </div>
       </Dialog>
     </Transition>

@@ -2,7 +2,7 @@
 
 import { useState, useRef, Fragment } from "react";
 import { Check } from "lucide-react";
-import { Dialog, Transition } from "@headlessui/react";
+import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
 import { tintPillDarkClassName } from "@/styles/interactive";
@@ -76,7 +76,7 @@ export const AddWalletModal = ({
         onClose={handleClose}
         initialFocus={addressInputRef}
       >
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-200"
           enterFrom="opacity-0"
@@ -86,10 +86,10 @@ export const AddWalletModal = ({
           leaveTo="opacity-0"
         >
           <div className="absolute inset-0 bg-black/20" />
-        </Transition.Child>
+        </TransitionChild>
 
         {/* ✦ Panel ✦ */}
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-200"
           enterFrom="opacity-0 scale-95 translate-y-1"
@@ -98,12 +98,12 @@ export const AddWalletModal = ({
           leaveFrom="opacity-100 scale-100 translate-y-0"
           leaveTo="opacity-0 scale-95 translate-y-1"
         >
-          <Dialog.Panel className="relative bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-2xl shadow-xl w-full max-w-sm mx-4 p-6 font-body">
+          <DialogPanel className="relative bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-2xl shadow-xl w-full max-w-sm mx-4 p-6 font-body">
             {/* Header */}
             <div className="flex items-center justify-between mb-5">
-              <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
+              <DialogTitle className="text-base font-medium text-ink-100 dark:text-white">
                 Add Wallet
-              </Dialog.Title>
+              </DialogTitle>
               <CloseIconButton size="sm" onClick={handleClose} />
             </div>
 
@@ -160,8 +160,8 @@ export const AddWalletModal = ({
                 Cancel
               </button>
             </div>
-          </Dialog.Panel>
-        </Transition.Child>
+          </DialogPanel>
+        </TransitionChild>
       </Dialog>
     </Transition>
   );
@@ -216,7 +216,7 @@ export const ManageWalletsModal = ({
           className="fixed inset-0 z-50 flex items-center justify-center text-ink-100"
           onClose={onClose}
         >
-          <Transition.Child
+          <TransitionChild
             as={Fragment}
             enter="ease-out duration-200"
             enterFrom="opacity-0"
@@ -226,9 +226,9 @@ export const ManageWalletsModal = ({
             leaveTo="opacity-0"
           >
             <div className="absolute inset-0 bg-black/[10.2%]" />
-          </Transition.Child>
+          </TransitionChild>
 
-          <Transition.Child
+          <TransitionChild
             as={Fragment}
             enter="ease-out duration-200"
             enterFrom="opacity-0 scale-95 translate-y-1"
@@ -237,11 +237,11 @@ export const ManageWalletsModal = ({
             leaveFrom="opacity-100 scale-100 translate-y-0"
             leaveTo="opacity-0 scale-95 translate-y-1"
           >
-            <Dialog.Panel className="relative bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-3xl shadow-xl w-full max-w-md mx-4 px-8 py-8 font-body">
+            <DialogPanel className="relative bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-3xl shadow-xl w-full max-w-md mx-4 px-8 py-8 font-body">
               <div className="flex items-center justify-between mb-5">
-                <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
+                <DialogTitle className="text-base font-medium text-ink-100 dark:text-white">
                   Manage Wallets
-                </Dialog.Title>
+                </DialogTitle>
                 <CloseIconButton size="sm" onClick={onClose} />
               </div>
 
@@ -320,8 +320,8 @@ export const ManageWalletsModal = ({
                   </button>
                 )}
               </div>
-            </Dialog.Panel>
-          </Transition.Child>
+            </DialogPanel>
+          </TransitionChild>
         </Dialog>
       </Transition>
 

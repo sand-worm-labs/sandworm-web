@@ -3,7 +3,7 @@
 // =====================================
 // ⬢ Imports
 // =====================================
-import { Dialog, Transition } from "@headlessui/react";
+import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
 import { Fragment, useState, useEffect, useMemo, useCallback } from "react";
 import { Check } from "lucide-react";
 
@@ -173,7 +173,7 @@ export function ForkToWorkspaceModal({
     <Transition show={isOpen} as={Fragment}>
       <Dialog onClose={handleClose} className="relative z-50">
         {/* ✦ Backdrop ✦ */}
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-200"
           enterFrom="opacity-0"
@@ -183,11 +183,11 @@ export function ForkToWorkspaceModal({
           leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-black/[10.2%]" aria-hidden="true" />
-        </Transition.Child>
+        </TransitionChild>
 
         {/* ✦ Panel ✦  */}
         <div className="fixed inset-0 flex items-center justify-center p-4 font-body">
-          <Transition.Child
+          <TransitionChild
             as={Fragment}
             enter="ease-out duration-200"
             enterFrom="opacity-0 scale-95 translate-y-1"
@@ -196,13 +196,13 @@ export function ForkToWorkspaceModal({
             leaveFrom="opacity-100 scale-100 translate-y-0"
             leaveTo="opacity-0 scale-95 translate-y-1"
           >
-            <Dialog.Panel className="w-full max-w-sm bg-white rounded-3xl shadow-xl p-6 flex flex-col gap-5">
+            <DialogPanel className="w-full max-w-sm bg-white rounded-3xl shadow-xl p-6 flex flex-col gap-5">
               {/* ✦  Header ✦ */}
               <div className="flex items-start justify-between">
                 <div>
-                  <Dialog.Title className="text-base font-semibold text-gray-900">
+                  <DialogTitle className="text-base font-semibold text-gray-900">
                     Fork notebook
-                  </Dialog.Title>
+                  </DialogTitle>
                   <p
                     className="text-xs text-gray-400 mt-0.5 truncate max-w-[260px]"
                     title={document.title}
@@ -303,8 +303,8 @@ export function ForkToWorkspaceModal({
                   buttonLabel
                 )}
               </button>
-            </Dialog.Panel>
-          </Transition.Child>
+            </DialogPanel>
+          </TransitionChild>
         </div>
       </Dialog>
     </Transition>

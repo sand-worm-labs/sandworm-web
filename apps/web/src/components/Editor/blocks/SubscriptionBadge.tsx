@@ -1,5 +1,5 @@
 import { Fragment, useRef } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
 import { TicketIcon } from "@heroicons/react/24/outline";
 import { HeartIcon } from "@heroicons/react/24/solid";
 
@@ -17,13 +17,13 @@ export function FeaturesDialog({
   const cancelButtonRef = useRef(null);
 
   return (
-    <Transition.Root show={open} as={Fragment}>
+    <Transition show={open} as={Fragment}>
       <Dialog
         className="relative z-[1000]"
         initialFocus={cancelButtonRef}
         onClose={setOpen}
       >
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -33,11 +33,11 @@ export function FeaturesDialog({
           leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-        </Transition.Child>
+        </TransitionChild>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <Transition.Child
+            <TransitionChild
               as="div"
               enter="ease-out duration-300"
               enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -46,7 +46,7 @@ export function FeaturesDialog({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 w-full max-w-xl p-6">
+              <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 w-full max-w-xl p-6">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
                     {currentPlan !== "open-source" ? (
@@ -62,12 +62,12 @@ export function FeaturesDialog({
                     )}
                   </div>
                   <div className="mt-2 text-center sm:mt-5">
-                    <Dialog.Title
+                    <DialogTitle
                       as="h2"
                       className="text-xl font-semibold leading-6 text-ink-100"
                     >
                       You're using sandworm's open source version
-                    </Dialog.Title>
+                    </DialogTitle>
                     <div className="pt-4 pb-2 text-md text-ink-400  flex flex-0 flex-col items-center gap-y-6 px-3">
                       <div className="flex flex-col gap-y-3 text-left">
                         <p>
@@ -103,11 +103,11 @@ export function FeaturesDialog({
                     Close
                   </button>
                 </div>
-              </Dialog.Panel>
-            </Transition.Child>
+              </DialogPanel>
+            </TransitionChild>
           </div>
         </div>
       </Dialog>
-    </Transition.Root>
+    </Transition>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, Fragment, useCallback } from "react";
-import { Dialog, Transition, Listbox } from "@headlessui/react";
+import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild, Listbox } from "@headlessui/react";
 import {
   PiCheck,
   PiX,
@@ -194,7 +194,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog onClose={handleClose} className="relative z-[99]">
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-200"
           enterFrom="opacity-0"
@@ -204,11 +204,11 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
           leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-black/[10.2%] dark:bg-black/30" />
-        </Transition.Child>
+        </TransitionChild>
 
         {/* ── Panel ── */}
         <div className="fixed inset-0 flex items-center justify-center p-4 font-body">
-          <Transition.Child
+          <TransitionChild
             as={Fragment}
             enter="ease-out duration-200"
             enterFrom="opacity-0 scale-95 translate-y-2"
@@ -217,17 +217,17 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
             leaveFrom="opacity-100 scale-100 translate-y-0"
             leaveTo="opacity-0 scale-95 translate-y-1"
           >
-            <Dialog.Panel className="w-full max-w-lg bg-white dark:bg-base-100 rounded-2xl overflow-hidden border border-border-secondary dark:border-base-700 shadow-xl">
+            <DialogPanel className="w-full max-w-lg bg-white dark:bg-base-100 rounded-2xl overflow-hidden border border-border-secondary dark:border-base-700 shadow-xl">
               {submitted ? (
                 <SuccessState />
               ) : (
                 <div className="flex flex-col max-h-[90vh]">
                   <div className="flex items-start justify-between px-6 pt-6 pb-2">
                     <div>
-                      <Dialog.Title className="text-lg font-medium text-ink-100 dark:text-white flex gap-x-2">
+                      <DialogTitle className="text-lg font-medium text-ink-100 dark:text-white flex gap-x-2">
                         <PowerToolBoxIcon />
                         <span> Share feedback</span>
-                      </Dialog.Title>
+                      </DialogTitle>
                       <p className="text-[12.5px] font-medium text-ink-400 dark:text-ink-500 mt-1">
                         We'd love to hear your thoughts.
                       </p>
@@ -511,8 +511,8 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                   </div>
                 </div>
               )}
-            </Dialog.Panel>
-          </Transition.Child>
+            </DialogPanel>
+          </TransitionChild>
         </div>
       </Dialog>
     </Transition>

@@ -1,5 +1,5 @@
 import { Fragment, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
 
 import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 
@@ -7,9 +7,9 @@ export default function MobileWarning() {
   const [open, setOpen] = useState(window.innerWidth < 768);
 
   return (
-    <Transition.Root show={open} as={Fragment}>
+    <Transition show={open} as={Fragment}>
       <Dialog className="relative z-[99999]" onClose={setOpen}>
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -19,11 +19,11 @@ export default function MobileWarning() {
           leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-[#161633] transition-opacity bg-opacity-20" />
-        </Transition.Child>
+        </TransitionChild>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -32,18 +32,18 @@ export default function MobileWarning() {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left border transition-all my-auto font-body border-border-tertiary shadow-xl">
+              <DialogPanel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left border transition-all my-auto font-body border-border-tertiary shadow-xl">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/[12.5%]">
                     <ScheduleIcon />
                   </div>
                   <div className="mt-4 text-center sm:mt-5">
-                    <Dialog.Title
+                    <DialogTitle
                       as="h3"
                       className="text-base font-semibold leading-6 text-ink-100"
                     >
                       Sandworm works best on desktop
-                    </Dialog.Title>
+                    </DialogTitle>
                     <div className="mt-4 text-sm text-ink-400  flex flex-col gap-y-4">
                       <p>
                         Hey there! We love mobile too, but sandworm works best
@@ -65,11 +65,11 @@ export default function MobileWarning() {
                     I want to stay on mobile
                   </button>
                 </div>
-              </Dialog.Panel>
-            </Transition.Child>
+              </DialogPanel>
+            </TransitionChild>
           </div>
         </div>
       </Dialog>
-    </Transition.Root>
+    </Transition>
   );
 }
