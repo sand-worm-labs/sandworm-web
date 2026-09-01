@@ -63,14 +63,14 @@ function HiddenInPublishedButton(props: Props) {
                 <Menu.Items
                   as="div"
                   ref={containerRef}
-                  className="absolute z-30 rounded-lg bg-base-100 shadow-[0_4px_12px_#CFCFCF] ring-1 ring-border-tertiary focus:outline-none font-body  divide-y divide-border-secondary flex flex-col text-xs text-ink-400"
+                  className="absolute z-30 rounded-lg bg-white dark:bg-dropdown-bg shadow-[0_4px_12px_#CFCFCF] ring-1 ring-border-tertiary focus:outline-none font-body  divide-y divide-border-secondary flex flex-col text-xs text-ink-400"
                 >
                   <div className="flex flex-col divide-y divide-border-secondary">
                     <div className="py-0.5 px-0.5">
                       <Menu.Item
                         as="button"
                         onClick={props.onToggleIsBlockHiddenInPublished}
-                        className="hover:bg-primary/20 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
+                        className="hover:bg-primary/20 dark:hover:bg-base-600 dark:hover:text-ink-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                       >
                         <BookUpIcon className="w-4 h-4 " />
                         <span>
@@ -86,7 +86,7 @@ function HiddenInPublishedButton(props: Props) {
                           <Menu.Item
                             as="button"
                             onClick={props.onToggleIsCodeHidden}
-                            className="hover:bg-primary/20 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
+                            className="hover:bg-primary/20 dark:hover:bg-base-600 dark:hover:text-ink-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                           >
                             <PiCode className="h-4 w-4" />
                             <span>
@@ -98,7 +98,7 @@ function HiddenInPublishedButton(props: Props) {
                           <Menu.Item
                             as="button"
                             onClick={props.onToggleIsOutputHidden}
-                            className="hover:bg-primary/20 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
+                            className="hover:bg-primary/20 dark:hover:bg-base-600 dark:hover:text-ink-100 w-full px-2 py-1.5 rounded-md text-left flex gap-x-2 items-center whitespace-nowrap"
                           >
                             <PiMonitor className="h-4 w-4" />
                             <span>

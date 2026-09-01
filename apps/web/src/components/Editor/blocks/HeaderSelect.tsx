@@ -86,7 +86,7 @@ export default function HeaderSelect(props: Props) {
           >
             <Listbox.Options
               as="div"
-              className="px-1 py-1 pb-0 mt-[7px] absolute z-[90] max-h-60 overflow-auto rounded-lg border border-border-tertiary bg-white dark:border-border-tertiary dark:bg-base-400 text-base focus:outline-none sm:text-xs font-body w-[calc(100%-1px)]"
+              className="px-1 py-1 pb-0 mt-[7px] absolute z-[90] max-h-60 overflow-auto rounded-lg border border-border-tertiary bg-white dark:border-border-tertiary dark:bg-dropdown-bg text-base focus:outline-none sm:text-xs font-body w-[calc(100%-1px)]"
             >
               {options.map(option => (
                 <Listbox.Option
@@ -96,7 +96,7 @@ export default function HeaderSelect(props: Props) {
                   className={({ active }) =>
                     clsx(
                       active && !option.disabled
-                        ? "bg-primary/20 dark:bg-editor-100"
+                        ? "bg-primary/20 dark:bg-base-600"
                         : "",
                       option.disabled
                         ? "opacity-50 cursor-not-allowed"

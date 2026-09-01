@@ -154,13 +154,7 @@ function AIEditTooltipContent({
 // =====================================
 function HatchBackground() {
   return (
-    <div
-      className="border border-[#E7E1F0] h-2"
-      style={{
-        backgroundColor: "white",
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Cline x1='0' y1='8' x2='8' y2='0' stroke='%23E7E1F0' stroke-width='1'/%3E%3C/svg%3E")`,
-      }}
-    />
+    <div className="hatch-bg border border-[#E7E1F0] dark:border-legacy-lightText h-2" />
   );
 }
 
@@ -178,7 +172,7 @@ function CollapsedCodeSummary({
   showOutputHidden: boolean;
 }) {
   return (
-    <div className="flex items-center gap-x-2 px-4 py-1.5 text-xs bg-inputBg dark:bg-base-200 border-t border-hover-border dark:border-border-tertiary">
+    <div className="flex items-center gap-x-2 px-4 py-1.5 text-xs bg-inputBg dark:bg-header-surface border-t border-hover-border dark:border-border-dark">
       <span className="italic text-ink-400">{lineCount} lines hidden</span>
       {showOutputHidden && (
         <>
@@ -202,7 +196,7 @@ function PythonResultFooter({
   toggleResultHidden: () => void;
 }) {
   return (
-    <div className="flex items-center px-3 h-10 text-xs text-ink-400 bg-inputBg dark:bg-base-200 border-t border-hover-border dark:border-border-tertiary">
+    <div className="flex items-center px-3 h-10 text-xs text-ink-400 bg-inputBg dark:bg-header-surface border-t border-hover-border dark:border-border-dark">
       {outputCount} {outputCount === 1 ? "output" : "outputs"}
       {dataframeDimensions && ` · ${dataframeDimensions}`}
       {isResultHidden && (
@@ -657,6 +651,7 @@ function PythonBlock(props: Props) {
         }
         canFixWithAI={hasOaiKey}
         blockId={blockId}
+        isDark={resolvedTheme === "dark"}
       />
     );
   }
@@ -686,13 +681,13 @@ function PythonBlock(props: Props) {
                 aiSuggestions !== null),
             "border-hover-border block-focus-ring dark:border-border-tertiary":
               statusIsDisabled,
-            "border-hover-border shadow-none":
+            "border-hover-border dark:border-border-dark shadow-none":
               !statusIsDisabled &&
               !isAIEditing &&
               aiSuggestions === null &&
               isEditorFocused &&
               editorState.mode === "normal",
-            "border-hover-border block-shadow-soft dark:border-border-tertiary":
+            "border-hover-border block-shadow-soft dark:border-border-dark":
               !statusIsDisabled &&
               !isAIEditing &&
               aiSuggestions === null &&
@@ -704,17 +699,17 @@ function PythonBlock(props: Props) {
         <div
           className={clsx(
             "rounded-2xl overflow-hidden",
-            statusIsDisabled ? "" : "bg-white dark:bg-base-100",
+            statusIsDisabled ? "" : "bg-white dark:bg-header-surface",
             props.hasMultipleTabs ? "rounded-tl-none" : ""
           )}
         >
           <div
             className={clsx(
-              "rounded-t-2xl dark:bg-base-100",
+              "rounded-t-2xl dark:bg-header-surface",
               props.hasMultipleTabs ? "rounded-tl-none" : "",
               isCodeHidden && isResultHidden
                 ? "rounded-b-2xl"
-                : "border-b border-hover-border dark:border-border-tertiary"
+                : "border-b border-hover-border dark:border-border-dark"
             )}
             ref={d => {
               props.dragPreview?.(d);
@@ -822,7 +817,7 @@ function PythonBlock(props: Props) {
                   hidden: isCodeHidden,
                 })}
               >
-                <div className="flex justify-between text-xs pt-2 pb-3 px-3 -mx-3 -mb-3 bg-inputBg dark:bg-base-200 border-t border-hover-border">
+                <div className="flex justify-between text-xs pt-2 pb-3 px-3 -mx-3 -mb-3 bg-inputBg dark:bg-header-surface border-t border-hover-border dark:border-border-dark">
                   <div className="flex items-center">{queryStatusText}</div>
                   {aiSuggestions === null &&
                     !props.isPublicMode &&
@@ -841,11 +836,11 @@ function PythonBlock(props: Props) {
                             className={clsx(
                               !props.isEditable || !hasOaiKey
                                 ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                                : "cusor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary",
-                              "flex items-center border rounded-md border-hover-border px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
+                                : "cusor-pointer dark:bg-header-surface hover:bg-hover-bg hover:text-gray-700 hover:border-primary",
+                              "flex items-center border rounded-md border-hover-border px-2 py-1 gap-x-1 text-ink-300 dark:text-ink-400 group relative font-body"
                             )}
                           >
-                            <PiCpu className="w-[11.5px] h-[11.5px] text-ink-300" />
+                            <PiCpu className="w-[11.5px] h-[11.5px] text-ink-300 dark:text-ink-400" />
                             <span>Edit with AI</span>
                           </button>
                         )}
@@ -890,6 +885,7 @@ function PythonBlock(props: Props) {
                     isDashboardView={false}
                     lazyRender={!props.isPDF}
                     blockId={blockId}
+                    isDark={resolvedTheme === "dark"}
                   />
                 </ScrollBar>
               </div>
@@ -911,7 +907,7 @@ function PythonBlock(props: Props) {
             </div>
           )}
           {results.length === 0 && !statusIsDisabled && isCodeHidden && (
-            <div className="flex items-center px-3 h-10 text-xs text-ink-400 bg-inputBg dark:bg-base-200">
+            <div className="flex items-center px-3 h-10 text-xs text-ink-400 bg-inputBg dark:bg-header-surface">
               No output
             </div>
           )}
@@ -943,14 +939,15 @@ function PythonBlock(props: Props) {
                     !isRunButtonDisabled &&
                     (status === "enqueued" ||
                       (status === "running" && envStatus !== "Running")),
-                  "bg-base-200": !isRunButtonDisabled && status === "idle",
+                  "bg-base-200 dark:bg-header-surface":
+                    !isRunButtonDisabled && status === "idle",
                   "bg-inputBg":
                     !isRunButtonDisabled &&
                     status !== "idle" &&
                     status !== "running" &&
                     status !== "enqueued",
                 },
-                "rounded-[5px] border-hover-border border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-hover-bg hover:border-primary"
+                "rounded-[5px] border-hover-border border h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-hover-bg hover:border-primary"
               )}
             >
               {status !== "idle" ? (
@@ -990,7 +987,7 @@ function PythonBlock(props: Props) {
           type="button"
           onClick={props.onDeleteBlock}
           aria-label="Delete block"
-          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+          className="bg-[#FFDBDB] dark:bg-header-surface dark:border dark:border-hover-border rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
         >
           <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
         </button>

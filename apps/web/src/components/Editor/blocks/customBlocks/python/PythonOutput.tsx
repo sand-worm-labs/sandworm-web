@@ -31,6 +31,7 @@ interface Props {
   isDashboardView: boolean;
   lazyRender: boolean;
   blockId: string;
+  isDark?: boolean;
 }
 
 const EXPENSIVE_TYPES = new Set<PythonBlock["result"][0]["type"]>([
@@ -125,6 +126,17 @@ const SANDWORM_TABLE_CSS = `
   }
 `;
 
+const SANDWORM_TABLE_CSS_DARK = `
+  ${SANDWORM_TABLE_CSS}
+
+  body { color: #e9ecef; }
+  thead tr { background: #0f0f0f; }
+  thead th { color: #a5a5a4; border-bottom: 1px solid #212529 !important; }
+  tbody { background: #1a1a1a; }
+  tbody tr { border-bottom: 1px solid #212529; }
+  tbody td { color: #e9ecef; }
+`;
+
 // Matches pandas' truncated-repr caption, e.g. "500 rows × 4 columns"
 const DATAFRAME_DIMENSIONS_REGEX = /<p>\s*(\d+ rows × \d+ columns)\s*<\/p>/;
 
@@ -154,8 +166,8 @@ const RESIZE_REPORTER_SCRIPT = `
   </script>
 `;
 
-function injectTableStyles(html: string): string {
-  const styleTag = `<style>${SANDWORM_TABLE_CSS}</style>`;
+function injectTableStyles(html: string, isDark: boolean): string {
+  const styleTag = `<style>${isDark ? SANDWORM_TABLE_CSS_DARK : SANDWORM_TABLE_CSS}</style>`;
 
   // The "N rows × M columns" caption is surfaced in the block's result
   // footer instead, so drop it from the iframe content entirely.
@@ -207,7 +219,7 @@ export function PythonOutputs(props: Props) {
           key={i}
           className={clsx(
             ["plotly"].includes(output.type) ? "flex-grow" : "",
-            "bg-base-100 overflow-x-auto"
+            "bg-base-100 dark:bg-header-surface overflow-x-auto"
           )}
         >
           <PythonOutput
@@ -218,6 +230,7 @@ export function PythonOutputs(props: Props) {
             canFixWithAI={props.canFixWithAI}
             isDashboardView={props.isDashboardView}
             blockId={props.blockId}
+            isDark={props.isDark ?? false}
           />
         </div>
       ))}
@@ -233,6 +246,7 @@ interface ItemProps {
   isDashboardView: boolean;
   canFixWithAI: boolean;
   blockId: string;
+  isDark: boolean;
 }
 
 export function PythonOutput(props: ItemProps) {
@@ -294,7 +308,7 @@ export function PythonOutput(props: ItemProps) {
       );
     }
     case "html": {
-      return <HTMLOutput output={props.output} />;
+      return <HTMLOutput output={props.output} isDark={props.isDark} />;
     }
     case "error":
       return (
@@ -336,7 +350,7 @@ export function PythonOutputWrapper(props: PythonOutputWrapperProps) {
   );
 }
 
-function HTMLOutput(props: { output: PythonHTMLOutput }) {
+function HTMLOutput(props: { output: PythonHTMLOutput; isDark: boolean }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   // Starts at 0 rather than a fixed guess — the iframe's content height
   // varies a lot (a 3-row dataframe vs. a 500-row one). The sandboxed
@@ -346,8 +360,8 @@ function HTMLOutput(props: { output: PythonHTMLOutput }) {
   const [height, setHeight] = React.useState(0);
 
   const styledHtml = useMemo(
-    () => injectTableStyles(props.output.html),
-    [props.output.html]
+    () => injectTableStyles(props.output.html, props.isDark),
+    [props.output.html, props.isDark]
   );
 
   useEffect(() => {
