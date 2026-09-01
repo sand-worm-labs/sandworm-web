@@ -10,6 +10,7 @@ import { SliderHorizontal } from "@/components/Assets/SliderHorizontal";
 import { GearIcon } from "@/components/Assets/GearIcon";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import { useSignout } from "@/components/Editor/hooks/useAuth";
+import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
 
 export default function SettingsLayout({
   children,
@@ -48,17 +49,32 @@ export default function SettingsLayout({
     },
   ];
 
+  const currentTab = tabs.find(tab => pathname.startsWith(tab.href));
+
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-base-200">
-      <header className="flex shrink-0 items-center gap-2 border-b border-base-300 bg-header-surface px-10 py-3 text-[1.1rem] dark:border-border-tertiary">
-        <Link
-          href="/workspace"
-          className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md text-ink-400 hover:bg-base-350 hover:text-ink-500 dark:text-ink-400 dark:hover:bg-base-700 dark:hover:text-ink-200 transition-all duration-100"
+      <header className="flex shrink-0 items-center border-b border-base-300 bg-header-surface text-[1.1rem] dark:border-border-tertiary">
+        <div
+          className="flex shrink-0 items-center gap-2 border-r border-border-secondary px-10 py-3 dark:border-border-tertiary"
+          style={{ minWidth: 250 }}
         >
-          <ChevronLeft size={16} />
-        </Link>
+          <Link
+            href="/workspace"
+            className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md text-ink-400 hover:bg-base-350 hover:text-ink-500 dark:text-ink-400 dark:hover:bg-base-700 dark:hover:text-ink-200 transition-all duration-100"
+          >
+            <ChevronLeft size={16} />
+          </Link>
 
-        <span>Settings</span>
+          <span>Settings</span>
+        </div>
+
+        <div className="flex flex-1 items-center justify-between px-6 py-3">
+          <span className="font-medium text-ink-100 dark:text-white">
+            {currentTab?.name}
+          </span>
+
+          <ThemeTogggle iconSize={18} />
+        </div>
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">

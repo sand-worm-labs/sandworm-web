@@ -348,7 +348,7 @@ const ProfileComponent = ({
                 <div className="w-full flex-1 py-12 md:py-0">
                   {displayWallets && displayWallets.length > 0 ? (
                     <div className="bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-2xl md:p-6">
-                      <h2 className="px-2 py-0.5 font-medium text-ink-100 mb-4 bg-border-secondary dark:bg-base-100 inline-block text-sm rounded-lg">
+                      <h2 className="px-2 py-0.5 font-medium text-ink-100 mb-4 bg-border-secondary dark:bg-transparent inline-block text-sm rounded-lg">
                         Main Wallets
                       </h2>
                       <div className="space-y-3">
