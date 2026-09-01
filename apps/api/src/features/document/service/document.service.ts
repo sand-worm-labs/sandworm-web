@@ -392,10 +392,8 @@ export class DocumentService {
     }
 
     document.publishedAt = new Date();
-    this.logger.log("dhhdhd")
-    let data = await this.yjsDocumentService.publishDocument(documentId);
-    //this.logger.log(data)
-    //document.visibility = DocumentVisibility.PUBLIC;
+    await this.yjsDocumentService.publishDocument(documentId);
+    document.visibility = DocumentVisibility.PUBLIC;
 
     await this.documentRepository.save(document);
 
@@ -417,8 +415,7 @@ export class DocumentService {
     }
 
     document.publishedAt = null;
-    //this.yjsDocumentService.unpublishDocument(documentId);
-    //document.visibility = DocumentVisibility.WORKSPACE;
+    document.visibility = DocumentVisibility.WORKSPACE;
 
     await this.documentRepository.save(document);
 

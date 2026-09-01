@@ -1,6 +1,20 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, {
+  Fragment,
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
+import {
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 import {
   PiPlus,
   PiStarLight,
@@ -20,6 +34,7 @@ import Link from "next/link";
 import { iconButtonSmClassName } from "@/styles/interactive";
 import { useFavorites } from "@/components/Editor/hooks/useFavorites";
 import { useSession } from "@/components/Editor/hooks/useAuth";
+import { StyledCheckbox } from "@/components/StyledCheckbox";
 
 import { UploadIcon } from "../Assets/UploadIcon";
 import { useDocuments } from "../Editor/hooks/useDocuments";
@@ -44,6 +59,100 @@ interface Project {
 }
 
 type MenuAction = "duplicate" | "newTab" | "trash";
+
+// =====================================
+// ⬢ Confirm Dialog
+// =====================================
+interface ConfirmDialogProps {
+  isOpen: boolean;
+  isBusy: boolean;
+  title: string;
+  message: string;
+  confirmLabel: string;
+  busyLabel: string;
+  onClose: () => void;
+  onConfirm: () => void;
+}
+
+function ConfirmDialog({
+  isOpen,
+  isBusy,
+  title,
+  message,
+  confirmLabel,
+  busyLabel,
+  onClose,
+  onConfirm,
+}: ConfirmDialogProps) {
+  return (
+    <Transition show={isOpen} as={Fragment}>
+      <Dialog
+        as="div"
+        className="fixed inset-0 z-50 flex items-center justify-center text-ink-100"
+        onClose={onClose}
+      >
+        <TransitionChild
+          as={Fragment}
+          enter="ease-out duration-200"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-150"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="absolute inset-0 bg-black/30" />
+        </TransitionChild>
+
+        <TransitionChild
+          as={Fragment}
+          enter="ease-out duration-200"
+          enterFrom="opacity-0 scale-95 translate-y-1"
+          enterTo="opacity-100 scale-100 translate-y-0"
+          leave="ease-in duration-150"
+          leaveFrom="opacity-100 scale-100 translate-y-0"
+          leaveTo="opacity-0 scale-95 translate-y-1"
+        >
+          <DialogPanel
+            className="relative bg-white dark:bg-dropdown-bg dark:border
+            dark:border-border-tertiary rounded-2xl shadow-xl w-full max-w-sm
+            mx-4 p-6 font-body"
+          >
+            <DialogTitle className="text-base font-medium text-ink-100 dark:text-white">
+              {title}
+            </DialogTitle>
+            <p className="text-sm text-ink-300 dark:text-placeholder-muted mt-2">
+              {message}
+            </p>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                type="button"
+                onClick={onClose}
+                disabled={isBusy}
+                className="flex-1 py-2.5 rounded-xl border border-border
+                  dark:border-border-tertiary text-ink-400 dark:text-ink-400
+                  text-sm font-medium hover:bg-inputBg dark:hover:bg-dropdown-hover
+                  transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={onConfirm}
+                disabled={isBusy}
+                className="flex-1 py-2.5 rounded-xl text-white text-sm
+                  font-medium hover:bg-opacity-90 transition-colors
+                  disabled:opacity-50 bg-error"
+              >
+                {isBusy ? busyLabel : confirmLabel}
+              </button>
+            </div>
+          </DialogPanel>
+        </TransitionChild>
+      </Dialog>
+    </Transition>
+  );
+}
 
 function formatDate(dateString: string | Date): string {
   if (!dateString) return "Unknown";
@@ -104,6 +213,11 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
   const [hoveredUser, setHoveredUser] = useState<string | null>(null);
   const [hoveredSave, setHoveredSave] = useState<string | null>(null);
 
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isDeletingSelected, setIsDeletingSelected] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const selectAllRef = useRef<HTMLInputElement>(null);
+
   // ⬢ Create Document
   // =====================================
   const onCreateDocument = useCallback(
@@ -153,6 +267,51 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
       })),
     [docs, favorites]
   );
+
+  // Drop selected ids that fell out of the list (deleted/filtered elsewhere).
+  useEffect(() => {
+    const visibleIds = new Set(projects.map(p => p.id));
+    setSelectedIds(prev => {
+      const next = new Set(Array.from(prev).filter(id => visibleIds.has(id)));
+      return next.size === prev.size ? prev : next;
+    });
+  }, [projects]);
+
+  const allSelected =
+    projects.length > 0 && selectedIds.size === projects.length;
+  const someSelected = selectedIds.size > 0 && !allSelected;
+
+  useEffect(() => {
+    if (selectAllRef.current) {
+      selectAllRef.current.indeterminate = someSelected;
+    }
+  }, [someSelected]);
+
+  const onToggleSelect = useCallback((id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const onToggleSelectAll = useCallback(() => {
+    setSelectedIds(allSelected ? new Set() : new Set(projects.map(p => p.id)));
+  }, [allSelected, projects]);
+
+  const onConfirmDeleteSelected = useCallback(async () => {
+    setIsDeletingSelected(true);
+    try {
+      await Promise.allSettled(
+        Array.from(selectedIds).map(id => deleteDocument(id))
+      );
+      setSelectedIds(new Set());
+      setConfirmingDelete(false);
+    } finally {
+      setIsDeletingSelected(false);
+    }
+  }, [selectedIds, deleteDocument]);
 
   const toggleFavorite = (id: string): void => {
     if (favorites.has(id)) {
@@ -248,6 +407,38 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
           hideFilter={isFavorites}
         />
 
+        {projects.length > 0 && (
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div
+              className="flex items-center gap-2 text-sm text-ink-300
+              dark:text-placeholder-muted select-none"
+            >
+              <StyledCheckbox
+                ref={selectAllRef}
+                checked={allSelected}
+                indeterminate={someSelected}
+                onChange={onToggleSelectAll}
+                aria-label="Select all"
+              />
+              {selectedIds.size > 0
+                ? `${selectedIds.size} selected`
+                : "Select all"}
+            </div>
+
+            {selectedIds.size > 0 && (
+              <button
+                type="button"
+                onClick={() => setConfirmingDelete(true)}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium
+                  bg-error text-white hover:bg-error/90
+                  transition-colors duration-100"
+              >
+                Delete selected
+              </button>
+            )}
+          </div>
+        )}
+
         {activeView === "grid" ? (
           projects.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 gap-3">
@@ -273,15 +464,35 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
               {projects.map(project => (
                 <div
                   key={project.id}
-                  className="bg-page-surface rounded-3xl border border-border-tertiary transition-all duration-200 p-4 py-3 relative group flex flex-col hover:shadow-[0_1px_3px_rgba(208,0,255,0.08)]"
+                  className={`bg-page-surface rounded-3xl border transition-all duration-200 p-4 py-3 relative group flex flex-col hover:shadow-[0_1px_3px_rgba(208,0,255,0.08)] ${
+                    selectedIds.has(project.id)
+                      ? "border-primary ring-1 ring-primary bg-primary/[0.03] dark:bg-primary/[0.06]"
+                      : "border-border-tertiary"
+                  }`}
                 >
                   <div className="flex items-start justify-between mb-4">
-                    <Link
-                      href={`/workspace/${workspaceId}/documents/${project.id}`}
-                      className="text-[0.9rem] font-medium text-ink-100 dark:text-white flex-1 pr-2 after:absolute after:inset-0 after:rounded-3xl focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-primary"
-                    >
-                      {project.title}
-                    </Link>
+                    <div className="flex items-start gap-2 flex-1 min-w-0">
+                      <div
+                        className={`relative z-[1] shrink-0 overflow-hidden transition-all duration-150 ${
+                          selectedIds.size > 0 || selectedIds.has(project.id)
+                            ? "w-4 opacity-100"
+                            : "w-0 opacity-0 group-hover:w-4 group-hover:opacity-100 group-focus-within:w-4 group-focus-within:opacity-100"
+                        }`}
+                      >
+                        <StyledCheckbox
+                          checked={selectedIds.has(project.id)}
+                          onChange={() => onToggleSelect(project.id)}
+                          aria-label={`Select ${project.title}`}
+                        />
+                      </div>
+
+                      <Link
+                        href={`/workspace/${workspaceId}/documents/${project.id}`}
+                        className="text-[0.9rem] font-medium text-ink-100 dark:text-white flex-1 min-w-0 pr-2 truncate after:absolute after:inset-0 after:rounded-3xl focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-primary"
+                      >
+                        {project.title}
+                      </Link>
+                    </div>
 
                     <div className="flex items-center gap-2 relative z-[1]">
                       <button
@@ -416,9 +627,23 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
             onToggleFavorite={toggleFavorite}
             onMenuAction={handleMenuAction}
             searchQuery={searchValue}
+            selectedIds={selectedIds}
+            onToggleSelect={onToggleSelect}
+            onToggleSelectAll={onToggleSelectAll}
           />
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmingDelete}
+        isBusy={isDeletingSelected}
+        title="Delete selected?"
+        message={`This will move ${selectedIds.size} selected project${selectedIds.size === 1 ? "" : "s"} to trash.`}
+        confirmLabel="Delete selected"
+        busyLabel="Deleting…"
+        onClose={() => setConfirmingDelete(false)}
+        onConfirm={onConfirmDeleteSelected}
+      />
     </div>
   );
 };

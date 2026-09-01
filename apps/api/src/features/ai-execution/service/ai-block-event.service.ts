@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ChatEntity } from '@sandworm/postgresql-typeorm';
 import { BlockType, ExecutionQueue, getBlocks, getPythonAttributes, getSQLAttributes, updateYText } from '@sandworm/editor';
-import type { PowerToolboxInputs, PythonBlock, SQLBlock } from '@sandworm/editor';
-import type { Output, RunQueryResult } from '@sandworm/types';
+import type { PivotTableMetric, PowerToolboxInputs, PythonBlock, SQLBlock } from '@sandworm/editor';
+import type { DataFrameColumn, Output, RunQueryResult } from '@sandworm/types';
 import * as Y from 'yjs';
 import { BlockActionEvent, BlockActionEventNames } from '@/core/events/block-action.events';
 import { SqlGeneratorService } from '@/infrastructure/ai/services/sql-generator.service';
@@ -175,7 +175,24 @@ export class AiBlockEventService implements OnModuleInit {
       };
     }
 
-    if (blockType === BlockType.PivotTable || blockType === BlockType.VisualizationV2) {
+    if (blockType === BlockType.PivotTable) {
+      // content is a JSON config from _select_pivot_config on the Python
+      // side: {"rows": DataFrameColumn[], "columns": DataFrameColumn[],
+      // "metrics": {column, aggregateFunction}[]} — already validated there
+      // against the dependency's real columns, so it's trusted as-is here.
+      const config = this.parsePivotTableConfig(event.content, event.chatId);
+      return {
+        type: blockType,
+        dataframeName: event.dataframeName ?? null,
+        title: event.blockTitle,
+        id: explicitId,
+        rows: config.rows,
+        columns: config.columns,
+        metrics: config.metrics,
+      };
+    }
+
+    if (blockType === BlockType.VisualizationV2) {
       return {
         type: blockType,
         dataframeName: event.dataframeName ?? null,
@@ -185,6 +202,24 @@ export class AiBlockEventService implements OnModuleInit {
     }
 
     return { type: blockType, source: event.content, title: event.blockTitle, id: explicitId } as BlockSpec;
+  }
+
+  // Best-effort parse of _select_pivot_config's JSON output. Already
+  // validated on the Python side against the dependency's real columns, so
+  // no further shape-checking here beyond "did JSON.parse not throw" —
+  // worst case an empty/malformed config just leaves the pivot table blank
+  // for a human to configure, same as before this feature existed.
+  private parsePivotTableConfig(
+    content: string,
+    chatId: string,
+  ): { rows?: DataFrameColumn[]; columns?: DataFrameColumn[]; metrics?: { column: DataFrameColumn; aggregateFunction: PivotTableMetric['aggregateFunction'] }[] } {
+    if (!content) return {};
+    try {
+      return JSON.parse(content);
+    } catch {
+      this.logger.warn(`[block-action] failed to parse pivot_table content for chat ${chatId}`);
+      return {};
+    }
   }
 
   // Waits for the run just enqueued above to finish; on a syntax error, asks

@@ -53,7 +53,8 @@
     "env-cmd": "^11.0.0",
     "p-queue": "^8.1.1",
     "pg": "^8.16.3",
-    "typeorm": "^0.3.27"
+    "typeorm": "^0.3.27",
+    "yjs": "^13.6.14"
   },
   "devDependencies": {
     "@sandworm/eslint-config": "workspace:*",

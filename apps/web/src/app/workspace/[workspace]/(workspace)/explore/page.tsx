@@ -23,7 +23,6 @@ async function fetchInitialData() {
   const client = await getServerClient();
 
   try {
-    console.log("trying");
     const [explorer, featured] = await Promise.all([
       client.query<GetTrendingPublishedDocumentsQuery>({
         query: GetTrendingPublishedDocumentsDocument,
@@ -34,15 +33,6 @@ async function fetchInitialData() {
         variables: { limit: FEATURED_LIMIT },
       }),
     ]);
-
-    console.log(
-      "[SSR] trending count:",
-      explorer.data?.getTrendingPublishedDocuments?.length
-    );
-    console.log(
-      "[SSR] featured count:",
-      featured.data?.getFeaturedDocuments?.length
-    );
 
     return {
       initialDocuments: (explorer.data?.getTrendingPublishedDocuments ??
