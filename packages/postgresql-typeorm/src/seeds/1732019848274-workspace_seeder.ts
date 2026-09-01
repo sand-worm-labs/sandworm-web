@@ -1,12 +1,12 @@
 // workspace.seeder.ts
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
-import { getRandomInt } from '@sandworm/nest-common';
 import {
   UserEntity,
   WorkspaceEntity,
   UserWorkspaceEntity,
   UserWorkspaceRole,
+  UserWorkspaceStatus,
 } from '../entities';
 
 export class WorkspaceSeeder1732019848274 implements Seeder {
@@ -17,23 +17,25 @@ export class WorkspaceSeeder1732019848274 implements Seeder {
     factoryManager: SeederFactoryManager,
   ): Promise<any> {
     const userRepository = dataSource.getRepository(UserEntity);
+    const workspaceRepository = dataSource.getRepository(WorkspaceEntity);
     const userWorkspaceRepository = dataSource.getRepository(UserWorkspaceEntity);
 
-    const numberOfUsers = await userRepository.count();
-    if (numberOfUsers === 0) {
+    const users = await userRepository.find();
+    if (users.length === 0) {
       console.warn('No users found, skipping WorkspaceSeeder');
       return;
     }
 
-    const randomOffset = getRandomInt(0, Math.max(0, numberOfUsers - 1));
-    const users = await userRepository
-      .createQueryBuilder('user')
-      .skip(randomOffset)
-      .take(10)
-      .getMany();
+    // Every user gets a workspace — a random skip/take(10) here used to
+    // always leave exactly one user (sometimes 'admin') without one.
+    const existingOwners = new Set(
+      (await workspaceRepository.find()).map((w) => w.ownerId),
+    );
 
     const workspaceFactory = factoryManager.get(WorkspaceEntity);
     for (const user of users) {
+      if (existingOwners.has(user.id)) continue;
+
       const workspace = await workspaceFactory.save({
         ownerId: user.id,
         name: user.getTeamName(),
@@ -43,6 +45,7 @@ export class WorkspaceSeeder1732019848274 implements Seeder {
         userId: user.id,
         workspaceId: workspace.id,
         role: UserWorkspaceRole.ADMIN,
+        status: UserWorkspaceStatus.ACTIVE,
         inviterId: null,
       });
 
