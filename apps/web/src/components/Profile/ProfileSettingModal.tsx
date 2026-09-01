@@ -113,7 +113,7 @@ export function ProfileSettingsModal({
               leaveFrom="opacity-100 translate-y-0 md:scale-100"
               leaveTo="opacity-0 translate-y-full md:translate-y-4 md:scale-95"
             >
-              <DialogPanel className="w-full md:max-w-4xl transform overflow-hidden rounded-t-2xl rounded-b-none md:rounded-[32px] bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary transition-all max-h-[92dvh] md:max-h-none flex flex-col pt-0 md:pt-5">
+              <DialogPanel className="w-full md:max-w-4xl transform overflow-hidden rounded-t-2xl rounded-b-none md:rounded-[32px] bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary transition-all max-h-[92dvh] md:max-h-none flex flex-col pt-0 md:pt-5 shadow-xl">
                 <div className="md:hidden flex justify-center pt-3 pb-1 flex-shrink-0">
                   <div className="w-9 h-[4px] rounded-full bg-gray-200 dark:bg-gray-700" />
                 </div>

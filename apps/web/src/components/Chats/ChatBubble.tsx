@@ -4,6 +4,8 @@ import {
   PiThumbsDown,
   PiFileCsv,
   PiFileText,
+  PiCopy,
+  PiCheck,
 } from "react-icons/pi";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -207,6 +209,45 @@ function RatingButton({ type, active, onClick }: RatingButtonProps) {
 }
 
 // =====================================
+// ⬢ Copy Button
+// =====================================
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      console.error("Failed to copy message:", err);
+    }
+  }
+
+  return (
+    <TooltipV2<HTMLButtonElement>
+      title={copied ? "Copied!" : "Copy message"}
+      active
+      position="top"
+    >
+      {ref => (
+        <button
+          ref={ref}
+          type="button"
+          onClick={handleCopy}
+          aria-label="Copy message"
+          className="p-1 rounded-md transition-all duration-150
+            text-ink-300 dark:text-ink-600 hover:text-ink-400 hover:bg-base-300 dark:hover:bg-base-720"
+        >
+          {copied ? <PiCheck size={13} /> : <PiCopy size={13} />}
+        </button>
+      )}
+    </TooltipV2>
+  );
+}
+
+// =====================================
 // ⬢ Chat Bubble
 // =====================================
 
@@ -296,6 +337,7 @@ export function ChatBubble({
 
       {!isUser && (
         <div className="flex items-center gap-0.5 mt-0.5">
+          <CopyButton text={text} />
           <RatingButton
             type="up"
             active={rating === "up"}

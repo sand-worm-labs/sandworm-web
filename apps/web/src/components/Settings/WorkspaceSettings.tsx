@@ -8,7 +8,7 @@ import React, {
   useMemo,
 } from "react";
 import { useRouter } from "next/navigation";
-import { Transition } from "@headlessui/react";
+import { Transition, TransitionChild } from "@headlessui/react";
 import { toast } from "sonner";
 
 import type { UserWorkspaceRole } from "@/types";
@@ -711,7 +711,7 @@ export default function WorkspaceSettingsModal({
     >
       <div className="fixed inset-0 z-50 flex flex-col overflow-hidden p-4 sm:p-6">
         {/* ✦ Backdrop ✦ */}
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -733,11 +733,11 @@ export default function WorkspaceSettingsModal({
             tabIndex={0}
             aria-label="Close modal"
           />
-        </Transition.Child>
+        </TransitionChild>
 
         {/* ✦ Panel ✦ */}
         <div className="relative z-10 mx-auto flex h-full w-full min-h-0 max-w-[1500px]">
-          <Transition.Child
+          <TransitionChild
             as="div"
             enter="ease-out duration-300"
             enterFrom="opacity-0 scale-95"
@@ -789,7 +789,7 @@ export default function WorkspaceSettingsModal({
                 </div>
               </div>
             </div>
-          </Transition.Child>
+          </TransitionChild>
         </div>
 
         {/* ✦ SubModals ✦ */}

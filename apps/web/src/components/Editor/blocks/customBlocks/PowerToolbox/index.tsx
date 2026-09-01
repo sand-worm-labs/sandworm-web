@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useState, useEffect, useRef, useCallback } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
 import { useApolloClient } from "@apollo/client";
 import clsx from "clsx";
 import {
@@ -451,7 +451,7 @@ export function PowerToolboxModal({
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-[99]" onClose={onClose}>
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-150"
           enterFrom="opacity-0"
@@ -461,10 +461,10 @@ export function PowerToolboxModal({
           leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-black/[10.2%]" />
-        </Transition.Child>
+        </TransitionChild>
 
         <div className="fixed inset-0 flex items-start justify-center pt-[15vh] px-4 font-body">
-          <Transition.Child
+          <TransitionChild
             as={Fragment}
             enter="ease-out duration-150"
             enterFrom="opacity-0 scale-[0.97] translate-y-1"
@@ -473,9 +473,9 @@ export function PowerToolboxModal({
             leaveFrom="opacity-100 scale-100 translate-y-0"
             leaveTo="opacity-0 scale-[0.97] translate-y-1"
           >
-            <Dialog.Panel
+            <DialogPanel
               className={clsx(
-                "w-full max-w-[655px] rounded-2xl overflow-hidden",
+                "w-full max-w-[655px] rounded-2xl overflow-hidden shadow-xl",
                 "bg-base-100 border border-border-secondary dark:bg-dropdown-bg dark:border-border-tertiary"
               )}
             >
@@ -497,13 +497,13 @@ export function PowerToolboxModal({
 
                 {(step === "categories" || isSearching) && <PowerToolBoxIcon />}
 
-                <Dialog.Title className="text-base font-medium text-ink-100 leading-none">
+                <DialogTitle className="text-base font-medium text-ink-100 leading-none">
                   {isSearching
                     ? `${searchResults.length} result${searchResults.length !== 1 ? "s" : ""}`
                     : step === "categories"
                       ? "Power Toolbox"
                       : (activeCategory?.name ?? "")}
-                </Dialog.Title>
+                </DialogTitle>
 
                 {step === "tools" && !isSearching && activeCategory && (
                   <span className="ml-auto text-[10px] font-medium text-ink-100 border border-white/10 rounded-full px-2 py-0.5">
@@ -675,8 +675,8 @@ export function PowerToolboxModal({
                   <KeyHint keys={["Esc"]} label="close" muted />
                 </span>
               </div>
-            </Dialog.Panel>
-          </Transition.Child>
+            </DialogPanel>
+          </TransitionChild>
         </div>
       </Dialog>
     </Transition>

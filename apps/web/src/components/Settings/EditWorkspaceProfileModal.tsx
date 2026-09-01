@@ -1,4 +1,4 @@
-import { Dialog, Transition } from "@headlessui/react";
+import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { useState, Fragment } from "react";
 
@@ -55,7 +55,7 @@ export default function EditWorkspaceProfileModal({
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -65,11 +65,11 @@ export default function EditWorkspaceProfileModal({
           leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-black/[10.2%]" />
-        </Transition.Child>
+        </TransitionChild>
 
         <div className="fixed inset-0 overflow-y-auto font-body">
           <div className="flex min-h-full items-center justify-center p-4">
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 scale-95"
@@ -78,14 +78,14 @@ export default function EditWorkspaceProfileModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="relative bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-3xl w-full max-w-md  mx-4 p-6 py-10 px-10">
+              <DialogPanel className="relative bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-3xl w-full max-w-md  mx-4 p-6 py-10 px-10 shadow-xl">
                 <div className="flex items-center justify-between mb-6">
-                  <Dialog.Title
+                  <DialogTitle
                     as="h2"
                     className="text-base font-medium text-ink-100 dark:text-white"
                   >
                     Edit workspace Profile
-                  </Dialog.Title>
+                  </DialogTitle>
                   <CloseIconButton onClick={onClose} />
                 </div>
 
@@ -191,8 +191,8 @@ export default function EditWorkspaceProfileModal({
                     "Save Changes"
                   )}
                 </button>
-              </Dialog.Panel>
-            </Transition.Child>
+              </DialogPanel>
+            </TransitionChild>
           </div>
         </div>
       </Dialog>

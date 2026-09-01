@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { Dialog, Transition, RadioGroup } from "@headlessui/react";
+import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild, RadioGroup } from "@headlessui/react";
 import {
   PiX,
   PiLink,
@@ -220,7 +220,7 @@ export default function ShareModal({
       <Transition show={isOpen} as={React.Fragment}>
         <Dialog as="div" className="relative z-[99]" onClose={closeModal}>
           {/* Backdrop */}
-          <Transition.Child
+          <TransitionChild
             as={React.Fragment}
             enter="ease-out duration-200"
             enterFrom="opacity-0"
@@ -230,11 +230,11 @@ export default function ShareModal({
             leaveTo="opacity-0"
           >
             <div className="fixed inset-0 bg-black/10 dark:bg-black/30" />
-          </Transition.Child>
+          </TransitionChild>
 
           <div className="fixed inset-0 overflow-y-auto font-body">
             <div className="flex min-h-full items-center justify-center p-4">
-              <Transition.Child
+              <TransitionChild
                 as={React.Fragment}
                 enter="ease-out duration-200"
                 enterFrom="opacity-0 scale-95 translate-y-2"
@@ -243,11 +243,11 @@ export default function ShareModal({
                 leaveFrom="opacity-100 scale-100 translate-y-0"
                 leaveTo="opacity-0 scale-95 translate-y-1"
               >
-                <Dialog.Panel
+                <DialogPanel
                   className="w-full max-w-md rounded-2xl overflow-hidden
                   bg-white dark:bg-dropdown-bg
                   border border-base-300 dark:border-border-tertiary
-                  shadow-[0_8px_32px_rgba(0,0,0,0.10)]"
+                  shadow-xl"
                 >
                   {/* ── Header ── */}
                   <div
@@ -255,9 +255,9 @@ export default function ShareModal({
                     border-b border-base-300 dark:border-border-tertiary"
                   >
                     <div>
-                      <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
+                      <DialogTitle className="text-base font-medium text-ink-100 dark:text-white">
                         Share notebook
-                      </Dialog.Title>
+                      </DialogTitle>
                       <p className="text-[12.5px] text-ink-400 dark:text-placeholder-muted mt-0.5">
                         Choose who can access this notebook
                       </p>
@@ -525,8 +525,8 @@ export default function ShareModal({
                       {isUpdating ? "Saving…" : "Save changes"}
                     </button>
                   </div>
-                </Dialog.Panel>
-              </Transition.Child>
+                </DialogPanel>
+              </TransitionChild>
             </div>
           </div>
         </Dialog>

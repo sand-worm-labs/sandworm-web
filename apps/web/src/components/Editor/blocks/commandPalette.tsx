@@ -1,4 +1,4 @@
-import { Combobox, Dialog, Transition } from "@headlessui/react";
+import { DialogPanel, Combobox, Dialog, Transition, TransitionChild } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { FolderIcon } from "@heroicons/react/24/outline";
 import { useCallback, useMemo, useState } from "react";
@@ -100,7 +100,7 @@ export default function CommandPalette({
           setQuery("");
         }}
       >
-        <Transition.Child
+        <TransitionChild
           enter="ease-out duration-300"
           enterFrom="opacity-0"
           enterTo="opacity-100"
@@ -109,10 +109,10 @@ export default function CommandPalette({
           leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-gray-500 bg-opacity-25 transition-opacity" />
-        </Transition.Child>
+        </TransitionChild>
 
         <div className="fixed inset-0 z-[910] w-screen overflow-y-auto p-4 sm:p-6 md:p-20">
-          <Transition.Child
+          <TransitionChild
             as="div"
             enter="ease-out duration-300"
             enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -121,7 +121,7 @@ export default function CommandPalette({
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <Dialog.Panel className="mx-auto max-w-2xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
+            <DialogPanel className="mx-auto max-w-2xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black ring-opacity-5 transition-all">
               <Combobox
                 onChange={(item: ApiDocument | null) => {
                   if (item) {
@@ -205,8 +205,8 @@ export default function CommandPalette({
                   </>
                 )}
               </Combobox>
-            </Dialog.Panel>
-          </Transition.Child>
+            </DialogPanel>
+          </TransitionChild>
         </div>
       </Dialog>
     </Transition>

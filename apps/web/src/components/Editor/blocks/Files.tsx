@@ -5,7 +5,7 @@ import {
   DocumentPlusIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
-import { Dialog, Transition } from "@headlessui/react";
+import { DialogPanel, Dialog, Transition, TransitionChild } from "@headlessui/react";
 import type { SandwormFile } from "@sandworm/types";
 import Link from "next/link";
 import clsx from "clsx";
@@ -248,7 +248,7 @@ function ReplaceDialog(props: ReplaceDialogProps) {
   return (
     <Transition show={props.open}>
       <Dialog onClose={props.onReplaceNo} className="relative z-[100]">
-        <Transition.Child
+        <TransitionChild
           enter="ease-out duration-300"
           enterFrom="opacity-0"
           enterTo="opacity-100"
@@ -257,11 +257,11 @@ function ReplaceDialog(props: ReplaceDialogProps) {
           leaveTo="opacity-0 font-body "
         >
           <div className="fixed inset-0 bg-black/[10.2%] transition-opacity" />
-        </Transition.Child>
+        </TransitionChild>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <Transition.Child
+            <TransitionChild
               as="div"
               enter="ease-out duration-300"
               enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -270,7 +270,7 @@ function ReplaceDialog(props: ReplaceDialogProps) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-xl bg-white dark:bg-page-surface px-4 pb-4 pt-5 text-left  transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 border-border-secondary  font-body font-medium">
+              <DialogPanel className="relative transform overflow-hidden rounded-xl bg-white dark:bg-page-surface px-4 pb-4 pt-5 text-left  transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 border-border-secondary  font-body font-medium shadow-xl">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full ">
                     <Cautious />
@@ -309,8 +309,8 @@ function ReplaceDialog(props: ReplaceDialogProps) {
                     No
                   </button>
                 </div>
-              </Dialog.Panel>
-            </Transition.Child>
+              </DialogPanel>
+            </TransitionChild>
           </div>
         </div>
       </Dialog>

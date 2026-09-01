@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import type * as Y from "yjs";
 import React, { useCallback, useState } from "react";
 import { PiStackLight, PiFloppyDisk } from "react-icons/pi";
-import { Transition, Dialog } from "@headlessui/react";
+import { DialogPanel, DialogTitle, Transition, TransitionChild, Dialog } from "@headlessui/react";
 import { format } from "date-fns";
 import clsx from "clsx";
 import { addComponentToDocument, decodeComponentState } from "@sandworm/editor";
@@ -39,7 +39,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
   return (
     <Transition show={props.isOpen}>
       <Dialog onClose={props.onClose} className="relative z-[1000]">
-        <Transition.Child
+        <TransitionChild
           enter="ease-out duration-300"
           enterFrom="opacity-0"
           enterTo="opacity-100"
@@ -48,11 +48,11 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
           leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-black/[10.2%] transition-opacity" />
-        </Transition.Child>
+        </TransitionChild>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto ">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <Transition.Child
+            <TransitionChild
               enter="ease-out duration-300"
               enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               enterTo="opacity-100 translate-y-0 sm:scale-100"
@@ -60,18 +60,18 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-page-surface px-4 pb-4 pt-5 text-left transition-all w-[532px] font-body">
+              <DialogPanel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-page-surface px-4 pb-4 pt-5 text-left transition-all w-[532px] font-body shadow-xl">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full ">
                     <ScheduleIcon />
                   </div>
                   <div className="mt-1 text-center sm:mt-1 mb-5">
-                    <Dialog.Title
+                    <DialogTitle
                       as="h3"
                       className="text-base font-semibold leading-6 text-ink-100"
                     >
                       Update existing component
-                    </Dialog.Title>
+                    </DialogTitle>
                     <div className="mt-2 flex flex-col items-center gap-y-2">
                       <p className="text-sm text-ink-100 font-medium">
                         You have previously saved this block as a reusable
@@ -105,8 +105,8 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
                     Cancel
                   </button>
                 </div>
-              </Dialog.Panel>
-            </Transition.Child>
+              </DialogPanel>
+            </TransitionChild>
           </div>
         </div>
       </Dialog>
