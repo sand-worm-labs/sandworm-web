@@ -59,7 +59,7 @@ function ScheduleConfigForm({
             <select
               {...form.register("type")}
               defaultValue="monthly"
-              className="mt-2 block w-full rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-500 ring-[1.5px] ring-border-secondary focus-visible:outline-primary focus:ring-1 focus:ring-primary sm:text-sm sm:leading-6 "
+              className="mt-2 block w-full rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-100 bg-white dark:bg-base-710 ring-[1.5px] ring-border-secondary dark:ring-border-tertiary focus-visible:outline-primary focus:ring-1 focus:ring-primary sm:text-sm sm:leading-6 "
             >
               <option value="hourly">Hourly</option>
               <option value="daily">Daily</option>
@@ -79,7 +79,7 @@ function ScheduleConfigForm({
             </label>
             <select
               {...form.register("timezone", { required: true })}
-              className="mt-2 block w-full rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-500 ring-[1.5px] ring-border-secondary focus:ring-2 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6"
+              className="mt-2 block w-full rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-100 bg-white dark:bg-base-710 ring-[1.5px] ring-border-secondary dark:ring-border-tertiary focus:ring-2 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6"
               defaultValue={userTimezone}
             >
               {tzList.map(timezone => (
@@ -151,7 +151,7 @@ function ScheduleConfigForm({
           </div> */}
         </div>
 
-        <div className="flex bg-white  py-4  px-0 w-full space-x-2 ">
+        <div className="flex bg-white dark:bg-page-surface py-4  px-0 w-full space-x-2 ">
           <button
             onClick={onClose}
             type="button"
@@ -161,7 +161,7 @@ function ScheduleConfigForm({
           </button>
           <button
             type="submit"
-            className="flex-1 flex items-center text-center justify-center  rounded-full bg-base-400 px-3 py-1.5 text-sm hover:bg-primary-300 text-white dark:bg-create-project-tint/[0.16] dark:border dark:border-border-tertiary dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]"
+            className="flex-1 flex items-center text-center justify-center  rounded-full bg-base-400 px-3 py-1.5 text-sm hover:bg-primary-300 text-white dark:bg-primary dark:hover:bg-primary-710"
           >
             Schedule run
           </button>
