@@ -71,7 +71,19 @@ export class AiBlockEventService implements OnModuleInit {
     // upserts the notebook's single header), "created" for everything else
     // — see BlockActionService.generate_blocks on the Python side. All three
     // land here; "generating"/"deleted" don't apply to this handler.
-    if (!['created', 'edited', 'ran'].includes(event.action) || !event.content) return;
+    if (!['created', 'edited', 'ran'].includes(event.action)) return;
+
+    const blockType = BLOCK_TYPE_MAP[event.blockType.toLowerCase()];
+    if (!blockType) {
+      this.logger.warn(`[block-action] unknown block type: ${event.blockType}`);
+      return;
+    }
+
+    // pivot_table is intentionally content-less (NO_CONTENT_TYPES on the
+    // Python side) — it's a blank widget wired to a dataframeName, not
+    // freeform generated text, so it must not be dropped here like every
+    // other type that genuinely needs real content to be worth inserting.
+    if (blockType !== BlockType.PivotTable && !event.content) return;
 
     const chat = await this.chatRepository.findOne({
       where: { id: event.chatId },
@@ -79,12 +91,6 @@ export class AiBlockEventService implements OnModuleInit {
     });
     if (!chat) {
       this.logger.warn(`[block-action] chat not found: ${event.chatId}`);
-      return;
-    }
-
-    const blockType = BLOCK_TYPE_MAP[event.blockType.toLowerCase()];
-    if (!blockType) {
-      this.logger.warn(`[block-action] unknown block type: ${event.blockType}`);
       return;
     }
 
@@ -119,16 +125,7 @@ export class AiBlockEventService implements OnModuleInit {
     const explicitId = event.blockId || undefined;
 
     const [blockId] = addBlocks(sharedDoc.ydoc, [
-      blockType === BlockType.SQL
-        ? {
-            type: blockType,
-            source: event.content,
-            title: event.blockTitle,
-            dataSourceId: event.dataSourceId ?? null,
-            dataframeName: event.dataframeName ?? undefined,
-            id: explicitId,
-          }
-        : { type: blockType, source: event.content, title: event.blockTitle, id: explicitId } as BlockSpec,
+      this.buildBlockSpec(blockType, event, explicitId),
     ]);
 
     this.logger.log(`[block-action] inserted ${event.blockType} block "${event.blockTitle}" → doc ${chat.documentId}`);
@@ -157,6 +154,37 @@ export class AiBlockEventService implements OnModuleInit {
         void this.runPythonWithAutoFix(sharedDoc.ydoc, blockId, chat.userId, ctx);
       }
     }
+  }
+
+  // One BlockSpec per shape addBlocks actually accepts for that type —
+  // SQL carries its data source and generated query text; PivotTable and
+  // VisualizationV2 wire up to a dataframe, not freeform generated text
+  // (`source`/`content` isn't part of their schema at all, see BlockSpec in
+  // ai-blocks.ts — passing it there was silently discarded and left them
+  // with no dataframeName, i.e. no data); everything else carries its
+  // generated text as `source`.
+  private buildBlockSpec(blockType: BlockType, event: BlockActionEvent, explicitId: string | undefined): BlockSpec {
+    if (blockType === BlockType.SQL) {
+      return {
+        type: blockType,
+        source: event.content,
+        title: event.blockTitle,
+        dataSourceId: event.dataSourceId ?? null,
+        dataframeName: event.dataframeName ?? undefined,
+        id: explicitId,
+      };
+    }
+
+    if (blockType === BlockType.PivotTable || blockType === BlockType.VisualizationV2) {
+      return {
+        type: blockType,
+        dataframeName: event.dataframeName ?? null,
+        title: event.blockTitle,
+        id: explicitId,
+      };
+    }
+
+    return { type: blockType, source: event.content, title: event.blockTitle, id: explicitId } as BlockSpec;
   }
 
   // Waits for the run just enqueued above to finish; on a syntax error, asks
@@ -197,7 +225,8 @@ export class AiBlockEventService implements OnModuleInit {
       if (result.type !== 'syntax-error') {
         if (result.type === 'success') {
           const summary = `${(result.count ?? 0).toLocaleString()} rows × ${(result.columns ?? []).length} cols`;
-          await this.publishBlockResult(blockId, 'success', summary);
+          const columns = (result.columns ?? []).map(c => ({ name: String(c.name), type: c.type }));
+          await this.publishBlockResult(blockId, 'success', summary, columns);
         } else {
           await this.publishBlockResult(blockId, 'error', result.type);
         }
@@ -384,9 +413,14 @@ export class AiBlockEventService implements OnModuleInit {
   // Python side, which BLPOPs this exact key). Best-effort: if this fails,
   // the sidecar's own wait just times out and it falls back to generating
   // blind, same as before this feature existed.
-  private async publishBlockResult(blockId: string, outcome: 'success' | 'error', summary: string): Promise<void> {
+  private async publishBlockResult(
+    blockId: string,
+    outcome: 'success' | 'error',
+    summary: string,
+    columns?: { name: string; type: string }[],
+  ): Promise<void> {
     try {
-      await this.redisService.rpush(`block:result:${blockId}`, JSON.stringify({ outcome, summary }));
+      await this.redisService.rpush(`block:result:${blockId}`, JSON.stringify({ outcome, summary, columns }));
     } catch (err) {
       this.logger.warn({ blockId, err }, '[block-action] failed to publish block result for sidecar handoff');
     }
