@@ -1,14 +1,24 @@
 "use client";
 
-import { useState, useRef, Fragment } from "react";
+import { useState, useRef, useEffect, Fragment } from "react";
+import Image from "next/image";
 import { Check } from "lucide-react";
 import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@sandworm/ui/components/select";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
 import { tintPillDarkClassName } from "@/styles/interactive";
+import { useChainStore, getChainLogoUrl } from "@/store/chains";
 
 import { Copy } from "../Assets/Copy";
 import { Trash } from "../Assets/Trash";
+import { FourSquare } from "../Assets/FourSquare";
 import ScrollBar from "../Editor/blocks/ScrollBar";
 
 interface WalletInfo {
@@ -16,6 +26,38 @@ interface WalletInfo {
   chain?: string;
   label?: string;
 }
+
+const SELECT_TRIGGER_CLASSNAME =
+  "w-full px-4 py-2.5 rounded-xl border border-border dark:border-border-tertiary dark:bg-base-400 text-sm bg-inputBg text-ink-100 dark:text-white data-[placeholder]:text-[#ADB5BD] dark:data-[placeholder]:text-ink-400 focus:border-primary outline-none transition-colors font-body h-auto";
+
+const SELECT_CONTENT_CLASSNAME =
+  "z-[70] w-[var(--radix-select-trigger-width)] max-h-72 bg-white dark:bg-dropdown-bg border-border-tertiary font-body text-ink-200 dark:text-ink-300 dark:border-border-tertiary rounded-xl";
+
+const SELECT_ITEM_CLASSNAME =
+  "hover:bg-primary/20 dark:hover:bg-dropdown-hover dark:hover:text-white";
+
+// =====================================
+// ⬢  Chain Icon (falls back gracefully if a chain has no logo asset)
+// =====================================
+const ChainIcon = ({ name, size = 16 }: { name: string; size?: number }) => {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return <FourSquare className="shrink-0" />;
+  }
+
+  return (
+    <Image
+      alt=""
+      src={getChainLogoUrl(name)}
+      width={size}
+      height={size}
+      unoptimized
+      className="rounded-full shrink-0"
+      onError={() => setFailed(true)}
+    />
+  );
+};
 
 interface AddWalletModalProps {
   isOpen: boolean;
@@ -37,6 +79,15 @@ export const AddWalletModal = ({
   const [chain, setChain] = useState("");
   const [addressError, setAddressError] = useState("");
   const addressInputRef = useRef<HTMLInputElement>(null);
+
+  const { chains, loading: chainsLoading, error: chainsError, fetchChainData } =
+    useChainStore();
+
+  useEffect(() => {
+    if (isOpen && !chains && !chainsLoading) fetchChainData();
+  }, [isOpen, chains, chainsLoading, fetchChainData]);
+
+  const selectedChain = chains?.find(c => c.short_code === chain);
 
   const handleClose = () => {
     setAddress("");
@@ -133,14 +184,53 @@ export const AddWalletModal = ({
                 )}
               </div>
 
-              <input
-                type="text"
-                value={chain}
-                onChange={e => setChain(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Chain"
-                className="w-full px-4 py-2.5 rounded-xl border border-border dark:border-border-tertiary dark:bg-base-400 text-sm bg-inputBg text-ink-100 dark:text-white placeholder:text-[#ADB5BD] dark:placeholder:text-ink-400 focus:border-primary outline-none transition-colors font-body"
-              />
+              <Select value={chain || undefined} onValueChange={setChain}>
+                <SelectTrigger className={SELECT_TRIGGER_CLASSNAME}>
+                  <SelectValue placeholder="Select chain (optional)">
+                    {selectedChain && (
+                      <span className="flex items-center gap-2">
+                        <ChainIcon name={selectedChain.name} />
+                        {selectedChain.name}
+                      </span>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent
+                  className={SELECT_CONTENT_CLASSNAME}
+                  side="bottom"
+                  sideOffset={4}
+                  avoidCollisions={false}
+                >
+                  {chainsLoading && !chains ? (
+                    <div className="px-3 py-2 text-sm text-ink-400">
+                      Loading chains…
+                    </div>
+                  ) : chainsError ? (
+                    <div className="px-3 py-2 text-sm text-red-500">
+                      Couldn&apos;t load chains — you can still add the
+                      wallet without one.
+                    </div>
+                  ) : (
+                    chains?.map(c => (
+                      <SelectItem
+                        key={c.short_code}
+                        value={c.short_code}
+                        className={SELECT_ITEM_CLASSNAME}
+                      >
+                        <span className="flex items-center gap-2">
+                          <ChainIcon name={c.name} />
+                          <span className="flex flex-col">
+                            <span>{c.name}</span>
+                            <span className="text-xs text-ink-400 uppercase">
+                              {c.short_code}
+                            </span>
+                          </span>
+                        </span>
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* ✦ Actions ✦ */}
@@ -269,7 +359,7 @@ export const ManageWalletsModal = ({
                             {truncateAddress(wallet.address)}
                           </code>
                           {wallet.chain && (
-                            <span className="text-xs text-ink-400 dark:text-ink-400 mt-0.5">
+                            <span className="text-xs text-ink-400 dark:text-ink-400 mt-0.5 uppercase">
                               {wallet.chain}
                             </span>
                           )}
