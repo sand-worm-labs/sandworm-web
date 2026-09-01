@@ -194,7 +194,7 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
           <button
             type="button"
             onClick={onCreateDocumentHandler}
-            className="py-2 px-6 bg-base-200 dark:bg-create-project-tint/[0.16] rounded-xl hover:cursor-pointer text-sm border mt-6 flex  items-center justify-center w-full border-[#D000FF] dark:border-border-tertiary text-primary dark:text-white mb-3 font-body font-medium gap-2 shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.04),0px_4px_4px_-2px_rgba(0,0,0,0.02)] dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]"
+            className="py-2 px-6 bg-primary-tint-75 dark:bg-base-700 hover:bg-primary/5 dark:hover:bg-base-600 rounded-xl hover:cursor-pointer text-sm border mt-6 flex  items-center justify-center w-full border-accent-fuchsia dark:border-white/15 text-accent-fuchsia dark:text-white mb-3 font-body font-medium gap-2 shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.04),0px_4px_4px_-2px_rgba(0,0,0,0.02)] dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]"
           >
             <PiPlus className="mr-2 h-4 w-4" />
             <span>Create Project</span>
@@ -223,7 +223,7 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
           <div>
             <button
               type="button"
-              className="py-2 px-6 bg-primary/5 dark:bg-create-project-tint/[0.16] rounded-xl hover:cursor-pointer text-sm border mt-6 flex  items-center w-full border-[#D000FF] dark:border-border-tertiary text-primary dark:text-white mb-3 font-body font-medium gap-2 shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.04),0px_4px_4px_-2px_rgba(0,0,0,0.02)] dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]"
+              className="py-2 px-6 bg-primary-tint-75 dark:bg-base-700 hover:bg-primary/5 dark:hover:bg-base-600 rounded-xl hover:cursor-pointer text-sm border mt-6 flex  items-center w-full border-accent-fuchsia dark:border-white/15 text-accent-fuchsia dark:text-white mb-3 font-body font-medium gap-2 shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.04),0px_4px_4px_-2px_rgba(0,0,0,0.02)] dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]"
               onClick={onCreateDocumentHandler}
             >
               <PiPlus className=" h-4 w-4" />
