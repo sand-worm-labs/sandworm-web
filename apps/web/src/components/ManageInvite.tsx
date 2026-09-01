@@ -501,7 +501,7 @@ const ManageInviteModal: React.FC<ManageInviteModalProps> = ({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="relative bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-hidden mx-4 transition-all">
+              <Dialog.Panel className="relative bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-hidden mx-4 transition-all shadow-xl">
                 <div className="flex h-full">
                   <div className="flex-1 p-8 overflow-y-auto">
                     <div className="flex items-center justify-between mb-6">

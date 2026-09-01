@@ -87,7 +87,7 @@ export default function CreateTeamModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-[31rem] transform overflow-hidden rounded-3xl bg-white  dark:bg-dropdown-bg transition-all dark:border-border-tertiary dark:border ">
+              <Dialog.Panel className="w-full max-w-[31rem] transform overflow-hidden rounded-3xl bg-white  dark:bg-dropdown-bg transition-all dark:border-border-tertiary dark:border shadow-xl">
                 <div className="flex items-center justify-between  px-6 py-4">
                   <Dialog.Title className="text-base font-medium text-ink-100 dark:text-white">
                     Create New Team

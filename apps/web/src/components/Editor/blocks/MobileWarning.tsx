@@ -32,7 +32,7 @@ export default function MobileWarning() {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left border transition-all my-auto font-body border-border-tertiary ">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-base-100 px-4 pb-4 pt-5 text-left border transition-all my-auto font-body border-border-tertiary shadow-xl">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/[12.5%]">
                     <ScheduleIcon />

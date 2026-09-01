@@ -475,7 +475,7 @@ export function PowerToolboxModal({
           >
             <Dialog.Panel
               className={clsx(
-                "w-full max-w-[655px] rounded-2xl overflow-hidden",
+                "w-full max-w-[655px] rounded-2xl overflow-hidden shadow-xl",
                 "bg-base-100 border border-border-secondary dark:bg-dropdown-bg dark:border-border-tertiary"
               )}
             >

@@ -150,7 +150,7 @@ export const UserConnectionsModal = ({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <DialogPanel className="w-full max-w-md rounded-2xl bg-white dark:bg-base-200  border border-border-secondary overflow-hidden">
+              <DialogPanel className="w-full max-w-md rounded-2xl bg-white dark:bg-base-200  border border-border-secondary overflow-hidden shadow-xl">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 dark:border-neutral-800">
                   <DialogTitle className="text-sm font-semibold mt-3">
                     {title ?? defaultTitle}

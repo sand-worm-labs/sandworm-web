@@ -78,7 +78,7 @@ export default function EditWorkspaceProfileModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="relative bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-3xl w-full max-w-md  mx-4 p-6 py-10 px-10">
+              <Dialog.Panel className="relative bg-white dark:bg-dropdown-bg dark:border dark:border-border-tertiary rounded-3xl w-full max-w-md  mx-4 p-6 py-10 px-10 shadow-xl">
                 <div className="flex items-center justify-between mb-6">
                   <Dialog.Title
                     as="h2"

@@ -60,7 +60,7 @@ export const SaveConfirmationModal = (props: SaveConfirmationModalProps) => {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-page-surface px-4 pb-4 pt-5 text-left transition-all w-[532px] font-body">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-page-surface px-4 pb-4 pt-5 text-left transition-all w-[532px] font-body shadow-xl">
                 <div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full ">
                     <ScheduleIcon />

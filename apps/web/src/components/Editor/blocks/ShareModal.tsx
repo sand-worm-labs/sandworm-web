@@ -247,7 +247,7 @@ export default function ShareModal({
                   className="w-full max-w-md rounded-2xl overflow-hidden
                   bg-white dark:bg-dropdown-bg
                   border border-base-300 dark:border-border-tertiary
-                  shadow-[0_8px_32px_rgba(0,0,0,0.10)]"
+                  shadow-xl"
                 >
                   {/* ── Header ── */}
                   <div
