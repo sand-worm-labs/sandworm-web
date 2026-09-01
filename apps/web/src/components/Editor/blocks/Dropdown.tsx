@@ -38,7 +38,7 @@ function Dropdown(props: Props) {
                   "flex items-center relative w-full cursor-default rounded-md py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-border dark:ring-border-tertiary focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6",
                   props.disabled
                     ? "bg-gray-100 dark:bg-base-100 cursor-not-allowed text-ink-400"
-                    : "bg-white dark:bg-base-400 cursor-pointer text-ink-100 dark:text-white"
+                    : "bg-white dark:bg-header-surface cursor-pointer text-ink-100 dark:text-white"
                 )}
               >
                 {props.value && props.icon && (
@@ -60,14 +60,14 @@ function Dropdown(props: Props) {
                 </span>
               </Listbox.Button>
 
-              <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-border-tertiary bg-white dark:bg-base-400 dark:border-border-tertiary py-1 text-base focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm">
+              <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-border-tertiary bg-white dark:bg-header-surface dark:border-border-tertiary py-1 text-base focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm">
                 {props.options.map(option => (
                   <Listbox.Option
                     key={option.value}
                     className={({ active }) =>
                       clsx(
                         active
-                          ? (props.bg ?? "bg-primary/20 dark:bg-editor-100")
+                          ? (props.bg ?? "bg-primary/20 dark:bg-base-600")
                           : "",
                         "text-ink-100 dark:text-white",
                         "relative cursor-default select-none rounded-md py-2 pl-3 pr-9"

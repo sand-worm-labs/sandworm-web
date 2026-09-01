@@ -378,8 +378,7 @@ pre {
   line-height: 1.2;
   margin-top: 0.75rem;
   margin-bottom: 0.375rem;
-  color: var(--color-ink-400, #374151);
-  color: "Moderat", sans-serif;
+  color: var(--ink-400);
 }
 
 .sandworm-prose h2 {
@@ -453,6 +452,10 @@ pre {
   height: 0;
 }
 
+.dark .sandworm-prose .is-empty::before {
+  color: var(--placeholder-muted);
+}
+
 .ProseMirror:focus,
 .ProseMirror:focus-visible {
   outline: none !important;
@@ -512,6 +515,11 @@ pre {
   color: #1a1a1a;
   padding: 0.15em 0.35em;
   border-radius: 0.25rem;
+}
+
+.dark .sw-markdown-preview code:not(.hljs) {
+  background-color: hsl(var(--base-200));
+  color: var(--ink-100);
 }
 
 .sw-markdown-preview a {

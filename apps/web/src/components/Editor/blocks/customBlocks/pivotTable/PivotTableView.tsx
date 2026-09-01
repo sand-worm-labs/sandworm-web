@@ -56,7 +56,7 @@ function PivotTableView(props: Props) {
       {props.result && !props.loadingTable && !props.error ? (
         <>
           {props.loadingPage && (
-            <div className="absolute top-0 left-0 bottom-8 right-0 bg-white dark:bg-base-100  opacity-50 z-10 flex items-center justify-center">
+            <div className="absolute top-0 left-0 bottom-8 right-0 bg-white dark:bg-header-surface  opacity-50 z-10 flex items-center justify-center">
               <LargeSpinner color="#deff80" />
             </div>
           )}
@@ -67,7 +67,7 @@ function PivotTableView(props: Props) {
               onSort={props.onSort}
             />
             {props.result.pageCount > 1 && (
-              <div className="flex w-full items-center justify-between border-t border-border-secondary dark:border-border-tertiary px-3 py-1.5 text-xs font-syne rounded-b-md bg-gray-50 dark:bg-base-100  ">
+              <div className="flex w-full items-center justify-between border-t border-border-secondary dark:border-border-dark px-3 py-1.5 text-xs font-syne rounded-b-md bg-gray-50 dark:bg-header-surface  ">
                 <PageButtons
                   currentPage={props.page - 1}
                   totalPages={props.result.pageCount - 1}
@@ -133,7 +133,7 @@ function PivotTableView(props: Props) {
           <button
             type="button"
             className={clsx(
-              "absolute bottom-0 bg-white rounded-tr-md border-t border-r border-border-secondary p-2 hover:bg-gray-50 z-10",
+              "absolute bottom-0 bg-white dark:bg-header-surface rounded-tr-md border-t border-r border-border-secondary p-2 hover:bg-gray-50 dark:hover:bg-base-600 z-10",
               props.controlsHidden ? "left-0 rounded-bl-md" : "-left-[1px]"
             )}
             onClick={props.onToggleControlsHidden}

@@ -91,7 +91,7 @@ export default function ComboboxV2<T>({
         label
       )}
       <div className="relative mt-1 mb-0.5" ref={inputContainerRef}>
-        <div className="flex items-center space-x-1.5 rounded-md ring-1 ring-inset ring-gray-200 dark:ring-border-tertiary focus-within:ring-1 focus-within:ring-inset focus-within:ring-gray-300 bg-white group pl-2.5 pr-8 text-ink-100 dark:bg-base-100  dark:text-white">
+        <div className="flex items-center space-x-1.5 rounded-md ring-1 ring-inset ring-gray-200 dark:ring-border-dark focus-within:ring-1 focus-within:ring-inset focus-within:ring-gray-300 bg-white group pl-2.5 pr-8 text-ink-100 dark:bg-header-surface  dark:text-white">
           {value && icon(value)}
           <input
             className={clsx(
@@ -150,14 +150,14 @@ export default function ComboboxV2<T>({
             }}
           >
             <div
-              className="mt-1 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="mt-1 max-h-56 overflow-auto rounded-md bg-white dark:bg-header-surface py-1 shadow-lg ring-1 ring-black dark:ring-border-dark ring-opacity-5 focus:outline-none"
               ref={menuRef}
             >
               {filteredColumns.map(c => (
                 <button
                   type="button"
                   key={String(c)}
-                  className="hover:text-white hover:bg-gray-50 text-ink-100 relative select-none flex items-center gap-x-2 w-full cursor-pointer"
+                  className="hover:text-white hover:bg-gray-50 dark:hover:bg-base-600 text-ink-100 dark:text-white relative select-none flex items-center gap-x-2 w-full cursor-pointer"
                   onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -165,7 +165,7 @@ export default function ComboboxV2<T>({
                     setOpen(false);
                   }}
                 >
-                  <div className="text-ink-100 flex w-full items-center justify-between pl-2 pr-4 py-2 hover:bg-gray-50">
+                  <div className="text-ink-100 dark:text-white flex w-full items-center justify-between pl-2 pr-4 py-2 hover:bg-gray-50 dark:hover:bg-base-600">
                     <div className="flex items-center gap-x-2">
                       {icon(c)}
                       <span

@@ -43,7 +43,7 @@ export default function DateSettings(props: Props) {
   }, [props.onChangeDateType]);
 
   return (
-    <div className="bg-gray-50 px-3 py-3 border border-border-secondary flex flex-col gap-y-2 rounded-md shadow-sm">
+    <div className="bg-gray-50 dark:bg-header-surface px-3 py-3 border border-border-secondary flex flex-col gap-y-2 rounded-md shadow-sm">
       <div className="flex items-center justify-between w-full">
         <span className="text-xs font-semibold py-1 flex gap-x-1 text-ink-400 w-full">
           <PiGearSix className="w-4 h-4" />
@@ -68,10 +68,10 @@ export default function DateSettings(props: Props) {
           type="button"
           onClick={onDateDateType}
           className={clsx(
-            "relative inline-flex items-center justify-between rounded-l-md px-3 py-2 text-xs ring-1 ring-inset ring-gray-300 hover:bg-ceramic-50 focus:z-10 w-full",
+            "relative inline-flex items-center justify-between rounded-l-md px-3 py-2 text-xs ring-1 ring-inset ring-gray-300 dark:ring-border-dark hover:bg-hover-bg dark:hover:bg-base-600 focus:z-10 w-full",
             props.dateType === "date"
-              ? "bg-ceramic-50 text-ink-100 font-medium"
-              : "bg-white text-ink-400 "
+              ? "bg-white dark:bg-header-surface text-ink-100 dark:text-white font-medium"
+              : "bg-white dark:bg-header-surface text-ink-400 "
           )}
           disabled={props.dateType === "date" || props.disabled}
         >
@@ -84,17 +84,17 @@ export default function DateSettings(props: Props) {
             Date
           </span>
           {props.dateType === "date" && (
-            <PiCheckBold className="w-4 h-4 text-ceramic-400" />
+            <PiCheckBold className="w-4 h-4 text-primary" />
           )}
         </button>
         <button
           type="button"
           onClick={onDateTimeDateType}
           className={clsx(
-            "relative -ml-px inline-flex items-center justify-between rounded-r-md px-3 py-2 text-xs ring-1 ring-inset ring-gray-300 hover:bg-ceramic-50 focus:z-10 w-full",
+            "relative -ml-px inline-flex items-center justify-between rounded-r-md px-3 py-2 text-xs ring-1 ring-inset ring-gray-300 dark:ring-border-dark hover:bg-hover-bg dark:hover:bg-base-600 focus:z-10 w-full",
             props.dateType === "datetime"
-              ? "bg-ceramic-50 text-ink-100 font-medium"
-              : "bg-white text-ink-400 "
+              ? "bg-white dark:bg-header-surface text-ink-100 dark:text-white font-medium"
+              : "bg-white dark:bg-header-surface text-ink-400 "
           )}
           disabled={props.dateType === "datetime" || props.disabled}
         >
@@ -107,7 +107,7 @@ export default function DateSettings(props: Props) {
             Date and time
           </span>
           {props.dateType === "datetime" && (
-            <PiCheckBold className="w-4 h-4 text-ceramic-400" />
+            <PiCheckBold className="w-4 h-4 text-primary" />
           )}
         </button>
       </span>

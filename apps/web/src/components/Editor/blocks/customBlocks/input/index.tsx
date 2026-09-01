@@ -229,9 +229,9 @@ function InputBlock(props: Props) {
           {
             "border-primary block-focus-ring":
               props.isCursorWithin && props.isCursorInserting,
-            "border-hover-border shadow-none":
+            "border-hover-border dark:border-border-dark shadow-none":
               props.isCursorWithin && !props.isCursorInserting,
-            "border-hover-border block-shadow-soft dark:border-border-tertiary":
+            "border-hover-border block-shadow-soft dark:border-border-dark":
               !props.isCursorWithin,
           }
         )}
@@ -318,7 +318,7 @@ function InputBlock(props: Props) {
             onBlur={onBlur}
             onKeyDown={unfocusOnEscape}
             className={clsx(
-              "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white",
+              "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 dark:disabled:bg-base-100 disabled:cursor-not-allowed bg-white dark:bg-header-surface",
               attrs.value.error
                 ? "ring-red-200 focus:ring-red-200"
                 : "focus:ring-primary-200",
@@ -326,7 +326,7 @@ function InputBlock(props: Props) {
                 !props.isCursorInserting &&
                 !props.belongsToMultiTabGroup
                 ? "ring-blue-400"
-                : "ring-gray-200"
+                : "ring-gray-200 dark:ring-border-dark"
             )}
             type="text"
             value={attrs.value.newValue}
@@ -382,7 +382,7 @@ function InputBlock(props: Props) {
           type="button"
           onClick={props.onDeleteBlock}
           aria-label="Delete block"
-          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+          className="bg-[#FFDBDB] dark:bg-header-surface dark:border dark:border-hover-border rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
         >
           <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
         </button>

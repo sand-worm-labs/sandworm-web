@@ -95,13 +95,13 @@ function AxisModifierSelector({
                   }}
                   className="z-[2000]"
                 >
-                  <Listbox.Options className="min-w-24 max-w-44 mt-0.5 max-h-60 overflow-auto rounded-md bg-white py-2 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <Listbox.Options className="min-w-24 max-w-44 mt-0.5 max-h-60 overflow-auto rounded-md bg-white dark:bg-header-surface py-2 text-base shadow-lg ring-1 ring-black dark:ring-border-dark ring-opacity-5 focus:outline-none">
                     {options.map(option => (
                       <Listbox.Option
                         as="div"
                         className={({ active }) =>
                           clsx(
-                            active ? "bg-gray-50" : "",
+                            active ? "bg-gray-50 dark:bg-base-600" : "",
                             "relative cursor-default select-none py-2 text-xs flex items-center justify-between px-2.5"
                           )
                         }
@@ -113,8 +113,8 @@ function AxisModifierSelector({
                             <span
                               className={clsx(
                                 isSelected
-                                  ? "font-semibold text-gray-800"
-                                  : "font-normal text-gray-600",
+                                  ? "font-semibold text-ink-100 dark:text-white"
+                                  : "font-normal text-ink-400",
                                 "block truncate"
                               )}
                             >
@@ -123,7 +123,7 @@ function AxisModifierSelector({
 
                             {isSelected ? (
                               <CheckIcon
-                                className="h-3 w-3 text-gray-600"
+                                className="h-3 w-3 text-ink-100 dark:text-white"
                                 aria-hidden="true"
                               />
                             ) : null}

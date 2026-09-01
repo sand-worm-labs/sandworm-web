@@ -74,24 +74,24 @@ const StaticInput = (props: StaticInputProps) => {
 
   return (
     <div className="pt-2">
-      <span className="block text-xs font-medium leading-6 text-gray-700 py-0.5">
+      <span className="block text-xs font-medium leading-6 text-gray-700 dark:text-ink-400 py-0.5">
         Static options
       </span>
       <div
         className={clsx(
           props.options.length > 0 ? "p-2" : "py-0.5",
-          "flex flex-wrap border border-border-secondary  rounded-md shadow-sm bg-white"
+          "flex flex-wrap border border-border-secondary  rounded-md shadow-sm bg-white dark:bg-header-surface"
         )}
       >
         <div className="flex flex-wrap">
           {props.options.map(option => (
             <div className="px-1 py-1">
-              <div className="bg-gray-50 border border-border-secondary px-2 py-1 rounded-sm flex items-center gap-x-1 text-xs">
+              <div className="bg-gray-50 dark:bg-header-surface border border-border-secondary px-2 py-1 rounded-sm flex items-center gap-x-1 text-xs">
                 <span>{option}</span>
                 <button
                   type="button"
                   onClick={() => onRemoveOption(option)}
-                  className="rounded-full mt-0.5 p-0.5 hover:bg-gray-200"
+                  className="rounded-full mt-0.5 p-0.5 hover:bg-gray-200 dark:hover:bg-base-600"
                 >
                   <PiX className="w-3 h-3" />
                 </button>
@@ -103,7 +103,7 @@ const StaticInput = (props: StaticInputProps) => {
           type="text"
           value={unfinishedOption}
           onChange={onChangeUnfinishedOption}
-          className="flex-1 border-0 focus:ring-0 focus:outline-0 rounded-md text-sm placeholder-gray-400 bg-transparent"
+          className="flex-1 border-0 focus:ring-0 focus:outline-0 rounded-md text-sm text-ink-100 placeholder-gray-400 dark:placeholder-ink-300 bg-transparent"
           onKeyDown={onOptionsInputKeydown}
           onBlur={onOptionsInputBlur}
           placeholder="Type an option and press enter or tab"
@@ -141,7 +141,7 @@ const getCurrColumns = (currDataframe: DataFrame | null) => {
     return [];
   }
 
-  return currDataframe.columns
+  return (currDataframe.columns ?? [])
     .filter(column => "categories" in column)
     .map(column => ({
       label: column.name.toString(),
@@ -187,7 +187,7 @@ const DynamicInput = (props: DynamicInputProps) => {
   );
 
   useEffect(() => {
-    const currCol = currDataframe?.columns.find(
+    const currCol = currDataframe?.columns?.find(
       col => col.name === attrs.columnName
     );
     const categories =
@@ -244,7 +244,7 @@ export default function DropdownSettings(props: Props) {
   );
 
   return (
-    <div className="bg-gray-50 px-3 py-3 border border-border-secondary flex flex-col gap-y-2 rounded-md shadow-sm">
+    <div className="bg-gray-50 dark:bg-header-surface px-3 py-3 border border-border-secondary flex flex-col gap-y-2 rounded-md shadow-sm">
       <span className="text-xs font-semibold py-1 flex gap-x-1 text-ink-400">
         <PiGearSix className="w-4 h-4" />
         Dropdown settings
@@ -255,10 +255,10 @@ export default function DropdownSettings(props: Props) {
           type="button"
           onClick={() => onChangeDropdownType("static")}
           className={clsx(
-            "relative inline-flex items-center justify-between rounded-l-md px-3 py-2 text-xs ring-1 ring-inset ring-gray-300 hover:bg-ceramic-50 focus:z-10 w-full",
+            "relative inline-flex items-center justify-between rounded-l-md px-3 py-2 text-xs ring-1 ring-inset ring-gray-300 dark:ring-border-dark hover:bg-hover-bg dark:hover:bg-base-600 focus:z-10 w-full",
             attrs.dropdownType === "static"
-              ? "bg-ceramic-50 text-ink-100 font-medium"
-              : "bg-white text-ink-400 "
+              ? "bg-white dark:bg-header-surface text-ink-100 dark:text-white font-medium"
+              : "bg-white dark:bg-header-surface text-ink-400 "
           )}
           disabled={attrs.dropdownType === "static"}
         >
@@ -271,17 +271,17 @@ export default function DropdownSettings(props: Props) {
             Static
           </span>
           {attrs.dropdownType === "static" && (
-            <PiCheckBold className="w-4 h-4 text-ceramic-400" />
+            <PiCheckBold className="w-4 h-4 text-primary" />
           )}
         </button>
         <button
           type="button"
           onClick={() => onChangeDropdownType("dynamic")}
           className={clsx(
-            "relative -ml-px inline-flex items-center justify-between rounded-r-md px-3 py-2 text-xs ring-1 ring-inset ring-gray-300 hover:bg-ceramic-50 focus:z-10 w-full",
+            "relative -ml-px inline-flex items-center justify-between rounded-r-md px-3 py-2 text-xs ring-1 ring-inset ring-gray-300 dark:ring-border-dark hover:bg-hover-bg dark:hover:bg-base-600 focus:z-10 w-full",
             attrs.dropdownType === "dynamic"
-              ? "bg-ceramic-50 text-ink-100 font-medium"
-              : "bg-white text-ink-400 "
+              ? "bg-white dark:bg-header-surface text-ink-100 dark:text-white font-medium"
+              : "bg-white dark:bg-header-surface text-ink-400 "
           )}
           disabled={attrs.dropdownType === "dynamic"}
         >
@@ -294,7 +294,7 @@ export default function DropdownSettings(props: Props) {
             Dynamic
           </span>
           {attrs.dropdownType === "dynamic" && (
-            <PiCheckBold className="w-4 h-4 text-ceramic-400" />
+            <PiCheckBold className="w-4 h-4 text-primary" />
           )}
         </button>
       </span>

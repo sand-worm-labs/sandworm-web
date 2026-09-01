@@ -270,9 +270,9 @@ function DropdownInputBlock(props: Props) {
           {
             "border-primary block-focus-ring":
               props.isCursorWithin && props.isCursorInserting,
-            "border-hover-border shadow-none":
+            "border-hover-border dark:border-border-dark shadow-none":
               props.isCursorWithin && !props.isCursorInserting,
-            "border-hover-border block-shadow-soft dark:border-border-tertiary":
+            "border-hover-border block-shadow-soft dark:border-border-dark":
               !props.isCursorWithin,
           }
         )}
@@ -373,7 +373,7 @@ function DropdownInputBlock(props: Props) {
                     onFocus={onFocus}
                     onBlur={editorAPI.blur}
                     className={clsx(
-                      "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white px-1",
+                      "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 dark:disabled:bg-base-100 disabled:cursor-not-allowed bg-white dark:bg-header-surface px-1",
                       attrs.value.error
                         ? "ring-red-200 focus:ring-red-200"
                         : "focus:ring-primary-200",
@@ -381,7 +381,7 @@ function DropdownInputBlock(props: Props) {
                         !props.isCursorInserting &&
                         !props.belongsToMultiTabGroup
                         ? "ring-primary-400"
-                        : "ring-gray-200",
+                        : "ring-gray-200 dark:ring-border-dark",
                       (isExecutionStatusLoading(valueStatus) ||
                         attrs.value.error) &&
                         "bg-none" // this removes the caret
@@ -410,7 +410,7 @@ function DropdownInputBlock(props: Props) {
                       dropdownWrapperRef.current?.getBoundingClientRect().width,
                   }}
                   onKeyDown={unfocusOnEscape}
-                  className="absolute mt-1 w-full max-h-60 overflow-auto rounded-lg border border-border-tertiary bg-white dark:bg-base-400 dark:border-border-tertiary py-1 text-base focus:outline-none sm:text-sm z-40 px-1"
+                  className="absolute mt-1 w-full max-h-60 overflow-auto rounded-lg border border-border-tertiary bg-white dark:bg-dropdown-bg dark:border-border-tertiary py-1 text-base focus:outline-none sm:text-sm z-40 px-1"
                 >
                   {filteredOptions.map(option => (
                     <Combobox.Option
@@ -419,7 +419,7 @@ function DropdownInputBlock(props: Props) {
                       className={({ active }) =>
                         clsx(
                           "cursor-default select-none relative rounded-md py-2 pl-10 pr-4 text-ink-100 dark:text-white font-body",
-                          active && "bg-primary/20 dark:bg-editor-100"
+                          active && "bg-primary/20 dark:bg-base-600"
                         )
                       }
                     >
@@ -495,7 +495,7 @@ function DropdownInputBlock(props: Props) {
       >
         <button
           type="button"
-          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+          className="bg-[#FFDBDB] dark:bg-header-surface dark:border dark:border-hover-border rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
         >
           <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
         </button>

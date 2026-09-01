@@ -61,7 +61,7 @@ export default function Comments({
   const onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> =
     useCallback(
       e => {
-        if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+        if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault();
           onComment();
         }

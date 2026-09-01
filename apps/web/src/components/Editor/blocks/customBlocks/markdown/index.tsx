@@ -19,6 +19,7 @@ import markdownItMark from "markdown-it-mark";
 import markdownItIns from "markdown-it-ins";
 import hljs from "highlight.js";
 import clsx from "clsx";
+import { useTheme } from "next-themes";
 import type { ConnectDragPreview } from "react-dnd";
 import type { MarkdownBlock } from "@sandworm/editor";
 import {
@@ -52,13 +53,7 @@ import { BlockTypePill } from "../../BlockTypePill";
 
 function HatchBackground() {
   return (
-    <div
-      className="border border-[#E7E1F0] h-2"
-      style={{
-        backgroundColor: "white",
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Cline x1='0' y1='8' x2='8' y2='0' stroke='%23E7E1F0' stroke-width='1'/%3E%3C/svg%3E")`,
-      }}
-    />
+    <div className="hatch-bg border border-[#E7E1F0] dark:border-legacy-lightText h-2" />
   );
 }
 
@@ -70,7 +65,7 @@ function countMarkdownLines(source: Y.Text): number {
 
 function CollapsedCodeSummary({ lineCount }: { lineCount: number }) {
   return (
-    <div className="flex items-center gap-x-2 px-4 py-1.5 text-xs bg-inputBg dark:bg-base-200 border-t border-hover-border dark:border-border-tertiary">
+    <div className="flex items-center gap-x-2 px-4 py-1.5 text-xs bg-inputBg dark:bg-header-surface border-t border-hover-border dark:border-border-dark">
       <span className="italic text-ink-400">{lineCount} lines hidden</span>
     </div>
   );
@@ -130,60 +125,92 @@ interface Props {
 // ⬢ CodeMirror Theme
 // =====================================
 
-const sandwormTheme = EditorView.theme(
-  {
-    "&": {
-      color: "#1a1a1a",
-      backgroundColor: "transparent",
-      fontSize: "13px",
-      fontFamily: "'Moderat Mono', monospace",
+function getSandwormTheme(isDark: boolean) {
+  const c = isDark
+    ? { text: "#d4d4d4", selection: "#33344a", selectionMatch: "#24263a" }
+    : { text: "#1a1a1a", selection: "#dce4f5", selectionMatch: "#e8edf8" };
+
+  return EditorView.theme(
+    {
+      "&": {
+        color: c.text,
+        backgroundColor: "transparent",
+        fontSize: "13px",
+        fontFamily: "'Moderat Mono', monospace",
+      },
+      "&.cm-focused": { outline: "none" },
+      ".cm-content": {
+        caretColor: c.text,
+        paddingLeft: "8px",
+        fontFamily: "'Moderat Mono', monospace",
+      },
+      ".cm-scroller": {
+        fontFamily: "'Moderat Mono', monospace !important",
+      },
+      ".cm-cursor, .cm-dropCursor": { borderLeftColor: c.text },
+      "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
+        { backgroundColor: c.selection },
+      ".cm-selectionMatch": { backgroundColor: c.selectionMatch },
+      ".cm-activeLine": { backgroundColor: "transparent" },
     },
-    "&.cm-focused": { outline: "none" },
-    ".cm-content": {
-      caretColor: "#1a1a1a",
-      paddingLeft: "8px",
-      fontFamily: "'Moderat Mono', monospace",
-    },
-    ".cm-scroller": {
-      fontFamily: "'Moderat Mono', monospace !important",
-    },
-    ".cm-cursor, .cm-dropCursor": { borderLeftColor: "#1a1a1a" },
-    "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
-      { backgroundColor: "#dce4f5" },
-    ".cm-selectionMatch": { backgroundColor: "#e8edf8" },
-    ".cm-activeLine": { backgroundColor: "transparent" },
-  },
-  { dark: false }
-);
+    { dark: isDark }
+  );
+}
 
 // =====================================
 // ⬢ Markdown Highlight Style
 // =====================================
 
-const markdownHighlight = HighlightStyle.define([
-  { tag: t.heading1, color: "#7B2FBE", fontWeight: "500" },
-  { tag: t.heading2, color: "#7B2FBE", fontWeight: "500" },
-  { tag: t.heading3, color: "#7B2FBE", fontWeight: "500" },
-  { tag: t.heading, color: "#7B2FBE", fontWeight: "500" },
-  { tag: t.strong, fontWeight: "600" },
-  { tag: t.emphasis, fontStyle: "italic", color: "#555555" },
-  {
-    tag: t.monospace,
-    color: "#2E9E5B",
-    fontFamily: "'Moderat Mono', monospace",
-  },
-  { tag: t.special(t.string), color: "#2E9E5B" },
-  { tag: t.tagName, color: "#C96A10" },
-  { tag: t.angleBracket, color: "#555555" },
-  { tag: t.attributeName, color: "#7B2FBE" },
-  { tag: t.attributeValue, color: "#2E9E5B" },
-  { tag: t.url, color: "#0b6e99" },
-  { tag: t.link, color: "#0b6e99" },
-  { tag: t.quote, color: "#8B8FA8", fontStyle: "italic" },
-  { tag: t.processingInstruction, color: "#7B2FBE" },
-  { tag: t.punctuation, color: "#555555" },
-  { tag: t.comment, color: "#8B8FA8", fontStyle: "italic" },
-]);
+function getMarkdownHighlight(isDark: boolean) {
+  const c = isDark
+    ? {
+        heading: "#D988F9",
+        emphasis: "#B0B0B0",
+        monospace: "#8FD693",
+        tagName: "#E0995B",
+        angleBracket: "#B0B0B0",
+        link: "#5AC8E0",
+        quote: "#9C9A92",
+        punctuation: "#B0B0B0",
+        comment: "#9C9A92",
+      }
+    : {
+        heading: "#7B2FBE",
+        emphasis: "#555555",
+        monospace: "#2E9E5B",
+        tagName: "#C96A10",
+        angleBracket: "#555555",
+        link: "#0b6e99",
+        quote: "#8B8FA8",
+        punctuation: "#555555",
+        comment: "#8B8FA8",
+      };
+
+  return HighlightStyle.define([
+    { tag: t.heading1, color: c.heading, fontWeight: "500" },
+    { tag: t.heading2, color: c.heading, fontWeight: "500" },
+    { tag: t.heading3, color: c.heading, fontWeight: "500" },
+    { tag: t.heading, color: c.heading, fontWeight: "500" },
+    { tag: t.strong, fontWeight: "600" },
+    { tag: t.emphasis, fontStyle: "italic", color: c.emphasis },
+    {
+      tag: t.monospace,
+      color: c.monospace,
+      fontFamily: "'Moderat Mono', monospace",
+    },
+    { tag: t.special(t.string), color: c.monospace },
+    { tag: t.tagName, color: c.tagName },
+    { tag: t.angleBracket, color: c.angleBracket },
+    { tag: t.attributeName, color: c.heading },
+    { tag: t.attributeValue, color: c.monospace },
+    { tag: t.url, color: c.link },
+    { tag: t.link, color: c.link },
+    { tag: t.quote, color: c.quote, fontStyle: "italic" },
+    { tag: t.processingInstruction, color: c.heading },
+    { tag: t.punctuation, color: c.punctuation },
+    { tag: t.comment, color: c.comment, fontStyle: "italic" },
+  ]);
+}
 
 // =====================================
 // ⬢ useCodeMirror
@@ -192,16 +219,17 @@ const markdownHighlight = HighlightStyle.define([
 function getBaseExtensions(
   source: Y.Text,
   isEditable: boolean,
+  isDark: boolean,
   onFocus: () => void,
   onBlur: () => void
 ) {
   return [
     yCollab(source, null, { undoManager: false }),
     markdownLang({ htmlTagLanguage: undefined }),
-    syntaxHighlighting(markdownHighlight, { fallback: true }),
+    syntaxHighlighting(getMarkdownHighlight(isDark), { fallback: true }),
     keymap.of([...defaultKeymap, ...historyKeymap]),
     EditorState.readOnly.of(!isEditable),
-    sandwormTheme,
+    getSandwormTheme(isDark),
     EditorView.lineWrapping,
     EditorView.domEventHandlers({
       focus: () => {
@@ -221,6 +249,7 @@ function useCodeMirror({
   source,
   diff,
   isEditable,
+  isDark,
   onFocus,
   onBlur,
 }: {
@@ -228,6 +257,7 @@ function useCodeMirror({
   source: Y.Text;
   diff?: Y.Text | null;
   isEditable: boolean;
+  isDark: boolean;
   onFocus: () => void;
   onBlur: () => void;
 }) {
@@ -246,18 +276,28 @@ function useCodeMirror({
       mergeRef.current = new MergeView({
         a: {
           doc: source.toString(),
-          extensions: [...getBaseExtensions(source, false, onFocus, onBlur)],
+          extensions: [
+            ...getBaseExtensions(source, false, isDark, onFocus, onBlur),
+          ],
         },
         b: {
           doc: diff.toString(),
-          extensions: [...getBaseExtensions(diff, false, onFocus, onBlur)],
+          extensions: [
+            ...getBaseExtensions(diff, false, isDark, onFocus, onBlur),
+          ],
         },
         parent: containerRef.current,
       });
     } else {
       const state = EditorState.create({
         doc: source.toString(),
-        extensions: getBaseExtensions(source, isEditable, onFocus, onBlur),
+        extensions: getBaseExtensions(
+          source,
+          isEditable,
+          isDark,
+          onFocus,
+          onBlur
+        ),
       });
 
       viewRef.current = new EditorView({
@@ -272,7 +312,7 @@ function useCodeMirror({
       mergeRef.current?.destroy();
       mergeRef.current = null;
     };
-  }, [source, diff, isEditable]);
+  }, [source, diff, isEditable, isDark]);
 }
 
 // =====================================
@@ -281,6 +321,7 @@ function useCodeMirror({
 
 const MarkdownPreview = ({ source }: { source: Y.Text }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { resolvedTheme } = useTheme();
   const [html, setHtml] = useState(
     () => md.render(source.toString()) as string
   );
@@ -332,13 +373,11 @@ const MarkdownPreview = ({ source }: { source: Y.Text }) => {
     <>
       <link
         rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
-        media="(prefers-color-scheme: light)"
-      />
-      <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
-        media="(prefers-color-scheme: dark)"
+        href={
+          resolvedTheme === "dark"
+            ? "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+            : "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+        }
       />
       <div
         ref={containerRef}
@@ -357,6 +396,7 @@ const MarkdownBlock = (props: Props) => {
   const id = props.block.getAttribute("id")!;
   const source = props.block.getAttribute("source")!;
   const [workspaces] = useWorkspaces();
+  const { resolvedTheme } = useTheme();
 
   const { editTextWithAi, loading } = useAITaskActions();
   const { api: sidebarApi } = useSideBar();
@@ -486,6 +526,7 @@ const MarkdownBlock = (props: Props) => {
     source,
     diff: aiSuggestions,
     isEditable: props.isEditable,
+    isDark: resolvedTheme === "dark",
     onFocus,
     onBlur,
   });
@@ -521,18 +562,18 @@ const MarkdownBlock = (props: Props) => {
           {
             "border-primary block-focus-ring":
               props.isCursorWithin && props.isCursorInserting,
-            "border-hover-border block-shadow-soft dark:border-border-tertiary":
+            "border-hover-border block-shadow-soft dark:border-border-dark":
               !props.isCursorWithin || !props.isCursorInserting,
           }
         )}
       >
         <div
           className={clsx(
-            "rounded-t-2xl dark:bg-base-100",
+            "rounded-t-2xl dark:bg-header-surface",
             props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
             isSourceCollapsed
               ? "rounded-b-2xl"
-              : "border-b border-hover-border dark:border-border-tertiary"
+              : "border-b border-hover-border dark:border-border-dark"
           )}
           ref={d => {
             props.dragPreview?.(d);
@@ -607,7 +648,7 @@ const MarkdownBlock = (props: Props) => {
             />
           ) : (
             <div className="print:hidden px-3 pb-3">
-              <div className="flex justify-end text-xs pt-2 pb-3 px-3 -mx-3 -mb-3 bg-inputBg dark:bg-base-200 border-t border-hover-border">
+              <div className="flex justify-end text-xs pt-2 pb-3 px-3 -mx-3 -mb-3 bg-inputBg dark:bg-header-surface border-t border-hover-border dark:border-border-dark">
                 {props.isEditable && !props.dashboardMode && (
                   <TooltipV2<HTMLButtonElement>
                     content={aiEditTooltipContent}
@@ -622,11 +663,11 @@ const MarkdownBlock = (props: Props) => {
                         className={clsx(
                           !hasOaiKey
                             ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                            : "cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary",
-                          "flex items-center border rounded-md border-hover-border px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
+                            : "cursor-pointer dark:bg-header-surface hover:bg-hover-bg hover:text-gray-700 hover:border-primary",
+                          "flex items-center border rounded-md border-hover-border px-2 py-1 gap-x-1 text-ink-300 dark:text-ink-400 group relative font-body"
                         )}
                       >
-                        <PiCpu className="w-[11.5px] h-[11.5px] text-ink-300" />
+                        <PiCpu className="w-[11.5px] h-[11.5px] text-ink-300 dark:text-ink-400" />
                         <span>Edit with AI</span>
                       </button>
                     )}
@@ -671,7 +712,7 @@ const MarkdownBlock = (props: Props) => {
           type="button"
           onClick={props.onDeleteBlock}
           aria-label="Delete block"
-          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+          className="bg-[#FFDBDB] dark:bg-header-surface dark:border dark:border-hover-border rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
         >
           <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
         </button>

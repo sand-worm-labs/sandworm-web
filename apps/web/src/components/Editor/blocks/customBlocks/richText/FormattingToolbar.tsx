@@ -140,7 +140,7 @@ const NodeTypeDropdown = ({
             type="button"
             aria-label="Close menu"
           />
-          <div className="absolute left-0 top-8 z-50 rounded-xl dark:bg-base-100 bg-white ring-1 ring-border-tertiary  whitespace-nowrap  ">
+          <div className="absolute left-0 top-8 z-50 rounded-xl dark:bg-header-surface bg-white ring-1 ring-border-tertiary  whitespace-nowrap  ">
             <div className="py-0.5">
               {Object.values(items).map(item => (
                 <button
@@ -177,7 +177,7 @@ const ToggleFormattingButton = (props: {
       onMouseDown={stopBlur}
       onClick={props.onToggle}
       className={clsx(
-        isActive ? "bg-gray-100 dark:bg-base-100" : "",
+        isActive ? "bg-gray-100 dark:bg-base-600" : "",
         "h-full text-sm px-2.5 hover:bg-primary/20 dark:hover:bg-base-600  relative rounded-md group/toggle-button"
       )}
     >
@@ -208,7 +208,7 @@ const ColorOption = (props: {
     onClick={() => props.onShiftColor(props.color)}
   >
     <div
-      className="rounded-md border border-border-secondary p-0.5 dark:border-border-tertiary"
+      className="rounded-md border border-border-secondary p-0.5 dark:border-border-dark"
       style={{
         backgroundColor: props.color.type === "bg" ? props.color.hex : "#fff",
         color: props.color.type === "fg" ? props.color.hex : "#000",
@@ -251,13 +251,13 @@ const ColorTextButton = (props: {
         type="button"
         onMouseDown={stopBlur}
         onClick={props.onToggle}
-        className="h-full text-sm px-2.5 rounded-md ring-1 ring-inset ring-gray-200 dark:ring-editor-200 relative"
+        className="h-full text-sm px-2.5 rounded-md ring-1 ring-inset ring-gray-200 dark:ring-border-dark relative"
         style={{
           color: currentColor ?? "inherit",
           backgroundColor: currentBgColor ?? "inherit",
         }}
       >
-        <div className="h-full w-full absolute top-0 left-0 flex items-center justify-center hover:bg-gray-100/30 rounded-md" />
+        <div className="h-full w-full absolute top-0 left-0 flex items-center justify-center hover:bg-gray-100/30 dark:hover:bg-base-600 rounded-md" />
         <span className="font-bold text-xs">A</span>
       </button>
 
@@ -275,7 +275,7 @@ const ColorTextButton = (props: {
           />
           <div
             onPointerDown={stopBlur}
-            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-base-100 border  dark:border-border-tertiary border-border-tertiary px-1 py-2 flex gap-x-2 rounded-xl z-50"
+            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-base-100 dark:bg-header-surface border  dark:border-border-dark border-border-tertiary px-1 py-2 flex gap-x-2 rounded-xl z-50"
           >
             <div className="flex flex-col gap-y-1">
               <span className="font-medium px-2 dark:text-white">Text</span>
@@ -406,7 +406,7 @@ const AddLinkButton = (props: {
         onMouseDown={stopBlur}
         onClick={onClickLinkButton}
         className={clsx(
-          isActive ? "bg-gray-100 dark:bg-editor-400" : "",
+          isActive ? "bg-gray-100 dark:bg-base-600" : "",
           "h-full text-sm px-2.5 dark:hover:bg-base-600 hover:bg-primary/20 relative rounded-md group/toggle-button"
         )}
       >
@@ -419,11 +419,11 @@ const AddLinkButton = (props: {
       {showLinkForm && (
         <form
           onPointerDown={stopBlur}
-          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white dark:bg-editor-400 p-1.5 ring-1 ring-inset ring-gray-300 rounded-md dark:ring-editor-200 flex items-center gap-x-1.5 h-8 shadow-md z-[9999]"
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white dark:bg-header-surface p-1.5 ring-1 ring-inset ring-gray-300 rounded-md dark:ring-border-dark flex items-center gap-x-1.5 h-8 shadow-md z-[9999]"
           onSubmit={onSubmit}
         >
           <input
-            className="text-xs focus:outline-none px-1 py-0.5 border-0 rounded-sm ring-1 ring-gray-200 focus:ring-1 focus:ring-gray-300 placeholder-gray-300 w-48"
+            className="text-xs focus:outline-none px-1 py-0.5 border-0 rounded-sm ring-1 ring-gray-200 dark:ring-border-dark focus:ring-1 focus:ring-gray-300 placeholder-gray-300 dark:placeholder-ink-300 dark:text-white bg-transparent w-48"
             placeholder="Enter a link and press Enter"
             ref={inputRef}
             onChange={e => setUrl(e.target.value)}
@@ -431,7 +431,7 @@ const AddLinkButton = (props: {
           />
           <button
             type="submit"
-            className="bg-primary-100 hover:bg-primary h-full px-2 ring-1 ring-primary-400 rounded-sm"
+            className="bg-primary/10 hover:bg-primary h-full px-2 ring-1 ring-primary/40 rounded-sm"
           >
             <CheckIcon className="h-4 w-4 text-gray-600" />
           </button>
@@ -445,7 +445,7 @@ const FormattingToolbar = ({ editor }: { editor: Editor }) => {
   const [openMenu, setOpenMenu] = useState<OpenMenu>(null);
 
   return (
-    <div className="bg-white dark:bg-editor-400 text-gray-600 py-1 text-xs flex divide-x divide-border-secondary dark:divide-border-tertiary w-fit">
+    <div className="bg-white dark:bg-header-surface text-gray-600 dark:text-ink-400 py-1 text-xs flex divide-x divide-border-secondary dark:divide-border-tertiary w-fit">
       <div className="flex gap-x-1 items-center justify-center px-1">
         <NodeTypeDropdown
           editor={editor}

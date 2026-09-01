@@ -212,9 +212,9 @@ const RichTextBlock = (props: Props) => {
           {
             "border-primary block-focus-ring":
               props.isCursorWithin && props.isCursorInserting,
-            "border-hover-border shadow-none":
+            "border-hover-border dark:border-border-dark shadow-none":
               props.isCursorWithin && !props.isCursorInserting,
-            "border-hover-border block-shadow-soft dark:border-border-tertiary":
+            "border-hover-border block-shadow-soft dark:border-border-dark":
               !props.isCursorWithin,
           }
         )}
@@ -231,7 +231,7 @@ const RichTextBlock = (props: Props) => {
           )}
         >
           {editor && (
-            <div className="border-b border-border-secondary dark:border-border-tertiary px-2 py-1">
+            <div className="border-b border-border-secondary dark:border-border-dark px-2 py-1">
               <FormattingToolbar editor={editor} />
             </div>
           )}
@@ -262,7 +262,7 @@ const RichTextBlock = (props: Props) => {
           type="button"
           onClick={props.onDeleteBlock}
           aria-label="Delete block"
-          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+          className="bg-[#FFDBDB] dark:bg-header-surface dark:border dark:border-hover-border rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
         >
           <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
         </button>

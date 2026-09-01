@@ -107,7 +107,7 @@ function DatePicker(props: Props) {
         <input
           type="time"
           step={2}
-          className="border border-border-secondary focus:border-ceramic-300 rounded-md ring-0 focus:ring-0 w-full px-2 py-1.5"
+          className="border border-border-secondary focus:border-primary rounded-md ring-0 focus:ring-0 w-full px-2 py-1.5 bg-transparent text-ink-100"
           value={time}
           onChange={onChangeTime}
         />

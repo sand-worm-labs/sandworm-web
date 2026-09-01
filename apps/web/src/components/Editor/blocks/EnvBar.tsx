@@ -24,15 +24,27 @@ const STATUS_COLORS: Record<
   blue: {
     dot: "bg-blue-400",
     text: "text-blue-700 dark:text-blue-400",
-    bg: "bg-blue-50 dark:bg-base-200",
+    bg: "bg-blue-50 dark:bg-blue-500/10",
   },
-  green: { dot: "bg-green-500", text: "text-green-700", bg: "bg-green-50" },
-  red: { dot: "bg-red-500", text: "text-red-700", bg: "bg-red-50" },
-  yellow: { dot: "bg-yellow-500", text: "text-yellow-800", bg: "bg-yellow-50" },
+  green: {
+    dot: "bg-green-500",
+    text: "text-green-700 dark:text-green-400",
+    bg: "bg-green-50 dark:bg-green-500/10",
+  },
+  red: {
+    dot: "bg-red-500",
+    text: "text-red-700 dark:text-red-400",
+    bg: "bg-red-50 dark:bg-red-500/10",
+  },
+  yellow: {
+    dot: "bg-yellow-500",
+    text: "text-yellow-800 dark:text-yellow-400",
+    bg: "bg-yellow-50 dark:bg-yellow-500/10",
+  },
   gray: {
     dot: "bg-gray-400",
-    text: "text-gray-600",
-    bg: "bg-gray-100 dark:bg-base-200",
+    text: "text-gray-600 dark:text-gray-400",
+    bg: "bg-gray-100 dark:bg-header-surface",
   },
 };
 

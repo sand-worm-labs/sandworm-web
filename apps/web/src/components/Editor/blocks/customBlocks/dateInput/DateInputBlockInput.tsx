@@ -149,7 +149,7 @@ function DateInputBlockInput(props: Props) {
         onBlur={editorAPI.blur}
         onKeyDown={unfocusOnEscape}
         className={clsx(
-          "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 disabled:cursor-not-allowed bg-white appearance-none px-2",
+          "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 dark:disabled:bg-base-100 disabled:cursor-not-allowed bg-white dark:bg-header-surface appearance-none px-2",
           props.error
             ? "ring-red-200 focus:ring-red-200"
             : "focus:ring-primary-200",
@@ -157,15 +157,15 @@ function DateInputBlockInput(props: Props) {
             !props.isCursorInserting &&
             !props.belongsToMultiTabGroup
             ? "ring-primary "
-            : "ring-gray-200",
-          (isLoading || props.error) && "bg-none" 
+            : "ring-gray-200 dark:ring-border-dark",
+          (isLoading || props.error) && "bg-none"
         )}
       />
 
       {ReactDOM.createPortal(
         <div
           className={clsx(
-            "absolute bg-white mt-1.5 border border-border-secondary rounded-md z-[2000] px-3 pt-1 pb-2 shadow-lg",
+            "absolute bg-white dark:bg-dropdown-bg mt-1.5 border border-border-secondary rounded-md z-[2000] px-3 pt-1 pb-2 shadow-lg",
             isPickerOpen ? "block" : "hidden"
           )}
           ref={pickerContainer}
