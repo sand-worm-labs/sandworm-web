@@ -9,9 +9,10 @@ import {
     getBlocks,
     getLayout,
     getRichTextAttributes,
+    writeDocTitle,
 } from '@sandworm/editor';
 import { DocumentEntity, DocumentVisibility, FavoriteEntity, UserEntity, WorkspaceEntity, YjsDocumentEntity } from '../entities';
-import { fake } from '../utils';
+import { fake, slugify } from '../utils';
 import { NOTEBOOK_TITLES, SAMPLE_QUERIES } from './data/explore-seed-data';
 
 function pickSql(): string {
@@ -22,9 +23,9 @@ function shuffledTitles(count: number): string[] {
     return [...NOTEBOOK_TITLES].sort(() => Math.random() - 0.5).slice(0, count);
 }
 
-function slugify(title: string, documentId: string): string {
-    const base = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'notebook';
-    return `${base}-${documentId.slice(0, 8)}`;
+// Appends a short id suffix so republished slugs stay unique across reseeds.
+function publishedSlugFor(title: string, documentId: string): string {
+    return `${slugify(title) || 'notebook'}-${documentId.slice(0, 8)}`;
 }
 
 // Real starter content, not a blank canvas — a title heading, a short
@@ -34,8 +35,7 @@ function slugify(title: string, documentId: string): string {
 function starterYjsState(title: string): Buffer {
     const doc = new Y.Doc();
 
-    const titleFragment = doc.getXmlFragment('doc-title');
-    titleFragment.insert(0, [new Y.XmlText(title)]);
+    writeDocTitle(doc, title);
 
     const layout = getLayout(doc);
     const blocks = getBlocks(doc);
@@ -110,7 +110,7 @@ export class ExploreSeeder1776676230562 implements Seeder {
                 workspaceId: spec.workspaceId,
                 visibility: DocumentVisibility.PUBLIC,
                 publishedAt: spec.publishedAt,
-                publishedSlug: slugify(spec.title, spec.id),
+                publishedSlug: publishedSlugFor(spec.title, spec.id),
                 runUnexecutedBlocks: false,
                 runSQLSelection: true,
                 shareLinksWithoutSidebar: true,
@@ -154,7 +154,7 @@ export class ExploreSeeder1776676230562 implements Seeder {
                 workspaceId: adminWorkspace ? adminWorkspace.id : workspaces[0]!.id,
                 visibility: DocumentVisibility.PUBLIC,
                 publishedAt: new Date(),
-                publishedSlug: slugify(demoTitle, demoId),
+                publishedSlug: publishedSlugFor(demoTitle, demoId),
                 runUnexecutedBlocks: false,
                 runSQLSelection: true,
                 shareLinksWithoutSidebar: true,

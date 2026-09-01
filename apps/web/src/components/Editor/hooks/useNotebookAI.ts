@@ -1,11 +1,14 @@
 import { useCallback } from "react";
 import * as Y from "yjs";
-import { addBlockGroup, BlockType } from "@sandworm/editor";
+import { addBlockGroup, BlockType, writeDocTitle } from "@sandworm/editor";
 import type { YBlock, YBlockGroup } from "@sandworm/editor";
 
 import type { NotebookAIRequest, BlockSpec } from "@/app/api/chat/route";
 
-function writeTitleToFragment(fragment: Y.XmlFragment, text: string) {
+// Block-local content fragment (distinct from the document's own title,
+// which is written via the shared writeDocTitle) — unchanged from before
+// the writeDocTitle extraction.
+function writeBlockContent(fragment: Y.XmlFragment, text: string) {
   if (fragment.length > 0) {
     fragment.delete(0, fragment.length);
   }
@@ -36,7 +39,7 @@ function applyBlockSpec(
           | Y.XmlFragment
           | undefined;
         if (fragment) {
-          writeTitleToFragment(fragment, spec.text);
+          writeBlockContent(fragment, spec.text);
         }
         block.setAttribute("title", spec.text);
       }
@@ -56,7 +59,7 @@ function applyBlockSpec(
           | Y.XmlFragment
           | undefined;
         if (fragment) {
-          writeTitleToFragment(fragment, spec.text);
+          writeBlockContent(fragment, spec.text);
         }
       }
       break;
@@ -148,8 +151,7 @@ export function useNotebookAI({
 
       yDoc.transact(() => {
         if (data.documentTitle) {
-          const titleFragment = yDoc.getXmlFragment("title");
-          writeTitleToFragment(titleFragment, data.documentTitle);
+          writeDocTitle(yDoc, data.documentTitle);
         }
 
         blocks.forEach((spec, i) => {
