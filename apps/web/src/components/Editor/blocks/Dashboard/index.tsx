@@ -488,7 +488,7 @@ export default function Dashboard(props: Props) {
 
     await props.publish();
     router.push(
-      `/workspaces/${props.document.workspaceId}/documents/${props.document.id}/dashboard`
+      `/workspace/${props.document.workspaceId}/documents/${props.document.id}/dashboard`
     );
   }, [props.publish, props.publishing]);
 
