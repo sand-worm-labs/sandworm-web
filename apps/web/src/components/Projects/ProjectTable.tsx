@@ -49,7 +49,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
         <thead className="sticky top-0 z-10 border-b border-border-secondary dark:border-border-tertiary">
           <tr>
             <th className="p-4 w-10" />
-            <th className="text-left p-4 text-xs font-bold text-ink-400 uppercase sticky left-0 bg-base-100 min-w-[250px]">
+            <th className="text-left p-4 text-xs font-bold text-ink-400 uppercase sticky left-0  min-w-[250px]">
               Title
             </th>
             <th className="text-left p-4 text-xs font-bold text-ink-400 uppercase min-w-[120px]">
@@ -112,7 +112,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                   )}
                 </button>
               </td>
-              <td className="p-4 sticky left-0 bg-white dark:bg-base-100">
+              <td className="p-4 sticky left-0">
                 <Link
                   href={`/workspace/${workspaceId}/documents/${project.id}/notebook/edit`}
                   className="text-sm font-medium text-ink-100 dark:text-white hover:underline truncate"

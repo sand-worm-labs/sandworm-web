@@ -389,7 +389,7 @@ const ProfileComponent = ({
                           <button
                             type="button"
                             onClick={() => setIsAddWalletOpen(true)}
-                            className={`bg-primary py-3 px-5 rounded-xl mt-6 text-border-secondary xl:text-sm w-full text-start text-[13px] font-medium border border-transparent ${tintPillDarkClassName}`}
+                            className={`bg-[#A308F0] py-3 px-5 rounded-xl mt-6 text-border-secondary xl:text-sm w-full text-start text-[13px] font-medium border border-transparent ${tintPillDarkClassName}`}
                           >
                             Add Wallet
                           </button>

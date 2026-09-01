@@ -299,56 +299,6 @@ const Preferences: React.FC = () => {
           </p>
         </div>
 
-        {/* ✦ Data & Performance  ✦ */}
-        <div className=" py-8  flex ">
-          <div className="flex flex-1 items-start gap-3 mb-6">
-            <div className="">
-              <h2 className="text-lg font-medium text-ink-100 ">
-                Regional and Data
-              </h2>
-              <p className="text-sm text-ink-400 dark:text-ink-400 max-w-[25rem] mt-2 ">
-                Set your region and preferred currency to be displayed.{" "}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex-1">
-            <div className="space-y-6">
-              <div>
-                <label className="block xl:text-sm text-xs font-bold text-ink-400 dark:text-ink-400  mb-3 uppercase">
-                  Timezone
-                </label>
-                <select
-                  value={dateFormat}
-                  onChange={e => setDateFormat(e.target.value as DateFormat)}
-                  className=" text-sm  w-full px-5 py-2 rounded-xl border border-border-tertiary  bg-white dark:bg-dropdown-bg dark:border-border-tertiary text-ink-100 focus:ring-2 focus:ring-primary focus:border-transparent"
-                >
-                  <option value="us">US (MM/DD/YYYY)</option>
-                  <option value="eu">European (DD/MM/YYYY)</option>
-                  <option value="iso">ISO 8601 (YYYY-MM-DD)</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="space-y-6 my-6">
-              <div>
-                <label className="block xl:text-sm text-xs  font-bold text-ink-400 dark:text-ink-400  mb-3 uppercase">
-                  Currency Display
-                </label>
-                <select
-                  value={dateFormat}
-                  onChange={e => setDateFormat(e.target.value as DateFormat)}
-                  className="text-sm w-full px-5 py-2 rounded-xl border border-border-tertiary  bg-white dark:bg-dropdown-bg dark:border-border-tertiary text-ink-100 focus:ring-2 focus:ring-primary focus:border-transparent"
-                >
-                  <option value="us">USD($)</option>
-                  <option value="eu">European (DD/MM/YYYY)</option>
-                  <option value="iso">ISO 8601 (YYYY-MM-DD)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* ✦ AI Edit Permission Control ✦ */}
         <div className="py-8 flex">
           <div className="flex flex-1 items-start gap-3 mb-6">
