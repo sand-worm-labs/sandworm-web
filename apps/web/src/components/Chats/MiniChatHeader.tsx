@@ -25,7 +25,7 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
   <header className="flex items-start gap-2 px-3 pt-3 pb-2.5 bg-white dark:bg-[#1D1D1C] border-b border-border-secondary dark:border-border-tertiary">
     <PiSparkle
       size={18}
-      className="flex-shrink-0 mt-0.5 text-ink-500 dark:text-ink-300"
+      className="flex-shrink-0 mt-0.5 text-ink-500 dark:text-placeholder-muted"
     />
 
     <div className="flex-1 min-w-0">
@@ -33,7 +33,7 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
         <button
           type="button"
           onClick={onOpenThreads}
-          className="text-[13px] font-medium text-ink-450 hover:text-ink-500 dark:hover:text-ink-300
+          className="text-[13px] font-medium text-ink-450 dark:text-placeholder-muted hover:text-ink-500 dark:hover:text-ink-300
             flex-shrink-0 transition-colors"
         >
           History
@@ -43,7 +43,7 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
           {activeThreadTitle || "Sandworm agent"}
         </h3>
       </div>
-      <p className="text-[11px] text-ink-450 leading-tight mt-0.5 truncate">
+      <p className="text-[11px] text-ink-450 dark:text-placeholder-muted leading-tight mt-0.5 truncate">
         Write queries, generate charts, and get answers in seconds.
       </p>
     </div>
@@ -54,12 +54,16 @@ export const MiniChatHeader: React.FC<MiniChatHeaderProps> = ({
         aria-label="New thread"
         onClick={onNewThread}
         className="flex items-center justify-center w-7 h-7 rounded-lg
-          text-ink-400 hover:text-ink-500 hover:bg-base-300 dark:hover:bg-base-700
+          text-ink-400 dark:text-placeholder-muted hover:text-ink-500 hover:bg-base-300 dark:hover:bg-base-700
           transition-colors"
       >
         <PiPlus size={15} />
       </button>
-      <CloseIconButton onClick={onCancel} size="sm" />
+      <CloseIconButton
+        onClick={onCancel}
+        size="sm"
+        className="dark:text-placeholder-muted"
+      />
     </div>
   </header>
 );

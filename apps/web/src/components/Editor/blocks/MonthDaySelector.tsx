@@ -30,18 +30,18 @@ const MonthDaySelector = (props: WeekdaySelectorProps) => {
     <Menu>
       {({ open }) => (
         <>
-          <Menu.Button className="inline-flex justify-between w-full px-2 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-primary">
+          <Menu.Button className="inline-flex justify-between w-full px-2 py-2 text-sm font-medium text-gray-700 dark:text-white bg-white dark:bg-base-710 border border-gray-300 dark:border-border-tertiary rounded-md shadow-sm focus:outline-none focus:ring focus:border-primary">
             {currentValue.length > 0 ? (
               <div className="flex justify-start items-center gap-x-2 gap-y-2 flex-wrap">
                 {currentValue.map(dayIndex => (
                   <div
                     key={dayIndex}
-                    className="flex items-center bg-gray-50 rounded-sm px-2 gap-x-1 py-0.5 text-sm border border-border-secondary"
+                    className="flex items-center bg-gray-50 dark:bg-base-710 rounded-sm px-2 gap-x-1 py-0.5 text-sm border border-border-secondary dark:border-border-tertiary"
                   >
                     <span>{monthDays[dayIndex]}</span>
                     <button
                       type="button"
-                      className="hover:bg-gray-200 rounded-full p-0.5"
+                      className="hover:bg-gray-200 dark:hover:bg-base-600 rounded-full p-0.5"
                       onClick={() => toggleDay(dayIndex)}
                     >
                       <XMarkIcon className="h-3 w-3 cursor-pointer" />
@@ -65,7 +65,7 @@ const MonthDaySelector = (props: WeekdaySelectorProps) => {
           >
             <Menu.Items
               static
-              className="absolute w-56 mt-2 origin-top-right bg-white border border-border-secondary  divide-y divide-gray-100 rounded-xl   focus:outline-none  max-h-56 overflow-y-auto"
+              className="absolute w-56 mt-2 origin-top-right bg-white dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary  divide-y divide-gray-100 dark:divide-border-tertiary rounded-xl   focus:outline-none  max-h-56 overflow-y-auto"
             >
               <div className="px-1 py-1">
                 {monthDays.map((day, dayIndex) => (
@@ -74,8 +74,8 @@ const MonthDaySelector = (props: WeekdaySelectorProps) => {
                       <button
                         type="button"
                         className={`${
-                          active ? "bg-primary/10" : ""
-                        } group flex items-center px-2 py-2 text-sm cursor-pointer w-full rounded-lg`}
+                          active ? "bg-primary/10 dark:bg-base-600" : ""
+                        } group flex items-center px-2 py-2 text-sm cursor-pointer w-full rounded-lg text-ink-100`}
                         onClick={() => toggleDay(dayIndex)}
                       >
                         <div className="flex items-center gap-x-2">

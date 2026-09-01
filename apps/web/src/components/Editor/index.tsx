@@ -1736,17 +1736,17 @@ const Editor = (props: Props) => {
   return (
     <div className="editor-v2 flex flex-col flex-grow justify-center font-body  subpixel-antialiased h-full w-full relative flex-1 min-w-0 bg-[#fdfdfd] dark:bg-sidebar-surface">
       {props.isDeleted && (
-        <div className="bg-yellow-50 py-6 border-b border-yellow-200">
+        <div className="bg-yellow-50 dark:bg-yellow-500/10 py-6 border-b border-yellow-200 dark:border-yellow-500/20">
           <div className="flex justify-center">
             <div className="flex-shrink-0">
               <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400" />
             </div>
             <div className="ml-3">
-              <p className="text-sm leading-5 text-yellow-700">
+              <p className="text-sm leading-5 text-yellow-700 dark:text-yellow-400">
                 This document is deleted.{" "}
                 <button
                   type="button"
-                  className="hover:underline text-primary-600 hover:text-primary-800 font-medium"
+                  className="hover:underline text-primary hover:text-primary-710 font-medium"
                   onClick={props.onRestoreDocument}
                 >
                   Restore.

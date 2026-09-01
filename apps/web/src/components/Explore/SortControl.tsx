@@ -15,6 +15,13 @@ export type SortOption =
   | "your-forks"
   | "your-favourites";
 
+const SORT_LABELS: Record<SortOption, string> = {
+  trending: "Trending",
+  "most-popular": "Most Popular",
+  "your-forks": "Your Forks",
+  "your-favourites": "Your Favourites",
+};
+
 interface SortControlProps {
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
@@ -33,7 +40,7 @@ export function SortControl({
       <Select value={sortBy} onValueChange={v => onSortChange(v as SortOption)}>
         <SelectTrigger className="w-[180px] border-border-tertiary dark:border-border-tertiary bg-white dark:bg-dropdown-bg text-ink-200 dark:text-white h-8 rounded-lg cursor-pointer text-[0.8rem]">
           <TrendingUp className="h-3 w-4 mr-2" />
-          <SelectValue />
+          <SelectValue>{SORT_LABELS[sortBy]}</SelectValue>
         </SelectTrigger>
 
         <SelectContent className="bg-white dark:bg-dropdown-bg border-border-tertiary font-body mt-2 text-ink-200 dark:text-ink-300 dark:border-border-tertiary rounded-xl">

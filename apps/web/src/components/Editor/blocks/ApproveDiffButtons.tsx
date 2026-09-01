@@ -77,14 +77,12 @@ function ApproveDiffButtons({
     );
   }
 
-  // ── Pending state ──
   return (
     <div
       className="print:hidden mx-auto mb-3 px-3 py-2 flex w-[96%] justify-between items-center
       rounded-xl border border-border-secondary dark:border-base-700
       bg-white dark:bg-base-730"
     >
-      {/* ── Pending pill ── */}
       <span
         className="inline-flex items-center gap-x-1.5 px-2.5 py-1 rounded-md
         bg-[#ECEAF8] dark:bg-[#2A2440]

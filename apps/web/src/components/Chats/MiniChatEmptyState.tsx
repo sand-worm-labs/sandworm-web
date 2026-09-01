@@ -68,14 +68,12 @@ interface MiniChatEmptyStateProps {
 export const MiniChatEmptyState: React.FC<MiniChatEmptyStateProps> = ({
   onSelectPrompt,
 }) => (
-  <div className="flex flex-col items-center py-8 font-body justify-end h-full">
-    <div className="flex flex-col items-center justify-center ">
-      <Image
-        src="/img/ellipse.svg"
-        alt="Empty state"
-        width={400}
-        height={400}
-      />
+  <div className="flex flex-col items-center justify-center py-8 font-body h-full">
+    <div className="flex flex-col items-center justify-center text-center">
+      <Image src="/img/splash.png" alt="Empty state" width={300} height={232} />
+      <p className="text-sm font-normal text-ink-100 dark:text-white mt-0">
+        Supercharge your Research
+      </p>
     </div>
   </div>
 );

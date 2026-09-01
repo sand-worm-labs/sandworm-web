@@ -496,16 +496,16 @@ function PrivateDocumentPageInner(
               type="button"
               className="flex items-center gap-1.5
     rounded-lg px-3 py-1 text-sm font-body
-    bg-transparent text-primary
+    bg-transparent text-primary dark:text-primary-tint-75
     hover:bg-primary-300
     disabled:cursor-not-allowed disabled:opacity-50
-    border-[1.5px] border-primary relative group font-medium"
+    border-[1.5px] border-primary dark:border-hover-border relative group font-medium"
               onClick={onPublish}
               disabled={props.publishing}
             >
               <span
                 className="inline-flex items-center gap-[2px] font-body font-medium leading-none
-    text-primary border border-primary rounded-sm
+    text-primary dark:text-primary-tint-75 border border-primary dark:border-hover-border rounded-sm
     px-1 py-0.5 text-[12px] tracking-tight
     group-hover:scale-95 transition-transform duration-300"
               >

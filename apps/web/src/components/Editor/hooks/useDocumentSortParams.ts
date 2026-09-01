@@ -7,14 +7,13 @@ import type { SortOption } from "@/components/Explore/SortControl";
 
 // ─── CONSTANTS ───
 const VALID_SORTS: readonly SortOption[] = [
-  "all",
   "trending",
   "most-popular",
   "your-forks",
   "your-favourites",
 ];
 
-const DEFAULT_SORT: SortOption = "all";
+const DEFAULT_SORT: SortOption = "trending";
 const PARAM_KEY = "sort";
 
 // ─── HOOK ───
