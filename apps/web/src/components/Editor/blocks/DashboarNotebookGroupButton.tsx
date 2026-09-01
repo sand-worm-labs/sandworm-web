@@ -25,18 +25,18 @@ function DashboardNotebookGroupButton(props: Props) {
     props.userRole === "viewer" && !props.isPublished;
 
   return (
-    <div className="flex items-center px-1 relative bg-base-600 py-1 rounded-lg gap-x-1">
+    <div className="flex items-center shrink-0 whitespace-nowrap px-0.5 relative bg-base-600 py-0.5 rounded-md gap-x-1.5">
       <Link
         className={clsx(
-          "border border-transparent  flex gap-x-1.5 items-center px-2 py-0.5 text-[0.8rem] disabled:cursor-not-allowed disabled:opacity-50 hover:bg-white dark:hover:bg-white/10 rounded-md font-medium hover:border-primary hover:border hover:text-primary",
+          "border border-transparent  flex gap-x-1.5 items-center w-fit shrink-0 whitespace-nowrap px-1.5 py-1 text-[0.8rem] disabled:cursor-not-allowed disabled:opacity-50 hover:bg-white dark:hover:bg-white/10 rounded font-medium hover:border-primary hover:border hover:text-primary",
           props.current === "notebook"
-            ? "bg-white  dark:bg-base-600 dark:text-[#9D8FF0] border border-primary text-primary -mr-px"
+            ? "bg-white  dark:bg-base-600 dark:text-[#9D8FF0] border border-primary text-primary -mr-px outline outline-1 outline-primary outline-offset-1"
             : "bg-transparent text-ink-400 dark:bg-transparent dark:text-ink-400"
         )}
         href={`/workspace/${props.workspaceId}/documents/${props.documentId}/notebook${props.isEditing ? "/edit" : ""}`}
       >
         <PiNotebook className="w-4 h-4 shrink-0" />
-        <span>Notebook</span>
+        <span className="whitespace-nowrap shrink-0">Notebook</span>
       </Link>
       <Tooltip
         title="This page has not been saved"
@@ -50,9 +50,9 @@ function DashboardNotebookGroupButton(props: Props) {
           type="button"
           id="dashboard-view-button"
           className={clsx(
-            "border border-transparent flex gap-x-1.5 items-center px-2 py-0.5 text-[0.8rem] disabled:cursor-not-allowed disabled:opacity-50 hover:bg-white dark:hover:bg-white/10 rounded-md font-medium  hover:border-primary hover:border hover:text-primary",
+            "border border-transparent flex gap-x-1.5 items-center w-fit shrink-0 whitespace-nowrap px-1.5 py-1 text-[0.8rem] disabled:cursor-not-allowed disabled:opacity-50 hover:bg-white dark:hover:bg-white/10 rounded font-medium  hover:border-primary hover:border hover:text-primary",
             props.current === "dashboard"
-              ? "bg-white dark:bg-base-600 dark:text-[#9D8FF0]   border border-primary text-primary -ml-px"
+              ? "bg-white dark:bg-base-600 dark:text-[#9D8FF0]   border border-primary text-primary -ml-px outline outline-1 outline-primary outline-offset-1"
               : "bg-transparent text-ink-400 dark:bg-transparent dark:text-ink-400"
           )}
           disabled={isDashboardButtonDisabled}
@@ -63,7 +63,7 @@ function DashboardNotebookGroupButton(props: Props) {
           }}
         >
           <PiSquaresFour className="w-4 h-4 shrink-0" />
-          <span>Dashboard</span>
+          <span className="whitespace-nowrap shrink-0">Dashboard</span>
         </button>
       </Tooltip>
     </div>

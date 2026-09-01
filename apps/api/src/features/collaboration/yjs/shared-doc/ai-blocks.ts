@@ -13,7 +13,8 @@ import {
   updateInputValue,
   updateYText,
 } from '@sandworm/editor'
-import type { DateInputBlock, DropdownInputBlock, InputBlock, PowerToolboxInputs, RichTextBlock, YBlock, YBlockGroup } from '@sandworm/editor'
+import type { DateInputBlock, DropdownInputBlock, InputBlock, PivotTableBlock, PivotTableMetric, PowerToolboxInputs, RichTextBlock, YBlock, YBlockGroup } from '@sandworm/editor'
+import type { DataFrameColumn } from '@sandworm/types'
 import * as Y from 'yjs'
 
 function add(
@@ -179,7 +180,7 @@ export type BlockSpec = WithTitle & (
   | { type: BlockType.DateInput;      source?: string }
   | { type: BlockType.FileUpload }
   | { type: BlockType.DashboardHeader; content?: string }
-  | { type: BlockType.PivotTable;      dataframeName?: string | null }
+  | { type: BlockType.PivotTable;      dataframeName?: string | null; rows?: DataFrameColumn[]; columns?: DataFrameColumn[]; metrics?: { column: DataFrameColumn; aggregateFunction: PivotTableMetric['aggregateFunction'] }[] }
   | { type: BlockType.PowerToolbox;    toolId?: string; inputs?: PowerToolboxInputs }
 )
 
@@ -324,6 +325,17 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
         case BlockType.PivotTable: {
           id = addBlockGroup(layout, blocks, { type: BlockType.PivotTable, dataframeName: spec.dataframeName ?? null }, idx, true)
           applyTitle(blocks, id, spec.title)
+          // makePivotTableBlock only accepts dataframeName — rows/columns/
+          // metrics start as a single blank entry each, so set the real,
+          // AI-picked config (if any) directly on the freshly-created block.
+          if (spec.rows?.length || spec.columns?.length || spec.metrics?.length) {
+            const block = blocks.get(id) as Y.XmlElement<PivotTableBlock> | undefined
+            if (block) {
+              if (spec.rows?.length) block.setAttribute('rows', spec.rows.map(column => ({ column })))
+              if (spec.columns?.length) block.setAttribute('columns', spec.columns.map(column => ({ column })))
+              if (spec.metrics?.length) block.setAttribute('metrics', spec.metrics)
+            }
+          }
           break
         }
 

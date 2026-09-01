@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   PiStarLight,
   PiStarFill,
@@ -13,6 +13,7 @@ import {
 import Link from "next/link";
 
 import { iconButtonSmClassName } from "@/styles/interactive";
+import { StyledCheckbox } from "@/components/StyledCheckbox";
 
 interface Project {
   id: string;
@@ -32,6 +33,9 @@ interface ProjectsTableProps {
     projectId: string
   ) => void;
   searchQuery?: string;
+  selectedIds: Set<string>;
+  onToggleSelect: (id: string) => void;
+  onToggleSelectAll: () => void;
 }
 
 export const ProjectsTable: React.FC<ProjectsTableProps> = ({
@@ -40,14 +44,39 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
   onToggleFavorite,
   onMenuAction,
   searchQuery,
+  selectedIds,
+  onToggleSelect,
+  onToggleSelectAll,
 }) => {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
+  const allSelected =
+    projects.length > 0 && selectedIds.size === projects.length;
+  const someSelected = selectedIds.size > 0 && !allSelected;
+
+  const selectAllRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (selectAllRef.current) {
+      selectAllRef.current.indeterminate = someSelected;
+    }
+  }, [someSelected]);
 
   return (
     <div className="w-full overflow-x-auto rounded-t-2xl border-b-0">
       <table className="w-full border-collapse">
         <thead className="sticky top-0 z-10 border-b border-border-secondary dark:border-border-tertiary">
           <tr>
+            <th className="p-4 w-10">
+              {projects.length > 0 && (
+                <StyledCheckbox
+                  ref={selectAllRef}
+                  checked={allSelected}
+                  indeterminate={someSelected}
+                  onChange={onToggleSelectAll}
+                  aria-label="Select all"
+                />
+              )}
+            </th>
             <th className="p-4 w-10" />
             <th className="text-left p-4 text-xs font-bold text-ink-400 uppercase sticky left-0 bg-base-100 min-w-[250px]">
               Title
@@ -76,7 +105,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
         <tbody>
           {projects.length === 0 ? (
             <tr>
-              <td colSpan={9} className="py-16 text-center">
+              <td colSpan={10} className="py-16 text-center">
                 <div className="flex flex-col items-center justify-center gap-3">
                   <PiFolderLight
                     size={36}
@@ -99,6 +128,13 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
               key={project.id}
               className="border-b border-border-secondary dark:border-border-tertiary transition-colors"
             >
+              <td className="whitespace-nowrap p-4 w-10">
+                <StyledCheckbox
+                  checked={selectedIds.has(project.id)}
+                  onChange={() => onToggleSelect(project.id)}
+                  aria-label={`Select ${project.title}`}
+                />
+              </td>
               <td className="whitespace-nowrap p-4 w-10">
                 <button
                   type="button"
