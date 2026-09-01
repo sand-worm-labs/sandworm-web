@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { DocumentEntity, DocumentVisibility, FavoriteEntity, UserEntity, WorkspaceEntity } from '../entities';
-import { fake } from '../utils';
+import { fake, pickDocumentTitles, slugify } from '../utils';
 
 export class ExploreSeeder1776676230562 implements Seeder {
     track = false;
@@ -23,14 +23,18 @@ export class ExploreSeeder1776676230562 implements Seeder {
             return;
         }
 
-        // ---- 4 featured documents (getFeaturedDocuments) ----
+        const [featuredTitles, publicTitles] = (() => {
+            const titles = pickDocumentTitles(44);
+            return [titles.slice(0, 4), titles.slice(4)];
+        })();
+
         const featuredDocs: DocumentEntity[] = [];
         for (let i = 0; i < 4; i++) {
             const user = users[i % users.length]!;
             const workspace = workspaces[i % workspaces.length]!;
             featuredDocs.push(
                 documentRepository.create({
-                    title: `Featured: ${fake.lorem.sentence()}`,
+                    title: `Featured: ${featuredTitles[i]}`,
                     slug: 'slug',
                     orderIndex: i + 1,
                     version: 1,
@@ -38,7 +42,7 @@ export class ExploreSeeder1776676230562 implements Seeder {
                     workspaceId: workspace.id,
                     visibility: DocumentVisibility.PUBLIC,
                     publishedAt: fake.date.recent({ days: 7 }),
-                    publishedSlug: `featured-${fake.lorem.slug()}-${Date.now()}-${i}`,
+                    publishedSlug: `featured-${slugify(featuredTitles[i]!)}-${Date.now()}-${i}`,
                     isSyncedWithYjs: false,
                     runUnexecutedBlocks: false,
                     runSQLSelection: true,
@@ -57,7 +61,7 @@ export class ExploreSeeder1776676230562 implements Seeder {
             const workspace = workspaces[i % workspaces.length]!;
             publicDocs.push(
                 documentRepository.create({
-                    title: fake.lorem.sentence(),
+                    title: publicTitles[i],
                     slug: 'Slug',
                     orderIndex: i + 100,
                     version: 1,
@@ -65,7 +69,7 @@ export class ExploreSeeder1776676230562 implements Seeder {
                     workspaceId: workspace.id,
                     visibility: DocumentVisibility.PUBLIC,
                     publishedAt: fake.date.recent({ days: 60 }),
-                    publishedSlug: `explore-${fake.lorem.slug()}-${Date.now()}-${i}`,
+                    publishedSlug: `explore-${slugify(publicTitles[i]!)}-${Date.now()}-${i}`,
                     isSyncedWithYjs: false,
                     runUnexecutedBlocks: false,
                     runSQLSelection: true,
