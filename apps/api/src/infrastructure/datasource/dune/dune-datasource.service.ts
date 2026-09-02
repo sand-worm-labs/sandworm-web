@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DataSourceId, DataSourceName, DataSourceType } from '@sandworm/types';
 import { AllConfigType } from '@/core/config/config.type';
 import { AdhocQueryResult, TrinoQueryService } from '@/features/code-execution/query-engine/trino/trino-query.service';
 
@@ -22,11 +23,11 @@ export class DuneDataSourceService {
         const configured = this.isConfigured();
 
         return {
-            type: 'dune',
+            type: DataSourceType.dune,
             data: {
-                id: 'dune-datasource',
+                id: DataSourceId.dune,
                 workspaceId,
-                name: 'Dune',
+                name: DataSourceName.dune,
                 connStatus: configured ? 'checking' : 'offline',
                 lastConnection: null,
                 connError: configured

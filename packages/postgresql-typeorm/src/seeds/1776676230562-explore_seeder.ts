@@ -13,6 +13,7 @@ import {
     updateYText,
     writeTitleFragment,
 } from '@sandworm/editor';
+import { DataSourceId } from '@sandworm/types';
 import { DocumentEntity, DocumentVisibility, FavoriteEntity, UserEntity, UserWorkspaceEntity, UserWorkspaceRole, UserWorkspaceStatus, WorkspaceEntity, YjsAppDocumentEntity, YjsDocumentEntity } from '../entities';
 import { fake, slugify } from '../utils';
 import { NOTEBOOK_TITLES, SAMPLE_QUERIES, QUERY_SECTIONS, POWER_TOOLS, WORKSPACE_ICON_COLORS } from './data/explore-seed-data';
@@ -66,7 +67,7 @@ function starterYjsState(title: string): Buffer {
 
     addBlockGroup(
         layout, blocks,
-        { type: BlockType.SQL, dataSourceId: null, isFileDataSource: false, source: query, dataframeName: section.df },
+        { type: BlockType.SQL, dataSourceId: DataSourceId.duckdb, isFileDataSource: false, source: query, dataframeName: section.df },
         i++,
     );
     addBlockGroup(layout, blocks, { type: BlockType.Python, source: section.python }, i++);

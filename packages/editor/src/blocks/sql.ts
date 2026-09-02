@@ -1,5 +1,6 @@
 import * as Y from "yjs";
 import {
+  DataSourceId,
   RunQueryResult,
   SQLQueryConfiguration,
   TableSort,
@@ -38,7 +39,7 @@ export type DataframeName = {
 export type SQLBlock = BaseBlock<BlockType.SQL> & {
   source: Y.Text;
   dataframeName: DataframeName;
-  dataSourceId: string | null;
+  dataSourceId: DataSourceId | null;
   isFileDataSource: boolean;
   result: RunQueryResult | null;
   page: number;
@@ -66,7 +67,7 @@ export const makeSQLBlock = (
   id: string,
   blocks: Y.Map<YBlock>,
   opts?: {
-    dataSourceId?: string | null;
+    dataSourceId?: DataSourceId | null;
     isFileDataSource?: boolean;
     source?: string;
     dataframeName?: string;
@@ -152,7 +153,7 @@ export function duplicateSQLBlock(
   block: Y.XmlElement<SQLBlock>,
   blocks: Y.Map<YBlock>,
   options?: {
-    datasourceMap?: Map<string, string>;
+    datasourceMap?: Map<DataSourceId, DataSourceId>;
     componentId?: string;
     noState?: boolean;
     newVariableName?: boolean;

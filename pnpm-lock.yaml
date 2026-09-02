@@ -1481,6 +1481,9 @@ importers:
       '@sandworm/nest-common':
         specifier: workspace:*
         version: link:../nest-common
+      '@sandworm/types':
+        specifier: workspace:*
+        version: link:../types
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1

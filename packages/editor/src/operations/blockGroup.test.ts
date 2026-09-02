@@ -12,6 +12,7 @@ import {
   duplicateTab,
 } from './blockGroup.js'
 import { BlockType, SQLBlock, YBlock } from '../blocks/index.js'
+import { DataSourceId } from '@sandworm/types'
 
 let yDoc: Y.Doc
 let yBlocks: Y.Map<YBlock>
@@ -876,7 +877,7 @@ describe('duplicateTab', () => {
       firstTabId,
       {
         type: BlockType.SQL,
-        dataSourceId: 'something to test the duplication',
+        dataSourceId: DataSourceId.dune,
         isFileDataSource: false,
       },
       'after'

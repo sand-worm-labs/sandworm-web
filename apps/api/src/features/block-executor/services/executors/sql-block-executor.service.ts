@@ -7,7 +7,7 @@ import {
   SQLBlock,
   getSQLAttributes,
 } from '@sandworm/editor';
-import { exhaustiveCheck, RunQueryResult } from '@sandworm/types';
+import { DATA_SOURCE_QUERY_ENGINE, DataSourceId, exhaustiveCheck, RunQueryResult } from '@sandworm/types';
 import { DocumentContext } from '../../interfaces';
 import { DataFrameService } from '@/features/code-execution/query-engine/dataframe/dataframe.service';
 import { QueryExecutionService } from '@/features/code-execution/query-engine/query-execution.service';
@@ -53,10 +53,10 @@ export class SqlBlockExecutorService {
         dataSourceId,
       } = getSQLAttributes(block, ctx.blocks);
 
-      // Only "dune-datasource" is Trino-backed today; everything else (the
-      // local duckdb source, file-backed blocks, unset) runs against the
-      // DuckDB session, matching prior behavior.
-      const datasource = dataSourceId === 'dune-datasource' ? 'trino' : 'duckdb';
+      // Unset/file-backed blocks have no dataSourceId at all — same as
+      // duckdb, run against the local DuckDB session. See
+      // DATA_SOURCE_QUERY_ENGINE for the real per-source reasoning.
+      const datasource = DATA_SOURCE_QUERY_ENGINE[dataSourceId as DataSourceId] ?? 'duckdb';
 
       if (!dataframeName) {
         executionItem.setCompleted('error');
