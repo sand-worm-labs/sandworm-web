@@ -4,17 +4,23 @@ import React, { useState } from "react";
 import { Monitor, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 
+import { useSandwormStore } from "@/store";
+
+import {
+  THEME_IDS,
+  THEME_META,
+  THEME_PALETTES,
+} from "../Editor/blocks/customBlocks/CodeEditor/palettes";
+import type {
+  EditorPalette,
+  EditorThemeId,
+} from "../Editor/blocks/customBlocks/CodeEditor/palettes";
+import { useEditorThemeId } from "../Editor/blocks/customBlocks/CodeEditor/useEditorThemeId";
+
 // =====================================
 // ⬢ Types
 // =====================================
 type Theme = "system" | "light" | "dark";
-type EditorTheme =
-  | "monokai"
-  | "dracula"
-  | "github"
-  | "nord"
-  | "solarized"
-  | "material";
 type DateFormat = "us" | "eu" | "iso";
 type AIEditMode = "review" | "auto";
 
@@ -23,14 +29,6 @@ interface ThemeOption {
   label: string;
   description: string;
   icon: React.ReactNode;
-}
-
-interface EditorThemeOption {
-  id: EditorTheme;
-  name: string;
-  bg: string;
-  text: string;
-  accent: string;
 }
 
 // =====================================
@@ -165,11 +163,16 @@ const AIEditCard: React.FC<{
 // =====================================
 // ⬢ Editor Theme Card
 // =====================================
+// Preview colors are pulled straight from the theme's real palette (the
+// same one CodeMirror uses to render SQL/Python/Markdown), mapped onto
+// each token the same way the syntax highlighter maps them — so the card
+// is a true preview, not a stand-in.
 const EditorThemeCard: React.FC<{
-  theme: EditorThemeOption;
+  label: string;
+  palette: EditorPalette;
   selected: boolean;
   onClick: () => void;
-}> = ({ theme, selected, onClick }) => {
+}> = ({ label, palette, selected, onClick }) => {
   return (
     <button
       type="button"
@@ -181,26 +184,32 @@ const EditorThemeCard: React.FC<{
       }`}
     >
       <div className="flex items-center gap-3 mb-3">
-        <h4 className="font-medium text-ink-100  capitalize">{theme.name}</h4>
+        <h4 className="font-medium text-ink-100">{label}</h4>
         {selected && <div className="w-2 h-2 rounded-full bg-primary" />}
       </div>
       <div
-        className="rounded-xl p-3 font-body-mono text-xs leading-relaxed"
-        style={{ backgroundColor: theme.bg, color: theme.text }}
+        className="rounded-xl p-3 font-body-mono text-xs leading-relaxed border"
+        style={{
+          backgroundColor: palette.bg,
+          color: palette.text,
+          borderColor: palette.border,
+        }}
       >
         <div>
-          <span style={{ color: theme.accent }}>SELECT</span> wallet,
-          SUM(volume)
+          <span style={{ color: palette.keyword }}>SELECT</span> wallet,{" "}
+          <span style={{ color: palette.builtin }}>SUM</span>(volume)
         </div>
         <div>
-          <span style={{ color: theme.accent }}>FROM</span> transactions
+          <span style={{ color: palette.keyword }}>FROM</span> transactions
         </div>
         <div>
-          <span style={{ color: theme.accent }}>WHERE</span> chain = 'ethereum'
+          <span style={{ color: palette.keyword }}>WHERE</span> chain ={" "}
+          <span style={{ color: palette.string }}>&apos;ethereum&apos;</span>
         </div>
         <div className="pl-4">
-          <span style={{ color: theme.accent }}>GROUP BY</span> wallet
+          <span style={{ color: palette.keyword }}>GROUP BY</span> wallet
         </div>
+        <div style={{ color: palette.comment }}>-- {label.toLowerCase()}</div>
       </div>
     </button>
   );
@@ -210,10 +219,16 @@ const EditorThemeCard: React.FC<{
 // ⬢ Preference Main Component
 // =====================================
 const Preferences: React.FC = () => {
-  const { theme, setTheme } = useTheme();
-  const [editorTheme, setEditorTheme] = useState<EditorTheme>("monokai");
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const editorThemeId = useEditorThemeId();
+  const setEditorTheme = useSandwormStore(state => state.setEditorTheme);
   const [dateFormat, setDateFormat] = useState<DateFormat>("us");
   const [aiEditMode, setAIEditMode] = useState<AIEditMode>("review");
+
+  const isDarkMode = resolvedTheme === "dark";
+  const visibleThemeIds = THEME_IDS.filter(
+    id => THEME_META[id].dark === isDarkMode
+  );
 
   // ⬢ Theme Options
   // =====================================
@@ -235,53 +250,6 @@ const Preferences: React.FC = () => {
       label: "Dark theme",
       description: "Easy on the eyes for extended work sessions",
       icon: <Moon className="w-5 h-5" />,
-    },
-  ];
-
-  // ⬢ Editor Theme Options
-  // =====================================
-  const editorThemes: EditorThemeOption[] = [
-    {
-      id: "monokai",
-      name: "Monokai",
-      bg: "#272823",
-      text: "#F8F8F2",
-      accent: "#F92672",
-    },
-    {
-      id: "dracula",
-      name: "Dracula",
-      bg: "#282B37",
-      text: "#f8f8f2",
-      accent: "#ff79c6",
-    },
-    {
-      id: "github",
-      name: "GitHub",
-      bg: "#ffffff",
-      text: "#24292e",
-      accent: "#005cc5",
-    },
-    {
-      id: "nord",
-      name: "Nord",
-      bg: "#2E3440",
-      text: "#d8dee9",
-      accent: "#88c0d0",
-    },
-    {
-      id: "solarized",
-      name: "Solarized Dark",
-      bg: "#002B36",
-      text: "#839496",
-      accent: "#268bd2",
-    },
-    {
-      id: "material",
-      name: "Material",
-      bg: "#263339",
-      text: "#eeffff",
-      accent: "#c792ea",
     },
   ];
 
@@ -362,19 +330,20 @@ const Preferences: React.FC = () => {
                 Code Editor Theme
               </h2>
               <p className="text-sm text-ink-400 dark:text-ink-400 max-w-[25rem] mt-2 ">
-                Select your preferred syntax highlighting theme for the SQL and
-                python editors.
+                Select your preferred syntax highlighting theme for the SQL,
+                Python, and Markdown editors.
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {editorThemes.map(editorThemeOption => (
+            {visibleThemeIds.map((id: EditorThemeId) => (
               <EditorThemeCard
-                key={editorThemeOption.id}
-                theme={editorThemeOption}
-                selected={editorTheme === editorThemeOption.id}
-                onClick={() => setEditorTheme(editorThemeOption.id)}
+                key={id}
+                label={THEME_META[id].label}
+                palette={THEME_PALETTES[id]}
+                selected={editorThemeId === id}
+                onClick={() => setEditorTheme(id)}
               />
             ))}
           </div>

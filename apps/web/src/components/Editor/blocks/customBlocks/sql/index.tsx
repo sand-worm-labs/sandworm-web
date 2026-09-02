@@ -40,7 +40,6 @@ import { exhaustiveCheck } from "@sandworm/types";
 import { head } from "ramda";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import { Transition } from "@headlessui/react";
-import { useTheme } from "next-themes";
 import { HiVariable } from "react-icons/hi2";
 
 import type { ApiDocument, ApiWorkspace } from "@/types";
@@ -69,6 +68,7 @@ import { useBlockExecutions } from "../../../hooks/useBlockExecution";
 import { useAITaskActions, useAITasks } from "../../../hooks/useAITasks";
 import CodeEditor from "../CodeEditor";
 import type { CodeEditorRef } from "../CodeEditor";
+import { useEditorThemeId } from "../CodeEditor/useEditorThemeId";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 import ApproveDiffButons from "../../ApproveDiffButtons";
 import EditWithAIForm from "../../EditWithAIForm";
@@ -216,7 +216,7 @@ function SQLBlock(props: Props) {
     if (!props.document) return undefined;
     return workspaces.data.find(w => w.id === props.document.workspaceId);
   }, [workspaces.data, props.document?.workspaceId]);
-  const { resolvedTheme } = useTheme();
+  const editorThemeId = useEditorThemeId();
   const { editSqlWithAi } = useAITaskActions();
   const { fixSqlWithAi } = useAITaskActions();
 
@@ -1126,7 +1126,7 @@ function SQLBlock(props: Props) {
             <div
               className={clsx((isResultHidden || !result) && "rounded-b-xl")}
             >
-              <div className="print:hidden py-5 ">
+              <div className="print:hidden">
                 <div>
                   <CodeEditor
                     ref={codeEditor}
@@ -1143,7 +1143,7 @@ function SQLBlock(props: Props) {
                     dataSourceId={dataSourceId}
                     disabled={statusIsDisabled}
                     onSelectionChanged={onSQLSelectionChanged}
-                    isDark={resolvedTheme === "dark"}
+                    themeId={editorThemeId}
                   />
                 </div>
               </div>

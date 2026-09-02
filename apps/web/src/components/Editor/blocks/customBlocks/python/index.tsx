@@ -58,6 +58,7 @@ import {
 } from "../../ExecutionStatusText";
 import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
 import CodeEditor from "../CodeEditor";
+import { useEditorThemeId } from "../CodeEditor/useEditorThemeId";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 import EditWithAIForm from "../../EditWithAIForm";
 import ApproveDiffButons from "../../ApproveDiffButtons";
@@ -225,6 +226,7 @@ function PythonBlock(props: Props) {
     [workspaces.data, props.document.workspaceId]
   );
   const { resolvedTheme } = useTheme();
+  const editorThemeId = useEditorThemeId();
 
   const hasOaiKey = useMemo(
     () => currentWorkspace?.secrets?.hasAiModelApiKey ?? false,
@@ -785,7 +787,7 @@ function PythonBlock(props: Props) {
               } as React.CSSProperties
             }
           >
-            <div className="print:hidden py-5">
+            <div className="print:hidden">
               <div>
                 <CodeEditor
                   workspaceId={props.document.workspaceId}
@@ -799,7 +801,7 @@ function PythonBlock(props: Props) {
                   onInsertBlock={props.insertBelow ?? (() => {})}
                   diff={aiSuggestions ?? undefined}
                   disabled={statusIsDisabled}
-                  isDark={resolvedTheme === "dark"}
+                  themeId={editorThemeId}
                 />
               </div>
             </div>

@@ -38,7 +38,9 @@ import { historyField } from "@codemirror/commands";
 
 import useEditorAwareness from "../../../hooks/useEditorAwareness";
 
-import { diffTheme, editorTheme } from "./theme";
+import { diffTheme, getEditorTheme } from "./theme";
+import type { EditorThemeId } from "./palettes";
+import { DEFAULT_EDITOR_THEME_ID, THEME_META } from "./palettes";
 import { useSQLExtension } from "./sql";
 import { usePythonExtension } from "./python";
 
@@ -390,7 +392,7 @@ interface Props {
   dataSourceId?: string | null;
   disabled: boolean;
   onSelectionChanged?: (selectedCode: string | null) => void;
-  isDark?: boolean;
+  themeId?: EditorThemeId;
   customTheme?: Extension;
 }
 const CodeEditor = forwardRef<CodeEditorRef, Props>(
@@ -413,14 +415,17 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
     const viewRef = useRef<EditorView | null>(null);
     const mergeRef = useRef<{ view: EditorView; state: any } | null>(null);
 
+    const themeId = props.themeId ?? DEFAULT_EDITOR_THEME_ID;
+    const isDark = THEME_META[themeId].dark;
+
     const resolveTheme = useCallback(
       (disabled: boolean): Extension => {
         if (props.customTheme) {
           return props.customTheme;
         }
-        return editorTheme(disabled, props.isDark ?? false);
+        return getEditorTheme(themeId, disabled);
       },
-      [props.customTheme, props.isDark]
+      [props.customTheme, themeId]
     );
 
     useEffect(() => {
@@ -567,7 +572,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
                 gutter: false,
               }),
               createDiffGutterHighlight(),
-              diffThemeCompartment.of(diffTheme(props.isDark ?? false)),
+              diffThemeCompartment.of(diffTheme(isDark)),
             ],
           }),
           parent,
@@ -655,11 +660,11 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
         mergeRef.current.view.dispatch({
           effects: [
             effect,
-            diffThemeCompartment.reconfigure(diffTheme(props.isDark ?? false)),
+            diffThemeCompartment.reconfigure(diffTheme(isDark)),
           ],
         });
       }
-    }, [props.disabled, props.isDark, props.customTheme, resolveTheme]);
+    }, [props.disabled, isDark, props.customTheme, resolveTheme]);
 
     useEffect(() => {
       const effect = keymapsCompartment.reconfigure(
