@@ -100,52 +100,66 @@ export default function Comments({
         ref={scrollRef}
         className="flex-1 min-h-0 overflow-y-auto px-2 xl:px-4"
       >
-        <ul className="space-y-3 py-3">
-          {comments.map(comment => (
-            <li key={comment.id}>
-              <div className="rounded-xl p-3 border border-border dark:border-border-tertiary bg-transparent">
-                <div className="flex justify-between items-center gap-x-4 mb-2">
-                  <div className="flex items-center gap-x-2">
-                    <Image
-                      src={comment.user.picture ?? "/img/avatar/avatar2.svg"}
-                      alt=""
-                      width={24}
-                      height={24}
-                      className="h-6 w-6 flex-none rounded-full bg-gray-50"
-                      referrerPolicy="no-referrer"
-                    />
-                    <span className="text-sm font-medium text-ink-100">
-                      {comment.user.name}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-x-2">
-                    <time
-                      dateTime={new Date(comment.createdAt).toISOString()}
-                      className="text-xs leading-5 text-ink-400"
-                    >
-                      {timeAgo(new Date(comment.createdAt))}
-                    </time>
-                    {session?.user?.id === comment.userId && (
-                      <button
-                        type="button"
-                        onClick={() => onDeleteComment(comment.id)}
-                        className="text-ink-400 hover:text-red-600 transition-colors"
-                        aria-label="Delete comment"
-                      >
-                        <Trash />
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                <p className="text-[13px] leading-5 text-ink-400 dark:text-ink-100">
-                  {comment.content}
+        {comments.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center px-4 xl:px-6 py-12">
+            <div className="flex flex-col items-center gap-y-3">
+              <CommentIcon />
+              <div className="text-ink-300 dark:text-ink-400 text-center text-sm">
+                <p className="font-medium text-ink-100 dark:text-white">
+                  No comments yet
                 </p>
+                <p>Add a comment on this notebook.</p>
               </div>
-            </li>
-          ))}
-        </ul>
+            </div>
+          </div>
+        ) : (
+          <ul className="space-y-3 py-3">
+            {comments.map(comment => (
+              <li key={comment.id}>
+                <div className="rounded-xl p-3 border border-border dark:border-border-tertiary bg-transparent">
+                  <div className="flex justify-between items-center gap-x-4 mb-2">
+                    <div className="flex items-center gap-x-2">
+                      <Image
+                        src={comment.user.picture ?? "/img/avatar/avatar2.svg"}
+                        alt=""
+                        width={24}
+                        height={24}
+                        className="h-6 w-6 flex-none rounded-full bg-gray-50"
+                        referrerPolicy="no-referrer"
+                      />
+                      <span className="text-sm font-medium text-ink-100">
+                        {comment.user.name}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-x-2">
+                      <time
+                        dateTime={new Date(comment.createdAt).toISOString()}
+                        className="text-xs leading-5 text-ink-400"
+                      >
+                        {timeAgo(new Date(comment.createdAt))}
+                      </time>
+                      {session?.user?.id === comment.userId && (
+                        <button
+                          type="button"
+                          onClick={() => onDeleteComment(comment.id)}
+                          className="text-ink-400 hover:text-red-600 transition-colors"
+                          aria-label="Delete comment"
+                        >
+                          <Trash />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <p className="text-[13px] leading-5 text-ink-400 dark:text-ink-100">
+                    {comment.content}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </ScrollBar>
 
       <div className="flex-shrink-0 px-3 xl:px-4 py-3  dark:border-border-tertiary">

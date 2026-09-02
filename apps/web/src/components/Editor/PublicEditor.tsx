@@ -155,11 +155,13 @@ function PublicTabRef(props: PublicTabRefProps) {
       <RichTextBlock
         block={block}
         isEditable={false}
+        isPublicMode
         belongsToMultiTabGroup={props.hasMultipleTabs}
         dragPreview={null}
         dashboardMode={null}
         isCursorWithin={isCursorWithin}
         isCursorInserting={isCursorInserting}
+        onDeleteBlock={() => {}}
       />
     ),
     onSQL: block => (

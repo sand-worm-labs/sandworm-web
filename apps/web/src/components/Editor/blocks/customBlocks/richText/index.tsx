@@ -12,7 +12,7 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Color from "@tiptap/extension-color";
 import MathExtension from "@aarkue/tiptap-math-extension";
-import type { RichTextBlock } from "@sandworm/editor";
+import { getRichTextAttributes, type RichTextBlock } from "@sandworm/editor";
 import clsx from "clsx";
 import { useCallback, useEffect, useState } from "react";
 import type { ConnectDragPreview } from "react-dnd";
@@ -42,6 +42,7 @@ interface Props {
   block: Y.XmlElement<RichTextBlock>;
   belongsToMultiTabGroup: boolean;
   isEditable: boolean;
+  isPublicMode?: boolean;
   dragPreview: ConnectDragPreview | null;
   dashboardMode: DashboardMode | null;
   isCursorWithin: boolean;
@@ -157,7 +158,12 @@ const useBlockEditor = ({
 // =====================================
 const RichTextBlock = (props: Props) => {
   const id = props.block.getAttribute("id")!;
-  const content = props.block.getAttribute("content")!;
+  // getAttribute("content") can read back null for a block still being
+  // integrated (e.g. tab-hidden blocks reconnecting) — Tiptap's
+  // Collaboration extension crashes on a falsy fragment (falls back to
+  // `this.options.document.getXmlFragment(...)`, and document is never
+  // set here), so fall back to a fresh fragment rather than pass null.
+  const content = getRichTextAttributes(props.block).content;
 
   const setTitle = useCallback(
     (title: string) => {
@@ -206,17 +212,19 @@ const RichTextBlock = (props: Props) => {
           props.dragPreview?.(d);
         }}
         className={clsx(
-          "rounded-2xl border-[1.5px]",
+          "rounded-2xl",
           props.dashboardMode ? "h-full overflow-y-auto" : "",
           props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
-          {
-            "border-primary block-focus-ring":
-              props.isCursorWithin && props.isCursorInserting,
-            "border-hover-border dark:border-border-dark shadow-none":
-              props.isCursorWithin && !props.isCursorInserting,
-            "border-hover-border block-shadow-soft dark:border-border-dark":
-              !props.isCursorWithin,
-          }
+          props.isPublicMode
+            ? ""
+            : clsx("border-[1.5px]", {
+                "border-primary block-focus-ring":
+                  props.isCursorWithin && props.isCursorInserting,
+                "border-hover-border dark:border-border-dark shadow-none":
+                  props.isCursorWithin && !props.isCursorInserting,
+                "border-hover-border block-shadow-soft dark:border-border-dark":
+                  !props.isCursorWithin,
+              })
         )}
       >
         <div
@@ -239,18 +247,22 @@ const RichTextBlock = (props: Props) => {
 
         <div
           className={clsx(
-            props.dashboardMode
-              ? "px-4 py-4 h-full overflow-y-auto"
-              : "p-2 px-5"
+            props.isPublicMode
+              ? "p-0"
+              : props.dashboardMode
+                ? "px-4 py-4 h-full overflow-y-auto"
+                : "p-2 px-5"
           )}
         >
           <EditorContent editor={editor} />
         </div>
       </div>
 
-      <div className="absolute left-0 top-0 -translate-y-full pb-2">
-        <BlockTypePill label="Text" icon={<TextIcon className="w-3 h-3" />} />
-      </div>
+      {!props.isPublicMode && (
+        <div className="absolute left-0 top-0 -translate-y-full pb-2">
+          <BlockTypePill label="Text" icon={<TextIcon className="w-3 h-3" />} />
+        </div>
+      )}
 
       <div
         className={clsx(

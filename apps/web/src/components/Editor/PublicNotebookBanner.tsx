@@ -8,6 +8,7 @@ import ForkButton from "./PublicHeader/ForkButton";
 import HelpDropdown from "./PublicHeader/HelpDropdown";
 import PublicHeaderLogo from "./PublicHeader/Logo";
 import NotebookTitle from "./PublicHeader/NotebookTitle";
+import ReadOnlyBanner from "./PublicHeader/ReadOnlyBanner";
 import ShareButton from "./PublicHeader/ShareButton";
 import ViewSwitcher, { type NotebookView } from "./ViewSwitcher";
 
@@ -27,7 +28,7 @@ export default function PublicNotebookBanner({
   });
 
   return (
-    <div className="w-full bg-base-100 font-primary relative">
+    <div className="w-full bg-base-100 font-body relative">
       <div className="h-14 w-full flex items-center gap-3 px-5 border-b border-border-secondary dark:border-border-tertiary">
         <PublicHeaderLogo />
 
@@ -59,6 +60,12 @@ export default function PublicNotebookBanner({
           <AccountMenu user={user} loading={loading} />
         </div>
       </div>
+
+      <ReadOnlyBanner
+        document={document && { id: document.id, title: document.title }}
+        isAuthenticated={isAuthenticated}
+        onChangeView={onChangeView}
+      />
     </div>
   );
 }
