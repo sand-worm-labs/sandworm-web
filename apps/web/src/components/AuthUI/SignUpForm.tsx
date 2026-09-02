@@ -7,6 +7,7 @@ import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { useSignup } from "../Editor/hooks/useAuth";
 
 import { ClaimUsernameStep } from "./ClaimUsername";
+import PasswordStrength from "./PasswordStrength";
 
 type Step = 1 | 2 | 3;
 
@@ -176,6 +177,7 @@ export default function SignUpForm() {
               )}
             </button>
           </div>
+          <PasswordStrength password={formData.password} />
           <button
             type="submit"
             className="w-full rounded-3xl bg-base-400 dark:bg-white dark:text-black px-4 py-3.5 text-white font-medium text-sm font-body"

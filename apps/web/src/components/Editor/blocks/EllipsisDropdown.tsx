@@ -7,7 +7,6 @@ import {
   PiGear,
   PiMapTrifold,
   PiDotsThree,
-  PiTray,
   PiFolder,
   PiChatText,
   PiArrowLeft,
@@ -37,7 +36,6 @@ function MenuButton(props: MenuButtonProps) {
 
 interface Props {
   onToggleSchedules: () => void;
-  onToggleSnapshots: () => void;
   onToggleComments: () => void;
   onToggleFullScreen?: () => void;
   onToggleFiles?: () => void;
@@ -97,18 +95,11 @@ function EllipsisDropdown(props: Props) {
           )}
 
           {!props.isViewer && !props.isDeleted && (
-            <>
-              <MenuButton
-                icon={<PiClock className="h-4 w-4" />}
-                text="Schedules"
-                onClick={props.onToggleSchedules}
-              />
-              <MenuButton
-                icon={<PiTray className="h-4 w-4" />}
-                text="Snapshots"
-                onClick={props.onToggleSnapshots}
-              />
-            </>
+            <MenuButton
+              icon={<PiClock className="h-4 w-4" />}
+              text="Schedules"
+              onClick={props.onToggleSchedules}
+            />
           )}
 
           <MenuButton

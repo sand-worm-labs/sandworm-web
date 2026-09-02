@@ -1,10 +1,16 @@
-// sandworm main store. handle most state management for workspace
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { toast } from "sonner";
 
 import { runQuery } from "@/helpers/queryclient";
 import { generateUUID } from "@/lib/utils";
+import {
+  DEFAULT_EDITOR_THEME_ID,
+  DEFAULT_EDITOR_THEME_ID_DARK,
+  THEME_META,
+  isEditorThemeId,
+  type EditorThemeId,
+} from "@/components/Editor/blocks/customBlocks/CodeEditor/palettes";
 
 export interface CurrentConnection {
   executionMethod: "JSON_RPC" | "GRAPHQL" | "HTTP ";
@@ -37,8 +43,6 @@ export type EditorTabType = "sql" | "home";
 
 export type ExecutionMethodType = "rpc" | "indexed";
 
-export type Theme = "sandworm" | "vs-dark" | "vs-light" | "monokai";
-
 export interface EditorTab {
   id: string;
   title: string;
@@ -62,7 +66,8 @@ const chainRpcMap: Record<string, string> = {
 export interface SandwormSettings {
   selectedChain: string;
   rpcUrl: string;
-  editorTheme: "sandworm" | "vs-dark" | "vs-light" | "monokai";
+  editorThemeLight: EditorThemeId;
+  editorThemeDark: EditorThemeId;
   shortcutsEnabled: boolean;
   betaFeatures: boolean;
   defaultChain: string;
@@ -111,7 +116,7 @@ export interface SandwormStoreState {
   // 🔧 Settings Action
   setSelectedChain: (chain: string) => void;
   setRpcUrl: (url: string) => void;
-  setEditorTheme: (theme: Theme) => void;
+  setEditorTheme: (theme: EditorThemeId) => void;
   setShortcutsEnabled: (enabled: boolean) => void;
   setBetaFeatures: (enabled: boolean) => void;
   setDefaultChain: (chain: string) => void;
@@ -249,7 +254,8 @@ export const useSandwormStore = create<SandwormStoreState>()(
         settings: {
           selectedChain: "Base",
           rpcUrl: chainRpcMap.Base,
-          editorTheme: "sandworm",
+          editorThemeLight: DEFAULT_EDITOR_THEME_ID,
+          editorThemeDark: DEFAULT_EDITOR_THEME_ID_DARK,
           shortcutsEnabled: true,
           betaFeatures: false,
           defaultChain: "Sui",
@@ -537,7 +543,12 @@ export const useSandwormStore = create<SandwormStoreState>()(
 
         setEditorTheme: theme =>
           set(state => ({
-            settings: { ...state.settings, editorTheme: theme },
+            settings: {
+              ...state.settings,
+              ...(THEME_META[theme].dark
+                ? { editorThemeDark: theme }
+                : { editorThemeLight: theme }),
+            },
           })),
 
         setShortcutsEnabled: enabled =>
@@ -566,6 +577,27 @@ export const useSandwormStore = create<SandwormStoreState>()(
           connectionList: state.connectionList,
           settings: state.settings,
         }),
+        merge: (persistedState, currentState) => {
+          const persisted = persistedState as Partial<SandwormStoreState>;
+          const persistedLight = persisted?.settings?.editorThemeLight;
+          const persistedDark = persisted?.settings?.editorThemeDark;
+          return {
+            ...currentState,
+            ...persisted,
+            settings: {
+              ...currentState.settings,
+              ...persisted?.settings,
+              editorThemeLight:
+                persistedLight && isEditorThemeId(persistedLight)
+                  ? persistedLight
+                  : DEFAULT_EDITOR_THEME_ID,
+              editorThemeDark:
+                persistedDark && isEditorThemeId(persistedDark)
+                  ? persistedDark
+                  : DEFAULT_EDITOR_THEME_ID_DARK,
+            },
+          };
+        },
       }
     )
   )
