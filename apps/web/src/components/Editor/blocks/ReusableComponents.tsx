@@ -5,7 +5,6 @@ import React, { useCallback, useState } from "react";
 import { PiStackLight, PiFloppyDisk } from "react-icons/pi";
 import { DialogPanel, DialogTitle, Transition, TransitionChild, Dialog } from "@headlessui/react";
 import { format } from "date-fns";
-import clsx from "clsx";
 import { addComponentToDocument, decodeComponentState } from "@sandworm/editor";
 import Link from "next/link";
 import * as allOutlineIcons from "@heroicons/react/24/outline";
@@ -198,7 +197,7 @@ function ReusableComponentItem(props: ReusableComponentItemProps) {
           >
             <button
               type="button"
-              className="text-ink-400  hover:text-ink-400 hover:underline disabled:hover:text-ink-400  disabled:cursor-not-allowed"
+              className="text-ink-400 hover:text-ink-400 disabled:hover:text-ink-400 disabled:cursor-not-allowed bg-primary-tint-75 dark:text-white dark:bg-create-project-tint/[0.16] rounded-md px-1.5 py-0.5"
               onClick={onUse}
               disabled={!props.canUse}
             >
@@ -284,9 +283,7 @@ export default function ReusableComponents(props: Props) {
                   {data.map(component => (
                     <li
                       key={component.id}
-                      className={clsx(
-                        "border-border-secondary dark:border-border-tertiary border-b"
-                      )}
+                      className="border border-border-secondary rounded-xl my-2 dark:bg-page-surface dark:border-border-tertiary"
                     >
                       <ReusableComponentItem
                         workspaceId={props.workspaceId}
