@@ -229,14 +229,16 @@ export const DataSourceId = {
 } as const;
 export type DataSourceId = (typeof DataSourceId)[keyof typeof DataSourceId];
 
-// The AI sidecar names data sources "dune" or "duckdb" (see
-// BlockActionService._sql_data_source in apps/ai) — map those onto the
-// fixed synthetic ids the SQL block executor and the data source services
-// themselves are keyed by. Scoped to just what the sidecar actually sends,
-// not every DataSourceId key (e.g. sandwormCloud never comes from there).
+// The AI sidecar names data sources "dune", "duckdb", or "sandworm_cloud"
+// (see SqlDataSource in apps/ai's block_action/model.py) — map those onto
+// the fixed synthetic ids the SQL block executor and the data source
+// services themselves are keyed by. sandworm_cloud is listed for the same
+// reason it's listed there: honest completeness, not because the sidecar
+// can actually produce it yet (SandwormCloudQueryService is still a mock).
 export const DATA_SOURCE_ID_BY_NAME: Partial<Record<string, DataSourceId>> = {
   dune: DataSourceId.dune,
   duckdb: DataSourceId.duckdb,
+  sandworm_cloud: DataSourceId.sandwormCloud,
 };
 
 // Which real query engine executes a SQL block for a given dataSourceId.
