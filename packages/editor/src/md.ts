@@ -38,8 +38,13 @@ interface ResolvedBlock {
   fingerprint: string
 }
 
+// The live editor's Title component (Title.tsx) binds to the "title"
+// fragment; the wrapped element's tag must be "doc-title" to match
+// TitleExtension's registered ProseMirror node name — verified by actually
+// opening a seeded document in the live editor and confirming the title
+// renders (screenshot-checked, not just inferred from reading the schema).
 function extractTitle(doc: Y.Doc): string {
-  const frag = doc.getXmlFragment('doc-title')
+  const frag = doc.getXmlFragment('title')
   let title = ''
   frag.toArray().forEach((node) => {
     if (node instanceof Y.XmlElement) {
@@ -49,6 +54,20 @@ function extractTitle(doc: Y.Doc): string {
     }
   })
   return title.trim()
+}
+
+// Writes a document title in the exact shape the live editor expects.
+// Note: useNotebookAI.ts's own writeTitleToFragment uses the wrong tag
+// ("title" instead of "doc-title") — that AI "Generate title" path is
+// itself unverified/likely broken, don't copy it as ground truth.
+export function writeTitleFragment(doc: Y.Doc, text: string): void {
+  const fragment = doc.getXmlFragment('title')
+  if (fragment.length > 0) {
+    fragment.delete(0, fragment.length)
+  }
+  const titleEl = new Y.XmlElement('doc-title')
+  titleEl.insert(0, [new Y.XmlText(text)])
+  fragment.insert(0, [titleEl])
 }
 
 function extractRichText(b: Y.XmlElement<RichTextBlock>): string {

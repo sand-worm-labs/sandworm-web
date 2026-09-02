@@ -8,15 +8,17 @@ import {
     BlockType,
     getBlocks,
     getLayout,
+    getMarkdownSource,
     getRichTextAttributes,
-    writeDocTitle,
+    updateYText,
+    writeTitleFragment,
 } from '@sandworm/editor';
-import { DocumentEntity, DocumentVisibility, FavoriteEntity, UserEntity, WorkspaceEntity, YjsDocumentEntity, YjsAppDocumentEntity } from '../entities';
+import { DocumentEntity, DocumentVisibility, FavoriteEntity, UserEntity, UserWorkspaceEntity, UserWorkspaceRole, UserWorkspaceStatus, WorkspaceEntity, YjsAppDocumentEntity, YjsDocumentEntity } from '../entities';
 import { fake, slugify } from '../utils';
-import { NOTEBOOK_TITLES, SAMPLE_QUERIES } from './data/explore-seed-data';
+import { NOTEBOOK_TITLES, SAMPLE_QUERIES, QUERY_SECTIONS, POWER_TOOLS, WORKSPACE_ICON_COLORS } from './data/explore-seed-data';
 
-function pickSql(): string {
-    return SAMPLE_QUERIES[Math.floor(Math.random() * SAMPLE_QUERIES.length)]!;
+function randomWorkspaceIcon(): string {
+    return WORKSPACE_ICON_COLORS[Math.floor(Math.random() * WORKSPACE_ICON_COLORS.length)]!;
 }
 
 function shuffledTitles(count: number): string[] {
@@ -28,32 +30,58 @@ function publishedSlugFor(title: string, documentId: string): string {
     return `${slugify(title) || 'notebook'}-${documentId.slice(0, 8)}`;
 }
 
-// Real starter content, not a blank canvas — a title heading, a short
-// instructional paragraph, and one real runnable SQL block — built through
-// the same block APIs the live editor uses (@sandworm/editor), so forking
-// one of these actually forks something rather than an empty Yjs doc.
+function addRichText(layout: ReturnType<typeof getLayout>, blocks: ReturnType<typeof getBlocks>, index: number, markdown: string, isMarkdownBlock = false): void {
+    const blockId = addBlockGroup(layout, blocks, { type: isMarkdownBlock ? BlockType.Markdown : BlockType.RichText }, index);
+    const block = blocks.get(blockId)!;
+    if (isMarkdownBlock) {
+        const source = getMarkdownSource(block as Parameters<typeof getMarkdownSource>[0]);
+        updateYText(source, markdown);
+        return;
+    }
+    const { content } = getRichTextAttributes(block as Parameters<typeof getRichTextAttributes>[0]);
+    appendRichTextContent(content, markdown);
+}
+
+// One of each block type the live "Add block" menu offers, except
+// FileUpload (meaningless without a real file) and DashboardHeader (belongs
+// to the Dashboard view, not the notebook body) — a light example of every
+// block, not a stress test.
 function starterYjsState(title: string): Buffer {
     const doc = new Y.Doc();
-
-    writeDocTitle(doc, title);
+    writeTitleFragment(doc, title);
 
     const layout = getLayout(doc);
     const blocks = getBlocks(doc);
+    const section = QUERY_SECTIONS[0]!;
+    const query = SAMPLE_QUERIES[0]!;
+    const toolId = POWER_TOOLS[0]!;
+    let i = 0;
 
-    const textBlockId = addBlockGroup(layout, blocks, { type: BlockType.RichText }, 0);
-    const textBlock = blocks.get(textBlockId)!;
-    const { content } = getRichTextAttributes(textBlock as Parameters<typeof getRichTextAttributes>[0]);
-    appendRichTextContent(
-        content,
-        `# ${title}\n\nStarter notebook — the query below is a sample; adjust it to pull the data for this analysis.`,
+    addRichText(
+        layout, blocks, i++,
+        `# ${title}\n\nStarter notebook — the query below is real and runnable; swap in your own data source and re-run to pull live numbers.`,
     );
+
+    addRichText(layout, blocks, i++, `## ${section.heading}\n\n${section.body}`, true);
 
     addBlockGroup(
-        layout,
-        blocks,
-        { type: BlockType.SQL, dataSourceId: null, isFileDataSource: false, source: pickSql() },
-        1,
+        layout, blocks,
+        { type: BlockType.SQL, dataSourceId: null, isFileDataSource: false, source: query, dataframeName: section.df },
+        i++,
     );
+    addBlockGroup(layout, blocks, { type: BlockType.Python, source: section.python }, i++);
+    addBlockGroup(layout, blocks, { type: BlockType.VisualizationV2, dataframeName: section.df }, i++);
+    addBlockGroup(layout, blocks, { type: BlockType.PivotTable, dataframeName: section.df }, i++);
+    addBlockGroup(layout, blocks, { type: BlockType.PowerToolbox, toolId, inputs: {} }, i++);
+
+    addRichText(
+        layout, blocks, i++,
+        '## Parameters\n\nInputs below can be wired into the SQL/Python blocks above via their variable name.',
+        true,
+    );
+    addBlockGroup(layout, blocks, { type: BlockType.Input }, i++);
+    addBlockGroup(layout, blocks, { type: BlockType.DropdownInput }, i++);
+    addBlockGroup(layout, blocks, { type: BlockType.DateInput }, i++);
 
     return Buffer.from(Y.encodeStateAsUpdate(doc));
 }
@@ -64,42 +92,80 @@ export class ExploreSeeder1776676230562 implements Seeder {
     public async run(dataSource: DataSource, _factoryManager: SeederFactoryManager): Promise<any> {
         const userRepository = dataSource.getRepository(UserEntity);
         const workspaceRepository = dataSource.getRepository(WorkspaceEntity);
+        const userWorkspaceRepository = dataSource.getRepository(UserWorkspaceEntity);
         const documentRepository = dataSource.getRepository(DocumentEntity);
         const favoriteRepository = dataSource.getRepository(FavoriteEntity);
         const yjsDocumentRepository = dataSource.getRepository(YjsDocumentEntity);
         const yjsAppDocumentRepository = dataSource.getRepository(YjsAppDocumentEntity);
 
         const users = await userRepository.find();
-        const workspaces = await workspaceRepository.find();
-        if (!users.length || !workspaces.length) {
-            console.log('No users or workspaces — skipping explore seed');
+        if (!users.length) {
+            console.log('No users — skipping explore seed');
             return;
+        }
+
+        // A document's workspace must belong to its author, or it never
+        // shows up when that author looks at their own workspace. Give
+        // every user their own (active) workspace here rather than
+        // assuming the workspace seeder already did.
+        const existingWorkspaces = await workspaceRepository.find();
+        const workspaceByOwner = new Map(existingWorkspaces.map((w) => [w.ownerId, w]));
+
+        for (const user of users) {
+            if (workspaceByOwner.has(user.id)) continue;
+
+            const workspace = await workspaceRepository.save(
+                workspaceRepository.create({
+                    icon: randomWorkspaceIcon(),
+                    name: user.getTeamName(),
+                    useCases: [],
+                    ownerId: user.id,
+                }),
+            );
+            await userWorkspaceRepository.save(
+                userWorkspaceRepository.create({
+                    userId: user.id,
+                    workspaceId: workspace.id,
+                    role: UserWorkspaceRole.ADMIN,
+                    status: UserWorkspaceStatus.ACTIVE,
+                    inviterId: null,
+                }),
+            );
+            workspaceByOwner.set(user.id, workspace);
+            console.log(`✓ created workspace for ${user.username ?? user.id}`);
         }
 
         // Idempotent: clear whatever this seeder created last time (matched
         // by title, since ids/slugs are freshly random each run) before
         // reseeding, so reruns replace rather than pile up duplicates. Also
-        // catches lorem-ipsum rows from an older version of this seeder.
+        // catches lorem-ipsum rows and the old fixed-slug demo doc from
+        // older versions of this seeder.
         await documentRepository.delete([
-            { title: In([...NOTEBOOK_TITLES, 'Sandworm Demo']) },
+            { title: In(NOTEBOOK_TITLES) },
+            { title: 'Sandworm Demo' },
             { slug: Like('explore-%') },
             { slug: Like('featured-%') },
             { slug: 'sandworm-demo' },
         ]);
 
-        const admin = await userRepository.findOneBy({ username: 'admin' });
-        const adminWorkspace = admin ? workspaces.find((w) => w.ownerId === admin.id) : undefined;
+        const admin = users.find((u) => u.username === 'admin');
 
         const titles = shuffledTitles(44);
-        const specs = titles.map((title, i) => ({
-            id: randomUUID(),
-            title,
-            featured: i < 4,
-            orderIndex: i + 1,
-            authorId: admin && i < 4 ? admin.id : users[i % users.length]!.id,
-            workspaceId: adminWorkspace && i < 4 ? adminWorkspace.id : workspaces[i % workspaces.length]!.id,
-            publishedAt: fake.date.recent({ days: i < 4 ? 7 : 60 }),
-        }));
+        const specs = titles.map((title, idx) => {
+            const featured = idx < 4;
+            const author = featured && admin ? admin : users[idx % users.length]!;
+            // Every user got a workspace above, so this is always defined.
+            const workspace = workspaceByOwner.get(author.id)!;
+            return {
+                id: randomUUID(),
+                title,
+                featured,
+                orderIndex: idx + 1,
+                authorId: author.id,
+                workspaceId: workspace.id,
+                publishedAt: fake.date.recent({ days: featured ? 7 : 60 }),
+            };
+        });
 
         const docs = specs.map((spec) =>
             documentRepository.create({
@@ -162,44 +228,5 @@ export class ExploreSeeder1776676230562 implements Seeder {
             );
             console.log('✓ 10 favorites for admin');
         }
-
-        // ---- seed getPublishedDocumentBySlug — one demo doc ----
-        const demoId = randomUUID();
-        const demoTitle = 'Sandworm Demo';
-        const demoDoc = await documentRepository.save(
-            documentRepository.create({
-                id: demoId,
-                title: demoTitle,
-                orderIndex: 999,
-                version: 1,
-                authorId: admin ? admin.id : users[0]!.id,
-                workspaceId: adminWorkspace ? adminWorkspace.id : workspaces[0]!.id,
-                visibility: DocumentVisibility.PUBLIC,
-                publishedAt: new Date(),
-                slug: publishedSlugFor(demoTitle, demoId),
-                runUnexecutedBlocks: false,
-                runSQLSelection: true,
-                shareLinksWithoutSidebar: true,
-                featuredDocument: false,
-            }),
-        );
-        const demoState = starterYjsState(demoDoc.title);
-        await yjsDocumentRepository.save(
-            yjsDocumentRepository.create({
-                documentId: demoDoc.id,
-                state: demoState,
-                clock: 0,
-                clockUpdatedAt: new Date(),
-            }),
-        );
-        await yjsAppDocumentRepository.save(
-            yjsAppDocumentRepository.create({
-                documentId: demoDoc.id,
-                state: demoState,
-                clock: 0,
-                clockUpdatedAt: new Date(),
-            }),
-        );
-        console.log('✓ sandworm-demo slug document');
     }
 }
