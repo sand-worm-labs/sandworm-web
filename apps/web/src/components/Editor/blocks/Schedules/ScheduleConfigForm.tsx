@@ -32,7 +32,7 @@ function ScheduleConfigForm({
   const selectedScheduleType = useWatch({
     control: form.control,
     name: "type",
-    defaultValue: "monthly",
+    defaultValue: "MONTHLY",
   });
 
   return (
@@ -58,14 +58,14 @@ function ScheduleConfigForm({
             </label>
             <select
               {...form.register("type")}
-              defaultValue="monthly"
+              defaultValue="MONTHLY"
               className="mt-2 block w-full rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-100 bg-white dark:bg-base-710 ring-[1.5px] ring-border-secondary dark:ring-border-tertiary focus-visible:outline-primary focus:ring-1 focus:ring-primary sm:text-sm sm:leading-6 "
             >
-              <option value="hourly">Hourly</option>
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-              <option value="cron">Cron</option>
+              <option value="HOURLY">Hourly</option>
+              <option value="DAILY">Daily</option>
+              <option value="WEEKLY">Weekly</option>
+              <option value="MONTHLY">Monthly</option>
+              <option value="CRON">Cron</option>
             </select>
             <FormError msg={form.formState.errors.timezone?.message} />
           </div>
@@ -91,21 +91,21 @@ function ScheduleConfigForm({
             <FormError msg={form.formState.errors.timezone?.message} />
           </div>
 
-          {selectedScheduleType === "hourly" && (
+          {selectedScheduleType === "HOURLY" && (
             <HourlyScheduleFields
               register={form.register}
               formErrors={form.formState.errors}
             />
           )}
 
-          {selectedScheduleType === "daily" && (
+          {selectedScheduleType === "DAILY" && (
             <DailyScheduleFields
               register={form.register}
               formErrors={form.formState.errors}
             />
           )}
 
-          {selectedScheduleType === "weekly" && (
+          {selectedScheduleType === "WEEKLY" && (
             <WeeklyScheduleFields
               register={form.register}
               formErrors={form.formState.errors}
@@ -113,7 +113,7 @@ function ScheduleConfigForm({
             />
           )}
 
-          {selectedScheduleType === "monthly" && (
+          {selectedScheduleType === "MONTHLY" && (
             <MonthlyScheduleFields
               register={form.register}
               formErrors={form.formState.errors}
@@ -121,7 +121,7 @@ function ScheduleConfigForm({
             />
           )}
 
-          {selectedScheduleType === "cron" && (
+          {selectedScheduleType === "CRON" && (
             <CronScheduleFields
               register={form.register}
               formErrors={form.formState.errors}
