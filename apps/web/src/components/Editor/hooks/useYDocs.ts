@@ -160,7 +160,8 @@ export function useYDoc(
   userId: string | null,
   publishedAt: string | null,
   connect: boolean,
-  initialState: Buffer | null
+  initialState: Buffer | null,
+  accessToken: string | null
 ) {
   const isFirst = useRef(true);
 
@@ -177,7 +178,8 @@ export function useYDoc(
     isDataApp,
     clock,
     userId,
-    publishedAt
+    publishedAt,
+    accessToken
   );
   const [syncing, setSyncing] = useResettableState(() => true, [provider]);
 

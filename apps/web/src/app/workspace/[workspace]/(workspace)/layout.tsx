@@ -66,9 +66,7 @@ function WorkspaceLayoutInner({ children }: WorkspaceLayoutProps) {
     "viewing" | "sent" | "pending" | "approved"
   >("viewing");
 
-  const shouldHideHeader =
-    pathname.includes("/documents/") &&
-    (pathname.endsWith("/edit") || pathname.includes("/notebook"));
+  const shouldHideHeader = pathname.includes("/documents/");
 
   const isViewer = workspaceInfo?.role === "viewer";
 

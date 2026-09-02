@@ -25,6 +25,7 @@ type CardTag = "featured" | "popular" | "trending" | "new";
 
 interface FeaturedExploreCardProps {
   id: string;
+  slug: string;
   tag: CardTag;
   title: string;
   createdAt: Date;
@@ -51,6 +52,7 @@ const tagLabels: Record<CardTag, string> = {
 // =====================================
 export function FeaturedExploreCard({
   id,
+  slug,
   tag,
   title,
   createdAt,
@@ -122,7 +124,7 @@ export function FeaturedExploreCard({
   return (
     <>
       <div
-        onClick={() => router.push(`/p/${id}`)}
+        onClick={() => router.push(`/notebooks/${slug}`)}
         className={cn(
           "flex flex-col rounded-3xl py-5 border px-6 cursor-pointer transition-shadow font-body group/card dark:bg-dropdown-bg dark:border-border-tertiary",
           isPurple
@@ -132,7 +134,7 @@ export function FeaturedExploreCard({
         role="button"
         tabIndex={0}
         onKeyDown={e =>
-          (e.key === "Enter" || e.key === " ") && router.push(`/p/${id}`)
+          (e.key === "Enter" || e.key === " ") && router.push(`/notebooks/${slug}`)
         }
       >
         <div className="flex items-center justify-between mb-3">

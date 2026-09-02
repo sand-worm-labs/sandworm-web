@@ -18,7 +18,10 @@ export default function DashboardEditPage() {
   const workspaceId = useStringQuery("workspace");
   const documentId = useStringQuery("document");
 
-  const [{ document, loading }] = useDocument(workspaceId, documentId);
+  const [{ document, loading, publishing }, { publish }] = useDocument(
+    workspaceId,
+    documentId
+  );
 
   if (!session.user || loading || !document) {
     return null;
@@ -39,8 +42,8 @@ export default function DashboardEditPage() {
           role={role}
           user={session.user}
           isEditing
-          publish={() => Promise.resolve()}
-          publishing={false}
+          publish={publish}
+          publishing={publishing}
         />
       </main>
     </>

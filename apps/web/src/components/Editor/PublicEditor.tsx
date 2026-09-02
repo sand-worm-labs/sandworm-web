@@ -33,6 +33,7 @@ import PythonBlock from "./blocks/customBlocks/python";
 import RichTextBlock from "./blocks/customBlocks/richText";
 import AnalyticsBlock from "./blocks/customBlocks/PowerToolbox/AnalyticsBlock";
 import SQLBlock from "./blocks/customBlocks/sql";
+import { PublicSQLExtensionProvider } from "./blocks/customBlocks/CodeEditor/sql";
 import PivotTableBlock from "./blocks/customBlocks/pivotTable";
 import { useYDocState } from "./hooks/useYDocs";
 import useEditorAwareness, {
@@ -41,7 +42,7 @@ import useEditorAwareness, {
 import type { APIDataSources } from "./hooks/useDataSources";
 import { ContentSkeleton } from "./ContentSkeleton";
 import Title from "./Title";
-import { widthClasses } from "./constants";
+import { publicWidthClasses } from "./constants";
 
 import { getTabIcon } from ".";
 
@@ -60,13 +61,27 @@ const dataframesGetter = (yDoc: Y.Doc) => yDoc.getMap<DataFrame>("dataframes");
 // ─────────────────────────────────────────────────────────────
 
 const NOOP_EXECUTION_QUEUE = {
+  getCurrentBatch: () => null,
+  advance: () => {},
   enqueueBlock: () => {},
   enqueueBlockOnwards: () => {},
   enqueueBlockGroup: () => {},
+  enqueueRunAll: () => {},
+  getBlockExecutions: () => [],
+  observe: () => () => {},
+  toJSON: () => [],
+  getRunAllBatches: () => [],
   getExecutionQueueMetadataForBlock: () => null,
+  length: 0,
 } as unknown as ExecutionQueue;
 
-const NOOP_AI_TASKS = {} as unknown as AITasks;
+const NOOP_AI_TASKS = {
+  enqueue: () => {},
+  next: () => null,
+  getBlockTasks: () => [],
+  observe: () => () => {},
+  size: () => 0,
+} as unknown as AITasks;
 
 // ─────────────────────────────────────────────────────────────
 // ⬢ TAB HEADER (read-only, no drag/drop/context menu)
@@ -121,6 +136,7 @@ interface PublicTabRefProps {
   isApp: boolean;
   currentBlockId: string | undefined;
   isPDF: boolean;
+  isQueryView: boolean;
 }
 
 function PublicTabRef(props: PublicTabRefProps) {
@@ -152,6 +168,7 @@ function PublicTabRef(props: PublicTabRefProps) {
         layout={props.layout}
         blocks={props.blocks}
         isPublicMode
+        viewModeCodeHidden={!props.isQueryView}
         isEditable={false}
         document={props.document}
         dataSources={props.dataSources}
@@ -171,6 +188,7 @@ function PublicTabRef(props: PublicTabRefProps) {
     onPython: block => (
       <PythonBlock
         isPublicMode
+        viewModeCodeHidden={!props.isQueryView}
         block={block}
         blocks={props.blocks}
         isEditable={false}
@@ -364,6 +382,7 @@ interface PublicTabbedBlockProps {
   dataframes: Y.Map<DataFrame>;
   yDoc: Y.Doc;
   isPDF: boolean;
+  isQueryView: boolean;
 }
 
 function PublicTabbedBlock(props: PublicTabbedBlockProps) {
@@ -436,6 +455,7 @@ function PublicTabbedBlock(props: PublicTabbedBlockProps) {
                 isApp={props.isApp}
                 currentBlockId={currentBlockId}
                 isPDF={props.isPDF}
+                isQueryView={props.isQueryView}
               />
             ))}
           </div>
@@ -453,6 +473,7 @@ function PublicTabbedBlock(props: PublicTabbedBlockProps) {
               isApp={props.isApp}
               currentBlockId={currentBlockId}
               isPDF={props.isPDF}
+              isQueryView={props.isQueryView}
             />
           ))
         )}
@@ -473,6 +494,7 @@ interface PublicEditorInnerProps {
   isFullScreen: boolean;
   yDoc: Y.Doc;
   isSyncing: boolean;
+  isQueryView: boolean;
   scrollViewRef: React.MutableRefObject<HTMLDivElement | null>;
 }
 
@@ -509,6 +531,7 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
           dataframes={dataframes.value}
           yDoc={props.yDoc}
           isPDF={props.isPDF}
+          isQueryView={props.isQueryView}
         />
       );
     });
@@ -521,6 +544,7 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
     props.dataSources,
     props.isPDF,
     props.yDoc,
+    props.isQueryView,
   ]);
 
   return (
@@ -551,10 +575,10 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
             id="editor-wrapper"
             className={clsx(
               "flex-grow h-full py-2",
-              props.isFullScreen ? "w-full" : widthClasses
+              props.isFullScreen ? "w-full" : publicWidthClasses
             )}
           >
-            <div className={!props.isPDF ? "pt-12" : ""}>
+            <div className={!props.isPDF ? "pt-12 pb-6" : ""}>
               <Title
                 content={props.yDoc.getXmlFragment("title")}
                 isLoading={props.isSyncing}
@@ -565,7 +589,7 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
             <ContentSkeleton visible={props.isSyncing} />
 
             {!props.isSyncing && (
-              <div className="flex flex-col gap-y-1">{domBlocks}</div>
+              <div className="flex flex-col gap-y-6">{domBlocks}</div>
             )}
 
             {!props.isPDF && <div className="pb-20" />}
@@ -595,20 +619,32 @@ export interface PublicEditorProps {
   isFullScreen: boolean;
   yDoc: Y.Doc;
   isSyncing: boolean;
+  isQueryView?: boolean;
   children?: ReactNode;
 }
 
 export default function PublicEditor(props: PublicEditorProps) {
   const scrollViewRef = useRef<HTMLDivElement>(null);
+  const isQueryView = props.isQueryView ?? false;
 
   return (
     // EditorAwarenessProvider is kept because PublicTabRef calls
     // useEditorAwareness() for isCursorWithin/isCursorInserting.
     // Cost is negligible — it's just a context with no socket wiring.
-    // SQLExtensionProvider intentionally omitted.
+    // The real SQLExtensionProvider needs an authenticated workspace
+    // (useDataSources), which public viewers don't have — SQL blocks
+    // still call useSQLExtension() on mount regardless of isEditable,
+    // so a no-op PublicSQLExtensionProvider is required to avoid a
+    // "Called getExtension outside of provider" crash.
     <EditorAwarenessProvider scrollViewRef={scrollViewRef} yDoc={props.yDoc}>
-      <PublicEditorInner {...props} scrollViewRef={scrollViewRef} />
-      {props.children}
+      <PublicSQLExtensionProvider>
+        <PublicEditorInner
+          {...props}
+          isQueryView={isQueryView}
+          scrollViewRef={scrollViewRef}
+        />
+        {props.children}
+      </PublicSQLExtensionProvider>
     </EditorAwarenessProvider>
   );
 }

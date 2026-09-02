@@ -5,8 +5,6 @@ import { WebsocketProvider } from "y-websocket";
 
 import { NEXT_PUBLIC_API_WS_URL } from "../../../utils/env";
 
-import { useSession } from "./useAuth";
-
 // =====================================
 // ⬢ Utils
 // =====================================
@@ -141,13 +139,18 @@ export function useProvider(
   isDataApp: boolean,
   clock: number,
   userId: string | null,
-  publishedAt: string | null
+  publishedAt: string | null,
+  accessToken: string | null
 ): IProvider {
-  const session = useSession({ redirectToLogin: false });
-
   // ── state ──
   // ⬢ NOTE — useState with initialiser function to avoid creating a new
   // provider on every render, which would cause the previous one to leak.
+  // accessToken is taken from the caller's already-resolved session (not
+  // re-fetched here) — an independent useSession() call in this hook would
+  // resolve after the initial provider is constructed, so the first
+  // connection attempt would carry an empty token and get rejected by the
+  // server, burning through reconnect backoff before a token-bearing retry
+  // finally lands.
   const [provider, setProvider] = useState<Provider>(
     () =>
       new Provider(
@@ -158,7 +161,7 @@ export function useProvider(
           clock,
           userId,
           publishedAt,
-          session.user?.token ?? null
+          accessToken
         )
       )
   );
@@ -182,19 +185,11 @@ export function useProvider(
           clock,
           userId,
           publishedAt,
-          session.user?.token ?? null
+          accessToken
         )
       )
     );
-  }, [
-    yDoc,
-    documentId,
-    isDataApp,
-    clock,
-    userId,
-    publishedAt,
-    session.user?.token,
-  ]);
+  }, [yDoc, documentId, isDataApp, clock, userId, publishedAt, accessToken]);
 
   useEffect(
     () => () => {

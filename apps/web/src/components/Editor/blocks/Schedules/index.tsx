@@ -241,16 +241,11 @@ function ScheduleList(props: ScheduleListProps) {
               {/* Schedule List */}
               <ScrollBar className="overflow-auto flex-1 space-y-6 pb-6 pt-4 px-2 xl:px-4 ">
                 <ul className="text-xs font-body  overflow-visible">
-                  {props.schedules.map((scheduledRun, i) => {
+                  {props.schedules.map(scheduledRun => {
                     return (
                       <li
                         key={scheduledRun.id}
-                        className={clsx(
-                          {
-                            "": i === props.schedules.length - 1,
-                          },
-                          "flex  border-border bg-base-500 border rounded-xl  p-3"
-                        )}
+                        className="flex px-4 py-3 font-body border border-border-secondary rounded-xl my-2 dark:bg-page-surface dark:border-border-tertiary"
                       >
                         <div className="flex flex-1 items-center justify-between">
                           <div className="w-3/4">

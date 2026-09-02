@@ -263,3 +263,19 @@ export function SQLExtensionProvider(props: Props) {
     <Context.Provider value={getExtension}>{props.children}</Context.Provider>
   );
 }
+
+// =====================================
+// ⬢ PublicSQLExtensionProvider
+// No live datasource/schema fetch — SQL blocks in public/read-only mode
+// never trigger autocomplete, so a no-op extension is enough to satisfy
+// useSQLExtension without requiring an authenticated workspace.
+// =====================================
+export function PublicSQLExtensionProvider(props: {
+  children: React.ReactNode;
+}) {
+  const getExtension = useCallback((): Extension => [], []);
+
+  return (
+    <Context.Provider value={getExtension}>{props.children}</Context.Provider>
+  );
+}

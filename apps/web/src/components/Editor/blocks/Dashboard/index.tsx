@@ -1,8 +1,7 @@
 /* eslint-disable import/no-cycle */
 import type * as Y from "yjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { SquaresPlusIcon } from "@heroicons/react/24/solid";
-import { EyeIcon } from "@heroicons/react/24/outline";
+import { PiPencilSimple } from "react-icons/pi";
 import type { BlockType, YBlock, YBlockGroup } from "@sandworm/editor";
 import {
   AITasks,
@@ -25,6 +24,7 @@ import { ChatIcon } from "@/components/Assets/ChatIcon";
 import { ClockCountdown } from "@/components/Assets/ClockCountdown";
 import type { ApiDocument, UserWorkspaceRole } from "@/types";
 import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
+import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
 import Layout from "@/components/Visualization/Layout";
 import VisualizationBlock from "@/components/Visualization/index";
 
@@ -458,7 +458,8 @@ export default function Dashboard(props: Props) {
     props.user.id,
     props.document.publishedAt,
     true,
-    null
+    null,
+    props.user.token
   );
 
   useHotkeys("mod+z", undo);
@@ -487,7 +488,7 @@ export default function Dashboard(props: Props) {
 
     await props.publish();
     router.push(
-      `/workspaces/${props.document.workspaceId}/documents/${props.document.id}/dashboard`
+      `/workspace/${props.document.workspaceId}/documents/${props.document.id}/dashboard`
     );
   }, [props.publish, props.publishing]);
 
@@ -632,23 +633,27 @@ export default function Dashboard(props: Props) {
     ]
   );
 
+  const isDashboardViewer = props.role === "viewer";
+
   const topBarContent = (
-    <div className="flex items-center w-full justify-between">
-      <div className="w-full overflow-hidden flex items-center gap-x-1.5 text-sm text-ink-400 font-body ">
-        {props.isEditing ? (
-          <SquaresPlusIcon className="w-4 h-4" />
-        ) : (
-          <EyeIcon className="w-4 h-4" />
-        )}
-        <span className="w-full truncate">
-          <span className="font-semibold">
-            {props.isEditing ? (
-              "Editing"
+    <div className="flex items-center w-full justify-between gap-x-6">
+      <div className="w-full min-w-0 overflow-hidden flex items-center gap-x-1.5 text-[13px] text-ink-400 dark:text-ink-400 font-body ">
+        <span className="w-full min-w-0 flex gap-x-2 items-center ">
+          <span className="font-normal bg-base-600 rounded-full px-3 py-0.5 text-ink-100 border border-border-secondary flex gap-x-2 w-[90px] shrink-0 items-center  ">
+            <span className="relative flex items-center justify-center w-[10px] h-[10px]">
+              <span className="absolute inline-flex w-full h-full rounded-full bg-primary/15" />
+              <span className="absolute inline-flex w-full h-full animate-[ping_1.8s_cubic-bezier(0,0,0.2,1)_infinite] rounded-full bg-primary/30" />
+              <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-primary" />
+            </span>
+            {!props.isEditing || isDashboardViewer ? (
+              <span className="text-ink-100">Viewing</span>
             ) : (
-              <span className="text-ceramic-500">Viewing</span>
+              "Editing"
             )}
           </span>{" "}
-          {documentTitle}
+          <span className="text-ink-400 truncate min-w-0">
+            / {documentTitle}
+          </span>
         </span>
       </div>
       <DashboardNotebookGroupButton
@@ -659,7 +664,7 @@ export default function Dashboard(props: Props) {
         userRole={props.role}
         isPublished={props.document.publishedAt !== null}
       />
-      <div className="w-full justify-end flex items-center gap-x-2 h-[30px]">
+      <div className="w-full justify-end flex items-center gap-x-0.5 h-[30px]">
         {props.isEditing && (
           <LiveButton
             onClick={onGoToApp}
@@ -667,6 +672,9 @@ export default function Dashboard(props: Props) {
             tooltipActive={!props.document.publishedAt}
           />
         )}
+        <ThemeTogggle iconSize={18} />
+
+        <div className="ml-1 mr-3 h-5 w-px bg-[#E8E8EA] dark:bg-border-tertiary" />
 
         {props.role !== "viewer" && props.isEditing && (
           <Tooltip
@@ -679,23 +687,41 @@ export default function Dashboard(props: Props) {
             <button
               type="button"
               id="dashboard-publish-button"
-              className="flex items-center rounded-lg px-5 py-1 text-sm bg-primary text-white hover:bg-primary-300 border border-transparent disabled:border-border-secondary disabled:bg-gray-100 disabled:cursor-not-allowed gap-x-1.5 group relative disabled:text-ink-400 "
+              className="flex items-center gap-1.5
+    rounded-lg px-3 py-1 text-sm font-body
+    bg-transparent text-primary dark:text-primary-tint-75
+    hover:bg-primary-300
+    disabled:cursor-not-allowed disabled:opacity-50
+    border-[1.5px] border-primary dark:border-hover-border relative group font-medium"
               onClick={onPublish}
               disabled={props.publishing}
             >
+              <span
+                className="inline-flex items-center gap-[2px] font-body font-medium leading-none
+    text-primary dark:text-primary-tint-75 border border-primary dark:border-hover-border rounded-sm
+    px-1 py-0.5 text-[12px] tracking-tight
+    group-hover:scale-95 transition-transform duration-300"
+              >
+                ⌘ S
+              </span>
+              <span>Save</span>
               {isDirty && props.document.publishedAt && (
                 <PublishBlinkingSignal />
               )}
-              <span>Save</span>
             </button>
           </Tooltip>
         )}
         {!props.isEditing && props.role !== "viewer" && (
           <Link
-            className="flex  items-center rounded-sm px-3 py-1 text-sm text-ink-400  bg-white hover:bg-gray-100 border border-border-secondary disabled:cursor-not-allowed disabled:opacity-50 gap-x-1.5 justify-center"
-            href={`/workspaces/${props.document.workspaceId}/documents/${props.document.id}/dashboard/edit`}
+            className="flex items-center gap-1.5
+          rounded-lg px-3 py-1 text-sm font-body
+          bg-white dark:bg-base-100 dark:text-ink-100
+          border border-primary dark:border-border-tertiary
+          hover:bg-base-300 dark:hover:bg-base-700
+          disabled:cursor-not-allowed disabled:opacity-50"
+            href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/dashboard/edit`}
           >
-            <SquaresPlusIcon className="w-4 h-4" />
+            <PiPencilSimple size={16} />
             <span>Edit</span>
           </Link>
         )}

@@ -43,12 +43,9 @@ export class DocumentEntity extends AbstractEntity {
   @Column()
   title!: string;
 
-  @Index("IDX_document_published_slug", { unique: true, where: '"published_slug" IS NOT NULL' })
-  @Column({ name: "published_slug", nullable: true, unique: false })
-  publishedSlug!: string | null;
-
-  @Column({ default: "DocumentIcon" })
-  slug!: string;
+  @Index("IDX_document_slug", { unique: true, where: '"slug" IS NOT NULL' })
+  @Column({ name: "slug", nullable: true, unique: false })
+  slug!: string | null;
 
   @Column({ name: "order_index" })
   orderIndex!: number;

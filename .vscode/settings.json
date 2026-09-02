@@ -70,5 +70,6 @@
 
   "eslint.rules.customizations": [],
 
-  "eslint.run": "onType"
+  "eslint.run": "onType",
+  "wake.compiler.solc.remappings": []
 }

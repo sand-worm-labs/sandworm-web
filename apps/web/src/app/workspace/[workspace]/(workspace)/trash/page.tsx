@@ -15,6 +15,7 @@ import {
   Transition,
   TransitionChild,
 } from "@headlessui/react";
+import clsx from "clsx";
 import { PiTrash } from "react-icons/pi";
 
 import type { ApiDeletedDocument } from "@/types";
@@ -185,7 +186,6 @@ function getActionRoots(
 // =====================================
 
 type PendingAction =
-  | { kind: "delete"; scope: "all" }
   | { kind: "delete"; scope: "selected" }
   | { kind: "delete"; scope: "one"; id: string; title: string }
   | { kind: "restore"; scope: "one"; id: string; title: string };
@@ -197,13 +197,12 @@ type PendingAction =
 export default function TrashPage() {
   const workspaceId = useStringQuery("workspace");
 
-  const [state, { restoreDocument, deleteDocument, emptyTrash }] =
+  const [state, { restoreDocument, deleteDocument }] =
     useDocuments(workspaceId);
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const selectAllRef = useRef<HTMLInputElement>(null);
 
-  const [isRestoringAll, setIsRestoringAll] = useState(false);
   const [isRestoringSelected, setIsRestoringSelected] = useState(false);
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(
     null
@@ -277,15 +276,6 @@ export default function TrashPage() {
     [docsById, restoreDocument]
   );
 
-  const onRestoreAll = useCallback(async () => {
-    setIsRestoringAll(true);
-    try {
-      await restoreRoots(new Set(documents.map(d => d.id)));
-    } finally {
-      setIsRestoringAll(false);
-    }
-  }, [restoreRoots, documents]);
-
   const onRestoreSelected = useCallback(async () => {
     setIsRestoringSelected(true);
     try {
@@ -303,8 +293,6 @@ export default function TrashPage() {
     try {
       if (pendingAction.kind === "restore") {
         await restoreDocument(pendingAction.id);
-      } else if (pendingAction.scope === "all") {
-        await emptyTrash();
       } else if (pendingAction.scope === "selected") {
         const roots = getActionRoots(selectedIds, docsById);
         await Promise.allSettled(roots.map(id => deleteDocument(id, true)));
@@ -316,14 +304,7 @@ export default function TrashPage() {
     } finally {
       setIsActionBusy(false);
     }
-  }, [
-    pendingAction,
-    selectedIds,
-    docsById,
-    deleteDocument,
-    restoreDocument,
-    emptyTrash,
-  ]);
+  }, [pendingAction, selectedIds, docsById, deleteDocument, restoreDocument]);
 
   const pendingDialog = useMemo(() => {
     if (!pendingAction) return null;
@@ -339,15 +320,6 @@ export default function TrashPage() {
     }
 
     switch (pendingAction.scope) {
-      case "all":
-        return {
-          title: "Empty trash?",
-          message:
-            "This will permanently delete every notebook in trash. This action cannot be undone.",
-          confirmLabel: "Delete all",
-          busyLabel: "Deleting…",
-          variant: "danger" as const,
-        };
       case "selected":
         return {
           title: "Delete selected?",
@@ -397,80 +369,20 @@ export default function TrashPage() {
           </h3>
         </div>
 
-        {/* ── Bulk toolbar ── */}
+        {/* ── Select all ── */}
         {documents.size > 0 && (
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <div
-              className="flex items-center gap-2 text-sm text-ink-300
-              dark:text-placeholder-muted select-none"
-            >
-              <StyledCheckbox
-                ref={selectAllRef}
-                checked={allSelected}
-                indeterminate={someSelected}
-                onChange={onToggleSelectAll}
-                aria-label="Select all"
-              />
-              {selectedIds.size > 0
-                ? `${selectedIds.size} selected`
-                : "Select all"}
-            </div>
-
-            <div className="flex items-center gap-2">
-              {selectedIds.size > 0 ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={onRestoreSelected}
-                    disabled={isRestoringSelected}
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium border border-transparent
-                      text-primary bg-primary-tint-50 dark:bg-create-project-tint/[0.16]
-                      dark:border-border-tertiary dark:text-white hover:bg-primary hover:text-white dark:hover:bg-white/10
-                      dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]
-                      transition-colors duration-100 disabled:opacity-50"
-                  >
-                    {isRestoringSelected ? "Restoring…" : "Restore selected"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setPendingAction({ kind: "delete", scope: "selected" })
-                    }
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium
-                      bg-error text-white hover:bg-error/90
-                      transition-colors duration-100"
-                  >
-                    Delete selected
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    onClick={onRestoreAll}
-                    disabled={isRestoringAll}
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium border border-transparent
-                      text-primary bg-primary-tint-50 dark:bg-create-project-tint/[0.16]
-                      dark:border-border-tertiary dark:text-white hover:bg-primary hover:text-white dark:hover:bg-white/10
-                      dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]
-                      transition-colors duration-100 disabled:opacity-50"
-                  >
-                    {isRestoringAll ? "Restoring…" : "Restore all"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setPendingAction({ kind: "delete", scope: "all" })
-                    }
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium
-                      bg-error text-white hover:bg-error/90
-                      transition-colors duration-100"
-                  >
-                    Delete all
-                  </button>
-                </>
-              )}
-            </div>
+          <div
+            className="flex items-center gap-2 text-sm text-ink-300
+            dark:text-placeholder-muted select-none mb-4"
+          >
+            <StyledCheckbox
+              ref={selectAllRef}
+              checked={allSelected}
+              indeterminate={someSelected}
+              onChange={onToggleSelectAll}
+              aria-label="Select all"
+            />
+            {selectedIds.size > 0 ? `${selectedIds.size} selected` : "Select all"}
           </div>
         )}
 
@@ -487,6 +399,42 @@ export default function TrashPage() {
             onRestore={onRequestRestore}
           />
         )}
+      </div>
+
+      {/* ── Floating selection pill ── */}
+      <div
+        className={clsx(
+          "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",
+          "flex items-center gap-4 px-3 py-3",
+          "bg-base-400 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary",
+          "rounded-[14px]",
+          "shadow-lg",
+          "transition-all duration-200 ease-out",
+          selectedIds.size > 0
+            ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 translate-y-4 pointer-events-none"
+        )}
+      >
+        <span className="text-[13px] text-white/70 whitespace-nowrap">
+          <span className="text-white font-medium">{selectedIds.size}</span>{" "}
+          {selectedIds.size === 1 ? "notebook" : "notebooks"} selected
+        </span>
+
+        <button
+          type="button"
+          onClick={onRestoreSelected}
+          disabled={isRestoringSelected}
+          className="flex items-center gap-1.5 text-xs font-medium transition-colors bg-inputBg rounded-lg px-2 py-1.5 text-ink-500 disabled:opacity-50"
+        >
+          {isRestoringSelected ? "Restoring…" : "Restore selected"}
+        </button>
+        <button
+          type="button"
+          onClick={() => setPendingAction({ kind: "delete", scope: "selected" })}
+          className="flex items-center gap-1.5 text-xs font-medium transition-colors text-red-400 hover:text-red-300 rounded-lg px-2 py-1.5"
+        >
+          Delete selected
+        </button>
       </div>
 
       {pendingDialog && (

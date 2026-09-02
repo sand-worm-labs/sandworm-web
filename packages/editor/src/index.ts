@@ -416,6 +416,21 @@ export function createDocState(setup: (doc: Y.Doc) => void): Uint8Array {
     return Y.encodeStateAsUpdate(doc);
 }
 
+// Canonical way to write a document's title into its Yjs state — gets the
+// doc's "title" fragment, clears it, and writes a "doc-title" XmlElement
+// (matching Editor/Title.tsx's TipTap node name, so y-prosemirror binds it
+// correctly) wrapping the text, not a bare XmlText.
+export function writeDocTitle(doc: Y.Doc, text: string) {
+  const fragment = doc.getXmlFragment("title");
+  if (fragment.length > 0) {
+    fragment.delete(0, fragment.length);
+  }
+  const titleEl = new Y.XmlElement("doc-title");
+  const titleText = new Y.XmlText(text);
+  titleEl.insert(0, [titleText]);
+  fragment.insert(0, [titleEl]);
+}
+
 export function getDataframe(
   block: Y.XmlElement<any | PivotTableBlock>,
   dataframes: Y.Map<DataFrame>

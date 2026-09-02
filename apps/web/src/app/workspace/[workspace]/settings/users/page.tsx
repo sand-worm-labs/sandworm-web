@@ -263,6 +263,8 @@ export default function UsersPage() {
             onChangeRole={onChangeRole}
             onResetPassword={onResetPassword}
             userRole="admin"
+            searchValue={searchValue}
+            hasActiveFilters={roleFilters.some(f => f.enabled)}
           />
         </div>
       </ScrollBar>

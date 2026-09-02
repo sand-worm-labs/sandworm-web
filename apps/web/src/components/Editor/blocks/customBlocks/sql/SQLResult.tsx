@@ -397,6 +397,7 @@ function SQLAborted(props: {
 // =====================================
 function SQLSyntaxError(props: {
   result: SyntaxErrorRunQueryResult;
+  isPublic: boolean;
   isFixingWithAI: boolean;
   onFixWithAI?: () => void;
   canFixWithAI: boolean;
@@ -441,7 +442,7 @@ function SQLSyntaxError(props: {
               <pre className="whitespace-pre-wrap ph-no-capture overflow-hidden">
                 {props.result.message}
               </pre>
-              {props.onFixWithAI && (
+              {!props.isPublic && props.onFixWithAI && (
                 <Tooltip
                   title="Missing OpenAI API key"
                   message="Admins can add an OpenAI key in settings."
@@ -604,6 +605,7 @@ function SQLResult(props: Props) {
       return (
         <SQLSyntaxError
           result={props.result}
+          isPublic={props.isPublic}
           isFixingWithAI={props.isFixingWithAI}
           onFixWithAI={props.onFixWithAI}
           canFixWithAI={props.canFixWithAI}

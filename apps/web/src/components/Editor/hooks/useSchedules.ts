@@ -53,14 +53,14 @@ function buildScheduleInput(documentId: string, params: ScheduleParams) {
         ...base,
         hour: params.hour,
         minute: params.minute,
-        weekdays: params.weekdays as unknown as string,
+        weekdays: params.weekdays.join(","),
       };
     case "MONTHLY":
       return {
         ...base,
         hour: params.hour,
         minute: params.minute,
-        days: params.days as unknown as string,
+        days: params.days.join(","),
       };
     case "CRON":
       return { ...base, cron: params.cron };
@@ -96,14 +96,14 @@ function buildOptimisticSchedule(documentId: string, params: ScheduleParams) {
         ...base,
         hour: params.hour,
         minute: params.minute,
-        weekdays: params.weekdays as unknown as string,
+        weekdays: params.weekdays.join(","),
       };
     case "MONTHLY":
       return {
         ...base,
         hour: params.hour,
         minute: params.minute,
-        days: params.days as unknown as string,
+        days: params.days.join(","),
       };
     case "CRON":
       return { ...base, cron: params.cron };

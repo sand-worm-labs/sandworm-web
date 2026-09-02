@@ -40,6 +40,44 @@ query GetDocument($workspaceId: String!, $documentId: String!) {
   }
 }
 
+query GetPublishedDocumentBySlug($slug: String!) {
+  getPublishedDocumentBySlug(slug: $slug) {
+    id
+    title
+    slug
+    icon
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
+    author {
+      username
+      firstName
+      lastName
+      avater
+    }
+  }
+}
+
+query GetPublishedDocumentState($slug: String!) {
+  getPublishedDocumentState(slug: $slug)
+}
+
 query GetExplorerDocuments($limit: Float = 20, $offset: Float = 0) {
   getExplorerDocuments(limit: $limit, offset: $offset) {
       ...DocumentFields

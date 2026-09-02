@@ -1,17 +1,63 @@
-export default function PublicNotebookBanner() {
-  return (
-    <div className="w-full bg-base-100 border-b border-base-200 border-t border-border-secondary  text-sm font-primary relative">
-      <span className="text-base-400 bg-green-100 border-b border-green-400 font-medium w-full py-3 inline-block px-5">
-        Read-only preview. Fork this notebook to edit and run your own code.
-      </span>
+"use client";
 
-      <div className="py-4 flex justify-end">
-        <button
-          className="flex items-center gap-1.5 px-5 py-1.5 rounded-md text-white text-sm font-medium absolute "
-          style={{ backgroundColor: "#A308F0" }}
+import type { ApiDocument } from "@/types";
+
+import { useSession } from "./hooks/useAuth";
+import AccountMenu from "./PublicHeader/AccountMenu";
+import ForkButton from "./PublicHeader/ForkButton";
+import HelpDropdown from "./PublicHeader/HelpDropdown";
+import PublicHeaderLogo from "./PublicHeader/Logo";
+import NotebookTitle from "./PublicHeader/NotebookTitle";
+import ShareButton from "./PublicHeader/ShareButton";
+import ViewSwitcher, { type NotebookView } from "./ViewSwitcher";
+
+interface PublicNotebookBannerProps {
+  document: ApiDocument | null;
+  view: NotebookView;
+  onChangeView: (view: NotebookView) => void;
+}
+
+export default function PublicNotebookBanner({
+  document,
+  view,
+  onChangeView,
+}: PublicNotebookBannerProps) {
+  const { user, loading, isAuthenticated } = useSession({
+    redirectToLogin: false,
+  });
+
+  return (
+    <div className="w-full bg-base-100 font-primary relative">
+      <div className="h-14 w-full flex items-center gap-3 px-5 border-b border-border-secondary dark:border-border-tertiary">
+        <PublicHeaderLogo />
+
+        <span
+          className="text-border-secondary dark:text-border-tertiary select-none"
+          aria-hidden
         >
-          Fork
-        </button>
+          /
+        </span>
+
+        <div className="flex-1 min-w-0">
+          <NotebookTitle
+            title={document?.title ?? null}
+            isLoading={!document}
+          />
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <ViewSwitcher view={view} onChange={onChangeView} />
+          <ShareButton />
+          <ForkButton
+            document={document && { id: document.id, title: document.title }}
+            isAuthenticated={isAuthenticated}
+          />
+
+          <div className="h-5 w-px bg-[#E8E8EA] dark:bg-border-tertiary" />
+
+          <HelpDropdown />
+          <AccountMenu user={user} loading={loading} />
+        </div>
       </div>
     </div>
   );
