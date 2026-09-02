@@ -8,7 +8,9 @@ import {
     BlockType,
     getBlocks,
     getLayout,
+    getMarkdownSource,
     getRichTextAttributes,
+    updateYText,
     writeTitleFragment,
 } from '@sandworm/editor';
 import { DocumentEntity, DocumentVisibility, FavoriteEntity, UserEntity, UserWorkspaceEntity, UserWorkspaceRole, UserWorkspaceStatus, WorkspaceEntity, YjsAppDocumentEntity, YjsDocumentEntity } from '../entities';
@@ -31,6 +33,11 @@ function publishedSlugFor(title: string, documentId: string): string {
 function addRichText(layout: ReturnType<typeof getLayout>, blocks: ReturnType<typeof getBlocks>, index: number, markdown: string, isMarkdownBlock = false): void {
     const blockId = addBlockGroup(layout, blocks, { type: isMarkdownBlock ? BlockType.Markdown : BlockType.RichText }, index);
     const block = blocks.get(blockId)!;
+    if (isMarkdownBlock) {
+        const source = getMarkdownSource(block as Parameters<typeof getMarkdownSource>[0]);
+        updateYText(source, markdown);
+        return;
+    }
     const { content } = getRichTextAttributes(block as Parameters<typeof getRichTextAttributes>[0]);
     appendRichTextContent(content, markdown);
 }
