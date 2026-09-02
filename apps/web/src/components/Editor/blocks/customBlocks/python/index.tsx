@@ -26,7 +26,7 @@ import {
 } from "@sandworm/editor";
 import clsx from "clsx";
 import type { RefObject } from "react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ConnectDragPreview } from "react-dnd";
 import { exhaustiveCheck } from "@sandworm/types";
 import { head } from "ramda";
@@ -75,6 +75,7 @@ interface Props {
   isEditable: boolean;
   dragPreview: ConnectDragPreview | null;
   isPublicMode: boolean;
+  viewModeCodeHidden?: boolean;
   isPDF: boolean;
   dashboardMode: DashboardMode | null;
   hasMultipleTabs: boolean;
@@ -256,6 +257,13 @@ function PythonBlock(props: Props) {
   }, [props.block, props.isEditable]);
 
   const [localCodeHidden, setLocalCodeHidden] = useState<boolean | null>(null);
+
+  // Re-sync to the page-level Report/Query default whenever the viewer
+  // switches views, so a per-block manual toggle from the previous view
+  // doesn't linger and contradict the new default.
+  useEffect(() => {
+    setLocalCodeHidden(null);
+  }, [props.viewModeCodeHidden]);
 
   const toggleCodeHidden = useCallback(() => {
     if (props.isEditable) {
@@ -485,7 +493,9 @@ function PythonBlock(props: Props) {
     (props.isEditable
       ? (props.block.getAttribute("isCodeHidden") ?? false)
       : localCodeHidden === null
-        ? (props.block.getAttribute("isCodeHidden") ?? false)
+        ? (props.viewModeCodeHidden ??
+          props.block.getAttribute("isCodeHidden") ??
+          false)
         : localCodeHidden);
 
   const isResultHidden =

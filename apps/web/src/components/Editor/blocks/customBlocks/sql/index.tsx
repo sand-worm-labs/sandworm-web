@@ -89,6 +89,7 @@ interface Props {
   document: ApiDocument;
   isEditable: boolean;
   isPublicMode: boolean;
+  viewModeCodeHidden?: boolean;
   dragPreview: ConnectDragPreview | null;
   dashboardMode: DashboardMode | null;
   hasMultipleTabs: boolean;
@@ -244,6 +245,13 @@ function SQLBlock(props: Props) {
 
   const [localCodeHidden, setLocalCodeHidden] = useState<boolean | null>(null);
 
+  // Re-sync to the page-level Report/Query default whenever the viewer
+  // switches views, so a per-block manual toggle from the previous view
+  // doesn't linger and contradict the new default.
+  useEffect(() => {
+    setLocalCodeHidden(null);
+  }, [props.viewModeCodeHidden]);
+
   const toggleCodeHidden = useCallback(() => {
     if (props.isEditable) {
       props.block.doc?.transact(() => {
@@ -289,7 +297,7 @@ function SQLBlock(props: Props) {
     (props.isEditable
       ? isCodeHiddenProp
       : localCodeHidden === null
-        ? isCodeHiddenProp
+        ? (props.viewModeCodeHidden ?? isCodeHiddenProp)
         : localCodeHidden);
 
   const isResultHidden =

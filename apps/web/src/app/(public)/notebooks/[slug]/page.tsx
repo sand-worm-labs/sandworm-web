@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import * as Y from "yjs";
 import dynamic from "next/dynamic";
 import { List } from "immutable";
@@ -13,6 +13,7 @@ import {
   useGetPublishedDocumentStateQuery,
 } from "@/generated/graphql";
 import PublicNotebookBanner from "@/components/Editor/PublicNotebookBanner";
+import type { NotebookView } from "@/components/Editor/ViewSwitcher";
 import { widthClasses } from "@/components/Editor/constants";
 import {
   ContentSkeleton,
@@ -119,6 +120,7 @@ function PublicSkeleton() {
 export default function PublicNotebookPage() {
   const slug = useStringQuery("slug");
   const { yDoc, document, error, isSyncing } = usePublicYDoc(slug);
+  const [view, setView] = useState<NotebookView>("report");
 
   const content = useMemo(() => {
     if (error) {
@@ -143,13 +145,14 @@ export default function PublicNotebookPage() {
         isFullScreen={false}
         yDoc={yDoc}
         isSyncing={false}
+        isQueryView={view === "query"}
       />
     );
-  }, [error, isSyncing, document, yDoc]);
+  }, [error, isSyncing, document, yDoc, view]);
 
   return (
     <div className="flex flex-col h-screen bg-base-100 font-body">
-      <PublicNotebookBanner />
+      <PublicNotebookBanner view={view} onChangeView={setView} />
       <div className="flex-1 min-w-0 flex overflow-hidden">{content}</div>
     </div>
   );

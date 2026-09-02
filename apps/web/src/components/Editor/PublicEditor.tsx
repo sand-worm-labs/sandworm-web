@@ -136,6 +136,7 @@ interface PublicTabRefProps {
   isApp: boolean;
   currentBlockId: string | undefined;
   isPDF: boolean;
+  isQueryView: boolean;
 }
 
 function PublicTabRef(props: PublicTabRefProps) {
@@ -167,6 +168,7 @@ function PublicTabRef(props: PublicTabRefProps) {
         layout={props.layout}
         blocks={props.blocks}
         isPublicMode
+        viewModeCodeHidden={!props.isQueryView}
         isEditable={false}
         document={props.document}
         dataSources={props.dataSources}
@@ -186,6 +188,7 @@ function PublicTabRef(props: PublicTabRefProps) {
     onPython: block => (
       <PythonBlock
         isPublicMode
+        viewModeCodeHidden={!props.isQueryView}
         block={block}
         blocks={props.blocks}
         isEditable={false}
@@ -379,6 +382,7 @@ interface PublicTabbedBlockProps {
   dataframes: Y.Map<DataFrame>;
   yDoc: Y.Doc;
   isPDF: boolean;
+  isQueryView: boolean;
 }
 
 function PublicTabbedBlock(props: PublicTabbedBlockProps) {
@@ -451,6 +455,7 @@ function PublicTabbedBlock(props: PublicTabbedBlockProps) {
                 isApp={props.isApp}
                 currentBlockId={currentBlockId}
                 isPDF={props.isPDF}
+                isQueryView={props.isQueryView}
               />
             ))}
           </div>
@@ -468,6 +473,7 @@ function PublicTabbedBlock(props: PublicTabbedBlockProps) {
               isApp={props.isApp}
               currentBlockId={currentBlockId}
               isPDF={props.isPDF}
+              isQueryView={props.isQueryView}
             />
           ))
         )}
@@ -488,6 +494,7 @@ interface PublicEditorInnerProps {
   isFullScreen: boolean;
   yDoc: Y.Doc;
   isSyncing: boolean;
+  isQueryView: boolean;
   scrollViewRef: React.MutableRefObject<HTMLDivElement | null>;
 }
 
@@ -524,6 +531,7 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
           dataframes={dataframes.value}
           yDoc={props.yDoc}
           isPDF={props.isPDF}
+          isQueryView={props.isQueryView}
         />
       );
     });
@@ -536,6 +544,7 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
     props.dataSources,
     props.isPDF,
     props.yDoc,
+    props.isQueryView,
   ]);
 
   return (
@@ -610,11 +619,13 @@ export interface PublicEditorProps {
   isFullScreen: boolean;
   yDoc: Y.Doc;
   isSyncing: boolean;
+  isQueryView?: boolean;
   children?: ReactNode;
 }
 
 export default function PublicEditor(props: PublicEditorProps) {
   const scrollViewRef = useRef<HTMLDivElement>(null);
+  const isQueryView = props.isQueryView ?? false;
 
   return (
     // EditorAwarenessProvider is kept because PublicTabRef calls
@@ -627,7 +638,11 @@ export default function PublicEditor(props: PublicEditorProps) {
     // "Called getExtension outside of provider" crash.
     <EditorAwarenessProvider scrollViewRef={scrollViewRef} yDoc={props.yDoc}>
       <PublicSQLExtensionProvider>
-        <PublicEditorInner {...props} scrollViewRef={scrollViewRef} />
+        <PublicEditorInner
+          {...props}
+          isQueryView={isQueryView}
+          scrollViewRef={scrollViewRef}
+        />
         {props.children}
       </PublicSQLExtensionProvider>
     </EditorAwarenessProvider>
