@@ -44,8 +44,8 @@ interface PythonErrorUIProps {
 export function PythonErrorUI(props: PythonErrorUIProps) {
   return (
     <div className="text-xs font-body">
-      <div className="flex border border-error p-2 gap-x-3 text-xs overflow-hidden">
-        <HiOutlineExclamationTriangle className="text-error h-5 w-5" />
+      <div className="flex border border-red-300 dark:border-red-500/30 p-2 gap-x-3 text-xs overflow-hidden">
+        <HiOutlineExclamationTriangle className="text-error dark:text-red-400 h-5 w-5" />
         <div>
           <h4 className="font-semibold mb-2">
             Your code could not be executed
@@ -75,14 +75,14 @@ export function PythonErrorUI(props: PythonErrorUIProps) {
                   !props.canFixWithAI
                     ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
                     : "cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary",
-                  "mt-2 flex items-center border rounded-md border-hover-border px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
+                  "mt-2 flex items-center border rounded-md border-hover-border px-2 py-1 gap-x-1 text-ink-300 dark:text-ink-400 group relative font-body"
                 )}
                 disabled={props.isFixWithAILoading || !props.canFixWithAI}
               >
                 {props.isFixWithAILoading ? (
                   <Spin />
                 ) : (
-                  <PiCpu className="w-[11.5px] h-[11.5px] text-ink-300" />
+                  <PiCpu className="w-[11.5px] h-[11.5px] text-ink-300 dark:text-ink-400" />
                 )}
                 Fix with AI
               </button>

@@ -11,7 +11,7 @@ import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import debounce from "lodash.debounce";
 import { Transition } from "@headlessui/react";
-import { PiFileCsvLight, PiSparkle, PiChartPie } from "react-icons/pi";
+import { PiFileCsvLight, PiCpu, PiChartPie } from "react-icons/pi";
 
 import { Tooltip, TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
@@ -362,7 +362,7 @@ function SQLAborted(props: {
         <div className="p-3 text-xs text-gray-300 flex items-center justify-end">
           <button
             type="button"
-            className="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[12px] text-red-700 ring-1 ring-inset ring-red-600/10 hover:bg-red-100"
+            className="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[12px] text-red-700 ring-1 ring-inset ring-red-600/10 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20 dark:hover:bg-red-500/20"
             onClick={props.toggleResultHidden}
           >
             contains errors
@@ -380,8 +380,8 @@ function SQLAborted(props: {
         leaveTo="max-h-0 overflow-hidden"
       >
         <div className="px-3.5 pb-4 pt-0.5">
-          <div className="flex border border-red-300 p-2 gap-x-3 items-center">
-            <ExclamationTriangleIcon className="text-red-500 h-6 w-6" />
+          <div className="flex border border-red-300 dark:border-red-500/30 p-2 gap-x-3 items-center">
+            <ExclamationTriangleIcon className="text-red-500 dark:text-red-400 h-6 w-6" />
             <div>
               <h4 className="font-semibold">Query aborted.</h4>
             </div>
@@ -410,7 +410,7 @@ function SQLSyntaxError(props: {
         <div className="p-3 text-xs text-gray-300 flex items-center justify-end">
           <button
             type="button"
-            className="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[12px] text-red-700 ring-1 ring-inset ring-red-600/10 hover:bg-red-100"
+            className="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[12px] text-red-700 ring-1 ring-inset ring-red-600/10 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20 dark:hover:bg-red-500/20"
             onClick={props.toggleResultHidden}
           >
             contains errors
@@ -429,10 +429,10 @@ function SQLSyntaxError(props: {
         leaveTo="max-h-0 overflow-hidden"
       >
         <div className="px-3.5 pb-4 pt-0.5">
-          <div className="flex border border-red-300 p-4 gap-x-3 word-wrap">
+          <div className="flex border border-red-300 dark:border-red-500/30 p-4 gap-x-3 word-wrap">
             <div className="w-full">
               <span className="flex items-center gap-x-2 pb-2">
-                <ExclamationTriangleIcon className="text-red-500 h-6 w-6" />
+                <ExclamationTriangleIcon className="text-red-500 dark:text-red-400 h-6 w-6" />
                 <h4 className="font-semibold mb-2">
                   Your query could not be executed
                 </h4>
@@ -458,7 +458,7 @@ function SQLSyntaxError(props: {
                       !props.canFixWithAI
                         ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
                         : "cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary",
-                      "mt-4 flex items-center border rounded-md border-hover-border px-2 py-1 gap-x-1 text-ink-300 group relative font-body"
+                      "mt-4 flex items-center border rounded-md border-hover-border px-2 py-1 gap-x-1 text-ink-300 dark:text-ink-400 group relative font-body"
                     )}
                   >
                     {props.isFixingWithAI ? (
@@ -468,7 +468,7 @@ function SQLSyntaxError(props: {
                       </>
                     ) : (
                       <>
-                        <PiSparkle className="w-[11.5px] h-[11.5px]" />
+                        <PiCpu className="w-[11.5px] h-[11.5px] text-ink-300 dark:text-ink-400" />
                         Fix with AI
                       </>
                     )}
@@ -498,7 +498,7 @@ function SQLPythonError(props: {
         <div className="p-3 text-xs text-gray-300 flex items-center justify-end">
           <button
             type="button"
-            className="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[12px] text-red-700 ring-1 ring-inset ring-red-600/10"
+            className="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[12px] text-red-700 ring-1 ring-inset ring-red-600/10 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20"
             onClick={props.toggleResultHidden}
           >
             contains errors
@@ -517,10 +517,10 @@ function SQLPythonError(props: {
         leaveTo="max-h-0 overflow-hidden"
       >
         <div className="px-3.5 pb-4 pt-0.5">
-          <div className="flex border border-red-300 p-4 gap-x-3 text-xs overflow-hidden word-wrap">
+          <div className="flex border border-red-300 dark:border-red-500/30 p-4 gap-x-3 text-xs overflow-hidden word-wrap">
             <div className="w-full">
               <span className="flex items-center gap-x-2 pb-2">
-                <ExclamationTriangleIcon className="text-red-500 h-6 w-6" />
+                <ExclamationTriangleIcon className="text-red-500 dark:text-red-400 h-6 w-6" />
                 <h4 className="font-semibold">
                   Your code could not be executed
                 </h4>

@@ -58,7 +58,7 @@ export default function HeaderSelect(props: Props) {
               " py-1.5 h-full relative w-full rounded-lg pl-3 pr-10 text-left sm:text-xs flex items-center cursor-pointer",
               hasValue
                 ? "text-ink-400 dark:text-white bg-hover-bg dark:bg-header-surface hover:bg-gray-100/50"
-                : "text-error bg-red-50 hover:bg-red-100"
+                : "text-error bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20"
             )}
           >
             <div className="flex gap-x-3 items-center font-body overflow-hidden">

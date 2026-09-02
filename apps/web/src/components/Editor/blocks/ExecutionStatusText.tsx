@@ -46,9 +46,8 @@ export function QuerySucceededText({
               cx="9"
               cy="9"
               r="8"
-              stroke="#E6E0F1"
               strokeWidth="1.5"
-              className="fill-base-200 dark:fill-[var(--color-base-100)]"
+              className="fill-base-200 dark:fill-[var(--color-base-100)] stroke-hover-border"
             />
           </svg>
           <PiCheck className="absolute inset-0 w-full h-full p-[4px] text-primary" />{" "}
@@ -95,12 +94,11 @@ export function ExecutionFailedText({
               cx="9"
               cy="9"
               r="8"
-              stroke="#E6E0F1"
               strokeWidth="1.5"
-              className="fill-base-200 dark:fill-[var(--color-base-100)]"
+              className="fill-base-200 dark:fill-[var(--color-base-100)] stroke-hover-border"
             />
           </svg>
-          <PiX className="absolute inset-0 w-full h-full p-[4px] text-error" />
+          <PiX className="absolute inset-0 w-full h-full p-[4px] text-error dark:text-red-400" />
         </div>
         <button
           type="button"
@@ -114,7 +112,7 @@ export function ExecutionFailedText({
           )}
         </button>
       </div>
-      <span className="ml-1 text-error">
+      <span className="ml-1 text-error dark:text-red-400">
         Failed in {formatExecutionTime(lastExecutionTime)}
       </span>
     </div>
@@ -250,9 +248,8 @@ export function PythonSucceededText({
               cx="9"
               cy="9"
               r="8"
-              stroke="#E6E0F1"
               strokeWidth="1.5"
-              className="fill-base-200 dark:fill-[var(--color-base-100)]"
+              className="fill-base-200 dark:fill-[var(--color-base-100)] stroke-hover-border"
             />
           </svg>
           <PiCheck className="absolute inset-0 w-full h-full p-[4px] text-primary" />

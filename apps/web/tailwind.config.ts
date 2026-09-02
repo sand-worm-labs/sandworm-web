@@ -132,6 +132,7 @@ const config: Config = {
         link: "var(--link)",
         "link-tint": "var(--link-tint)",
         "accent-violet": "var(--accent-violet)",
+        "accent-fuchsia": "var(--accent-fuchsia)",
         "error-tint": "var(--error-tint)",
         "error-shade": "var(--error-shade)",
         "info-tint": "var(--info-tint)",

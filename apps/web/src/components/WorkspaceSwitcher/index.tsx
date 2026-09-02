@@ -6,12 +6,16 @@ import { useRouter } from "next/navigation";
 import { Transition } from "@headlessui/react";
 import { toast } from "sonner";
 
+import type { ApiWorkspace } from "@/types";
+
 import {
   useCurrentWorkspaceInfo,
   useSwitchWorkspace,
+  useUpdateWorkspace,
   useWorkspaces,
 } from "../Editor/hooks/useWorkspaces";
 import CreateTeamModal from "../Settings/CreateTeam";
+import WorkspaceSettingsModal from "../Settings/WorkspaceSettings";
 import { WorkspaceIcon } from "../Settings/WorkspaceIcon";
 import { CaretUpDown } from "../Assets/CaretUpDown";
 
@@ -51,6 +55,9 @@ function useWorkspaceSwitcher() {
     { refetch: refetchAll },
   ] = useWorkspaces();
   const { switchWorkspace, loading: isSwitching } = useSwitchWorkspace();
+  const { updateWorkspace, loading: isUpdating } = useUpdateWorkspace();
+  const [selectedWorkspace, setSelectedWorkspace] =
+    useState<ApiWorkspace | null>(null);
 
   const refetchBoth = () => {
     refetchAll();
@@ -63,6 +70,10 @@ function useWorkspaceSwitcher() {
     if (success) router.push(`/workspace/${id}`);
   };
 
+  const handleOpenSettings = (id: string) => {
+    setSelectedWorkspace((allWorkspaces ?? []).find(w => w.id === id) ?? null);
+  };
+
   const others = (allWorkspaces ?? []).filter(w => w.id !== workspaceInfo?.id);
 
   return {
@@ -72,6 +83,11 @@ function useWorkspaceSwitcher() {
     isLoading: isLoadingCurrent || isLoadingAll,
     refetchBoth,
     handleSwitch,
+    handleOpenSettings,
+    selectedWorkspace,
+    closeSettings: () => setSelectedWorkspace(null),
+    updateWorkspace,
+    isUpdating,
   };
 }
 
@@ -131,6 +147,7 @@ function CollapsedSwitcher({
   isSwitching,
   refetchBoth,
   handleSwitch,
+  handleOpenSettings,
 }: ReturnType<typeof useWorkspaceSwitcher>) {
   const [open, setOpen] = useState(false);
   const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
@@ -182,6 +199,10 @@ function CollapsedSwitcher({
               handleSwitch(id);
             }}
             onCreateTeam={() => setIsCreateTeamOpen(true)}
+            onWorkspaceSettings={id => {
+              setOpen(false);
+              handleOpenSettings(id);
+            }}
           />
         </div>
       </Transition>
@@ -207,6 +228,7 @@ function ExpandedSwitcher({
   isSwitching,
   refetchBoth,
   handleSwitch,
+  handleOpenSettings,
 }: ReturnType<typeof useWorkspaceSwitcher>) {
   const [open, setOpen] = useState(false);
   const [treeOpen, setTreeOpen] = useState(true);
@@ -285,6 +307,10 @@ function ExpandedSwitcher({
               handleSwitch(id);
             }}
             onCreateTeam={() => setIsCreateTeamOpen(true)}
+            onWorkspaceSettings={id => {
+              setOpen(false);
+              handleOpenSettings(id);
+            }}
           />
         </div>
       </Transition>
@@ -316,9 +342,25 @@ export default function WorkspaceSwitcher({
 
   if (!switcherState.workspaceInfo) return null;
 
-  return collapsed ? (
-    <CollapsedSwitcher {...switcherState} />
-  ) : (
-    <ExpandedSwitcher {...switcherState} />
+  return (
+    <>
+      {collapsed ? (
+        <CollapsedSwitcher {...switcherState} />
+      ) : (
+        <ExpandedSwitcher {...switcherState} />
+      )}
+
+      <WorkspaceSettingsModal
+        isOpen={!!switcherState.selectedWorkspace}
+        onClose={switcherState.closeSettings}
+        workspace={switcherState.selectedWorkspace}
+        updateWorkspace={switcherState.updateWorkspace}
+        isUpdating={switcherState.isUpdating}
+        isCurrentWorkspace={
+          switcherState.selectedWorkspace?.id === switcherState.workspaceInfo?.id
+        }
+        disableCustomAiModelKey={false}
+      />
+    </>
   );
 }

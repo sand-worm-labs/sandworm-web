@@ -65,8 +65,8 @@ const KeyboardKey = (props: {
     className={clsx(
       "px-1.5 py-0.5 rounded-md font-tertiary text-[0.85rem] ",
       props.mode === "insert"
-        ? "bg-[#F1E6F7] text-primary"
-        : "bg-[#F7F6E6] text-ink-navy"
+        ? "bg-[#F1E6F7] text-primary dark:bg-primary/10 dark:text-primary-300"
+        : "bg-[#F7F6E6] text-ink-navy dark:bg-warning/10 dark:text-warning"
     )}
   >
     {props.children}
@@ -153,7 +153,7 @@ export default function ShortcutsModal(props: ShortcutsModalProps) {
                     type="button"
                     data-autofocus
                     onClick={props.onHide}
-                    className="rounded-xl  px-3 py-2 text-sm font-medium text-white bg-base-400 dark:bg-white dark:text-black mt-0 w-1/3"
+                    className="rounded-xl  px-3 py-2 text-sm font-medium text-white bg-base-400 dark:bg-base-700 dark:hover:bg-base-600 dark:text-white mt-0 w-1/3"
                   >
                     Close
                   </button>

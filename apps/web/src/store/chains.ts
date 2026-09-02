@@ -1,8 +1,16 @@
 import { create } from "zustand";
 import axios from "axios";
 
+export interface Chain {
+  name: string;
+  short_code: string;
+}
+
+export const getChainLogoUrl = (chainName: string) =>
+  `https://raw.githubusercontent.com/sand-worm-sql/assets/master/blockchains/${chainName.toLowerCase()}/info/logo.png`;
+
 interface ChainStoreState {
-  chains: any[] | null;
+  chains: Chain[] | null;
   entityData: {
     raw: any;
     decoded: any;
@@ -23,7 +31,7 @@ export const useChainStore = create<ChainStoreState>(set => ({
   fetchChainData: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get(
+      const response = await axios.get<Chain[]>(
         "https://raw.githubusercontent.com/sand-worm-sql/chain_registry/main/data/chain/index.json"
       );
       set({ chains: response.data, loading: false });

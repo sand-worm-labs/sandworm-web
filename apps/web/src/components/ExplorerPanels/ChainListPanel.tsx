@@ -1,13 +1,9 @@
 import React from "react";
 import Image from "next/image";
 
-import { FourSquare } from "../Assets/FourSquare";
+import { type Chain, getChainLogoUrl } from "@/store/chains";
 
-interface Chain {
-  id: string;
-  name: string;
-  short_code: string;
-}
+import { FourSquare } from "../Assets/FourSquare";
 
 interface IChainListPanelProps {
   chains: Chain[];
@@ -34,7 +30,7 @@ export const ChainListPanel: React.FC<IChainListPanelProps> = ({
 
           <Image
             alt={`${chain.name} logo`}
-            src={`https://raw.githubusercontent.com/sand-worm-sql/assets/master/blockchains/${chain.name.toLowerCase()}/info/logo.png`}
+            src={getChainLogoUrl(chain.name)}
             width={25}
             height={25}
             unoptimized

@@ -80,7 +80,7 @@ function AiDiffToolbar({
               onClick={onRejectCurrent}
               className="flex items-center justify-center w-7 h-7 rounded-lg
                 border border-border-secondary dark:border-base-700
-                text-ink-400 dark:text-ink-500
+                text-ink-400 dark:text-ink-400
                 hover:border-warning/50 hover:text-warning
                 transition-colors"
             >
@@ -130,7 +130,7 @@ function AiDiffToolbar({
               disabled={!onPrev || (currentIndex ?? 0) === 0}
               aria-label="Previous change"
               className="flex items-center justify-center w-7 h-7 rounded-lg
-                text-ink-400 dark:text-ink-500
+                text-ink-400 dark:text-ink-400
                 hover:bg-base-300 dark:hover:bg-base-700
                 disabled:opacity-90 disabled:cursor-not-allowed
                 transition-colors"
@@ -143,7 +143,7 @@ function AiDiffToolbar({
               disabled={!onNext || (currentIndex ?? 0) >= totalAi - 1}
               aria-label="Next change"
               className="flex items-center justify-center w-7 h-7 rounded-lg
-                text-ink-400 dark:text-ink-500
+                text-ink-400 dark:text-ink-400
                 hover:bg-base-300 dark:hover:bg-base-700
                 disabled:opacity-90 disabled:cursor-not-allowed
                 transition-colors"
@@ -159,7 +159,7 @@ function AiDiffToolbar({
               type="button"
               onClick={onRejectAll}
               className="px-3.5 py-1.5 rounded-lg text-[12px] font-medium
-                text-ink-400 dark:text-ink-500
+                text-ink-400 dark:text-ink-400
                 border border-border-secondary dark:border-base-700
                 hover:border-error hover:text-error
                 transition-colors"
@@ -174,6 +174,7 @@ function AiDiffToolbar({
               onClick={onAcceptAll}
               className="px-3.5 py-1.5 rounded-lg text-[12px] font-medium
                 bg-base-400 hover:bg-ink-100 text-white
+                dark:bg-white dark:hover:bg-gray-200 dark:text-black
                 transition-colors"
             >
               Accept all

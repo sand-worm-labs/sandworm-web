@@ -56,7 +56,7 @@ export const HourlyScheduleFields = ({
             validate: minuteValidator,
           })}
           required
-          className="block w-full rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-500 ring-[1.5px] ring-border-secondary focus:ring-2 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6"
+          className="block w-full rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-100 bg-white dark:bg-base-710 ring-[1.5px] ring-border-secondary dark:ring-border-tertiary focus:ring-2 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6"
         />
         <FormError msg={formErrors.minute?.message} />
       </div>
@@ -92,7 +92,7 @@ export const DailyScheduleFields = ({
               },
               validate: hourValidator,
             })}
-            className="pt-2 rounded-[10px] border-0 py-1.5 text-ink-500 ring-[1.5px] ring-border-secondary focus:ring-2 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6 w-full text-right"
+            className="pt-2 rounded-[10px] border-0 py-1.5 text-ink-100 bg-white dark:bg-base-710 ring-[1.5px] ring-border-secondary dark:ring-border-tertiary focus:ring-2 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6 w-full text-right"
           />
 
           <span className="text-ink-300">:</span>
@@ -108,14 +108,14 @@ export const DailyScheduleFields = ({
               },
               validate: minuteValidator,
             })}
-            className="pt-2 block rounded-[10px] border-0 py-1.5 text-ink-500 ring-[1.5px] ring-border-secondary focus:ring-2 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6 w-full text-right"
+            className="pt-2 block rounded-[10px] border-0 py-1.5 text-ink-100 bg-white dark:bg-base-710 ring-[1.5px] ring-border-secondary dark:ring-border-tertiary focus:ring-2 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6 w-full text-right"
           />
         </div>
 
         <select
           id="amPm"
           {...register("amPm", { required: true })}
-          className="pt-2 block rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-500 ring-[1.5px] ring-border-secondary focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 w-1/3"
+          className="pt-2 block rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-100 bg-white dark:bg-base-710 ring-[1.5px] ring-border-secondary dark:ring-border-tertiary focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 w-1/3"
         >
           <option value="AM">AM</option>
           <option value="PM">PM</option>
@@ -155,10 +155,10 @@ export const WeeklyScheduleFields = ({
                 },
                 validate: hourValidator,
               })}
-              className="pt-2 rounded-[10px] border-0 py-1.5 text-ink-500 ring-[1.5px] ring-border-secondary focus:ring-2  sm:text-sm sm:leading-6 w-full text-right focus:ring-primary focus-visible:outline-primary"
+              className="pt-2 rounded-[10px] border-0 py-1.5 text-ink-100 bg-white dark:bg-base-710 ring-[1.5px] ring-border-secondary dark:ring-border-tertiary focus:ring-2  sm:text-sm sm:leading-6 w-full text-right focus:ring-primary focus-visible:outline-primary"
             />
 
-            <span className="text-gray-700">:</span>
+            <span className="text-ink-300">:</span>
 
             <input
               type="number"
@@ -171,13 +171,13 @@ export const WeeklyScheduleFields = ({
                 },
                 validate: minuteValidator,
               })}
-              className="pt-2 block rounded-[10px] border-0 py-1.5 text-ring-500 ring-[1.5px] ring-border-secondary focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 w-full text-right"
+              className="pt-2 block rounded-[10px] border-0 py-1.5 text-ink-100 bg-white dark:bg-base-710 ring-[1.5px] ring-border-secondary dark:ring-border-tertiary focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 w-full text-right"
             />
           </div>
 
           <select
             {...register("amPm", { required: true })}
-            className="pt-2 block rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-300 ring-[1.5px] ring-border-secondary focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 w-1/3"
+            className="pt-2 block rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-100 bg-white dark:bg-base-710 ring-[1.5px] ring-border-secondary dark:ring-border-tertiary focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 w-1/3"
           >
             <option value="AM">AM</option>
             <option value="PM">PM</option>
@@ -240,7 +240,7 @@ export const MonthlyScheduleFields = ({
                 validate: hourValidator,
               })}
               placeholder="hour"
-              className="pt-2 rounded-[10px] border-0 py-1.5 text-ink-500 ring-[1.5px] ring-border-secondary focus:ring-2 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6 w-full text-right placeholder:text-ink-300"
+              className="pt-2 rounded-[10px] border-0 py-1.5 text-ink-100 bg-white dark:bg-base-710 ring-[1.5px] ring-border-secondary dark:ring-border-tertiary focus:ring-2 focus:ring-primary focus-visible:outline-primary sm:text-sm sm:leading-6 w-full text-right placeholder:text-ink-300"
             />
 
             <span className="text-ink-300">:</span>
@@ -257,14 +257,14 @@ export const MonthlyScheduleFields = ({
                 },
                 validate: minuteValidator,
               })}
-              className="pt-2 block rounded-[10px] border-0 py-1.5 text-ink-500 ring-1 ring-border-secondary focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 w-full text-right placeholder:text-ink-300"
+              className="pt-2 block rounded-[10px] border-0 py-1.5 text-ink-100 bg-white dark:bg-base-710 ring-1 ring-border-secondary dark:ring-border-tertiary focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 w-full text-right placeholder:text-ink-300"
             />
           </div>
 
           <select
             id="amPm"
             {...register("amPm", { required: true })}
-            className="pt-2 block rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-500 ring-1 ring-border-secondary focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 w-1/3"
+            className="pt-2 block rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-100 bg-white dark:bg-base-710 ring-1 ring-border-secondary dark:ring-border-tertiary focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 w-1/3"
           >
             <option value="AM">AM</option>
             <option value="PM">PM</option>
@@ -322,7 +322,7 @@ export const CronScheduleFields = ({
             },
           })}
           required
-          className="font-mono block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-ink-100 ring-1 ring-gray-300 focus:ring-2 focus:ring-primary-400 sm:text-sm sm:leading-6 focus:ring-primary focus-visible:outline-primary"
+          className="font-mono block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-ink-100 bg-white dark:bg-base-710 ring-1 ring-border-secondary dark:ring-border-tertiary focus:ring-2 sm:text-sm sm:leading-6 focus:ring-primary focus-visible:outline-primary"
         />
         <FormError msg={formErrors.cron?.message} />
       </div>

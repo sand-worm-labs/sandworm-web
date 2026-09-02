@@ -372,8 +372,8 @@ export const WorkspaceSidebar = () => {
                       onClick={onCreateDocumentHandler}
                       className={`
                         flex items-center justify-center gap-1.5
-                       border border-[#C44FFF] dark:border-white/15
-                        text-[#C44FFF] dark:text-white
+                       border border-accent-fuchsia dark:border-white/15
+                        text-accent-fuchsia dark:text-white
                         hover:bg-primary/5 bg-primary-tint-75 dark:bg-base-700 dark:hover:bg-base-600
                         transition-colors font-body font-medium text-sm
                         ${collapsed ? "w-8 h-8 rounded-[10px]" : "w-full px-4 py-2   rounded-xl"}
