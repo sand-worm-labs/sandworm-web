@@ -13,8 +13,13 @@ export class EnvironmentSeeder1732019848275 implements Seeder {
     const environmentRepository = dataSource.getRepository(EnvironmentEntity);
 
     const workspaces = await workspaceRepository.find();
+    const existingWorkspaceIds = new Set(
+      (await environmentRepository.find()).map((e) => e.workspaceId),
+    );
 
     for (const workspace of workspaces) {
+      if (existingWorkspaceIds.has(workspace.id)) continue;
+
       const environment = environmentRepository.create({
         workspaceId: workspace.id,
         status: EnvironmentStatus.STOPPED,
