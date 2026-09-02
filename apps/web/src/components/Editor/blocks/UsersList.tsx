@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { PiUsers } from "react-icons/pi";
 import { Avatar } from "@sandworm/ui/components/avatar";
 
 import { Trash } from "@/components/Assets/Trash";
@@ -112,6 +113,8 @@ type Props = {
   users: WorkspaceUser[];
   onRemoveUser: (id: string) => void;
   userRole: UserWorkspaceRole;
+  searchValue?: string;
+  hasActiveFilters?: boolean;
 };
 
 function UsersList(props: Props) {
@@ -229,21 +232,45 @@ function UsersList(props: Props) {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {users.map((user, index) => {
-                const isCurrentUser = user.email === props.currentUserEmail;
-                return (
-                  <UserItem
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={`${user.email}-${index}`}
-                    user={user}
-                    isCurrentUser={isCurrentUser}
-                    isSelected={selectedIds.has(user.id)}
-                    onToggleSelect={handleToggleSelect}
-                    onRemoveUser={props.onRemoveUser}
-                    role={props.userRole}
-                  />
-                );
-              })}
+              {users.length === 0 ? (
+                <tr>
+                  <td colSpan={6}>
+                    <div className="flex flex-col items-center justify-center py-20 gap-3">
+                      <PiUsers
+                        size={36}
+                        className="text-ink-200 dark:text-ink-600"
+                      />
+                      <p className="text-sm font-medium text-ink-200 dark:text-ink-400">
+                        {props.searchValue
+                          ? `No users matching "${props.searchValue}"`
+                          : props.hasActiveFilters
+                            ? "No users match the selected filters"
+                            : "No users found"}
+                      </p>
+                      <p className="text-xs text-ink-300 dark:text-ink-500">
+                        Try adjusting or clearing your filters to see all
+                        users.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                users.map((user, index) => {
+                  const isCurrentUser = user.email === props.currentUserEmail;
+                  return (
+                    <UserItem
+                      // eslint-disable-next-line react/no-array-index-key
+                      key={`${user.email}-${index}`}
+                      user={user}
+                      isCurrentUser={isCurrentUser}
+                      isSelected={selectedIds.has(user.id)}
+                      onToggleSelect={handleToggleSelect}
+                      onRemoveUser={props.onRemoveUser}
+                      role={props.userRole}
+                    />
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
