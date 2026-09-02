@@ -14,16 +14,15 @@ import {
 } from "@/generated/graphql";
 import PublicNotebookBanner from "@/components/Editor/PublicNotebookBanner";
 import type { NotebookView } from "@/components/Editor/ViewSwitcher";
-import { widthClasses } from "@/components/Editor/constants";
+import { publicWidthClasses } from "@/components/Editor/constants";
 import {
   ContentSkeleton,
   TitleSkeleton,
 } from "@/components/Editor/ContentSkeleton";
 
-const PublicEditor = dynamic(
-  () => import("@/components/Editor/PublicEditor"),
-  { ssr: false }
-);
+const PublicEditor = dynamic(() => import("@/components/Editor/PublicEditor"), {
+  ssr: false,
+});
 
 const EMPTY_DATA_SOURCES: List<APIDataSource> = List();
 
@@ -106,7 +105,7 @@ function usePublicYDoc(slug: string): {
 function PublicSkeleton() {
   return (
     <div className="w-full flex justify-center">
-      <div className={clsx(widthClasses, "py-20")}>
+      <div className={clsx(publicWidthClasses, "py-20")}>
         <TitleSkeleton visible />
         <ContentSkeleton visible />
       </div>
@@ -152,7 +151,11 @@ export default function PublicNotebookPage() {
 
   return (
     <div className="flex flex-col h-screen bg-base-100 font-body">
-      <PublicNotebookBanner view={view} onChangeView={setView} />
+      <PublicNotebookBanner
+        document={document}
+        view={view}
+        onChangeView={setView}
+      />
       <div className="flex-1 min-w-0 flex overflow-hidden">{content}</div>
     </div>
   );

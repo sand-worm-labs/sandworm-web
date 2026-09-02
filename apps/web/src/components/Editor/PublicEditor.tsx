@@ -42,7 +42,7 @@ import useEditorAwareness, {
 import type { APIDataSources } from "./hooks/useDataSources";
 import { ContentSkeleton } from "./ContentSkeleton";
 import Title from "./Title";
-import { widthClasses } from "./constants";
+import { publicWidthClasses } from "./constants";
 
 import { getTabIcon } from ".";
 
@@ -575,10 +575,10 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
             id="editor-wrapper"
             className={clsx(
               "flex-grow h-full py-2",
-              props.isFullScreen ? "w-full" : widthClasses
+              props.isFullScreen ? "w-full" : publicWidthClasses
             )}
           >
-            <div className={!props.isPDF ? "pt-12" : ""}>
+            <div className={!props.isPDF ? "pt-12 pb-6" : ""}>
               <Title
                 content={props.yDoc.getXmlFragment("title")}
                 isLoading={props.isSyncing}
@@ -589,7 +589,7 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
             <ContentSkeleton visible={props.isSyncing} />
 
             {!props.isSyncing && (
-              <div className="flex flex-col gap-y-1">{domBlocks}</div>
+              <div className="flex flex-col gap-y-6">{domBlocks}</div>
             )}
 
             {!props.isPDF && <div className="pb-20" />}
