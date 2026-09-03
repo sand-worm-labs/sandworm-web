@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import { WorkspaceSidebar } from "@/components/Layout/WorkSpaceSidebar";
 import { AppHeader } from "@/components/Layout/AppHeader";
@@ -58,7 +58,13 @@ function WorkspaceLayoutInner({ children }: WorkspaceLayoutProps) {
     useCurrentWorkspaceInfo(sessionLoading || !isAuthenticated);
 
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const workspaceId = workspaceInfo?.id ?? "";
+
+  // Set by a "share link" copied with the "Share links without sidebar"
+  // page setting on — a presentational gate only, never persisted, so it
+  // doesn't clobber the viewer's own sidebar preference in localStorage.
+  const shouldHideSidebar = searchParams.get("sidebar") === "hidden";
 
   const { requestRoleUpgrade } = useRequestRoleUpgrade(workspaceId);
 
@@ -87,13 +93,14 @@ function WorkspaceLayoutInner({ children }: WorkspaceLayoutProps) {
     <div className="flex h-screen w-full bg-base-100">
       <AutoCollapseOnNotebook />
       <MobileWarning />
-      {isMobile ? (
-        <div className="w-0 overflow-visible flex-none">
+      {!shouldHideSidebar &&
+        (isMobile ? (
+          <div className="w-0 overflow-visible flex-none">
+            <WorkspaceSidebar />
+          </div>
+        ) : (
           <WorkspaceSidebar />
-        </div>
-      ) : (
-        <WorkspaceSidebar />
-      )}
+        ))}
       <div className="flex flex-col flex-1 overflow-hidden">
         {!shouldHideHeader && <AppHeader />}
         <main className="flex-1 overflow-y-auto bg-base-100">{children}</main>

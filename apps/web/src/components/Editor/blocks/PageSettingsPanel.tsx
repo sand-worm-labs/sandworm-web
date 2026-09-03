@@ -1,10 +1,16 @@
 import { Switch, Transition } from "@headlessui/react";
 import clsx from "clsx";
+import { useTheme } from "next-themes";
 import { PiGearSixLight } from "react-icons/pi";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
+import { useSandwormStore } from "@/store";
 
 import useDocument from "../hooks/useDocument";
+
+import { THEME_IDS, THEME_META } from "./customBlocks/CodeEditor/palettes";
+import type { EditorThemeId } from "./customBlocks/CodeEditor/palettes";
+import { useEditorThemeId } from "./customBlocks/CodeEditor/useEditorThemeId";
 
 type PageSettingToggleProps = {
   name: string;
@@ -61,6 +67,13 @@ interface Props {
 export default function PageSettingsPanel(props: Props) {
   const [{ document }, api] = useDocument(props.workspaceId, props.documentId);
 
+  const { resolvedTheme } = useTheme();
+  const editorThemeId = useEditorThemeId();
+  const setEditorTheme = useSandwormStore(state => state.setEditorTheme);
+  const visibleThemeIds = THEME_IDS.filter(
+    id => THEME_META[id].dark === (resolvedTheme === "dark")
+  );
+
   return (
     <Transition
       as="div"
@@ -112,6 +125,26 @@ export default function PageSettingsPanel(props: Props) {
             enabled={document?.shareLinksWithoutSidebar ?? false}
             onToggle={api.toggleShareLinksWithoutSidebar}
           />
+        </div>
+
+        <div className="w-full px-4 xl:px-6 py-5">
+          <h4 className="text-sm font-medium text-ink-100 dark:text-white">
+            Code editor theme
+          </h4>
+          <p className="text-[12.5px] text-ink-400 mt-0.5 mb-3">
+            Syntax highlighting for the SQL, Python, and Markdown editors.
+          </p>
+          <select
+            value={editorThemeId}
+            onChange={e => setEditorTheme(e.target.value as EditorThemeId)}
+            className="block rounded-[10px] border-0 py-1.5 pl-3 pr-10 text-ink-100 dark:text-white bg-white dark:bg-base-710 ring-[1.5px] ring-border-secondary dark:ring-border-tertiary focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 w-full"
+          >
+            {visibleThemeIds.map((id: EditorThemeId) => (
+              <option key={id} value={id}>
+                {THEME_META[id].label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
     </Transition>

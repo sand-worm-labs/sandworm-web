@@ -375,7 +375,7 @@ function PrivateDocumentPageInner(
         </div>
 
         <ShareModal
-          link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook`}
+          link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook${props.document.shareLinksWithoutSidebar ? "?sidebar=hidden" : ""}`}
           initialVisibility="WORKSPACE"
           onVisibilityChange={handleVisibilityChange}
           onExportPDF={triggerPrint}

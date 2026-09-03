@@ -314,6 +314,13 @@ function SQLBlock(props: Props) {
 
   // ⬢  Run handler
   // =====================================
+  // The "Run selected SQL only" page setting decides whether a text
+  // selection actually narrows execution — off, a block always runs in
+  // full even with text selected (selection stays a read/copy affordance).
+  const effectiveSelectedCode = props.document.runSQLSelection
+    ? selectedCode
+    : null;
+
   const onRun = useCallback(() => {
     props.executionQueue.enqueueBlock(
       blockId,
@@ -322,7 +329,7 @@ function SQLBlock(props: Props) {
       {
         _tag: "sql",
         isSuggestion: false,
-        selectedCode,
+        selectedCode: effectiveSelectedCode,
       }
     );
   }, [
@@ -330,7 +337,7 @@ function SQLBlock(props: Props) {
     blockId,
     props.userId,
     environmentStartedAt,
-    selectedCode,
+    effectiveSelectedCode,
   ]);
 
   const onTry = useCallback(() => {
@@ -341,7 +348,7 @@ function SQLBlock(props: Props) {
       {
         _tag: "sql",
         isSuggestion: true,
-        selectedCode,
+        selectedCode: effectiveSelectedCode,
       }
     );
   }, [
@@ -349,7 +356,7 @@ function SQLBlock(props: Props) {
     blockId,
     props.userId,
     environmentStartedAt,
-    selectedCode,
+    effectiveSelectedCode,
   ]);
 
   const executions = useBlockExecutions(

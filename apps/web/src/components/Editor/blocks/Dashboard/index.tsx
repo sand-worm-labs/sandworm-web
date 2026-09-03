@@ -596,7 +596,7 @@ export default function Dashboard(props: Props) {
         </div>
 
         <ShareModal
-          link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook`}
+          link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook${props.document.shareLinksWithoutSidebar ? "?sidebar=hidden" : ""}`}
           initialVisibility="private"
           onVisibilityChange={handleVisibilityChange}
         />

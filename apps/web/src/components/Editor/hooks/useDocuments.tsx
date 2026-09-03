@@ -722,7 +722,13 @@ export function useDocuments(workspaceId: string): UseDocuments {
           variables: {
             workspaceId,
             documentId: id,
-            input: settings as UpdateDocumentInput,
+            // orderIndex is required by UpdateDocumentInput even though
+            // this call never changes it — carry the document's current
+            // value through so the mutation doesn't fail validation.
+            input: {
+              orderIndex: document.orderIndex,
+              ...settings,
+            } as UpdateDocumentInput,
           },
         });
 
