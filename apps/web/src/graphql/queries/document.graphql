@@ -79,6 +79,10 @@ query GetPublishedDocumentState($slug: String!) {
   getPublishedDocumentState(slug: $slug)
 }
 
+query GetDocumentState($documentId: String!, $workspaceId: String!) {
+  getDocumentState(documentId: $documentId, workspaceId: $workspaceId)
+}
+
 query GetExplorerDocuments($limit: Float = 20, $offset: Float = 0) {
   getExplorerDocuments(limit: $limit, offset: $offset) {
       ...DocumentFields

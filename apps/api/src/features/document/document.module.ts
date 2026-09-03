@@ -7,6 +7,7 @@ import { DocumentTreeService } from './service/document-tree.service';
 import { AuthGraphqlModule } from '../auth/graphql/auth-graphql.module';
 import { YjsModule } from '../collaboration/yjs/yjs.module';
 import { UserModule } from '../user/user.module';
+import { WorkspaceModule } from '../workspace/workspace.module';
 import { DocumentQueryController } from './document.controller';
 import { JupyterModule } from '@/infrastructure/jupyter/jupyter.module';
 
@@ -15,7 +16,8 @@ import { JupyterModule } from '@/infrastructure/jupyter/jupyter.module';
     TypeOrmModule.forFeature([DocumentEntity, DocumentForkEntity, WorkspaceEntity, FavoriteEntity,UserEntity, YjsDocumentEntity]),
     AuthGraphqlModule,
     forwardRef(() => YjsModule),
-    forwardRef(() => UserModule), 
+    forwardRef(() => UserModule),
+    forwardRef(() => WorkspaceModule),
     JupyterModule
   ],
   providers: [DocumentResolver, DocumentService, DocumentTreeService],

@@ -804,6 +804,8 @@ export type Query = {
   getComponent: ReusableComponent;
   /** Get a single document by ID */
   getDocument: Document;
+  /** Get the base64-encoded Yjs state of a document by ID (authenticated snapshot, used to render optimistically before the live collaboration socket syncs) */
+  getDocumentState: Scalars['String']['output'];
   /** Get documents in a workspace organized as a tree for explorer view */
   getExplorerDocuments: Array<Document>;
   /** Get User favorite documents */
@@ -929,6 +931,12 @@ export type QueryGetComponentArgs = {
 
 
 export type QueryGetDocumentArgs = {
+  documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryGetDocumentStateArgs = {
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 };
@@ -1895,6 +1903,14 @@ export type GetPublishedDocumentStateQueryVariables = Exact<{
 
 
 export type GetPublishedDocumentStateQuery = { __typename?: 'Query', getPublishedDocumentState: string };
+
+export type GetDocumentStateQueryVariables = Exact<{
+  documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type GetDocumentStateQuery = { __typename?: 'Query', getDocumentState: string };
 
 export type GetExplorerDocumentsQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Float']['input']>;
@@ -5155,6 +5171,45 @@ export type GetPublishedDocumentStateQueryHookResult = ReturnType<typeof useGetP
 export type GetPublishedDocumentStateLazyQueryHookResult = ReturnType<typeof useGetPublishedDocumentStateLazyQuery>;
 export type GetPublishedDocumentStateSuspenseQueryHookResult = ReturnType<typeof useGetPublishedDocumentStateSuspenseQuery>;
 export type GetPublishedDocumentStateQueryResult = Apollo.QueryResult<GetPublishedDocumentStateQuery, GetPublishedDocumentStateQueryVariables>;
+export const GetDocumentStateDocument = gql`
+    query GetDocumentState($documentId: String!, $workspaceId: String!) {
+  getDocumentState(documentId: $documentId, workspaceId: $workspaceId)
+}
+    `;
+
+/**
+ * __useGetDocumentStateQuery__
+ *
+ * To run a query within a React component, call `useGetDocumentStateQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetDocumentStateQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetDocumentStateQuery({
+ *   variables: {
+ *      documentId: // value for 'documentId'
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useGetDocumentStateQuery(baseOptions: Apollo.QueryHookOptions<GetDocumentStateQuery, GetDocumentStateQueryVariables> & ({ variables: GetDocumentStateQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetDocumentStateQuery, GetDocumentStateQueryVariables>(GetDocumentStateDocument, options);
+      }
+export function useGetDocumentStateLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetDocumentStateQuery, GetDocumentStateQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetDocumentStateQuery, GetDocumentStateQueryVariables>(GetDocumentStateDocument, options);
+        }
+export function useGetDocumentStateSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetDocumentStateQuery, GetDocumentStateQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetDocumentStateQuery, GetDocumentStateQueryVariables>(GetDocumentStateDocument, options);
+        }
+export type GetDocumentStateQueryHookResult = ReturnType<typeof useGetDocumentStateQuery>;
+export type GetDocumentStateLazyQueryHookResult = ReturnType<typeof useGetDocumentStateLazyQuery>;
+export type GetDocumentStateSuspenseQueryHookResult = ReturnType<typeof useGetDocumentStateSuspenseQuery>;
+export type GetDocumentStateQueryResult = Apollo.QueryResult<GetDocumentStateQuery, GetDocumentStateQueryVariables>;
 export const GetExplorerDocumentsDocument = gql`
     query GetExplorerDocuments($limit: Float = 20, $offset: Float = 0) {
   getExplorerDocuments(limit: $limit, offset: $offset) {
