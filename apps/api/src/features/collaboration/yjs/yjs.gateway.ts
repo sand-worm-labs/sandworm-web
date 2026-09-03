@@ -9,6 +9,7 @@ import qs from 'querystring';
 import { z } from 'zod';
 import {
   DocumentEntity,
+  DocumentVisibility,
   UserWorkspaceEntity,
   UserWorkspaceRole,
   UserWorkspaceStatus,
@@ -255,7 +256,15 @@ export class YjsGateway implements OnModuleInit, OnModuleDestroy {
       }
 
       const entry = session.roles?.find(r => r[document.workspaceId]);
-      const role = entry?.[document.workspaceId];
+      let role = entry?.[document.workspaceId];
+      if (!role && document.visibility === DocumentVisibility.LINK) {
+        // "Anyone with the link" — any authenticated Sandworm user, not a
+        // workspace member, gets read-only access to this specific
+        // document. Synthesized as VIEWER (not a new pseudo-role) so the
+        // existing write-path enforcement in MessageHandlerService already
+        // blocks edits from it with no further changes there.
+        role = UserWorkspaceRole.VIEWER;
+      }
       if (!role) {
         this.logger.warn(`[YJS Rejected] reason=no_role userId=${session.user.id} workspaceId=${document.workspaceId}`);
         return null;

@@ -225,7 +225,8 @@ function PrivateDocumentPageInner(
     props.document.id
   );
 
-  const [, { restoreDocument }] = useDocuments(props.workspaceId);
+  const [, { restoreDocument, publish, unpublish, setLinkVisibility }] =
+    useDocuments(props.workspaceId);
   const onRestoreDocument = useCallback(() => {
     restoreDocument(props.documentId);
   }, [props.documentId, restoreDocument]);
@@ -307,9 +308,20 @@ function PrivateDocumentPageInner(
 
   const handleVisibilityChange = useCallback(
     async (visibility: "WORKSPACE" | "LINK" | "PUBLIC") => {
-      console.log(visibility);
+      try {
+        if (visibility === "PUBLIC") {
+          await publish(props.document.id);
+        } else if (visibility === "LINK") {
+          await setLinkVisibility(props.document.id);
+        } else {
+          await unpublish(props.document.id);
+        }
+      } catch {
+        // publish/unpublish/setLinkVisibility already toast on failure —
+        // nothing more to do.
+      }
     },
-    []
+    [publish, unpublish, setLinkVisibility, props.document.id]
   );
 
   // ⬢ Sidebar content for NotebookPanel
@@ -384,7 +396,7 @@ function PrivateDocumentPageInner(
 
         <ShareModal
           link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook`}
-          initialVisibility="WORKSPACE"
+          initialVisibility={props.document.visibility ?? "WORKSPACE"}
           onVisibilityChange={handleVisibilityChange}
           onExportPDF={triggerPrint}
           isExportingPDF={isPrinting}

@@ -185,6 +185,7 @@ export type Document = {
 
 export type ApiDocument = Document & {
   publishedAt: string | null;
+  visibility?: "WORKSPACE" | "LINK" | "PUBLIC";
   clock: number;
   appClock: number;
   appId: string;

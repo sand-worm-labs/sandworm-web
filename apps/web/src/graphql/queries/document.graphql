@@ -21,6 +21,7 @@ query GetDocument($workspaceId: String!, $documentId: String!) {
     deletedAt
     version
     publishedAt
+    visibility
     isDataApp
     isSyncedWithYjs
     hasDashboard

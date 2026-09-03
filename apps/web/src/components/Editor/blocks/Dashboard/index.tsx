@@ -31,6 +31,7 @@ import VisualizationBlock from "@/components/Visualization/index";
 import type { APIDataSources } from "../../hooks/useDataSources";
 import ShareModal from "../ShareModal";
 import { useDataSources } from "../../hooks/useDataSources";
+import { useDocuments } from "../../hooks/useDocuments";
 import { useLastUpdatedAt, useYDoc, useYDocState } from "../../hooks/useYDocs";
 import DashboardNotebookGroupButton from "../DashboarNotebookGroupButton";
 import EllipsisDropdown from "../EllipsisDropdown";
@@ -562,11 +563,25 @@ export default function Dashboard(props: Props) {
 
   const isDeleted = !isNil(props.document.deletedAt);
 
+  const [, { publish, unpublish, setLinkVisibility }] = useDocuments(
+    props.document.workspaceId
+  );
   const handleVisibilityChange = useCallback(
-    async (visibility: "private" | "team" | "community") => {
-      console.log("Visibility changed to:", visibility);
+    async (visibility: "WORKSPACE" | "LINK" | "PUBLIC") => {
+      try {
+        if (visibility === "PUBLIC") {
+          await publish(props.document.id);
+        } else if (visibility === "LINK") {
+          await setLinkVisibility(props.document.id);
+        } else {
+          await unpublish(props.document.id);
+        }
+      } catch {
+        // publish/unpublish/setLinkVisibility already toast on failure —
+        // nothing more to do.
+      }
     },
-    []
+    [publish, unpublish, setLinkVisibility, props.document.id]
   );
 
   const onGoToApp = useCallback(() => {
@@ -605,7 +620,7 @@ export default function Dashboard(props: Props) {
 
         <ShareModal
           link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook`}
-          initialVisibility="private"
+          initialVisibility={props.document.visibility ?? "WORKSPACE"}
           onVisibilityChange={handleVisibilityChange}
         />
         <EllipsisDropdown

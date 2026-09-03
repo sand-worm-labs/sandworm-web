@@ -19,6 +19,8 @@ import {
   useRestoreDocumentMutation,
   useUpdateDocumentMutation,
   usePublishDocumentMutation,
+  useUnpublishDocumentMutation,
+  useSetDocumentLinkVisibilityMutation,
   type UpdateDocumentInput,
 } from "@/generated/graphql";
 
@@ -149,6 +151,8 @@ type API = {
     }
   ) => Promise<void>;
   publish: (id: string) => Promise<void>;
+  unpublish: (id: string) => Promise<void>;
+  setLinkVisibility: (id: string) => Promise<void>;
 };
 
 type UseDocumentsState = {
@@ -277,6 +281,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
   const [emptyTrashMutation] = useEmptyTrashMutation();
   const [updateDocumentMutation] = useUpdateDocumentMutation();
   const [publishDocumentMutation] = usePublishDocumentMutation();
+  const [unpublishDocumentMutation] = useUnpublishDocumentMutation();
+  const [setLinkVisibilityMutation] = useSetDocumentLinkVisibilityMutation();
 
   const { documents, loading } = useMemo(
     (): StateValue =>
@@ -684,6 +690,104 @@ export function useDocuments(workspaceId: string): UseDocuments {
     [documents, workspaceId, setState, publishDocumentMutation]
   );
 
+  // ⬢ Unpublish Document
+  // =====================================
+  const unpublish = useCallback(
+    async (id: string) => {
+      const document = documents.find(doc => doc.id === id);
+      if (!document) {
+        return;
+      }
+
+      try {
+        const result = await unpublishDocumentMutation({
+          variables: {
+            workspaceId,
+            documentId: id,
+          },
+        });
+
+        if (!result.data?.unpublishDocument) {
+          throw new Error(`Error unpublishing Document(${id})`);
+        }
+
+        setState(prev => {
+          const { loading: prevLoading, documents: prevDocuments } = prev.get(
+            workspaceId
+          ) ?? {
+            loading: true,
+            documents: List(),
+          };
+          return prev.set(workspaceId, {
+            loading: prevLoading,
+            documents: prevDocuments.map(doc =>
+              doc.id === id
+                ? {
+                    ...doc,
+                    publishedAt: null,
+                  }
+                : doc
+            ),
+          });
+        });
+      } catch (e) {
+        toast.error("Failed to unpublish document");
+        throw e;
+      }
+    },
+    [documents, workspaceId, setState, unpublishDocumentMutation]
+  );
+
+  // ⬢ Set Document Link Visibility
+  // =====================================
+  const setLinkVisibility = useCallback(
+    async (id: string) => {
+      const document = documents.find(doc => doc.id === id);
+      if (!document) {
+        return;
+      }
+
+      try {
+        const result = await setLinkVisibilityMutation({
+          variables: {
+            workspaceId,
+            documentId: id,
+          },
+        });
+
+        if (!result.data?.setDocumentLinkVisibility) {
+          throw new Error(`Error setting link visibility for Document(${id})`);
+        }
+
+        // Mirrors unpublish: LINK docs never appear on the community
+        // explore/trending feeds, so publishedAt is cleared server-side too.
+        setState(prev => {
+          const { loading: prevLoading, documents: prevDocuments } = prev.get(
+            workspaceId
+          ) ?? {
+            loading: true,
+            documents: List(),
+          };
+          return prev.set(workspaceId, {
+            loading: prevLoading,
+            documents: prevDocuments.map(doc =>
+              doc.id === id
+                ? {
+                    ...doc,
+                    publishedAt: null,
+                  }
+                : doc
+            ),
+          });
+        });
+      } catch (e) {
+        toast.error("Failed to update link sharing");
+        throw e;
+      }
+    },
+    [documents, workspaceId, setState, setLinkVisibilityMutation]
+  );
+
   // ⬢ Update Document Settings
   // =====================================
   const updateDocumentSettings = useCallback(
@@ -753,6 +857,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
         emptyTrash,
         updateParent,
         publish,
+        unpublish,
+        setLinkVisibility,
         updateDocumentSettings,
       },
     ],
@@ -766,6 +872,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
       emptyTrash,
       updateParent,
       publish,
+      unpublish,
+      setLinkVisibility,
       updateDocumentSettings,
     ]
   );

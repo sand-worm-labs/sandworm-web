@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import {
   BooleanField,
   StringField,
@@ -9,8 +9,10 @@ import {
   DateFieldOptional,
   UUIDFieldOptional,
 } from '@sandworm/graphql';
-import { DocumentEntity } from '@sandworm/postgresql-typeorm';
+import { DocumentEntity, DocumentVisibility } from '@sandworm/postgresql-typeorm';
 import { GraphQLJSON } from 'graphql-type-json';
+
+registerEnumType(DocumentVisibility, { name: 'DocumentVisibility' });
 
 @ObjectType()
 export class Document {
@@ -63,6 +65,9 @@ export class Document {
   @DateFieldOptional()
   publishedAt!: Date | null;
 
+  @Field(() => DocumentVisibility)
+  visibility: DocumentVisibility = DocumentVisibility.WORKSPACE;
+
   @BooleanField({ defaultValue: false })
   isDataApp: boolean = false;
 
@@ -104,6 +109,7 @@ export class Document {
 
     // Publish feature defaults
     document.publishedAt = (entity as any).publishedAt ?? null;
+    document.visibility = (entity as any).visibility ?? DocumentVisibility.WORKSPACE;
     document.isDataApp = (entity as any).isDataApp ?? false;
     document.isSyncedWithYjs = true;
     document.hasDashboard = false;

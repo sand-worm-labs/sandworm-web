@@ -98,6 +98,7 @@ type Document {
   updatedAt: DateTime!
   version: Float!
   publishedAt: DateTime
+  visibility: DocumentVisibility!
   isDataApp: Boolean!
   isSyncedWithYjs: Boolean!
   hasDashboard: Boolean!
@@ -111,6 +112,12 @@ type Document {
   forkCount: Int!
   favoriteCount: Int!
   isFavorite: Boolean!
+}
+
+enum DocumentVisibility {
+  WORKSPACE
+  LINK
+  PUBLIC
 }
 
 type WorkspaceSecrets {
@@ -600,6 +607,11 @@ type Mutation {
 
   """Unpublish a document"""
   unpublishDocument(workspaceId: String!, documentId: String!): Document!
+
+  """
+  Let any authenticated user with the link view this document read-only, without publishing it to the community
+  """
+  setDocumentLinkVisibility(workspaceId: String!, documentId: String!): Document!
 
   """Create a new reusable component"""
   createComponent(workspaceId: String!, input: CreateReusableComponentInput!): ReusableComponent!
