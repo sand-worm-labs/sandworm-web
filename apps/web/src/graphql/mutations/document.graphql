@@ -13,6 +13,7 @@ mutation CreateDocument($workspaceId: String!, $input: CreateDocumentInput!) {
     deletedAt
     version
     publishedAt
+    visibility
     isDataApp
     isSyncedWithYjs
     hasDashboard
@@ -48,6 +49,7 @@ mutation UpdateDocument(
     deletedAt
     version
     publishedAt
+    visibility
     isDataApp
     isSyncedWithYjs
     hasDashboard
@@ -84,6 +86,7 @@ mutation RestoreDocument($input: RestoreDocumentInput!) {
     deletedAt
     version
     publishedAt
+    visibility
     isDataApp
     isSyncedWithYjs
     hasDashboard
@@ -112,6 +115,7 @@ mutation DuplicateDocument($input: DuplicateDocumentInput!) {
     deletedAt
     version
     publishedAt
+    visibility
     isDataApp
     isSyncedWithYjs
     hasDashboard
@@ -139,6 +143,7 @@ mutation PublishDocument($workspaceId: String!, $documentId: String!) {
     deletedAt
     version
     publishedAt
+    visibility
     isDataApp
     isSyncedWithYjs
     hasDashboard
@@ -166,6 +171,7 @@ mutation UnpublishDocument($workspaceId: String!, $documentId: String!) {
     deletedAt
     version
     publishedAt
+    visibility
     isDataApp
     isSyncedWithYjs
     hasDashboard
@@ -179,6 +185,33 @@ mutation UnpublishDocument($workspaceId: String!, $documentId: String!) {
   }
 }
 
+mutation SetDocumentLinkVisibility($workspaceId: String!, $documentId: String!) {
+  setDocumentLinkVisibility(workspaceId: $workspaceId, documentId: $documentId) {
+    id
+    title
+    slug
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    visibility
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
+  }
+}
 
 mutation AddFavoriteDocument($input: FavoriteDocumentInput!) {
   addWorkspaceFavoriteDocument(input: $input) {

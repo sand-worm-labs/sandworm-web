@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/date";
 import { tintPillDarkClassName } from "@/styles/interactive";
 
+import { useSession } from "../Editor/hooks/useAuth";
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 import { useForkDocument } from "../Editor/hooks/usePublicDocuments";
 import { useFavorites } from "../Editor/hooks/useFavorites";
@@ -65,6 +66,9 @@ export function FeaturedExploreCard({
   const router = useRouter();
   const workspaceId = useStringQuery("workspace");
   const isPurple = variant === "purple";
+
+  const { user } = useSession({ redirectToLogin: false });
+  const isOwnDocument = !!user && user.id === creator.userId;
 
   const { forkDocument, loading: forking } = useForkDocument();
   const [, { favoriteDocument, unfavoriteDocument }] = useFavorites(
@@ -230,19 +234,21 @@ export function FeaturedExploreCard({
             />
           </button>
 
-          <button
-            type="button"
-            onClick={handleSaveClick}
-            disabled={forking}
-            aria-label="Fork to workspace"
-            className={cn(
-              "flex items-center gap-1 transition-colors disabled:opacity-50",
-              isPurple ? "hover:text-blue-300" : "hover:text-blue-500"
-            )}
-          >
-            <span>{forks}</span>
-            <GitFork size={18} />
-          </button>
+          {!isOwnDocument && (
+            <button
+              type="button"
+              onClick={handleSaveClick}
+              disabled={forking}
+              aria-label="Fork to workspace"
+              className={cn(
+                "flex items-center gap-1 transition-colors disabled:opacity-50",
+                isPurple ? "hover:text-blue-300" : "hover:text-blue-500"
+              )}
+            >
+              <span>{forks}</span>
+              <GitFork size={18} />
+            </button>
+          )}
         </div>
       </div>
 

@@ -76,7 +76,6 @@ function PrivateDocumentPageInner(
   props: Props & {
     document: ApiDocument;
     publish: () => Promise<void>;
-    unpublish: () => Promise<void>;
     publishing: boolean;
   }
 ) {
@@ -218,7 +217,8 @@ function PrivateDocumentPageInner(
     props.document.id
   );
 
-  const [, { restoreDocument }] = useDocuments(props.workspaceId);
+  const [, { restoreDocument, publish, unpublish, setLinkVisibility }] =
+    useDocuments(props.workspaceId);
   const onRestoreDocument = useCallback(() => {
     restoreDocument(props.documentId);
   }, [props.documentId, restoreDocument]);
@@ -299,14 +299,21 @@ function PrivateDocumentPageInner(
   }, [router]);
 
   const handleVisibilityChange = useCallback(
-    async (visibility: "WORKSPACE" | "PUBLIC") => {
-      if (visibility === "PUBLIC") {
-        await props.publish();
-      } else {
-        await props.unpublish();
+    async (visibility: "WORKSPACE" | "LINK" | "PUBLIC") => {
+      try {
+        if (visibility === "PUBLIC") {
+          await publish(props.document.id);
+        } else if (visibility === "LINK") {
+          await setLinkVisibility(props.document.id);
+        } else {
+          await unpublish(props.document.id);
+        }
+      } catch {
+        // publish/unpublish/setLinkVisibility already toast on failure —
+        // nothing more to do.
       }
     },
-    [props.publish, props.unpublish]
+    [publish, unpublish, setLinkVisibility, props.document.id]
   );
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -384,9 +391,7 @@ function PrivateDocumentPageInner(
 
         <ShareModal
           link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook${props.document.shareLinksWithoutSidebar ? "?sidebar=hidden" : ""}`}
-          initialVisibility={
-            props.document.publishedAt !== null ? "PUBLIC" : "WORKSPACE"
-          }
+          initialVisibility={props.document.visibility ?? "WORKSPACE"}
           onVisibilityChange={handleVisibilityChange}
           onExportPDF={triggerPrint}
           isExportingPDF={isPrinting}
@@ -651,7 +656,7 @@ function PrivateDocumentPageInner(
 }
 
 export default function PrivateDocumentPage(props: Props) {
-  const [{ document, publishing }, { publish, unpublish }] = useDocument(
+  const [{ document, publishing }, { publish }] = useDocument(
     props.workspaceId,
     props.documentId
   );
@@ -677,7 +682,6 @@ export default function PrivateDocumentPage(props: Props) {
       {...props}
       document={document}
       publish={publish}
-      unpublish={unpublish}
       publishing={publishing}
     />
   );

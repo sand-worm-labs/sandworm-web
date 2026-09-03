@@ -24,7 +24,7 @@ import { TooltipV2 } from "./ToolTips";
 // ⬢ Types
 // =====================================
 
-type ShareVisibility = "WORKSPACE" | "PUBLIC";
+type ShareVisibility = "WORKSPACE" | "LINK" | "PUBLIC";
 
 type ShareModalProps = {
   link?: string;
@@ -53,6 +53,12 @@ const visibilityOptions = [
     name: "Workspace only",
     description: "Only workspace members can access",
     icon: PiLockSimple,
+  },
+  {
+    id: "LINK" as const,
+    name: "Anyone with link",
+    description: "View-only with URL — not on explore",
+    icon: PiLink,
   },
   {
     id: "PUBLIC" as const,
@@ -186,7 +192,7 @@ export default function ShareModal({
     }
   }, [isOpen, initialVisibility]);
 
-  const showLink = visibility === "PUBLIC";
+  const showLink = visibility === "LINK" || visibility === "PUBLIC";
   const showMeta = visibility === "PUBLIC";
 
   const handleCopy = useCallback(() => {
