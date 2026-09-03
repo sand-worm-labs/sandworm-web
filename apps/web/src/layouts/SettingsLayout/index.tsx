@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserRound, ChevronLeft, CreditCard } from "lucide-react";
+import { PiUserCircle, PiCaretLeft, PiCreditCard } from "react-icons/pi";
 import { Button } from "@sandworm/ui/components/button";
 
 import { User } from "@/components/Assets/User";
@@ -25,7 +25,7 @@ export default function SettingsLayout({
     {
       name: "Profile",
       href: `/workspace/${workspaceId}/settings/profile`,
-      icon: <UserRound size={18} />,
+      icon: <PiUserCircle size={18} />,
     },
     {
       name: "Account",
@@ -45,7 +45,7 @@ export default function SettingsLayout({
     {
       name: "Plan",
       href: `/workspace/${workspaceId}/settings/plan`,
-      icon: <CreditCard size={18} />,
+      icon: <PiCreditCard size={18} />,
     },
   ];
 
@@ -62,7 +62,7 @@ export default function SettingsLayout({
             href="/workspace"
             className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md text-ink-400 hover:bg-base-350 hover:text-ink-500 dark:text-ink-400 dark:hover:bg-base-700 dark:hover:text-ink-200 transition-all duration-100"
           >
-            <ChevronLeft size={16} />
+            <PiCaretLeft size={16} />
           </Link>
 
           <span>Settings</span>

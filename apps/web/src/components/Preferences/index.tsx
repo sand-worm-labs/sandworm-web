@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Monitor, Sun, Moon } from "lucide-react";
+import { PiMonitor, PiSun, PiMoon } from "react-icons/pi";
 import { useTheme } from "next-themes";
 
 import { useSandwormStore } from "@/store";
@@ -167,7 +167,7 @@ const AIEditCard: React.FC<{
 // same one CodeMirror uses to render SQL/Python/Markdown), mapped onto
 // each token the same way the syntax highlighter maps them — so the card
 // is a true preview, not a stand-in.
-const EditorThemeCard: React.FC<{
+export const EditorThemeCard: React.FC<{
   label: string;
   palette: EditorPalette;
   selected: boolean;
@@ -237,19 +237,19 @@ const Preferences: React.FC = () => {
       id: "system",
       label: "System preference",
       description: "Automatically match your system theme settings",
-      icon: <Monitor className="w-5 h-5" />,
+      icon: <PiMonitor className="w-5 h-5" />,
     },
     {
       id: "light",
       label: "Light theme",
       description: "Bright and clean interface for daytime use",
-      icon: <Sun className="w-5 h-5" />,
+      icon: <PiSun className="w-5 h-5" />,
     },
     {
       id: "dark",
       label: "Dark theme",
       description: "Easy on the eyes for extended work sessions",
-      icon: <Moon className="w-5 h-5" />,
+      icon: <PiMoon className="w-5 h-5" />,
     },
   ];
 

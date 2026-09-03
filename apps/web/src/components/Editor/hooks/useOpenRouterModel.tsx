@@ -1,4 +1,5 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { useApolloClient } from "@apollo/client";
 
 import {
   useGetOpenRouterModelsQuery,
@@ -91,6 +92,7 @@ export const useOpenRouterModels = (
   workspaceId: string,
   initialModelId?: string
 ) => {
+  const client = useApolloClient();
   const { data, loading, error } = useGetOpenRouterModelsQuery();
 
   const {
@@ -109,6 +111,14 @@ export const useOpenRouterModels = (
     initialModelId ?? null
   );
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+
+  // `initialModelId` only seeds state on mount — re-sync whenever the
+  // workspace's default model changes underneath us (e.g. picked from a
+  // different mounted instance of this hook, like the Settings modal vs.
+  // the main chat panel).
+  useEffect(() => {
+    setSelectedModelId(initialModelId ?? null);
+  }, [initialModelId]);
 
   const models = useMemo<NormalizedModel[]>(
     () => (data?.openRouterModels ?? []).map(normalizeModel),
@@ -136,8 +146,19 @@ export const useOpenRouterModels = (
       await setDefaultModel({
         variables: { workspaceId, model: modelId },
       });
+
+      // The mutation only returns a bare scalar, so Apollo has nothing to
+      // normalize back into the Workspace entity on its own — write it
+      // directly so every other query reading `workspace.assistantModel`
+      // (main chat, MiniChat, this same picker elsewhere) updates in place.
+      client.cache.modify({
+        id: client.cache.identify({ __typename: "Workspace", id: workspaceId }),
+        fields: {
+          assistantModel: () => modelId,
+        },
+      });
     },
-    [workspaceId, setDefaultModel]
+    [workspaceId, setDefaultModel, client]
   );
 
   return {
