@@ -11,6 +11,7 @@ import { DateInputBlockExecutorService } from './services/executors/date-input-b
 import { DropdownInputBlockExecutorService } from './services/executors/dropdown-input-block-executor.service';
 import { PivotTableBlockExecutorService } from './services/executors/pivot-table-block-executor.service';
 import { VisualizationBlockExecutorService } from './services/executors/visualization-block-executor.service';
+import { PowerToolboxBlockExecutorService } from './services/executors/power-toolbox-block-executor.service';
 
 const executorServices = [
   PythonBlockExecutorService,
@@ -20,6 +21,7 @@ const executorServices = [
   DropdownInputBlockExecutorService,
   PivotTableBlockExecutorService,
   VisualizationBlockExecutorService,
+  PowerToolboxBlockExecutorService,
 ];
 
 @Module({

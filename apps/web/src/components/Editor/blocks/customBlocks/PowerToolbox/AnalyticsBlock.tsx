@@ -218,7 +218,7 @@ function AnalyticsBlock(props: Props) {
   const executions = useBlockExecutions(
     props.executionQueue,
     props.block,
-    "powertoolbox" // need to add execution for useblock execution
+    "power-toolbox"
   );
   const execution = head(executions) ?? null;
   const status = execution?.item.getStatus()._tag ?? "idle";
@@ -259,7 +259,7 @@ function AnalyticsBlock(props: Props) {
       blockId,
       props.userId,
       environmentStartedAt,
-      { _tag: "analytics" }
+      { _tag: "power-toolbox" }
     );
   }, [props.executionQueue, blockId, props.userId, environmentStartedAt]);
 
@@ -273,14 +273,15 @@ function AnalyticsBlock(props: Props) {
         break;
       case "idle":
       case "completed":
-      case "unknown":
-        if (isDirty || view === "form") {
+      case "unknown": {
+        const source = props.block.getAttribute("generatedSource") ?? "";
+        if (isDirty || view === "form" || !source.trim()) {
           setView("form");
         } else {
-          const source = props.block.getAttribute("generatedSource") ?? "";
-          onRun(source);
+          onRun();
         }
         break;
+      }
       case "aborting":
         break;
       default:

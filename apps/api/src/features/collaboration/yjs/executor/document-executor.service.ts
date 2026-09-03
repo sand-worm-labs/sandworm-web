@@ -8,6 +8,7 @@ import { InputBlockExecutorService } from '@/features/block-executor/services/ex
 import { DateInputBlockExecutorService } from '@/features/block-executor/services/executors/date-input-block-executor.service';
 import { DropdownInputBlockExecutorService } from '@/features/block-executor/services/executors/dropdown-input-block-executor.service';
 import { PivotTableBlockExecutorService } from '@/features/block-executor/services/executors/pivot-table-block-executor.service';
+import { PowerToolboxBlockExecutorService } from '@/features/block-executor/services/executors/power-toolbox-block-executor.service';
 import { DocExecutor } from './doc-executor';
 
 @Injectable()
@@ -20,6 +21,7 @@ export class DocumentExecutorService {
     private readonly dateInput: DateInputBlockExecutorService,
     private readonly dropdownInput: DropdownInputBlockExecutorService,
     private readonly pivotTable: PivotTableBlockExecutorService,
+    private readonly powerToolbox: PowerToolboxBlockExecutorService,
     private readonly lock: LockService,
   ) {}
 
@@ -46,6 +48,7 @@ export class DocumentExecutorService {
         dateInput: this.dateInput,
         dropdownInput: this.dropdownInput,
         pivotTable: this.pivotTable,
+        powerToolbox: this.powerToolbox,
         lock: this.lock,
       },
     );

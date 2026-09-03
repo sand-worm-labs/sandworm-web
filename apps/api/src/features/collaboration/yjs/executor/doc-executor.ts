@@ -14,6 +14,7 @@ import {
   isDropdownInputBlock,
   isTextInputBlock,
   isPivotTableBlock,
+  isPowerToolboxBlock,
   YBlock,
 } from '@sandworm/editor';
 import { exhaustiveCheck } from '@sandworm/types';
@@ -25,6 +26,7 @@ import { InputBlockExecutorService } from '@/features/block-executor/services/ex
 import { DateInputBlockExecutorService } from '@/features/block-executor/services/executors/date-input-block-executor.service';
 import { DropdownInputBlockExecutorService } from '@/features/block-executor/services/executors/dropdown-input-block-executor.service';
 import { PivotTableBlockExecutorService } from '@/features/block-executor/services/executors/pivot-table-block-executor.service';
+import { PowerToolboxBlockExecutorService } from '@/features/block-executor/services/executors/power-toolbox-block-executor.service';
 import { DocumentContext, ExecutionContext } from '@/features/block-executor/interfaces';
 
 export interface DocExecutorServices {
@@ -35,6 +37,7 @@ export interface DocExecutorServices {
   dateInput: DateInputBlockExecutorService;
   dropdownInput: DropdownInputBlockExecutorService;
   pivotTable: PivotTableBlockExecutorService;
+  powerToolbox: PowerToolboxBlockExecutorService;
   lock: LockService;
 }
 
@@ -245,6 +248,11 @@ export class DocExecutor {
         case 'pivot-table-load-page': {
           if (!isPivotTableBlock(block)) { item.setCompleted('error'); return; }
           await this.services.pivotTable.loadPage(ctx, item, block, docCtx);
+          break;
+        }
+        case 'power-toolbox': {
+          if (!isPowerToolboxBlock(block)) { item.setCompleted('error'); return; }
+          await this.services.powerToolbox.run(ctx, item, block, docCtx);
           break;
         }
         case 'noop':
