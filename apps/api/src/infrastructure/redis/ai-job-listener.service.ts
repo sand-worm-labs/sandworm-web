@@ -6,6 +6,7 @@ import { RedisService } from './redis.service';
 import { AiJobEvent, AiJobEventNames } from '@/core/events/ai-job.events';
 import { BlockActionEvent, BlockActionEventNames, BlockActionType } from '@/core/events/block-action.events';
 import pLimit from 'p-limit';
+import { DATA_SOURCE_ID_BY_NAME } from '@sandworm/types';
 
 interface RawAiJobEvent {
   chat_id?: string;
@@ -79,10 +80,7 @@ export class AiJobListenerService implements OnModuleInit {
     // BlockActionService.generate_blocks on the Python side.
     const delta = type === 'content_block_delta' ? (rest as any).delta : undefined;
     if (delta?.type === 'block_action_delta') {
-      // The AI sidecar names data sources by their Dune-facing identity
-      // ("dune"); map that onto the fixed synthetic id the SQL block
-      // executor and the Dune data source itself are keyed by.
-      const dataSourceId = delta.data_source === 'dune' ? 'dune-datasource' : null;
+      const dataSourceId = DATA_SOURCE_ID_BY_NAME[delta.data_source] ?? null;
 
       const blockEvent: BlockActionEvent = {
         action: (delta.action as BlockActionType) ?? 'created',

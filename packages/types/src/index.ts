@@ -208,6 +208,77 @@ export const ChartType = z.union([
 
 export type ChartType = z.infer<typeof ChartType>;
 
+// Single source of truth for the app's fixed set of data sources — the id
+// (apps/api/src/infrastructure/datasource/*'s BaseDataSource.id), the
+// discriminator tag on the `{ type, data }` wrapper those services return
+// (datasource.types.ts's DataSource union), and the display name, keyed
+// together so the three can't drift out of sync.
+const DATA_SOURCES = {
+  duckdb: { id: 'duckdb', type: 'duckdb', name: 'DuckDB' },
+  dune: { id: 'dune-datasource', type: 'dune', name: 'Dune' },
+  sandwormCloud: { id: 'sandwormcloud-datasource', type: 'sandwormcloud', name: 'Sandworm Cloud' },
+} as const;
+
+// Plain objects (not z.enum) so callers get clean dot access
+// (DataSourceId.dune) even though the underlying value
+// ("dune-datasource") isn't a valid identifier itself.
+export const DataSourceId = {
+  duckdb: DATA_SOURCES.duckdb.id,
+  dune: DATA_SOURCES.dune.id,
+  sandwormCloud: DATA_SOURCES.sandwormCloud.id,
+} as const;
+export type DataSourceId = (typeof DataSourceId)[keyof typeof DataSourceId];
+
+// The AI sidecar names data sources "dune", "duckdb", or "sandworm_cloud"
+// (see SqlDataSource in apps/ai's block_action/model.py) — map those onto
+// the fixed synthetic ids the SQL block executor and the data source
+// services themselves are keyed by. sandworm_cloud is listed for the same
+// reason it's listed there: honest completeness, not because the sidecar
+// can actually produce it yet (SandwormCloudQueryService is still a mock).
+export const DATA_SOURCE_ID_BY_NAME: Partial<Record<string, DataSourceId>> = {
+  dune: DataSourceId.dune,
+  duckdb: DataSourceId.duckdb,
+  sandworm_cloud: DataSourceId.sandwormCloud,
+};
+
+// Which real query engine executes a SQL block for a given dataSourceId.
+// Only "dune-datasource" is Trino-backed today; duckdb and sandwormCloud
+// both run against the local DuckDB session — sandwormCloud because
+// SandwormCloudQueryService is still a mock (no real query execution wired
+// up, disabled in the datasource picker; see sandworm-cloud-datasource.
+// service.ts), not because DuckDB is actually the right engine for it. When
+// that becomes real, add its own engine here instead of leaving it folded
+// into duckdb.
+export const DATA_SOURCE_QUERY_ENGINE: Record<DataSourceId, 'trino' | 'duckdb'> = {
+  [DataSourceId.dune]: 'trino',
+  [DataSourceId.duckdb]: 'duckdb',
+  [DataSourceId.sandwormCloud]: 'duckdb',
+};
+
+// The dialect name shown to the AI when describing a query back to it (e.g.
+// SqlAiExecutorService's edit/fix prompts) — same split as
+// DATA_SOURCE_QUERY_ENGINE, just in the vocabulary an LLM prompt uses
+// ("sql" for Trino, not "trino").
+export const DATA_SOURCE_DIALECT: Record<DataSourceId, 'sql' | 'duckdb'> = {
+  [DataSourceId.dune]: 'sql',
+  [DataSourceId.duckdb]: 'duckdb',
+  [DataSourceId.sandwormCloud]: 'duckdb',
+};
+
+export const DataSourceType = {
+  duckdb: DATA_SOURCES.duckdb.type,
+  dune: DATA_SOURCES.dune.type,
+  sandwormCloud: DATA_SOURCES.sandwormCloud.type,
+} as const;
+export type DataSourceType = (typeof DataSourceType)[keyof typeof DataSourceType];
+
+export const DataSourceName = {
+  duckdb: DATA_SOURCES.duckdb.name,
+  dune: DATA_SOURCES.dune.name,
+  sandwormCloud: DATA_SOURCES.sandwormCloud.name,
+} as const;
+export type DataSourceName = (typeof DataSourceName)[keyof typeof DataSourceName];
+
 // ═══════════════════════════════════════════════
 //  DataFrame
 // ═══════════════════════════════════════════════

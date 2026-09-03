@@ -5,6 +5,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ChatEntity } from '@sandworm/postgresql-typeorm';
 import { BlockType, ExecutionQueue, getBlocks, getPythonAttributes, getSQLAttributes, updateYText } from '@sandworm/editor';
 import type { PivotTableMetric, PowerToolboxInputs, PythonBlock, SQLBlock } from '@sandworm/editor';
+import { DATA_SOURCE_DIALECT, DataSourceId } from '@sandworm/types';
 import type { DataFrameColumn, Output, RunQueryResult } from '@sandworm/types';
 import * as Y from 'yjs';
 import { BlockActionEvent, BlockActionEventNames } from '@/core/events/block-action.events';
@@ -282,7 +283,7 @@ export class AiBlockEventService implements OnModuleInit {
       this.logger.log(`[block-action] SQL block ${blockId} failed on attempt ${attempt}/${MAX_SQL_RUN_ATTEMPTS}, asking AI to fix`);
 
       const { source, dataSourceId } = getSQLAttributes(block, blocks);
-      const dialect = dataSourceId ? 'sql' : 'duckdb';
+      const dialect = DATA_SOURCE_DIALECT[dataSourceId as DataSourceId] ?? 'duckdb';
       const errorMessage = `Dialect: ${dialect}\n\nQuery:\n${source.toJSON()}\n\nError: ${result.message}`;
 
       let fixed: string;
