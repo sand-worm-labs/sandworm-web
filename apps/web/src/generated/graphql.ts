@@ -1584,6 +1584,14 @@ export type PublishDocumentMutationVariables = Exact<{
 
 export type PublishDocumentMutation = { __typename?: 'Mutation', publishDocument: { __typename?: 'Document', id: string, title: string, slug?: string | null, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
 
+export type UnpublishDocumentMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+}>;
+
+
+export type UnpublishDocumentMutation = { __typename?: 'Mutation', unpublishDocument: { __typename?: 'Document', id: string, title: string, slug?: string | null, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean } };
+
 export type AddFavoriteDocumentMutationVariables = Exact<{
   input: FavoriteDocumentInput;
 }>;
@@ -3488,6 +3496,61 @@ export function usePublishDocumentMutation(baseOptions?: Apollo.MutationHookOpti
 export type PublishDocumentMutationHookResult = ReturnType<typeof usePublishDocumentMutation>;
 export type PublishDocumentMutationResult = Apollo.MutationResult<PublishDocumentMutation>;
 export type PublishDocumentMutationOptions = Apollo.BaseMutationOptions<PublishDocumentMutation, PublishDocumentMutationVariables>;
+export const UnpublishDocumentDocument = gql`
+    mutation UnpublishDocument($workspaceId: String!, $documentId: String!) {
+  unpublishDocument(workspaceId: $workspaceId, documentId: $documentId) {
+    id
+    title
+    slug
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
+  }
+}
+    `;
+export type UnpublishDocumentMutationFn = Apollo.MutationFunction<UnpublishDocumentMutation, UnpublishDocumentMutationVariables>;
+
+/**
+ * __useUnpublishDocumentMutation__
+ *
+ * To run a mutation, you first call `useUnpublishDocumentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnpublishDocumentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unpublishDocumentMutation, { data, loading, error }] = useUnpublishDocumentMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      documentId: // value for 'documentId'
+ *   },
+ * });
+ */
+export function useUnpublishDocumentMutation(baseOptions?: Apollo.MutationHookOptions<UnpublishDocumentMutation, UnpublishDocumentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UnpublishDocumentMutation, UnpublishDocumentMutationVariables>(UnpublishDocumentDocument, options);
+      }
+export type UnpublishDocumentMutationHookResult = ReturnType<typeof useUnpublishDocumentMutation>;
+export type UnpublishDocumentMutationResult = Apollo.MutationResult<UnpublishDocumentMutation>;
+export type UnpublishDocumentMutationOptions = Apollo.BaseMutationOptions<UnpublishDocumentMutation, UnpublishDocumentMutationVariables>;
 export const AddFavoriteDocumentDocument = gql`
     mutation AddFavoriteDocument($input: FavoriteDocumentInput!) {
   addWorkspaceFavoriteDocument(input: $input) {

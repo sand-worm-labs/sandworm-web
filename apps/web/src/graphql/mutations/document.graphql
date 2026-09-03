@@ -152,6 +152,33 @@ mutation PublishDocument($workspaceId: String!, $documentId: String!) {
   }
 }
 
+mutation UnpublishDocument($workspaceId: String!, $documentId: String!) {
+  unpublishDocument(workspaceId: $workspaceId, documentId: $documentId) {
+    id
+    title
+    slug
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
+  }
+}
+
 
 mutation AddFavoriteDocument($input: FavoriteDocumentInput!) {
   addWorkspaceFavoriteDocument(input: $input) {

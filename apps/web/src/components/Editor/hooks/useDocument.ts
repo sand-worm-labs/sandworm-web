@@ -8,6 +8,7 @@ import { useDocuments } from "./useDocuments";
 
 type API = {
   publish: () => Promise<void>;
+  unpublish: () => Promise<void>;
   toggleRunUnexecutedBlocks: () => Promise<void>;
   toggleRunSQLSelection: () => Promise<void>;
   toggleShareLinksWithoutSidebar: () => Promise<void>;
@@ -66,14 +67,22 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
   const [publishing, setPublishing] = useState(false);
   const publish = useCallback(async () => {
     setPublishing(true);
+
     try {
       await api.publish(documentId);
-    } catch (err) {
-      toast.success("Failed to save document");
     } finally {
       setPublishing(false);
     }
   }, [workspaceId, documentId, api.publish]);
+
+  const unpublish = useCallback(async () => {
+    setPublishing(true);
+    try {
+      await api.unpublish(documentId);
+    } finally {
+      setPublishing(false);
+    }
+  }, [workspaceId, documentId, api.unpublish]);
 
   const toggleRunUnexecutedBlocks = useCallback(async () => {
     const newRunUnexecutedBlocks = !currRunUnexecutedBlocks;
@@ -128,6 +137,7 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
       { document, loading, publishing },
       {
         publish,
+        unpublish,
         toggleRunUnexecutedBlocks,
         toggleRunSQLSelection,
         toggleShareLinksWithoutSidebar,
@@ -138,6 +148,7 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
       loading,
       publishing,
       publish,
+      unpublish,
       toggleRunUnexecutedBlocks,
       toggleRunSQLSelection,
       toggleShareLinksWithoutSidebar,

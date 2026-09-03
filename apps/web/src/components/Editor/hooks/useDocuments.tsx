@@ -19,6 +19,7 @@ import {
   useRestoreDocumentMutation,
   useUpdateDocumentMutation,
   usePublishDocumentMutation,
+  useUnpublishDocumentMutation,
   type UpdateDocumentInput,
 } from "@/generated/graphql";
 
@@ -149,6 +150,7 @@ type API = {
     }
   ) => Promise<void>;
   publish: (id: string) => Promise<void>;
+  unpublish: (id: string) => Promise<void>;
 };
 
 type UseDocumentsState = {
@@ -277,6 +279,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
   const [emptyTrashMutation] = useEmptyTrashMutation();
   const [updateDocumentMutation] = useUpdateDocumentMutation();
   const [publishDocumentMutation] = usePublishDocumentMutation();
+  const [unpublishDocumentMutation] = useUnpublishDocumentMutation();
 
   const { documents, loading } = useMemo(
     (): StateValue =>
@@ -684,6 +687,49 @@ export function useDocuments(workspaceId: string): UseDocuments {
     [documents, workspaceId, setState, publishDocumentMutation]
   );
 
+  // ⬢ Unpublish Document
+  // =====================================
+  const unpublish = useCallback(
+    async (id: string) => {
+      const document = documents.find(doc => doc.id === id);
+      if (!document) {
+        return;
+      }
+
+      try {
+        const result = await unpublishDocumentMutation({
+          variables: {
+            workspaceId,
+            documentId: id,
+          },
+        });
+
+        if (!result.data?.unpublishDocument) {
+          throw new Error(`Error unpublishing Document(${id})`);
+        }
+
+        setState(prev => {
+          const { loading: prevLoading, documents: prevDocuments } = prev.get(
+            workspaceId
+          ) ?? {
+            loading: true,
+            documents: List(),
+          };
+          return prev.set(workspaceId, {
+            loading: prevLoading,
+            documents: prevDocuments.map(doc =>
+              doc.id === id ? { ...doc, publishedAt: null } : doc
+            ),
+          });
+        });
+      } catch (e) {
+        toast.error("Failed to unpublish document");
+        throw e;
+      }
+    },
+    [documents, workspaceId, setState, unpublishDocumentMutation]
+  );
+
   // ⬢ Update Document Settings
   // =====================================
   const updateDocumentSettings = useCallback(
@@ -759,6 +805,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
         emptyTrash,
         updateParent,
         publish,
+        unpublish,
         updateDocumentSettings,
       },
     ],
@@ -772,6 +819,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
       emptyTrash,
       updateParent,
       publish,
+      unpublish,
       updateDocumentSettings,
     ]
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild, RadioGroup } from "@headlessui/react";
 import {
   PiX,
@@ -24,7 +24,7 @@ import { TooltipV2 } from "./ToolTips";
 // ⬢ Types
 // =====================================
 
-type ShareVisibility = "WORKSPACE" | "LINK" | "PUBLIC";
+type ShareVisibility = "WORKSPACE" | "PUBLIC";
 
 type ShareModalProps = {
   link?: string;
@@ -35,6 +35,12 @@ type ShareModalProps = {
   ) => Promise<void> | void;
   onExportPDF?: () => void;
   isExportingPDF?: boolean;
+  // Optional external control — lets another button (e.g. a top-bar
+  // "Publish" action) open this same modal. Falls back to its own
+  // internal state when omitted, so the existing icon trigger keeps
+  // working unchanged.
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
 };
 
 // =====================================
@@ -47,12 +53,6 @@ const visibilityOptions = [
     name: "Workspace only",
     description: "Only workspace members can access",
     icon: PiLockSimple,
-  },
-  {
-    id: "LINK" as const,
-    name: "Anyone with link",
-    description: "View-only with URL — not on explore",
-    icon: PiLink,
   },
   {
     id: "PUBLIC" as const,
@@ -155,8 +155,21 @@ export default function ShareModal({
   onVisibilityChange,
   onExportPDF,
   isExportingPDF = false,
+  isOpen: isOpenProp,
+  onOpenChange,
 }: ShareModalProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = isOpenProp !== undefined;
+  const isOpen = isControlled ? isOpenProp : internalOpen;
+
+  const setIsOpen = useCallback(
+    (next: boolean) => {
+      if (!isControlled) setInternalOpen(next);
+      onOpenChange?.(next);
+    },
+    [isControlled, onOpenChange]
+  );
+
   const [copied, setCopied] = useState(false);
   const [visibility, setVisibility] =
     useState<ShareVisibility>(initialVisibility);
@@ -164,7 +177,16 @@ export default function ShareModal({
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState<string[]>([]);
 
-  const showLink = visibility === "LINK" || visibility === "PUBLIC";
+  // Reflect the document's real current state each time the modal opens —
+  // it stays mounted between opens, so without this it would keep showing
+  // whatever visibility was selected the first time it ever opened.
+  useEffect(() => {
+    if (isOpen) {
+      setVisibility(initialVisibility);
+    }
+  }, [isOpen, initialVisibility]);
+
+  const showLink = visibility === "PUBLIC";
   const showMeta = visibility === "PUBLIC";
 
   const handleCopy = useCallback(() => {
@@ -187,17 +209,17 @@ export default function ShareModal({
     } finally {
       setIsUpdating(false);
     }
-  }, [onVisibilityChange, visibility, description, tags]);
+  }, [onVisibilityChange, visibility, description, tags, setIsOpen]);
 
-  const openModal = useCallback(() => setIsOpen(true), []);
-  const closeModal = useCallback(() => setIsOpen(false), []);
+  const openModal = useCallback(() => setIsOpen(true), [setIsOpen]);
+  const closeModal = useCallback(() => setIsOpen(false), [setIsOpen]);
 
   const handleExportPDF = useCallback(() => {
     // Close the modal first, then trigger print after the leave animation
     // completes (leave transition is duration-150, so 200ms is safe).
     setIsOpen(false);
     setTimeout(() => onExportPDF?.(), 200);
-  }, [onExportPDF]);
+  }, [onExportPDF, setIsOpen]);
 
   return (
     <>

@@ -76,6 +76,7 @@ function PrivateDocumentPageInner(
   props: Props & {
     document: ApiDocument;
     publish: () => Promise<void>;
+    unpublish: () => Promise<void>;
     publishing: boolean;
   }
 ) {
@@ -298,11 +299,18 @@ function PrivateDocumentPageInner(
   }, [router]);
 
   const handleVisibilityChange = useCallback(
-    async (visibility: "WORKSPACE" | "LINK" | "PUBLIC") => {
-      console.log(visibility);
+    async (visibility: "WORKSPACE" | "PUBLIC") => {
+      if (visibility === "PUBLIC") {
+        await props.publish();
+      } else {
+        await props.unpublish();
+      }
     },
-    []
+    [props.publish, props.unpublish]
   );
+
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const onOpenShareModal = useCallback(() => setIsShareModalOpen(true), []);
 
   // ⬢ Sidebar content for NotebookPanel
   // =====================================
@@ -376,10 +384,14 @@ function PrivateDocumentPageInner(
 
         <ShareModal
           link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook${props.document.shareLinksWithoutSidebar ? "?sidebar=hidden" : ""}`}
-          initialVisibility="WORKSPACE"
+          initialVisibility={
+            props.document.publishedAt !== null ? "PUBLIC" : "WORKSPACE"
+          }
           onVisibilityChange={handleVisibilityChange}
           onExportPDF={triggerPrint}
           isExportingPDF={isPrinting}
+          isOpen={isShareModalOpen}
+          onOpenChange={setIsShareModalOpen}
         />
         <EllipsisDropdown
           onToggleSchedules={onToggleSchedules}
@@ -417,6 +429,7 @@ function PrivateDocumentPageInner(
       handleVisibilityChange,
       triggerPrint,
       isPrinting,
+      isShareModalOpen,
     ]
   );
 
@@ -476,38 +489,52 @@ function PrivateDocumentPageInner(
             <span>Edit</span>
           </Link>
         ) : (
-          <Tooltip
-            title="Click to save"
-            message="This notebook has unsaved changes."
-            active={props.document.publishedAt !== null && isDirty}
-            position="bottom"
-            tooltipClassname="w-40"
-          >
-            <button
-              type="button"
-              className="flex items-center gap-1.5
-    rounded-lg px-3 py-1 text-sm font-body
+          <>
+            <Tooltip
+              title="Click to save"
+              message="This notebook has unsaved changes."
+              active={props.document.publishedAt !== null && isDirty}
+              position="bottom"
+              tooltipClassname="w-40"
+            >
+              <button
+                type="button"
+                className="h-[30px] flex items-center gap-1.5
+    rounded-lg px-3 text-sm font-body
     bg-transparent text-primary dark:text-primary-tint-75
     hover:bg-primary-300
     disabled:cursor-not-allowed disabled:opacity-50
     border-[1.5px] border-primary dark:border-hover-border relative group font-medium"
-              onClick={onPublish}
-              disabled={props.publishing}
-            >
-              <span
-                className="inline-flex items-center gap-[2px] font-body font-medium leading-none
+                onClick={onPublish}
+                disabled={props.publishing}
+              >
+                <span
+                  className="inline-flex items-center gap-[2px] font-body font-medium leading-none
     text-primary dark:text-primary-tint-75 border border-primary dark:border-hover-border rounded-sm
     px-1 py-0.5 text-[12px] tracking-tight
     group-hover:scale-95 transition-transform duration-300"
-              >
-                ⌘ S
-              </span>
-              <span>Save</span>
-              {isDirty && props.document.publishedAt && (
-                <PublishBlinkingSignal />
-              )}
+                >
+                  ⌘ S
+                </span>
+                <span>Save</span>
+                {isDirty && props.document.publishedAt && (
+                  <PublishBlinkingSignal />
+                )}
+              </button>
+            </Tooltip>
+
+            <button
+              type="button"
+              className="ml-2 h-[30px] flex items-center gap-1.5
+    rounded-lg px-3 text-sm font-body font-medium
+    bg-primary text-white
+    hover:bg-primary-710
+    disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+              onClick={onOpenShareModal}
+            >
+              <span>Publish</span>
             </button>
-          </Tooltip>
+          </>
         )}
       </div>
     </div>
@@ -624,7 +651,7 @@ function PrivateDocumentPageInner(
 }
 
 export default function PrivateDocumentPage(props: Props) {
-  const [{ document, publishing }, { publish }] = useDocument(
+  const [{ document, publishing }, { publish, unpublish }] = useDocument(
     props.workspaceId,
     props.documentId
   );
@@ -650,6 +677,7 @@ export default function PrivateDocumentPage(props: Props) {
       {...props}
       document={document}
       publish={publish}
+      unpublish={unpublish}
       publishing={publishing}
     />
   );
