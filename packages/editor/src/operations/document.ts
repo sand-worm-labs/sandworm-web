@@ -1,5 +1,6 @@
 import * as Y from "yjs";
 import { v4 as uuidv4 } from "uuid";
+import { DataSourceId } from "@sandworm/types";
 import {
   cloneBlockGroup,
   YBlockRef,
@@ -57,7 +58,7 @@ export type AddBlockGroupBlock =
     }
   | {
       type: BlockType.SQL
-      dataSourceId: string | null
+      dataSourceId: DataSourceId | null
       isFileDataSource: boolean
       source?: string
       dataframeName?: string

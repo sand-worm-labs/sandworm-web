@@ -1,5 +1,7 @@
+import { DataSourceId, DataSourceType } from '@sandworm/types';
+
 export interface DuckDBDataSource extends BaseDataSource {
-    path: string; 
+    path: string;
     notes: string;
     readOnly: boolean;
 }
@@ -17,7 +19,7 @@ export interface DataSourceTable {
 
 
 export interface BaseDataSource {
-    id: string;
+    id: DataSourceId;
     workspaceId: string;
     name: string;
     connStatus: 'online' | 'offline' | 'checking';
@@ -63,6 +65,6 @@ export interface DuneDataSource extends BaseDataSource {
 }
 
 export type DataSource =
-    | { type: 'sandwormcloud'; data: SandwormCloudDataSource }
-    | { type: 'dune'; data: DuneDataSource }
-    | { type: 'duckdb'; data: DuckDBDataSource };
+    | { type: typeof DataSourceType.sandwormCloud; data: SandwormCloudDataSource }
+    | { type: typeof DataSourceType.dune; data: DuneDataSource }
+    | { type: typeof DataSourceType.duckdb; data: DuckDBDataSource };

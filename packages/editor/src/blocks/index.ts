@@ -1,5 +1,6 @@
 import * as dfns from "date-fns";
 import * as Y from "yjs";
+import { DataSourceId } from "@sandworm/types";
 import { RichTextBlock, duplicateRichTextBlock } from "./richText.js";
 import {
   SQLBlock,
@@ -300,7 +301,7 @@ export function duplicateBlock(
   blocks: Y.Map<YBlock>,
   duplicatingDocument: boolean,
   options?: {
-    datasourceMap?: Map<string, string>;
+    datasourceMap?: Map<DataSourceId, DataSourceId>;
     componentId?: string;
     noState?: boolean;
     newVariableName?: boolean;

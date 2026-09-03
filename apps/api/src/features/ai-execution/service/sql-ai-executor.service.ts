@@ -13,6 +13,7 @@ import {
   closeSQLEditWithAIPrompt,
 } from '@sandworm/editor';
 import type { SQLBlock } from '@sandworm/editor';
+import { DATA_SOURCE_DIALECT, DataSourceId } from '@sandworm/types';
 import { BaseAiExecutorService } from './base-ai-executor.service';
 import { SqlGeneratorService } from '@/infrastructure/ai/services/sql-generator.service';
 import { GeneratorContext } from '@/infrastructure/ai/types/generator.types';
@@ -136,7 +137,7 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
       if (!instructions) { taskItem.setCompleted('error'); return ''; }
 
       const query = source?.toJSON() ?? '';
-      const dialect = dataSourceId ? 'sql' : 'duckdb';
+      const dialect = DATA_SOURCE_DIALECT[dataSourceId as DataSourceId] ?? 'duckdb';
       const prompt = `Dialect: ${dialect}\n\nQuery:\n${query}\n\nInstructions: ${instructions}`;
 
       const { code } = await this.sqlGeneratorService.edit(ctx, prompt);
@@ -175,7 +176,7 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
       }
 
       const query = source?.toJSON() ?? '';
-      const dialect = dataSourceId ? 'sql' : 'duckdb';
+      const dialect = DATA_SOURCE_DIALECT[dataSourceId as DataSourceId] ?? 'duckdb';
       const error_message = `Dialect: ${dialect}\n\nQuery:\n${query}\n\nError: ${blockResult.message}`;
 
       const { code } = await this.sqlGeneratorService.fix(ctx, error_message);

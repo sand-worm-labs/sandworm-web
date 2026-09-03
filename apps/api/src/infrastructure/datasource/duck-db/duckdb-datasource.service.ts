@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { DataSourceId, DataSourceName, DataSourceType } from '@sandworm/types';
 
 @Injectable()
 export class DuckDBDataSourceService {
@@ -6,11 +7,11 @@ export class DuckDBDataSourceService {
 
     getDataSource(workspaceId: string) {
         return {
-            type: 'duckdb',
+            type: DataSourceType.duckdb,
             data: {
-                id: 'duckdb',
+                id: DataSourceId.duckdb,
                 workspaceId,
-                name: 'DuckDB',
+                name: DataSourceName.duckdb,
                 connStatus: 'online',
                 lastConnection: new Date().toISOString(),
                 connError: null,

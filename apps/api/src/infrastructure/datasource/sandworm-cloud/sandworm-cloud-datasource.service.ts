@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { DataSourceId, DataSourceName, DataSourceType } from '@sandworm/types';
 
 @Injectable()
 export class SandwormCloudDataSourceService {
 
     getDataSource(workspaceId: string) {
         return {
-            type: 'sandwormcloud',
+            type: DataSourceType.sandwormCloud,
             data: {
-                id: 'sandwormcloud-datasource',
+                id: DataSourceId.sandwormCloud,
                 workspaceId: workspaceId,
-                name: 'Sandworm Cloud',
+                name: DataSourceName.sandwormCloud,
                 // Disabled for now — SandwormCloudQueryService is still a
                 // mock (fake schema, no real query execution wired up), so
                 // this stays visible but unselectable until it's real.
