@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import type { ApiDocument } from "@/types";
 import { formatDate } from "@/lib/date";
 
+import { useSession } from "../Editor/hooks/useAuth";
 import { useFavorites } from "../Editor/hooks/useFavorites";
 import { useForkDocument } from "../Editor/hooks/usePublicDocuments";
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
@@ -37,6 +38,9 @@ interface ExploreCardProps {
 export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
   const router = useRouter();
   const workspaceId = useStringQuery("workspace");
+
+  const { user } = useSession({ redirectToLogin: false });
+  const isOwnDocument = !!user && user.id === query.authorId;
 
   const { forkDocument, loading: forking } = useForkDocument();
   const [, { favoriteDocument, unfavoriteDocument }] = useFavorites(
@@ -157,22 +161,24 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                 />
               </button>
 
-              <button
-                type="button"
-                onClick={handleForkClick}
-                disabled={forking}
-                className="flex items-center gap-1 group disabled:opacity-50"
-                aria-label="Fork document"
-              >
-                <span>{query.forkCount}</span>
-                <GitFork
-                  className={cn(
-                    "h-4 w-4 transition-colors text-ink-300 dark:text-ink-300",
-                    !forking && "group-hover:text-blue-400"
-                  )}
-                  strokeWidth={1.2}
-                />
-              </button>
+              {!isOwnDocument && (
+                <button
+                  type="button"
+                  onClick={handleForkClick}
+                  disabled={forking}
+                  className="flex items-center gap-1 group disabled:opacity-50"
+                  aria-label="Fork document"
+                >
+                  <span>{query.forkCount}</span>
+                  <GitFork
+                    className={cn(
+                      "h-4 w-4 transition-colors text-ink-300 dark:text-ink-300",
+                      !forking && "group-hover:text-blue-400"
+                    )}
+                    strokeWidth={1.2}
+                  />
+                </button>
+              )}
             </div>
           </div>
         </div>

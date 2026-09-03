@@ -26,6 +26,8 @@ export default function PublicNotebookBanner({
     redirectToLogin: false,
   });
 
+  const isOwnDocument = !!user && !!document && document.authorId === user.id;
+
   return (
     <div className="w-full bg-base-100 font-primary relative">
       <div className="h-14 w-full flex items-center gap-3 px-5 border-b border-border-secondary dark:border-border-tertiary">
@@ -48,10 +50,12 @@ export default function PublicNotebookBanner({
         <div className="flex items-center gap-2 shrink-0">
           <ViewSwitcher view={view} onChange={onChangeView} />
           <ShareButton />
-          <ForkButton
-            document={document && { id: document.id, title: document.title }}
-            isAuthenticated={isAuthenticated}
-          />
+          {!isOwnDocument && (
+            <ForkButton
+              document={document && { id: document.id, title: document.title }}
+              isAuthenticated={isAuthenticated}
+            />
+          )}
 
           <div className="h-5 w-px bg-[#E8E8EA] dark:bg-border-tertiary" />
 
