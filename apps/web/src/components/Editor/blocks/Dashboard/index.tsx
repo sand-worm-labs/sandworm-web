@@ -37,7 +37,6 @@ import DashboardNotebookGroupButton from "../DashboarNotebookGroupButton";
 import EllipsisDropdown from "../EllipsisDropdown";
 import Comments from "../Comments";
 import Schedules from "../Schedules";
-import Snapshots from "../Snapshots";
 import LiveButton from "../LiveButton";
 import EnvBar from "../EnvBar";
 import Files from "../Files";
@@ -501,7 +500,6 @@ export default function Dashboard(props: Props) {
   const [selectedSidebar, setSelectedSidebar] = useState<
     | { _tag: "comments" }
     | { _tag: "schedules" }
-    | { _tag: "snapshots" }
     | { _tag: "files" }
     | { _tag: "schemaExplorer"; dataSourceId: string | null }
     | { _tag: "shortcuts" }
@@ -525,12 +523,6 @@ export default function Dashboard(props: Props) {
   const onToggleSchedules = useCallback(() => {
     setSelectedSidebar(v =>
       v?._tag === "schedules" ? null : { _tag: "schedules" }
-    );
-  }, [setSelectedSidebar]);
-
-  const onToggleSnapshots = useCallback(() => {
-    setSelectedSidebar(v =>
-      v?._tag === "snapshots" ? null : { _tag: "snapshots" }
     );
   }, [setSelectedSidebar]);
 
@@ -625,7 +617,6 @@ export default function Dashboard(props: Props) {
         />
         <EllipsisDropdown
           onToggleSchedules={onToggleSchedules}
-          onToggleSnapshots={onToggleSnapshots}
           onToggleComments={onToggleComments}
           onToggleFiles={onToggleFiles}
           onToggleEnvironment={onToggleEnvironment}
@@ -639,7 +630,6 @@ export default function Dashboard(props: Props) {
     ),
     [
       onToggleSchedules,
-      onToggleSnapshots,
       onToggleComments,
       onToggleFiles,
       onToggleEnvironment,
@@ -819,10 +809,6 @@ export default function Dashboard(props: Props) {
               onHide={onHideSidebar}
               onPublish={onPublish}
               publishing={props.publishing}
-            />
-            <Snapshots
-              visible={selectedSidebar?._tag === "snapshots"}
-              onHide={onHideSidebar}
             />
             <Files
               workspaceId={props.document.workspaceId}

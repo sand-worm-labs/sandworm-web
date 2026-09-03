@@ -32,7 +32,6 @@ import { ContentSkeleton, TitleSkeleton } from "../ContentSkeleton";
 
 import Comments from "./Comments";
 import Schedules from "./Schedules";
-import Snapshots from "./Snapshots";
 import DashboardNotebookGroupButton from "./DashboarNotebookGroupButton";
 import EllipsisDropdown from "./EllipsisDropdown";
 import LiveButton from "./LiveButton";
@@ -90,7 +89,6 @@ function PrivateDocumentPageInner(
   const [selectedSidebar, setSelectedSidebar] = useState<
     | { _tag: "comments" }
     | { _tag: "schedules" }
-    | { _tag: "snapshots" }
     | { _tag: "files" }
     | { _tag: "schemaExplorer"; dataSourceId: string | null }
     | { _tag: "shortcuts" }
@@ -151,12 +149,6 @@ function PrivateDocumentPageInner(
   const onToggleSchedules = useCallback(() => {
     setSelectedSidebar(v =>
       v?._tag === "schedules" ? null : { _tag: "schedules" }
-    );
-  }, [setSelectedSidebar]);
-
-  const onToggleSnapshots = useCallback(() => {
-    setSelectedSidebar(v =>
-      v?._tag === "snapshots" ? null : { _tag: "snapshots" }
     );
   }, [setSelectedSidebar]);
 
@@ -403,7 +395,6 @@ function PrivateDocumentPageInner(
         />
         <EllipsisDropdown
           onToggleSchedules={onToggleSchedules}
-          onToggleSnapshots={onToggleSnapshots}
           onToggleComments={onToggleComments}
           onToggleFullScreen={onToggleFullScreen}
           onToggleFiles={onToggleFiles}
@@ -421,7 +412,6 @@ function PrivateDocumentPageInner(
     ),
     [
       onToggleSchedules,
-      onToggleSnapshots,
       onToggleComments,
       onToggleFullScreen,
       onToggleFiles,
@@ -603,10 +593,6 @@ function PrivateDocumentPageInner(
                 onHide={onHideSidebar}
                 onPublish={onPublish}
                 publishing={props.publishing}
-              />
-              <Snapshots
-                visible={selectedSidebar?._tag === "snapshots"}
-                onHide={onHideSidebar}
               />
               <Files
                 workspaceId={props.workspaceId}

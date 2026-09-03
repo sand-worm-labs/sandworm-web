@@ -4,7 +4,6 @@ import { Transition } from "@headlessui/react";
 import { EditorView, keymap } from "@codemirror/view";
 import { EditorState } from "@codemirror/state";
 import { markdown as markdownLang } from "@codemirror/lang-markdown";
-import { syntaxHighlighting, HighlightStyle } from "@codemirror/language";
 import { defaultKeymap, historyKeymap } from "@codemirror/commands";
 import { MergeView } from "@codemirror/merge";
 import { yCollab } from "y-codemirror.next";
@@ -31,7 +30,6 @@ import {
   getBaseAttributes,
   setTitle,
 } from "@sandworm/editor";
-import { tags as t } from "@lezer/highlight";
 import { PiMarkdownLogo, PiCpu, PiTrash } from "react-icons/pi";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
@@ -40,6 +38,9 @@ import type { ApiWorkspace, ApiDocument } from "@/types";
 import { useAITaskActions } from "@/components/Editor/hooks/useAITasks";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
 
+import { getMarkdownTheme } from "../CodeEditor/theme";
+import type { EditorThemeId } from "../CodeEditor/palettes";
+import { useEditorThemeId } from "../CodeEditor/useEditorThemeId";
 import ApproveDiffButtons from "../../ApproveDiffButtons";
 import { TooltipV2 } from "../../ToolTips";
 import EditWithAIForm from "../../EditWithAIForm";
@@ -122,114 +123,22 @@ interface Props {
 }
 
 // =====================================
-// ⬢ CodeMirror Theme
-// =====================================
-
-function getSandwormTheme(isDark: boolean) {
-  const c = isDark
-    ? { text: "#d4d4d4", selection: "#33344a", selectionMatch: "#24263a" }
-    : { text: "#1a1a1a", selection: "#dce4f5", selectionMatch: "#e8edf8" };
-
-  return EditorView.theme(
-    {
-      "&": {
-        color: c.text,
-        backgroundColor: "transparent",
-        fontSize: "13px",
-        fontFamily: "'Moderat Mono', monospace",
-      },
-      "&.cm-focused": { outline: "none" },
-      ".cm-content": {
-        caretColor: c.text,
-        paddingLeft: "8px",
-        fontFamily: "'Moderat Mono', monospace",
-      },
-      ".cm-scroller": {
-        fontFamily: "'Moderat Mono', monospace !important",
-      },
-      ".cm-cursor, .cm-dropCursor": { borderLeftColor: c.text },
-      "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
-        { backgroundColor: c.selection },
-      ".cm-selectionMatch": { backgroundColor: c.selectionMatch },
-      ".cm-activeLine": { backgroundColor: "transparent" },
-    },
-    { dark: isDark }
-  );
-}
-
-// =====================================
-// ⬢ Markdown Highlight Style
-// =====================================
-
-function getMarkdownHighlight(isDark: boolean) {
-  const c = isDark
-    ? {
-        heading: "#D988F9",
-        emphasis: "#B0B0B0",
-        monospace: "#8FD693",
-        tagName: "#E0995B",
-        angleBracket: "#B0B0B0",
-        link: "#5AC8E0",
-        quote: "#9C9A92",
-        punctuation: "#B0B0B0",
-        comment: "#9C9A92",
-      }
-    : {
-        heading: "#7B2FBE",
-        emphasis: "#555555",
-        monospace: "#2E9E5B",
-        tagName: "#C96A10",
-        angleBracket: "#555555",
-        link: "#0b6e99",
-        quote: "#8B8FA8",
-        punctuation: "#555555",
-        comment: "#8B8FA8",
-      };
-
-  return HighlightStyle.define([
-    { tag: t.heading1, color: c.heading, fontWeight: "500" },
-    { tag: t.heading2, color: c.heading, fontWeight: "500" },
-    { tag: t.heading3, color: c.heading, fontWeight: "500" },
-    { tag: t.heading, color: c.heading, fontWeight: "500" },
-    { tag: t.strong, fontWeight: "600" },
-    { tag: t.emphasis, fontStyle: "italic", color: c.emphasis },
-    {
-      tag: t.monospace,
-      color: c.monospace,
-      fontFamily: "'Moderat Mono', monospace",
-    },
-    { tag: t.special(t.string), color: c.monospace },
-    { tag: t.tagName, color: c.tagName },
-    { tag: t.angleBracket, color: c.angleBracket },
-    { tag: t.attributeName, color: c.heading },
-    { tag: t.attributeValue, color: c.monospace },
-    { tag: t.url, color: c.link },
-    { tag: t.link, color: c.link },
-    { tag: t.quote, color: c.quote, fontStyle: "italic" },
-    { tag: t.processingInstruction, color: c.heading },
-    { tag: t.punctuation, color: c.punctuation },
-    { tag: t.comment, color: c.comment, fontStyle: "italic" },
-  ]);
-}
-
-// =====================================
 // ⬢ useCodeMirror
 // =====================================
 
 function getBaseExtensions(
   source: Y.Text,
   isEditable: boolean,
-  isDark: boolean,
+  themeId: EditorThemeId,
   onFocus: () => void,
   onBlur: () => void
 ) {
   return [
     yCollab(source, null, { undoManager: false }),
     markdownLang({ htmlTagLanguage: undefined }),
-    syntaxHighlighting(getMarkdownHighlight(isDark), { fallback: true }),
     keymap.of([...defaultKeymap, ...historyKeymap]),
     EditorState.readOnly.of(!isEditable),
-    getSandwormTheme(isDark),
+    getMarkdownTheme(themeId),
     EditorView.lineWrapping,
     EditorView.domEventHandlers({
       focus: () => {
@@ -249,7 +158,7 @@ function useCodeMirror({
   source,
   diff,
   isEditable,
-  isDark,
+  themeId,
   onFocus,
   onBlur,
 }: {
@@ -257,7 +166,7 @@ function useCodeMirror({
   source: Y.Text;
   diff?: Y.Text | null;
   isEditable: boolean;
-  isDark: boolean;
+  themeId: EditorThemeId;
   onFocus: () => void;
   onBlur: () => void;
 }) {
@@ -277,13 +186,13 @@ function useCodeMirror({
         a: {
           doc: source.toString(),
           extensions: [
-            ...getBaseExtensions(source, false, isDark, onFocus, onBlur),
+            ...getBaseExtensions(source, false, themeId, onFocus, onBlur),
           ],
         },
         b: {
           doc: diff.toString(),
           extensions: [
-            ...getBaseExtensions(diff, false, isDark, onFocus, onBlur),
+            ...getBaseExtensions(diff, false, themeId, onFocus, onBlur),
           ],
         },
         parent: containerRef.current,
@@ -294,7 +203,7 @@ function useCodeMirror({
         extensions: getBaseExtensions(
           source,
           isEditable,
-          isDark,
+          themeId,
           onFocus,
           onBlur
         ),
@@ -312,7 +221,7 @@ function useCodeMirror({
       mergeRef.current?.destroy();
       mergeRef.current = null;
     };
-  }, [source, diff, isEditable, isDark]);
+  }, [source, diff, isEditable, themeId]);
 }
 
 // =====================================
@@ -396,7 +305,7 @@ const MarkdownBlock = (props: Props) => {
   const id = props.block.getAttribute("id")!;
   const source = props.block.getAttribute("source")!;
   const [workspaces] = useWorkspaces();
-  const { resolvedTheme } = useTheme();
+  const editorThemeId = useEditorThemeId();
 
   const { editTextWithAi, loading } = useAITaskActions();
   const { api: sidebarApi } = useSideBar();
@@ -526,7 +435,7 @@ const MarkdownBlock = (props: Props) => {
     source,
     diff: aiSuggestions,
     isEditable: props.isEditable,
-    isDark: resolvedTheme === "dark",
+    themeId: editorThemeId,
     onFocus,
     onBlur,
   });

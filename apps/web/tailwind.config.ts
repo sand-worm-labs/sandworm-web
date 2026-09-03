@@ -129,6 +129,7 @@ const config: Config = {
         "hover-border": "var(--hover-border)",
 
         warning: "var(--warning)",
+        success: "var(--success)",
         link: "var(--link)",
         "link-tint": "var(--link-tint)",
         "accent-violet": "var(--accent-violet)",

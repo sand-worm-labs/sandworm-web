@@ -589,7 +589,7 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
             <ContentSkeleton visible={props.isSyncing} />
 
             {!props.isSyncing && (
-              <div className="flex flex-col gap-y-6">{domBlocks}</div>
+              <div className="flex flex-col gap-y-12">{domBlocks}</div>
             )}
 
             {!props.isPDF && <div className="pb-20" />}
