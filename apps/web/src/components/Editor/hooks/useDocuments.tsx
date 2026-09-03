@@ -682,6 +682,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
             ),
           });
         });
+
+        toast.success("Notebook published");
       } catch (e) {
         toast.error("Failed to publish document");
         throw e;
@@ -725,6 +727,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
             ),
           });
         });
+
+        toast.success("Notebook set to workspace only");
       } catch (e) {
         toast.error("Failed to unpublish document");
         throw e;
@@ -775,6 +779,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
             ),
           });
         });
+
+        toast.success("Anyone with the link can now view");
       } catch (e) {
         toast.error("Failed to update link sharing");
         throw e;

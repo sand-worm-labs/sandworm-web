@@ -18,6 +18,7 @@ export class DocumentGatewayService {
             let documents = await this.documentRepository.find({
                 where: { workspaceId },
                 order: { orderIndex: 'ASC' },
+                relations: { author: true },
             });
 
 
@@ -33,6 +34,7 @@ export class DocumentGatewayService {
             const documents = await this.documentRepository.find({
                 where: { workspaceId },
                 order: { orderIndex: 'ASC' },
+                relations: { author: true },
             });
 
             server.to(workspaceId).emit('workspace-documents', { workspaceId, documents });
@@ -45,6 +47,7 @@ export class DocumentGatewayService {
         try {
             const document = await this.documentRepository.findOne({
                 where: { id: documentId },
+                relations: { author: true },
             });
             if (!document) {
                 

@@ -85,11 +85,14 @@ function usePublicYDoc(slug: string): {
       forkCount: 0,
       favoriteCount: 0,
       isFavorite: false,
-      author: {
-        username: rawDoc.author?.username ?? "",
-        image: rawDoc.author?.avater ?? "",
-        userId: "",
-      },
+      author: rawDoc.author
+        ? {
+            username: rawDoc.author.username ?? null,
+            firstName: rawDoc.author.firstName ?? null,
+            lastName: rawDoc.author.lastName ?? null,
+            avater: rawDoc.author.avater ?? null,
+          }
+        : null,
     } as ApiDocument;
   }, [rawDoc]);
 

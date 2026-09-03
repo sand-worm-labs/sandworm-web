@@ -89,6 +89,20 @@ export class Document {
   @Field(() => GraphQLJSON, { defaultValue: {} })
   userAppClock: Record<string, number> = {};
 
+  // Socket-only — deliberately not a @Field(), since GraphQL already
+  // resolves `author` via a separate @ResolveField on this type (adding
+  // one here would collide with it). Populated only when the entity was
+  // fetched with the `author` relation loaded, so live socket broadcasts
+  // (workspace-documents / workspace-document-update) can carry basic
+  // author info without a GraphQL round-trip.
+  author?: {
+    id: string;
+    username: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    avater: string | null;
+  } | null;
+
   static fromEntity(entity: DocumentEntity): Document {
     const document = new Document();
     document.id = entity.id;
@@ -117,6 +131,16 @@ export class Document {
     document.clock = 0;
     document.appClock = 0;
     document.userAppClock = {};
+
+    document.author = entity.author
+      ? {
+          id: entity.author.id,
+          username: entity.author.username ?? null,
+          firstName: entity.author.firstName ?? null,
+          lastName: entity.author.lastName ?? null,
+          avater: entity.author.avater ?? null,
+        }
+      : null;
 
     return document;
   }

@@ -125,6 +125,7 @@ export class DocumentService {
     }
     const updatedDocument = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
+      relations: { author: true },
     });
 
     if (!updatedDocument) {
@@ -377,6 +378,7 @@ export class DocumentService {
   ): Promise<Document> {
     const document = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
+      relations: { author: true },
     });
 
     if (!document) throw new ValidationException(ErrorCode.E003);
@@ -415,6 +417,7 @@ export class DocumentService {
   ): Promise<Document> {
     const document = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
+      relations: { author: true },
     });
 
     if (!document) {
@@ -437,6 +440,7 @@ export class DocumentService {
   ): Promise<Document> {
     const document = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
+      relations: { author: true },
     });
 
     if (!document) {

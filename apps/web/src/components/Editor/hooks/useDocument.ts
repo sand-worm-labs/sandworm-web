@@ -53,11 +53,14 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
       forkCount: 0,
       favoriteCount: 0,
       isFavorite: false,
-      author: {
-        username: raw.author?.username ?? "",
-        image: raw.author?.avater ?? "",
-        userId: "",
-      },
+      author: raw.author
+        ? {
+            username: raw.author.username ?? null,
+            firstName: raw.author.firstName ?? null,
+            lastName: raw.author.lastName ?? null,
+            avater: raw.author.avater ?? null,
+          }
+        : null,
     } as ApiDocument;
   }, [documentFromList, singleDocData]);
 

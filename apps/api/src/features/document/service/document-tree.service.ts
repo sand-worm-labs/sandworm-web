@@ -466,7 +466,10 @@ export class DocumentTreeService {
     }
 
     async getWorkspaceDocuments(workspaceId: string): Promise<Document[]> {
-        const documents = await this.documentRepository.find({ where: { workspaceId } });
+        const documents = await this.documentRepository.find({
+            where: { workspaceId },
+            relations: { author: true },
+        });
         return Document.fromEntities(documents);
     }
 

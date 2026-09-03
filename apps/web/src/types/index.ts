@@ -193,10 +193,11 @@ export type ApiDocument = Document & {
   hasDashboard: boolean;
   authorId: string;
   author: {
-    username: string;
-    image: string;
-    userId: string;
-  };
+    username: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    avater: string | null;
+  } | null;
   forkCount: number;
   favoriteCount: number;
   isFavorite: boolean;

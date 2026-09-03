@@ -54,8 +54,10 @@ interface Project {
   id: string;
   title: string;
   creator: string;
+  creatorImage: string | null;
   lastEdited: string;
   created: string;
+  publishedAt: string | null;
   isFavorite: boolean;
 }
 
@@ -261,9 +263,11 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
       docs.map(doc => ({
         id: doc.id,
         title: doc.title || "Untitled Project",
-        creator: doc.createdBy || "Unknown",
+        creator: doc.author?.username || "Unknown",
+        creatorImage: doc.author?.avater ?? null,
         lastEdited: formatDate(doc.updatedAt),
         created: formatDate(doc.createdAt),
+        publishedAt: doc.publishedAt ? formatDate(doc.publishedAt) : null,
         isFavorite: favorites.has(doc.id),
       })),
     [docs, favorites]

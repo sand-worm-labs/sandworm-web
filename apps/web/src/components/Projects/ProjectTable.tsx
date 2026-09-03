@@ -11,6 +11,12 @@ import {
   PiFolderLight,
 } from "react-icons/pi";
 import Link from "next/link";
+import Image from "next/image";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@sandworm/ui/components/avatar";
 
 import { iconButtonSmClassName } from "@/styles/interactive";
 import { StyledCheckbox } from "@/components/StyledCheckbox";
@@ -19,8 +25,10 @@ interface Project {
   id: string;
   title: string;
   creator: string;
+  creatorImage: string | null;
   lastEdited: string;
   created: string;
+  publishedAt: string | null;
   isFavorite: boolean;
 }
 
@@ -96,9 +104,6 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
             <th className="text-left p-4 text-xs font-bold text-ink-400 uppercase min-w-[120px]">
               Your Access
             </th>
-            <th className="text-left p-4 text-xs font-bold text-ink-400 uppercase min-w-[100px]">
-              Reviews
-            </th>
             <th className="w-24 p-4" />
           </tr>
         </thead>
@@ -157,7 +162,26 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                 </Link>
               </td>
               <td className="p-4 text-sm text-ink-200 dark:text-ink-300">
-                {project.creator}
+                <div className="flex items-center gap-2">
+                  <Avatar className="size-6 shrink-0">
+                    <AvatarImage
+                      src={project.creatorImage ?? undefined}
+                      alt={project.creator}
+                    />
+                    <AvatarFallback className="relative overflow-hidden">
+                      <Image
+                        src="/img/avatar/avatar6.svg"
+                        alt=""
+                        fill
+                        className="object-cover"
+                      />
+                      <span className="relative z-10 font-bold font-body text-white text-[10px]">
+                        {project.creator?.[0]?.toUpperCase() ?? "U"}
+                      </span>
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="capitalize">{project.creator}</span>
+                </div>
               </td>
               <td className="p-4 text-sm text-ink-200 dark:text-ink-300">
                 {project.lastEdited}
@@ -165,13 +189,14 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
               <td className="p-4 text-sm text-ink-200 dark:text-ink-300">
                 {project.created}
               </td>
-              <td className="p-4 text-sm text-ink-200 dark:text-ink-300">-</td>
+              <td className="p-4 text-sm text-ink-200 dark:text-ink-300">
+                {project.publishedAt ?? "-"}
+              </td>
               <td className="p-4 text-sm text-ink-200 dark:text-ink-300">
                 <span className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium border border-border dark:border-border-tertiary bg-inputBg dark:bg-base-100 text-ink-200 dark:text-ink-300">
                   Owner
                 </span>
               </td>
-              <td className="p-4 text-sm text-ink-200 dark:text-ink-300">-</td>
               <td className="whitespace-nowrap p-4">
                 <div className="flex items-center gap-1 justify-end">
                   <button

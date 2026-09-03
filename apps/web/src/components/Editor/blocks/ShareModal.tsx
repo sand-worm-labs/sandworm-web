@@ -550,6 +550,9 @@ export default function ShareModal({
                           : `bg-primary hover:bg-primary-710 text-white active:scale-[0.98] ${tintPillDarkClassName}`
                       )}
                     >
+                      {isUpdating && (
+                        <PiSpinner size={14} className="animate-spin" />
+                      )}
                       {isUpdating ? "Saving…" : "Save changes"}
                     </button>
                   </div>
