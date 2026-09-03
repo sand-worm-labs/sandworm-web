@@ -9,7 +9,12 @@ import {
   useEffect,
   Fragment,
 } from "react";
-import { Avatar } from "@sandworm/ui/components/avatar";
+import Image from "next/image";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@sandworm/ui/components/avatar";
 import { PlusIcon } from "lucide-react";
 import {
   Dialog,
@@ -195,7 +200,23 @@ function MiniUserItem({
 
   return (
     <div className="flex items-center gap-3 py-3 px-4 border-b border-border dark:border-border-tertiary last:border-0">
-      <Avatar />
+      <Avatar className="size-8 shrink-0">
+        <AvatarImage
+          src={user.avater ?? undefined}
+          alt={user.firstName ?? "Sandworm User"}
+        />
+        <AvatarFallback className="relative overflow-hidden">
+          <Image
+            src="/img/avatar/avatar6.svg"
+            alt=""
+            fill
+            className="object-cover"
+          />
+          <span className="relative z-10 font-bold font-body text-white text-sm">
+            {user.firstName?.[0] ?? "U"}
+          </span>
+        </AvatarFallback>
+      </Avatar>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-ink-100 dark:text-white truncate">
           {user.firstName} {user.lastName}

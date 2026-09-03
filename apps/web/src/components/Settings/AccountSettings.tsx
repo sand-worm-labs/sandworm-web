@@ -142,7 +142,7 @@ function WorkspaceRow({
     <div
       className={clsx(
         "flex items-center px-5 py-4 border-b border-border-secondary  dark:border-border-tertiary transition-colors",
-        !isCurrentWorkspace && "hover:bg-gray-50 dark:hover:bg-editor-100"
+        !isCurrentWorkspace && "hover:bg-hover-bg dark:hover:bg-dropdown-hover"
       )}
     >
       {/* ✦ Workspace name + switch  ✦ */}

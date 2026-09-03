@@ -223,7 +223,8 @@ export function FeaturedExploreCard({
             onClick={handleFavoriteClick}
             aria-label={isFavorited ? "Unfavorite" : "Favorite"}
             className={cn(
-              "flex items-center gap-1 transition-colors",
+              "flex items-center gap-1 -mx-2 -my-1 px-2 py-1 rounded-full border border-transparent transition-colors",
+              "hover:bg-black/5 hover:border-black/10 dark:hover:bg-white/10 dark:hover:border-white/20",
               isPurple ? "hover:text-yellow-300" : "hover:text-yellow-500"
             )}
           >
@@ -241,8 +242,8 @@ export function FeaturedExploreCard({
               disabled={forking}
               aria-label="Fork to workspace"
               className={cn(
-                "flex items-center gap-1 transition-colors disabled:opacity-50",
-                isPurple ? "hover:text-blue-300" : "hover:text-blue-500"
+                "flex items-center gap-1 -mx-2 -my-1 px-2 py-1 rounded-full border border-transparent transition-colors disabled:opacity-50",
+                "hover:bg-black/5 hover:border-black/10 dark:hover:bg-white/10 dark:hover:border-white/20"
               )}
             >
               <span>{forks}</span>

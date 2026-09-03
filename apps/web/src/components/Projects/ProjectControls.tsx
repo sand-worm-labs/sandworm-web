@@ -13,10 +13,7 @@ import { IoFilterOutline } from "react-icons/io5";
 import { PiSquareSplitVerticalFill, PiListThin } from "react-icons/pi";
 
 import { cn } from "@/lib/utils";
-import {
-  iconButtonClassName,
-  iconButtonMdClassName,
-} from "@/styles/interactive";
+import { iconButtonMdClassName } from "@/styles/interactive";
 
 import type { FilterOption, SortOption } from "./useProjectFilter";
 
@@ -96,7 +93,7 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="outline"
-                      className="gap-2 outline-none border-none text-sm bg-transparent text-ink-200 hover:bg-[rgba(177,182,196,0.1)] h-7"
+                      className="gap-2 outline-none border border-transparent text-sm bg-transparent text-ink-200 hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 h-7"
                     >
                       <IoFilterOutline className="w-4 h-4" />
                       <span>Filter</span>
@@ -151,8 +148,9 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
                 <button
                   type="button"
                   className={cn(
-                    iconButtonClassName,
-                    "h-7 px-2 text-sm gap-1.5 text-placeholder-muted hover:text-placeholder-muted dark:hover:text-placeholder-muted"
+                    "flex-shrink-0 flex items-center justify-center rounded-md transition-all duration-100",
+                    "h-7 px-2 text-sm gap-1.5 border border-transparent text-ink-200",
+                    "hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600"
                   )}
                 >
                   <span>Sort by</span>

@@ -146,7 +146,7 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
               <button
                 type="button"
                 onClick={handleFavorite}
-                className="flex items-center gap-1 group"
+                className="flex items-center gap-1 -mx-2 -my-1 px-2 py-1 rounded-full border border-transparent group hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors"
                 aria-label={isFavorited ? "Unfavorite" : "Favorite"}
               >
                 <span>{favoriteCount}</span>
@@ -166,14 +166,15 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
                   type="button"
                   onClick={handleForkClick}
                   disabled={forking}
-                  className="flex items-center gap-1 group disabled:opacity-50"
+                  className="flex items-center gap-1 -mx-2 -my-1 px-2 py-1 rounded-full border border-transparent group hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors disabled:opacity-50"
                   aria-label="Fork document"
                 >
                   <span>{query.forkCount}</span>
                   <GitFork
                     className={cn(
                       "h-4 w-4 transition-colors text-ink-300 dark:text-ink-300",
-                      !forking && "group-hover:text-blue-400"
+                      !forking &&
+                        "group-hover:text-ink-500 dark:group-hover:text-ink-200"
                     )}
                     strokeWidth={1.2}
                   />

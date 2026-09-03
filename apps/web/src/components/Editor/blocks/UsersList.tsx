@@ -1,9 +1,14 @@
 "use client";
 
 import clsx from "clsx";
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PiUsers } from "react-icons/pi";
-import { Avatar } from "@sandworm/ui/components/avatar";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@sandworm/ui/components/avatar";
 
 import { Trash } from "@/components/Assets/Trash";
 import { StyledCheckbox } from "@/components/StyledCheckbox";
@@ -72,11 +77,31 @@ function UserItem(props: UserItemProps) {
         />
       </td>
       <td className="whitespace-nowrap p-4 text-sm font-medium text-ink-100 dark:text-white">
-        <Avatar />
-        <span>{props.user.name}</span>{" "}
-        <span className="text-ink-400 dark:text-ink-400 inline-block font-light">
-          {props.user.email}
-        </span>
+        <div className="flex items-center gap-2.5">
+          <Avatar className="size-8 shrink-0">
+            <AvatarImage
+              src={props.user.avater ?? undefined}
+              alt={props.user.name ?? "Sandworm User"}
+            />
+            <AvatarFallback className="relative overflow-hidden">
+              <Image
+                src="/img/avatar/avatar6.svg"
+                alt=""
+                fill
+                className="object-cover"
+              />
+              <span className="relative z-10 font-bold font-body text-white text-sm">
+                {props.user.name?.split(" ")[0]?.[0] ?? "U"}
+              </span>
+            </AvatarFallback>
+          </Avatar>
+          <span>
+            <span>{props.user.name}</span>{" "}
+            <span className="text-ink-400 dark:text-ink-400 inline-block font-light">
+              {props.user.email}
+            </span>
+          </span>
+        </div>
       </td>
       <td className="whitespace-nowrap p-4 text-sm text-ink-100">
         <span className="bg-inputBg border border-border dark:bg-[#2E2E2C]  dark:border-border-tertiary rounded-md px-3 py-1">
