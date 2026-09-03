@@ -15,6 +15,9 @@ import { LRUCache } from "lru-cache";
 import type { EntityTable } from "dexie";
 import Dexie from "dexie";
 
+import { useGetDocumentStateQuery } from "@/generated/graphql";
+import { base64ToUint8Array } from "@/helpers/formatters";
+
 import { getDocId, useProvider } from "./useYProvider";
 import useResettableState from "./useResettableState";
 import { useReusableComponents } from "./useReusableComponents";
@@ -182,6 +185,37 @@ export function useYDoc(
     accessToken
   );
   const [syncing, setSyncing] = useResettableState(() => true, [provider]);
+
+  // ⬢ NOTE — Fetches the last-persisted Yjs state over GraphQL and applies it
+  // as soon as it lands, instead of leaving the editor blank until the
+  // websocket provider finishes its connect + auth + CRDT sync handshake.
+  // Skipped once the doc is already warm in the in-memory LRU cache, and for
+  // app/dashboard-view docs (isDataApp), which read a different per-user
+  // Y.Doc that this query does not serve — those fall back to the original
+  // restore + websocket-sync gating below, unaffected by this fetch.
+  const willFetchSnapshot =
+    !cached && !isDataApp && connect && Boolean(documentId) && Boolean(workspaceId);
+
+  const appliedSnapshotIdRef = useRef<string | null>(null);
+  const [snapshotApplied, setSnapshotApplied] = useResettableState(
+    () => cached,
+    [id]
+  );
+
+  const { data: snapshotData } = useGetDocumentStateQuery({
+    variables: { documentId, workspaceId },
+    skip: !willFetchSnapshot,
+    fetchPolicy: "network-only",
+  });
+
+  useEffect(() => {
+    const state = snapshotData?.getDocumentState;
+    if (!state || appliedSnapshotIdRef.current === id) return;
+
+    Y.applyUpdate(yDoc, base64ToUint8Array(state), "snapshot");
+    appliedSnapshotIdRef.current = id;
+    setSnapshotApplied(true);
+  }, [snapshotData, yDoc, id, setSnapshotApplied]);
 
   const [, { removeInstance: removeComponentInstance }] =
     useReusableComponents(workspaceId);
@@ -380,7 +414,12 @@ export function useYDoc(
   return {
     yDoc,
     provider,
-    syncing: (syncing || restoring) && !cached,
+    // ⬢ NOTE — When we're fetching a snapshot (private, editable docs), the
+    // loader's only job is to wait for that GraphQL fetch: it must stop as
+    // soon as `snapshotApplied` is true, regardless of websocket sync state.
+    // For docs where no snapshot is fetched (isDataApp / not connected),
+    // fall back to the original restore + websocket-sync gating.
+    syncing: !cached && (willFetchSnapshot ? !snapshotApplied : syncing || restoring),
     isDirty: metadata.state.value.getAttribute("isDirty") ?? false,
     undo,
     redo,

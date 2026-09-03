@@ -396,6 +396,11 @@ type Query {
   """Get a single document by ID"""
   getDocument(documentId: String!, workspaceId: String!): Document!
 
+  """
+  Get the base64-encoded Yjs state of a document by ID (authenticated snapshot, used to render optimistically before the live collaboration socket syncs)
+  """
+  getDocumentState(documentId: String!, workspaceId: String!): String!
+
   """Get User favorite documents"""
   getFavoriteDocuments(workspaceId: String!): [Document!]!
 

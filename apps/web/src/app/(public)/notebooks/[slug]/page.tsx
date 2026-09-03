@@ -7,6 +7,7 @@ import { List } from "immutable";
 import clsx from "clsx";
 
 import type { ApiDocument, APIDataSource } from "@/types";
+import { base64ToUint8Array } from "@/helpers/formatters";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import {
   useGetPublishedDocumentBySlugQuery,
@@ -25,15 +26,6 @@ const PublicEditor = dynamic(() => import("@/components/Editor/PublicEditor"), {
 });
 
 const EMPTY_DATA_SOURCES: List<APIDataSource> = List();
-
-function base64ToUint8Array(base64: string): Uint8Array {
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i += 1) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes;
-}
 
 // ─────────────────────────────────────────────────────────────
 // ⬢ HOOK — usePublicYDoc

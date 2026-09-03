@@ -1,6 +1,7 @@
 import { ErrorCode } from '@/constants/error-code.constant';
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { ValidationException } from '@sandworm/graphql';
+import { WorkspaceMembershipService } from '../../workspace/service/workspace-membership.service';
 import {
   DocumentEntity,
   FavoriteEntity,
@@ -42,7 +43,9 @@ export class DocumentService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly documentTreeService: DocumentTreeService,
-    private readonly yjsDocumentService: YjsDocumentService
+    private readonly yjsDocumentService: YjsDocumentService,
+    @Inject(forwardRef(() => WorkspaceMembershipService))
+    private readonly workspaceMembershipService: WorkspaceMembershipService
   ) { }
 
   async getDocument(
@@ -58,6 +61,26 @@ export class DocumentService {
     }
 
     return Document.fromEntity(document);
+  }
+
+  async getDocumentState(documentId: string, workspaceId: string, userId: string): Promise<string> {
+    await this.workspaceMembershipService.assertActiveMember(workspaceId, userId);
+
+    const document = await this.documentRepository.findOne({
+      where: { id: documentId, workspaceId },
+    });
+
+    if (!document) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+    const state = await this.yjsDocumentService.getYDocState(documentId, false);
+
+    if (!state) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+    return state;
   }
 
   async getChildren(parentId: string): Promise<Document[]> {

@@ -45,6 +45,18 @@ export class DocumentResolver {
     return this.documentService.getDocument(documentId, workspaceId);
   }
 
+  @Query(() => String, {
+    name: 'getDocumentState',
+    description: 'Get the base64-encoded Yjs state of a document by ID (authenticated snapshot, used to render optimistically before the live collaboration socket syncs)',
+  })
+  async getDocumentState(
+    @Args('documentId') documentId: string,
+    @Args('workspaceId') workspaceId: string,
+    @CurrentUser('id') userId: string,
+  ): Promise<string> {
+    return this.documentService.getDocumentState(documentId, workspaceId, userId);
+  }
+
   @Query(() => [Document], {
     name: 'getFavoriteDocuments',
     description: 'Get User favorite documents',
