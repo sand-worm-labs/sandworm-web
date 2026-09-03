@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as Y from "yjs";
 import dynamic from "next/dynamic";
 import { List } from "immutable";
@@ -20,6 +20,7 @@ import {
   ContentSkeleton,
   TitleSkeleton,
 } from "@/components/Editor/ContentSkeleton";
+import { EmptyState } from "@/components/EmptyState";
 
 const PublicEditor = dynamic(() => import("@/components/Editor/PublicEditor"), {
   ssr: false,
@@ -116,13 +117,22 @@ export default function PublicNotebookPage() {
   const { yDoc, document, error, isSyncing } = usePublicYDoc(slug);
   const [view, setView] = useState<NotebookView>("report");
 
+  useEffect(() => {
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+    }
+  }, [error]);
+
   const content = useMemo(() => {
     if (error) {
       return (
-        <div className="flex flex-col items-center justify-center flex-1 gap-y-2 text-sm text-ink-400">
-          <p>Could not load this notebook.</p>
-          <p className="text-xs text-red-400">{error}</p>
-        </div>
+        <EmptyState
+          heading="404"
+          title="Notebook not found"
+          subtitle="This notebook doesn't exist, or it's no longer public."
+          showGoBack
+        />
       );
     }
 
@@ -150,6 +160,7 @@ export default function PublicNotebookPage() {
         document={document}
         view={view}
         onChangeView={setView}
+        notFound={!!error}
       />
       <div className="flex-1 min-w-0 flex overflow-hidden">{content}</div>
     </div>

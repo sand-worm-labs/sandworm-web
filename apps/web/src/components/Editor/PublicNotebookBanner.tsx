@@ -16,12 +16,14 @@ interface PublicNotebookBannerProps {
   document: ApiDocument | null;
   view: NotebookView;
   onChangeView: (view: NotebookView) => void;
+  notFound?: boolean;
 }
 
 export default function PublicNotebookBanner({
   document,
   view,
   onChangeView,
+  notFound = false,
 }: PublicNotebookBannerProps) {
   const { user, loading, isAuthenticated } = useSession({
     redirectToLogin: false,
@@ -34,42 +36,54 @@ export default function PublicNotebookBanner({
       <div className="h-14 w-full flex items-center gap-3 px-5 border-b border-border-secondary dark:border-border-tertiary">
         <PublicHeaderLogo />
 
-        <span
-          className="text-border-secondary dark:text-border-tertiary select-none"
-          aria-hidden
-        >
-          /
-        </span>
+        {!notFound && (
+          <>
+            <span
+              className="text-border-secondary dark:text-border-tertiary select-none"
+              aria-hidden
+            >
+              /
+            </span>
 
-        <div className="flex-1 min-w-0">
-          <NotebookTitle
-            title={document?.title ?? null}
-            isLoading={!document}
-          />
-        </div>
+            <div className="flex-1 min-w-0">
+              <NotebookTitle
+                title={document?.title ?? null}
+                isLoading={!document}
+              />
+            </div>
+          </>
+        )}
 
-        <div className="flex items-center gap-2 shrink-0">
-          <ViewSwitcher view={view} onChange={onChangeView} />
-          <ShareButton />
-          {!isOwnDocument && (
-            <ForkButton
-              document={document && { id: document.id, title: document.title }}
-              isAuthenticated={isAuthenticated}
-            />
+        <div className="flex items-center gap-2 shrink-0 ml-auto">
+          {!notFound && (
+            <>
+              <ViewSwitcher view={view} onChange={onChangeView} />
+              <ShareButton />
+              {!isOwnDocument && (
+                <ForkButton
+                  document={
+                    document && { id: document.id, title: document.title }
+                  }
+                  isAuthenticated={isAuthenticated}
+                />
+              )}
+
+              <div className="h-5 w-px bg-[#E8E8EA] dark:bg-border-tertiary" />
+            </>
           )}
-
-          <div className="h-5 w-px bg-[#E8E8EA] dark:bg-border-tertiary" />
 
           <HelpDropdown />
           <AccountMenu user={user} loading={loading} />
         </div>
       </div>
 
-      <ReadOnlyBanner
-        document={document && { id: document.id, title: document.title }}
-        isAuthenticated={isAuthenticated}
-        onChangeView={onChangeView}
-      />
+      {!notFound && (
+        <ReadOnlyBanner
+          document={document && { id: document.id, title: document.title }}
+          isAuthenticated={isAuthenticated}
+          onChangeView={onChangeView}
+        />
+      )}
     </div>
   );
 }

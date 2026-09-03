@@ -90,9 +90,10 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     <div
       className="
         h-full
-        flex 
-        flex-col 
-        gap-2 
+        w-full
+        flex
+        flex-col
+        gap-2
         items-center font-body relative
       "
     >

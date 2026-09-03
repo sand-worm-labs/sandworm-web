@@ -22,7 +22,6 @@ import { useEditorThemeId } from "../Editor/blocks/customBlocks/CodeEditor/useEd
 // =====================================
 type Theme = "system" | "light" | "dark";
 type DateFormat = "us" | "eu" | "iso";
-type AIEditMode = "review" | "auto";
 
 interface ThemeOption {
   id: Theme;
@@ -111,56 +110,6 @@ const ThemeCard: React.FC<{
 };
 
 // =====================================
-// ⬢ AI Edit Card
-// =====================================
-const AIEditCard: React.FC<{
-  label: string;
-  description: string;
-  selected: boolean;
-  onClick: () => void;
-}> = ({ label, description, selected, onClick }) => {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`relative w-full p-5 py-4 border rounded-xl transition-all text-left dark:bg-dropdown-bg ${
-        selected
-          ? "border-primary dark:border-primary"
-          : "border-border-secondary dark:border-border-tertiary"
-      }`}
-    >
-      <div className="flex items-start gap-4">
-        <div
-          className={`mt-0.5 w-5 h-5 rounded-full border border flex items-center justify-center flex-shrink-0 ${
-            selected
-              ? "border-accent-violet dark:border-primary"
-              : "border-border-secondary dark:border-border-tertiary"
-          }`}
-        >
-          {selected && (
-            <div className="w-2 h-2 rounded-full bg-accent-violet dark:bg-primary" />
-          )}
-        </div>
-        <div className="flex-1">
-          <h3 className="font-medium text-ink-100 mb-1 text-[0.9rem]">
-            {label}
-          </h3>
-          <p
-            className={`text-sm ${
-              selected
-                ? "text-primary dark:text-primary"
-                : "text-ink-400 dark:text-ink-400"
-            }`}
-          >
-            {description}
-          </p>
-        </div>
-      </div>
-    </button>
-  );
-};
-
-// =====================================
 // ⬢ Editor Theme Card
 // =====================================
 // Preview colors are pulled straight from the theme's real palette (the
@@ -223,7 +172,6 @@ const Preferences: React.FC = () => {
   const editorThemeId = useEditorThemeId();
   const setEditorTheme = useSandwormStore(state => state.setEditorTheme);
   const [dateFormat, setDateFormat] = useState<DateFormat>("us");
-  const [aiEditMode, setAIEditMode] = useState<AIEditMode>("review");
 
   const isDarkMode = resolvedTheme === "dark";
   const visibleThemeIds = THEME_IDS.filter(
@@ -265,37 +213,6 @@ const Preferences: React.FC = () => {
           <p className="text-ink-400 dark:text-ink-400 text-sm">
             Manage your interface and privacy settings{" "}
           </p>
-        </div>
-
-        {/* ✦ AI Edit Permission Control ✦ */}
-        <div className="py-8 flex">
-          <div className="flex flex-1 items-start gap-3 mb-6">
-            <div>
-              <h2 className="text-lg font-medium text-ink-100">
-                AI Edit Permission Control
-              </h2>
-              <p className="text-sm text-ink-400 dark:text-ink-400 max-w-[25rem] mt-2">
-                Control how AI-generated changes are applied to your blocks.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex-1">
-            <div className="space-y-4">
-              <AIEditCard
-                label="Review every edit"
-                description="AI-generated changes wait for your approval. You can accept, reject, or edit before it runs."
-                selected={aiEditMode === "review"}
-                onClick={() => setAIEditMode("review")}
-              />
-              <AIEditCard
-                label="Auto-apply all edits"
-                description="AI changes apply immediately and run. You can still undo from block history."
-                selected={aiEditMode === "auto"}
-                onClick={() => setAIEditMode("auto")}
-              />
-            </div>
-          </div>
         </div>
 
         {/* ✦ Appearance Section  ✦ */}
