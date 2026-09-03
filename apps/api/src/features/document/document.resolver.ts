@@ -296,6 +296,17 @@ export class DocumentResolver {
     return this.documentService.unpublishDocument(documentId, workspaceId);
   }
 
+  @Mutation(() => Document, {
+    name: 'setDocumentLinkVisibility',
+    description: 'Let any authenticated user with the link view this document read-only, without publishing it to the community',
+  })
+  async setDocumentLinkVisibility(
+    @Args('workspaceId') workspaceId: string,
+    @Args('documentId') documentId: string,
+  ): Promise<Document> {
+    return this.documentService.setDocumentLinkVisibility(documentId, workspaceId);
+  }
+
   @ResolveField(() => [Document], {
     name: 'children',
   })

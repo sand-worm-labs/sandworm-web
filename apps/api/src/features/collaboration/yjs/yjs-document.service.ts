@@ -20,6 +20,7 @@ import { addBlockGroup, addDashboardItemToYDashboard, addGroupedBlock, BlockType
 import { v4 as uuidv4 } from 'uuid';
 import { clone } from 'ramda';
 import { hashState } from "@sandworm/nest-common";
+import { DataSourceId } from "@sandworm/types";
 
 export interface LoadYDocResult {
     yDoc: Y.Doc;
@@ -424,7 +425,7 @@ export class YjsDocumentService implements OnModuleDestroy {
         newWorkspaceId: string,
         server: Server,
         getDuplicatedTitle: (title: string) => string = (t) => `${t} copy`,
-        datasourceMap?: Map<string, string>,
+        datasourceMap?: Map<DataSourceId, DataSourceId>,
     ): Promise<void> {
         const prevId = this.getDocId(prevDocumentId, null);
         const newId = this.getDocId(newDocumentId, null);
@@ -447,7 +448,7 @@ export class YjsDocumentService implements OnModuleDestroy {
         prevYDoc: SharedDoc,
         newYDoc: Y.Doc,
         getDuplicatedTitle: (title: string) => string,
-        config: { keepIds: boolean; datasourceMap?: Map<string, string> }
+        config: { keepIds: boolean; datasourceMap?: Map<DataSourceId, DataSourceId> }
     ) {
         newYDoc.transact(
             () => {

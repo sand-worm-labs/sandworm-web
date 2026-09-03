@@ -402,6 +402,35 @@ export class DocumentService {
     return result;
   }
 
+  // "Anyone with the link" — any AUTHENTICATED Sandworm user, not a public/
+  // anonymous share. The live notebook (YjsGateway) requires a session
+  // regardless of visibility; this only changes whether a non-member's
+  // session is let in read-only, not whether a session is required at all.
+  // See YjsGateway.getRequestData, which synthesizes VIEWER for LINK docs.
+  // Distinct from publishDocument: LINK never appears on the community
+  // explore/trending feeds, so publishedAt stays null.
+  async setDocumentLinkVisibility(
+    documentId: string,
+    workspaceId: string,
+  ): Promise<Document> {
+    const document = await this.documentRepository.findOne({
+      where: { id: documentId, workspaceId },
+    });
+
+    if (!document) {
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+    document.publishedAt = null;
+    document.visibility = DocumentVisibility.LINK;
+
+    await this.documentRepository.save(document);
+
+    const result = Document.fromEntity(document);
+    await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
+    return result;
+  }
+
   async unpublishDocument(
     documentId: string,
     workspaceId: string,

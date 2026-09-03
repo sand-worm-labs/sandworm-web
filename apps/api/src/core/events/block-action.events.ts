@@ -1,3 +1,5 @@
+import { DataSourceId } from '@sandworm/types';
+
 export type BlockActionType = 'generating' | 'created' | 'edited' | 'ran' | 'deleted';
 
 export class BlockActionEvent {
@@ -7,7 +9,7 @@ export class BlockActionEvent {
   blockTitle: string;
   action: BlockActionType;
   content?: string;
-  dataSourceId?: string | null;
+  dataSourceId?: DataSourceId | null;
   dataframeName?: string | null;
 }
 

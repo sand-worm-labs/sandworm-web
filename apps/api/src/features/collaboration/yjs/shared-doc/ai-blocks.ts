@@ -14,7 +14,7 @@ import {
   updateYText,
 } from '@sandworm/editor'
 import type { DateInputBlock, DropdownInputBlock, InputBlock, PivotTableBlock, PivotTableMetric, PowerToolboxInputs, RichTextBlock, YBlock, YBlockGroup } from '@sandworm/editor'
-import type { DataFrameColumn } from '@sandworm/types'
+import type { DataFrameColumn, DataSourceId } from '@sandworm/types'
 import * as Y from 'yjs'
 
 function add(
@@ -46,7 +46,7 @@ export function addPythonBlock(doc: Y.Doc, source = '') {
 export function addSQLBlock(
   doc: Y.Doc,
   source = '',
-  dataSourceId: string | null = null,
+  dataSourceId: DataSourceId | null = null,
   isFileDataSource = false
 ) {
   add(doc, (layout, blocks, idx) =>
@@ -171,7 +171,7 @@ type WithTitle = { title?: string; id?: string }
 
 export type BlockSpec = WithTitle & (
   | { type: BlockType.Python;          source?: string }
-  | { type: BlockType.SQL;             source?: string; dataSourceId?: string | null; isFileDataSource?: boolean; dataframeName?: string }
+  | { type: BlockType.SQL;             source?: string; dataSourceId?: DataSourceId | null; isFileDataSource?: boolean; dataframeName?: string }
   | { type: BlockType.RichText;        source?: string }
   | { type: BlockType.Markdown;        source?: string }
   | { type: BlockType.VisualizationV2; dataframeName?: string | null }
