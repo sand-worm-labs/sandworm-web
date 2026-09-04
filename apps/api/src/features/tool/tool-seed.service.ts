@@ -37,6 +37,7 @@ interface ToolYaml {
     required: boolean;
     default?: unknown;
   }>;
+  template?: string;
 }
 
 interface FetchedCatalog {
@@ -128,15 +129,10 @@ export class ToolSeedService implements OnModuleInit {
     this.logger.log(`upserted ${categories.length} tool categories`);
   }
 
-  // The catalog is ~1400 tools and static, so mirror apps/ai's seed_tools.py:
-  // skip entirely once the table has data rather than upserting every boot.
+  // Upserted every boot (like seedCategories) rather than skip-once — tools
+  // now carry a `template` that gets iterated on in the source repo, so a
+  // one-time seed would silently go stale on every subsequent edit there.
   private async seedTools(tools: ToolYaml[]): Promise<void> {
-    const existing = await this.toolRepository.count();
-    if (existing > 0) {
-      this.logger.log('tools already seeded, skipping');
-      return;
-    }
-
     if (tools.length === 0) {
       this.logger.warn('no tools fetched from catalog tarball');
       return;
@@ -157,10 +153,11 @@ export class ToolSeedService implements OnModuleInit {
         g5: tool.g5,
         scope: tool.scope || 'generic',
         returns: tool.returns ?? [],
+        template: tool.template ?? '',
       }),
     );
 
-    this.logger.log(`seeding ${entities.length} tools`);
+    this.logger.log(`upserting ${entities.length} tools`);
     const batchSize = 200;
     for (let i = 0; i < entities.length; i += batchSize) {
       await this.toolRepository.save(entities.slice(i, i + batchSize));

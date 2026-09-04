@@ -44,6 +44,14 @@ export class Tool {
   @Field(() => GraphQLJSON)
   returns!: unknown[];
 
+  // Deliberately NOT a @Field — this is the tool's actual implementation
+  // source. getTools is @Public(), and any GraphQL field on this type is
+  // queryable by anyone regardless of what the web app's own .graphql files
+  // select, so `template` must never be decorated here. Rendering happens
+  // through a dedicated authenticated resolver that reads ToolEntity.template
+  // directly and returns only the final generatedSource for one tool+inputs
+  // — never the raw template, and never as part of this bulk-listing type.
+
   static fromEntity(entity: ToolEntity): Tool {
     const tool = new Tool();
     tool.toolId = entity.toolId;
