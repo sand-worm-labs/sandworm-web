@@ -160,6 +160,7 @@ export class WorkspaceMembershipService {
             workspaceMember.user = membership.user ? User.fromEntity(membership.user) : undefined;
             workspaceMember.workspaceName = membership.workspace?.name || null;
             workspaceMember.workspaceId = membership.workspaceId || null;
+            workspaceMember.joinedAt = membership.createdAt;
             return workspaceMember;
         });
     }

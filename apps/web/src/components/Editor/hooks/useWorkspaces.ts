@@ -414,6 +414,7 @@ export type WorkspaceMember = {
   lastName: string | null;
   fullName: string;
   name: string;
+  joinedAt: string | null;
 };
 
 export const useWorkspaceWithMembers = (workspaceId: string | undefined) => {
@@ -447,6 +448,7 @@ export const useWorkspaceWithMembers = (workspaceId: string | undefined) => {
         lastName: member.user?.lastName ?? null,
         fullName,
         name: fullName,
+        joinedAt: member.joinedAt ?? null,
       };
     });
   }, [data?.getWorkspaceMembers]);

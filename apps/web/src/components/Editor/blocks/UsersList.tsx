@@ -13,6 +13,7 @@ import {
 import { Trash } from "@/components/Assets/Trash";
 import { StyledCheckbox } from "@/components/StyledCheckbox";
 import type { UserWorkspaceRole, WorkspaceUser } from "@/types";
+import { formatDate } from "@/lib/date";
 
 interface BadgeProps {
   className?: string;
@@ -112,7 +113,9 @@ function UserItem(props: UserItemProps) {
         {badge}
       </td>
       <td className="whitespace-nowrap p-4 text-sm text-ink-400 dark:text-ink-400  font-medium">
-        10 mins ago
+        {props.user.joinedAt
+          ? `Joined ${formatDate(props.user.joinedAt)}`
+          : "—"}
       </td>
       <td className="whitespace-nowrap p-4 text-sm font-medium sm:pl-6 lg:pl-8 pr-4 items-end flex w-full">
         <button
@@ -246,7 +249,7 @@ function UsersList(props: Props) {
                   scope="col"
                   className="text-left p-4 text-xs font-bold text-ink-400  min-w-[120px] uppercase"
                 >
-                  last active
+                  joined
                 </th>
                 <th
                   scope="col"

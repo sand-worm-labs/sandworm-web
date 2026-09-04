@@ -21,8 +21,9 @@ import { CloseIconButton } from "@/components/CloseIconButton";
 import { Shimmer } from "@/components/Skeletons";
 import { useChat } from "@/components/Editor/hooks/useChat";
 import type { Chat } from "@/generated/graphql";
+import { getRelativeTime } from "@/lib/date";
 
-import { MAX_PINNED, getThreadGroup, getRelativeTime } from "./types";
+import { MAX_PINNED, getThreadGroup } from "./types";
 
 // =====================================
 // ⬢ Inline Rename Input

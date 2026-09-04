@@ -1312,6 +1312,7 @@ export type WorkspaceInvitationInfo = {
 
 export type WorkspaceMember = {
   __typename?: 'WorkspaceMember';
+  joinedAt?: Maybe<Scalars['DateTime']['output']>;
   requestedRole?: Maybe<Scalars['String']['output']>;
   role: Scalars['String']['output'];
   user?: Maybe<User>;
@@ -2081,12 +2082,12 @@ export type GetWorkspaceWithMembersQueryVariables = Exact<{
 }>;
 
 
-export type GetWorkspaceWithMembersQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, icon?: string | null, source?: string | null, ownerId: string }, getWorkspaceMembers: Array<{ __typename?: 'WorkspaceMember', role: string, userId: string, user?: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
+export type GetWorkspaceWithMembersQuery = { __typename?: 'Query', getWorkspace: { __typename?: 'Workspace', id: string, name: string, plan: WorkspacePlan, icon?: string | null, source?: string | null, ownerId: string }, getWorkspaceMembers: Array<{ __typename?: 'WorkspaceMember', role: string, userId: string, joinedAt?: any | null, user?: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
 
 export type GetAdminWorkspacesWithMembersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAdminWorkspacesWithMembersQuery = { __typename?: 'Query', getAdminWorkspacesWithMembers: Array<{ __typename?: 'WorkspaceMember', userId: string, role: string, requestedRole?: string | null, workspaceName?: string | null, workspaceId?: string | null, user?: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
+export type GetAdminWorkspacesWithMembersQuery = { __typename?: 'Query', getAdminWorkspacesWithMembers: Array<{ __typename?: 'WorkspaceMember', userId: string, role: string, requestedRole?: string | null, workspaceName?: string | null, workspaceId?: string | null, joinedAt?: any | null, user?: { __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
 
 export type GetWorkspaceQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -6445,6 +6446,7 @@ export const GetWorkspaceWithMembersDocument = gql`
   getWorkspaceMembers(workspaceId: $workspaceId) {
     role
     userId
+    joinedAt
     user {
       id
       username
@@ -6496,6 +6498,7 @@ export const GetAdminWorkspacesWithMembersDocument = gql`
     requestedRole
     workspaceName
     workspaceId
+    joinedAt
     user {
       id
       username

@@ -194,6 +194,7 @@ type WorkspaceMember {
   user: User
   workspaceName: String
   workspaceId: String
+  joinedAt: DateTime
 }
 
 type WorkspaceInfo {

@@ -36,6 +36,7 @@ import { iconButtonSmClassName } from "@/styles/interactive";
 import { useFavorites } from "@/components/Editor/hooks/useFavorites";
 import { useSession } from "@/components/Editor/hooks/useAuth";
 import { StyledCheckbox } from "@/components/StyledCheckbox";
+import { formatDate } from "@/lib/date";
 
 import { UploadIcon } from "../Assets/UploadIcon";
 import { useDocuments } from "../Editor/hooks/useDocuments";
@@ -155,29 +156,6 @@ function ConfirmDialog({
       </Dialog>
     </Transition>
   );
-}
-
-function formatDate(dateString: string | Date): string {
-  if (!dateString) return "Unknown";
-
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-
-  if (diffInHours < 24) {
-    if (diffInHours < 1) return "Just now";
-    return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
-  }
-  if (diffInDays < 7) {
-    return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
-  }
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
 }
 
 // =====================================

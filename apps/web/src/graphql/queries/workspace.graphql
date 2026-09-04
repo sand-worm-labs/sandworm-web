@@ -55,6 +55,7 @@ query GetWorkspaceWithMembers($workspaceId: String!) {
   getWorkspaceMembers(workspaceId: $workspaceId) {
     role
     userId
+    joinedAt
     user {
       id
       username
@@ -72,6 +73,7 @@ query GetAdminWorkspacesWithMembers {
     requestedRole
     workspaceName
     workspaceId
+    joinedAt
     user {
       id
       username

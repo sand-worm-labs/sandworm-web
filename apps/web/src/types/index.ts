@@ -235,6 +235,7 @@ export type WorkspaceUser = ApiUser & {
   workspaceId: string;
   workspaceName?: string;
   role: UserWorkspaceRole;
+  joinedAt?: string | null;
 };
 
 export type ApiWorkspace = Workspace & {

@@ -7,6 +7,7 @@ import { DialogPanel, Dialog, Transition, TransitionChild } from "@headlessui/re
 import type { UserWorkspaceRole } from "@/types";
 import { CloseIconButton } from "@/components/CloseIconButton";
 import { tintPillDarkClassName } from "@/styles/interactive";
+import { getTimeAgo } from "@/lib/date";
 
 import { User } from "./Assets/Avatar/User";
 import { useInviteUserToWorkspace } from "./Editor/hooks/useWorkspaces";
@@ -56,23 +57,6 @@ interface ManageInviteModalProps {
 // ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
-
-const getTimeAgo = (date: Date) => {
-  const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInMonths = Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 30));
-
-  if (diffInMonths >= 1) {
-    return `${diffInMonths} month${diffInMonths > 1 ? "s" : ""} ago`;
-  }
-
-  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-  if (diffInDays >= 1) {
-    return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
-  }
-
-  return "Today";
-};
 
 // ============================================================================
 // INVITE FORM COMPONENT

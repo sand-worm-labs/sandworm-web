@@ -26,6 +26,9 @@ export class WorkspaceMember {
   @UUIDField({ nullable: true })
   workspaceId?: string;
 
+  @DateField({ nullable: true })
+  joinedAt?: Date;
+
 }
 
 @ObjectType()

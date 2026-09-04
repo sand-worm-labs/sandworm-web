@@ -61,6 +61,7 @@ export default function UsersPage() {
         name: fullName,
         workspaceName: member.workspaceName ?? "",
         workspaceId: member.workspaceId ?? "",
+        joinedAt: member.joinedAt ?? null,
       };
     });
   }, [workspacesWithMembers]);
