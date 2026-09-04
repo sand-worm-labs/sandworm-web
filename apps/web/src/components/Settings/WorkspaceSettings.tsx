@@ -684,6 +684,7 @@ export default function WorkspaceSettingsModal({
         name.trim(),
         selectedIcon ?? undefined
       );
+      toast.success("Workspace updated");
       setIsEditModalOpen(false);
     } catch (err) {
       console.error("Failed to update workspace name:", err);
@@ -825,6 +826,7 @@ export default function WorkspaceSettingsModal({
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           currentName={activeWorkspace.name}
+          currentIcon={activeWorkspace.icon}
           onSave={handleSave}
           isLoading={isUpdating}
         />

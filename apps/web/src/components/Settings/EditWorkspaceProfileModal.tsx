@@ -47,10 +47,11 @@ export default function EditWorkspaceProfileModal({
     onSave({ name: workspaceName, selectedIcon });
   };
 
-  const isNameValid =
-    workspaceName.trim().length > 0 &&
-    workspaceName.length <= 40 &&
-    !/[^\w\s]/.test(workspaceName);
+  const isLengthValid =
+    workspaceName.trim().length > 0 && workspaceName.length <= 40;
+
+  const hasNoInvalidChars = !/[^\w\s']/.test(workspaceName);
+  const isNameValid = isLengthValid && hasNoInvalidChars;
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -95,17 +96,11 @@ export default function EditWorkspaceProfileModal({
                   </label>
                   <div className="flex items-center gap-3">
                     <div className="relative w-14 h-14 rounded-full border-2 border-border dark:border-border-tertiary flex items-center justify-center overflow-hidden mr-4">
-                      {selectedIcon ? (
-                        <WorkspaceIcon
-                          icon={selectedIcon}
-                          size={56}
-                          className="object-cover"
-                        />
-                      ) : (
-                        <span className="text-[10px] text-center text-ink-400 leading-tight">
-                          No icon
-                        </span>
-                      )}
+                      <WorkspaceIcon
+                        icon={selectedIcon}
+                        size={56}
+                        className="object-cover"
+                      />
                     </div>
 
                     {PRESET_ICONS.map(colorKey => {
@@ -146,13 +141,26 @@ export default function EditWorkspaceProfileModal({
                     className="w-full px-4 py-3 rounded-xl bg-inputBg dark:bg-base-400 border border-border dark:border-border-tertiary text-ink-100 placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm font-medium"
                   />
                   <ul className="mt-2 space-y-1 text-xs font-medium">
-                    <li className="flex items-center gap-1">
-                      <span className="text-ink-400 dark:text-ink-400">·</span>
+                    <li
+                      className={`flex items-center gap-1 ${
+                        workspaceName.length > 40
+                          ? "text-red-500 dark:text-red-400"
+                          : "text-ink-400 dark:text-ink-400"
+                      }`}
+                    >
+                      <span>·</span>
                       Workspace name should be less than 40 characters
                     </li>
-                    <li className="flex items-center gap-1">
-                      <span className="text-ink-400 dark:text-ink-400">·</span>
-                      Cannot contain punctuation/special marks
+                    <li
+                      className={`flex items-center gap-1 ${
+                        workspaceName.length > 0 && !hasNoInvalidChars
+                          ? "text-red-500 dark:text-red-400"
+                          : "text-ink-400 dark:text-ink-400"
+                      }`}
+                    >
+                      <span>·</span>
+                      Cannot contain punctuation/special marks (apostrophes
+                      are fine)
                     </li>
                   </ul>
                 </div>

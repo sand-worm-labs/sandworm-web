@@ -284,8 +284,14 @@ export default function WorkspaceSettings() {
   const { updateWorkspace, loading: isUpdating } = useUpdateWorkspace();
   const { switchWorkspace, loading: isSwitching } = useSwitchWorkspace();
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [selectedWorkspace, setSelectedWorkspace] =
-    useState<ApiWorkspace | null>(null);
+  // Track just the id, not a snapshot of the workspace object — deriving
+  // the object below keeps it in sync after updateWorkspace() refetches
+  // allWorkspaces, instead of freezing on the object captured when the
+  // modal was opened (which used to show the old name/icon until a full
+  // page reload).
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<
+    string | null
+  >(null);
 
   // ⬢ Derived
   // =====================================
@@ -327,12 +333,13 @@ export default function WorkspaceSettings() {
     [switchWorkspace, router]
   );
 
-  const handleOpenSettings = useCallback(
-    (targetId: string) => {
-      const target = allWorkspaces.find(w => w.id === targetId) ?? null;
-      setSelectedWorkspace(target);
-    },
-    [allWorkspaces]
+  const handleOpenSettings = useCallback((targetId: string) => {
+    setSelectedWorkspaceId(targetId);
+  }, []);
+
+  const selectedWorkspace = useMemo(
+    () => allWorkspaces.find(w => w.id === selectedWorkspaceId) ?? null,
+    [allWorkspaces, selectedWorkspaceId]
   );
 
   const sharedTableProps = {
@@ -429,7 +436,7 @@ export default function WorkspaceSettings() {
 
       <WorkspaceSettingsModal
         isOpen={!!selectedWorkspace}
-        onClose={() => setSelectedWorkspace(null)}
+        onClose={() => setSelectedWorkspaceId(null)}
         workspace={selectedWorkspace}
         _isAdmin={!!selectedWorkspace && isAdminOf(selectedWorkspace.id)}
         isCurrentWorkspace={selectedWorkspace?.id === workspaceInfo?.id}

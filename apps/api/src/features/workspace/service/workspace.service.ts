@@ -283,7 +283,7 @@ export class WorkspaceService {
     }
 
     const workspace = await this.workspaceRepository.findOne({
-      where: { id: workspaceId, ownerId: data.ownerId, icon: data.icon },
+      where: { id: workspaceId, ownerId: data.ownerId },
     });
 
     if (!workspace) {
@@ -294,6 +294,10 @@ export class WorkspaceService {
 
     if (data.name) {
       workspace.name = data.name.trim();
+    }
+
+    if (data.icon !== undefined) {
+      workspace.icon = data.icon;
     }
 
     const updatedWorkspace = await this.workspaceRepository.save(workspace);
