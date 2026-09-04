@@ -2,6 +2,7 @@ import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { CodeExecutionModule } from '@/features/code-execution/code-execution.module';
+import { ToolModule } from '@/features/tool/tool.module';
 import blockExecutorConfig from './config/block-executor.config';
 import { BlockExecutorDataframeService } from './services/block-executor-dataframe.service';
 import { PythonBlockExecutorService } from './services/executors/python-block-executor.service';
@@ -29,6 +30,7 @@ const executorServices = [
     EventEmitterModule.forRoot(),
     ConfigModule.forFeature(blockExecutorConfig),
     forwardRef(() => CodeExecutionModule),
+    ToolModule,
   ],
   providers: [
     BlockExecutorDataframeService,
