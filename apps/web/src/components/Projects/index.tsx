@@ -487,7 +487,7 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
                       </Link>
                     </div>
 
-                    <div className="flex items-center gap-2 relative z-[1]">
+                    <div className="flex items-center gap-2 relative z-[2]">
                       <button
                         type="button"
                         onClick={() => toggleFavorite(project.id)}
