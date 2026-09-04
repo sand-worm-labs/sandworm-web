@@ -272,7 +272,7 @@ export default function ShareModal({
                 leaveTo="opacity-0 scale-95 translate-y-1"
               >
                 <DialogPanel
-                  className="w-full max-w-md rounded-2xl overflow-hidden
+                  className="w-full max-w-lg rounded-2xl overflow-hidden
                   bg-white dark:bg-dropdown-bg
                   border border-base-300 dark:border-border-tertiary
                   shadow-xl"
@@ -307,10 +307,10 @@ export default function ShareModal({
                           disabled={isUpdating}
                           className={({ checked }) =>
                             cn(
-                              "relative flex items-center gap-3 rounded-xl px-4 py-3",
+                              "group relative flex items-center gap-3 rounded-xl px-4 py-3",
                               "cursor-pointer transition-all duration-150 border",
                               checked
-                                ? "border-hover-border bg-hover-bg dark:bg-base-600 dark:text-ink-100 dark:border-border-tertiary"
+                                ? "border-primary bg-hover-bg dark:bg-dropdown-hover dark:text-ink-100 dark:border-border-tertiary"
                                 : "border-border dark:border-border-tertiary hover:bg-hover-bg hover:border-primary dark:hover:bg-dropdown-hover",
                               isUpdating && "opacity-50 cursor-not-allowed"
                             )
@@ -323,8 +323,8 @@ export default function ShareModal({
                                 className={cn(
                                   "flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0 transition-colors",
                                   checked
-                                    ? "bg-[#E8D5FC] dark:bg-create-project-tint/[0.16] text-primary-700 dark:text-white"
-                                    : "bg-base-300 dark:bg-base-700 text-ink-400 dark:text-placeholder-muted"
+                                    ? "border border-primary text-primary-700 dark:text-white"
+                                    : "bg-base-300 dark:bg-base-700 text-ink-400 dark:text-placeholder-muted group-hover:bg-transparent group-hover:border group-hover:border-primary group-hover:text-primary-700 dark:group-hover:text-white"
                                 )}
                               >
                                 <option.icon size={16} />
@@ -362,7 +362,7 @@ export default function ShareModal({
                                 leaveTo="opacity-0 scale-75"
                               >
                                 <PiCheckCircle
-                                  size={18}
+                                  size={22}
                                   className="text-primary dark:text-white flex-shrink-0"
                                 />
                               </Transition>
@@ -487,18 +487,18 @@ export default function ShareModal({
                         onClick={handleExportPDF}
                         disabled={isExportingPDF}
                         className={cn(
-                          "w-full flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-150 border",
+                          "group w-full flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-150 border",
                           isExportingPDF
                             ? "border-border dark:border-border-tertiary bg-inputBg dark:bg-base-730 text-ink-300 dark:text-placeholder-muted cursor-not-allowed"
-                            : "border-border dark:border-border-tertiary hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover hover:border-primary-200 dark:hover:border-border-tertiary text-ink-500 dark:text-ink-200"
+                            : "border-border dark:border-border-tertiary hover:bg-hover-bg hover:border-primary dark:hover:bg-dropdown-hover text-ink-500 dark:text-ink-200"
                         )}
                       >
                         <div
                           className={cn(
-                            "flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0",
+                            "flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0 transition-colors",
                             isExportingPDF
                               ? "bg-base-300 dark:bg-base-700 text-ink-300 dark:text-placeholder-muted"
-                              : "bg-base-300 dark:bg-base-700 text-ink-400 dark:text-placeholder-muted"
+                              : "bg-base-300 dark:bg-base-700 text-ink-400 dark:text-placeholder-muted group-hover:bg-transparent group-hover:border group-hover:border-primary group-hover:text-primary-700 dark:group-hover:text-white"
                           )}
                         >
                           {isExportingPDF ? (

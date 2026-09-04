@@ -482,12 +482,11 @@ function PrivateDocumentPageInner(
 
         {isViewer ? null : props.isApp ? (
           <Link
-            className="flex items-center gap-1.5
-          rounded-lg px-3 py-1 text-sm font-body
-          bg-white dark:bg-base-100 dark:text-ink-100
-          border border-primary dark:border-border-tertiary
-          hover:bg-base-300 dark:hover:bg-base-700
-          disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-[30px] flex items-center gap-1.5
+          rounded-lg px-3 text-sm font-body font-medium
+          bg-transparent text-primary dark:text-primary-tint-75
+          disabled:cursor-not-allowed disabled:opacity-50
+          border-[1.5px] border-primary dark:border-hover-border"
             href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook/edit`}
           >
             <PiPencilSimple size={16} />
@@ -507,7 +506,7 @@ function PrivateDocumentPageInner(
                 className="h-[30px] flex items-center gap-1.5
     rounded-lg px-3 text-sm font-body
     bg-transparent text-primary dark:text-primary-tint-75
-    hover:bg-primary-300
+   
     disabled:cursor-not-allowed disabled:opacity-50
     border-[1.5px] border-primary dark:border-hover-border relative group font-medium"
                 onClick={onPublish}

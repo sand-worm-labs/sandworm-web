@@ -719,10 +719,9 @@ export default function Dashboard(props: Props) {
         {!props.isEditing && props.role !== "viewer" && (
           <Link
             className="flex items-center gap-1.5
-          rounded-lg px-3 py-1 text-sm font-body
-          bg-white dark:bg-base-100 dark:text-ink-100
-          border border-primary dark:border-border-tertiary
-          hover:bg-base-300 dark:hover:bg-base-700
+          rounded-lg px-3 py-1 text-sm font-body font-medium
+          bg-transparent text-primary dark:text-primary-tint-75
+          border-[1.5px] border-primary dark:border-hover-border
           disabled:cursor-not-allowed disabled:opacity-50"
             href={`/workspace/${props.document.workspaceId}/documents/${props.document.id}/dashboard/edit`}
           >

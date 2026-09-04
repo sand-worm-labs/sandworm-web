@@ -95,7 +95,7 @@ export default function ComboboxV2<T>({
           {value && icon(value)}
           <input
             className={clsx(
-              "w-full truncate border-0 text-xs pl-0.5 focus:ring-0 bg-transparent font-mono placeholder:text-ink-400 min-h-[2rem] ",
+              "w-full truncate border-0 text-xs pl-0.5 focus:ring-0 bg-transparent font-body placeholder:text-ink-400 min-h-[2rem] ",
               value === null && "text-ink-400"
             )}
             onChange={event => setQuery(event.target.value)}
@@ -170,7 +170,7 @@ export default function ComboboxV2<T>({
                       {icon(c)}
                       <span
                         className={clsx(
-                          "truncate font-mono",
+                          "truncate font-body",
                           value === c && "font-semibold"
                         )}
                       >
