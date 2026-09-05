@@ -37,6 +37,7 @@ import { useFavorites } from "@/components/Editor/hooks/useFavorites";
 import { useSession } from "@/components/Editor/hooks/useAuth";
 import { StyledCheckbox } from "@/components/StyledCheckbox";
 import { formatDate } from "@/lib/date";
+import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 
 import { UploadIcon } from "../Assets/UploadIcon";
 import { useDocuments } from "../Editor/hooks/useDocuments";
@@ -191,6 +192,11 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
   );
   const [activeSort, setActiveSort] = useState<SortOption>("Last Modified");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  // Only one project's dropdown is ever open at a time, so one shared ref
+  // (attached below to whichever project's menu panel is currently
+  // rendered) is enough to detect outside clicks and close it.
+  useOnClickOutside(() => setOpenMenuId(null), menuRef, openMenuId !== null);
   const [hoveredUser, setHoveredUser] = useState<string | null>(null);
   const [hoveredSave, setHoveredSave] = useState<string | null>(null);
 
@@ -494,13 +500,16 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
                         </button>
 
                         {openMenuId === project.id && (
-                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-dropdown-bg rounded-xl shadow-lg border border-border-tertiary dark:border-border-tertiary pb-1  text-ink-200 dark:text-white z-[99]">
+                          <div
+                            ref={menuRef}
+                            className="absolute right-0 mt-2 w-48 bg-white dark:bg-dropdown-bg rounded-xl shadow-lg border border-border-tertiary dark:border-border-tertiary py-1.5 flex flex-col gap-0.5 text-ink-200 dark:text-white z-[99]"
+                          >
                             <button
                               type="button"
                               onClick={() =>
                                 handleMenuAction("duplicate", project.id)
                               }
-                              className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20 dark:hover:bg-dropdown-hover"
+                              className="mx-1.5 w-[calc(100%-0.75rem)] px-3 py-1.5 rounded-[10px] border border-transparent text-left text-sm flex items-center gap-2 transition-colors duration-100 hover:bg-hover-bg dark:hover:bg-dropdown-hover hover:border-hover-border"
                             >
                               <PiCopyLight className="w-3.5 h-3.5 dark:text-placeholder-muted" />
                               Duplicate
@@ -510,7 +519,7 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
                               onClick={() =>
                                 handleMenuAction("newTab", project.id)
                               }
-                              className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-primary/20 dark:hover:bg-dropdown-hover"
+                              className="mx-1.5 w-[calc(100%-0.75rem)] px-3 py-1.5 rounded-[10px] border border-transparent text-left text-sm flex items-center gap-2 transition-colors duration-100 hover:bg-hover-bg dark:hover:bg-dropdown-hover hover:border-hover-border"
                             >
                               <PiArrowSquareOutLight className="w-3.5 h-3.5 dark:text-placeholder-muted" />
                               Open in new tab
@@ -520,7 +529,7 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
                               onClick={() =>
                                 handleMenuAction("trash", project.id)
                               }
-                              className="w-full px-4 py-2 text-left text-sm hover:bg-primary/20 dark:hover:bg-dropdown-hover flex items-center gap-2"
+                              className="mx-1.5 w-[calc(100%-0.75rem)] px-3 py-1.5 rounded-[10px] border border-transparent text-left text-sm flex items-center gap-2 transition-colors duration-100 hover:bg-hover-bg dark:hover:bg-dropdown-hover hover:border-hover-border"
                             >
                               <PiTrashLight className="w-3.5 h-3.5 dark:text-placeholder-muted" />
                               Move to trash

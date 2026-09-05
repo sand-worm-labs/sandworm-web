@@ -292,7 +292,7 @@ function ModelRow({
           ? "bg-primary/10 border-primary/40"
           : isFocused
             ? "bg-white/[0.06] border-white/10"
-            : "border-transparent hover:bg-white/[0.04] hover:border-white/[0.06]"
+            : "border-transparent hover:bg-hover-bg dark:hover:bg-dropdown-hover hover:border-hover-border"
       )}
     >
       <button

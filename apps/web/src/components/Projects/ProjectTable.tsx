@@ -20,6 +20,7 @@ import {
 
 import { iconButtonSmClassName } from "@/styles/interactive";
 import { StyledCheckbox } from "@/components/StyledCheckbox";
+import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 
 interface Project {
   id: string;
@@ -57,6 +58,11 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
   onToggleSelectAll,
 }) => {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  // Only one row's dropdown is ever open at a time, so one shared ref
+  // (attached below to whichever row's menu panel is currently rendered)
+  // is enough to detect outside clicks and close it.
+  useOnClickOutside(() => setOpenMenuId(null), menuRef, openMenuId !== null);
 
   const allSelected =
     projects.length > 0 && selectedIds.size === projects.length;
@@ -221,7 +227,10 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                     </button>
 
                     {openMenuId === project.id && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100 rounded-xl shadow-lg border border-border-tertiary dark:border-border-tertiary pb-1 z-20">
+                      <div
+                        ref={menuRef}
+                        className="absolute right-0 mt-2 w-48 bg-white dark:bg-base-100 rounded-xl shadow-lg border border-border-tertiary dark:border-border-tertiary pb-1 z-20"
+                      >
                         <button
                           type="button"
                           onClick={() => {
