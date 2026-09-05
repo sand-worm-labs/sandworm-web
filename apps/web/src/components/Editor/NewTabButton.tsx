@@ -1,7 +1,7 @@
 import type * as Y from "yjs";
 import { Menu, Transition } from "@headlessui/react";
 import clsx from "clsx";
-import { PlusIcon } from "@heroicons/react/20/solid";
+import { PiPlus } from "react-icons/pi";
 import {
   BlockType,
   addGroupedBlock,
@@ -171,9 +171,9 @@ function NewTabButton(props: Props) {
       <Menu.Button
         ref={buttonRef}
         onClick={onOpen}
-        className="cursor-pointer text-xs px-1.5 rounded-t-sm flex items-center text-ink-400 hover:text-gray-600 h-full"
+        className="cursor-pointer text-xs px-1.5 border border-transparent rounded-t-lg flex items-center text-ink-400 hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 hover:text-ink-100 dark:hover:text-white h-full"
       >
-        <PlusIcon className="w-3 h-3" />
+        <PiPlus className="w-3 h-3" />
       </Menu.Button>
       {createPortal(
         <Transition

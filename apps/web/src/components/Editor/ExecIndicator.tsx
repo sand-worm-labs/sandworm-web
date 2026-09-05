@@ -1,9 +1,5 @@
 import type * as Y from "yjs";
-import {
-  CheckIcon,
-  ClockIcon,
-  ExclamationTriangleIcon,
-} from "@heroicons/react/24/outline";
+import { PiCheck, PiClock, PiWarning } from "react-icons/pi";
 import type { ExecutionQueue, TabRef, YBlock } from "@sandworm/editor";
 import { getResultStatus } from "@sandworm/editor";
 import { head } from "ramda";
@@ -25,7 +21,7 @@ function ExecIndicator(props: Props) {
 
   switch (status) {
     case "enqueued":
-      return <ClockIcon className="h-3 w-3" />;
+      return <PiClock className="h-3 w-3" />;
     case "aborting":
     case "running":
       return <Spin />;
@@ -36,9 +32,9 @@ function ExecIndicator(props: Props) {
         case "idle":
           return null;
         case "error":
-          return <ExclamationTriangleIcon className="h-3 w-3 text-red-500" />;
+          return <PiWarning className="h-3 w-3 text-error" />;
         case "success":
-          return <CheckIcon className="h-3 w-3 text-green-500" />;
+          return <PiCheck className="h-3 w-3 text-primary" />;
         default:
           return null;
       }

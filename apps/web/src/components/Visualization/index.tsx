@@ -809,9 +809,17 @@ function VisualizationBlockV2(props: Props) {
           }
         )}
       >
-        <div className="rounded-2xl">
+        <div
+          className={clsx(
+            "rounded-2xl",
+            props.hasMultipleTabs ? "rounded-tl-none" : ""
+          )}
+        >
           <div
-            className="border-b border-hover-border dark:border-border-tertiary rounded-t-2xl"
+            className={clsx(
+              "border-b border-hover-border dark:border-border-tertiary rounded-t-2xl",
+              props.hasMultipleTabs ? "rounded-tl-none" : ""
+            )}
             ref={d => {
               props.dragPreview?.(d);
             }}

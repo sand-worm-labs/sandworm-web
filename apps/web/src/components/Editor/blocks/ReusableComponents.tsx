@@ -3,7 +3,13 @@ import { v4 as uuidv4 } from "uuid";
 import type * as Y from "yjs";
 import React, { useCallback, useState } from "react";
 import { PiStackLight, PiFloppyDisk } from "react-icons/pi";
-import { DialogPanel, DialogTitle, Transition, TransitionChild, Dialog } from "@headlessui/react";
+import {
+  DialogPanel,
+  DialogTitle,
+  Transition,
+  TransitionChild,
+  Dialog,
+} from "@headlessui/react";
 import { format } from "date-fns";
 import { addComponentToDocument, decodeComponentState } from "@sandworm/editor";
 import Link from "next/link";
@@ -298,12 +304,15 @@ export default function ReusableComponents(props: Props) {
               </ScrollBar>
             </>
           ) : (
-            <div className="flex-1 p-4">
-              <div className="flex items-center justify-center h-full text-ink-300 dark:text-ink-400 rounded-lg border border-dashed border-border-secondary dark:border-border-tertiary p-8 text-center font-body font-medium flex-col bg-base-500 dark:bg-page-surface">
+            <div className="h-full flex flex-col items-center justify-center px-4 xl:px-6 py-12">
+              <div className="flex flex-col items-center gap-y-3">
                 <ScheduleIcon />
-                <p className="mt-2 text-[0.9rem]">
-                  You have no reusable components. Save a block to create one.
-                </p>
+                <div className="text-ink-300 dark:text-ink-400 text-center text-sm">
+                  <p className="font-medium text-ink-100 dark:text-white">
+                    No reusable components yet
+                  </p>
+                  <p>Save a block to create one.</p>
+                </div>
               </div>
             </div>
           )}

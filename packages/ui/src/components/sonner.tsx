@@ -87,9 +87,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
-      className="toaster group"
+      className="toaster group font-body"
       icons={{
-        success: <CheckMarkIcon classNames="size-6" />,
+        success: <CheckMarkIcon classNames="size-4" />,
         info: <InfoIcon className="size-4" />,
         warning: <TriangleAlertIcon className="size-4" />,
         error: <OctagonXIcon className="size-4" />,
@@ -97,7 +97,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       style={
         {
-          borderRadius: "1rem"
+          "--border-radius": "1rem",
         } as React.CSSProperties
       }
       {...props}

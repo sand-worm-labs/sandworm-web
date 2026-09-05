@@ -48,19 +48,22 @@ import {
   getAiBlocks,
 } from "@sandworm/editor";
 import type { DataFrame } from "@sandworm/types";
+import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import {
-  Bars3CenterLeftIcon,
-  ChartPieIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  CircleStackIcon,
-  DocumentArrowUpIcon,
-  ExclamationTriangleIcon,
-  PencilSquareIcon,
-  QueueListIcon,
-  CommandLineIcon as CommandLineSmallIcon,
-  CalendarIcon,
-} from "@heroicons/react/20/solid";
+  PiTextAlignLeft,
+  PiDatabase,
+  PiCode,
+  PiChartBar,
+  PiPencilSimpleLine,
+  PiListBullets,
+  PiCalendarBlank,
+  PiUploadSimple,
+  PiWarning,
+  PiTable,
+  PiFile,
+  PiCaretLeft,
+  PiCaretRight,
+} from "react-icons/pi";
 import { descend, head, sortWith } from "ramda";
 import { HotkeysProvider } from "react-hotkeys-hook";
 import { createPortal } from "react-dom";
@@ -72,7 +75,6 @@ import {
   PlayIcon,
 } from "@heroicons/react/24/outline";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
-import { DocumentIcon } from "@heroicons/react/24/solid";
 
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import type { ApiDocument, UserWorkspaceRole } from "@/types";
@@ -201,28 +203,28 @@ export function getTabIcon(
 ): React.ComponentType<React.SVGProps<SVGSVGElement>> {
   switch (blockType) {
     case BlockType.RichText:
-      return Bars3CenterLeftIcon;
+      return PiTextAlignLeft;
     case BlockType.SQL:
-      return CircleStackIcon;
+      return PiDatabase;
     case BlockType.Python:
-      return CommandLineSmallIcon;
+      return PiCode;
     case BlockType.Visualization:
     case BlockType.VisualizationV2:
-      return ChartPieIcon;
+      return PiChartBar;
     case BlockType.Input:
-      return PencilSquareIcon;
+      return PiPencilSimpleLine;
     case BlockType.DropdownInput:
-      return QueueListIcon;
+      return PiListBullets;
     case BlockType.DateInput:
-      return CalendarIcon;
+      return PiCalendarBlank;
     case BlockType.FileUpload:
-      return DocumentArrowUpIcon;
+      return PiUploadSimple;
     case BlockType.DashboardHeader:
-      return ExclamationTriangleIcon;
+      return PiWarning;
     case BlockType.PivotTable:
-      return Bars3CenterLeftIcon;
+      return PiTable;
     default:
-      return DocumentIcon;
+      return PiFile;
   }
 }
 
@@ -404,12 +406,11 @@ function Tab(props: TabProps) {
           ref={buttonRef}
           onClick={() => props.onSwitchActiveTab(props.tabRef.blockId)}
           className={clsx(
-            "flex gap-x-2 items-center border-l border-r border-t border-border-secondary px-2.5 py-1.5 rounded-t-sm whitespace-nowrap",
+            "flex gap-x-2 items-center border border-border-secondary dark:border-border-tertiary px-2.5 py-1.5 rounded-t-lg whitespace-nowrap transition-colors",
             props.tabRef.isCurrent
-              ? "bg-white text-gray-950"
-              : "bg-gray-50 text-ink-400 hover:bg-gray-100",
-            isDragging ? "opacity-0" : "",
-            !props.isFirst ? "-ml-[1px]" : ""
+              ? "bg-white dark:bg-header-surface text-ink-100 dark:text-white"
+              : "bg-transparent border-transparent text-ink-400 hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600",
+            isDragging ? "opacity-0" : ""
           )}
           onContextMenu={onRightClick}
         >
@@ -417,7 +418,9 @@ function Tab(props: TabProps) {
             <Icon
               className={clsx(
                 "h-3 w-3",
-                props.tabRef.isCurrent ? "text-gray-600" : "text-gray-300"
+                props.tabRef.isCurrent
+                  ? "text-ink-100 dark:text-white"
+                  : "text-ink-400"
               )}
             />
             {props.tabRef.title || getPrettyTitle(props.tabRef.type)}{" "}
@@ -425,7 +428,7 @@ function Tab(props: TabProps) {
               <span
                 className={clsx(
                   "pl-0.5 text-[10px]",
-                  props.tabRef.isCurrent ? "text-ink-400" : "text-gray-300"
+                  props.tabRef.isCurrent ? "text-ink-400" : "text-ink-300"
                 )}
               >
                 hidden
@@ -1036,18 +1039,18 @@ file`;
       </div>
       <div className="flex-grow max-w-full">
         {hasMultipleTabs && !props.isPDF && (
-          <div className="print:hidden flex">
+          <div className="print:hidden flex items-center gap-x-1.5 pb-2">
             <div
-              className="flex max-w-full overflow-x-scroll no-scrollbar scroll-smooth"
+              className="flex items-center gap-x-1.5 max-w-full overflow-x-scroll no-scrollbar scroll-smooth"
               ref={tabContainerRef}
             >
               {isScrollable && !isScrolledAllTheWayLeft && (
                 <button
                   type="button"
-                  className="sticky left-0 h-full bg-white border-t border-r border-l border-border-secondary"
+                  className="sticky left-0 h-full bg-white dark:bg-header-surface border-t border-r border-l border-border-secondary dark:border-border-tertiary hover:bg-hover-bg dark:hover:bg-base-600"
                   onClick={onClickScrollLeft}
                 >
-                  <ChevronLeftIcon className="h-5 w-5 text-ink-400" />
+                  <PiCaretLeft className="h-4 w-4 text-ink-400" />
                 </button>
               )}
               {tabRefs.map((tabRef, i) => (
@@ -1070,10 +1073,10 @@ file`;
               {isScrollable && !isScrolledAllTheWayRight && (
                 <button
                   type="button"
-                  className="sticky right-0 h-full bg-white border-t border-r border-l border-border-secondary"
+                  className="sticky right-0 h-full bg-white dark:bg-header-surface border-t border-r border-l border-border-secondary dark:border-border-tertiary hover:bg-hover-bg dark:hover:bg-base-600"
                   onClick={onClickScrollRight}
                 >
-                  <ChevronRightIcon className="h-5 w-5 text-ink-400" />
+                  <PiCaretRight className="h-4 w-4 text-ink-400" />
                 </button>
               )}
             </div>
