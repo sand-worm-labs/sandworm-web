@@ -56,37 +56,61 @@ beforeEach(() => {
 
 describe("useChatStream", () => {
   it("turns a thinking block into a single onPart call", async () => {
-    const text =
-      sse("content_block_start", { type: "content_block_start", index: 0, content_block: { type: "thinking", thinking: "" } }) +
+    const text = `${
+      sse("content_block_start", {
+        type: "content_block_start",
+        index: 0,
+        content_block: { type: "thinking", thinking: "" },
+      }) +
       sse("content_block_delta", {
         type: "content_block_delta",
         index: 0,
-        delta: { type: "thinking_delta", thinking: "Planning 2 blocks", duration_ms: 120 },
+        delta: {
+          type: "thinking_delta",
+          thinking: "Planning 2 blocks",
+          duration_ms: 120,
+        },
       }) +
-      sse("content_block_stop", { type: "content_block_stop", index: 0 }) +
-      "data: [DONE]\n\n";
+      sse("content_block_stop", { type: "content_block_stop", index: 0 })
+    }data: [DONE]\n\n`;
 
     const { onPart, onComplete, onError } = await runStream(text);
 
-    expect(onPart).toHaveBeenCalledWith({ type: "thinking", thinking: "Planning 2 blocks", duration_ms: 120 } satisfies PartPayload);
+    expect(onPart).toHaveBeenCalledWith({
+      type: "thinking",
+      thinking: "Planning 2 blocks",
+      duration_ms: 120,
+    } satisfies PartPayload);
     expect(onComplete).toHaveBeenCalledTimes(1);
     expect(onError).not.toHaveBeenCalled();
   });
 
   it("turns block_action start/delta into generating then ran onPart calls", async () => {
-    const text =
+    const text = `${
       sse("content_block_start", {
         type: "content_block_start",
         index: 0,
-        content_block: { type: "block_action", action: "generating", block_id: "b1", block_type: "sql", block_title: "Top holders" },
+        content_block: {
+          type: "block_action",
+          action: "generating",
+          block_id: "b1",
+          block_type: "sql",
+          block_title: "Top holders",
+        },
       }) +
       sse("content_block_delta", {
         type: "content_block_delta",
         index: 0,
-        delta: { type: "block_action_delta", action: "ran", block_id: "b1", block_type: "sql", block_title: "Top holders" },
+        delta: {
+          type: "block_action_delta",
+          action: "ran",
+          block_id: "b1",
+          block_type: "sql",
+          block_title: "Top holders",
+        },
       }) +
-      sse("content_block_stop", { type: "content_block_stop", index: 0 }) +
-      "data: [DONE]\n\n";
+      sse("content_block_stop", { type: "content_block_stop", index: 0 })
+    }data: [DONE]\n\n`;
 
     const { onPart } = await runStream(text);
 
@@ -107,12 +131,24 @@ describe("useChatStream", () => {
   });
 
   it("streams text_delta chunks through onToken in order", async () => {
-    const text =
-      sse("content_block_start", { type: "content_block_start", index: 0, content_block: { type: "text", text: "" } }) +
-      sse("content_block_delta", { type: "content_block_delta", index: 0, delta: { type: "text_delta", text: "Hel" } }) +
-      sse("content_block_delta", { type: "content_block_delta", index: 0, delta: { type: "text_delta", text: "lo" } }) +
-      sse("content_block_stop", { type: "content_block_stop", index: 0 }) +
-      "data: [DONE]\n\n";
+    const text = `${
+      sse("content_block_start", {
+        type: "content_block_start",
+        index: 0,
+        content_block: { type: "text", text: "" },
+      }) +
+      sse("content_block_delta", {
+        type: "content_block_delta",
+        index: 0,
+        delta: { type: "text_delta", text: "Hel" },
+      }) +
+      sse("content_block_delta", {
+        type: "content_block_delta",
+        index: 0,
+        delta: { type: "text_delta", text: "lo" },
+      }) +
+      sse("content_block_stop", { type: "content_block_stop", index: 0 })
+    }data: [DONE]\n\n`;
 
     const { onToken } = await runStream(text);
 
@@ -120,22 +156,28 @@ describe("useChatStream", () => {
   });
 
   it("surfaces follow_up carried on message_delta", async () => {
-    const questions = [{ id: "q1", text: "Which chain?", input_type: "text" as const }];
-    const text =
-      sse("message_delta", {
-        type: "message_delta",
-        delta: { follow_up: { message: "Need more info", questions } },
-      }) + "data: [DONE]\n\n";
+    const questions = [
+      { id: "q1", text: "Which chain?", input_type: "text" as const },
+    ];
+    const text = `${sse("message_delta", {
+      type: "message_delta",
+      delta: { follow_up: { message: "Need more info", questions } },
+    })}data: [DONE]\n\n`;
 
     const { onPart } = await runStream(text);
 
-    expect(onPart).toHaveBeenCalledWith({ type: "follow_up", message: "Need more info", questions });
+    expect(onPart).toHaveBeenCalledWith({
+      type: "follow_up",
+      message: "Need more info",
+      questions,
+    });
   });
 
   it("calls onError (not onComplete) when the server sends a structured error event", async () => {
-    const text =
-      sse("error", { type: "error", error: { type: "intent_error", message: "Intent parsing failed" } }) +
-      "data: [ERROR]\n\n";
+    const text = `${sse("error", {
+      type: "error",
+      error: { type: "intent_error", message: "Intent parsing failed" },
+    })}data: [ERROR]\n\n`;
 
     const { onComplete, onError } = await runStream(text);
 

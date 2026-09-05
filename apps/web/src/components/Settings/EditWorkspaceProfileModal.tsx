@@ -1,4 +1,10 @@
-import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
+import {
+  DialogPanel,
+  DialogTitle,
+  Dialog,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { useState, Fragment } from "react";
 
@@ -159,8 +165,8 @@ export default function EditWorkspaceProfileModal({
                       }`}
                     >
                       <span>·</span>
-                      Cannot contain punctuation/special marks (apostrophes
-                      are fine)
+                      Cannot contain punctuation/special marks (apostrophes are
+                      fine)
                     </li>
                   </ul>
                 </div>

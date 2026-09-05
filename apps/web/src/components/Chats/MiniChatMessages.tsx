@@ -4,7 +4,10 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PiArrowDown } from "react-icons/pi";
 
-import type { ActiveFollowUpStep, LocalMessage } from "../Editor/hooks/useMiniChat";
+import type {
+  ActiveFollowUpStep,
+  LocalMessage,
+} from "../Editor/hooks/useMiniChat";
 
 import { MessageParts } from "./MessageParts";
 import { FollowUpCard } from "./FollowUpCard";

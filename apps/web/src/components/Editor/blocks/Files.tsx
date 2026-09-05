@@ -5,7 +5,12 @@ import {
   DocumentPlusIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
-import { DialogPanel, Dialog, Transition, TransitionChild } from "@headlessui/react";
+import {
+  DialogPanel,
+  Dialog,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 import type { SandwormFile } from "@sandworm/types";
 import Link from "next/link";
 import clsx from "clsx";

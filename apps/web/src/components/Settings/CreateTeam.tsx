@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, Fragment } from "react";
-import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
+import {
+  DialogPanel,
+  DialogTitle,
+  Dialog,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 
 import { useCreateWorkspaceMutation } from "@/generated/graphql";
 import { CloseIconButton } from "@/components/CloseIconButton";

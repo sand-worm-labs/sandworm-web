@@ -357,7 +357,8 @@ export default function WorkspaceSwitcher({
         updateWorkspace={switcherState.updateWorkspace}
         isUpdating={switcherState.isUpdating}
         isCurrentWorkspace={
-          switcherState.selectedWorkspace?.id === switcherState.workspaceInfo?.id
+          switcherState.selectedWorkspace?.id ===
+          switcherState.workspaceInfo?.id
         }
         disableCustomAiModelKey={false}
       />

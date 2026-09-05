@@ -79,7 +79,13 @@ interface DateFieldProps {
   error?: string;
 }
 
-export function DateField({ param, value, onChange, onBlur, error }: DateFieldProps) {
+export function DateField({
+  param,
+  value,
+  onChange,
+  onBlur,
+  error,
+}: DateFieldProps) {
   const today = new Date().toISOString().split("T")[0];
 
   return (

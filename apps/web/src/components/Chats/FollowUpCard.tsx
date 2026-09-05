@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { PiArrowRight, PiArrowLeft } from "react-icons/pi";
 
 import type { ActiveFollowUpStep } from "../Editor/hooks/useMiniChat";
+
 import type { FollowUpPart, FollowUpQuestion } from "./parts.types";
 import { useTypewriter } from "./useTypewriter";
 

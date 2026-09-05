@@ -289,9 +289,9 @@ export default function WorkspaceSettings() {
   // allWorkspaces, instead of freezing on the object captured when the
   // modal was opened (which used to show the old name/icon until a full
   // page reload).
-  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<
-    string | null
-  >(null);
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(
+    null
+  );
 
   // ⬢ Derived
   // =====================================

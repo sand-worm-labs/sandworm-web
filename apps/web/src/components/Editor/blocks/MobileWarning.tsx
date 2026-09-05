@@ -1,5 +1,11 @@
 import { Fragment, useState } from "react";
-import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
+import {
+  DialogPanel,
+  DialogTitle,
+  Dialog,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 
 import { ScheduleIcon } from "@/components/Assets/ScheduleIcon";
 

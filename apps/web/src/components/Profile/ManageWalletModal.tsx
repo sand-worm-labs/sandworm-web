@@ -3,7 +3,13 @@
 import { useState, useRef, useEffect, Fragment } from "react";
 import Image from "next/image";
 import { Check } from "lucide-react";
-import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
+import {
+  DialogPanel,
+  DialogTitle,
+  Dialog,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 import {
   Select,
   SelectContent,
@@ -80,8 +86,12 @@ export const AddWalletModal = ({
   const [addressError, setAddressError] = useState("");
   const addressInputRef = useRef<HTMLInputElement>(null);
 
-  const { chains, loading: chainsLoading, error: chainsError, fetchChainData } =
-    useChainStore();
+  const {
+    chains,
+    loading: chainsLoading,
+    error: chainsError,
+    fetchChainData,
+  } = useChainStore();
 
   useEffect(() => {
     if (isOpen && !chains && !chainsLoading) fetchChainData();
@@ -207,8 +217,8 @@ export const AddWalletModal = ({
                     </div>
                   ) : chainsError ? (
                     <div className="px-3 py-2 text-sm text-red-500">
-                      Couldn&apos;t load chains — you can still add the
-                      wallet without one.
+                      Couldn&apos;t load chains — you can still add the wallet
+                      without one.
                     </div>
                   ) : (
                     chains?.map(c => (

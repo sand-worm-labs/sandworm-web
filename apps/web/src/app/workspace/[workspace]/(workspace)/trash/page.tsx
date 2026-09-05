@@ -382,7 +382,9 @@ export default function TrashPage() {
               onChange={onToggleSelectAll}
               aria-label="Select all"
             />
-            {selectedIds.size > 0 ? `${selectedIds.size} selected` : "Select all"}
+            {selectedIds.size > 0
+              ? `${selectedIds.size} selected`
+              : "Select all"}
           </div>
         )}
 
@@ -430,7 +432,9 @@ export default function TrashPage() {
         </button>
         <button
           type="button"
-          onClick={() => setPendingAction({ kind: "delete", scope: "selected" })}
+          onClick={() =>
+            setPendingAction({ kind: "delete", scope: "selected" })
+          }
           className="flex items-center gap-1.5 text-xs font-medium transition-colors text-red-400 hover:text-red-300 rounded-lg px-2 py-1.5"
         >
           Delete selected

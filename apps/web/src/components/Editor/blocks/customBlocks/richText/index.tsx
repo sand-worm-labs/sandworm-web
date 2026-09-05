@@ -163,7 +163,7 @@ const RichTextBlock = (props: Props) => {
   // Collaboration extension crashes on a falsy fragment (falls back to
   // `this.options.document.getXmlFragment(...)`, and document is never
   // set here), so fall back to a fresh fragment rather than pass null.
-  const content = getRichTextAttributes(props.block).content;
+  const { content } = getRichTextAttributes(props.block);
 
   const setTitle = useCallback(
     (title: string) => {

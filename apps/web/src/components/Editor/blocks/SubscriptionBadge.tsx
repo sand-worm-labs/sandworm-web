@@ -1,5 +1,11 @@
 import { Fragment, useRef } from "react";
-import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
+import {
+  DialogPanel,
+  DialogTitle,
+  Dialog,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 import { TicketIcon } from "@heroicons/react/24/outline";
 import { HeartIcon } from "@heroicons/react/24/solid";
 

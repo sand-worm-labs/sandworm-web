@@ -194,7 +194,11 @@ export function useYDoc(
   // Y.Doc that this query does not serve — those fall back to the original
   // restore + websocket-sync gating below, unaffected by this fetch.
   const willFetchSnapshot =
-    !cached && !isDataApp && connect && Boolean(documentId) && Boolean(workspaceId);
+    !cached &&
+    !isDataApp &&
+    connect &&
+    Boolean(documentId) &&
+    Boolean(workspaceId);
 
   const appliedSnapshotIdRef = useRef<string | null>(null);
   const [snapshotApplied, setSnapshotApplied] = useResettableState(
@@ -419,7 +423,8 @@ export function useYDoc(
     // soon as `snapshotApplied` is true, regardless of websocket sync state.
     // For docs where no snapshot is fetched (isDataApp / not connected),
     // fall back to the original restore + websocket-sync gating.
-    syncing: !cached && (willFetchSnapshot ? !snapshotApplied : syncing || restoring),
+    syncing:
+      !cached && (willFetchSnapshot ? !snapshotApplied : syncing || restoring),
     isDirty: metadata.state.value.getAttribute("isDirty") ?? false,
     undo,
     redo,

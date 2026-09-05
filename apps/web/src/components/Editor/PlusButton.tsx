@@ -163,7 +163,9 @@ function MultiBlockSuggestion({
                 <button
                   type="button"
                   className={clsx(
-                    active ? "bg-primary/20 dark:bg-dropdown-hover text-ink-100" : "text-ink-400",
+                    active
+                      ? "bg-primary/20 dark:bg-dropdown-hover text-ink-100"
+                      : "text-ink-400",
                     index === 0 ? "rounded-lg" : "",
                     index === options.length - 1 ? "rounded-lg" : "",
                     "flex items-center gap-x-2 w-full text-sm px-2 py-1.5 mb-0.5 hover:bg-primary/20 dark:hover:bg-dropdown-hover rounded-lg"
@@ -216,7 +218,9 @@ function OverflowMenu({ items }: { items: OverflowItem[] }) {
                 <button
                   type="button"
                   className={clsx(
-                    active ? "bg-primary/20 dark:bg-dropdown-hover text-ink-100" : "text-ink-400",
+                    active
+                      ? "bg-primary/20 dark:bg-dropdown-hover text-ink-100"
+                      : "text-ink-400",
                     index === 0 || index === items.length - 1
                       ? "rounded-lg"
                       : "",

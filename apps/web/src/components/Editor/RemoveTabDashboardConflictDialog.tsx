@@ -1,6 +1,12 @@
 import type * as Y from "yjs";
 import { useCallback, useEffect, useState } from "react";
-import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
+import {
+  DialogPanel,
+  DialogTitle,
+  Dialog,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 import * as R from "ramda";
 import type { RemoveBlockDashboardConflictResult } from "@sandworm/editor";
 import { removeBlock } from "@sandworm/editor";

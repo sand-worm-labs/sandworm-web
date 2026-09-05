@@ -2,7 +2,13 @@
 
 import { Fragment, useMemo, useState } from "react";
 import Link from "next/link";
-import { DialogPanel, DialogTitle, Dialog, Transition, TransitionChild } from "@headlessui/react";
+import {
+  DialogPanel,
+  DialogTitle,
+  Dialog,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 import { Check, Wallet } from "lucide-react";
 
 import { cn } from "@/lib/utils";

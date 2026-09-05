@@ -276,8 +276,7 @@ function UsersList(props: Props) {
                             : "No users found"}
                       </p>
                       <p className="text-xs text-ink-300 dark:text-ink-500">
-                        Try adjusting or clearing your filters to see all
-                        users.
+                        Try adjusting or clearing your filters to see all users.
                       </p>
                     </div>
                   </td>

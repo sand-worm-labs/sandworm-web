@@ -138,7 +138,8 @@ export function FeaturedExploreCard({
         role="button"
         tabIndex={0}
         onKeyDown={e =>
-          (e.key === "Enter" || e.key === " ") && router.push(`/notebooks/${slug}`)
+          (e.key === "Enter" || e.key === " ") &&
+          router.push(`/notebooks/${slug}`)
         }
       >
         <div className="flex items-center justify-between mb-3">

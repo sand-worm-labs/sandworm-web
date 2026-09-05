@@ -2,7 +2,12 @@ import React, { useState, Fragment } from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { DialogPanel, Dialog, Transition, TransitionChild } from "@headlessui/react";
+import {
+  DialogPanel,
+  Dialog,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 
 import type { UserWorkspaceRole } from "@/types";
 import { CloseIconButton } from "@/components/CloseIconButton";

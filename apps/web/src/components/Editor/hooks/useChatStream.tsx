@@ -55,7 +55,10 @@ type AiStreamEvent =
   | { type: "content_block_stop"; index: number }
   | {
       type: "message_delta";
-      delta: { stop_reason?: string; follow_up?: { message: string; questions: FollowUpQuestion[] } };
+      delta: {
+        stop_reason?: string;
+        follow_up?: { message: string; questions: FollowUpQuestion[] };
+      };
     }
   | { type: "message_stop" }
   | { type: "error"; error: { type: string; message: string } };
