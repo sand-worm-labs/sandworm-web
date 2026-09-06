@@ -146,15 +146,16 @@ def _sandworm_convert_to_utc_safe(datetime_series, comparison_value):
 
 def _sandworm_create_visualization(df, options):
     colors = [
-        "#A308F0",
-        "#91cc75",
-        "#fac858",
-        "#ee6666",
-        "#73c0de",
-        "#3ba272",
-        "#fc8452",
-        "#9a60b4",
-        "#ea7ccc"
+        "#2E1065",  # deep indigo
+        "#EE149E",  # hot magenta
+        "#7C3AED",  # violet (brand)
+        "#FB51BD",  # pink
+        "#84185C",  # plum
+        "#C4B5FD",  # pale lavender
+        "#DB2777",  # rose
+        "#5B21B6",  # deep violet
+        "#F9A8D4",  # pale rose
+        "#64748B"   # slate (other)
     ]
 
     def extract_chart_type(chart_type):
@@ -489,7 +490,7 @@ def _sandworm_create_visualization(df, options):
             "id": pie_series_id,
             "type": "pie",
             "z": 0,
-            "radius": "70%",
+            "radius": ["45%", "70%"],
             "avoidLabelOverlap": True,
             "data": pie_data,
         }

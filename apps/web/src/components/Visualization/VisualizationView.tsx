@@ -379,6 +379,9 @@ function SandwormResult(props: {
         },
       })),
       backgroundColor: "#fff",
+      textStyle: {
+        fontFamily: FONT_FAMILY,
+      },
       legend: {
         ...props.result.legend,
         padding: props.hasControls
@@ -388,7 +391,8 @@ function SandwormResult(props: {
         icon: "circle",
         textStyle: {
           padding: [0, 0, 0, -6],
-          fontWeight: "bold",
+          fontWeight: 400,
+          fontFamily: FONT_FAMILY,
           color: "#6b7280",
         },
         left: !props.hasControls ? 18 : "center",
@@ -446,6 +450,16 @@ function SandwormResult(props: {
       })),
       tooltip: {
         ...props.result.tooltip,
+        backgroundColor: "#F8F9FA",
+        borderColor: "#CED4DA",
+        borderWidth: 1,
+        borderRadius: 12,
+        padding: [10, 14],
+        textStyle: {
+          color: "#1a1a1a",
+          fontFamily: FONT_FAMILY,
+          fontSize: 12,
+        },
         formatter(params) {
           // ⬢ NOTE — avoid no-param-reassign by creating a local copy
           const paramList = Array.isArray(params) ? params : [params];
@@ -532,7 +546,7 @@ function SandwormResult(props: {
                 }
 
                 counter += 1;
-                return `<div class="font-body" style="display: flex; align-items: center; justify-content: space-between; gap: 20px;  ">
+                return `<div style="display: flex; align-items: center; justify-content: space-between; gap: 20px; color: #6c757d;">
                   <div>${param.marker ?? ""}${param.seriesName ?? key}</div>
                   <div>${formattedValue}</div>
                 </div>`;
@@ -543,8 +557,8 @@ function SandwormResult(props: {
           }, "");
 
           return `
-            <div>
-              ${xFormatted}
+            <div class="font-body" style="font-family: ${FONT_FAMILY};">
+              <div style="font-weight: 600; margin-bottom: 4px; color: #1a1a1a;">${xFormatted}</div>
               <div>${yValues}</div>
             </div>
           `;
@@ -618,6 +632,9 @@ function getPieOption(
 
   return {
     backgroundColor: "#fff",
+    textStyle: {
+      fontFamily: FONT_FAMILY,
+    },
     legend: {
       ...result.legend,
       padding: hasControls
@@ -627,7 +644,8 @@ function getPieOption(
       icon: "circle",
       textStyle: {
         padding: [0, 0, 0, -6],
-        fontWeight: "bold",
+        fontWeight: 400,
+        fontFamily: FONT_FAMILY,
         color: "#6b7280",
       },
       left: !hasControls ? 18 : "center",
@@ -635,6 +653,16 @@ function getPieOption(
     tooltip: {
       ...result.tooltip,
       trigger: "item",
+      backgroundColor: "#F8F9FA",
+      borderColor: "#CED4DA",
+      borderWidth: 1,
+      borderRadius: 12,
+      padding: [10, 14],
+      textStyle: {
+        color: "#1a1a1a",
+        fontFamily: FONT_FAMILY,
+        fontSize: 12,
+      },
       formatter: (params: unknown) => {
         const param = (Array.isArray(params) ? params[0] : params) as
           | {
@@ -653,9 +681,9 @@ function getPieOption(
             : "";
 
         return `
-          <div>
-            <div style="font-weight: 600; margin-bottom: 4px;">${param.name ?? ""}</div>
-            <div class="font-body" style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+          <div class="font-body" style="font-family: ${FONT_FAMILY};">
+            <div style="font-weight: 600; margin-bottom: 4px; color: #1a1a1a;">${param.name ?? ""}</div>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px; color: #6c757d;">
               <div>${param.marker ?? ""}${formatValue(param.value)}</div>
               <div>${percent}</div>
             </div>
@@ -663,22 +691,32 @@ function getPieOption(
         `;
       },
     },
-    series: result.series.map(series => ({
-      ...series,
-      label:
-        series.label && "show" in series.label && series.label.show
-          ? {
-              ...series.label,
-              formatter: (param: { name?: string; percent?: number }) => {
-                const pct =
-                  typeof param.percent === "number"
-                    ? `${param.percent.toFixed(1)}%`
-                    : "";
-                return `${param.name ?? ""}${pct ? `: ${pct}` : ""}`;
-              },
-            }
-          : series.label,
-    })),
+    // `result` can briefly still hold the previous (Cartesian) execution's
+    // series — e.g. bar/line series with an `xAxisIndex` — if the user just
+    // switched chartType to "pie" and the backend hasn't re-executed yet.
+    // This option has no xAxis/yAxis/grid at all, so passing one of those
+    // through would make ECharts throw ("xAxis '0' not found"). Only ever
+    // render series that are actually pie-shaped.
+    series: result.series
+      .filter(series => series.type === "pie")
+      .map(series => ({
+        ...series,
+        label:
+          series.label && "show" in series.label && series.label.show
+            ? {
+                ...series.label,
+                fontFamily: FONT_FAMILY,
+                color: "#1a1a1a",
+                formatter: (param: { name?: string; percent?: number }) => {
+                  const pct =
+                    typeof param.percent === "number"
+                      ? `${param.percent.toFixed(1)}%`
+                      : "";
+                  return `${param.name ?? ""}${pct ? `: ${pct}` : ""}`;
+                },
+              }
+            : series.label,
+      })),
   };
 }
 
