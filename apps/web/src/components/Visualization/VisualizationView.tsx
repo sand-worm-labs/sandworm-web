@@ -304,6 +304,10 @@ function SandwormResult(props: {
 
   // @ts-ignore
   const option: echarts.EChartsOption = useMemo(() => {
+    if (props.input.chartType === "pie") {
+      return getPieOption(props.result, props.input, props.hasControls, props.title);
+    }
+
     const grid: echarts.EChartsOption["grid"] = {
       ...props.result.grid,
       left: props.hasControls ? "36px" : "28px",
@@ -343,11 +347,16 @@ function SandwormResult(props: {
                 .flatMap(yAxis => yAxis.series)
                 .find(s => s.id === seriesId) ?? null;
 
-            const key = series.encode?.y ?? series.id.split(":").pop() ?? "";
+            const key =
+              ("encode" in series ? series.encode?.y : undefined) ??
+              series.id.split(":").pop() ??
+              "";
             const value =
-              props.result.dataset[series.datasetIndex]?.source[
-                param.dataIndex
-              ]?.[key];
+              "datasetIndex" in series
+                ? props.result.dataset[series.datasetIndex]?.source[
+                    param.dataIndex
+                  ]?.[key]
+                : undefined;
 
             // ⬢ NOTE — guard against undefined value before passing to formatters
             if (value === undefined) return "";
@@ -567,6 +576,110 @@ function SandwormResult(props: {
       <Echarts width={size.width} height={size.height} option={option} />
     </div>
   );
+}
+
+// =====================================
+// ⬢ getPieOption
+// =====================================
+// Pie charts have no axes and no shared dataset — each slice's value lives
+// directly on the series' own `data` array — so this intentionally does not
+// reuse the Cartesian dataset/encode based label & tooltip formatters above.
+function getPieOption(
+  result: VisualizationV2BlockOutputResult,
+  input: VisualizationV2BlockInput,
+  hasControls: boolean,
+  title: string
+) {
+  const pieSeries = result.series[0];
+  const seriesInput: Series | null =
+    input.yAxes
+      .flatMap(yAxis => yAxis.series)
+      .find(s => s.id === pieSeries?.id) ?? null;
+
+  const formatValue = (value: unknown): string => {
+    if (typeof value !== "number") {
+      return value === undefined || value === null ? "" : String(value);
+    }
+
+    if (seriesInput?.column) {
+      if (NumpyDateTypes.safeParse(seriesInput.column.type).success) {
+        return formatDateTime(value, seriesInput.dateFormat);
+      }
+      if (
+        NumpyNumberTypes.safeParse(seriesInput.column.type).success &&
+        seriesInput.numberFormat
+      ) {
+        return formatNumber(value, seriesInput.numberFormat);
+      }
+    }
+
+    return value.toLocaleString();
+  };
+
+  return {
+    backgroundColor: "#fff",
+    legend: {
+      ...result.legend,
+      padding: hasControls
+        ? [28, 28, 0, 28]
+        : [title ? 4 : 20, 28, 0, 8],
+      type: "scroll",
+      icon: "circle",
+      textStyle: {
+        padding: [0, 0, 0, -6],
+        fontWeight: "bold",
+        color: "#6b7280",
+      },
+      left: !hasControls ? 18 : "center",
+    },
+    tooltip: {
+      ...result.tooltip,
+      trigger: "item",
+      formatter: (params: unknown) => {
+        const param = (Array.isArray(params) ? params[0] : params) as
+          | {
+              name?: string;
+              value?: unknown;
+              percent?: number;
+              marker?: string;
+            }
+          | undefined;
+
+        if (!param) return "";
+
+        const percent =
+          typeof param.percent === "number"
+            ? `${param.percent.toFixed(1)}%`
+            : "";
+
+        return `
+          <div>
+            <div style="font-weight: 600; margin-bottom: 4px;">${param.name ?? ""}</div>
+            <div class="font-body" style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+              <div>${param.marker ?? ""}${formatValue(param.value)}</div>
+              <div>${percent}</div>
+            </div>
+          </div>
+        `;
+      },
+    },
+    series: result.series.map(series => ({
+      ...series,
+      label:
+        series.label && "show" in series.label && series.label.show
+          ? {
+              ...series.label,
+              formatter: (param: { name?: string; percent?: number }) => {
+                const pct =
+                  typeof param.percent === "number"
+                    ? `${param.percent.toFixed(1)}%`
+                    : "";
+                return `${param.name ?? ""}${pct ? `: ${pct}` : ""}`;
+              },
+            }
+          : series.label,
+    })),
+  };
 }
 
 // =====================================
@@ -997,7 +1110,7 @@ function getValueAxis(
   let max = Infinity;
   const xFields = uniq(
     result.series
-      .map(s => s.encode?.x)
+      .map(s => ("encode" in s ? s.encode?.x : undefined))
       .filter((x): x is string | number => x !== undefined)
   );
   const values = result.dataset
@@ -1050,7 +1163,7 @@ function getTimeAxis(
   };
 
   const xFields = result.series
-    .map(s => s.encode?.x)
+    .map(s => ("encode" in s ? s.encode?.x : undefined))
     .filter((x): x is string | number => x !== undefined);
 
   // ⬢ NOTE — filter out undefined values before constructing Date to avoid

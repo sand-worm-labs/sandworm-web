@@ -210,7 +210,8 @@ function YAxisPickerV2(props: Props) {
     <div>
       <div className="flex justify-between items-end pb-1">
         {props.defaultChartType !== "trend" &&
-          props.defaultChartType !== "number" && (
+          props.defaultChartType !== "number" &&
+          props.defaultChartType !== "pie" && (
             <div className="text-md font-medium leading-6 text-ink-100">
               {props.onAddYAxis ? "" : props.index === 0 ? "Left" : "Right"}{" "}
               Y-Axis
@@ -231,7 +232,8 @@ function YAxisPickerV2(props: Props) {
           .slice(
             0,
             props.defaultChartType === "trend" ||
-              props.defaultChartType === "number"
+              props.defaultChartType === "number" ||
+              props.defaultChartType === "pie"
               ? 1
               : undefined
           )
@@ -269,6 +271,7 @@ function YAxisPickerV2(props: Props) {
               </div>
               {props.defaultChartType !== "trend" &&
                 props.defaultChartType !== "number" &&
+                props.defaultChartType !== "pie" &&
                 (props.yAxis.series.length > 1 ||
                   !props.onAddYAxis ||
                   (s.chartType && s.chartType !== props.defaultChartType)) && (
@@ -306,7 +309,8 @@ function YAxisPickerV2(props: Props) {
                     disabled={!props.dataframe || !props.isEditable}
                   />
                   {props.defaultChartType !== "trend" &&
-                    props.defaultChartType !== "number" && (
+                    props.defaultChartType !== "number" &&
+                    props.defaultChartType !== "pie" && (
                       <AxisModifierSelector
                         label="Group by"
                         value={s.groupBy?.name.toString() ?? null}
@@ -328,6 +332,7 @@ function YAxisPickerV2(props: Props) {
       </div>
       {props.defaultChartType !== "trend" &&
         props.defaultChartType !== "number" &&
+        props.defaultChartType !== "pie" &&
         (props.yAxis.series.length > 1 ||
           props.yAxis.series[0]?.column !== null) && (
           <div className="flex justify-end pt-2">

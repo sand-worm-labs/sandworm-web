@@ -13,6 +13,14 @@ import { EnvironmentEntity, EnvironmentStatus } from '@sandworm/postgresql-typeo
 import { EnvironmentStatusEvent, EventNames } from '@/events/environment.events';
 import { LockService } from "@/infrastructure/lock/lock.services";
 
+
+class JupyterKernelWebSocket extends WebSocket {
+  constructor(url: string | URL, protocols?: string | string[]) {
+    super(url, protocols);
+    this.binaryType = 'arraybuffer';
+  }
+}
+
 @Injectable()
 export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(JupyterService.name);
@@ -284,7 +292,7 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
       fetch,
       Request,
       Headers,
-      WebSocket: WebSocket as any,
+      WebSocket: JupyterKernelWebSocket as any,
       init: {},
     })
   }

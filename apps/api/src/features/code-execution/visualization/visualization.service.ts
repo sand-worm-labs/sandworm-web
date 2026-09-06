@@ -184,7 +184,7 @@ def _sandworm_create_visualization(df, options):
         elif chart_type == "scatterPlot":
             return "scatter", False, False, False
         elif chart_type == "pie":
-            raise ValueError("Pie chart is not implemented yet")
+            raise ValueError("Pie chart cannot be combined with other chart types on the same axis")
         elif chart_type == "histogram":
             raise ValueError("Histogram chart is not supported")
         elif chart_type == "trend":
@@ -445,6 +445,67 @@ def _sandworm_create_visualization(df, options):
                 "bin": bin,
                 "value": val
             })
+    elif options["chartType"] == "pie":
+        data["tooltip"] = {"trigger": "item"}
+        data["xAxis"] = []
+        data["yAxis"] = []
+
+        pie_data = []
+        pie_series_id = "pie"
+        series_name = None
+
+        y_axis = options["yAxes"][0] if options["yAxes"] else None
+        series = (
+            next((s for s in y_axis["series"] if s.get("column")), None)
+            if y_axis
+            else None
+        )
+
+        if options["xAxis"] and series:
+            series_dataframe, capped = get_series_df(df, options, y_axis, series)
+            if capped:
+                too_many_data_points = True
+
+            x_name = options["xAxis"]["name"]
+            y_name = series["id"]
+            pie_series_id = series["id"]
+            series_name = series.get("name") or series["column"]["name"]
+
+            for _, row in series_dataframe.iterrows():
+                value = row[y_name]
+                if value is None or (isinstance(value, float) and math.isnan(value)):
+                    continue
+                pie_data.append({
+                    "name": row[x_name],
+                    "value": value,
+                })
+
+        for i, item in enumerate(pie_data):
+            item["itemStyle"] = {"color": colors[i % len(colors)]}
+
+        data["legend"]["data"] = [item["name"] for item in pie_data]
+
+        pie_series = {
+            "id": pie_series_id,
+            "type": "pie",
+            "z": 0,
+            "radius": "70%",
+            "avoidLabelOverlap": True,
+            "data": pie_data,
+        }
+
+        if series_name is not None:
+            pie_series["name"] = series_name
+
+        if options["dataLabels"]["show"]:
+            pie_series["label"] = {"show": True}
+            pie_series["labelLayout"] = {
+                "hideOverlap": options["dataLabels"]["frequency"] == "some"
+            }
+        else:
+            pie_series["label"] = {"show": False}
+
+        data["series"].append(pie_series)
     else:
         color_index = -1
         for y_index, y_axis in enumerate(options["yAxes"]):

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { PiCheck, PiCaretUpDown } from "react-icons/pi";
 import { Transition } from "@headlessui/react";
 import clsx from "clsx";
 import ReactDOM from "react-dom";
@@ -91,7 +91,7 @@ export default function ComboboxV2<T>({
         label
       )}
       <div className="relative mt-1 mb-0.5" ref={inputContainerRef}>
-        <div className="flex items-center space-x-1.5 rounded-md ring-1 ring-inset ring-gray-200 dark:ring-border-dark focus-within:ring-1 focus-within:ring-inset focus-within:ring-gray-300 bg-white group pl-2.5 pr-8 text-ink-100 dark:bg-header-surface  dark:text-white">
+        <div className="flex items-center space-x-1.5 rounded-lg border border-border-tertiary focus-within:border-hover-border bg-inputBg group pl-2.5 pr-8 text-ink-100 dark:bg-dropdown-bg dark:text-white transition-colors">
           {value && icon(value)}
           <input
             className={clsx(
@@ -122,12 +122,12 @@ export default function ComboboxV2<T>({
         </div>
         <button
           type="button"
-          className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none"
+          className="absolute inset-y-0 right-0 flex items-center rounded-r-lg px-2 focus:outline-none"
           ref={buttonRef}
           onClick={onClickButton}
         >
-          <ChevronUpDownIcon
-            className="h-5 w-5 text-ink-400"
+          <PiCaretUpDown
+            className="h-3.5 w-3.5 text-ink-400"
             aria-hidden="true"
           />
         </button>
@@ -142,7 +142,7 @@ export default function ComboboxV2<T>({
             leave="transition duration-75 ease-out"
             leaveFrom="transform scale-100 opacity-100"
             leaveTo="transform scale-95 opacity-0"
-            className="absolute z-[2000] text-xs -translate-x-1/2"
+            className="absolute z-[2000] text-xs -translate-x-1/2 font-body"
             style={{
               top: dropdownPosition.top,
               left: dropdownPosition.left,
@@ -150,14 +150,14 @@ export default function ComboboxV2<T>({
             }}
           >
             <div
-              className="mt-1 max-h-56 overflow-auto rounded-md bg-white dark:bg-header-surface py-1 shadow-lg ring-1 ring-black dark:ring-border-dark ring-opacity-5 focus:outline-none"
+              className="mt-0.5 max-h-56 overflow-auto rounded-xl border border-border-tertiary bg-inputBg dark:bg-dropdown-bg p-1 shadow-lg focus:outline-none"
               ref={menuRef}
             >
               {filteredColumns.map(c => (
                 <button
                   type="button"
                   key={String(c)}
-                  className="hover:text-white hover:bg-gray-50 dark:hover:bg-base-600 text-ink-100 dark:text-white relative select-none flex items-center gap-x-2 w-full cursor-pointer"
+                  className="border border-transparent hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 text-ink-100 dark:text-white relative select-none flex items-center justify-between gap-x-2 w-full cursor-pointer rounded-lg px-2 py-1.5 transition-colors"
                   onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -165,23 +165,24 @@ export default function ComboboxV2<T>({
                     setOpen(false);
                   }}
                 >
-                  <div className="text-ink-100 dark:text-white flex w-full items-center justify-between pl-2 pr-4 py-2 hover:bg-gray-50 dark:hover:bg-base-600">
-                    <div className="flex items-center gap-x-2">
-                      {icon(c)}
-                      <span
-                        className={clsx(
-                          "truncate font-body",
-                          value === c && "font-semibold"
-                        )}
-                      >
-                        {getLabel(c)}
-                      </span>
-                    </div>
-
-                    {value === c && (
-                      <CheckIcon className="h-3 w-3" aria-hidden="true" />
-                    )}
+                  <div className="flex items-center gap-x-2">
+                    {icon(c)}
+                    <span
+                      className={clsx(
+                        "truncate font-body",
+                        value === c && "font-semibold"
+                      )}
+                    >
+                      {getLabel(c)}
+                    </span>
                   </div>
+
+                  {value === c && (
+                    <PiCheck
+                      className="h-3 w-3 text-primary flex-shrink-0"
+                      aria-hidden="true"
+                    />
+                  )}
                 </button>
               ))}
               {loadingOptions && (

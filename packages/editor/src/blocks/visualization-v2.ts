@@ -242,6 +242,32 @@ const Serie = z.union([
     stack: z.string().optional(),
     symbolSize: z.number().optional(),
   }),
+
+  z.object({
+    id: z.string(),
+    type: z.literal("pie"),
+    name: z.string().or(z.number()).optional(),
+    z: z.number(),
+    radius: z.string().or(z.array(z.string())).optional(),
+    avoidLabelOverlap: z.boolean().optional(),
+    label: z
+      .object({
+        show: z.boolean(),
+      })
+      .optional(),
+    labelLayout: z.object({ hideOverlap: z.boolean() }).optional(),
+    data: z.array(
+      z.object({
+        name: OrdinalRawValue,
+        value: z.number(),
+        itemStyle: z
+          .object({
+            color: z.string().optional(),
+          })
+          .optional(),
+      })
+    ),
+  }),
 ]);
 
 export type Serie = z.infer<typeof Serie>;
@@ -262,8 +288,12 @@ const YAxis = CartesianAxisOption.and(
 );
 
 export const VisualizationV2BlockOutputResult = z.object({
-  tooltip: z.object({ trigger: z.literal("axis") }),
-  legend: z.object({}),
+  tooltip: z.object({
+    trigger: z.union([z.literal("axis"), z.literal("item")]),
+  }),
+  legend: z.object({
+    data: z.array(OrdinalRawValue).optional(),
+  }),
   grid: z.object({ containLabel: z.literal(true) }),
   dataset: z.array(DataSet),
   xAxis: z.array(XAxis),

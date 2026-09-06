@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom";
 import { useCallback, useEffect, useRef } from "react";
 import { Listbox, Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { PiCaretDown } from "react-icons/pi";
 import clsx from "clsx";
 import type { ChartType } from "@sandworm/types";
 import Image from "next/image";
@@ -49,6 +49,11 @@ const charts: Chart[] = [
     value: "scatterPlot",
     label: "Scatter Plot",
     icon: "scatter.svg",
+  },
+  {
+    value: "pie",
+    label: "Pie",
+    icon: "pie.svg",
   },
   {
     value: "histogram",
@@ -105,7 +110,7 @@ export default function ChartTypeSelector({
   return (
     <Listbox value={value} onChange={onChange} disabled={!isEditable}>
       {({ open }) => (
-        <div className="relative dark:bg-base-100 ">
+        <div className="relative">
           {!compact && (
             <div className="block text-xs font-medium leading-6 text-ink-100 pb-1">
               {label}
@@ -116,14 +121,14 @@ export default function ChartTypeSelector({
             ref={buttonRef}
             onClick={onClickButton}
           >
-            <div className="border border-border-secondary dark:border-border-tertiary rounded-md px-3 flex items-center justify-between gap-x-2 w-full min-h-8">
+            <div className="border border-border-tertiary rounded-lg px-3 flex items-center justify-between gap-x-2 w-full min-h-8 bg-inputBg dark:bg-dropdown-bg transition-colors hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600">
               <div className="flex items-center justify-left gap-x-2 text-left w-full h-6">
                 <div className="h-4 w-6 rounded-sm grayscale">
-                  <img src={`/images/charts/${selected.icon}`} alt="" />
+                  <img src={`/img/charts/${selected.icon}`} alt="" />
                 </div>
                 {!compact && <span>{selected.label}</span>}
               </div>
-              <ChevronDownIcon className="h-4 w-4 text-ink-400 " />
+              <PiCaretDown className="h-3.5 w-3.5 text-ink-400" />
             </div>
           </Listbox.Button>
 
@@ -144,7 +149,7 @@ export default function ChartTypeSelector({
               >
                 <Listbox.Options
                   as="div"
-                  className="w-[30rem] z-20 mt-2 divide-y divide-border-secondary overflow-hidden rounded-lg bg-white  dark:bg-base-200  ring-1 ring-border-secondary focus:outline-none px-5 py-4 dark:border-border-tertiary dark:border font-body "
+                  className="w-[30rem] z-20 mt-2 divide-y divide-border-secondary overflow-hidden rounded-xl bg-inputBg dark:bg-dropdown-bg border border-border-tertiary focus:outline-none px-5 py-4 font-body"
                 >
                   <div className="grid grid-cols-3 gap-x-4 gap-y-6 items-stretch">
                     {charts.map(option => (
@@ -155,12 +160,12 @@ export default function ChartTypeSelector({
                         className={({ active }) =>
                           clsx(
                             active
-                              ? " border-primary"
-                              : "border-border-secondary dark:border-tertiary",
+                              ? "bg-hover-bg dark:bg-base-600 border-hover-border"
+                              : "border-border-secondary dark:border-border-tertiary",
                             option.comingSoon
                               ? "cursor-not-allowed"
                               : "cursor-pointer",
-                            "pb-3.5 pt-2.5 select-none rounded-md border flex flex-col justify-center items-center relative"
+                            "pb-3.5 pt-2.5 select-none rounded-lg border flex flex-col justify-center items-center relative transition-colors"
                           )
                         }
                         value={option.value}
@@ -184,9 +189,9 @@ export default function ChartTypeSelector({
                             <span
                               className={clsx(
                                 active
-                                  ? "text-gray-600 dark:text-white"
+                                  ? "text-ink-100 dark:text-white"
                                   : "text-ink-400 dark:text-white",
-                                "text-center px-1.5 text-[11.5px] absolute bottom-0 translate-y-1/2 bg-white dark:bg-base-100 "
+                                "text-center px-1.5 text-[11.5px] absolute bottom-0 translate-y-1/2 bg-inputBg dark:bg-dropdown-bg"
                               )}
                             >
                               {option.label}
@@ -194,7 +199,7 @@ export default function ChartTypeSelector({
 
                             {option.comingSoon && (
                               <div className="absolute h-3/4 w-5/6 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-2 py-1 flex items-center justify-center">
-                                <div className="absolute h-full w-full top-0 left-0 bg-gray-100 opacity-80 rounded-md" />
+                                <div className="absolute h-full w-full top-0 left-0 bg-base-200 dark:bg-base-600 opacity-80 rounded-md" />
                                 <div className="relative text-xs text-ink-400  whitespace-nowrap">
                                   Coming soon
                                 </div>

@@ -1,7 +1,59 @@
 import { FastifyLoggerOptions, PinoLoggerOptions } from 'fastify/types/logger';
 import hyperid from 'hyperid';
+import pino from 'pino';
 
 export const REQUEST_ID_HEADER = 'X-Request-Id';
+
+// pino's default `err` serializer copies every enumerable own property of a
+// caught error verbatim — including a full `.raw` copy of the original error
+// — with no check for binary values. If any property (however deeply nested)
+// is a Buffer/Uint8Array/ArrayBuffer, JSON.stringify renders it as
+// `{"type":"Buffer","data":[...]}`, an unreadable byte-array dump instead of
+// a usable log line. This wraps the default serializer and replaces any
+// binary payload with a short placeholder so error logs stay readable text.
+function sanitizeLoggedValue(value: unknown, seen: WeakSet<object>): unknown {
+  if (
+    Buffer.isBuffer(value) ||
+    value instanceof Uint8Array ||
+    value instanceof ArrayBuffer
+  ) {
+    const byteLength =
+      value instanceof ArrayBuffer ? value.byteLength : value.length;
+    return `[binary data omitted: ${byteLength} bytes]`;
+  }
+
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+
+  if (seen.has(value)) {
+    return '[circular]';
+  }
+  seen.add(value);
+
+  if (Array.isArray(value)) {
+    return value.map((item) => sanitizeLoggedValue(item, seen));
+  }
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, val]) => [
+      key,
+      sanitizeLoggedValue(val, seen),
+    ]),
+  );
+}
+
+export function errSerializer(err: unknown) {
+  const serialized = pino.stdSerializers.err(err as Error) as Record<
+    string,
+    unknown
+  >;
+  // `.raw` duplicates the whole original error object (and whatever binary
+  // properties it carries) — the rest of `serialized` already has its
+  // properties flattened out individually, so `.raw` is redundant.
+  const { raw: _raw, ...rest } = serialized;
+  return sanitizeLoggedValue(rest, new WeakSet());
+}
 
 export type FastifyLoggerEnv =
   | 'local'
@@ -35,6 +87,7 @@ const developmentLogger = (): any => {
           statusCode: reply.statusCode,
         };
       },
+      err: errSerializer,
     },
     customSuccessMessage,
     customReceivedMessage,
@@ -77,9 +130,11 @@ export function fastifyPinoOptions(
     development: developmentLogger(),
     production: {
       level: 'debug',
+      serializers: { err: errSerializer },
     },
     staging: {
       level: 'debug',
+      serializers: { err: errSerializer },
     },
   } as const;
 

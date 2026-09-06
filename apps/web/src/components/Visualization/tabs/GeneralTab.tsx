@@ -429,7 +429,11 @@ const GeneralTab = ({
           {yAxes
             .slice(
               0,
-              chartType === "trend" || chartType === "number" ? 1 : undefined
+              chartType === "trend" ||
+                chartType === "number" ||
+                chartType === "pie"
+                ? 1
+                : undefined
             )
             .map((yAxis, i) => (
               <YAxisPickerV2
@@ -444,7 +448,8 @@ const GeneralTab = ({
                   i === 0 &&
                   yAxes.length === 1 &&
                   chartType !== "trend" &&
-                  chartType !== "number"
+                  chartType !== "number" &&
+                  chartType !== "pie"
                     ? onAddYAxis
                     : undefined
                 }
