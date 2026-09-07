@@ -261,6 +261,7 @@ function AnalyticsBlock(props: Props) {
       environmentStartedAt,
       { _tag: "power-toolbox" }
     );
+    setView("result");
   }, [props.executionQueue, blockId, props.userId, environmentStartedAt]);
 
   const onRunAbort = useCallback(() => {
@@ -273,21 +274,18 @@ function AnalyticsBlock(props: Props) {
         break;
       case "idle":
       case "completed":
-      case "unknown": {
-        const source = props.block.getAttribute("generatedSource") ?? "";
-        if (isDirty || view === "form" || !source.trim()) {
-          setView("form");
-        } else {
-          onRun();
-        }
+      case "unknown":
+        // PowerToolboxBlockExecutorService renders the template fresh from
+        // toolId + inputs on every run, so there's nothing to pre-generate
+        // client-side before running — just enqueue it.
+        onRun();
         break;
-      }
       case "aborting":
         break;
       default:
         break;
     }
-  }, [status, execution, blockId, isDirty, view, props.block, onRun]);
+  }, [status, execution, blockId, onRun]);
 
   const isRunButtonDisabled =
     status === "aborting" || execution?.batch.isRunAll();
