@@ -1,9 +1,4 @@
-import {
-  PlayIcon,
-  StopIcon,
-  ClockIcon,
-  ExclamationCircleIcon,
-} from "@heroicons/react/20/solid";
+import { PlayIcon, StopIcon, ClockIcon } from "@heroicons/react/20/solid";
 import { PiTrash } from "react-icons/pi";
 import type * as Y from "yjs";
 import {
@@ -35,6 +30,7 @@ import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 import ScrollBar from "../../ScrollBar";
 import { BlockTypePill } from "../../BlockTypePill";
 import { PythonOutputs } from "../python/PythonOutput";
+import { SucceededText, ExecutionFailedText } from "../../ExecutionStatusText";
 
 import { AnalyticsParamForm } from "./AnalyticsparamForm";
 
@@ -42,16 +38,18 @@ function ExecutionStatusText({
   status,
   resultStatus,
   executedAt,
-  _startedAt,
   envStatus,
   isDirty,
+  isResultHidden,
+  onToggleResultHidden,
 }: {
   status: string;
   resultStatus: "idle" | "running" | "success" | "error";
   executedAt: string;
-  _startedAt: string;
   envStatus: string;
   isDirty: boolean;
+  isResultHidden: boolean;
+  onToggleResultHidden: () => void;
 }) {
   if (status === "running" || status === "enqueued" || status === "aborting") {
     return (
@@ -64,21 +62,24 @@ function ExecutionStatusText({
 
   if (resultStatus === "error") {
     return (
-      <span className="text-xs text-error flex items-center gap-x-1">
-        <ExclamationCircleIcon className="w-3.5 h-3.5" />
-        Execution failed
-      </span>
+      <ExecutionFailedText
+        lastExecutionTime={executedAt}
+        isResultHidden={isResultHidden}
+        onToggleResultHidden={onToggleResultHidden}
+      />
     );
   }
 
   if (resultStatus === "success" && executedAt) {
     return (
-      <span className="text-xs text-ink-400 flex items-center gap-x-2">
-        <span className="text-emerald-500/70">
-          ✓ Completed {formatRelativeTime(executedAt)}
-        </span>
+      <span className="flex items-center gap-x-2">
+        <SucceededText
+          lastExecutionTime={executedAt}
+          isResultHidden={isResultHidden}
+          onToggleResultHidden={onToggleResultHidden}
+        />
         {isDirty && (
-          <span className="text-amber-500/80">
+          <span className="text-xs text-amber-500/80">
             params changed — re-run to update
           </span>
         )}
@@ -138,21 +139,6 @@ function BlockIcon({
       />
     </svg>
   );
-}
-
-function formatRelativeTime(isoString: string): string {
-  if (!isoString) return "";
-  try {
-    const diff = Date.now() - new Date(isoString).getTime();
-    const mins = Math.floor(diff / 60_000);
-    if (mins < 1) return "just now";
-    if (mins < 60) return `${mins}m ago`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h ago`;
-    return `${Math.floor(hrs / 24)}d ago`;
-  } catch {
-    return "";
-  }
 }
 
 interface RunTooltipContentProps {
@@ -333,11 +319,11 @@ function AnalyticsBlock(props: Props) {
               editorState.mode === "insert",
             "border-hover-border block-focus-ring dark:border-border-tertiary":
               statusIsDisabled,
-            "border-hover-border shadow-none":
+            "border-hover-border dark:border-border-dark shadow-none":
               !statusIsDisabled &&
               isEditorFocused &&
               editorState.mode === "normal",
-            "border-hover-border block-shadow-soft dark:border-border-tertiary":
+            "border-hover-border block-shadow-soft dark:border-border-dark":
               !statusIsDisabled && !isEditorFocused,
           }
         )}
@@ -345,20 +331,20 @@ function AnalyticsBlock(props: Props) {
         <div
           className={clsx(
             "rounded-2xl overflow-hidden",
-            statusIsDisabled ? "" : "bg-white dark:bg-base-100",
+            statusIsDisabled ? "bg-gray-100" : "bg-white dark:bg-header-surface",
             props.hasMultipleTabs ? "rounded-tl-none" : ""
           )}
         >
           <div
             className={clsx(
-              "rounded-t-2xl border-b border-border-secondary dark:border-border-tertiary"
+              "rounded-t-2xl dark:bg-header-surface border-b border-hover-border dark:border-border-dark"
             )}
             ref={d => {
               props.dragPreview?.(d);
             }}
           >
-            <div className="flex items-center justify-between px-3 pr-4 gap-x-4 font-body h-12">
-              <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5">
+            <div className="flex items-center justify-between px-3 pr-0 gap-x-4 font-body h-10">
+              <div className="select-none text-gray-300 text-xs flex items-center w-full h-full gap-x-1.5 px-4">
                 <div className="w-4 h-4 shrink-0">
                   <BlockIcon />
                 </div>
@@ -379,7 +365,7 @@ function AnalyticsBlock(props: Props) {
                 />
               </div>
 
-              <div className="flex items-center gap-x-2 shrink-0">
+              <div className="flex items-center gap-x-2 shrink-0 pr-4">
                 {attrs.toolCategory && (
                   <span
                     className={clsx(
@@ -407,7 +393,7 @@ function AnalyticsBlock(props: Props) {
                 )}
 
                 {hasError && !statusIsDisabled && (
-                  <code className="bg-red-50 text-error px-1.5 py-0.5 font-mono text-[10px] rounded-md">
+                  <code className="bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 px-1.5 py-0.5 font-mono text-[10px] rounded-md">
                     contains errors
                   </code>
                 )}
@@ -416,42 +402,38 @@ function AnalyticsBlock(props: Props) {
           </div>
 
           <div className="print:hidden">
-            <div className="p-3">
+            <div className="px-3 pb-3 pt-3">
               <AnalyticsParamForm block={props.block} />
-            </div>
 
-            {!resultsHidden && (hasResults || attrs.executedAt) && (
-              <>
-                <div
-                  className={clsx(
-                    "flex items-center justify-between px-4 py-2",
-                    "border-b border-border-secondary dark:border-border-tertiary",
-                    "bg-gray-50/50 dark:bg-white/[0.02]"
+              {!resultsHidden && (hasResults || attrs.executedAt) && (
+                <div className="flex flex-col text-xs -mx-3 -mb-3 mt-3 bg-inputBg dark:bg-header-surface border-t border-hover-border dark:border-border-dark">
+                  {Object.entries(attrs.inputs ?? {}).some(
+                    ([, v]) => v !== "" && v !== null
+                  ) && (
+                    <div className="flex flex-wrap items-center gap-1.5 px-3 pt-2 border-b border-hover-border dark:border-border-dark pb-2">
+                      {Object.entries(attrs.inputs ?? {})
+                        .filter(([, v]) => v !== "" && v !== null)
+                        .slice(0, 4)
+                        .map(([key, value]) => (
+                          <ParamSummaryPill key={key} label={key} value={value} />
+                        ))}
+                    </div>
                   )}
-                >
-                  <div className="flex flex-wrap items-center gap-1.5 flex-1 min-w-0">
-                    {Object.entries(attrs.inputs ?? {})
-                      .filter(([, v]) => v !== "" && v !== null)
-                      .slice(0, 4)
-                      .map(([key, value]) => (
-                        <ParamSummaryPill key={key} label={key} value={value} />
-                      ))}
+
+                  <div className="flex items-center gap-x-2 px-3 pt-2 pb-3">
+                    <ExecutionStatusText
+                      status={status}
+                      resultStatus={resultStatus}
+                      executedAt={attrs.executedAt}
+                      envStatus={envStatus}
+                      isDirty={isDirty}
+                      isResultHidden={resultsHidden}
+                      onToggleResultHidden={() => setResultsHidden(prev => !prev)}
+                    />
                   </div>
                 </div>
-
-                {/* Execution status row */}
-                <div className="px-4 py-2 flex items-center gap-x-2">
-                  <ExecutionStatusText
-                    status={status}
-                    resultStatus={resultStatus}
-                    executedAt={attrs.executedAt}
-                    startedAt={attrs.startedAt}
-                    envStatus={envStatus}
-                    isDirty={isDirty}
-                  />
-                </div>
-              </>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
@@ -512,7 +494,7 @@ function AnalyticsBlock(props: Props) {
               onClick={onRunAbort}
               disabled={isRunButtonDisabled}
               className={clsx(
-                "rounded-[5px] border-hover-border border border-border dark:border-border-tertiary h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-hover-bg hover:border-primary",
+                "rounded-[5px] border-hover-border border h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-hover-bg hover:border-primary",
                 {
                   "bg-gray-200": isRunButtonDisabled,
                   "bg-red-200": status === "running" && envStatus === "Running",
@@ -520,23 +502,30 @@ function AnalyticsBlock(props: Props) {
                     !isRunButtonDisabled &&
                     (status === "enqueued" ||
                       (status === "running" && envStatus !== "Running")),
-                  "bg-primary":
-                    !isRunButtonDisabled &&
-                    (status === "idle" || status === "completed"),
                   "bg-amber-500":
                     !isRunButtonDisabled &&
                     status === "idle" &&
                     isDirty &&
                     hasResults,
+                  "bg-base-200 dark:bg-header-surface":
+                    !isRunButtonDisabled &&
+                    !(status === "idle" && isDirty && hasResults) &&
+                    (status === "idle" || status === "completed"),
+                  "bg-inputBg":
+                    !isRunButtonDisabled &&
+                    status !== "idle" &&
+                    status !== "completed" &&
+                    status !== "running" &&
+                    status !== "enqueued",
                 }
               )}
             >
               {status === "enqueued" ? (
-                <ClockIcon className="w-[13px] h-[13px] text-inputBg" />
+                <ClockIcon className="w-[13px] h-[13px] text-ink-navy" />
               ) : status === "running" || status === "aborting" ? (
-                <StopIcon className="w-[13px] h-[13px] text-inputBg" />
+                <StopIcon className="w-[13px] h-[13px] text-ink-navy" />
               ) : (
-                <PlayIcon className="w-[13px] h-[13px] text-inputBg" />
+                <PlayIcon className="w-[13px] h-[13px] text-ink-navy" />
               )}
             </button>
           )}
@@ -558,7 +547,7 @@ function AnalyticsBlock(props: Props) {
           type="button"
           onClick={props.onDeleteBlock}
           aria-label="Delete block"
-          className="bg-[#FFDBDB] rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+          className="bg-[#FFDBDB] dark:bg-header-surface dark:border dark:border-hover-border rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
         >
           <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
         </button>

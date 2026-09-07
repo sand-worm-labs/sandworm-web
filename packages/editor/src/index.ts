@@ -301,7 +301,12 @@ export function getLastUpdatedAt(doc: Y.Doc): string | null {
           lastUpdatedAt = updatedAt;
         }
       },
-      onPowerToolbox: () => {},
+      onPowerToolbox: block => {
+        const executedAt = block.getAttribute("executedAt");
+        if (executedAt && (!lastUpdatedAt || executedAt > lastUpdatedAt)) {
+          lastUpdatedAt = executedAt;
+        }
+      },
     });
   });
 

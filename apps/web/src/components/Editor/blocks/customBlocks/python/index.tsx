@@ -53,7 +53,7 @@ import ScrollBar from "../../ScrollBar";
 import {
   RunningQueryText,
   LoadingEnvText,
-  PythonSucceededText,
+  SucceededText,
   ExecutionFailedText,
 } from "../../ExecutionStatusText";
 import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
@@ -564,7 +564,7 @@ function PythonBlock(props: Props) {
             );
           }
           return (
-            <PythonSucceededText
+            <SucceededText
               lastExecutionTime={lastQueryTime}
               isResultHidden={isResultHidden ?? false}
               onToggleResultHidden={toggleResultHidden}

@@ -54,7 +54,7 @@ import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
 import {
   LoadingEnvText,
   RunningQueryText,
-  QuerySucceededText,
+  SucceededText,
   ExecutionFailedText,
 } from "../../ExecutionStatusText";
 import LargeSpinner from "../../LargeSpinner";
@@ -509,7 +509,7 @@ function SQLBlock(props: Props) {
           });
           if (result?.type === "success") {
             return (
-              <QuerySucceededText
+              <SucceededText
                 lastExecutionTime={lastQueryTime}
                 isResultHidden={isResultHidden}
                 onToggleResultHidden={toggleResultHidden}
