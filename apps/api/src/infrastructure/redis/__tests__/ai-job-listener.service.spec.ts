@@ -8,7 +8,7 @@ jest.mock('@/features/workspace/service/workspace.service', () => ({
   WorkspaceService: jest.fn(),
 }));
 
-import { AiJobListenerService } from './ai-job-listener.service';
+import { AiJobListenerService } from '../ai-job-listener.service';
 import { AiJobEventNames } from '@/core/events/ai-job.events';
 import { BlockActionEventNames } from '@/core/events/block-action.events';
 
@@ -54,12 +54,14 @@ describe('AiJobListenerService', () => {
       });
 
       expect(eventEmitter.emit).toHaveBeenCalledWith(BlockActionEventNames.BLOCK_ACTION, {
-        action: 'created',
+        action: 'ran',
         blockId: 'block-1',
         blockType: 'sql',
         blockTitle: 'Top holders',
         content: 'SELECT 1',
         chatId: CHAT_ID,
+        dataSourceId: null,
+        dataframeName: null,
       });
     });
 

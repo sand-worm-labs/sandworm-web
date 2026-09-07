@@ -221,7 +221,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
         }
 
         case BlockType.RichText: {
-          id = addBlockGroup(layout, blocks, { type: BlockType.RichText }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.RichText }, idx, true, spec.id)
           applyTitle(blocks, id, spec.title)
           if (spec.source) {
             const block = blocks.get(id) as Y.XmlElement<RichTextBlock> | undefined
@@ -232,7 +232,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
         }
 
         case BlockType.Markdown: {
-          id = addBlockGroup(layout, blocks, { type: BlockType.Markdown }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.Markdown }, idx, true, spec.id)
           applyTitle(blocks, id, spec.title)
           if (spec.source) {
             ;(blocks.get(id) as any)?.getAttribute('source')?.insert(0, spec.source)
@@ -241,13 +241,13 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
         }
 
         case BlockType.VisualizationV2: {
-          id = addBlockGroup(layout, blocks, { type: BlockType.VisualizationV2, dataframeName: spec.dataframeName ?? null }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.VisualizationV2, dataframeName: spec.dataframeName ?? null }, idx, true, spec.id)
           applyTitle(blocks, id, spec.title)
           break
         }
 
         case BlockType.Input: {
-          id = addBlockGroup(layout, blocks, { type: BlockType.Input }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.Input }, idx, true, spec.id)
 
           // Input's visible block name is the `label` attribute, not `title`
           // (unlike SQL/Python/Markdown/etc) — the block component only ever
@@ -266,7 +266,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
         }
 
         case BlockType.DropdownInput: {
-          id = addBlockGroup(layout, blocks, { type: BlockType.DropdownInput }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.DropdownInput }, idx, true, spec.id)
 
           // Same as Input above: DropdownInput's visible name is `label`, not `title`.
           if (spec.title) {
@@ -286,7 +286,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
         }
 
         case BlockType.DateInput: {
-          id = addBlockGroup(layout, blocks, { type: BlockType.DateInput }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.DateInput }, idx, true, spec.id)
 
           // Same again: DateInput's visible name is `label` (a Y.Text here,
           // unlike the plain-string `label` on Input/DropdownInput), not `title`.
@@ -311,19 +311,19 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
         }
 
         case BlockType.FileUpload: {
-          id = addBlockGroup(layout, blocks, { type: BlockType.FileUpload }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.FileUpload }, idx, true, spec.id)
           applyTitle(blocks, id, spec.title)
           break
         }
 
         case BlockType.DashboardHeader: {
-          id = addBlockGroup(layout, blocks, { type: BlockType.DashboardHeader, content: spec.content ?? '' }, idx)
+          id = addBlockGroup(layout, blocks, { type: BlockType.DashboardHeader, content: spec.content ?? '' }, idx, undefined, spec.id)
           applyTitle(blocks, id, spec.title)
           break
         }
 
         case BlockType.PivotTable: {
-          id = addBlockGroup(layout, blocks, { type: BlockType.PivotTable, dataframeName: spec.dataframeName ?? null }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.PivotTable, dataframeName: spec.dataframeName ?? null }, idx, true, spec.id)
           applyTitle(blocks, id, spec.title)
           // makePivotTableBlock only accepts dataframeName — rows/columns/
           // metrics start as a single blank entry each, so set the real,
@@ -340,7 +340,7 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
         }
 
         case BlockType.PowerToolbox: {
-          id = addBlockGroup(layout, blocks, { type: BlockType.PowerToolbox, toolId: spec.toolId ?? '', inputs: spec.inputs ?? null }, idx, true)
+          id = addBlockGroup(layout, blocks, { type: BlockType.PowerToolbox, toolId: spec.toolId ?? '', inputs: spec.inputs ?? null }, idx, true, spec.id)
           applyTitle(blocks, id, spec.title)
           break
         }
