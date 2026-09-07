@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Star, Tag as TagIcon, BadgeCheck, ArrowLeft } from "lucide-react";
+import { Star, Tag as TagIcon, ArrowLeft } from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -18,10 +18,6 @@ import { tintPillDarkClassName } from "@/styles/interactive";
 import { useStringQuery } from "../hooks/useQueryArgs";
 import ForkButton from "./ForkButton";
 
-// Placeholders until the notebook feed carries real category/tag data.
-const DUMMY_CATEGORY = "Starter notebook";
-const DUMMY_TAGS = ["Real-world assets (RWA)", "Yield farming", "DeFi"];
-
 interface NotebookHeroTopProps {
   document: ApiDocument | null;
   isAuthenticated: boolean;
@@ -35,7 +31,7 @@ export function NotebookHeroTop({
   isOwnDocument,
   backHref = "/explore",
 }: NotebookHeroTopProps) {
-  const favoriteCount = document?.favoriteCount ?? 24;
+  const favoriteCount = document?.favoriteCount ?? 0;
   const updatedAt = document?.updatedAt ?? new Date();
 
   return (
@@ -89,11 +85,18 @@ export function NotebookHeroMeta({ document }: NotebookHeroMetaProps) {
   const authorName =
     [author?.firstName, author?.lastName].filter(Boolean).join(" ") ||
     (author?.username ? `@${author.username}` : "Sandworm");
+  const tags = document?.tags ?? [];
 
   return (
     <div className="flex flex-col gap-4 pb-6">
+      {document?.description && (
+        <p className="text-sm text-ink-500 dark:text-ink-300 max-w-2xl">
+          {document.description}
+        </p>
+      )}
+
       <p className="text-sm text-ink-400">
-        {DUMMY_CATEGORY} | {dayjs(createdAt).format("MMMM D, YYYY")}
+        {dayjs(createdAt).format("MMMM D, YYYY")}
       </p>
 
       <div className="flex items-center gap-2">
@@ -114,27 +117,27 @@ export function NotebookHeroMeta({ document }: NotebookHeroMetaProps) {
         >
           {authorName}
         </Link>
-        <BadgeCheck
-          className="h-4 w-4 text-primary"
-          strokeWidth={1.5}
-          aria-label="Verified"
-        />
       </div>
 
-      <div className="flex items-center gap-2 flex-wrap">
-        <TagIcon className="h-4 w-4 text-ink-400 shrink-0" strokeWidth={1.5} />
-        {DUMMY_TAGS.map(tag => (
-          <span
-            key={tag}
-            className={cn(
-              "text-xs font-medium px-2.5 py-1 rounded-full bg-base-300 text-ink-400 border border-transparent",
-              tintPillDarkClassName
-            )}
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
+      {tags.length > 0 && (
+        <div className="flex items-center gap-2 flex-wrap">
+          <TagIcon
+            className="h-4 w-4 text-ink-400 shrink-0"
+            strokeWidth={1.5}
+          />
+          {tags.map(tag => (
+            <span
+              key={tag}
+              className={cn(
+                "text-xs font-medium px-2.5 py-1 rounded-full bg-base-300 text-ink-400 border border-transparent",
+                tintPillDarkClassName
+              )}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

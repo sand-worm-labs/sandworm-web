@@ -12,6 +12,8 @@ interface IQueryListProps {
   loadingMore?: boolean;
 }
 
+const COLUMN_HEADERS = ["Username", "Title", "Tags", "Actions"] as const;
+
 export const QueryList: React.FC<IQueryListProps> = ({
   documents,
   loadingMore = false,
@@ -27,18 +29,33 @@ export const QueryList: React.FC<IQueryListProps> = ({
     );
   }
 
-  /*  const queriesWithLikeStatus = documents.map(document => ({
-     ...document,
-     liked: document.stared_by.includes(userId),
-   })); */
-
   return (
     <div className="mb-16 h-full justify-between flex flex-col">
-      <div className="grid grid-cols-1 gap-2 mb-8 border border-border-secondary dark:border-border-tertiary rounded-xl px-3.5 py-5 my-6">
-        {documents.map(query => (
-          <ExploreCard key={query.id} query={query} viewMode="compact" />
-        ))}
-        {loadingMore && <ExploreListLoadMoreSkeleton />}
+      <div className="mb-8 my-6 overflow-x-auto border border-border-secondary dark:border-border-tertiary rounded-xl">
+        <table className="w-full border-collapse">
+          <thead className="border-b border-border-secondary dark:border-border-tertiary">
+            <tr>
+              {COLUMN_HEADERS.map(header => (
+                <th
+                  key={header}
+                  className={
+                    header === "Actions"
+                      ? "text-right p-4 text-xs font-bold text-ink-400 uppercase"
+                      : "text-left p-4 text-xs font-bold text-ink-400 uppercase"
+                  }
+                >
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody aria-busy={loadingMore || undefined}>
+            {documents.map(query => (
+              <ExploreCard key={query.id} query={query} />
+            ))}
+            {loadingMore && <ExploreListLoadMoreSkeleton />}
+          </tbody>
+        </table>
       </div>
     </div>
   );

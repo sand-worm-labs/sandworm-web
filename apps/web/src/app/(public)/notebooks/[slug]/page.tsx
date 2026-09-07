@@ -75,8 +75,6 @@ function usePublicYDoc(slug: string): {
     if (!rawDoc) return null;
     return {
       ...rawDoc,
-      forkCount: 0,
-      favoriteCount: 0,
       isFavorite: false,
       author: rawDoc.author
         ? {

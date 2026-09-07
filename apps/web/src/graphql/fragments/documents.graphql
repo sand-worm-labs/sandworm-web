@@ -14,6 +14,8 @@ fragment DocumentFields on Document {
   updatedAt
   version
   publishedAt
+  description
+  tags
   visibility
   isDataApp
   isSyncedWithYjs
