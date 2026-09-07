@@ -23,12 +23,6 @@ interface AnalyticsParamFormProps {
 
   /** Called when the user submits the form to run the tool. */
   onRun: () => void;
-
-  /** Called when the user explicitly cancels / discards the form. */
-  onCancel?: () => void;
-
-  /** If true, the form renders in edit mode over an already-executed block. */
-  isEditing?: boolean;
 }
 
 // ─── Default values ───────────────────────────────────────────────────────────
@@ -88,8 +82,6 @@ function ParamPill({ label, value }: { label: string; value: FieldValue }) {
 export function AnalyticsParamForm({
   block,
   onRun,
-  onCancel,
-  isEditing = false,
 }: AnalyticsParamFormProps) {
   const toolId = block.getAttribute("toolId") as string | null;
   const existingInputs =
@@ -180,15 +172,6 @@ export function AnalyticsParamForm({
           </div>
         </div>
 
-        {isEditing && onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="text-xs text-ink-400  hover:text-ink-400 transition-colors"
-          >
-            Cancel
-          </button>
-        )}
       </div>
 
       <div className="px-4 py-4 flex flex-col gap-4">
