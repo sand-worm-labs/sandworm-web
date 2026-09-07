@@ -55,4 +55,9 @@ export class ToolEntity extends AbstractEntity {
 
   @Column({ type: 'jsonb', default: '[]' })
   returns!: unknown[];
+
+  // Raw Python template, {{key}}-interpolated against a block's resolved
+  // inputs at render time — see @sandworm/editor's renderTool/renderToolById.
+  @Column({ type: 'text', default: '' })
+  template!: string;
 }

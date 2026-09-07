@@ -151,6 +151,13 @@ export type ExecutionQueueItemNoopMetadata = z.infer<
   typeof ExecutionQueueItemNoopMetadata
 >
 
+export const ExecutionQueueItemPowerToolboxMetadata = z.object({
+  _tag: z.literal('power-toolbox'),
+})
+export type ExecutionQueueItemPowerToolboxMetadata = z.infer<
+  typeof ExecutionQueueItemPowerToolboxMetadata
+>
+
 export const ExecutionQueueItemMetadata = z.union([
   ExecutionQueueItemPythonMetadata,
   ExecutionQueueItemSQLMetadata,
@@ -166,6 +173,7 @@ export const ExecutionQueueItemMetadata = z.union([
   ExecutionQueueItemPivotTableMetadata,
   ExecutionQueueItemPivotTableLoadPageMetadata,
   ExecutionQueueItemWritebackMetadata,
+  ExecutionQueueItemPowerToolboxMetadata,
   ExecutionQueueItemNoopMetadata,
 ])
 export type ExecutionQueueItemMetadata = z.infer<

@@ -120,6 +120,28 @@ enum DocumentVisibility {
   PUBLIC
 }
 
+type Tool {
+  toolId: String!
+  categoryId: String!
+  name: String!
+  description: String!
+  tags: [String!]!
+  params: JSON!
+  g1: String
+  g2: String
+  g3: String
+  g4: String
+  g5: String
+  scope: String
+  returns: JSON!
+}
+
+type ToolCategory {
+  categoryId: String!
+  name: String!
+  description: String!
+}
+
 type WorkspaceSecrets {
   hasAiModelApiKey: Boolean!
 }
@@ -229,28 +251,6 @@ type Profile {
   bio: String!
   image: String!
   following: Boolean!
-}
-
-type Tool {
-  toolId: String!
-  categoryId: String!
-  name: String!
-  description: String!
-  tags: [String!]!
-  params: JSON!
-  g1: String
-  g2: String
-  g3: String
-  g4: String
-  g5: String
-  scope: String
-  returns: JSON!
-}
-
-type ToolCategory {
-  categoryId: String!
-  name: String!
-  description: String!
 }
 
 type Comment {
@@ -434,6 +434,14 @@ type Query {
   """
   getPublishedDocumentState(slug: String!): String!
 
+  """
+  Get the full power tool catalog (SQL/Python analytics tools available to the notebook)
+  """
+  getTools: [Tool!]!
+
+  """Get the power tool category taxonomy"""
+  getToolCategories: [ToolCategory!]!
+
   """Get a reusable component by ID"""
   getComponent(componentId: String!, workspaceId: String!): ReusableComponent!
 
@@ -458,14 +466,6 @@ type Query {
   """Check if a file exists"""
   fileExists(workspaceId: String!, fileName: String!): Boolean!
   tags: [String!]!
-
-  """
-  Get the full power tool catalog (SQL/Python analytics tools available to the notebook)
-  """
-  getTools: [Tool!]!
-
-  """Get the power tool category taxonomy"""
-  getToolCategories: [ToolCategory!]!
 
   """Get a single schedule by ID"""
   schedule(scheduleId: String!): Schedule!

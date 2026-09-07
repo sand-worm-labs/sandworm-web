@@ -24,6 +24,12 @@ export async function fetchToolsForRegistry(
     tags: tool.tags,
     uiHint: "form" as UiHint,
     params: tool.params as ParamDefinition[],
+    // Deliberately not fetched here — getTools is a @Public() query used to
+    // bulk-load the whole catalog client-side, and template is the tool's
+    // actual implementation source. Rendering happens server-side via a
+    // dedicated authenticated query instead (see PowerToolboxModal /
+    // AnalyticsparamForm), which returns only the final generatedSource for
+    // one tool+inputs at a time, never the raw template.
     template: "",
   }));
 }
