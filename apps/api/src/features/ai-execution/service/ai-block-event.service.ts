@@ -115,6 +115,11 @@ export class AiBlockEventService implements OnModuleInit {
       } catch {
         this.logger.warn(`[block-action] failed to parse power_toolbox content for chat ${event.chatId}`);
       }
+
+      // No render here — PowerToolboxBlockExecutorService renders the
+      // template fresh from toolId + current inputs at Run time, so there's
+      // only one place template rendering happens instead of duplicating it
+      // at every point a block's toolId/inputs could be set.
       addBlocks(sharedDoc.ydoc, [{ type: BlockType.PowerToolbox, toolId, inputs, title: event.blockTitle }]);
       this.logger.log(`[block-action] inserted power_toolbox block (tool=${toolId || '(none)'}) → doc ${chat.documentId}`);
       return;

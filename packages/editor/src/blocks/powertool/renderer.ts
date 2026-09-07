@@ -95,14 +95,39 @@ export function dfNameFromToolId(toolId: string): string {
 
 // ─── Main render entry point ──────────────────────────────────────────────────
 
+// A template is treated as raw SQL (and gets wrapped via wrapSqlInPython)
+// only when it looks like a bare SQL statement — starts with one of the
+// usual statement keywords once comments/whitespace are stripped. Anything
+// else (print statements, a `sql = """..."""` + query(...) template, plain
+// Python) is assumed to already be valid Python and passed through as-is
+// after interpolation, unwrapped.
+const SQL_STATEMENT_RE = /^(select|with|insert|update|delete)\b/i;
+
+function looksLikeBareSql(template: string): boolean {
+  const withoutComments = template
+    .split("\n")
+    .filter(line => !line.trim().startsWith("#"))
+    .join("\n")
+    .trim();
+  return SQL_STATEMENT_RE.test(withoutComments);
+}
+
 /**
  * Renders a tool template with the user-supplied params.
  *
  * Steps:
- *  1. Inject renderer-controlled reserved keys (__df_name, __tool_name,
+ *  1. Fill in each param's declared default for any key the caller didn't
+ *     supply — a param the user never touched in the form (or that an AI
+ *     block-creation call omitted) still needs a value in scope, otherwise
+ *     its {{placeholder}} is left un-interpolated and the raw `{{...}}`
+ *     reaches Python as literal syntax (e.g. `{{count}}` parses as a nested
+ *     set literal referencing an undefined `count` name).
+ *  2. Inject renderer-controlled reserved keys (__df_name, __tool_name,
  *     __time_where, __protocol_where) into params before interpolation.
- *  2. Interpolate all {{key}} placeholders.
- *  3. Wrap the result in a Python cell via wrapSqlInPython.
+ *  3. Interpolate all {{key}} placeholders.
+ *  4. If the template is bare SQL, wrap it in a Python cell via
+ *     wrapSqlInPython. Otherwise it's already Python (print statements, a
+ *     `sql = """..."""` + query(...) mix, etc.) — pass it through unwrapped.
  *
  * The caller (registry.ts) is responsible for looking up the correct
  * template from the TemplateMap.
@@ -114,8 +139,14 @@ export function renderTool(
 ): GenerateResult {
   const dfName = dfNameFromToolId(definition.id);
 
+  const defaults: ResolvedParams = {};
+  for (const param of definition.params) {
+    if (param.default !== undefined) defaults[param.key] = param.default;
+  }
+
   // Reserved keys available in every template — no tool needs to redeclare these.
   const augmented: ResolvedParams = {
+    ...defaults,
     ...params,
     __df_name: dfName,
     __tool_name: definition.name,
@@ -124,6 +155,10 @@ export function renderTool(
     __time_where: timeWhere((params["days"] as string) ?? "30"),
     __protocol_where: protocolWhere(params["protocol"] as string),
   };
+
+  if (!looksLikeBareSql(template)) {
+    return { language: "python", source: interpolate(template, augmented) };
+  }
 
   const sql = interpolate(template, augmented);
   const source = wrapSqlInPython(definition.name, sql, dfName, params);
