@@ -1,3 +1,10 @@
+// YjsDocumentService transitively drags in DocumentExecutorService -> the
+// visualization block executor -> an ESM-only dependency (aggregate-error);
+// stub it via an explicit factory so jest never loads the real module chain.
+jest.mock('@/features/collaboration/yjs/yjs-document.service', () => ({
+  YjsDocumentService: jest.fn(),
+}));
+
 const cronJobInstances: any[] = [];
 
 jest.mock('cron', () => ({
@@ -10,6 +17,19 @@ jest.mock('cron', () => ({
       cronJobInstances.push(instance);
       return instance;
     }),
+  },
+}));
+
+// Only executeNotebook touches @sandworm/editor, and only to orchestrate
+// (load doc, enqueueRunAll, waitForCompletion) — stub it so tests target
+// that orchestration instead of re-testing ExecutionQueue's own behavior
+// (already covered in packages/editor and the sql-block-executor specs).
+const enqueueRunAll = jest.fn();
+jest.mock('@sandworm/editor', () => ({
+  getBlocks: jest.fn(() => 'blocks'),
+  getLayout: jest.fn(() => 'layout'),
+  ExecutionQueue: {
+    fromYjs: jest.fn(() => ({ enqueueRunAll })),
   },
 }));
 
@@ -30,15 +50,36 @@ function makeService() {
   const lockService = {
     acquireLock: jest.fn((_name: string, cb: () => Promise<void>) => cb()),
   } as any;
+  const yjsDocumentService = {
+    getYDoc: jest.fn(),
+  } as any;
+  const persistor = { name: 'stub-persistor' };
+  const persistorFactory = {
+    getDocId: jest.fn((documentId: string, app: { id: string; userId: string | null } | null) =>
+      app ? `${documentId}-${app.id}-${app.userId}` : `${documentId}-null`,
+    ),
+    createAppPersistor: jest.fn().mockReturnValue(persistor),
+  } as any;
 
   const service = new ScheduleExecutorService(
     scheduleRepository,
     documentRepository,
     yjsAppRepository,
     lockService,
+    yjsDocumentService,
+    persistorFactory,
   );
 
-  return { service, scheduleRepository, documentRepository, yjsAppRepository, lockService };
+  return {
+    service,
+    scheduleRepository,
+    documentRepository,
+    yjsAppRepository,
+    lockService,
+    yjsDocumentService,
+    persistorFactory,
+    persistor,
+  };
 }
 
 describe('ScheduleExecutorService', () => {
@@ -196,10 +237,11 @@ describe('ScheduleExecutorService', () => {
     });
 
     it('runs executeDocument for an active, non-deleted document', async () => {
-      const { service, documentRepository, yjsAppRepository } = makeService();
-      documentRepository.findOne.mockResolvedValue({ id: 'doc-1', deletedAt: null });
+      const { service, documentRepository, yjsAppRepository, yjsDocumentService, persistor } = makeService();
+      documentRepository.findOne.mockResolvedValue({ id: 'doc-1', workspaceId: 'ws-1', deletedAt: null });
       yjsAppRepository.findOne.mockResolvedValue({ id: 'yjs-1', documentId: 'doc-1' });
-      const warnSpy = jest.spyOn((service as any).logger, 'warn').mockImplementation(() => {});
+      yjsDocumentService.getYDoc.mockResolvedValue({ ydoc: {} });
+      enqueueRunAll.mockReturnValue({ waitForCompletion: jest.fn().mockResolvedValue(null) });
 
       await (service as any).executeScheduleInternal({ id: 'sched-1', documentId: 'doc-1' });
 
@@ -207,7 +249,38 @@ describe('ScheduleExecutorService', () => {
         where: { documentId: 'doc-1' },
         order: { createdAt: 'DESC' },
       });
-      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Yjs execution not implemented'));
+      expect(yjsDocumentService.getYDoc).toHaveBeenCalledWith('doc-1-yjs-1-null', 'doc-1', 'ws-1', persistor);
+    });
+  });
+
+  describe('executeNotebook', () => {
+    it('loads the app doc, enqueues a schedule-tagged run-all, and resolves on success', async () => {
+      const { service, yjsDocumentService, persistorFactory, persistor } = makeService();
+      const ydoc = {};
+      yjsDocumentService.getYDoc.mockResolvedValue({ ydoc });
+      const waitForCompletion = jest.fn().mockResolvedValue(null);
+      enqueueRunAll.mockReturnValue({ waitForCompletion });
+
+      await (service as any).executeNotebook(
+        'sched-1',
+        { id: 'doc-1', workspaceId: 'ws-1' },
+        { id: 'yjs-1' },
+      );
+
+      expect(persistorFactory.createAppPersistor).toHaveBeenCalledWith('doc-1', 'yjs-1', null);
+      expect(yjsDocumentService.getYDoc).toHaveBeenCalledWith('doc-1-yjs-1-null', 'doc-1', 'ws-1', persistor);
+      expect(enqueueRunAll).toHaveBeenCalledWith('layout', 'blocks', { _tag: 'schedule', scheduleId: 'sched-1' });
+      expect(waitForCompletion).toHaveBeenCalled();
+    });
+
+    it('throws when the run-all batch fails on a block', async () => {
+      const { service, yjsDocumentService } = makeService();
+      yjsDocumentService.getYDoc.mockResolvedValue({ ydoc: {} });
+      enqueueRunAll.mockReturnValue({ waitForCompletion: jest.fn().mockResolvedValue('block-1') });
+
+      await expect(
+        (service as any).executeNotebook('sched-1', { id: 'doc-1', workspaceId: 'ws-1' }, { id: 'yjs-1' }),
+      ).rejects.toThrow('Run-all for document doc-1 failed on block block-1');
     });
 
     it('logs and swallows an error raised while executing the document', async () => {

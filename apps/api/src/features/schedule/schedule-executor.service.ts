@@ -8,7 +8,10 @@ import {
     ExecutionScheduleType,
     YjsAppDocumentEntity,
 } from '@sandworm/postgresql-typeorm';
+import { ExecutionQueue, getBlocks, getLayout } from '@sandworm/editor';
 import { LockService } from '@/infrastructure/lock/lock.services';
+import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
+import { PersistorFactory } from '@/features/collaboration/yjs/persistors/persistor.factory';
 
 interface JobInfo {
     job: CronJob<null, string>;
@@ -33,6 +36,8 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
         @InjectRepository(YjsAppDocumentEntity)
         private readonly yjsAppRepository: Repository<YjsAppDocumentEntity>,
         private readonly lockService: LockService,
+        private readonly yjsDocumentService: YjsDocumentService,
+        private readonly persistorFactory: PersistorFactory,
     ) { }
 
     async onModuleInit() {
@@ -281,17 +286,36 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
         document: DocumentEntity,
         yjsApp: YjsAppDocumentEntity,
     ): Promise<void> {
-        // TODO: Integrate with Yjs service
-        // Implementation should:
-        // 1. Load Yjs document
-        // 2. Create ExecutionQueue
-        // 3. Run all blocks with scheduleId
-        // 4. Wait for completion
-        // 5. Update app state
-
-        this.logger.warn(
-            `Yjs execution not implemented for document ${document.id}`,
+        const docId = this.persistorFactory.getDocId(document.id, {
+            id: yjsApp.id,
+            userId: null,
+        });
+        const persistor = this.persistorFactory.createAppPersistor(
+            document.id,
+            yjsApp.id,
+            null,
         );
+        const sharedDoc = await this.yjsDocumentService.getYDoc(
+            docId,
+            document.id,
+            document.workspaceId,
+            persistor,
+        );
+
+        const layout = getLayout(sharedDoc.ydoc);
+        const blocks = getBlocks(sharedDoc.ydoc);
+        const batch = ExecutionQueue.fromYjs(sharedDoc.ydoc).enqueueRunAll(layout, blocks, {
+            _tag: 'schedule',
+            scheduleId,
+        });
+
+        const failedBlockId = await batch.waitForCompletion();
+
+        if (failedBlockId) {
+            throw new Error(
+                `Run-all for document ${document.id} failed on block ${failedBlockId}`,
+            );
+        }
     }
 
     private sleep(ms: number): Promise<void> {
