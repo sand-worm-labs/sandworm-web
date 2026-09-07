@@ -19,7 +19,8 @@ import {
   DuplicateDocumentInput,
   RestoreDocumentInput,
   UpdateDocumentInput,
-  ForkDocumentInput
+  ForkDocumentInput,
+  PublishDocumentMetaInput
 } from '../dto/document.dto';
 import { Document } from '../model/document.model';
 import { DocumentTreeService } from './document-tree.service';
@@ -398,6 +399,7 @@ export class DocumentService {
   async publishDocument(
     documentId: string,
     workspaceId: string,
+    meta?: PublishDocumentMetaInput,
   ): Promise<Document> {
     const document = await this.documentRepository.findOne({
       where: { id: documentId, workspaceId },
@@ -419,6 +421,16 @@ export class DocumentService {
     document.publishedAt = new Date();
     await this.yjsDocumentService.publishDocument(documentId);
     document.visibility = DocumentVisibility.PUBLIC;
+
+    // Only overwrite when explicitly provided — the no-meta "quick publish"
+    // path (useDocument.ts -> api.publish(documentId)) must not wipe
+    // metadata a previous Share-modal save already persisted.
+    if (meta?.description !== undefined) {
+      document.description = meta.description;
+    }
+    if (meta?.tags !== undefined) {
+      document.tags = meta.tags;
+    }
 
     await this.documentRepository.save(document);
 

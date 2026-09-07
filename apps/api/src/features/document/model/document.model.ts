@@ -65,6 +65,12 @@ export class Document {
   @DateFieldOptional()
   publishedAt!: Date | null;
 
+  @StringFieldOptional()
+  description!: string | null;
+
+  @Field(() => [String])
+  tags!: string[];
+
   @Field(() => DocumentVisibility)
   visibility: DocumentVisibility = DocumentVisibility.WORKSPACE;
 
@@ -123,6 +129,8 @@ export class Document {
 
     // Publish feature defaults
     document.publishedAt = (entity as any).publishedAt ?? null;
+    document.description = (entity as any).description ?? null;
+    document.tags = (entity as any).tags ?? [];
     document.visibility = (entity as any).visibility ?? DocumentVisibility.WORKSPACE;
     document.isDataApp = (entity as any).isDataApp ?? false;
     document.isSyncedWithYjs = true;

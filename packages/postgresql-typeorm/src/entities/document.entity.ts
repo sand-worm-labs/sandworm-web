@@ -84,6 +84,12 @@ export class DocumentEntity extends AbstractEntity {
   @Column({ type: "timestamp", nullable: true })
   publishedAt!: Date | null;
 
+  @Column({ type: "text", nullable: true })
+  description!: string | null;
+
+  @Column({ type: "text", array: true, default: () => "'{}'" })
+  tags!: string[];
+
 
   @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.documents, {
     onDelete: "CASCADE",

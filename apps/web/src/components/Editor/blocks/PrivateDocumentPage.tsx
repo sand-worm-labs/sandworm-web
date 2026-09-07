@@ -299,10 +299,13 @@ function PrivateDocumentPageInner(
   }, [router]);
 
   const handleVisibilityChange = useCallback(
-    async (visibility: "WORKSPACE" | "LINK" | "PUBLIC") => {
+    async (
+      visibility: "WORKSPACE" | "LINK" | "PUBLIC",
+      meta?: { description?: string; tags?: string[] }
+    ) => {
       try {
         if (visibility === "PUBLIC") {
-          await publish(props.document.id);
+          await publish(props.document.id, meta);
         } else if (visibility === "LINK") {
           await setLinkVisibility(props.document.id);
         } else {
@@ -392,6 +395,8 @@ function PrivateDocumentPageInner(
         <ShareModal
           link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook${props.document.shareLinksWithoutSidebar ? "?sidebar=hidden" : ""}`}
           initialVisibility={props.document.visibility ?? "WORKSPACE"}
+          initialDescription={props.document.description}
+          initialTags={props.document.tags}
           onVisibilityChange={handleVisibilityChange}
           onExportPDF={triggerPrint}
           isExportingPDF={isPrinting}

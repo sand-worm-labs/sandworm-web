@@ -16,7 +16,7 @@ import {
 import { DataSourceId } from '@sandworm/types';
 import { DocumentEntity, DocumentVisibility, FavoriteEntity, UserEntity, UserWorkspaceEntity, UserWorkspaceRole, UserWorkspaceStatus, WorkspaceEntity, YjsAppDocumentEntity, YjsDocumentEntity } from '../entities';
 import { fake, slugify } from '../utils';
-import { NOTEBOOK_TITLES, SAMPLE_QUERIES, QUERY_SECTIONS, POWER_TOOLS, WORKSPACE_ICON_COLORS } from './data/explore-seed-data';
+import { NOTEBOOK_TITLES, NOTEBOOK_META, SAMPLE_QUERIES, QUERY_SECTIONS, POWER_TOOLS, WORKSPACE_ICON_COLORS } from './data/explore-seed-data';
 
 function randomWorkspaceIcon(): string {
     return WORKSPACE_ICON_COLORS[Math.floor(Math.random() * WORKSPACE_ICON_COLORS.length)]!;
@@ -168,10 +168,13 @@ export class ExploreSeeder1776676230562 implements Seeder {
             };
         });
 
-        const docs = specs.map((spec) =>
-            documentRepository.create({
+        const docs = specs.map((spec) => {
+            const meta = NOTEBOOK_META[spec.title];
+            return documentRepository.create({
                 id: spec.id,
                 title: spec.title,
+                description: meta?.description ?? null,
+                tags: meta?.tags ?? [],
                 orderIndex: spec.orderIndex,
                 version: 1,
                 authorId: spec.authorId,
@@ -183,8 +186,8 @@ export class ExploreSeeder1776676230562 implements Seeder {
                 runSQLSelection: true,
                 shareLinksWithoutSidebar: true,
                 featuredDocument: spec.featured,
-            }),
-        );
+            });
+        });
         const saved = await documentRepository.save(docs, { chunk: 20 });
         console.log(`✓ ${saved.filter((d) => d.featuredDocument).length} featured + ${saved.filter((d) => !d.featuredDocument).length} public explore documents`);
 

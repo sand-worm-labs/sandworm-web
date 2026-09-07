@@ -21,6 +21,8 @@ query GetDocument($workspaceId: String!, $documentId: String!) {
     deletedAt
     version
     publishedAt
+    description
+    tags
     visibility
     isDataApp
     isSyncedWithYjs
@@ -56,6 +58,10 @@ query GetPublishedDocumentBySlug($slug: String!) {
     deletedAt
     version
     publishedAt
+    description
+    tags
+    favoriteCount
+    forkCount
     isDataApp
     isSyncedWithYjs
     hasDashboard

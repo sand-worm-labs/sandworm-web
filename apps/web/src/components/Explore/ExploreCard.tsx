@@ -23,19 +23,21 @@ import { useForkDocument } from "../Editor/hooks/usePublicDocuments";
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 
 // =====================================
+// ⬢ Constants
+// =====================================
+const MAX_VISIBLE_TAGS = 4;
+
+// =====================================
 // ⬢ Types
 // =====================================
-type ViewMode = "compact" | "detailed";
-
 interface ExploreCardProps {
   query: ApiDocument;
-  viewMode: ViewMode;
 }
 
 // =====================================
 // ⬢ Component
 // =====================================
-export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
+export const ExploreCard = ({ query }: ExploreCardProps) => {
   const router = useRouter();
   const workspaceId = useStringQuery("workspace");
 
@@ -52,6 +54,10 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
   const [isFavorited, setIsFavorited] = useState(query.isFavorite ?? false);
   const [favoriteCount, setFavoriteCount] = useState(query.favoriteCount ?? 0);
   const formattedDate = formatDate(query.createdAt);
+
+  const tags = query.tags ?? [];
+  const visibleTags = tags.slice(0, MAX_VISIBLE_TAGS);
+  const hiddenTagCount = tags.length - visibleTags.length;
 
   const handleForkClick = () => setIsForkModalOpen(true);
 
@@ -96,96 +102,106 @@ export const ExploreCard = ({ query, viewMode }: ExploreCardProps) => {
   // =====================================
   return (
     <>
-      <div
-        className={
-          viewMode === "detailed"
-            ? " "
-            : "border-b border-border-secondary pb-3 transition-shadow mb-1 dark:border-border-tertiary"
-        }
-      >
-        <div className="p-2 px-5">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-            <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
-              <div className="flex space-x-3 items-center w-full">
-                <Avatar className="h-8 w-8 flex-shrink-0">
-                  {query.authorId ? (
-                    <AvatarImage src="/img/avatar.svg" />
-                  ) : (
-                    <AvatarFallback>
-                      <Image
-                        src="/img/avatar.svg"
-                        alt="fallback avatar"
-                        width={32}
-                        height={32}
-                      />
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <Link
-                    href={`/workspace/${workspaceId}/profile/${query.authorId}`}
-                    className="text-[0.8rem] mb-1 text-ink-400 hover:underline"
-                  >
-                    @{query.author?.username}
-                  </Link>
-                  <Link
-                    href={`/notebooks/${query.slug ?? query.id}`}
-                    className="text-[0.95rem] font-medium break-words cursor-pointer hover:underline block"
-                  >
-                    {query.title}
-                  </Link>
-
-                  <p className="text-xs text-ink-400">
-                    Created {formattedDate}
-                  </p>
-                </div>
-              </div>
+      <tr className="border-b border-border-secondary dark:border-border-tertiary last:border-b-0">
+        <td className="p-4 align-top">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Avatar className="h-8 w-8 flex-shrink-0">
+              {query.authorId ? (
+                <AvatarImage src="/img/avatar.svg" />
+              ) : (
+                <AvatarFallback>
+                  <Image
+                    src="/img/avatar.svg"
+                    alt="fallback avatar"
+                    width={32}
+                    height={32}
+                  />
+                </AvatarFallback>
+              )}
+            </Avatar>
+            <div className="min-w-0">
+              <Link
+                href={`/workspace/${workspaceId}/profile/${query.authorId}`}
+                className="text-sm font-medium text-ink-100 dark:text-white hover:underline block truncate"
+              >
+                @{query.author?.username}
+              </Link>
+              <p className="text-xs text-ink-400">Created {formattedDate}</p>
             </div>
+          </div>
+        </td>
 
-            <div className="flex items-center gap-3 text-sm pl-11 sm:pl-0 flex-shrink-0">
+        <td className="p-4 align-top max-w-xs">
+          <Link
+            href={`/notebooks/${query.slug ?? query.id}`}
+            className="text-sm font-medium text-ink-100 dark:text-white hover:underline break-words"
+          >
+            {query.title}
+          </Link>
+        </td>
+
+        <td className="p-4 align-top">
+          {tags.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1.5 max-w-xs">
+              {visibleTags.map(tag => (
+                <span
+                  key={tag}
+                  className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-base-300 dark:bg-base-700 text-ink-400 whitespace-nowrap"
+                >
+                  #{tag}
+                </span>
+              ))}
+              {hiddenTagCount > 0 && (
+                <span className="text-[11px] text-ink-300 dark:text-ink-500">
+                  +{hiddenTagCount}
+                </span>
+              )}
+            </div>
+          )}
+        </td>
+
+        <td className="p-4 align-top">
+          <div className="flex items-center gap-3 justify-end">
+            <button
+              type="button"
+              onClick={handleFavorite}
+              className="flex items-center gap-1 -mx-2 -my-1 px-2 py-1 rounded-full border border-transparent group hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors"
+              aria-label={isFavorited ? "Unfavorite" : "Favorite"}
+            >
+              <span className="text-sm">{favoriteCount}</span>
+              <Star
+                className={cn(
+                  "h-4 w-4 transition-colors",
+                  isFavorited
+                    ? "fill-primary text-primary"
+                    : "text-ink-300 dark:text-ink-300 group-hover:text-yellow-400"
+                )}
+                strokeWidth={1.2}
+              />
+            </button>
+
+            {!isOwnDocument && (
               <button
                 type="button"
-                onClick={handleFavorite}
-                className="flex items-center gap-1 -mx-2 -my-1 px-2 py-1 rounded-full border border-transparent group hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors"
-                aria-label={isFavorited ? "Unfavorite" : "Favorite"}
+                onClick={handleForkClick}
+                disabled={forking}
+                className="flex items-center gap-1 -mx-2 -my-1 px-2 py-1 rounded-full border border-transparent group hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors disabled:opacity-50"
+                aria-label="Fork document"
               >
-                <span>{favoriteCount}</span>
-                <Star
+                <span className="text-sm">{query.forkCount}</span>
+                <GitFork
                   className={cn(
-                    "h-4 w-4 transition-colors",
-                    isFavorited
-                      ? "fill-primary text-primary"
-                      : "text-ink-300 dark:text-ink-300 group-hover:text-yellow-400"
+                    "h-4 w-4 transition-colors text-ink-300 dark:text-ink-300",
+                    !forking &&
+                      "group-hover:text-ink-500 dark:group-hover:text-ink-200"
                   )}
                   strokeWidth={1.2}
                 />
               </button>
-
-              {!isOwnDocument && (
-                <button
-                  type="button"
-                  onClick={handleForkClick}
-                  disabled={forking}
-                  className="flex items-center gap-1 -mx-2 -my-1 px-2 py-1 rounded-full border border-transparent group hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors disabled:opacity-50"
-                  aria-label="Fork document"
-                >
-                  <span>{query.forkCount}</span>
-                  <GitFork
-                    className={cn(
-                      "h-4 w-4 transition-colors text-ink-300 dark:text-ink-300",
-                      !forking &&
-                        "group-hover:text-ink-500 dark:group-hover:text-ink-200"
-                    )}
-                    strokeWidth={1.2}
-                  />
-                </button>
-              )}
-            </div>
+            )}
           </div>
-        </div>
-
-        {viewMode === "detailed" && <div className="px-5 pb-4 text-sm" />}
-      </div>
+        </td>
+      </tr>
 
       <ForkToWorkspaceModal
         isOpen={isForkModalOpen}

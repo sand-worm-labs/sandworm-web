@@ -150,7 +150,10 @@ type API = {
       shareLinksWithoutSidebar?: boolean;
     }
   ) => Promise<void>;
-  publish: (id: string) => Promise<void>;
+  publish: (
+    id: string,
+    meta?: { description?: string; tags?: string[] }
+  ) => Promise<void>;
   unpublish: (id: string) => Promise<void>;
   setLinkVisibility: (id: string) => Promise<void>;
 };
@@ -644,7 +647,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
   // ⬢ Publish Document
   // =====================================
   const publish = useCallback(
-    async (id: string) => {
+    async (id: string, meta?: { description?: string; tags?: string[] }) => {
       const document = documents.find(doc => doc.id === id);
       if (!document) {
         return;
@@ -655,10 +658,12 @@ export function useDocuments(workspaceId: string): UseDocuments {
           variables: {
             workspaceId,
             documentId: id,
+            meta,
           },
         });
 
-        if (!result.data?.publishDocument) {
+        const published = result.data?.publishDocument;
+        if (!published) {
           throw new Error(`Error publishing Document(${id})`);
         }
 
@@ -677,6 +682,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
                     ...doc,
                     isDataApp: true,
                     publishedAt: new Date().toISOString(),
+                    description: published.description,
+                    tags: published.tags,
                   }
                 : doc
             ),
