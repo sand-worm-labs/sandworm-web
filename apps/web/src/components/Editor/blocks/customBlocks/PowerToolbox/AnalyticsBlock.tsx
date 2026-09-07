@@ -416,7 +416,7 @@ function AnalyticsBlock(props: Props) {
 
           <div className="print:hidden">
             <div className="p-3">
-              <AnalyticsParamForm block={props.block} onRun={onRun} />
+              <AnalyticsParamForm block={props.block} />
             </div>
 
             {!resultsHidden && (hasResults || attrs.executedAt) && (
