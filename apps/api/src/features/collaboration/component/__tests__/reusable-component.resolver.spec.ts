@@ -1,7 +1,7 @@
-import { ReusableComponentResolver } from './reusable-component.resolver';
-import { ReusableComponentService } from './reusable-component.service';
-import { ReusableComponent } from './model/reusable-component.model';
-import { ReusableComponentInstance } from './model/reusable-component-instance.model';
+import { ReusableComponentResolver } from '../reusable-component.resolver';
+import { ReusableComponentService } from '../reusable-component.service';
+import { ReusableComponent } from '../model/reusable-component.model';
+import { ReusableComponentInstance } from '../model/reusable-component-instance.model';
 
 function makeService(): jest.Mocked<ReusableComponentService> {
   return {
@@ -77,7 +77,7 @@ describe('ReusableComponentResolver', () => {
     it('delegates to service and returns updated component', async () => {
       const { resolver, service } = makeResolver();
       const input = { name: 'Updated' } as any;
-      const component = { id: COMPONENT_ID, name: 'Updated' } as ReusableComponent;
+      const component = { id: COMPONENT_ID, name: 'Updated' } as unknown as ReusableComponent;
       service.updateComponent.mockResolvedValue(component);
 
       const result = await resolver.updateComponent(COMPONENT_ID, WORKSPACE, input);

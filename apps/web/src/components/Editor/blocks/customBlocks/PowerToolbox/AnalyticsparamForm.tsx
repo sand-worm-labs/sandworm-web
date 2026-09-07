@@ -11,8 +11,6 @@ import {
   type ResolvedParams,
 } from "@sandworm/editor";
 
-import { PlayIcon } from "@heroicons/react/20/solid";
-
 import { BoltIcon } from "@/components/Assets/BoltIcon";
 
 import { ParamField, type FieldValue } from "./ParamsField";
@@ -20,15 +18,6 @@ import { ParamField, type FieldValue } from "./ParamsField";
 interface AnalyticsParamFormProps {
   /** The Yjs block element — used to read/write toolId, inputs, generatedSource */
   block: Y.XmlElement<PowerToolboxBlock>;
-
-  /** Called when the user submits the form to run the tool. */
-  onRun: () => void;
-
-  /** Called when the user explicitly cancels / discards the form. */
-  onCancel?: () => void;
-
-  /** If true, the form renders in edit mode over an already-executed block. */
-  isEditing?: boolean;
 }
 
 // ─── Default values ───────────────────────────────────────────────────────────
@@ -85,12 +74,7 @@ function ParamPill({ label, value }: { label: string; value: FieldValue }) {
   );
 }
 
-export function AnalyticsParamForm({
-  block,
-  onRun,
-  onCancel,
-  isEditing = false,
-}: AnalyticsParamFormProps) {
+export function AnalyticsParamForm({ block }: AnalyticsParamFormProps) {
   const toolId = block.getAttribute("toolId") as string | null;
   const existingInputs =
     (block.getAttribute("inputs") as ResolvedParams | null) ?? {};
@@ -179,16 +163,6 @@ export function AnalyticsParamForm({
             </p>
           </div>
         </div>
-
-        {isEditing && onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="text-xs text-ink-400  hover:text-ink-400 transition-colors"
-          >
-            Cancel
-          </button>
-        )}
       </div>
 
       <div className="px-4 py-4 flex flex-col gap-4">
@@ -240,19 +214,6 @@ export function AnalyticsParamForm({
               />
             ))}
         </div>
-
-        <button
-          type="button"
-          onClick={onRun}
-          className={clsx(
-            "flex items-center gap-x-1 shrink-0",
-            "text-xs font-medium text-inputBg bg-primary",
-            "px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity"
-          )}
-        >
-          <PlayIcon className="w-3 h-3" />
-          Run
-        </button>
       </div>
     </div>
   );

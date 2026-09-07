@@ -58,7 +58,7 @@ export class SqlBlockExecutorService {
       // DATA_SOURCE_QUERY_ENGINE for the real per-source reasoning.
       const datasource = DATA_SOURCE_QUERY_ENGINE[dataSourceId as DataSourceId] ?? 'duckdb';
 
-      if (!dataframeName) {
+      if (!dataframeName.value) {
         executionItem.setCompleted('error');
         cleanup();
         return;

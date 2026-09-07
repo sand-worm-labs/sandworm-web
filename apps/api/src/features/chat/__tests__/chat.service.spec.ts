@@ -3,14 +3,14 @@ import { ReplaySubject } from 'rxjs';
 // TitleAiExecutorService and WorkspaceService transitively drag in the
 // Jupyter/code-execution stack and an ESM-only SDK — stub both via an
 // explicit factory so jest never loads the real modules.
-jest.mock('../ai-execution/service/title-ai-executor.service', () => ({
+jest.mock('../../ai-execution/service/title-ai-executor.service', () => ({
   TitleAiExecutorService: jest.fn(),
 }));
-jest.mock('../workspace/service/workspace.service', () => ({
+jest.mock('../../workspace/service/workspace.service', () => ({
   WorkspaceService: jest.fn(),
 }));
 
-import { ChatService, SseEvent } from './chat.service';
+import { ChatService, SseEvent } from '../chat.service';
 
 function makeService(): ChatService {
   const configService = { getOrThrow: jest.fn(() => 'stub') } as any;

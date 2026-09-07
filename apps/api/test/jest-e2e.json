@@ -4,6 +4,25 @@
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
-  }
+    "^.+\\.(t|j)s$": ["@swc/jest"]
+  },
+  "transformIgnorePatterns": [
+    "/node_modules/.pnpm/(?!(p-queue|p-limit|p-timeout|p-all|p-map|eventemitter3|yocto-queue)@)"
+  ],
+  "moduleNameMapper": {
+    "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^@/common(.*)$": "<rootDir>/src/common$1",
+    "^@/core(.*)$": "<rootDir>/src/core$1",
+    "^@/features(.*)$": "<rootDir>/src/features$1",
+    "^@/infrastructure(.*)$": "<rootDir>/src/infrastructure$1",
+    "^@/events(.*)$": "<rootDir>/src/core/events$1",
+    "^@/generated(.*)$": "<rootDir>/src/generated$1",
+    "^@/i18n(.*)$": "<rootDir>/src/i18n$1",
+    "^@/config(.*)$": "<rootDir>/src/core/config$1",
+    "^@/constants(.*)$": "<rootDir>/src/core/constants$1",
+    "^@/filters(.*)$": "<rootDir>/src/core/filters$1",
+    "^@/guards(.*)$": "<rootDir>/src/core/guards$1"
+  },
+  "setupFiles": ["<rootDir>/test/setup-e2e.mjs"],
+  "testTimeout": 60000
 }
