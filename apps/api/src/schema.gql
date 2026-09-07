@@ -98,6 +98,8 @@ type Document {
   updatedAt: DateTime!
   version: Float!
   publishedAt: DateTime
+  description: String
+  tags: [String!]!
   visibility: DocumentVisibility!
   isDataApp: Boolean!
   isSyncedWithYjs: Boolean!
@@ -609,7 +611,7 @@ type Mutation {
   removePublicFavoriteDocument(input: FavoritePublicDocumentInput!): Document!
 
   """Publish a document"""
-  publishDocument(workspaceId: String!, documentId: String!): Document!
+  publishDocument(workspaceId: String!, documentId: String!, meta: PublishDocumentMetaInput): Document!
 
   """Unpublish a document"""
   unpublishDocument(workspaceId: String!, documentId: String!): Document!
@@ -805,6 +807,11 @@ input FavoriteDocumentInput {
 
 input FavoritePublicDocumentInput {
   documentId: String!
+}
+
+input PublishDocumentMetaInput {
+  description: String
+  tags: [String!]
 }
 
 input CreateReusableComponentInput {

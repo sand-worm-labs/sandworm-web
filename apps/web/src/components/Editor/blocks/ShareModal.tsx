@@ -36,6 +36,8 @@ type ShareVisibility = "WORKSPACE" | "LINK" | "PUBLIC";
 type ShareModalProps = {
   link?: string;
   initialVisibility?: ShareVisibility;
+  initialDescription?: string | null;
+  initialTags?: string[];
   onVisibilityChange?: (
     visibility: ShareVisibility,
     meta?: { description?: string; tags?: string[] }
@@ -165,6 +167,8 @@ function TagsInput({
 export default function ShareModal({
   link = "https://app.sandworm.dev/notebooks/demo",
   initialVisibility = "WORKSPACE",
+  initialDescription = "",
+  initialTags = [],
   onVisibilityChange,
   onExportPDF,
   isExportingPDF = false,
@@ -192,12 +196,15 @@ export default function ShareModal({
 
   // Reflect the document's real current state each time the modal opens —
   // it stays mounted between opens, so without this it would keep showing
-  // whatever visibility was selected the first time it ever opened.
+  // whatever visibility/description/tags were set the first time it ever
+  // opened (or, worse, wipe out already-saved metadata on the next Save).
   useEffect(() => {
     if (isOpen) {
       setVisibility(initialVisibility);
+      setDescription(initialDescription ?? "");
+      setTags(initialTags);
     }
-  }, [isOpen, initialVisibility]);
+  }, [isOpen, initialVisibility, initialDescription, initialTags]);
 
   const showLink = visibility === "LINK" || visibility === "PUBLIC";
   const showMeta = visibility === "PUBLIC";

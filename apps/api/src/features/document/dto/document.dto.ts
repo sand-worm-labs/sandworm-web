@@ -97,3 +97,12 @@ export class ForkDocumentInput {
   @UUIDField()
   targetWorkspaceId!: string;
 }
+
+@InputType()
+export class PublishDocumentMetaInput {
+  @StringFieldOptional({ maxLength: 280 })
+  description?: string;
+
+  @StringFieldOptional({ each: true, maxLength: 32 })
+  tags?: string[];
+}

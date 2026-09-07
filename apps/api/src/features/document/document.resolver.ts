@@ -19,6 +19,7 @@ import {
   FavoriteDocumentInput,
   ForkDocumentInput,
   FavoritePublicDocumentInput,
+  PublishDocumentMetaInput,
 } from './dto/document.dto';
 import { DocumentTreeService } from './service/document-tree.service';
 import { Public } from '@sandworm/nest-common';
@@ -293,8 +294,10 @@ export class DocumentResolver {
   async publishDocument(
     @Args('workspaceId') workspaceId: string,
     @Args('documentId') documentId: string,
+    @Args('meta', { type: () => PublishDocumentMetaInput, nullable: true })
+    meta?: PublishDocumentMetaInput,
   ): Promise<Document> {
-    return this.documentService.publishDocument(documentId, workspaceId);
+    return this.documentService.publishDocument(documentId, workspaceId, meta);
   }
 
   @Mutation(() => Document, {

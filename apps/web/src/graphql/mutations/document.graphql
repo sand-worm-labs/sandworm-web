@@ -129,8 +129,12 @@ mutation DuplicateDocument($input: DuplicateDocumentInput!) {
   }
 }
 
-mutation PublishDocument($workspaceId: String!, $documentId: String!) {
-  publishDocument(workspaceId: $workspaceId, documentId: $documentId) {
+mutation PublishDocument(
+  $workspaceId: String!
+  $documentId: String!
+  $meta: PublishDocumentMetaInput
+) {
+  publishDocument(workspaceId: $workspaceId, documentId: $documentId, meta: $meta) {
     id
     title
     slug
@@ -143,6 +147,8 @@ mutation PublishDocument($workspaceId: String!, $documentId: String!) {
     deletedAt
     version
     publishedAt
+    description
+    tags
     visibility
     isDataApp
     isSyncedWithYjs
