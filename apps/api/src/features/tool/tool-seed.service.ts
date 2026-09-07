@@ -36,13 +36,19 @@ interface ToolYaml {
     type: string;
     required: boolean;
     default?: unknown;
+    description?: string;
+    placeholder?: string;
+    options?: Array<{ label: string; value: string }>;
+    min?: number;
+    max?: number;
   }>;
-  template?: string;
 }
+
+type ToolWithTemplate = ToolYaml & { template: string };
 
 interface FetchedCatalog {
   categories: CategoryYaml[];
-  tools: ToolYaml[];
+  tools: ToolWithTemplate[];
 }
 
 function deriveName(toolId: string): string {
@@ -72,15 +78,21 @@ export class ToolSeedService implements OnModuleInit {
   }
 
   // Streams the repo's tarball straight into a gunzip + tar extractor —
-  // nothing ever touches disk. Every *.yaml under catalog/ is a tool;
-  // categories.yaml (repo root) is the taxonomy.
+  // nothing ever touches disk. Each tool is now two sibling files —
+  // catalog/<category>/<name>/tool.yaml (metadata) and .../template.py
+  // (the actual {{key}}-interpolated source, kept out of the YAML for real
+  // syntax highlighting and clean diffs). Tar entries can arrive in either
+  // order, so both are buffered by their shared parent directory and paired
+  // up once the whole stream has been read; categories.yaml (repo root) is
+  // the taxonomy.
   private async fetchCatalog(): Promise<FetchedCatalog> {
     const response = await axios.get<NodeJS.ReadableStream>(CATALOG_TARBALL_URL, {
       responseType: 'stream',
     });
 
     const categories: CategoryYaml[] = [];
-    const tools: ToolYaml[] = [];
+    const toolYamlByDir = new Map<string, ToolYaml>();
+    const templateByDir = new Map<string, string>();
 
     await new Promise<void>((resolve, reject) => {
       const extractor = extract();
@@ -90,10 +102,15 @@ export class ToolSeedService implements OnModuleInit {
         stream.on('data', (chunk: Buffer) => chunks.push(chunk));
         stream.on('end', () => {
           try {
+            const dir = header.name.slice(0, header.name.lastIndexOf('/'));
+            const content = Buffer.concat(chunks).toString('utf-8');
+
             if (header.name.endsWith('/categories.yaml')) {
-              categories.push(...(load(Buffer.concat(chunks).toString('utf-8')) as CategoryYaml[]));
-            } else if (header.name.includes('/catalog/') && header.name.endsWith('.yaml')) {
-              tools.push(load(Buffer.concat(chunks).toString('utf-8')) as ToolYaml);
+              categories.push(...(load(content) as CategoryYaml[]));
+            } else if (header.name.includes('/catalog/') && header.name.endsWith('/tool.yaml')) {
+              toolYamlByDir.set(dir, load(content) as ToolYaml);
+            } else if (header.name.includes('/catalog/') && header.name.endsWith('/template.py')) {
+              templateByDir.set(dir, content);
             }
           } catch (err) {
             this.logger.warn(`skipping ${header.name}: ${(err as Error).message}`);
@@ -109,6 +126,16 @@ export class ToolSeedService implements OnModuleInit {
 
       response.data.pipe(createGunzip()).pipe(extractor);
     });
+
+    const tools: ToolWithTemplate[] = [];
+    for (const [dir, tool] of toolYamlByDir) {
+      const template = templateByDir.get(dir);
+      if (!template) {
+        this.logger.warn(`skipping ${dir}/tool.yaml: no sibling template.py found`);
+        continue;
+      }
+      tools.push({ ...tool, template });
+    }
 
     this.logger.log(`fetched ${categories.length} categories and ${tools.length} tools from ${CATALOG_TARBALL_URL}`);
     return { categories, tools };
@@ -132,7 +159,7 @@ export class ToolSeedService implements OnModuleInit {
   // Upserted every boot (like seedCategories) rather than skip-once — tools
   // now carry a `template` that gets iterated on in the source repo, so a
   // one-time seed would silently go stale on every subsequent edit there.
-  private async seedTools(tools: ToolYaml[]): Promise<void> {
+  private async seedTools(tools: ToolWithTemplate[]): Promise<void> {
     if (tools.length === 0) {
       this.logger.warn('no tools fetched from catalog tarball');
       return;
