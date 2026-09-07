@@ -169,6 +169,7 @@ interface Props {
   executionQueue: ExecutionQueue;
   userId: string | null;
   isFullScreen: boolean;
+  hideTypePill?: boolean;
 }
 
 // =====================================
@@ -940,12 +941,14 @@ function VisualizationBlockV2(props: Props) {
           />
         </div>
 
-        <div className="absolute left-0 top-0 -translate-y-full pb-2">
-          <BlockTypePill
-            label="Chart"
-            icon={<PiChartBar className="w-3 h-3" />}
-          />
-        </div>
+        {!props.hideTypePill && (
+          <div className="absolute left-0 top-0 -translate-y-full pb-2">
+            <BlockTypePill
+              label="Chart"
+              icon={<PiChartBar className="w-3 h-3" />}
+            />
+          </div>
+        )}
         <div
           className={clsx(
             "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-2 flex flex-row gap-x-1",

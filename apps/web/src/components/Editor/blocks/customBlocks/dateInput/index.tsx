@@ -72,6 +72,7 @@ interface Props {
   userId: string | null;
   executionQueue: ExecutionQueue;
   onDeleteBlock: () => void;
+  hideTypePill?: boolean;
 }
 function DateInput(props: Props) {
   const blockId = props.block.getAttribute("id");
@@ -276,12 +277,14 @@ function DateInput(props: Props) {
         </div>
       </div>
 
-      <div className="absolute left-0 top-0 -translate-y-full pb-2">
-        <BlockTypePill
-          label="Date"
-          icon={<PiCalendarDots className="w-3 h-3" />}
-        />
-      </div>
+      {!props.hideTypePill && (
+        <div className="absolute left-0 top-0 -translate-y-full pb-2">
+          <BlockTypePill
+            label="Date"
+            icon={<PiCalendarDots className="w-3 h-3" />}
+          />
+        </div>
+      )}
 
       <div
         className={clsx(

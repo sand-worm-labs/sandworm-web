@@ -64,6 +64,7 @@ interface Props {
   executionQueue: ExecutionQueue;
   isFullScreen: boolean;
   onDeleteBlock: () => void;
+  hideTypePill?: boolean;
 }
 
 // =====================================
@@ -599,9 +600,11 @@ function PivotTableBlock(props: Props) {
           />
         </div>
       </div>
-      <div className="absolute left-0 top-0 -translate-y-full pb-2">
-        <BlockTypePill label="Pivot" icon={<PiTable className="w-3 h-3" />} />
-      </div>
+      {!props.hideTypePill && (
+        <div className="absolute left-0 top-0 -translate-y-full pb-2">
+          <BlockTypePill label="Pivot" icon={<PiTable className="w-3 h-3" />} />
+        </div>
+      )}
       <div
         className={clsx(
           "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-2 flex flex-row gap-x-1",

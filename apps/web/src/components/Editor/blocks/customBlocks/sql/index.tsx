@@ -102,6 +102,7 @@ interface Props {
   aiTasks: AITasks;
   isFullScreen: boolean;
   onDeleteBlock: () => void;
+  hideTypePill?: boolean;
 }
 
 // =====================================
@@ -1339,12 +1340,14 @@ function SQLBlock(props: Props) {
           )}
         </div>
       </div>
-      <div className="absolute left-0 top-0 -translate-y-full pb-2">
-        <BlockTypePill
-          label="SQL"
-          icon={<PiDatabase className="w-[14px] h-[14px]" />}
-        />
-      </div>
+      {!props.hideTypePill && (
+        <div className="absolute left-0 top-0 -translate-y-full pb-2">
+          <BlockTypePill
+            label="SQL"
+            icon={<PiDatabase className="w-[14px] h-[14px]" />}
+          />
+        </div>
+      )}
       <div
         className={clsx(
           "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-2 flex flex-row gap-x-1",

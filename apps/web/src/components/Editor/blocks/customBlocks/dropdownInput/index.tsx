@@ -90,6 +90,7 @@ interface Props {
   workspaceId: string;
   executionQueue: ExecutionQueue;
   onDeleteBlock: () => void;
+  hideTypePill?: boolean;
 }
 function DropdownInputBlock(props: Props) {
   const attrs = getDropdownInputAttributes(props.block, props.blocks);
@@ -480,12 +481,14 @@ function DropdownInputBlock(props: Props) {
         </div>
       </div>
 
-      <div className="absolute left-0 top-0 -translate-y-full pb-2">
-        <BlockTypePill
-          label="Dropdown"
-          icon={<PiListPlus className="w-3 h-3" />}
-        />
-      </div>
+      {!props.hideTypePill && (
+        <div className="absolute left-0 top-0 -translate-y-full pb-2">
+          <BlockTypePill
+            label="Dropdown"
+            icon={<PiListPlus className="w-3 h-3" />}
+          />
+        </div>
+      )}
 
       <div
         className={clsx(

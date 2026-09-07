@@ -22,15 +22,14 @@ interface NotebookHeroTopProps {
   document: ApiDocument | null;
   isAuthenticated: boolean;
   isOwnDocument: boolean;
-  backHref?: string;
 }
 
 export function NotebookHeroTop({
   document,
   isAuthenticated,
   isOwnDocument,
-  backHref = "/explore",
 }: NotebookHeroTopProps) {
+  const workspaceId = useStringQuery("workspace");
   const favoriteCount = document?.favoriteCount ?? 0;
   const updatedAt = document?.updatedAt ?? new Date();
 
@@ -38,7 +37,7 @@ export function NotebookHeroTop({
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between gap-3">
         <Link
-          href={backHref}
+          href={`/workspace/${workspaceId}/explore`}
           className="group inline-flex items-center gap-1.5 text-sm text-ink-400 hover:text-primary transition-colors w-fit"
         >
           <ArrowLeft

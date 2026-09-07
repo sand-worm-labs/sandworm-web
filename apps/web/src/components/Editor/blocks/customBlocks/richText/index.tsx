@@ -48,6 +48,7 @@ interface Props {
   isCursorWithin: boolean;
   isCursorInserting: boolean;
   onDeleteBlock: () => void;
+  hideTypePill?: boolean;
 }
 
 // =====================================
@@ -258,7 +259,7 @@ const RichTextBlock = (props: Props) => {
         </div>
       </div>
 
-      {!props.isPublicMode && (
+      {!props.hideTypePill && (
         <div className="absolute left-0 top-0 -translate-y-full pb-2">
           <BlockTypePill label="Text" icon={<TextIcon className="w-3 h-3" />} />
         </div>
