@@ -49,8 +49,8 @@ export default function ViewSwitcher({ view, onChange }: ViewSwitcherProps) {
           type="button"
           className={clsx(
             "flex items-center gap-2 px-3 py-1.5 rounded-[10px] text-sm font-medium",
-            "bg-base-100 dark:bg-transparent text-ink-100",
-            "hover:bg-hover-bg dark:hover:bg-base-600",
+            "border border-transparent bg-base-100 dark:bg-transparent text-ink-100",
+            "hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600",
             "transition-colors duration-100"
           )}
         >

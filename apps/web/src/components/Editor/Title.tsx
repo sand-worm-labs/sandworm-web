@@ -147,7 +147,7 @@ function Title(props: Props) {
         TitleExtension.configure({
           level: 1,
           HTMLAttributes: {
-            style: `font-weight: 700; font-size: 2.5rem; line-height: 1.1;  ${props.style ?? ""}`,
+            style: `font-weight: 500; font-size: 2.5rem; line-height: 1.1;  ${props.style ?? ""}`,
             class: "font-body text-[#050818] dark:text-ink-100",
           },
         }),
@@ -166,7 +166,7 @@ function Title(props: Props) {
           autocapitalize: "off",
           spellcheck: "false",
           class:
-            "min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 px-2 outline-none border-none ring-0",
+            "min-h-full prose sm:prose-base prose-sm max-w-full rounded-sm focus:outline-0 px-0 outline-none border-none ring-0",
         },
       },
     },

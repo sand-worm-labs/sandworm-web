@@ -4,7 +4,6 @@ import type { ApiDocument } from "@/types";
 
 import { useSession } from "./hooks/useAuth";
 import AccountMenu from "./PublicHeader/AccountMenu";
-import ForkButton from "./PublicHeader/ForkButton";
 import HelpDropdown from "./PublicHeader/HelpDropdown";
 import PublicHeaderLogo from "./PublicHeader/Logo";
 import NotebookTitle from "./PublicHeader/NotebookTitle";
@@ -28,8 +27,6 @@ export default function PublicNotebookBanner({
   const { user, loading, isAuthenticated } = useSession({
     redirectToLogin: false,
   });
-
-  const isOwnDocument = !!user && !!document && document.authorId === user.id;
 
   return (
     <div className="w-full bg-base-100 font-body relative">
@@ -59,14 +56,6 @@ export default function PublicNotebookBanner({
             <>
               <ViewSwitcher view={view} onChange={onChangeView} />
               <ShareButton />
-              {!isOwnDocument && (
-                <ForkButton
-                  document={
-                    document && { id: document.id, title: document.title }
-                  }
-                  isAuthenticated={isAuthenticated}
-                />
-              )}
 
               <div className="h-5 w-px bg-[#E8E8EA] dark:bg-border-tertiary" />
             </>

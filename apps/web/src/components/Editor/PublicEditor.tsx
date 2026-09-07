@@ -39,10 +39,12 @@ import { useYDocState } from "./hooks/useYDocs";
 import useEditorAwareness, {
   EditorAwarenessProvider,
 } from "./hooks/useEditorAwareness";
+import { useSession } from "./hooks/useAuth";
 import type { APIDataSources } from "./hooks/useDataSources";
 import { ContentSkeleton } from "./ContentSkeleton";
 import Title from "./Title";
 import { publicWidthClasses } from "./constants";
+import { NotebookHeroTop, NotebookHeroMeta } from "./PublicHeader/NotebookHero";
 
 import { getTabIcon } from ".";
 
@@ -514,6 +516,9 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
     dataframesGetter
   );
 
+  const { user, isAuthenticated } = useSession({ redirectToLogin: false });
+  const isOwnDocument = !!user && user.id === props.document.authorId;
+
   const domBlocks = useMemo(() => {
     return layout.value.toArray().map(blockGroup => {
       const blockId = blockGroup.getAttribute("id");
@@ -581,11 +586,23 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
             )}
           >
             <div className={!props.isPDF ? "pt-12 pb-6" : ""}>
-              <Title
-                content={props.yDoc.getXmlFragment("title")}
-                isLoading={props.isSyncing}
-                isEditable={false}
-              />
+              {!props.isPDF && (
+                <NotebookHeroTop
+                  document={props.document}
+                  isAuthenticated={isAuthenticated}
+                  isOwnDocument={isOwnDocument}
+                />
+              )}
+
+              <div className={!props.isPDF ? "mt-8 mb-4" : ""}>
+                <Title
+                  content={props.yDoc.getXmlFragment("title")}
+                  isLoading={props.isSyncing}
+                  isEditable={false}
+                />
+              </div>
+
+              {!props.isPDF && <NotebookHeroMeta document={props.document} />}
             </div>
 
             <ContentSkeleton visible={props.isSyncing} />

@@ -37,7 +37,7 @@ export default function ShareButton() {
           type="button"
           onClick={onShare}
           aria-label="Copy link to this notebook"
-          className="flex items-center justify-center h-8 w-8 rounded-lg text-ink-400 hover:text-ink-100 dark:hover:text-white hover:bg-hover-bg dark:hover:bg-base-600 transition-colors"
+          className="flex items-center justify-center h-8 w-8 rounded-[10px] border border-transparent text-ink-400 hover:text-ink-100 dark:hover:text-white hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors"
         >
           <PiShareNetwork size={18} />
         </button>
