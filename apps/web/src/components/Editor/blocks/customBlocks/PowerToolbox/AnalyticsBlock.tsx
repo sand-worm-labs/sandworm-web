@@ -2,7 +2,6 @@ import {
   PlayIcon,
   StopIcon,
   ClockIcon,
-  PencilSquareIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/20/solid";
 import { PiTrash } from "react-icons/pi";
@@ -19,7 +18,7 @@ import {
   setTitle,
 } from "@sandworm/editor";
 import clsx from "clsx";
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useState, useMemo } from "react";
 import type { ConnectDragPreview } from "react-dnd";
 import { head } from "ramda";
 import { Transition } from "@headlessui/react";
@@ -46,7 +45,6 @@ function ExecutionStatusText({
   _startedAt,
   envStatus,
   isDirty,
-  onEditParams,
 }: {
   status: string;
   resultStatus: "idle" | "running" | "success" | "error";
@@ -54,7 +52,6 @@ function ExecutionStatusText({
   _startedAt: string;
   envStatus: string;
   isDirty: boolean;
-  onEditParams: () => void;
 }) {
   if (status === "running" || status === "enqueued" || status === "aborting") {
     return (
@@ -81,13 +78,9 @@ function ExecutionStatusText({
           ✓ Completed {formatRelativeTime(executedAt)}
         </span>
         {isDirty && (
-          <button
-            type="button"
-            onClick={onEditParams}
-            className="text-amber-500/80 hover:text-amber-400 underline underline-offset-2 transition-colors"
-          >
-            params changed — re-run?
-          </button>
+          <span className="text-amber-500/80">
+            params changed — re-run to update
+          </span>
         )}
       </span>
     );
@@ -162,21 +155,19 @@ function formatRelativeTime(isoString: string): string {
   }
 }
 
-type BlockView = "form" | "result";
-
 interface RunTooltipContentProps {
   ref: React.Ref<HTMLButtonElement>;
   isDirty: boolean;
-  view: string;
+  hasResults: boolean;
 }
 
-const RunTooltipContent = ({ ref, isDirty, view }: RunTooltipContentProps) => (
+const RunTooltipContent = ({ ref, isDirty, hasResults }: RunTooltipContentProps) => (
   <div
     className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
     ref={ref}
   >
     <span>
-      {isDirty && view === "result" ? "Params changed — re-run" : "Run block"}
+      {isDirty && hasResults ? "Params changed — re-run" : "Run block"}
     </span>
     <span className="inline-flex gap-x-1 items-center text-ink-400">
       <span>⌘</span>
@@ -233,19 +224,9 @@ function AnalyticsBlock(props: Props) {
   const hasResults = results.length > 0;
   const hasError = results.some(r => r.type === "error");
 
-  const [view, setView] = useState<BlockView>(() =>
-    props.block.getAttribute("lastExecutedInputs") ? "result" : "form"
-  );
-
-  useEffect(() => {
-    const executedAt = props.block.getAttribute("executedAt");
-    if (
-      executedAt &&
-      (resultStatus === "success" || resultStatus === "error")
-    ) {
-      setView("result");
-    }
-  }, [props.block, resultStatus]);
+  // Params and results are always shown together — this only controls the
+  // "hide output in published view" toggle, independent of the editor UI.
+  const [resultsHidden, setResultsHidden] = useState(false);
 
   const [editorState, editorAPI] = useEditorAwareness();
   const isEditorFocused = editorState.cursorBlockId === blockId;
@@ -261,7 +242,6 @@ function AnalyticsBlock(props: Props) {
       environmentStartedAt,
       { _tag: "power-toolbox" }
     );
-    setView("result");
   }, [props.executionQueue, blockId, props.userId, environmentStartedAt]);
 
   const onRunAbort = useCallback(() => {
@@ -327,10 +307,10 @@ function AnalyticsBlock(props: Props) {
     () =>
       status === "idle"
         ? (ref: React.Ref<HTMLButtonElement>) => (
-            <RunTooltipContent ref={ref} isDirty={isDirty} view={view} />
+            <RunTooltipContent ref={ref} isDirty={isDirty} hasResults={hasResults} />
           )
         : undefined,
-    [status, isDirty, view]
+    [status, isDirty, hasResults]
   );
 
   return (
@@ -412,7 +392,7 @@ function AnalyticsBlock(props: Props) {
                   </span>
                 )}
 
-                {isDirty && view === "result" && (
+                {isDirty && hasResults && (
                   <span
                     className={clsx(
                       "hidden sm:inline-flex items-center gap-x-1",
@@ -435,22 +415,11 @@ function AnalyticsBlock(props: Props) {
           </div>
 
           <div className="print:hidden">
-            {view === "form" && (
-              <div className="p-3">
-                <AnalyticsParamForm
-                  block={props.block}
-                  onRun={onRun}
-                  onCancel={
-                    attrs.lastExecutedInputs
-                      ? () => setView("result")
-                      : undefined
-                  }
-                  isEditing={!!attrs.lastExecutedInputs}
-                />
-              </div>
-            )}
+            <div className="p-3">
+              <AnalyticsParamForm block={props.block} onRun={onRun} />
+            </div>
 
-            {view === "result" && (
+            {!resultsHidden && (hasResults || attrs.executedAt) && (
               <>
                 <div
                   className={clsx(
@@ -467,23 +436,6 @@ function AnalyticsBlock(props: Props) {
                         <ParamSummaryPill key={key} label={key} value={value} />
                       ))}
                   </div>
-
-                  {props.isEditable && (
-                    <button
-                      type="button"
-                      onClick={() => setView("form")}
-                      className={clsx(
-                        "flex items-center gap-x-1 shrink-0 ml-2",
-                        "text-xs text-ink-400 hover:text-ink-200",
-                        "border border-border-secondary hover:border-border-primary",
-                        "px-2 py-1 rounded-md transition-colors",
-                        "font-body"
-                      )}
-                    >
-                      <PencilSquareIcon className="w-3 h-3" />
-                      Edit params
-                    </button>
-                  )}
                 </div>
 
                 {/* Execution status row */}
@@ -495,7 +447,6 @@ function AnalyticsBlock(props: Props) {
                     startedAt={attrs.startedAt}
                     envStatus={envStatus}
                     isDirty={isDirty}
-                    onEditParams={() => setView("form")}
                   />
                 </div>
               </>
@@ -504,7 +455,7 @@ function AnalyticsBlock(props: Props) {
         </div>
 
         <Transition
-          show={view === "result" && hasResults}
+          show={!resultsHidden && hasResults}
           className="text-xs border-t border-border-secondary"
           enter="transition-all ease-in duration-300"
           enterFrom="max-h-0 overflow-hidden"
@@ -573,7 +524,7 @@ function AnalyticsBlock(props: Props) {
                     !isRunButtonDisabled &&
                     status === "idle" &&
                     isDirty &&
-                    view === "result",
+                    hasResults,
                 }
               )}
             >
@@ -595,10 +546,8 @@ function AnalyticsBlock(props: Props) {
             hasMultipleTabs={props.hasMultipleTabs}
             isCodeHidden={false}
             onToggleIsCodeHidden={() => {}}
-            isOutputHidden={view === "form"}
-            onToggleIsOutputHidden={() =>
-              setView(v => (v === "form" ? "result" : "form"))
-            }
+            isOutputHidden={resultsHidden}
+            onToggleIsOutputHidden={() => setResultsHidden(h => !h)}
           />
         )}
 
