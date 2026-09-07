@@ -23,7 +23,7 @@ interface LastExecutedStatusTextProps {
   onToggleResultHidden: () => void;
 }
 
-export function QuerySucceededText({
+export function SucceededText({
   lastExecutionTime,
   isResultHidden,
   onToggleResultHidden,
@@ -224,51 +224,3 @@ export const ExecutingPythonText = ({
     </span>
   );
 };
-
-export function PythonSucceededText({
-  lastExecutionTime,
-  isResultHidden,
-  onToggleResultHidden,
-}: LastExecutedStatusTextProps) {
-  return (
-    <div className="flex items-center gap-x-1 text-ink-400 font-[300]">
-      <div className="relative group w-4 h-4">
-        <div
-          className={clsx(
-            "relative w-[18px] h-[18px]",
-            "group-hover:opacity-0 transition-opacity"
-          )}
-        >
-          <svg
-            viewBox="0 0 18 18"
-            fill="none"
-            className="absolute inset-0 w-full h-full"
-          >
-            <circle
-              cx="9"
-              cy="9"
-              r="8"
-              strokeWidth="1.5"
-              className="fill-base-200 dark:fill-[var(--color-base-100)] stroke-hover-border"
-            />
-          </svg>
-          <PiCheck className="absolute inset-0 w-full h-full p-[4px] text-primary" />
-        </div>
-        <button
-          type="button"
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
-          onClick={onToggleResultHidden}
-        >
-          {isResultHidden ? (
-            <ChevronRightIcon className="h-4 w-4" />
-          ) : (
-            <ChevronDownIcon className="h-4 w-4" />
-          )}
-        </button>
-      </div>
-      <span className="ml-1">
-        Succeeded in {formatExecutionTime(lastExecutionTime)}
-      </span>
-    </div>
-  );
-}

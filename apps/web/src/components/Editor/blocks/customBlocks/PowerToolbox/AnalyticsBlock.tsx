@@ -1,9 +1,4 @@
-import {
-  PlayIcon,
-  StopIcon,
-  ClockIcon,
-  ExclamationCircleIcon,
-} from "@heroicons/react/20/solid";
+import { PlayIcon, StopIcon, ClockIcon } from "@heroicons/react/20/solid";
 import { PiTrash } from "react-icons/pi";
 import type * as Y from "yjs";
 import {
@@ -35,6 +30,7 @@ import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 import ScrollBar from "../../ScrollBar";
 import { BlockTypePill } from "../../BlockTypePill";
 import { PythonOutputs } from "../python/PythonOutput";
+import { SucceededText, ExecutionFailedText } from "../../ExecutionStatusText";
 
 import { AnalyticsParamForm } from "./AnalyticsparamForm";
 
@@ -42,16 +38,18 @@ function ExecutionStatusText({
   status,
   resultStatus,
   executedAt,
-  _startedAt,
   envStatus,
   isDirty,
+  isResultHidden,
+  onToggleResultHidden,
 }: {
   status: string;
   resultStatus: "idle" | "running" | "success" | "error";
   executedAt: string;
-  _startedAt: string;
   envStatus: string;
   isDirty: boolean;
+  isResultHidden: boolean;
+  onToggleResultHidden: () => void;
 }) {
   if (status === "running" || status === "enqueued" || status === "aborting") {
     return (
@@ -64,21 +62,24 @@ function ExecutionStatusText({
 
   if (resultStatus === "error") {
     return (
-      <span className="text-xs text-error flex items-center gap-x-1">
-        <ExclamationCircleIcon className="w-3.5 h-3.5" />
-        Execution failed
-      </span>
+      <ExecutionFailedText
+        lastExecutionTime={executedAt}
+        isResultHidden={isResultHidden}
+        onToggleResultHidden={onToggleResultHidden}
+      />
     );
   }
 
   if (resultStatus === "success" && executedAt) {
     return (
-      <span className="text-xs text-ink-400 flex items-center gap-x-2">
-        <span className="text-emerald-500/70">
-          ✓ Completed {formatRelativeTime(executedAt)}
-        </span>
+      <span className="flex items-center gap-x-2">
+        <SucceededText
+          lastExecutionTime={executedAt}
+          isResultHidden={isResultHidden}
+          onToggleResultHidden={onToggleResultHidden}
+        />
         {isDirty && (
-          <span className="text-amber-500/80">
+          <span className="text-xs text-amber-500/80">
             params changed — re-run to update
           </span>
         )}
