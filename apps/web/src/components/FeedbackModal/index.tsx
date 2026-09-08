@@ -142,7 +142,7 @@ const MAX_CHARS = 1000;
 // =====================================
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <label className="block text-[11px] font-semibold text-ink-300 dark:text-ink-600 uppercase  mb-2">
+    <label className="block text-xs font-bold text-ink-400 dark:text-gray-300 mb-2 uppercase">
       {children}
     </label>
   );
@@ -214,7 +214,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
         </TransitionChild>
 
         {/* ── Panel ── */}
-        <div className="fixed inset-0 flex items-center justify-center p-4 font-body">
+        <div className="fixed inset-0 flex items-center justify-center p-8 font-body">
           <TransitionChild
             as={Fragment}
             enter="ease-out duration-200"
@@ -224,37 +224,39 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
             leaveFrom="opacity-100 scale-100 translate-y-0"
             leaveTo="opacity-0 scale-95 translate-y-1"
           >
-            <DialogPanel className="w-full max-w-lg bg-white dark:bg-base-100 rounded-2xl overflow-hidden border border-border-secondary dark:border-base-700 shadow-xl">
+            <DialogPanel className="w-full max-w-lg bg-white dark:bg-base-100 rounded-[32px] overflow-hidden border border-border-secondary dark:border-base-700 shadow-xl">
               {submitted ? (
                 <SuccessState />
               ) : (
                 <div className="flex flex-col max-h-[90vh]">
-                  <div className="flex items-start justify-between px-6 pt-6 pb-2">
+                  <div className="flex items-start justify-between px-6 py-4">
                     <div>
-                      <DialogTitle className="text-lg font-medium text-ink-100 dark:text-white flex gap-x-2">
-                        <PowerToolBoxIcon />
-                        <span> Share feedback</span>
+                      <PowerToolBoxIcon />
+                      <DialogTitle
+                        as="h2"
+                        className="text-[0.9rem] font-semibold text-ink-100 dark:text-white mt-3"
+                      >
+                        Share feedback
                       </DialogTitle>
-                      <p className="text-[12.5px] font-medium text-ink-400 dark:text-ink-500 mt-1">
+                      <p className="text-ink-400 dark:text-ink-400 text-sm mt-1.5">
                         We'd love to hear your thoughts.
                       </p>
                     </div>
                     <CloseIconButton onClick={handleClose} />
                   </div>
 
-                  <div className="overflow-y-auto px-6 py-5 flex-1 space-y-5">
+                  <div className="overflow-y-auto px-6 py-6 flex-1 space-y-6">
                     <div>
                       <FieldLabel>Feedback type</FieldLabel>
                       <Listbox value={selectedType} onChange={setSelectedType}>
                         <div className="relative">
                           <Listbox.Button
                             className="w-full flex items-center justify-between
-                            px-3.5 py-2.5 rounded-xl text-[13px] text-left
+                            px-3 py-2.5 rounded-lg text-[13px] text-left
                             bg-base-300 dark:bg-base-730
-                            border border-transparent
-                            focus:outline-none focus:border-primary-200 dark:focus:border-primary-700
-                            hover:border-border dark:hover:border-base-710
-                            transition-colors duration-100"
+                            border border-hover-border dark:border-border-tertiary
+                            focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary
+                            transition duration-100"
                           >
                             {selectedType ? (
                               <span className="flex items-center gap-2.5 text-ink-500 dark:text-ink-200">
@@ -286,8 +288,8 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                             <Listbox.Options
                               className="absolute z-10 mt-1.5 w-full
                               bg-white dark:bg-base-730
-                              border border-base-350 dark:border-base-760
-                              rounded-2xl shadow-sm
+                              border border-border-secondary dark:border-border-tertiary
+                              rounded-xl shadow-sm
                               overflow-hidden focus:outline-none p-1"
                             >
                               {REPORT_TYPES.map(type => (
@@ -298,8 +300,8 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                                 >
                                   {({ active, selected }) => (
                                     <li
-                                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors
-                                      ${active ? "bg-primary/10 dark:bg-primary/10" : ""}`}
+                                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer border transition-colors duration-100
+                                      ${active ? "bg-hover-bg dark:bg-dropdown-hover border-hover-border" : "border-transparent"}`}
                                     >
                                       <span
                                         className={
@@ -363,11 +365,10 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                         className="w-full text-[13px] text-ink-500 dark:text-ink-200
                           placeholder:text-ink-300 dark:placeholder:text-ink-600
                           bg-base-300 dark:bg-base-730
-                          border border-transparent
-                          focus:border-primary-200 dark:focus:border-primary-700
-                          hover:border-border dark:hover:border-base-710
-                          rounded-xl px-3.5 py-3 resize-none
-                          focus:outline-none transition-colors duration-100"
+                          border border-hover-border dark:border-border-tertiary
+                          rounded-lg px-3 py-2.5 resize-none
+                          focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary
+                          transition duration-100"
                       />
                     </div>
 
@@ -400,13 +401,13 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                             handleFiles(e.dataTransfer.files);
                           }}
                           className={`flex flex-col items-center justify-center gap-2
-                            border-2 border-dashed rounded-xl py-6
+                            border border-dashed rounded-lg py-6 bg-base-300 
                             transition-colors duration-150
-                            bg-transparent w-full
+ w-full
                             ${
                               isDragging
                                 ? "border-primary bg-primary/5 dark:bg-primary/10"
-                                : "border-border dark:border-base-710 hover:border-primary-300 dark:hover:border-primary-700 hover:bg-primary/[0.02]"
+                                : "border-hover-border dark:border-border-tertiary hover:border-primary dark:hover:border-primary-700 "
                             }`}
                         >
                           <div
@@ -473,10 +474,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                     </div>
                   </div>
 
-                  <div
-                    className="flex items-center justify-between px-6 py-4
-                    border-t border-base-300 dark:border-base-700"
-                  >
+                  <div className="flex items-center justify-between px-6 py-4 pt-3">
                     <button
                       type="button"
                       onClick={handleClose}
