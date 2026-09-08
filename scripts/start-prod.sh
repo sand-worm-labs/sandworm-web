@@ -57,6 +57,10 @@ echo "▶ Installing dependencies..."
 cd "$ROOT_DIR"
 pnpm install --frozen-lockfile
 
+# ─── MIGRATIONS ──────────────────────────────────────────────────────────────
+echo "▶ Running database migrations..."
+(cd "$ROOT_DIR/packages/postgresql-typeorm" && pnpm run migration:up)
+
 # ─── BUILD ───────────────────────────────────────────────────────────────────
 # Uses turbo (not plain `pnpm --filter`) so workspace deps like @sandworm/types
 # get built first per turbo.json's build.dependsOn = ["^build"].
