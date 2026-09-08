@@ -64,13 +64,13 @@ echo "▶ Building editor package..."
 pnpm turbo run build --filter=@sandworm/editor
 
 echo "▶ Building API..."
-pnpm turbo run build --filter=api
+pnpm turbo run build --filter=@sandworm/app_api
 
 echo "▶ Building Next.js..."
-NODE_OPTIONS='--max-old-space-size=4096' pnpm turbo run build --filter=web
+NODE_OPTIONS='--max-old-space-size=4096' pnpm turbo run build --filter=@sandworm/web
 
 echo "▶ Building landing page..."
-pnpm turbo run build --filter=landing-page
+pnpm turbo run build --filter=@sandworm/landing-page
 
 # ─── PM2 ─────────────────────────────────────────────────────────────────────
 echo "▶ Ensuring PM2 is installed..."
