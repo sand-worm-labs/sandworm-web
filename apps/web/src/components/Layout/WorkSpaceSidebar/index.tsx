@@ -19,6 +19,7 @@ import {
 } from "react-icons/pi";
 
 import { AccountDropdown } from "@/components/AccountDropdown";
+import { BetaBadge } from "@/components/BetaBadge";
 import DocumentTree from "@/components/Editor/blocks/DocumentsTree";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import { Shimmer } from "@/components/Skeletons";
@@ -244,6 +245,7 @@ export const WorkspaceSidebar = () => {
                 <span className="font-bold text-[1.05rem] uppercase font-tertiary">
                   SandWorm
                 </span>
+                <BetaBadge />
               </Link>
             )}
             <TooltipV2<HTMLButtonElement>

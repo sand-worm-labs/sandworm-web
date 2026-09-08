@@ -17,6 +17,7 @@ export default setSeederFactory(DocumentEntity, () => {
   document.runUnexecutedBlocks =  fake.datatype.boolean();
   document.runSQLSelection =  fake.datatype.boolean();
   document.shareLinksWithoutSidebar =  fake.datatype.boolean();
+  document.isDashboardPublic = fake.datatype.boolean();
 
   return document;
 });

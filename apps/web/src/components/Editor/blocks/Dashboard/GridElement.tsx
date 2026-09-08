@@ -47,6 +47,7 @@ interface Props {
   executionQueue: ExecutionQueue;
   aiTasks: AITasks;
   onExpand: (block: YBlock) => void;
+  isPublicMode?: boolean;
 }
 
 const NO_TITLE_BLOCKS = [
@@ -73,6 +74,7 @@ interface GridBlockRendererProps {
   userId: string | null;
   executionQueue: ExecutionQueue;
   aiTasks: AITasks;
+  isPublicMode: boolean;
 }
 
 function GridBlockRenderer(props: GridBlockRendererProps) {
@@ -118,7 +120,7 @@ function GridBlockRenderer(props: GridBlockRendererProps) {
         dataSources={props.dataSources}
         isEditable={false}
         dragPreview={null}
-        isPublicMode={false}
+        isPublicMode={props.isPublicMode}
         dashboardMode={
           props.isEditingDashboard
             ? { _tag: "editing", position: "dashboard" }
@@ -149,7 +151,7 @@ function GridBlockRenderer(props: GridBlockRendererProps) {
             ? { _tag: "editing", position: "dashboard" }
             : { _tag: "live" }
         }
-        isPublicMode={false}
+        isPublicMode={props.isPublicMode}
         hasMultipleTabs={false}
         isBlockHiddenInPublished={false}
         onToggleIsBlockHiddenInPublished={() => {}}
@@ -173,7 +175,7 @@ function GridBlockRenderer(props: GridBlockRendererProps) {
             ? { _tag: "editing", position: "dashboard" }
             : { _tag: "live" }
         }
-        isPublicMode={false}
+        isPublicMode={props.isPublicMode}
         hasMultipleTabs={false}
         isBlockHiddenInPublished={false}
         onToggleIsBlockHiddenInPublished={() => {}}
@@ -350,6 +352,7 @@ function GridElement(props: Props) {
                 userId={props.userId}
                 executionQueue={props.executionQueue}
                 aiTasks={props.aiTasks}
+                isPublicMode={props.isPublicMode ?? false}
               />
             )}{" "}
           </div>

@@ -91,6 +91,7 @@ type Document {
   runUnexecutedBlocks: Boolean!
   runSQLSelection: Boolean!
   shareLinksWithoutSidebar: Boolean!
+  isDashboardPublic: Boolean!
   icon: String
   orderIndex: Float!
   deletedAt: DateTime
@@ -777,6 +778,7 @@ input UpdateDocumentInput {
   runUnexecutedBlocks: Boolean
   runSQLSelection: Boolean
   shareLinksWithoutSidebar: Boolean
+  isDashboardPublic: Boolean
 }
 
 input DeleteDocumentInput {

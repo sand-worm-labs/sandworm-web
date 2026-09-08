@@ -180,6 +180,10 @@ export type Document = {
   runUnexecutedBlocks: boolean;
   runSQLSelection: boolean;
   shareLinksWithoutSidebar: boolean;
+  // Optional: only fetched by queries that need to gate public dashboard
+  // visibility (GetDocument, GetPublishedDocumentBySlug, UpdateDocument).
+  // Other document-list queries don't select it.
+  isDashboardPublic?: boolean;
   createdBy?: string;
 };
 

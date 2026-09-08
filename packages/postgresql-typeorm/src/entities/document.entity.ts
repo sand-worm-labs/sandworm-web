@@ -81,6 +81,9 @@ export class DocumentEntity extends AbstractEntity {
   @Column({ default: true })
   shareLinksWithoutSidebar!: boolean;
 
+  @Column({ default: true })
+  isDashboardPublic!: boolean;
+
   @Column({ type: "timestamp", nullable: true })
   publishedAt!: Date | null;
 

@@ -165,6 +165,9 @@ export class DocumentService {
     if (input.shareLinksWithoutSidebar !== undefined) {
       updatedDocument.shareLinksWithoutSidebar = input.shareLinksWithoutSidebar;
     }
+    if (input.isDashboardPublic !== undefined) {
+      updatedDocument.isDashboardPublic = input.isDashboardPublic;
+    }
     await this.documentRepository.save(updatedDocument);
     const result = Document.fromEntity(updatedDocument);
 

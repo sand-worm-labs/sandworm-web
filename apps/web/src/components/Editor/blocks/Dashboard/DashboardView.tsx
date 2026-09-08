@@ -133,6 +133,7 @@ interface InnerProps {
   executionQueue: ExecutionQueue;
   aiTasks: AITasks;
   onExpand: (block: YBlock) => void;
+  isPublicMode?: boolean;
 
   // We use this to trigger actions when a new block is added
   latestBlockId: string | null;
@@ -220,6 +221,7 @@ function DashboardViewInner(props: InnerProps) {
                 executionQueue={props.executionQueue}
                 aiTasks={props.aiTasks}
                 onExpand={props.onExpand}
+                isPublicMode={props.isPublicMode}
               />
             </WrapperCard>
           </div>
@@ -340,6 +342,7 @@ interface Props {
   executionQueue: ExecutionQueue;
   aiTasks: AITasks;
   onExpand: (block: YBlock) => void;
+  isPublicMode?: boolean;
 }
 export default function DashboardView(props: Props) {
   const { width, ref } = useResizeDetector();
@@ -349,7 +352,7 @@ export default function DashboardView(props: Props) {
       id="dashboard-wrapper"
       data-dashboard-ready="true"
       className={clsx(
-        "h-full min-h-0 overflow-y-auto overflow-x-hidden px-8 py-6 font-body",
+        "h-full min-h-0 overflow-y-auto overflow-x-hidden px-8 py-6 font-body lg:px-16",
         props.className
       )}
     >

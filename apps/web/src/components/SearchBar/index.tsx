@@ -139,47 +139,37 @@ export const SearchBar = () => {
   //  // ⬢ Render Component
   // =====================================
   return (
-    <div className="relative" ref={searchContainerRef}>
-      {/* Search Icon Button Trigger */}
-      <button
-        type="button"
-        onClick={() => setIsActive(true)}
-        className="p-2 rounded-lg dark:bg-base-100 border dark:border-border-tertiary border-border dark:text-white text-ink-200 hover:bg-gray-100 dark:hover:bg-editor-500 transition-colors bg-base-300"
-        aria-label="Open search"
-      >
-        <Search size={18} />
-      </button>
+    <div className="relative w-[25rem]" ref={searchContainerRef}>
+      {/* Search Input Trigger */}
+      <div className="relative">
+        <Search
+          size={16}
+          className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400 dark:text-ink-400"
+        />
+        <Input
+          ref={inputRef}
+          type="text"
+          placeholder="Search Queries, Dashboards, Users"
+          value={query}
+          onFocus={() => setIsActive(true)}
+          onChange={e => {
+            setQuery(e.target.value);
+            setIsActive(true);
+            setHighlightIndex(-1);
+          }}
+          onKeyDown={handleKeyDown}
+          className="w-full pl-10 pr-16 py-1 h-8 rounded-lg border border-transparent dark:border-border-tertiary dark:bg-base-400 dark:text-white placeholder:dark:text-placeholder-muted placeholder-[#868E96] focus:outline-none focus:ring focus:ring-primary transition text-xs md:text-sm bg-base-600 placeholder:text-ink-300"
+        />
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-gray select-none font-medium pointer-events-none">
+          Press{" "}
+          <kbd className="dark:bg-white dark:text-ink-200 text-ink-200 bg-[#E0EAF1] px-1 py-0.5 rounded ml-1">
+            Enter
+          </kbd>
+        </div>
+      </div>
 
       {isActive && (
-        <div className="absolute z-50 top-full mt-4 left-[0px] min-w-[32rem] dark:bg-base-100 bg-white border dark:border-border-tertiary rounded-xl shadow-md overflow-hidden border-border-quiet">
-          {/* Search Input Inside Dropdown */}
-          <div className="px-4 py-3 border-b dark:border-border-tertiary border-border-secondary">
-            <div className="relative">
-              <Search
-                size={16}
-                className="absolute left-3 top-1/2 z-10 -translate-y-1/2 text-text-gray"
-              />
-              <Input
-                ref={inputRef}
-                type="text"
-                placeholder="Search Queries, Dashboards, Users"
-                value={query}
-                onChange={e => {
-                  setQuery(e.target.value);
-                  setHighlightIndex(-1);
-                }}
-                onKeyDown={handleKeyDown}
-                className="w-full pl-10 pr-16 py-1 rounded-md dark:bg-ink-100 border dark:border-border-tertiary border-border dark:text-white placeholder:dark:text-ink-300  placeholder-[#455768] focus:outline-none focus:ring-[1p] focus:ring-primary transition text-xs md:text-sm bg-base-300 font-body "
-              />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-gray select-none font-medium">
-                Press{" "}
-                <kbd className="dark:bg-white dark:text-ink-200 text-ink-200 bg-[#E0EAF1] px-1 py-0.5 rounded ml-1">
-                  Enter
-                </kbd>
-              </div>
-            </div>
-          </div>
-
+        <div className="absolute z-50 top-full mt-2 left-0 w-full min-w-[32rem] dark:bg-base-100 bg-white border dark:border-border-tertiary rounded-xl shadow-md overflow-hidden border-border-quiet">
           {/* Filters Section */}
           <div className="px-4 py-3 border-b dark:border-border-tertiary border-border-secondary">
             <div className="flex flex-wrap gap-2">

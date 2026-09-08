@@ -148,6 +148,7 @@ type API = {
       runUnexecutedBlocks?: boolean;
       runSQLSelection?: boolean;
       shareLinksWithoutSidebar?: boolean;
+      isDashboardPublic?: boolean;
     }
   ) => Promise<void>;
   publish: (

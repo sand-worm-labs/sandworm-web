@@ -142,7 +142,7 @@ function EnvBar(props: Props) {
   return (
     <div
       className="flex items-center justify-between
-      border-t border-border-secondary dark:border-base-700
+      border-none border-border-secondary dark:border-base-700
       py-2 px-3 font-body env-bar"
     >
       <div className="flex items-center gap-1.5">

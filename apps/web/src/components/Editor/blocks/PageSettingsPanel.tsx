@@ -2,11 +2,14 @@ import { Switch, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import { useTheme } from "next-themes";
 import { PiGearSixLight } from "react-icons/pi";
+import type * as Y from "yjs";
+import { getDashboard } from "@sandworm/editor";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
 import { useSandwormStore } from "@/store";
 
 import useDocument from "../hooks/useDocument";
+import { useYDocState } from "../hooks/useYDocs";
 
 import { THEME_IDS, THEME_META } from "./customBlocks/CodeEditor/palettes";
 import type { EditorThemeId } from "./customBlocks/CodeEditor/palettes";
@@ -62,10 +65,13 @@ interface Props {
   documentId: string;
   visible: boolean;
   onHide: () => void;
+  yDoc: Y.Doc;
 }
 
 export default function PageSettingsPanel(props: Props) {
   const [{ document }, api] = useDocument(props.workspaceId, props.documentId);
+  const { state: dashboard } = useYDocState(props.yDoc, getDashboard);
+  const hasDashboardContent = dashboard.value.size > 0;
 
   const { resolvedTheme } = useTheme();
   const editorThemeId = useEditorThemeId();
@@ -125,6 +131,14 @@ export default function PageSettingsPanel(props: Props) {
             enabled={document?.shareLinksWithoutSidebar ?? false}
             onToggle={api.toggleShareLinksWithoutSidebar}
           />
+          {hasDashboardContent && (
+            <PageSettingToggle
+              name="Show dashboard on public page"
+              description="Whether the public notebook page should offer a Dashboard view alongside Report and Query."
+              enabled={document?.isDashboardPublic ?? false}
+              onToggle={api.toggleDashboardVisibility}
+            />
+          )}
         </div>
 
         <div className="w-full px-4 xl:px-6 py-5">

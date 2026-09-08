@@ -8,6 +8,7 @@ fragment DocumentFields on Document {
   runUnexecutedBlocks
   runSQLSelection
   shareLinksWithoutSidebar
+  isDashboardPublic
   orderIndex
   deletedAt
   createdAt
