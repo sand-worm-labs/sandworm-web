@@ -1,5 +1,6 @@
 networks:
   sandworm-net:
+    name: sandworm-net
     driver: bridge
 
 volumes:
