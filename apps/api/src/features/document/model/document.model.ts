@@ -43,6 +43,9 @@ export class Document {
   @BooleanField()
   shareLinksWithoutSidebar!: boolean;
 
+  @BooleanField({ defaultValue: true })
+  isDashboardPublic: boolean = true;
+
   @StringFieldOptional()
   icon!: string | null;
 
@@ -120,6 +123,7 @@ export class Document {
     document.runUnexecutedBlocks = entity.runUnexecutedBlocks;
     document.runSQLSelection = entity.runSQLSelection;
     document.shareLinksWithoutSidebar = entity.shareLinksWithoutSidebar;
+    document.isDashboardPublic = entity.isDashboardPublic;
     document.orderIndex = entity.orderIndex;
     document.deletedAt = entity.deletedAt;
     document.createdAt = entity.createdAt;

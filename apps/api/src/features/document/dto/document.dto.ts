@@ -41,6 +41,9 @@ export class UpdateDocumentInput {
 
   @BooleanFieldOptional()
   shareLinksWithoutSidebar?: boolean;
+
+  @BooleanFieldOptional()
+  isDashboardPublic?: boolean;
 }
 
 @InputType()

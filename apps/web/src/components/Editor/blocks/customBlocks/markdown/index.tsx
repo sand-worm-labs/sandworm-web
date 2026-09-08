@@ -120,6 +120,8 @@ interface Props {
   isAIEditing?: boolean;
   workspaceId: string;
   onDeleteBlock: () => void;
+  hideTypePill?: boolean;
+  isPublicMode?: boolean;
 }
 
 // =====================================
@@ -458,6 +460,16 @@ const MarkdownBlock = (props: Props) => {
 
   const diffButtonsVisible = aiSuggestions !== null;
 
+  // Public viewers never see the source — no border, header, code editor,
+  // or block padding, just the rendered markdown flowing as normal text.
+  if (props.isPublicMode) {
+    return (
+      <div data-block-id={id}>
+        <MarkdownPreview source={source} />
+      </div>
+    );
+  }
+
   return (
     <div
       className="relative group/block mt-6"
@@ -604,12 +616,14 @@ const MarkdownBlock = (props: Props) => {
       </div>
 
       {/* ── Block type pill ── */}
-      <div className="absolute left-0 top-0 -translate-y-full pb-2">
-        <BlockTypePill
-          label="Markdown"
-          icon={<PiMarkdownLogo className="w-3 h-3" />}
-        />
-      </div>
+      {!props.hideTypePill && (
+        <div className="absolute left-0 top-0 -translate-y-full pb-2">
+          <BlockTypePill
+            label="Markdown"
+            icon={<PiMarkdownLogo className="w-3 h-3" />}
+          />
+        </div>
+      )}
 
       <div
         className={clsx(

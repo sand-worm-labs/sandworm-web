@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { SandwormLogo } from "@/components/Assets";
+import { BetaBadge } from "@/components/BetaBadge";
 
 export default function PublicHeaderLogo() {
   return (
@@ -13,6 +14,7 @@ export default function PublicHeaderLogo() {
       <span className="hidden sm:inline font-bold text-[0.95rem] uppercase font-tertiary text-ink-100 dark:text-white">
         SandWorm
       </span>
+      <BetaBadge />
     </Link>
   );
 }

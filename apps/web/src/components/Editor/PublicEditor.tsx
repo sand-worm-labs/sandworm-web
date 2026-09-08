@@ -29,6 +29,7 @@ import DateInputBlock from "./blocks/customBlocks/dateInput";
 import DropdownInputBlock from "./blocks/customBlocks/dropdownInput";
 import FileUploadBlock from "./blocks/customBlocks/fileUpload";
 import InputBlock from "./blocks/customBlocks/input";
+import MarkdownBlock from "./blocks/customBlocks/markdown";
 import PythonBlock from "./blocks/customBlocks/python";
 import RichTextBlock from "./blocks/customBlocks/richText";
 import AnalyticsBlock from "./blocks/customBlocks/PowerToolbox/AnalyticsBlock";
@@ -152,6 +153,12 @@ function PublicTabRef(props: PublicTabRefProps) {
   const isCursorWithin = editorState.cursorBlockId === props.tab.blockId;
   const isCursorInserting = editorState.mode === "insert";
 
+  // Report view renders a clean, finished-looking document — the little
+  // "SQL" / "Python" / "Chart" pill above each block is IDE chrome that
+  // only makes sense once you're looking at the underlying source, i.e.
+  // in query view.
+  const hideTypePill = !props.isQueryView;
+
   const jsx = switchBlockType(blockData, {
     onRichText: block => (
       <RichTextBlock
@@ -164,6 +171,23 @@ function PublicTabRef(props: PublicTabRefProps) {
         isCursorWithin={isCursorWithin}
         isCursorInserting={isCursorInserting}
         onDeleteBlock={() => {}}
+        hideTypePill={hideTypePill}
+      />
+    ),
+    onMarkdown: block => (
+      <MarkdownBlock
+        block={block}
+        document={props.document}
+        isEditable={false}
+        isPublicMode
+        belongsToMultiTabGroup={props.hasMultipleTabs}
+        dragPreview={null}
+        dashboardMode={null}
+        isCursorWithin={isCursorWithin}
+        isCursorInserting={isCursorInserting}
+        workspaceId={props.document.workspaceId}
+        onDeleteBlock={() => {}}
+        hideTypePill={hideTypePill}
       />
     ),
     onSQL: block => (
@@ -187,6 +211,7 @@ function PublicTabRef(props: PublicTabRefProps) {
         executionQueue={NOOP_EXECUTION_QUEUE}
         aiTasks={NOOP_AI_TASKS}
         isFullScreen={false}
+        hideTypePill={hideTypePill}
       />
     ),
     onPython: block => (
@@ -208,6 +233,7 @@ function PublicTabRef(props: PublicTabRefProps) {
         executionQueue={NOOP_EXECUTION_QUEUE}
         aiTasks={NOOP_AI_TASKS}
         isFullScreen={false}
+        hideTypePill={hideTypePill}
       />
     ),
     onVisualization: block => (
@@ -229,6 +255,7 @@ function PublicTabRef(props: PublicTabRefProps) {
         userId={null}
         executionQueue={NOOP_EXECUTION_QUEUE}
         isFullScreen={false}
+        hideTypePill={hideTypePill}
       />
     ),
     onVisualizationV2: block => (
@@ -250,6 +277,7 @@ function PublicTabRef(props: PublicTabRefProps) {
         userId={null}
         executionQueue={NOOP_EXECUTION_QUEUE}
         isFullScreen={false}
+        hideTypePill={hideTypePill}
       />
     ),
     onInput: block => (
@@ -266,6 +294,7 @@ function PublicTabRef(props: PublicTabRefProps) {
         userId={null}
         workspaceId={props.document.workspaceId}
         executionQueue={NOOP_EXECUTION_QUEUE}
+        hideTypePill={hideTypePill}
       />
     ),
     onDropdownInput: block => (
@@ -283,6 +312,7 @@ function PublicTabRef(props: PublicTabRefProps) {
         userId={null}
         workspaceId={props.document.workspaceId}
         executionQueue={NOOP_EXECUTION_QUEUE}
+        hideTypePill={hideTypePill}
       />
     ),
     onDateInput: block => (
@@ -299,6 +329,7 @@ function PublicTabRef(props: PublicTabRefProps) {
         userId={null}
         workspaceId={props.document.workspaceId}
         executionQueue={NOOP_EXECUTION_QUEUE}
+        hideTypePill={hideTypePill}
       />
     ),
     onFileUpload: block => (
@@ -337,6 +368,7 @@ function PublicTabRef(props: PublicTabRefProps) {
         userId={null}
         executionQueue={NOOP_EXECUTION_QUEUE}
         isFullScreen={false}
+        hideTypePill={hideTypePill}
       />
     ),
     onPowerToolbox: block => (
@@ -356,6 +388,7 @@ function PublicTabRef(props: PublicTabRefProps) {
         userId={null}
         executionQueue={NOOP_EXECUTION_QUEUE}
         isFullScreen={false}
+        hideTypePill={hideTypePill}
       />
     ),
   });
@@ -602,7 +635,12 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
                 />
               </div>
 
-              {!props.isPDF && <NotebookHeroMeta document={props.document} />}
+              {!props.isPDF && (
+                <NotebookHeroMeta
+                  document={props.document}
+                  isAuthenticated={isAuthenticated}
+                />
+              )}
             </div>
 
             <ContentSkeleton visible={props.isSyncing} />

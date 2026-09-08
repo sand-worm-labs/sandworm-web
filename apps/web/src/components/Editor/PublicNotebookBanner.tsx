@@ -1,12 +1,13 @@
 "use client";
 
 import type { ApiDocument } from "@/types";
+import { SearchBar } from "@/components/SearchBar";
 
 import { useSession } from "./hooks/useAuth";
 import AccountMenu from "./PublicHeader/AccountMenu";
 import HelpDropdown from "./PublicHeader/HelpDropdown";
 import PublicHeaderLogo from "./PublicHeader/Logo";
-import NotebookTitle from "./PublicHeader/NotebookTitle";
+// import NotebookTitle from "./PublicHeader/NotebookTitle";
 import ReadOnlyBanner from "./PublicHeader/ReadOnlyBanner";
 import ShareButton from "./PublicHeader/ShareButton";
 import ViewSwitcher, { type NotebookView } from "./ViewSwitcher";
@@ -16,6 +17,7 @@ interface PublicNotebookBannerProps {
   view: NotebookView;
   onChangeView: (view: NotebookView) => void;
   notFound?: boolean;
+  showDashboard?: boolean;
 }
 
 export default function PublicNotebookBanner({
@@ -23,6 +25,7 @@ export default function PublicNotebookBanner({
   view,
   onChangeView,
   notFound = false,
+  showDashboard = false,
 }: PublicNotebookBannerProps) {
   const { user, loading, isAuthenticated } = useSession({
     redirectToLogin: false,
@@ -38,15 +41,14 @@ export default function PublicNotebookBanner({
             <span
               className="text-border-secondary dark:text-border-tertiary select-none"
               aria-hidden
-            >
-              /
-            </span>
+            />
 
             <div className="flex-1 min-w-0">
-              <NotebookTitle
+              {/* <NotebookTitle
                 title={document?.title ?? null}
                 isLoading={!document}
-              />
+              /> */}
+              <SearchBar />
             </div>
           </>
         )}
@@ -54,7 +56,11 @@ export default function PublicNotebookBanner({
         <div className="flex items-center gap-2 shrink-0 ml-auto">
           {!notFound && (
             <>
-              <ViewSwitcher view={view} onChange={onChangeView} />
+              <ViewSwitcher
+                view={view}
+                onChange={onChangeView}
+                showDashboard={showDashboard}
+              />
               <ShareButton />
 
               <div className="h-5 w-px bg-[#E8E8EA] dark:bg-border-tertiary" />

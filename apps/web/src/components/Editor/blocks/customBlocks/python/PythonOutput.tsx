@@ -288,6 +288,13 @@ export function PythonOutput(props: ItemProps) {
           return null;
       }
     case "stdio":
+      // Warnings printed to stderr (deprecation notices, etc.) are useful
+      // context in the notebook, but read as a broken/erroring chart when
+      // they sit above the actual result in a dashboard tile — hide them
+      // there and let the tile show only its real output.
+      if (props.isDashboardView && props.output.name === "stderr") {
+        return null;
+      }
       return (
         <pre
           className={clsx(

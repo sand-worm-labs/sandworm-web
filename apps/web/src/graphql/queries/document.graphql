@@ -34,6 +34,7 @@ query GetDocument($workspaceId: String!, $documentId: String!) {
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
+    isDashboardPublic
      author{
       username
       firstName
@@ -72,6 +73,7 @@ query GetPublishedDocumentBySlug($slug: String!) {
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
+    isDashboardPublic
     author {
       username
       firstName

@@ -638,6 +638,7 @@ function PrivateDocumentPageInner(
                 documentId={props.documentId}
                 visible={selectedSidebar?._tag === "pageSettings"}
                 onHide={onHideSidebar}
+                yDoc={yDoc}
               />
               <DataExplorerContent
                 visible={selectedSidebar?._tag === "schemaExplorer"}

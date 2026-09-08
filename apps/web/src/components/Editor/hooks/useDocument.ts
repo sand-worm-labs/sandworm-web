@@ -11,6 +11,7 @@ type API = {
   toggleRunUnexecutedBlocks: () => Promise<void>;
   toggleRunSQLSelection: () => Promise<void>;
   toggleShareLinksWithoutSidebar: () => Promise<void>;
+  toggleDashboardVisibility: () => Promise<void>;
 };
 
 type UseDocument = [
@@ -125,6 +126,22 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
     api.updateDocumentSettings,
   ]);
 
+  const toggleDashboardVisibility = useCallback(async () => {
+    const newIsDashboardPublic = !document?.isDashboardPublic;
+    try {
+      await api.updateDocumentSettings(documentId, {
+        isDashboardPublic: newIsDashboardPublic,
+      });
+    } catch (err) {
+      toast.error("Failed to update document settings");
+    }
+  }, [
+    workspaceId,
+    documentId,
+    document?.isDashboardPublic,
+    api.updateDocumentSettings,
+  ]);
+
   return useMemo(
     () => [
       { document, loading, publishing },
@@ -133,6 +150,7 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
         toggleRunUnexecutedBlocks,
         toggleRunSQLSelection,
         toggleShareLinksWithoutSidebar,
+        toggleDashboardVisibility,
       },
     ],
     [
@@ -143,6 +161,7 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
       toggleRunUnexecutedBlocks,
       toggleRunSQLSelection,
       toggleShareLinksWithoutSidebar,
+      toggleDashboardVisibility,
     ]
   );
 }

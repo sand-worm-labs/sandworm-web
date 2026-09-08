@@ -1,7 +1,13 @@
 "use client";
 
 import clsx from "clsx";
-import { PiFileText, PiCode, PiCaretDown, PiCheck } from "react-icons/pi";
+import {
+  PiFileText,
+  PiCode,
+  PiSquaresFour,
+  PiCaretDown,
+  PiCheck,
+} from "react-icons/pi";
 import type { IconType } from "react-icons";
 import {
   DropdownMenu,
@@ -9,7 +15,7 @@ import {
   DropdownMenuContent,
 } from "@sandworm/ui/components/dropdown-menu";
 
-export type NotebookView = "report" | "query";
+export type NotebookView = "report" | "query" | "dashboard";
 
 interface ViewOption {
   id: NotebookView;
@@ -18,7 +24,7 @@ interface ViewOption {
   icon: IconType;
 }
 
-const VIEWS: ViewOption[] = [
+const REPORT_QUERY_VIEWS: ViewOption[] = [
   {
     id: "report",
     label: "Report",
@@ -33,12 +39,27 @@ const VIEWS: ViewOption[] = [
   },
 ];
 
+const DASHBOARD_VIEW: ViewOption = {
+  id: "dashboard",
+  label: "Dashboard",
+  description: "Grid layout of the notebook's key blocks",
+  icon: PiSquaresFour,
+};
+
 interface ViewSwitcherProps {
   view: NotebookView;
   onChange: (view: NotebookView) => void;
+  showDashboard?: boolean;
 }
 
-export default function ViewSwitcher({ view, onChange }: ViewSwitcherProps) {
+export default function ViewSwitcher({
+  view,
+  onChange,
+  showDashboard = false,
+}: ViewSwitcherProps) {
+  const VIEWS: ViewOption[] = showDashboard
+    ? [...REPORT_QUERY_VIEWS, DASHBOARD_VIEW]
+    : REPORT_QUERY_VIEWS;
   const current = VIEWS.find(v => v.id === view) ?? VIEWS[0]!;
   const CurrentIcon = current.icon;
 

@@ -16,7 +16,7 @@ import { WorkspaceIcon } from "./WorkspaceIcon";
 // =====================================
 // ⬢ Constants
 // =====================================
-const PRESET_ICONS = [
+export const PRESET_ICONS = [
   "red.png",
   "blue.png",
   "green.png",

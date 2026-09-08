@@ -89,6 +89,7 @@ interface Props {
   isFullScreen: boolean;
   workspaceId: string;
   onDeleteBlock: () => void;
+  hideTypePill?: boolean;
 }
 
 // =====================================
@@ -926,9 +927,11 @@ function PythonBlock(props: Props) {
         </div>
       </div>
 
-      <div className="absolute left-0 top-0 -translate-y-full pb-2">
-        <BlockTypePill label="Python" icon={<PiCode className="w-3 h-3" />} />
-      </div>
+      {!props.hideTypePill && (
+        <div className="absolute left-0 top-0 -translate-y-full pb-2">
+          <BlockTypePill label="Python" icon={<PiCode className="w-3 h-3" />} />
+        </div>
+      )}
       <div
         className={clsx(
           "absolute transition-opacity opacity-0 group-hover/block:opacity-100 right-0 top-0 -translate-y-full pb-2 flex flex-row gap-x-1",

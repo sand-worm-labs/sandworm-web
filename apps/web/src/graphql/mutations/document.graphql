@@ -24,6 +24,7 @@ mutation CreateDocument($workspaceId: String!, $input: CreateDocumentInput!) {
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
+    isDashboardPublic
   }
 }
 
@@ -60,6 +61,7 @@ mutation UpdateDocument(
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
+    isDashboardPublic
   }
 }
 
@@ -97,6 +99,7 @@ mutation RestoreDocument($input: RestoreDocumentInput!) {
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
+    isDashboardPublic
   }
 }
 
@@ -126,6 +129,7 @@ mutation DuplicateDocument($input: DuplicateDocumentInput!) {
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
+    isDashboardPublic
   }
 }
 
@@ -160,6 +164,7 @@ mutation PublishDocument(
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
+    isDashboardPublic
   }
 }
 
@@ -188,6 +193,7 @@ mutation UnpublishDocument($workspaceId: String!, $documentId: String!) {
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
+    isDashboardPublic
   }
 }
 
@@ -216,6 +222,7 @@ mutation SetDocumentLinkVisibility($workspaceId: String!, $documentId: String!) 
     runSQLSelection
     runUnexecutedBlocks
     shareLinksWithoutSidebar
+    isDashboardPublic
   }
 }
 
