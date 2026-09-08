@@ -1,18 +1,47 @@
 import Link from "next/link";
-import React, { memo } from "react";
+import React, { memo, useCallback, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { PiCheck, PiCopyLight } from "react-icons/pi";
+
+function CodeBlock({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const [copied, setCopied] = useState(false);
+  const language = /language-(\w+)/.exec(className || "")?.[1];
+
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(String(children).replace(/\n$/, ""));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [children]);
+
+  return (
+    <div className="relative group/code">
+      <pre className="text-sm w-[80dvw] md:max-w-[500px] overflow-x-scroll p-3 rounded-lg mt-2 bg-zinc-800">
+        <code className={language}>{children}</code>
+      </pre>
+      <button
+        type="button"
+        onClick={handleCopy}
+        aria-label={copied ? "Copied" : "Copy code"}
+        className="absolute top-4 right-2 flex items-center justify-center w-6 h-6 rounded-md bg-zinc-700/80 hover:bg-zinc-600 text-zinc-200 transition-colors opacity-0 group-hover/code:opacity-100 focus-visible:opacity-100"
+      >
+        {copied ? <PiCheck size={13} /> : <PiCopyLight size={13} />}
+      </button>
+    </div>
+  );
+}
 
 const components = {
   code: ({ _, inline, className, children, ...props }: any) => {
     const match = /language-(\w+)/.exec(className || "");
     return !inline && match ? (
-      <pre
-        {...props}
-        className={`${className} text-sm w-[80dvw] md:max-w-[500px] overflow-x-scroll  p-3 rounded-lg mt-2 bg-zinc-800`}
-      >
-        <code className={match[1]}>{children}</code>
-      </pre>
+      <CodeBlock className={className}>{children}</CodeBlock>
     ) : (
       <code
         className={`${className} text-sm bg-zinc-800 py-0.5 px-1 rounded-md`}

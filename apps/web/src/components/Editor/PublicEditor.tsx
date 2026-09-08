@@ -635,7 +635,12 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
                 />
               </div>
 
-              {!props.isPDF && <NotebookHeroMeta document={props.document} />}
+              {!props.isPDF && (
+                <NotebookHeroMeta
+                  document={props.document}
+                  isAuthenticated={isAuthenticated}
+                />
+              )}
             </div>
 
             <ContentSkeleton visible={props.isSyncing} />
