@@ -1304,7 +1304,7 @@ function SQLBlock(props: Props) {
               page={page}
               dashboardPage={dashboardPage}
               result={result}
-              isPublic={false}
+              isPublic={props.isPublicMode}
               documentId={props.document.id}
               workspaceId={props.document.workspaceId}
               blockId={blockId}

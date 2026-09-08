@@ -13,6 +13,7 @@ interface Props {
   isFixWithAILoading: boolean;
   onFixWithAI: (error: PythonErrorOutput) => void;
   canFixWithAI: boolean;
+  isPublic: boolean;
 }
 function PythonError(props: Props) {
   const onFixWithAI = useCallback(() => {
@@ -27,6 +28,7 @@ function PythonError(props: Props) {
       traceback={props.error.traceback}
       isFixWithAILoading={props.isFixWithAILoading}
       onFixWithAI={onFixWithAI}
+      isPublic={props.isPublic}
     />
   );
 }
@@ -40,6 +42,7 @@ interface PythonErrorUIProps {
   isFixWithAILoading: boolean;
   onFixWithAI?: () => void;
   canFixWithAI: boolean;
+  isPublic?: boolean;
 }
 export function PythonErrorUI(props: PythonErrorUIProps) {
   return (
@@ -59,7 +62,7 @@ export function PythonErrorUI(props: PythonErrorUIProps) {
               <Ansi useClasses>{line}</Ansi>
             </pre>
           ))}
-          {props.onFixWithAI && (
+          {!props.isPublic && props.onFixWithAI && (
             <Tooltip
               title="Missing AI key"
               message="Admins can add an OpenAI key in settings."

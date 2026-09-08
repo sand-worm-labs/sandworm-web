@@ -403,7 +403,14 @@ function AnalyticsBlock(props: Props) {
 
           <div className="print:hidden">
             <div className="px-3 pb-3 pt-3">
-              <AnalyticsParamForm block={props.block} />
+              {/* AnalyticsParamForm has no read-only mode of its own — its
+                  fields commit straight to the Yjs doc onBlur. On a public
+                  page that would look editable without doing anything
+                  useful, so it's hidden in both Report and Query view,
+                  not just Report. */}
+              {!props.isPublicMode && (
+                <AnalyticsParamForm block={props.block} />
+              )}
 
               {!resultsHidden && (hasResults || attrs.executedAt) && (
                 <div className="flex flex-col text-xs -mx-3 -mb-3 mt-3 bg-inputBg dark:bg-header-surface border-t border-hover-border dark:border-border-dark">

@@ -29,6 +29,7 @@ interface Props {
   onFixWithAI: (error: PythonErrorOutput) => void;
   isPDF: boolean;
   isDashboardView: boolean;
+  isPublicMode?: boolean;
   lazyRender: boolean;
   blockId: string;
   isDark?: boolean;
@@ -229,6 +230,7 @@ export function PythonOutputs(props: Props) {
             isPDF={props.isPDF}
             canFixWithAI={props.canFixWithAI}
             isDashboardView={props.isDashboardView}
+            isPublicMode={props.isPublicMode}
             blockId={props.blockId}
             isDark={props.isDark ?? false}
           />
@@ -244,6 +246,7 @@ interface ItemProps {
   onFixWithAI: (error: PythonErrorOutput) => void;
   isPDF: boolean;
   isDashboardView: boolean;
+  isPublicMode?: boolean;
   canFixWithAI: boolean;
   blockId: string;
   isDark: boolean;
@@ -324,6 +327,7 @@ export function PythonOutput(props: ItemProps) {
           error={props.output}
           isFixWithAILoading={props.isFixWithAILoading}
           onFixWithAI={props.onFixWithAI}
+          isPublic={!!props.isPublicMode}
         />
       );
     default:
