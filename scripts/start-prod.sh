@@ -57,18 +57,24 @@ echo "▶ Installing dependencies..."
 cd "$ROOT_DIR"
 pnpm install --frozen-lockfile
 
+# ─── MIGRATIONS ──────────────────────────────────────────────────────────────
+echo "▶ Running database migrations..."
+(cd "$ROOT_DIR/packages/postgresql-typeorm" && pnpm run migration:up)
+
 # ─── BUILD ───────────────────────────────────────────────────────────────────
+# Uses turbo (not plain `pnpm --filter`) so workspace deps like @sandworm/types
+# get built first per turbo.json's build.dependsOn = ["^build"].
 echo "▶ Building editor package..."
-pnpm --filter @sandworm/editor build
+pnpm turbo run build --filter=@sandworm/editor
 
 echo "▶ Building API..."
-pnpm --filter api build
+pnpm turbo run build --filter=@sandworm/app_api
 
 echo "▶ Building Next.js..."
-NODE_OPTIONS='--max-old-space-size=4096' pnpm --filter web build
+NODE_OPTIONS='--max-old-space-size=4096' pnpm turbo run build --filter=@sandworm/web
 
 echo "▶ Building landing page..."
-pnpm --filter landing-page build
+pnpm turbo run build --filter=@sandworm/landing-page
 
 # ─── PM2 ─────────────────────────────────────────────────────────────────────
 echo "▶ Ensuring PM2 is installed..."

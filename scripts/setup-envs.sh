@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-API_ENV="./apps/api/.env"
-WEB_ENV="./apps/web/.env"
-POSTGRES_ENV="./packages/postgresql-typeorm/.env"
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+
+API_ENV="$ROOT_DIR/apps/api/.env"
+WEB_ENV="$ROOT_DIR/apps/web/.env"
+POSTGRES_ENV="$ROOT_DIR/packages/postgresql-typeorm/.env"
 
 echo "▶ Running env setup..."
 
@@ -144,7 +146,7 @@ EOL
 fi
 
 # === AI .env ===
-AI_ENV="./apps/ai/.env"
+AI_ENV="$ROOT_DIR/apps/ai/.env"
 if [ ! -f "$AI_ENV" ]; then
   echo "Creating AI .env..."
   AI_TOKEN=$(grep AI_HANDSHAKE_TOKEN "$API_ENV" | cut -d '=' -f2 | tr -d "'" | tr -d '"')
