@@ -89,7 +89,7 @@ const ProfileComponent = ({
     onLoadMore: loadMore,
   });
 
-  const { updateProfile, error } = useCurrentUser();
+  const { updateProfile } = useCurrentUser();
   const {
     wallets: ownWallets,
     addWallets,
@@ -465,7 +465,6 @@ const ProfileComponent = ({
             user={userForModal}
             updateProfile={updateProfile}
             loading={updateLoading}
-            error={error}
           />
 
           <ManageWalletsModal

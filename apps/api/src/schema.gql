@@ -727,6 +727,8 @@ input CreateUserInput {
 input UpdateUserInput {
   email: String
   username: String
+  firstName: String
+  lastName: String
   bio: String
   image: String
 }
