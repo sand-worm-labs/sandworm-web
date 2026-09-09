@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import previewMobile from '../assets/img/preview-mobile.png';
 import previewDesktop from '../assets/img/preview.webp';
 const bgPlaceholder = "data:image/webp;base64,YOUR_BLUR_PLACEHOLDER";
+const appUrl = import.meta.env.PUBLIC_APP_URL ?? 'http://localhost:8081'
 ---
 
 <section
@@ -85,7 +86,7 @@ const bgPlaceholder = "data:image/webp;base64,YOUR_BLUR_PLACEHOLDER";
       adapts to how you work not the other way around.
     </p>
     <a
-      href="/waitlist"
+      href={`${appUrl}`}
       class="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:bg-white/90 hover:scale-105 transition-all px-5 font-medium font-primary inline-block text-sm mt-6 "
     >
       Get Started

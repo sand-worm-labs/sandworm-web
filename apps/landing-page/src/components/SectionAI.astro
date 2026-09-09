@@ -26,6 +26,8 @@ const aiCards: AICardProps[] = [
     description: "Analyse price action over any period of time to spot trends, systems and underlying issues before others do.",
   },
 ];
+
+const appUrl = import.meta.env.PUBLIC_APP_URL ?? 'http://localhost:8081'
 ---
 
 
@@ -79,7 +81,7 @@ const aiCards: AICardProps[] = [
 
     <a
       class="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:bg-white/90 hover:scale-105 transition-all px-5 font-medium inline-block text-sm font-primary"
-      href="/workspace"
+      href={`${appUrl}/workspace`}
     >
       Use WormAI
     </a>

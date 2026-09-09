@@ -8,6 +8,7 @@ import BlurRadar from "./icons/BlurRadar.astro";
 import BlurConsole from "./icons/BlurConsole.astro";
 import Dots from "./icons/Dots.astro";
 
+const appUrl = import.meta.env.PUBLIC_APP_URL ?? 'http://localhost:8081'
 ---
 
   <section class="lg:py-32 py-16 pt-0 lg:pt-32 bg-black text-white mb-32" aria-labelledby="features-heading">
@@ -58,7 +59,7 @@ import Dots from "./icons/Dots.astro";
                   </p>
                   <a
                     class="rounded-[16px]  p-2 m-0.5 py-2.5 bg-white text-black hover:bg-white/90 hover:scale-105 transition-all px-4 font-medium inline-block text-sm mt-5 font-primary"
-                    href="/waitlist"
+                    href={`${appUrl}`}
                   >
                     Launch App
                   </a>
@@ -79,7 +80,7 @@ import Dots from "./icons/Dots.astro";
             </p>
             <a
               class="rounded-[16px]  p-2 m-0.5 py-2.5 bg-white text-black hover:bg-white/90 hover:scale-105 transition-all px-4 font-medium inline-block text-sm mt-5 font-primary"
-              href="/waitlist"
+              href={`${appUrl}`}
             >
               Launch App
             </a>
@@ -117,7 +118,7 @@ import Dots from "./icons/Dots.astro";
                   </p>
                   <a
                     class="rounded-[16px]  p-2 py-2.5 m-0.5 bg-white text-black hover:bg-white/90 hover:scale-105 transition-all px-4 font-medium inline-block text-sm mt-5 font-primary"
-                    href="/waitlist"
+                    href={`${appUrl}`}
                   >
                     Explore Queries
                   </a>
@@ -137,7 +138,7 @@ import Dots from "./icons/Dots.astro";
             </p>
             <a
               class="rounded-[16px]  p-2 py-2.5 m-0.5 bg-white text-black hover:bg-white/90 hover:scale-105 transition-all px-4 font-medium inline-block text-sm mt-5 font-primary"
-              href="/waitlist"
+              href={`${appUrl}`}
             >
               Explore Queries
             </a>
@@ -164,7 +165,7 @@ import Dots from "./icons/Dots.astro";
                   </p>
                   <a
                     class="rounded-[16px] py-2.5 p-2 h-fit m-0.5 bg-white text-black hover:bg-white/90 hover:scale-105 transition-all px-4 font-medium inline-block text-sm mt-5 font-primary"
-                    href="/waitlist"
+                    href={`${appUrl}`}
                   >
                     Launch App
                   </a>
@@ -196,7 +197,7 @@ import Dots from "./icons/Dots.astro";
             </p>
             <a
               class="rounded-[16px] py-2.5 p-2 h-fit m-0.5 bg-white text-black hover:bg-white/90 hover:scale-105 transition-all px-4 font-medium inline-block text-sm mt-5 font-primary"
-              href="/waitlist"
+              href={`${appUrl}`}
             >
               Launch App
             </a>

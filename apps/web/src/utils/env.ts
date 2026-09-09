@@ -35,7 +35,6 @@ export const NEXT_PUBLIC_LANDING_URL = () =>
   getFromWindow("NEXT_PUBLIC_LANDING_URL") ||
   currentUrl();
 
-
 export const TERMS_URL = () => `${NEXT_PUBLIC_LANDING_URL()}/terms`;
 export const PRIVACY_URL = () => `${NEXT_PUBLIC_LANDING_URL()}/privacy`;
 
