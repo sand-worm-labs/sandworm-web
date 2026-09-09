@@ -29,6 +29,12 @@ interface Props {
   onFixWithAI: (error: PythonErrorOutput) => void;
   isPDF: boolean;
   isDashboardView: boolean;
+  // Whether this output sits inside an actual Dashboard grid tile (small,
+  // fixed-size card) as opposed to a full-width notebook block that merely
+  // hides stderr/controls for a cleaner report view. Only the former should
+  // force Plotly figures through the tile-constrained resize path — forcing
+  // it for full-width blocks squashes wide multi-subplot figures.
+  isDashboardTile?: boolean;
   isPublicMode?: boolean;
   lazyRender: boolean;
   blockId: string;
@@ -230,6 +236,7 @@ export function PythonOutputs(props: Props) {
             isPDF={props.isPDF}
             canFixWithAI={props.canFixWithAI}
             isDashboardView={props.isDashboardView}
+            isDashboardTile={props.isDashboardTile}
             isPublicMode={props.isPublicMode}
             blockId={props.blockId}
             isDark={props.isDark ?? false}
@@ -246,6 +253,7 @@ interface ItemProps {
   onFixWithAI: (error: PythonErrorOutput) => void;
   isPDF: boolean;
   isDashboardView: boolean;
+  isDashboardTile?: boolean;
   isPublicMode?: boolean;
   canFixWithAI: boolean;
   blockId: string;
@@ -314,6 +322,7 @@ export function PythonOutput(props: ItemProps) {
           output={props.output}
           isPDF={props.isPDF}
           isDashboardView={props.isDashboardView}
+          isDashboardTile={!!props.isDashboardTile}
         />
       );
     }
@@ -408,6 +417,7 @@ function PythonPlotOutput(props: {
   output: PythonPlotlyOutput;
   isPDF: boolean;
   isDashboardView: boolean;
+  isDashboardTile: boolean;
 }) {
   const layout = useMemo(() => {
     return {
@@ -440,7 +450,7 @@ function PythonPlotOutput(props: {
     }));
   }, [props.output.data]);
 
-  if (props.isDashboardView) {
+  if (props.isDashboardTile) {
     return <DashboardPlotOutput output={props.output} />;
   }
 
