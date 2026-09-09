@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
+import { TERMS_URL, PRIVACY_URL } from "@/utils/env";
+
 import { SandwormLogo } from "../Assets";
 
 import { SocialLogin } from "./SocialLogin";
@@ -65,11 +67,24 @@ export const SignIn = () => {
       </div> */}
       <p className="font-body font-medium text-center text-xs text-ink-400 mt-6 absolute bottom-4 max-w-[19rem]">
         By continuing, you agree to the{" "}
-        <Link href="/terms" className="underline">
+        <a
+          href={TERMS_URL()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
           Terms
-        </Link>{" "}
+        </a>{" "}
         and confirm that you have read the{" "}
-        <span className="underline">Privacy Policy</span>.
+        <a
+          href={PRIVACY_URL()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          Privacy Policy
+        </a>
+        .
       </p>
     </div>
   );

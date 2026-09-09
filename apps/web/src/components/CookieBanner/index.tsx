@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 
+import { PRIVACY_URL } from "@/utils/env";
+
 // =====================================
 // ⬢ Constants and Type
 // =====================================
@@ -63,7 +65,7 @@ export default function CookieBanner() {
         accept, we may also use cookies to enhance your experience, measure ad
         performance and analyze.
         <a
-          href="/privacy"
+          href={PRIVACY_URL()}
           target="_blank"
           rel="noreferrer"
           className="text-[#8053FE] hover:underline whitespace-nowrap font-medium font-body ml-1"

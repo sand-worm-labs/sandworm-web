@@ -18,6 +18,7 @@ import {
 import { Button } from "@sandworm/ui/components/button";
 
 import { useModalStore } from "@/store/auth";
+import { socialLinks } from "@/data/socialLinks";
 
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 import { useSession, useSignout } from "../Editor/hooks/useAuth";
@@ -26,6 +27,12 @@ import { BookIcon } from "../Assets/BookIcon";
 import { GearIcon } from "../Assets/GearIcon";
 import { QuestionIcon } from "../Assets/QuestionIcon";
 import { ThumbsUpIcon } from "../Assets/ThumbsUpIcon";
+
+// Docs aren't set up yet — send it to the repo in the meantime.
+const SANDWORM_GITHUB_URL = "https://github.com/sand-worm-labs/sandworm-web";
+const SANDWORM_DISCORD_URL =
+  socialLinks.find(link => link.name === "Discord")?.href ??
+  "https://discord.gg/pftQtpcjK2";
 
 // =====================================
 // ⬢ useShareProfile
@@ -198,8 +205,18 @@ const DropdownBody = ({
       </Button>
     </div>
 
-    <NavItem icon={<BookIcon size={18} />} label="Docs" href="#" external />
-    <NavItem icon={<QuestionIcon size={18} />} label="Get Help" href="#" />
+    <NavItem
+      icon={<BookIcon size={18} />}
+      label="Docs"
+      href={SANDWORM_GITHUB_URL}
+      external
+    />
+    <NavItem
+      icon={<QuestionIcon size={18} />}
+      label="Get Help"
+      href={SANDWORM_DISCORD_URL}
+      external
+    />
     <NavItem
       icon={<ThumbsUpIcon size={18} />}
       label="Give Feedback"
