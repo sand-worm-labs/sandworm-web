@@ -47,7 +47,7 @@ export class WorkspaceEntity extends AbstractEntity {
   @Column({ name: 'owner_id', nullable: true })
   ownerId!: string;
 
-  @Column({ name: 'assistant_model', default: 'anthropic/claude-sonnet-4.6' })
+  @Column({ name: 'assistant_model', default: 'deepseek/deepseek-v4-flash-0731' })
   assistantModel!: string;
 
   // ─── Relations ───
