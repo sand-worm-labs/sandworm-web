@@ -1,7 +1,7 @@
 "use client";
 
 import type { ApiDocument } from "@/types";
-import { SearchBar } from "@/components/SearchBar";
+// import { SearchBar } from "@/components/SearchBar";
 
 import { useSession } from "./hooks/useAuth";
 import AccountMenu from "./PublicHeader/AccountMenu";
@@ -48,7 +48,7 @@ export default function PublicNotebookBanner({
                 title={document?.title ?? null}
                 isLoading={!document}
               /> */}
-              <SearchBar />
+              {/* <SearchBar /> */}
             </div>
           </>
         )}
