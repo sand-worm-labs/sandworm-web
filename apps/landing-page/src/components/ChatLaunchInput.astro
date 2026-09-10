@@ -1,5 +1,7 @@
 ---
 import  PaperPlaneTilt  from '../assets/PaperPlaneTilt.svg';
+
+const appUrl = import.meta.env.PUBLIC_APP_URL ?? 'http://localhost:8081'
 ---
 
 <div class="relative w-full flex flex-col gap-4">
@@ -24,16 +26,16 @@ import  PaperPlaneTilt  from '../assets/PaperPlaneTilt.svg';
   </div>
 </div>
 
-<script>
-  const input = document.getElementById('chat-input') as HTMLTextAreaElement;
+<script define:vars={{ appUrl }}>
+  const input = document.getElementById('chat-input');
   const button = document.getElementById('chat-submit');
 
   function submit() {
     const query = input.value.trim();
     if (!query) return;
-    
+
     const params = new URLSearchParams({ q: query });
-    window.location.href = `/app?${params.toString()}`;
+    window.location.href = `${appUrl}/workspace?${params.toString()}`;
   }
 
   button?.addEventListener('click', submit);

@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@sandworm/ui/components/input";
 import { Button } from "@sandworm/ui/components/button";
 
 import { useCurrentUser } from "@/components/Editor/hooks/useCurrentUser";
+import { TERMS_URL, PRIVACY_URL } from "@/utils/env";
 
 import { Username } from "../Assets/Username";
 import { Spinner } from "../Spinner/Spinner";
@@ -176,13 +176,23 @@ export const ClaimUsername = () => {
       <div className="flex-col gap-2 absolute bottom-[4rem] w-full flex items-center justify-center">
         <p className="font-body  text-center text-xs text-ink-400 md:max-w-[300px] mt-6">
           By creating an account you agree to the{" "}
-          <Link href="/terms" className="underline">
+          <a
+            href={TERMS_URL()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
             Terms
-          </Link>{" "}
+          </a>{" "}
           and confirm that you have read the{" "}
-          <Link href="privacy" className="underline">
+          <a
+            href={PRIVACY_URL()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
             Privacy Policy
-          </Link>
+          </a>
           .
         </p>
       </div>

@@ -11,6 +11,14 @@ export const NEXT_PUBLIC_API_WS_URL = () =>
 export const NEXT_PUBLIC_PUBLIC_URL = () =>
   process.env.NEXT_PUBLIC_PUBLIC_URL || currentUrl();
 
+export const NEXT_PUBLIC_LANDING_URL = () =>
+  process.env.NEXT_PUBLIC_LANDING_URL ||
+  getFromWindow("NEXT_PUBLIC_LANDING_URL") ||
+  currentUrl();
+
+export const TERMS_URL = () => `${NEXT_PUBLIC_LANDING_URL()}/terms`;
+export const PRIVACY_URL = () => `${NEXT_PUBLIC_LANDING_URL()}/privacy`;
+
 export const NEXT_PUBLIC_GATEWAY_IP = () =>
   process.env.NEXT_PUBLIC_GATEWAY_IP || "";
 

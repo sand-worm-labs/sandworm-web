@@ -663,6 +663,7 @@ function PythonBlock(props: Props) {
           props.dashboardMode.position === "sidebar"
         }
         canFixWithAI={hasOaiKey}
+        isPublicMode={props.isPublicMode}
         blockId={blockId}
         isDark={resolvedTheme === "dark"}
       />
@@ -895,7 +896,8 @@ function PythonBlock(props: Props) {
                     onFixWithAI={onFixWithAI}
                     canFixWithAI={hasOaiKey}
                     isPDF={props.isPDF}
-                    isDashboardView={false}
+                    isDashboardView={!!props.viewModeCodeHidden}
+                    isPublicMode={props.isPublicMode}
                     lazyRender={!props.isPDF}
                     blockId={blockId}
                     isDark={resolvedTheme === "dark"}

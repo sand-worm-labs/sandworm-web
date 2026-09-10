@@ -10,7 +10,7 @@ export const AppFooter = () => {
     <footer className="p-4 text-sm text-text-gray border-t border-borderLight mb-12 md:mb-0">
       <div className="container mx-auto flex justify-between items-center flex-col md:flex-row">
         <div className="flex flex-col md:flex-row space-x-4 items-center">
-          <span>© 2025 Sandworm</span>
+          <span>© 2026 Sandworm</span>
           <div className="flex space-x-4 items-center my-3 lg:my-0">
             {footerLinks.map(({ label, href }) => (
               <Link

@@ -2,6 +2,8 @@
 // src/components/SectionHero.astro
 import { Image } from 'astro:assets';
 import ChatLaunchInput from './ChatLaunchInput.astro';
+
+const appUrl = import.meta.env.PUBLIC_APP_URL ?? 'http://localhost:8081'
 ---
 
 <section
@@ -48,14 +50,14 @@ import ChatLaunchInput from './ChatLaunchInput.astro';
     <!-- Hero Action Buttons  -->
     <div class="flex gap-x-4 mb-12 order-2 lg:order-1 mt-8 lg:mt-0">
       
-        <a href="/waitlist" aria-label="get started on sandworm"
+        <a href={`${appUrl}`} aria-label="get started on sandworm"
         class="rounded-2xl p-2.5 py-3 h-fit m-0.5  text-black outline-white bg-white px-5 transition-colors duration-200 hover:bg-white/80 border border-white font-medium font-primary lg:text-sm text-sm "
       >
         Get Started
       </a>
 
-      
-        <a href="/waitlist" aria-label="try out worm ai"
+
+        <a href={`${appUrl}`} aria-label="try out worm ai"
         class="rounded-2xl p-2.5 py-3 h-fit m-0.5 text-white bg-primary  px-5 font-medium border border-white transition-colors duration-200 hover:bg-primary/80 font-primary lg:text-sm text-sm"
       >
         Explore Worm AI

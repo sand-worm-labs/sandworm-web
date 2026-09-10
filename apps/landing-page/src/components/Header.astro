@@ -1,14 +1,14 @@
 ---
 import SandwormLogo from "../assets/sandworm.svg"
 
-const navLinks = [
-  { name: "Explore", href: "workspace/explore" },
-  { name: "Documentation", href: "https://docs.sandwormlabs.xyz", isExternal: true },
-  { name: "Blog", href: "https://docs.sandwormlabs.xyz/blog", isExternal: true },
-  { name: "About", href: "https://docs.sandwormlabs.xyz/blog", isExternal: true },
-];
-
 const appUrl = import.meta.env.PUBLIC_APP_URL ?? 'http://localhost:8081'
+
+const navLinks = [
+  { name: "Explore", href: `${appUrl}/workspace` },
+  { name: "Documentation", href: "https://github.com/sand-worm-labs/sandworm-web", isExternal: true },
+  { name: "Blog", href: "https://sandwormlabs.substack.com/", isExternal: true },
+  { name: "About", href: "https://sandwormlabs.substack.com/", isExternal: true },
+];
 ---
 
 <header class="fixed w-full lg:top-5 top-2 mx-auto left-0 right-0 z-99">
@@ -94,10 +94,10 @@ const appUrl = import.meta.env.PUBLIC_APP_URL ?? 'http://localhost:8081'
       </a>
   
       
-        <a href="/waitlist" aria-label="try out worm ai"
+        <a href={`${appUrl}`} aria-label="explore sandworm"
         class="rounded-2xl p-2.5 py-3 h-fit m-0.5 inline-block flex-1 text-white bg-primary  px-5 font-medium border border-white transition-colors duration-200 hover:bg-primary/80 font-primary lg:text-sm text-sm text-center"
       >
-        Explore 
+        Explore
       </a>
     </div>
         {navLinks.map(link => (

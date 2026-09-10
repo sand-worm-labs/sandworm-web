@@ -26,6 +26,8 @@ const aiCards: AICardProps[] = [
     description: "Analyse price action over any period of time to spot trends, systems and underlying issues before others do.",
   },
 ];
+
+const appUrl = import.meta.env.PUBLIC_APP_URL ?? 'http://localhost:8081'
 ---
 
 
@@ -79,7 +81,7 @@ const aiCards: AICardProps[] = [
 
     <a
       class="rounded-2xl p-2.5 h-fit m-0.5 bg-white text-black hover:bg-white/90 hover:scale-105 transition-all px-5 font-medium inline-block text-sm font-primary"
-      href="/workspace"
+      href={`${appUrl}/workspace`}
     >
       Use WormAI
     </a>
@@ -89,7 +91,7 @@ const aiCards: AICardProps[] = [
       <div class="rounded-full py-3 lg:w-auto w-full flex gap-4 items-center px-6 justify-center text-[13px] bg-hero-base text-[#C5CED9] font-primary font-normal">
         <SparkleIcon />
         <p class="truncate overflow-hidden flex-1 min-w-0">
-          Create a bar chart of the tokens with &gt; $1m mcap on Zora in August, 2025
+          Create a bar chart of the tokens with &gt; $1m mcap on Zora in August, 2026
         </p>
       </div>
     </div>
