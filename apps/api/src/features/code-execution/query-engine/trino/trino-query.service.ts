@@ -19,12 +19,12 @@ export class TrinoQueryService {
   ) { }
 
   private buildConnectionUrl(): string {
-    const { host, port, catalog, schema, user, password } = this.configService.getOrThrow('trino', { infer: true });
+    const { host, port, catalog, schema, user, password, httpScheme } = this.configService.getOrThrow('trino', { infer: true });
     const auth = password
       ? `${encodeURIComponent(user)}:${encodeURIComponent(password)}`
       : encodeURIComponent(user);
     const path = schema ? `${catalog}/${schema}` : catalog;
-    return `trino://${auth}@${host}:${port}/${path}`;
+    return `trino://${auth}@${host}:${port}/${path}?http_scheme=${httpScheme}`;
   }
 
   async execute(
