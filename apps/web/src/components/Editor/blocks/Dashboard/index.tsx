@@ -1,7 +1,12 @@
 /* eslint-disable import/no-cycle */
 import type * as Y from "yjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { PiPencilSimple } from "react-icons/pi";
+import {
+  PiChatCenteredText,
+  PiClockCountdown,
+  PiPencilSimple,
+  PiSquaresFour,
+} from "react-icons/pi";
 import type { BlockType, YBlock, YBlockGroup } from "@sandworm/editor";
 import {
   AITasks,
@@ -16,12 +21,10 @@ import Link from "next/link";
 import { isNil } from "ramda";
 import { Transition } from "@headlessui/react";
 import { createPortal } from "react-dom";
-import clsx from "clsx";
 import { useHotkeys } from "react-hotkeys-hook";
 import type { DataFrame } from "@sandworm/types";
 
-import { ChatIcon } from "@/components/Assets/ChatIcon";
-import { ClockCountdown } from "@/components/Assets/ClockCountdown";
+import { DataExplorerContent } from "@/components/ExplorerPanels/DataExplorerContent";
 import type { ApiDocument, UserWorkspaceRole } from "@/types";
 import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
 import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
@@ -43,7 +46,7 @@ import Files from "../Files";
 import EnvironmentPanel from "../EnvironmentPanel";
 import EnvVariablesPanel from "../EnvVariablesPanel";
 import { PublishBlinkingSignal } from "../BlinkingSignal";
-import { Tooltip } from "../ToolTips";
+import { Tooltip, TooltipV2 } from "../ToolTips";
 import { SQLExtensionProvider } from "../customBlocks/CodeEditor/sql";
 import ScrollBar from "../ScrollBar";
 import RichTextBlock from "../customBlocks/richText";
@@ -55,6 +58,7 @@ import PivotTableBlock from "../customBlocks/pivotTable";
 import DropdownInputBlock from "../customBlocks/dropdownInput";
 import MarkdownBlock from "../customBlocks/markdown";
 import type { SessionUser } from "../../hooks/useAuth";
+import { RightSidebarPanel } from "../../RightSidebarPanel";
 
 import DashboardSkeleton from "./DashboardSkeleton";
 import DashboardControls from "./DashboardControls";
@@ -287,6 +291,8 @@ function DashboardContent(
     executionQueue: ExecutionQueue;
     aiTasks: AITasks;
     onToggleSchemaExplorer: (dataSourceId?: string | null) => void;
+    isControlsOpen: boolean;
+    onCloseControls: () => void;
   }
 ) {
   const [{ datasources: dataSources }] = useDataSources(
@@ -330,22 +336,11 @@ function DashboardContent(
     };
   }, [expanded]);
 
-  const [isControlsOpen, setIsControlsOpen] = useState(true);
-  const onOpenControls = useCallback(() => {
-    setIsControlsOpen(true);
-  }, []);
-  const onCloseControls = useCallback(() => {
-    setIsControlsOpen(false);
-  }, []);
-
   return (
     <>
       <div className="flex h-[calc(100%-47px)] min-h-0 overflow-hidden">
         <DashboardView
-          className={clsx(
-            "flex-1 min-h-0 h-full",
-            props.isEditing && isControlsOpen && "w-[calc(100%-400px)]"
-          )}
+          className="flex-1 min-h-0 h-full min-w-0"
           document={props.document}
           dataSources={dataSources}
           yDoc={props.yDoc}
@@ -369,9 +364,8 @@ function DashboardContent(
             executionQueue={props.executionQueue}
             aiTasks={props.aiTasks}
             onExpand={setExpanded}
-            isOpen={isControlsOpen}
-            onOpen={onOpenControls}
-            onClose={onCloseControls}
+            isOpen={props.isControlsOpen}
+            onClose={props.onCloseControls}
           />
         )}
       </div>
@@ -514,6 +508,14 @@ export default function Dashboard(props: Props) {
     setSelectedSidebar(null);
   }, [setSelectedSidebar]);
 
+  const [isControlsOpen, setIsControlsOpen] = useState(true);
+  const onToggleControls = useCallback(() => {
+    setIsControlsOpen(v => !v);
+  }, []);
+  const onCloseControls = useCallback(() => {
+    setIsControlsOpen(false);
+  }, []);
+
   const onToggleComments = useCallback(() => {
     setSelectedSidebar(v =>
       v?._tag === "comments" ? null : { _tag: "comments" }
@@ -589,24 +591,51 @@ export default function Dashboard(props: Props) {
     () => (
       <>
         <div className="flex flex-col">
-          <button
-            type="button"
-            onClick={onToggleComments}
-            className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-hover-bg dark:bg-base-500 dark:hover:bg-base-200 dark:text-ink-100  h-full bg-white mb-1.5"
-            title="Comments"
-          >
-            <ChatIcon size={22} />
-          </button>
+          <TooltipV2 active title="Comments" position="left">
+            {ref => (
+              <button
+                ref={ref as React.RefObject<HTMLButtonElement>}
+                type="button"
+                onClick={onToggleComments}
+                className="w-[30px] h-[30px] mx-auto mb-1.5 flex items-center justify-center rounded-[10px] border border-transparent text-ink-navy dark:text-ink-navy hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors duration-100"
+              >
+                <PiChatCenteredText size={16} />
+              </button>
+            )}
+          </TooltipV2>
 
           {!isViewer && !isDeleted && (
-            <button
-              type="button"
-              onClick={onToggleSchedules}
-              className="flex items-center justify-center rounded-xl px-0.5 py-1.5 text-sm  hover:bg-hover-bg dark:bg-base-500  h-full bg-white mb-1.5 dark:text-ink-100"
-              title="Schedules"
+            <TooltipV2 active title="Schedules" position="left">
+              {ref => (
+                <button
+                  ref={ref as React.RefObject<HTMLButtonElement>}
+                  type="button"
+                  onClick={onToggleSchedules}
+                  className="w-[30px] h-[30px] mx-auto mb-1.5 flex items-center justify-center rounded-[10px] border border-transparent text-ink-navy dark:text-ink-navy hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors duration-100"
+                >
+                  <PiClockCountdown size={16} />
+                </button>
+              )}
+            </TooltipV2>
+          )}
+
+          {props.isEditing && (
+            <TooltipV2
+              active
+              title={isControlsOpen ? "Hide blocks" : "Show blocks"}
+              position="left"
             >
-              <ClockCountdown size={22} />
-            </button>
+              {ref => (
+                <button
+                  ref={ref as React.RefObject<HTMLButtonElement>}
+                  type="button"
+                  onClick={onToggleControls}
+                  className="w-[30px] h-[30px] mx-auto mb-1.5 flex items-center justify-center rounded-[10px] border border-transparent text-ink-navy dark:text-ink-navy hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors duration-100"
+                >
+                  <PiSquaresFour size={16} />
+                </button>
+              )}
+            </TooltipV2>
           )}
         </div>
 
@@ -634,7 +663,10 @@ export default function Dashboard(props: Props) {
       onToggleFiles,
       onToggleEnvironment,
       onToggleEnvVariables,
+      onToggleControls,
+      isControlsOpen,
       isDeleted,
+      props.isEditing,
     ]
   );
 
@@ -767,6 +799,8 @@ export default function Dashboard(props: Props) {
                 executionQueue={executionQueue}
                 aiTasks={aiTasks}
                 onToggleSchemaExplorer={onToggleSchemaExplorer}
+                isControlsOpen={isControlsOpen}
+                onCloseControls={onCloseControls}
               />
             </SQLExtensionProvider>
           )}
@@ -783,42 +817,49 @@ export default function Dashboard(props: Props) {
           />
         </div>
 
-        <Comments
-          workspaceId={props.document.workspaceId}
-          documentId={props.document.id}
-          visible={selectedSidebar?._tag === "comments"}
-          onHide={onHideSidebar}
-        />
-        <EnvironmentPanel
-          visible={selectedSidebar?._tag === "environment"}
-          onHide={onHideSidebar}
-        />
-        {props.role !== "viewer" && !isDeleted && (
-          <>
-            <EnvVariablesPanel
-              workspaceId={props.document.workspaceId}
-              visible={selectedSidebar?._tag === "envVariables"}
-              onHide={onHideSidebar}
-            />
-            <Schedules
-              workspaceId={props.document.workspaceId}
-              documentId={props.document.id}
-              isPublished={props.document.publishedAt !== null}
-              visible={selectedSidebar?._tag === "schedules"}
-              onHide={onHideSidebar}
-              onPublish={onPublish}
-              publishing={props.publishing}
-            />
-            <Files
-              workspaceId={props.document.workspaceId}
-              visible={selectedSidebar?._tag === "files"}
-              onHide={onHideSidebar}
-              userId={props.user.id}
-              yDoc={yDoc}
-              executionQueue={executionQueue}
-            />
-          </>
-        )}
+        <RightSidebarPanel visible={selectedSidebar !== null}>
+          <Comments
+            workspaceId={props.document.workspaceId}
+            documentId={props.document.id}
+            visible={selectedSidebar?._tag === "comments"}
+            onHide={onHideSidebar}
+          />
+          <EnvironmentPanel
+            visible={selectedSidebar?._tag === "environment"}
+            onHide={onHideSidebar}
+          />
+          {props.role !== "viewer" && !isDeleted && (
+            <>
+              <EnvVariablesPanel
+                workspaceId={props.document.workspaceId}
+                visible={selectedSidebar?._tag === "envVariables"}
+                onHide={onHideSidebar}
+              />
+              <Schedules
+                workspaceId={props.document.workspaceId}
+                documentId={props.document.id}
+                isPublished={props.document.publishedAt !== null}
+                visible={selectedSidebar?._tag === "schedules"}
+                onHide={onHideSidebar}
+                onPublish={onPublish}
+                publishing={props.publishing}
+              />
+              <Files
+                workspaceId={props.document.workspaceId}
+                visible={selectedSidebar?._tag === "files"}
+                onHide={onHideSidebar}
+                userId={props.user.id}
+                yDoc={yDoc}
+                executionQueue={executionQueue}
+              />
+              <DataExplorerContent
+                visible={selectedSidebar?._tag === "schemaExplorer"}
+                mode="sidebar"
+                showDragHandle={false}
+              />
+            </>
+          )}
+        </RightSidebarPanel>
       </div>
     </Layout>
   );

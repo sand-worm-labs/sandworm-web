@@ -132,9 +132,11 @@ export const NotebookPanel = ({
           />
         ))}
 
-        <div className="pt-2 w-full">
-          <AIAssistantButton onClick={onToggleChat} />
-        </div>
+        {onToggleChat && (
+          <div className="pt-2 w-full">
+            <AIAssistantButton onClick={onToggleChat} />
+          </div>
+        )}
       </div>
     </aside>
   );
