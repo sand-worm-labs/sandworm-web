@@ -5,4 +5,5 @@ export type TrinoConfig = {
   schema: string | null;
   user: string;
   password: string | null;
+  httpScheme: 'http' | 'https';
 };
