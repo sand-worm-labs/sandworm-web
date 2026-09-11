@@ -63,10 +63,6 @@ export function WebsocketProvider({ children }: Props) {
       auth: { token: session.user?.token },
     });
 
-    newSocket.on("connect", () => {
-      console.log("[WebSocket] Connected, id:", newSocket.id);
-    });
-
     newSocket.on("connect_error", err => {
       console.error("[WebSocket] Connection error:", err.message);
     });
@@ -91,7 +87,6 @@ export function WebsocketProvider({ children }: Props) {
     }
 
     const onConnect = () => {
-      console.log("[WebSocket] Emitting join-workspace:", workspaceId);
       socket.emit("join-workspace", { workspaceId });
     };
 

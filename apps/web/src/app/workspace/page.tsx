@@ -28,26 +28,6 @@ export default function WorkspaceRedirectPage() {
     networkStatus,
   } = useCurrentWorkspaceInfo(sessionLoading || !isAuthenticated || !user);
 
-  console.log(
-    "[workspace] sessionLoading:",
-    sessionLoading,
-    "| isAuthenticated:",
-    isAuthenticated,
-    "| user:",
-    user?.id ?? null
-  );
-  console.log(
-    "[workspace] skip:",
-    sessionLoading || !isAuthenticated || !user,
-    "| workspaceLoading:",
-    workspaceLoading,
-    "| workspaceInfo:",
-    workspaceInfo ?? null,
-    "| networkStatus:",
-    networkStatus,
-    "| error:",
-    error?.message ?? null
-  );
 
   useEffect(() => {
     // @hack this is too much code that shouldn't exist and too much condition, this is claude fault need to test this

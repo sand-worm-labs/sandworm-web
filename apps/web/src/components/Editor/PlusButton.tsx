@@ -252,7 +252,6 @@ interface BlockListProps {
 
 function BlockList(props: BlockListProps) {
   const ff = { visualizationsV2: true };
-  console.log(props.workspaceId);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const containerWidth = useContainerWidth(

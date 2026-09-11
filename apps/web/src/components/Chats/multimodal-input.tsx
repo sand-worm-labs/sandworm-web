@@ -57,8 +57,6 @@ export function MultimodalInput({
   const { workspace } = useWorkspace(workspaceId);
   const currentModel = workspace?.assistantModel;
 
-  console.log(currentModel, workspace, messages, appendAction);
-
   const adjustHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";

@@ -21,7 +21,6 @@ function HiddenInPublishedButton(props: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  console.log(props.hasMultipleTabs);
   return (
     <Menu as="div" className="inline-block">
       {({ open }) => {

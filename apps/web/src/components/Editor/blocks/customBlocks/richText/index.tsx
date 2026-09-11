@@ -231,9 +231,6 @@ const RichTextBlock = (props: Props) => {
         <div
           role="toolbar"
           aria-label="Text formatting tools"
-          onMouseDown={e =>
-            console.log("toolbar mousedown — target:", e.target)
-          }
           className={clsx(
             "overflow-visible transition-all duration-150 ease-out",
             editor?.isFocused ? "max-h-12 opacity-100" : "max-h-0 opacity-0"

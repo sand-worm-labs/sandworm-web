@@ -35,8 +35,6 @@ const CLARITY_ID = "yg1ksw88ha";
 // ⬢ Root Layout
 // =====================================
 export default async function RootLayout({ children }: ChildrenProps) {
-  console.log(azeretMono.style.fontFamily);
-
   return (
     <html lang="en" suppressHydrationWarning>
       <Script

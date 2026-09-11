@@ -71,7 +71,6 @@ export const createApolloClient = ({
           // Start refresh — server reads refresh_token cookie and sets new access_token cookie
           refreshingPromise = refreshAccessToken()
             .then(() => {
-              console.log("[apollo] token refresh succeeded");
               onRefreshed();
             })
             .catch(err => {

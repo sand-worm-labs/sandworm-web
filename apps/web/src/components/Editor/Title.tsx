@@ -192,9 +192,7 @@ function Title(props: Props) {
   );
 
   useEffect(() => {
-    const observer = () => {
-      console.log("[Title ydoc] fragment changed:", props.content.toJSON());
-    };
+    const observer = () => {};
     props.content.observeDeep(observer);
     return () => props.content.unobserveDeep(observer);
   }, [props.content]);

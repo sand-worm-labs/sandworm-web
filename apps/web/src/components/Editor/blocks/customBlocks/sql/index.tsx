@@ -492,7 +492,6 @@ function SQLBlock(props: Props) {
   }, [status, execution, onRun, blockId]);
 
   const { source, configuration } = getSQLAttributes(props.block, props.blocks);
-  console.log(configuration);
   const lastQuery = props.block.getAttribute("lastQuery");
   const startQueryTime = props.block.getAttribute("startQueryTime");
   const lastQueryTime = props.block.getAttribute("lastQueryTime");
@@ -501,12 +500,6 @@ function SQLBlock(props: Props) {
       case "idle":
       case "completed": {
         if (source?.toJSON() === lastQuery && lastQueryTime) {
-          // eslint-disable-next-line no-console
-          console.log("[DEBUG queryStatusText]", {
-            resultType: result?.type,
-            result,
-            statusTag: status._tag,
-          });
           if (result?.type === "success") {
             return (
               <SucceededText
@@ -589,7 +582,6 @@ function SQLBlock(props: Props) {
     });
 
     if (fixResult?.chatId) {
-      console.log("opening sidebar");
       sidebarApi.openRightPanel("chat", { chatId: fixResult.chatId });
     }
   }, [

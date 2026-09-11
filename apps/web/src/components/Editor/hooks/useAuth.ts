@@ -295,14 +295,6 @@ export const useSession = ({
 
   useEffect(() => {
     if (!loading && redirectToLogin) {
-      console.log(
-        "[useSession] settled — currentUser:",
-        data?.currentUser ?? null,
-        "| error:",
-        error?.message ?? null,
-        "| path:",
-        pathname
-      );
       if (!data?.currentUser) {
         const back = `${pathname}${searchParams.toString() ? `?${searchParams}` : ""}`;
         console.warn(
@@ -348,8 +340,7 @@ export const useSignout = () => {
         credentials: "include",
       });
 
-      const body = await response.text();
-      console.log("[signout] response body:", body);
+      await response.text();
     } catch (error) {
       console.error("[signout] fetch failed:", error);
     }

@@ -272,11 +272,6 @@ function VisualizationBlockV2(props: Props) {
   );
 
   const onRun = useCallback(() => {
-    console.log("[viz] onRun called", {
-      environmentStartedAt,
-      attrs_id: attrs.id,
-    });
-
     executions.forEach(e => e.item.setAborting());
     props.executionQueue.enqueueBlock(
       attrs.id,

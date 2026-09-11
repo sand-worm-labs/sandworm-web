@@ -166,7 +166,6 @@ export function useMiniChat({
   const loadThread = useCallback(
     async (chatId: string) => {
       const chat = await chatApi.fetchChat(chatId);
-      console.log(chat, "g");
       setActiveChatId(chat.id);
       setActiveThreadTitle(chat.title);
       setMessages(
@@ -248,8 +247,6 @@ export function useMiniChat({
       updateDocumentTitle = false
     ) => {
       if (!text.trim() || isLoading) return;
-
-      console.log("[MiniChat] sending fileRefs:", fileRefs);
 
       addMessage({
         text,
@@ -384,13 +381,9 @@ export function useMiniChat({
     [handleSendSafe]
   );
 
-  const handleAcceptAll = useCallback((_messageId: string) => {
-    console.log("[MiniChat] accept all blocks for message:", _messageId);
-  }, []);
+  const handleAcceptAll = useCallback((_messageId: string) => {}, []);
 
-  const handleRejectAll = useCallback((_messageId: string) => {
-    console.log("[MiniChat] reject all blocks for message:", _messageId);
-  }, []);
+  const handleRejectAll = useCallback((_messageId: string) => {}, []);
 
   const handleAbort = useCallback(() => {
     const chatId = currentChatIdRef.current ?? activeChatId;
