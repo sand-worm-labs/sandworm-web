@@ -647,6 +647,9 @@ function PythonBlock(props: Props) {
   // ⬢  Dashnboard Mode
   // =====================================
   if (props.dashboardMode && !dashboardModeHasControls(props.dashboardMode)) {
+    const isDashboardTile =
+      props.dashboardMode._tag === "live" ||
+      props.dashboardMode.position === "dashboard";
     return (
       <PythonOutputs
         className="flex flex-col h-full ph-no-capture"
@@ -654,10 +657,8 @@ function PythonBlock(props: Props) {
         isFixWithAILoading={isAIFixing}
         onFixWithAI={onFixWithAI}
         isPDF={props.isPDF}
-        isDashboardView={
-          props.dashboardMode._tag === "live" ||
-          props.dashboardMode.position === "dashboard"
-        }
+        isDashboardView={isDashboardTile}
+        isDashboardTile={isDashboardTile}
         lazyRender={
           props.dashboardMode._tag === "editing" &&
           props.dashboardMode.position === "sidebar"
@@ -897,6 +898,7 @@ function PythonBlock(props: Props) {
                     canFixWithAI={hasOaiKey}
                     isPDF={props.isPDF}
                     isDashboardView={!!props.viewModeCodeHidden}
+                    isDashboardTile={false}
                     isPublicMode={props.isPublicMode}
                     lazyRender={!props.isPDF}
                     blockId={blockId}

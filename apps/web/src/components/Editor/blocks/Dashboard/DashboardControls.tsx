@@ -24,7 +24,6 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import type { DataFrame } from "@sandworm/types";
 import { exhaustiveCheck } from "@sandworm/types";
 import {
-  PiCaretDoubleLeft,
   PiCaretDoubleRight,
   PiChartPie,
   PiTerminal,
@@ -51,6 +50,7 @@ import MarkdownBlock from "../customBlocks/markdown";
 import { useYDocState } from "../../hooks/useYDocs";
 import type { APIDataSources } from "../../hooks/useDataSources";
 import MultiSelect from "../MultiSelect";
+import { RightSidebarPanel } from "../../RightSidebarPanel";
 
 import ScaleChild from "./ScaleChild";
 import { getDefaults } from "./DashboardView";
@@ -492,7 +492,6 @@ interface Props {
   aiTasks: AITasks;
   onExpand: (block: YBlock) => void;
   isOpen: boolean;
-  onOpen: () => void;
   onClose: () => void;
 }
 
@@ -666,125 +665,110 @@ function DashboardControls(props: Props) {
     [blocks, layout, blocksInDashboard, search, types]
   );
 
-  if (!props.isOpen) {
-    return (
-      <div className="pt-3 fixed right-0 z-20">
+  return (
+    <RightSidebarPanel visible={props.isOpen}>
+      <div className="relative w-full font-body h-full">
         <button
           type="button"
-          onClick={props.onOpen}
-          className="bg-white dark:bg-base-720 flex items-center rounded-l-xl px-3 py-1.5
-            text-[12.5px] text-ink-400 hover:bg-primary-tint-50 dark:hover:bg-primary-900
-            border border-r-0 border-border-secondary dark:border-base-710
-            group max-w-11 hover:max-w-32 overflow-hidden transition-[max-width] duration-300"
-        >
-          <PiCaretDoubleLeft size={14} className="flex-shrink-0" />
-          <span className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-            Show Blocks
-          </span>
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative w-[400px] font-body h-full">
-      <button
-        type="button"
-        className="absolute z-10 top-12 rounded-full border border-border-secondary dark:border-base-710
+          className="absolute z-[60] top-12 rounded-full border border-border-secondary dark:border-base-710
           text-ink-400 bg-white dark:bg-base-720
           hover:bg-primary-tint-50 dark:hover:bg-primary-900 hover:text-primary
           w-6 h-6 flex justify-center items-center left-0 -translate-x-1/2
           transition-colors duration-100"
-        onClick={props.onClose}
-        aria-label="Close blocks panel"
-      >
-        <PiCaretDoubleRight size={14} />
-      </button>
+          onClick={props.onClose}
+          aria-label="Close blocks panel"
+        >
+          <PiCaretDoubleRight size={14} />
+        </button>
 
-      <div
-        className="bg-white dark:bg-base-720 border-l border-border-secondary dark:border-base-700
+        <div
+          className="bg-white dark:bg-base-720 border-l border-border-secondary dark:border-base-700
           overflow-hidden relative h-full flex flex-col"
-      >
-        <div className="flex-shrink-0 px-4 pt-4 pb-3 border-b border-base-300 dark:border-base-700">
-          <h2 className="text-[13px] font-medium text-ink-100 dark:text-white mb-3">
-            Blocks
-          </h2>
-          <div className="flex flex-col gap-2.5">
-            <div
-              className="flex items-center gap-2 px-2.5 py-1.5
+        >
+          <div className="flex-shrink-0 px-4 pt-4 pb-3 border-b border-base-300 dark:border-base-700">
+            <h2 className="text-[13px] font-medium text-ink-100 dark:text-white mb-3">
+              Blocks
+            </h2>
+            <div className="flex flex-col gap-2.5">
+              <div
+                className="flex items-center gap-2 px-2.5 py-1.5
                 bg-base-300 dark:bg-base-700
                 border border-transparent
                 focus-within:border-primary-200 dark:focus-within:border-primary-700
                 rounded-xl transition-colors duration-150"
-            >
-              <PiMagnifyingGlass
-                size={13}
-                className="text-ink-300 dark:text-ink-600 flex-shrink-0"
-              />
-              <input
-                type="text"
-                placeholder="Find block by title…"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="flex-1 bg-transparent outline-none text-[12.5px]
+              >
+                <PiMagnifyingGlass
+                  size={13}
+                  className="text-ink-300 dark:text-ink-600 flex-shrink-0"
+                />
+                <input
+                  type="text"
+                  placeholder="Find block by title…"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="flex-1 bg-transparent outline-none text-[12.5px]
                   text-ink-500 dark:text-ink-200
                   placeholder:text-ink-300 dark:placeholder:text-ink-600"
+                />
+                {search ? (
+                  <button
+                    type="button"
+                    onClick={() => setSearch("")}
+                    className="text-ink-300 hover:text-ink-500 transition-colors"
+                    aria-label="Clear search"
+                  >
+                    <PiX size={12} />
+                  </button>
+                ) : null}
+              </div>
+              <MultiSelect<BlockType>
+                value={types}
+                getLabel={getTypeLabel}
+                getIcon={t => getTypeIcon(t, 13)}
+                placeholder="Filter by type"
+                options={typeOptions}
+                onToggle={onToggleType}
               />
-              {search ? (
-                <button
-                  type="button"
-                  onClick={() => setSearch("")}
-                  className="text-ink-300 hover:text-ink-500 transition-colors"
-                  aria-label="Clear search"
-                >
-                  <PiX size={12} />
-                </button>
-              ) : null}
             </div>
-            <MultiSelect<BlockType>
-              value={types}
-              getLabel={getTypeLabel}
-              getIcon={t => getTypeIcon(t, 13)}
-              placeholder="Filter by type"
-              options={typeOptions}
-              onToggle={onToggleType}
-            />
           </div>
-        </div>
 
-        <OverlayScrollbarsComponent className="flex-1 min-h-0 px-3 pt-2 overflow-y-auto">
-          <BlocksList
-            document={props.document}
-            list={blocksList}
-            dataSources={props.dataSources}
-            dataframes={dataframes.value}
-            blocks={blocks.value}
-            layout={layout.value}
-            onDragStart={props.onDragStart}
-            userId={props.userId}
-            executionQueue={props.executionQueue}
-            aiTasks={props.aiTasks}
-            onExpand={props.onExpand}
-          />
-        </OverlayScrollbarsComponent>
+          <OverlayScrollbarsComponent className="flex-1 min-h-0 px-3 pt-2 overflow-y-auto">
+            <BlocksList
+              document={props.document}
+              list={blocksList}
+              dataSources={props.dataSources}
+              dataframes={dataframes.value}
+              blocks={blocks.value}
+              layout={layout.value}
+              onDragStart={props.onDragStart}
+              userId={props.userId}
+              executionQueue={props.executionQueue}
+              aiTasks={props.aiTasks}
+              onExpand={props.onExpand}
+            />
+          </OverlayScrollbarsComponent>
 
-        <div className="flex-shrink-0 p-3 border-t border-base-300 dark:border-base-700">
-          <button
-            type="button"
-            className="flex items-center justify-center gap-2 w-full rounded-xl px-3 py-2
+          <div className="flex-shrink-0 p-3 border-t border-base-300 dark:border-base-700">
+            <button
+              type="button"
+              className="flex items-center justify-center gap-2 w-full rounded-xl px-3 py-2
               text-[12.5px] font-medium text-ink-500 dark:text-ink-200
               border border-border-secondary dark:border-base-710
               bg-white dark:bg-base-750
               hover:bg-primary-tint-50 dark:hover:bg-primary-900
               transition-colors duration-100"
-            onClick={addHeading}
-          >
-            <PiTextHOne size={15} className="text-ink-300 dark:text-ink-500" />
-            <span>Add heading</span>
-          </button>
+              onClick={addHeading}
+            >
+              <PiTextHOne
+                size={15}
+                className="text-ink-300 dark:text-ink-500"
+              />
+              <span>Add heading</span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </RightSidebarPanel>
   );
 }
 

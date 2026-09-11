@@ -1,9 +1,7 @@
 export function BetaBadge() {
   return (
-    <span className="px-1.5 py-[1px] rounded-full bg-base-600 leading-4">
-      <span className="text-[10px] font-semibold uppercase tracking-wide text-ink-400">
-        Beta
-      </span>
+    <span className="px-2 py-0.5 rounded-lg text-[0.6rem] lg:text-xs font-tertiary bg-[var(--beta-badge-bg)] text-[var(--beta-badge-text)]">
+      beta
     </span>
   );
 }

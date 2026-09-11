@@ -33,6 +33,12 @@ export class UpdateUserInput {
   username?: string;
 
   @StringFieldOptional()
+  firstName?: string;
+
+  @StringFieldOptional()
+  lastName?: string;
+
+  @StringFieldOptional()
   bio?: string;
 
   @URLFieldOptional()

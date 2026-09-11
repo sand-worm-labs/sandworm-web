@@ -30,6 +30,7 @@ const azeretMono = AzeretMono({
 });
 
 const GTAG_ID = "G-GQB5QS1LHQ";
+const CLARITY_ID = "yg1ksw88ha";
 
 // ⬢ Root Layout
 // =====================================
@@ -48,6 +49,13 @@ export default async function RootLayout({ children }: ChildrenProps) {
   gtag('js', new Date());
 
   gtag('config', "G-GQB5QS1LHQ")`}
+      </Script>
+      <Script id="microsoft-clarity" strategy="afterInteractive">
+        {`(function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "${CLARITY_ID}");`}
       </Script>
       <body className={`${azeretMono.className} h-full w-screen `}>
         <RootProvider>{children}</RootProvider>

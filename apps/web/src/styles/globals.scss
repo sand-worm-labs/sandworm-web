@@ -220,6 +220,10 @@
     --radius: 0.5rem;
     --icon-bg: #f5f7fa;
     --icon-stroke: #1c3b5a;
+
+    /* Beta badge — matches the landing page badge, same in both themes */
+    --beta-badge-bg: #e4eaec;
+    --beta-badge-text: #3f1814;
   }
 
   .dark {

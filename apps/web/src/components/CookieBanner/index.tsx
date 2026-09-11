@@ -50,8 +50,8 @@ export default function CookieBanner() {
       role="region"
       aria-label="Cookie consent"
       className={[
-        "fixed bottom-6 right-[1.5rem] z-50 font-body",
-        "w-[400px] max-w-[720px]",
+        "fixed bottom-4 left-4 right-4 sm:bottom-6 sm:left-auto sm:right-6 z-50 font-body",
+        "w-auto sm:w-[400px] max-w-[720px]",
         "bg-white border dark:border-border-secondary border-border-secondary  rounded-2xl shadow-[0_4px_4px_0_#73768726] ",
         "flex flex-col  gap-4 px-5 py-2.5",
         leaving

@@ -269,6 +269,9 @@ function AnalyticsBlock(props: Props) {
   }, [props.onToggleIsBlockHiddenInPublished, blockId]);
 
   if (props.dashboardMode && !dashboardModeHasControls(props.dashboardMode)) {
+    const isDashboardTile =
+      props.dashboardMode._tag === "live" ||
+      props.dashboardMode.position === "dashboard";
     return (
       <PythonOutputs
         className="flex flex-col h-full ph-no-capture"
@@ -277,10 +280,8 @@ function AnalyticsBlock(props: Props) {
         onFixWithAI={() => {}}
         canFixWithAI={false}
         isPDF={props.isPDF}
-        isDashboardView={
-          props.dashboardMode._tag === "live" ||
-          props.dashboardMode.position === "dashboard"
-        }
+        isDashboardView={isDashboardTile}
+        isDashboardTile={isDashboardTile}
         lazyRender={
           props.dashboardMode._tag === "editing" &&
           props.dashboardMode.position === "sidebar"
