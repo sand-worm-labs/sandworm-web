@@ -46,21 +46,21 @@ export const ClaimUsernameStep = ({
   const error = validationError ?? submitError ?? null;
 
   return (
-    <div className="flex flex-col items-center justify-center px-4 py-12 w-full">
+    <div className="flex flex-col items-center justify-center px-4 py-6 sm:py-12 w-full">
       <Username />
 
-      <div className="w-full max-w-md mx-auto space-y-4 text-center">
-        <h2 className="text-2xl font-bold font-primary text-ink-100 mt-4">
+      <div className="w-full max-w-md mx-auto space-y-2 sm:space-y-4 text-center">
+        <h2 className="text-2xl font-bold font-primary text-ink-100 mt-3 sm:mt-4">
           Claim your Sandworm domain
         </h2>
-        <p className="text-sm font-medium text-ink-200 dark:text-white font-body mb-4">
+        <p className="text-sm font-medium text-ink-200 dark:text-white font-body mb-2 sm:mb-4">
           Your username is your unique profile URL where all your dashboards,
           queries, and public works live. It represents your identity across
           Sandworm.
         </p>
 
         <div className="space-y-2">
-          <div className="flex mb-6">
+          <div className="flex mb-3 sm:mb-6">
             <Input
               value={username}
               onChange={e => setUsername(e.target.value)}
@@ -83,7 +83,7 @@ export const ClaimUsernameStep = ({
             </Button>
           </div>
 
-          <div className="flex justify-center mt-5">
+          <div className="flex justify-center mt-3 sm:mt-5">
             <motion.span
               layout
               transition={{ type: "spring", stiffness: 350, damping: 35 }}
@@ -166,36 +166,36 @@ export const ClaimUsername = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4 py-12 w-full">
-      <ClaimUsernameStep
-        onSubmit={onSubmit}
-        isLoading={isClaiming}
-        error={claimError}
-      />
-
-      <div className="flex-col gap-2 absolute bottom-[4rem] w-full flex items-center justify-center">
-        <p className="font-body  text-center text-xs text-ink-400 md:max-w-[300px] mt-6">
-          By creating an account you agree to the{" "}
-          <a
-            href={TERMS_URL()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline"
-          >
-            Terms
-          </a>{" "}
-          and confirm that you have read the{" "}
-          <a
-            href={PRIVACY_URL()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline"
-          >
-            Privacy Policy
-          </a>
-          .
-        </p>
+    <div className="flex flex-col items-center justify-between min-h-screen px-4 py-6 sm:py-12 w-full">
+      <div className="flex-1 flex flex-col items-center justify-center w-full">
+        <ClaimUsernameStep
+          onSubmit={onSubmit}
+          isLoading={isClaiming}
+          error={claimError}
+        />
       </div>
+
+      <p className="font-body text-center text-xs text-ink-400 md:max-w-[300px] pt-4 pb-2">
+        By creating an account you agree to the{" "}
+        <a
+          href={TERMS_URL()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          Terms
+        </a>{" "}
+        and confirm that you have read the{" "}
+        <a
+          href={PRIVACY_URL()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          Privacy Policy
+        </a>
+        .
+      </p>
     </div>
   );
 };
