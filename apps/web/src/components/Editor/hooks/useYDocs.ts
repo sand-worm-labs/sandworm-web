@@ -168,7 +168,6 @@ export function useYDoc(
 ) {
   const isFirst = useRef(true);
 
-  console.log("get doc", isDataApp, clock, userId, publishedAt, connect);
   const [{ id, cached, yDoc, restore }, setYDoc] = useState(() =>
     getYDoc(documentId, isDataApp, clock, publishedAt)
   );
@@ -264,26 +263,6 @@ export function useYDoc(
   }, [provider, setSyncing]);
 
   useEffect(() => {
-    if (syncing) return;
-
-    const blocks = getBlocks(yDoc);
-    const layout = getLayout(yDoc);
-    const dashboard = getDashboard(yDoc);
-
-    console.log("[YDoc Content]", {
-      mode: isDataApp ? "VIEW" : "EDIT",
-      documentId,
-      blockCount: blocks.size,
-      blocks: Array.from(blocks.entries()).map(([id, block]) => ({
-        id,
-        type: block.get("type") as string,
-      })),
-      layoutSize: layout.length,
-      dashboardSize: dashboard.size,
-    });
-  }, [syncing, yDoc, documentId, isDataApp]);
-
-  useEffect(() => {
     if (initialState) {
       Y.applyUpdate(yDoc, initialState);
     }
@@ -310,7 +289,6 @@ export function useYDoc(
     }
 
     console.timeEnd(`${documentId} sync`);
-    console.log(`${documentId} not syncing`, new Date().toISOString());
 
     // ⬢ NOTE — consistent-return: both branches must return void or a cleanup.
     // The syncing branch returns undefined (no cleanup needed while still syncing).

@@ -563,17 +563,10 @@ const DraggableTabbedBlock = (props: {
         captureDraggingState: true,
       },
       item: () => {
-        console.log(
-          "[drag] item fired, blockGroupId:",
-          props.id,
-          "canDrag:",
-          props.isEditable && !props.isApp
-        );
         return { blockGroupId: props.id };
       },
       collect: monitor => {
         const dragging = !!monitor.isDragging();
-        if (dragging) console.log("[drag] isDragging TRUE for", props.id);
         return { isDragging: dragging };
       },
     }),
@@ -609,14 +602,6 @@ const DraggableTabbedBlock = (props: {
       },
       canDrop: ({ blockGroupId }) => {
         const result = blockGroupId !== props.id;
-        console.log(
-          "[drop] canDrop check — dragged:",
-          blockGroupId,
-          "target:",
-          props.id,
-          "result:",
-          result
-        );
         return result;
       },
       collect: monitor => ({
@@ -1262,8 +1247,6 @@ interface Props {
 const Editor = (props: Props) => {
   const { scrollViewRef } = props;
 
-  console.log(props.provider.awareness);
-
   const { state: layout } = useYDocState<Y.Array<YBlockGroup>>(
     props.yDoc,
     layoutGetter
@@ -1733,8 +1716,6 @@ const Editor = (props: Props) => {
   );
 
   const lastUpdatedAt = useLastUpdatedAt(props.yDoc);
-
-  console.log("hi", !props.isSyncing, domBlocks, domBlocks.length === 0);
 
   return (
     <div className="editor-v2 flex flex-col flex-grow justify-center font-body  subpixel-antialiased h-full w-full relative flex-1 min-w-0 bg-[#fdfdfd] dark:bg-sidebar-surface">

@@ -88,8 +88,6 @@ export const useFiles = (
   });
 
   const files = useMemo(() => {
-    console.log(path);
-
     return data?.listFiles ?? [];
   }, [data]);
 

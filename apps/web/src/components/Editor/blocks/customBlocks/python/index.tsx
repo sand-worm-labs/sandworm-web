@@ -420,7 +420,6 @@ function PythonBlock(props: Props) {
     });
 
     if (fixResult?.chatId) {
-      console.log("opening sidebar");
       sidebarApi.openRightPanel("chat", { chatId: fixResult.chatId });
     }
   }, [
@@ -546,14 +545,7 @@ function PythonBlock(props: Props) {
     switch (status) {
       case "idle":
       case "completed":
-        console.log("vava");
         if (source?.toJSON() === lastQuery && lastQueryTime) {
-          // eslint-disable-next-line no-console
-          console.log("[DEBUG python queryStatusText]", {
-            results,
-            hasError: results.some(r => r.type === "error"),
-            status,
-          });
           if (results.some(r => r.type === "error")) {
             return (
               <ExecutionFailedText

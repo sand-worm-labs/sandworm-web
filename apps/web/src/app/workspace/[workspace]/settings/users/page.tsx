@@ -144,9 +144,7 @@ export default function UsersPage() {
   }, []);
 
   const onChangeRole = useCallback(
-    async (id: string, role: UserWorkspaceRole) => {
-      console.log("Change role:", id, role);
-    },
+    async (id: string, role: UserWorkspaceRole) => {},
     []
   );
 
@@ -170,9 +168,7 @@ export default function UsersPage() {
     },
     [members, batchRemoveUsers, refetchMembers]
   );
-  const onResetPassword = useCallback(async (id: string) => {
-    console.log("Reset password:", id);
-  }, []);
+  const onResetPassword = useCallback(async (id: string) => {}, []);
 
   const handleInviteUser = async (email: string, role?: string) => {
     try {

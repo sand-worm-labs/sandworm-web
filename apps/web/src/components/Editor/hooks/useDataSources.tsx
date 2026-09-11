@@ -148,8 +148,6 @@ export function DataSourcesProvider(props: Props) {
       workspaceId: string;
       dataSources: APIDataSource[];
     }) => {
-      // NOTE: remove this log before production
-      console.log(data, "datasource");
       setState(prev =>
         prev.set(data.workspaceId, {
           datasources: List(data.dataSources),

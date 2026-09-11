@@ -411,7 +411,6 @@ export function PowerToolboxModal({
 
       if (isSearching || step === "tools") {
         onSelectTool((item as ToolDefinition).id);
-        console.log("onSelectTool fired", item.id);
         onClose();
       } else {
         setActiveCategory(item as ToolCategory);

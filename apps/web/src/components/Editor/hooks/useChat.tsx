@@ -220,7 +220,6 @@ export const useChat = (workspaceId: string, documentId: string): UseChat => {
       });
 
       const message = result.data?.sendMessage;
-      console.log("message res", message);
       if (!message) throw new Error("Failed to send message");
       return message as Message;
     },

@@ -67,14 +67,10 @@ export const MiniChat: React.FC<MiniChatProps> = ({
         }
       );
 
-      console.log("[upload] response.data:", response, response.data);
-
       toast.success(`${file.name} uploaded`, {
         description: "You can find it in your workspace files.",
         duration: 4000,
       });
-
-      console.log(file);
 
       return {
         name: file.name,
@@ -96,8 +92,6 @@ export const MiniChat: React.FC<MiniChatProps> = ({
       (p): p is PendingReviewPart => p.type === "pending_review"
     );
   }, [state.messages]);
-
-  console.log(pendingReview, "prd", state.messages);
 
   // =====================================
   // ⬢ Render

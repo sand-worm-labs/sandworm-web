@@ -186,12 +186,6 @@ interface Props {
 function AnalyticsBlock(props: Props) {
   const { status: envStatus, startedAt: environmentStartedAt } =
     useEnvironmentStatus(props.document.workspaceId);
-  console.log(
-    props.insertBelow,
-    props.isFullScreen,
-    props.isPublicMode,
-    props.blocks
-  );
 
   const executions = useBlockExecutions(
     props.executionQueue,

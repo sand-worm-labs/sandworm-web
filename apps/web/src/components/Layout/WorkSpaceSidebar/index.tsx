@@ -214,8 +214,6 @@ export const WorkspaceSidebar = () => {
 
   const isEditor = userRole !== "viewer";
 
-  console.log("editor?", user?.role?.[0]?.[workspaceId], user?.role);
-
   return (
     <>
       <aside

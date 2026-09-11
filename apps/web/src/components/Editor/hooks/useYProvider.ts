@@ -36,12 +36,6 @@ function getWSProvider(
   const id = getDocId(documentId, isDataApp, clock /* publishedAt */);
   const wsUrl = getYjsUrl();
 
-  console.log("[Room Name]", {
-    mode: isDataApp ? "VIEW" : "EDIT",
-    roomId: id,
-    parts: [documentId, isDataApp, clock],
-  });
-
   return new WebsocketProvider(wsUrl, id, yDoc, {
     connect: false,
     params: {
@@ -79,11 +73,8 @@ class Provider implements IProvider {
   constructor(private wsProvider: WebsocketProvider) {
     this._synced = this.wsProvider.synced;
     this.wsProvider.on("sync", this.onWSSynced);
-    this.wsProvider.on("status", (event: any) => {
-      console.log("[WS] status:", event.status);
-    });
     this.wsProvider.on("connection-error", (event: any) => {
-      console.log("[WS] connection-error:", event);
+      console.error("[WS] connection-error:", event);
     });
   }
 
@@ -102,7 +93,6 @@ class Provider implements IProvider {
 
   public connect() {
     this.wsProvider.connect();
-    console.log("[Provider] connect() called");
   }
 
   public destroy() {

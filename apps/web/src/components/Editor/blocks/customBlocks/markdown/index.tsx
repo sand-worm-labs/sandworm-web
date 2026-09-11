@@ -264,7 +264,7 @@ const MarkdownPreview = ({ source }: { source: Y.Text }) => {
           }, 1500);
         });
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     };
 
