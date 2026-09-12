@@ -52,7 +52,9 @@ export function protocolWhere(protocol: string | undefined, col = "project"): st
 
 /**
  * Wraps a SQL string in a Python cell with a standard Sandworm header comment.
- * Assigns the result to `dfName` using the platform's `query()` runner.
+ * Assigns the result to `dfName` using the platform's `_sandworm_query()` runner
+ * (namespaced rather than a bare `query` so it can't collide with a user's own
+ * variable of that name in the same persisted kernel session).
  *
  * The header comment lists each resolved param so notebooks are self-documenting.
  */
@@ -75,7 +77,7 @@ sql = """
 ${sql.trim()}
 """
 
-${dfName} = query(sql)
+${dfName} = _sandworm_query(sql)
 ${dfName}
 `;
 }
@@ -98,7 +100,7 @@ export function dfNameFromToolId(toolId: string): string {
 // A template is treated as raw SQL (and gets wrapped via wrapSqlInPython)
 // only when it looks like a bare SQL statement — starts with one of the
 // usual statement keywords once comments/whitespace are stripped. Anything
-// else (print statements, a `sql = """..."""` + query(...) template, plain
+// else (print statements, a `sql = """..."""` + _sandworm_query(...) template, plain
 // Python) is assumed to already be valid Python and passed through as-is
 // after interpolation, unwrapped.
 const SQL_STATEMENT_RE = /^(select|with|insert|update|delete)\b/i;
@@ -127,7 +129,7 @@ function looksLikeBareSql(template: string): boolean {
  *  3. Interpolate all {{key}} placeholders.
  *  4. If the template is bare SQL, wrap it in a Python cell via
  *     wrapSqlInPython. Otherwise it's already Python (print statements, a
- *     `sql = """..."""` + query(...) mix, etc.) — pass it through unwrapped.
+ *     `sql = """..."""` + _sandworm_query(...) mix, etc.) — pass it through unwrapped.
  *
  * The caller (registry.ts) is responsible for looking up the correct
  * template from the TemplateMap.

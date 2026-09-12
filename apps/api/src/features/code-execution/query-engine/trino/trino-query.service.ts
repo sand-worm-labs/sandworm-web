@@ -18,7 +18,7 @@ export class TrinoQueryService {
     private readonly configService: ConfigService<AllConfigType>,
   ) { }
 
-  private buildConnectionUrl(): string {
+  buildConnectionUrl(): string {
     const { host, port, catalog, schema, user, password, httpScheme } = this.configService.getOrThrow('trino', { infer: true });
     const auth = password
       ? `${encodeURIComponent(user)}:${encodeURIComponent(password)}`
