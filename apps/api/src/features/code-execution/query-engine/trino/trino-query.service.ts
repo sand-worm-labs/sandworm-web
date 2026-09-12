@@ -4,6 +4,7 @@ import { Output, RunQueryResult, SuccessRunQueryResult } from '@sandworm/types';
 import { AllConfigType } from '@/core/config/config.type';
 import { PythonExecutorService } from '../../python-executor.service';
 import { PythonQueryRunnerService } from '../python/python-query-runner.service';
+import { buildTrinoConnectionUrl } from './trino-connection-url.util';
 
 export interface AdhocQueryResult {
   columns: string[];
@@ -19,12 +20,7 @@ export class TrinoQueryService {
   ) { }
 
   buildConnectionUrl(): string {
-    const { host, port, catalog, schema, user, password, httpScheme } = this.configService.getOrThrow('trino', { infer: true });
-    const auth = password
-      ? `${encodeURIComponent(user)}:${encodeURIComponent(password)}`
-      : encodeURIComponent(user);
-    const path = schema ? `${catalog}/${schema}` : catalog;
-    return `trino://${auth}@${host}:${port}/${path}?http_scheme=${httpScheme}`;
+    return buildTrinoConnectionUrl(this.configService.getOrThrow('trino', { infer: true }));
   }
 
   async execute(

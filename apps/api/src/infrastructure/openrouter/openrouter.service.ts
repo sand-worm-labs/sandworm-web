@@ -23,7 +23,7 @@ import { OpenRouterModel } from './model/openrouter.model';
 import { WorkspaceEntity } from '@sandworm/postgresql-typeorm';
 import { WorkspaceMembershipService } from "@/features/workspace/service/workspace-membership.service";
 import { EnvironmentService } from '@/features/environment/environment.service';
-import { AI_ENV_HASH_KEYS, AIProvider } from '@/core/constants/app.constant';
+import { AI_ENV_HASH_KEYS, AI_ENV_KEYS, AIProvider } from '@/core/constants/app.constant';
 import { validateUUID } from '@/common/utils/uuid';
 
 export interface AccountCredits {

@@ -7,7 +7,7 @@ import { decrypt } from '@sandworm/nest-common';
 import { EnvironmentVariableEntity } from '@sandworm/postgresql-typeorm';
 import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
 import { AllConfigType } from '@/core/config/config.type';
-import { TrinoQueryService } from '@/features/code-execution/query-engine/trino/trino-query.service';
+import { buildTrinoConnectionUrl } from '@/features/code-execution/query-engine/trino/trino-connection-url.util';
 
 export type Jupyter = {
     session: services.Session.ISessionConnection;
@@ -24,7 +24,6 @@ export class JupyterSessionService {
         private readonly environmentVariableRepository: Repository<EnvironmentVariableEntity>,
         private readonly config: ConfigService<AllConfigType>,
         private readonly jupyterManager: JupyterService,
-        private readonly trinoQueryService: TrinoQueryService,
     ) { }
 
     async getSession(workspaceId: string, sessionId: string): Promise<Jupyter> {
@@ -105,7 +104,7 @@ def _sandworm_query(sql, datasource="trino"):
 
     from sqlalchemy import create_engine, text
 
-    engine = create_engine(${JSON.stringify(this.trinoQueryService.buildConnectionUrl())})
+    engine = create_engine(${JSON.stringify(buildTrinoConnectionUrl(this.config.getOrThrow('trino', { infer: true })))})
     try:
         with engine.connect() as conn:
             return pd.read_sql_query(text(sql), con=conn)
