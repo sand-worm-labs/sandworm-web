@@ -5,6 +5,9 @@ jest.mock('@openrouter/sdk', () => ({ OpenRouter: jest.fn() }));
 jest.mock('@openrouter/sdk/models/operations', () => ({
   CreateKeysLimitReset: { Monthly: 'monthly' },
 }));
+jest.mock('@openrouter/sdk/models/errors', () => ({
+  NotFoundResponseError: class MockNotFoundResponseError extends Error {},
+}));
 
 import { OpenRouterResolver } from '../openrouter.resolver';
 

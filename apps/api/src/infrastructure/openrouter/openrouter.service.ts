@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OpenRouter } from '@openrouter/sdk';
+import { NotFoundResponseError } from '@openrouter/sdk/models/errors';
 import { AllConfigType } from '@/config/config.type';
 import {
   type GetKeyRequest,
@@ -22,7 +23,7 @@ import { OpenRouterModel } from './model/openrouter.model';
 import { WorkspaceEntity } from '@sandworm/postgresql-typeorm';
 import { WorkspaceMembershipService } from "@/features/workspace/service/workspace-membership.service";
 import { EnvironmentService } from '@/features/environment/environment.service';
-import { AI_ENV_KEYS, AIProvider } from '@/core/constants/app.constant';
+import { AI_ENV_KEYS, AI_ENV_HASH_KEYS, AIProvider } from '@/core/constants/app.constant';
 import { validateUUID } from '@/common/utils/uuid';
 
 export interface AccountCredits {
@@ -154,15 +155,50 @@ export class OpenRouterService {
     }
 
     try {
-      const { data } = await this.client.apiKeys.get({ hash: workspaceHash });
-      return {
-        totalCredits: data.limit,
-        usedCredits: data.usage,
-        availableCredits: data.limitRemaining,
-      };
+      return await this.fetchCreditsByHash(workspaceHash);
+    } catch (err) {
+      if (!this.isMissingKeyError(err)) {
+        this.tagOpenRouterError(err);
+      }
+    }
+
+    // The stored hash no longer resolves to a key on OpenRouter's side —
+    // revoked, or provisioned under a since-rotated provisioning key.
+    // Re-provision a fresh sub-key for the workspace and retry once instead
+    // of surfacing a 500 on every credits check.
+    const freshHash = await this.reprovisionWorkspaceKey(workspaceId);
+    try {
+      return await this.fetchCreditsByHash(freshHash);
     } catch (err) {
       this.tagOpenRouterError(err);
     }
+  }
+
+  private async fetchCreditsByHash(hash: string): Promise<AccountCredits> {
+    const { data } = await this.client.apiKeys.get({ hash });
+    return {
+      totalCredits: data.limit,
+      usedCredits: data.usage,
+      availableCredits: data.limitRemaining,
+    };
+  }
+
+  private isMissingKeyError(err: unknown): boolean {
+    if (err instanceof NotFoundResponseError) return true;
+    const statusCode = (err as { statusCode?: number } | null)?.statusCode;
+    return statusCode === 404;
+  }
+
+  private async reprovisionWorkspaceKey(workspaceId: string): Promise<string> {
+    const { key, data } = await this.provisionKey(workspaceId);
+    await this.environmentService.setEnvironmentVariables(workspaceId, {
+      add: [
+        { name: AI_ENV_KEYS[AIProvider.OPENROUTER], value: key },
+        { name: AI_ENV_HASH_KEYS[AIProvider.OPENROUTER], value: data.hash },
+      ],
+      remove: [],
+    });
+    return data.hash;
   }
 
   async getModels(): Promise<OpenRouterModel[]> {

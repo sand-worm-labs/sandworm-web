@@ -1800,27 +1800,25 @@ const Editor = (props: Props) => {
 
             <ContentSkeleton visible={props.isSyncing} />
 
-            <HotkeysProvider initiallyActiveScopes={["editor"]}>
-              {!props.isSyncing && (
-                <>
-                  {domBlocks}
+            {!props.isSyncing && (
+              <>
+                {domBlocks}
 
-                  {domBlocks.length === 0 && (
-                    <div className="w-full">
-                      <PlusButton
-                        workspaceId={props.document.workspaceId}
-                        isLast
-                        alwaysOpen
-                        onAddBlock={addBlockToBottom}
-                        isEditable={props.isEditable}
-                        writebackEnabled={false}
-                        onAddAnalyticsBlock={onAddAnalyticsBlock}
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-            </HotkeysProvider>
+                {domBlocks.length === 0 && (
+                  <div className="w-full">
+                    <PlusButton
+                      workspaceId={props.document.workspaceId}
+                      isLast
+                      alwaysOpen
+                      onAddBlock={addBlockToBottom}
+                      isEditable={props.isEditable}
+                      writebackEnabled={false}
+                      onAddAnalyticsBlock={onAddAnalyticsBlock}
+                    />
+                  </div>
+                )}
+              </>
+            )}
 
             {!props.isPDF && <div className="pb-20" />}
           </div>
@@ -2195,7 +2193,9 @@ export default function V2Editor(
   return (
     <EditorAwarenessProvider scrollViewRef={scrollViewRef} yDoc={props.yDoc}>
       <SQLExtensionProvider workspaceId={props.document.workspaceId}>
-        <Editor {...props} scrollViewRef={scrollViewRef} />
+        <HotkeysProvider initiallyActiveScopes={["editor"]}>
+          <Editor {...props} scrollViewRef={scrollViewRef} />
+        </HotkeysProvider>
         {props.children}
       </SQLExtensionProvider>
     </EditorAwarenessProvider>

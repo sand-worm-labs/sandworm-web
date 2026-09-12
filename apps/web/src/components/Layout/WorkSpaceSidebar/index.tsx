@@ -464,6 +464,8 @@ export const WorkspaceSidebar = () => {
       <FeedbackModal
         isOpen={isFeedbackOpen}
         onClose={() => setIsFeedbackOpen(false)}
+        userEmail={user?.email}
+        username={user?.username}
       />
     </>
   );

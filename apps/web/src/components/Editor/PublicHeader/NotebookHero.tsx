@@ -156,18 +156,14 @@ export function NotebookHeroMeta({
   return (
     <div className="flex flex-col gap-4 pb-6">
       {document?.description && (
-        <p className="text-sm text-ink-500 dark:text-ink-300 max-w-2xl">
+        <p className="text-lg font-normal text-ink-400 dark:text-ink-300 max-w-2xl">
           {document.description}
         </p>
       )}
 
-      <p className="text-sm text-ink-400">
-        {dayjs(createdAt).format("MMMM D, YYYY")}
-      </p>
-
       <div className="flex items-center gap-2">
         <Avatar className="h-6 w-6">
-          <AvatarImage src="/img/avatar.svg" />
+          <AvatarImage src={author?.avater ?? undefined} alt={authorName} />
           <AvatarFallback>
             <Image
               src="/img/avatar.svg"
@@ -179,10 +175,14 @@ export function NotebookHeroMeta({
         </Avatar>
         <Link
           href={`/workspace/${workspaceInfo?.id ?? ""}/profile/${document?.authorId ?? ""}`}
-          className="text-sm font-medium text-ink-600 dark:text-ink-200 hover:text-primary transition-colors"
+          className="text-sm font-normal text-ink-100 dark:text-ink-200 hover:text-primary transition-colors"
         >
           {authorName}
         </Link>
+        <span className="text-sm text-ink-400">/</span>
+        <span className="text-sm text-ink-400">
+          {dayjs(createdAt).format("MMMM D, YYYY")}
+        </span>
       </div>
 
       {tags.length > 0 && (

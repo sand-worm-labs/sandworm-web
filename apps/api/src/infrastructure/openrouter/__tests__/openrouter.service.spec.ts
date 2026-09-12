@@ -22,8 +22,13 @@ jest.mock('@openrouter/sdk/models/operations', () => ({
   CreateKeysLimitReset: { Monthly: 'monthly', Daily: 'daily', Weekly: 'weekly' },
 }));
 
+jest.mock('@openrouter/sdk/models/errors', () => ({
+  NotFoundResponseError: class MockNotFoundResponseError extends Error {},
+}));
+
 import { NotFoundException } from '@nestjs/common';
 import { OpenRouter } from '@openrouter/sdk';
+import { NotFoundResponseError } from '@openrouter/sdk/models/errors';
 import { OpenRouterService } from '../openrouter.service';
 
 const WORKSPACE_ID = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
@@ -35,7 +40,10 @@ function makeService(configValues: Record<string, unknown> = {}) {
     get: jest.fn(() => configValues.openrouter ?? { defaultCap: undefined, limitReset: undefined }),
   } as any;
   const workspaceRepository = { findOne: jest.fn() } as any;
-  const environmentService = { getEnvironmentVariable: jest.fn() } as any;
+  const environmentService = {
+    getEnvironmentVariable: jest.fn(),
+    setEnvironmentVariables: jest.fn(),
+  } as any;
   const workspaceMembershipService = { assertActiveMember: jest.fn() } as any;
 
   const service = new OpenRouterService(
@@ -194,6 +202,41 @@ describe('OpenRouterService', () => {
       mockApiKeys.get.mockRejectedValue(new Error('rate limited'));
 
       await expect(service.getAccountCredits(WORKSPACE_ID, USER_ID)).rejects.toThrow('[OpenRouter] rate limited');
+    });
+
+    it('re-provisions and retries when the stored hash no longer exists on OpenRouter', async () => {
+      const { service, workspaceRepository, environmentService } = makeService();
+      workspaceRepository.findOne.mockResolvedValue({ id: WORKSPACE_ID });
+      environmentService.getEnvironmentVariable.mockResolvedValue({ value: 'stale-hash' });
+      mockApiKeys.get
+        .mockRejectedValueOnce(new (NotFoundResponseError as unknown as new () => NotFoundResponseError)())
+        .mockResolvedValueOnce({ data: { limit: 10, usage: 1, limitRemaining: 9 } });
+      mockApiKeys.create.mockResolvedValue({ key: 'new-key', data: { hash: 'fresh-hash' } });
+
+      const result = await service.getAccountCredits(WORKSPACE_ID, USER_ID);
+
+      expect(mockApiKeys.get).toHaveBeenNthCalledWith(1, { hash: 'stale-hash' });
+      expect(mockApiKeys.get).toHaveBeenNthCalledWith(2, { hash: 'fresh-hash' });
+      expect(environmentService.setEnvironmentVariables).toHaveBeenCalledWith(WORKSPACE_ID, {
+        add: [
+          { name: 'OPENROUTER_API_KEY', value: 'new-key' },
+          { name: 'OPENROUTER_API_KEY_HASH', value: 'fresh-hash' },
+        ],
+        remove: [],
+      });
+      expect(result).toEqual({ totalCredits: 10, usedCredits: 1, availableCredits: 9 });
+    });
+
+    it('tags the error when re-provisioning still fails to produce a usable key', async () => {
+      const { service, workspaceRepository, environmentService } = makeService();
+      workspaceRepository.findOne.mockResolvedValue({ id: WORKSPACE_ID });
+      environmentService.getEnvironmentVariable.mockResolvedValue({ value: 'stale-hash' });
+      mockApiKeys.get
+        .mockRejectedValueOnce(new (NotFoundResponseError as unknown as new () => NotFoundResponseError)())
+        .mockRejectedValueOnce(new Error('still missing'));
+      mockApiKeys.create.mockResolvedValue({ key: 'new-key', data: { hash: 'fresh-hash' } });
+
+      await expect(service.getAccountCredits(WORKSPACE_ID, USER_ID)).rejects.toThrow('[OpenRouter] still missing');
     });
   });
 

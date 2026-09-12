@@ -632,6 +632,7 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
                   content={props.yDoc.getXmlFragment("title")}
                   isLoading={props.isSyncing}
                   isEditable={false}
+                  style="font-size: 3.0rem;"
                 />
               </div>
 

@@ -9,6 +9,7 @@ import {
   TransitionChild,
   Listbox,
 } from "@headlessui/react";
+import { toast } from "sonner";
 import {
   PiCheck,
   PiX,
@@ -154,9 +155,16 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 interface FeedbackModalProps {
   isOpen: boolean;
   onClose: () => void;
+  userEmail?: string | null;
+  username?: string | null;
 }
 
-export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
+export function FeedbackModal({
+  isOpen,
+  onClose,
+  userEmail,
+  username,
+}: FeedbackModalProps) {
   const [selectedType, setSelectedType] = useState<ReportType | null>(null);
   const [feedback, setFeedback] = useState("");
   const [files, setFiles] = useState<File[]>([]);
@@ -188,14 +196,36 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
   }, [onClose]);
 
   async function handleSubmit() {
-    if (!canSubmit) return;
+    if (!canSubmit || !selectedType) return;
     setIsSubmitting(true);
-    await new Promise(r => {
-      setTimeout(r, 1200);
-    });
-    setIsSubmitting(false);
-    setSubmitted(true);
-    setTimeout(handleClose, 2000);
+
+    try {
+      const formData = new FormData();
+      formData.append("type", selectedType.id);
+      formData.append("message", feedback);
+      if (userEmail) formData.append("userEmail", userEmail);
+      if (username) formData.append("username", username);
+      files.forEach(file => formData.append("files", file));
+
+      const res = await fetch("/internal/feedback", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error ?? "Failed to send feedback.");
+      }
+
+      setSubmitted(true);
+      setTimeout(handleClose, 2000);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to send feedback."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
