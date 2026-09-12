@@ -10,7 +10,6 @@ import {
 import { DocumentContext } from '../../interfaces';
 import { DataFrameService } from '@/features/code-execution/query-engine/dataframe/dataframe.service';
 import { PythonExecutorService } from '@/features/code-execution/python-executor.service';
-import { TrinoQueryService } from '@/features/code-execution/query-engine/trino/trino-query.service';
 import { ToolService } from '@/features/tool/tool.service';
 import { BlockExecutorDataframeService } from '../block-executor-dataframe.service';
 
@@ -22,46 +21,9 @@ export class PowerToolboxBlockExecutorService {
     private readonly eventEmitter: EventEmitter2,
     private readonly dataframeService: DataFrameService,
     private readonly pythonExecutorService: PythonExecutorService,
-    private readonly trinoQueryService: TrinoQueryService,
     private readonly toolService: ToolService,
     private readonly blockExecutorDataframeService: BlockExecutorDataframeService,
   ) { }
-
-  // A bare-SQL tool template gets wrapped by renderTool() into source that
-  // calls _sandworm_query(sql) (see @sandworm/editor's wrapSqlInPython) —
-  // but nothing defines it in the kernel. This preamble does. Namespaced
-  // rather than a bare `query` since the kernel session is persisted
-  // (storeHistory: true) and could otherwise collide with a user's own
-  // variable of that name.
-  //
-  // datasource mirrors DATA_SOURCE_QUERY_ENGINE's split on the manual
-  // SQL-block path: "trino" for a fresh pull against Dune's catalog,
-  // "duckdb" to query a dataframe this session already loaded (e.g. a
-  // variable another block put in scope) without round-tripping to Dune.
-  // Defaults to "trino" since most tool templates are a first-touch pull.
-  private buildQueryPreamble(): string {
-    return `
-def _sandworm_query(sql, datasource="trino"):
-    import pandas as pd
-
-    if datasource == "duckdb":
-        import duckdb
-        result = duckdb.query(sql)
-        return result.df() if result is not None else pd.DataFrame()
-
-    if datasource != "trino":
-        raise ValueError(f"Unknown datasource: {datasource!r} (expected 'trino' or 'duckdb')")
-
-    from sqlalchemy import create_engine, text
-
-    engine = create_engine(${JSON.stringify(this.trinoQueryService.buildConnectionUrl())})
-    try:
-        with engine.connect() as conn:
-            return pd.read_sql_query(text(sql), con=conn)
-    finally:
-        engine.dispose()
-`;
-  }
 
   async run(
     context: { workspaceId: string; sessionId: string },
@@ -131,7 +93,7 @@ def _sandworm_query(sql, datasource="trino"):
       let errored = false;
       const { promise, abort } = await this.pythonExecutorService.executeCode(
         context,
-        this.buildQueryPreamble() + generatedSource,
+        generatedSource,
         (outputs) => {
           const prevOutputs = block.getAttribute('result') ?? [];
           block.setAttribute('result', prevOutputs.concat(outputs));
