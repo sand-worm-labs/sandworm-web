@@ -85,14 +85,23 @@ ${dfName}
 // ─── Dataframe name derivation ────────────────────────────────────────────────
 
 /**
- * Derives a safe Python variable name from a tool id.
+ * Derives a safe Python variable name from a tool id, optionally with a
+ * numeric suffix to disambiguate from an existing variable of the same name.
  * "forensics.fund_trace" → "ptb_forensics_fund_trace"
+ * "forensics.fund_trace" + 2 → "ptb_forensics_fund_trace_2"
  *
- * The "ptb_" prefix namespaces toolbox dataframes in doc.dataframes,
- * avoiding collisions with user-defined variable names.
+ * The "ptb_" prefix namespaces toolbox dataframes in doc.dataframes, avoiding
+ * collisions with user-defined variable names. Without a dfSuffix, two blocks
+ * running the *same* tool in one notebook session would both compute the
+ * identical name and silently overwrite each other's dataframe in the
+ * shared, persisted kernel — the caller is expected to check the session's
+ * existing variable names and pass the smallest suffix (2, 3, ...) that
+ * isn't already taken (see PowerToolboxBlockExecutorService.run).
  */
-export function dfNameFromToolId(toolId: string): string {
-  return "ptb_" + toolId.replace(/[^a-zA-Z0-9]/g, "_");
+export function dfNameFromToolId(toolId: string, dfSuffix?: string | number): string {
+  const base = "ptb_" + toolId.replace(/[^a-zA-Z0-9]/g, "_");
+  if (dfSuffix === undefined || dfSuffix === "") return base;
+  return `${base}_${dfSuffix}`;
 }
 
 // ─── Main render entry point ──────────────────────────────────────────────────
@@ -133,13 +142,18 @@ function looksLikeBareSql(template: string): boolean {
  *
  * The caller (registry.ts) is responsible for looking up the correct
  * template from the TemplateMap.
+ *
+ * @param dfSuffix  a numeric suffix (2, 3, ...) to disambiguate __df_name when
+ *   the caller has determined the plain tool-derived name is already in use
+ *   in this notebook's kernel session. Omit for the first/only use of a tool.
  */
 export function renderTool(
   definition: ToolDefinition,
   template: ToolTemplate,
-  params: ResolvedParams
+  params: ResolvedParams,
+  dfSuffix?: string | number
 ): GenerateResult {
-  const dfName = dfNameFromToolId(definition.id);
+  const dfName = dfNameFromToolId(definition.id, dfSuffix);
 
   const defaults: ResolvedParams = {};
   for (const param of definition.params) {
