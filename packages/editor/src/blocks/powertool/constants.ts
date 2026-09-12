@@ -1,18 +1,32 @@
 import type { SelectOption } from "./types.js";
 
+// Icons come from DefiLlama's public chain-icon CDN. Exported (not just used
+// inline below) because a tool's "chain" param options are usually seeded
+// live from the external sand-worm-labs/tools YAML catalog — ChainSelectField
+// falls back to deriving the icon from the option's plain `value` via this
+// same function when a seeded option has no explicit `icon`.
+// DefiLlama's slug matches `value` for every chain except this one.
+const ICON_SLUG_OVERRIDES: Record<string, string> = { zksync: "zksync_era" };
+export const chainIcon = (value: string) =>
+  `https://icons.llamao.fi/icons/chains/rsz_${ICON_SLUG_OVERRIDES[value] ?? value}.jpg`;
+
 export const CHAIN_OPTIONS: SelectOption[] = [
-  { label: "Ethereum", value: "ethereum" },
-  { label: "Base", value: "base" },
-  { label: "Optimism", value: "optimism" },
-  { label: "Arbitrum", value: "arbitrum" },
-  { label: "Polygon", value: "polygon" },
-  { label: "BSC", value: "bsc" },
-  { label: "Avalanche", value: "avalanche" },
-  { label: "Celo", value: "celo" },
-  { label: "Gnosis", value: "gnosis" },
-  { label: "Fantom", value: "fantom" },
-  { label: "Linea", value: "linea" },
-  { label: "Scroll", value: "scroll" },
+  { label: "Ethereum", value: "ethereum", icon: chainIcon("ethereum") },
+  { label: "Base", value: "base", icon: chainIcon("base") },
+  { label: "Optimism", value: "optimism", icon: chainIcon("optimism") },
+  { label: "Arbitrum", value: "arbitrum", icon: chainIcon("arbitrum") },
+  { label: "Polygon", value: "polygon", icon: chainIcon("polygon") },
+  { label: "BSC", value: "bsc", icon: chainIcon("bsc") },
+  { label: "Avalanche", value: "avalanche", icon: chainIcon("avalanche") },
+  { label: "Celo", value: "celo", icon: chainIcon("celo") },
+  { label: "Gnosis", value: "gnosis", icon: chainIcon("gnosis") },
+  { label: "Fantom", value: "fantom", icon: chainIcon("fantom") },
+  { label: "Linea", value: "linea", icon: chainIcon("linea") },
+  { label: "Scroll", value: "scroll", icon: chainIcon("scroll") },
+  { label: "Blast", value: "blast", icon: chainIcon("blast") },
+  // DefiLlama's icon slug is "zksync_era", not "zksync" — the one chain
+  // here where the option value and icon slug diverge.
+  { label: "zkSync Era", value: "zksync", icon: chainIcon("zksync_era") },
 ];
 
 export const TIME_RANGE_OPTIONS: SelectOption[] = [

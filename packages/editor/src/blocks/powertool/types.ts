@@ -15,7 +15,9 @@ export type ParamType =
   | "text"         // free-text input
   | "number"       // numeric with optional min/max
   | "date"         // single date picker
-  | "date_range";  // from/to date picker pair
+  | "date_range"   // from/to date picker pair
+  | "function_signature" // picks a real function signature off a contract's ABI
+  | "event_signature";   // picks a real event signature off a contract's ABI
 
 /**
  * Controls which UI surface is mounted for the tool's param form.
@@ -31,6 +33,8 @@ export type UiHint =
 export interface SelectOption {
   label: string;
   value: string;
+  /** Optional icon URL — used by the "chain" field to show each chain's logo. */
+  icon?: string;
 }
 
 export interface ParamDefinition {
@@ -46,6 +50,12 @@ export interface ParamDefinition {
   max?: number;
   default?: string | number | boolean | string[];
   placeholder?: string;
+  /**
+   * For type "function_signature" | "event_signature": the [chain, address]
+   * param keys this field's options are fetched against. Refetches whenever
+   * either sibling value changes.
+   */
+  dependsOn?: [string, string];
 }
 
 // ─── Tool & category types ────────────────────────────────────────────────────

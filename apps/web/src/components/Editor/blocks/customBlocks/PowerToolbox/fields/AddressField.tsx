@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import clsx from "clsx";
 import type { ParamDefinition } from "@sandworm/editor";
+
+import { blockieDataUri } from "./blockies";
 
 function isValidAddress(value: string): boolean {
   return /^0x[0-9a-fA-F]{40}$/.test(value);
@@ -88,11 +90,27 @@ export function AddressField({
   const inlineError = touched ? (error ?? validate(value)) : undefined;
   const isValid = value && !validate(value);
 
+  // Blockie identicon — same "real address, at a glance" affordance as
+  // scaffold-eth's <Address> component (what ABI Ninja is built on).
+  // Not shown for schema_uid: that's an EAS schema id, not an address.
+  const blockie = useMemo(
+    () => (isValid && !isUid ? blockieDataUri(value) : null),
+    [isValid, isUid, value]
+  );
+
   return (
     <div className="flex flex-col gap-1.5">
       <FieldLabel param={param} />
 
       <div className="relative">
+        {blockie && (
+          <img
+            src={blockie}
+            alt=""
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full"
+          />
+        )}
+
         <input
           type="text"
           value={value}
@@ -105,7 +123,8 @@ export function AddressField({
           spellCheck={false}
           autoComplete="off"
           className={clsx(
-            "w-full px-3 py-2.5 rounded-lg text-sm",
+            "w-full py-2.5 rounded-lg text-sm",
+            blockie ? "pl-9 pr-3" : "px-3",
             "font-body tracking-tight",
             " border border-border-tertiary transition-colors outline-none",
             "placeholder:text-ink-400   text-ink-100  ",
