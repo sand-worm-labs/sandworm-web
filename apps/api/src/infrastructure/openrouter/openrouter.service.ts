@@ -23,7 +23,7 @@ import { OpenRouterModel } from './model/openrouter.model';
 import { WorkspaceEntity } from '@sandworm/postgresql-typeorm';
 import { WorkspaceMembershipService } from "@/features/workspace/service/workspace-membership.service";
 import { EnvironmentService } from '@/features/environment/environment.service';
-import { AI_ENV_KEYS, AI_ENV_HASH_KEYS, AIProvider } from '@/core/constants/app.constant';
+import { AI_ENV_HASH_KEYS, AIProvider } from '@/core/constants/app.constant';
 import { validateUUID } from '@/common/utils/uuid';
 
 export interface AccountCredits {
@@ -141,8 +141,8 @@ export class OpenRouterService {
     if (!workspace) {
       throw new NotFoundException('Workspace not found');
     }
-    const envKey = AI_ENV_KEYS[AIProvider.OPENROUTER];
-    const aiEnvKey = await this.environmentService.getEnvironmentVariable(workspaceId, envKey);
+    const envHashKey = AI_ENV_HASH_KEYS[AIProvider.OPENROUTER];
+    const aiEnvKey = await this.environmentService.getEnvironmentVariable(workspaceId, envHashKey);
     return aiEnvKey?.value || null;
   }
 

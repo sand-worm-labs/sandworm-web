@@ -253,7 +253,8 @@ import type {
    */
   export function renderToolById(
     toolId: string,
-    params: ResolvedParams
+    params: ResolvedParams,
+    dfSuffix?: string | number
   ): GenerateResult {
     const definition = DEFINITION_MAP.get(toolId);
     if (!definition) {
@@ -292,7 +293,7 @@ import type {
       );
     }
   
-    return renderTool(definition, template, resolved);
+    return renderTool(definition, template, resolved, dfSuffix);
   }
   
   /**

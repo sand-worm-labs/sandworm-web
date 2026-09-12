@@ -52,7 +52,9 @@ export function protocolWhere(protocol: string | undefined, col = "project"): st
 
 /**
  * Wraps a SQL string in a Python cell with a standard Sandworm header comment.
- * Assigns the result to `dfName` using the platform's `query()` runner.
+ * Assigns the result to `dfName` using the platform's `_sandworm_query()` runner
+ * (namespaced rather than a bare `query` so it can't collide with a user's own
+ * variable of that name in the same persisted kernel session).
  *
  * The header comment lists each resolved param so notebooks are self-documenting.
  */
@@ -75,7 +77,7 @@ sql = """
 ${sql.trim()}
 """
 
-${dfName} = query(sql)
+${dfName} = _sandworm_query(sql)
 ${dfName}
 `;
 }
@@ -83,14 +85,23 @@ ${dfName}
 // ─── Dataframe name derivation ────────────────────────────────────────────────
 
 /**
- * Derives a safe Python variable name from a tool id.
+ * Derives a safe Python variable name from a tool id, optionally with a
+ * numeric suffix to disambiguate from an existing variable of the same name.
  * "forensics.fund_trace" → "ptb_forensics_fund_trace"
+ * "forensics.fund_trace" + 2 → "ptb_forensics_fund_trace_2"
  *
- * The "ptb_" prefix namespaces toolbox dataframes in doc.dataframes,
- * avoiding collisions with user-defined variable names.
+ * The "ptb_" prefix namespaces toolbox dataframes in doc.dataframes, avoiding
+ * collisions with user-defined variable names. Without a dfSuffix, two blocks
+ * running the *same* tool in one notebook session would both compute the
+ * identical name and silently overwrite each other's dataframe in the
+ * shared, persisted kernel — the caller is expected to check the session's
+ * existing variable names and pass the smallest suffix (2, 3, ...) that
+ * isn't already taken (see PowerToolboxBlockExecutorService.run).
  */
-export function dfNameFromToolId(toolId: string): string {
-  return "ptb_" + toolId.replace(/[^a-zA-Z0-9]/g, "_");
+export function dfNameFromToolId(toolId: string, dfSuffix?: string | number): string {
+  const base = "ptb_" + toolId.replace(/[^a-zA-Z0-9]/g, "_");
+  if (dfSuffix === undefined || dfSuffix === "") return base;
+  return `${base}_${dfSuffix}`;
 }
 
 // ─── Main render entry point ──────────────────────────────────────────────────
@@ -98,7 +109,7 @@ export function dfNameFromToolId(toolId: string): string {
 // A template is treated as raw SQL (and gets wrapped via wrapSqlInPython)
 // only when it looks like a bare SQL statement — starts with one of the
 // usual statement keywords once comments/whitespace are stripped. Anything
-// else (print statements, a `sql = """..."""` + query(...) template, plain
+// else (print statements, a `sql = """..."""` + _sandworm_query(...) template, plain
 // Python) is assumed to already be valid Python and passed through as-is
 // after interpolation, unwrapped.
 const SQL_STATEMENT_RE = /^(select|with|insert|update|delete)\b/i;
@@ -127,17 +138,22 @@ function looksLikeBareSql(template: string): boolean {
  *  3. Interpolate all {{key}} placeholders.
  *  4. If the template is bare SQL, wrap it in a Python cell via
  *     wrapSqlInPython. Otherwise it's already Python (print statements, a
- *     `sql = """..."""` + query(...) mix, etc.) — pass it through unwrapped.
+ *     `sql = """..."""` + _sandworm_query(...) mix, etc.) — pass it through unwrapped.
  *
  * The caller (registry.ts) is responsible for looking up the correct
  * template from the TemplateMap.
+ *
+ * @param dfSuffix  a numeric suffix (2, 3, ...) to disambiguate __df_name when
+ *   the caller has determined the plain tool-derived name is already in use
+ *   in this notebook's kernel session. Omit for the first/only use of a tool.
  */
 export function renderTool(
   definition: ToolDefinition,
   template: ToolTemplate,
-  params: ResolvedParams
+  params: ResolvedParams,
+  dfSuffix?: string | number
 ): GenerateResult {
-  const dfName = dfNameFromToolId(definition.id);
+  const dfName = dfNameFromToolId(definition.id, dfSuffix);
 
   const defaults: ResolvedParams = {};
   for (const param of definition.params) {

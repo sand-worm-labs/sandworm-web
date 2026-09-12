@@ -4,6 +4,7 @@ import * as Y from 'yjs';
 import {
   ExecutionQueueItem,
   PowerToolboxBlock,
+  dfNameFromToolId,
   getPowerToolboxAttributes,
 } from '@sandworm/editor';
 import { DocumentContext } from '../../interfaces';
@@ -49,9 +50,28 @@ export class PowerToolboxBlockExecutorService {
     // on every run — the template never gets cached onto the block itself,
     // so an edit to inputs is always reflected without a separate "regenerate"
     // step.
+    //
+    // The kernel session is persisted across blocks (storeHistory: true), so
+    // if this tool's plain dataframe name is already bound to something in
+    // this session — e.g. this same tool already ran from another block —
+    // reusing it would silently overwrite that variable. Check the session's
+    // live globals and, if taken, suffix with the smallest free number
+    // (2, 3, ...) rather than a long, unreadable id.
+    const existingDfNames = new Set(
+      (await this.dataframeService.list(context)).map((df) => df.name),
+    );
+    const baseDfName = dfNameFromToolId(toolId);
+    let dfSuffix: number | undefined;
+    if (existingDfNames.has(baseDfName)) {
+      dfSuffix = 2;
+      while (existingDfNames.has(dfNameFromToolId(toolId, dfSuffix))) {
+        dfSuffix += 1;
+      }
+    }
+
     let generatedSource: string;
     try {
-      generatedSource = await this.toolService.renderToolSource(toolId, inputs);
+      generatedSource = await this.toolService.renderToolSource(toolId, inputs, dfSuffix);
     } catch (err) {
       block.setAttribute('result', [
         {

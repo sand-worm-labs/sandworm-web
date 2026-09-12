@@ -7,6 +7,7 @@ import { decrypt } from '@sandworm/nest-common';
 import { EnvironmentVariableEntity } from '@sandworm/postgresql-typeorm';
 import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
 import { AllConfigType } from '@/core/config/config.type';
+import { TrinoQueryService } from '@/features/code-execution/query-engine/trino/trino-query.service';
 
 export type Jupyter = {
     session: services.Session.ISessionConnection;
@@ -23,6 +24,7 @@ export class JupyterSessionService {
         private readonly environmentVariableRepository: Repository<EnvironmentVariableEntity>,
         private readonly config: ConfigService<AllConfigType>,
         private readonly jupyterManager: JupyterService,
+        private readonly trinoQueryService: TrinoQueryService,
     ) { }
 
     async getSession(workspaceId: string, sessionId: string): Promise<Jupyter> {
@@ -70,8 +72,46 @@ export class JupyterSessionService {
         // }));
 
         await this.setEnvironmentVariables(session.kernel, { add: [], remove: [] });
+        await session.kernel.requestExecute({ code: this.buildQueryPreamble(), store_history: false }).done;
 
         return { session, kernel: session.kernel };
+    }
+
+    // Defines _sandworm_query once per fresh kernel session so it's a real,
+    // persistent global — usable from any cell in that session (a power-
+    // toolbox block, a manually re-run cell, or a user's own code) — rather
+    // than being re-injected as a prefix before each individual execution.
+    // Namespaced rather than a bare `query` since the session persists
+    // across blocks (storeHistory: true) and could otherwise collide with a
+    // user's own variable of that name.
+    //
+    // datasource mirrors DATA_SOURCE_QUERY_ENGINE's split on the manual
+    // SQL-block path: "trino" for a fresh pull against Dune's catalog,
+    // "duckdb" to query a dataframe this session already loaded (e.g. a
+    // variable another block put in scope) without round-tripping to Dune.
+    // Defaults to "trino" since most tool templates are a first-touch pull.
+    private buildQueryPreamble(): string {
+        return `
+def _sandworm_query(sql, datasource="trino"):
+    import pandas as pd
+
+    if datasource == "duckdb":
+        import duckdb
+        result = duckdb.query(sql)
+        return result.df() if result is not None else pd.DataFrame()
+
+    if datasource != "trino":
+        raise ValueError(f"Unknown datasource: {datasource!r} (expected 'trino' or 'duckdb')")
+
+    from sqlalchemy import create_engine, text
+
+    engine = create_engine(${JSON.stringify(this.trinoQueryService.buildConnectionUrl())})
+    try:
+        with engine.connect() as conn:
+            return pd.read_sql_query(text(sql), con=conn)
+    finally:
+        engine.dispose()
+`;
     }
 
     async cancelExecution(workspaceId: string, sessionId: string) {

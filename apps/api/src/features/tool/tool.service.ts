@@ -32,7 +32,11 @@ export class ToolService {
   // never leaves the backend. Shared by both the manual param-form path and
   // the AI block-creation path, so a tool's rendering behavior only lives
   // in one place (@sandworm/editor's renderTool).
-  async renderToolSource(toolId: string, inputs: Record<string, unknown>): Promise<string> {
+  async renderToolSource(
+    toolId: string,
+    inputs: Record<string, unknown>,
+    dfSuffix?: string | number,
+  ): Promise<string> {
     const entity = await this.toolRepository.findOneBy({ toolId });
     if (!entity) {
       throw new ValidationException(ErrorCode.E003);
@@ -49,7 +53,7 @@ export class ToolService {
       params: entity.params as ParamDefinition[],
     };
 
-    const result = renderTool(definition, entity.template, inputs as ResolvedParams);
+    const result = renderTool(definition, entity.template, inputs as ResolvedParams, dfSuffix);
     return result.source;
   }
 

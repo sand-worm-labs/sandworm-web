@@ -73,7 +73,7 @@ services:
   ###########################
   qdrant:
     container_name: sandworm-qdrant
-    image: qdrant/qdrant:v1.11.0
+    image: qdrant/qdrant:v1.17.0
     pull_policy: always
     ports:
       - "127.0.0.1:6333:6333"
