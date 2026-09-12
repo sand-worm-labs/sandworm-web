@@ -63,6 +63,7 @@
     "graphql-type-json": "^0.3.2",
     "handlebars": "^4.7.9",
     "ioredis": "^5.8.2",
+    "js-sha3": "^0.13.0",
     "js-yaml": "^4.3.1",
     "lib0": "^0.2.94",
     "lru-cache": "^10.0.0",

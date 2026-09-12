@@ -176,6 +176,7 @@ export function AnalyticsParamForm({ block }: AnalyticsParamFormProps) {
               key={param.key}
               param={param}
               value={values[param.key] ?? getDefaultValue(param)}
+              allValues={values}
               onChange={val => handleChange(param.key, val)}
               onBlur={val => handleBlur(param.key, val)}
               error={submitAttempted ? errors[param.key] : undefined}

@@ -21,6 +21,8 @@ const CHAIN_IDS: Record<string, number> = {
   fantom: 250,
   linea: 59144,
   scroll: 534352,
+  blast: 81457,
+  zksync: 324,
 };
 
 interface AbiParam {

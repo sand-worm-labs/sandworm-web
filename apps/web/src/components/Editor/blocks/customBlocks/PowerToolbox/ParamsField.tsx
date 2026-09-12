@@ -4,13 +4,14 @@ import type { ParamDefinition, ParamType } from "@sandworm/editor";
 
 import { AddressField } from "./fields/AddressField";
 import { AddressListField } from "./fields/AddressListField";
-import { SelectField, ChainMultiSelect } from "./fields/SelectField";
+import { SelectField, ChainSelectField, ChainMultiSelect } from "./fields/SelectField";
 import { TextField, NumberField } from "./fields/TextNumberField";
 import {
   DateRangeField,
   DateField,
   type DateRange,
 } from "./fields/DateRangeField";
+import { RemoteSignatureField } from "./fields/RemoteSignatureField";
 
 // ─── Field value types ────────────────────────────────────────────────────────
 
@@ -34,6 +35,10 @@ export type FieldValue = string | number | boolean | string[] | DateRange;
 type FieldRenderer = (props: {
   param: ParamDefinition;
   value: FieldValue;
+  /** Every other field's current value — only "function_signature" |
+   * "event_signature" use this, to read the chain/address pair they
+   * depend on (see ParamDefinition.dependsOn). */
+  allValues: Record<string, FieldValue>;
   onChange: (value: FieldValue) => void;
   onBlur: (value: FieldValue) => void;
   error?: string;
@@ -80,7 +85,7 @@ const FIELD_REGISTRY: Record<ParamType, FieldRenderer> = {
   ),
 
   chain: ({ param, value, onChange, error, onBlur }) => (
-    <SelectField
+    <ChainSelectField
       param={param}
       value={value as string}
       onChange={val => {
@@ -152,6 +157,28 @@ const FIELD_REGISTRY: Record<ParamType, FieldRenderer> = {
       error={error}
     />
   ),
+
+  function_signature: ({ param, value, allValues, onChange, onBlur, error }) => (
+    <RemoteSignatureField
+      param={param}
+      value={value as string}
+      allValues={allValues}
+      onChange={onChange as (v: string) => void}
+      onBlur={onBlur as (v: string) => void}
+      error={error}
+    />
+  ),
+
+  event_signature: ({ param, value, allValues, onChange, onBlur, error }) => (
+    <RemoteSignatureField
+      param={param}
+      value={value as string}
+      allValues={allValues}
+      onChange={onChange as (v: string) => void}
+      onBlur={onBlur as (v: string) => void}
+      error={error}
+    />
+  ),
 };
 
 // ─── ParamField ───────────────────────────────────────────────────────────────
@@ -159,6 +186,7 @@ const FIELD_REGISTRY: Record<ParamType, FieldRenderer> = {
 interface ParamFieldProps {
   param: ParamDefinition;
   value: FieldValue;
+  allValues: Record<string, FieldValue>;
   onChange: (value: FieldValue) => void;
   onBlur: (value: FieldValue) => void;
   error?: string;
@@ -172,6 +200,7 @@ interface ParamFieldProps {
 export function ParamField({
   param,
   value,
+  allValues,
   onChange,
   onBlur,
   error,
@@ -193,5 +222,5 @@ export function ParamField({
     );
   }
 
-  return renderer({ param, value, onChange, onBlur, error });
+  return renderer({ param, value, allValues, onChange, onBlur, error });
 }
