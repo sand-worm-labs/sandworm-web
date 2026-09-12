@@ -21,6 +21,7 @@ import type { DataFrame } from "@sandworm/types";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 
 import type { ApiDocument } from "@/types";
+import { reportProseFont, reportHeadingFont } from "@/styles/reportFonts";
 
 import VisualizationV2Block from "../Visualization";
 import VisualizationBlock from "../Visualization";
@@ -588,7 +589,14 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
   ]);
 
   return (
-    <div className="editor-v2 flex flex-col flex-grow justify-center font-body subpixel-antialiased h-full w-full relative flex-1 min-w-0">
+    <div
+      className={clsx(
+        "editor-v2 flex flex-col flex-grow justify-center font-body subpixel-antialiased h-full w-full relative flex-1 min-w-0",
+        "report-typography",
+        reportProseFont.variable,
+        reportHeadingFont.variable
+      )}
+    >
       <OverlayScrollbarsComponent
         id="editor-scrollview"
         element="div"
@@ -632,7 +640,7 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
                   content={props.yDoc.getXmlFragment("title")}
                   isLoading={props.isSyncing}
                   isEditable={false}
-                  style="font-size: 3.0rem;"
+                  style="font-size: 3.0rem; font-family: var(--font-report-heading), sans-serif; letter-spacing: -0.02em; font-weight: 700;"
                 />
               </div>
 

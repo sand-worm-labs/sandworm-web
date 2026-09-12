@@ -206,7 +206,10 @@ const RichTextBlock = (props: Props) => {
     <div
       data-testid={`RichTextBlock-${id}`}
       data-block-id={id}
-      className="relative group/block mt-6"
+      className={clsx(
+        "relative group/block",
+        props.isPublicMode ? "mt-2" : "mt-6"
+      )}
     >
       <div
         ref={d => {

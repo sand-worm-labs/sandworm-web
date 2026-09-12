@@ -464,7 +464,7 @@ const MarkdownBlock = (props: Props) => {
   // or block padding, just the rendered markdown flowing as normal text.
   if (props.isPublicMode) {
     return (
-      <div data-block-id={id}>
+      <div data-block-id={id} className="mt-2">
         <MarkdownPreview source={source} />
       </div>
     );

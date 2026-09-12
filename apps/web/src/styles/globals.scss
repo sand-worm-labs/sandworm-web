@@ -83,6 +83,61 @@
 }
 
 /* ╔════════════════════════════════════════════╗
+   ║   Report typography (public view only).    ║
+   ║   See reportFonts.ts + report-typography    ║
+   ║   wrapper in PublicEditor.tsx.              ║
+   ╚════════════════════════════════════════════╝ */
+.font-report-prose {
+  font-family: var(--font-report-prose), Georgia, serif;
+}
+
+.font-report-heading {
+  font-family: var(--font-report-heading), sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.report-typography .sandworm-prose {
+  font-family: var(--font-report-prose), Georgia, serif;
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+.report-typography .sandworm-prose h1,
+.report-typography .sandworm-prose h2,
+.report-typography .sandworm-prose h3,
+.report-typography .sandworm-prose h4,
+.report-typography .sandworm-prose h5,
+.report-typography .sandworm-prose h6 {
+  font-family: var(--font-report-heading), sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* In-body section labels (##, ###, ...) read as muted eyebrows rather
+   than full-contrast headlines — only the doc title stays high-contrast. */
+.report-typography .sandworm-prose h2,
+.report-typography .sandworm-prose h3,
+.report-typography .sandworm-prose h4,
+.report-typography .sandworm-prose h5,
+.report-typography .sandworm-prose h6 {
+  color: var(--ink-400);
+}
+
+.report-typography .sandworm-prose ul > li {
+  margin-top: 0.65em;
+  margin-bottom: 0.65em;
+}
+
+.report-typography .sandworm-prose ul {
+  list-style-type: decimal;
+}
+
+.report-typography .sandworm-prose ul > li::marker {
+  font-family: var(--font-report-heading), sans-serif;
+  font-weight: 700;
+  color: hsl(var(--primary));
+}
+
+/* ╔════════════════════════════════════════════╗
    ║                Variables.                  ║
    ╚════════════════════════════════════════════╝ */
 :root {
