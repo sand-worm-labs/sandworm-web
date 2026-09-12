@@ -9,6 +9,10 @@ export const CHAIN_OPTIONS: SelectOption[] = [
   { label: "BSC", value: "bsc" },
   { label: "Avalanche", value: "avalanche" },
   { label: "Celo", value: "celo" },
+  { label: "Gnosis", value: "gnosis" },
+  { label: "Fantom", value: "fantom" },
+  { label: "Linea", value: "linea" },
+  { label: "Scroll", value: "scroll" },
 ];
 
 export const TIME_RANGE_OPTIONS: SelectOption[] = [
