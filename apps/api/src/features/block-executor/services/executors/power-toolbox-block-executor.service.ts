@@ -121,6 +121,10 @@ export class PowerToolboxBlockExecutorService {
       }
 
       await this.updateDataFrames(context, blockId, ctx);
+ 
+      await this.dataframeService.exportBlockResult(context, blockId, {
+        dataframeName: dfNameFromToolId(toolId, dfSuffix),
+      });
 
       block.setAttribute('executedAt', new Date().toISOString());
       block.setAttribute('lastExecutedInputs', inputs);

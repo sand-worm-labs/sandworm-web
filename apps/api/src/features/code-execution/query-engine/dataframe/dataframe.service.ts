@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   AbortErrorRunQueryResult,
   DataFrame,
@@ -9,6 +9,10 @@ import {
 } from '@sandworm/types';
 import { PythonExecutorService } from '../../python-executor.service';
 
+export type BlockResultSource =
+  | { dataframeName: string }
+  | { executionCount: number | null };
+
 export type ReadDataFramePageResult =
   | Omit<SuccessRunQueryResultV2, 'queryDurationMs'>
   | SyntaxErrorRunQueryResult
@@ -17,6 +21,8 @@ export type ReadDataFramePageResult =
 
 @Injectable()
 export class DataFrameService {
+  private readonly logger = new Logger(DataFrameService.name);
+
   constructor(private readonly pythonExecutor: PythonExecutorService) { }
 
   async rename(context: { workspaceId: string; sessionId: string }, from: string, to: string): Promise<void> {
@@ -57,6 +63,105 @@ export class DataFrameService {
     ).promise;
 
     return result;
+  }
+
+  /**
+   * Saves a block's result DataFrame as `.sandworm/query-<blockId>.csv` and
+   * `.parquet.gzip`, the same files SQL blocks write, so the CSV endpoint and
+   * "use in new block" can serve it. `source` is either the variable the block
+   * wrote to, or the cell's `Out[n]` count (its last displayed expression).
+   * Best-effort: never throws.
+   */
+  async exportBlockResult(
+    context: { workspaceId: string; sessionId: string },
+    blockId: string,
+    source: BlockResultSource,
+  ): Promise<void> {
+    try {
+      await (
+        await this.pythonExecutor.executeCode(context, this.buildExportBlockResultCode(blockId, source), () => { }, {
+          storeHistory: false,
+        })
+      ).promise;
+    } catch (err) {
+      this.logger.warn({ ...context, blockId, source, err }, 'Failed to export block result');
+    }
+  }
+
+  buildExportBlockResultCode(blockId: string, source: BlockResultSource): string {
+    let findResult = 'None';
+    if ('dataframeName' in source) {
+      findResult = `ip.user_ns.get(${JSON.stringify(source.dataframeName)})`;
+    } else if (typeof source.executionCount === 'number') {
+      findResult = `ip.user_ns.get("Out", {}).get(${Number(source.executionCount)})`;
+    }
+
+    return `
+def _sandworm_export_result():
+    import os
+    import pandas as pd
+
+    base = "/home/sandwormuser/.sandworm/query-${blockId}"
+    csv = base + ".csv"
+    parquet = base + ".parquet.gzip"
+
+    # Drop the previous run's files first so a run that no longer displays a
+    # DataFrame (or fails halfway through) can't leave a stale result behind.
+    for path in (csv, parquet):
+        if os.path.exists(path):
+            os.remove(path)
+
+    ip = get_ipython()
+    df = ${findResult}
+    if not isinstance(df, pd.DataFrame):
+        return
+
+    os.makedirs(os.path.dirname(base), exist_ok=True)
+
+    # Shallow copy so stringifying column labels (parquet requires it) doesn't
+    # touch the user's own dataframe.
+    out = df.copy(deep=False)
+    out.columns = [str(c) for c in out.columns]
+
+    # The table UI hides the index, so a default RangeIndex is noise in the
+    # CSV — but a meaningful one (e.g. the labels of a correlation matrix)
+    # must be kept.
+    out.to_csv(csv, index=not isinstance(out.index, pd.RangeIndex))
+
+    try:
+        out.to_parquet(parquet, compression="gzip")
+    except Exception:
+        # Parquet is stricter than pandas: it rejects object columns holding
+        # mixed types (e.g. ints and strings) and duplicate column names, both
+        # common in messy data. Retry on a private copy with duplicate names
+        # suffixed and object columns stringified (nulls preserved) so the
+        # "use in new block" copy still loads — those columns come back as
+        # strings. The CSV above is unaffected.
+        try:
+            safe = out.copy()
+            names, seen = [], {}
+            for name in safe.columns:
+                count = seen.get(name, 0)
+                seen[name] = count + 1
+                names.append(name if count == 0 else f"{name}_{count}")
+            safe.columns = names
+            for i in range(safe.shape[1]):
+                column = safe.iloc[:, i]
+                if column.dtype == "object":
+                    safe.isetitem(i, column.where(column.isna(), column.astype(str)))
+            safe.to_parquet(parquet, compression="gzip")
+        except Exception:
+            # Don't leave a partial file that a new block would try to load.
+            if os.path.exists(parquet):
+                os.remove(parquet)
+
+try:
+    _sandworm_export_result()
+except Exception:
+    pass
+finally:
+    del _sandworm_export_result
+`;
   }
 
   private handleStdoutOutput(

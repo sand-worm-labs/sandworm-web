@@ -11,6 +11,8 @@ interface ExecutionHandle {
 
 interface ExecutionOptions {
     storeHistory: boolean;
+
+    onExecutionCount?: (count: number) => void;
 }
 
 interface JinjaRenderResult {
@@ -122,7 +124,11 @@ export class PythonExecutorService {
         future.onIOPub = (msg: any) => decodeIOPubMessage(msg, onOutputs);
 
         try {
-            await future.done;
+            const reply = await future.done;
+            const count = (reply?.content as { execution_count?: number | null } | undefined)?.execution_count;
+            if (typeof count === 'number') {
+                opts.onExecutionCount?.(count);
+            }
         } catch (err) {
             if (!abortController.aborted) {
                 this.logger.error(

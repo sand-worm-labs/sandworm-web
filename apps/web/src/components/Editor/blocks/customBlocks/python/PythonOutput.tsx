@@ -151,6 +151,14 @@ export function getDataFrameDimensions(html: string): string | null {
   return html.match(DATAFRAME_DIMENSIONS_REGEX)?.[1] ?? null;
 }
 
+// Only real pandas frames carry the "dataframe" class — Stylers, plain HTML
+// and other `_repr_html_` output don't, and the API only exports the former.
+export function hasDataframeOutput(outputs: Output[]): boolean {
+  return outputs.some(
+    output => output.type === "html" && output.html.includes('class="dataframe')
+  );
+}
+
 export const HTML_OUTPUT_HEIGHT_MESSAGE = "sandworm-html-output-height";
 
 // The iframe is sandboxed without allow-same-origin, so its document is a

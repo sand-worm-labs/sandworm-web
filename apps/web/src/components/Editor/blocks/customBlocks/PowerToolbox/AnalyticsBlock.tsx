@@ -30,6 +30,7 @@ import HiddenInPublishedButton from "../../HiddenInPublishedButton";
 import ScrollBar from "../../ScrollBar";
 import { BlockTypePill } from "../../BlockTypePill";
 import { PythonOutputs } from "../python/PythonOutput";
+import { DataframeResultActions } from "../python/DataframeResultActions";
 import { SucceededText, ExecutionFailedText } from "../../ExecutionStatusText";
 
 import { AnalyticsParamForm } from "./AnalyticsparamForm";
@@ -181,6 +182,7 @@ interface Props {
   isFullScreen: boolean;
   onDeleteBlock: () => void;
   hideTypePill?: boolean;
+  onUseResultInPythonBlock?: () => void;
 }
 
 function AnalyticsBlock(props: Props) {
@@ -205,8 +207,9 @@ function AnalyticsBlock(props: Props) {
   const hasResults = results.length > 0;
   const hasError = results.some(r => r.type === "error");
 
-  // Params and results are always shown together — this only controls the
-  // "hide output in published view" toggle, independent of the editor UI.
+  const showDataframeActions =
+    resultStatus === "success" && !props.isPublicMode && !props.isPDF;
+
   const [resultsHidden, setResultsHidden] = useState(false);
 
   const [editorState, editorAPI] = useEditorAwareness();
@@ -432,6 +435,21 @@ function AnalyticsBlock(props: Props) {
                       isResultHidden={resultsHidden}
                       onToggleResultHidden={() => setResultsHidden(prev => !prev)}
                     />
+                    {showDataframeActions && (
+                      <div className="ml-auto">
+                        <DataframeResultActions
+                          workspaceId={props.document.workspaceId}
+                          documentId={props.document.id}
+                          blockId={blockId}
+                          title={title || attrs.toolLabel || ""}
+                          onUseInNewBlock={
+                            props.isEditable
+                              ? props.onUseResultInPythonBlock
+                              : undefined
+                          }
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

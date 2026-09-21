@@ -40,6 +40,7 @@ export class PythonBlockExecutorService {
       const actualSource = (metadata.isSuggestion ? aiSuggestions : source)?.toJSON() ?? '';
 
       let errored = false;
+      let executionCount: number | null = null;
       const { promise, abort } = await this.pythonExecutorService.executeCode(
         context,
         actualSource,
@@ -50,7 +51,12 @@ export class PythonBlockExecutorService {
             errored = true;
           }
         },
-        { storeHistory: true },
+        {
+          storeHistory: true,
+          onExecutionCount: (count) => {
+            executionCount = count;
+          },
+        },
       );
 
       let abortP = Promise.resolve(false);
@@ -70,6 +76,7 @@ export class PythonBlockExecutorService {
       }
 
       await this.updateDataFrames(context, blockId, ctx);
+      await this.dataframeService.exportBlockResult(context, blockId, { executionCount });
 
       block.setAttribute('lastQuery', block.getAttribute('source')!.toJSON());
       block.setAttribute('lastQueryTime', new Date().toISOString());

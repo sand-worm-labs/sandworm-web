@@ -619,6 +619,33 @@ const DraggableTabbedBlock = (props: {
     [props.onAddGroupedBlock, props.id]
   );
 
+  const addAndRunPythonBlock = useCallback(
+    (source: string, afterBlockId: string) => {
+      const blockId = addBlockGroupAfterBlock(
+        layout.value,
+        blocks.value,
+        {
+          type: BlockType.Python,
+          source,
+        },
+        afterBlockId
+      );
+
+      const pythonBlock = blocks.value.get(blockId);
+      if (!pythonBlock) {
+        return;
+      }
+
+      props.executionQueue.enqueueBlock(
+        pythonBlock,
+        props.userId,
+        environmentStartedAt,
+        { _tag: "python", isSuggestion: false }
+      );
+    },
+    [layout, blocks, props.executionQueue, props.userId, environmentStartedAt]
+  );
+
   const onFileUploadBlockPythonUsage = useCallback(
     (block: Y.XmlElement<FileUploadBlock>, filename: string, type: string) => {
       const extensionMap: Record<string, string> = {
@@ -639,29 +666,22 @@ df`
           : `file = open('${filename}').read()
 file`;
 
-      const blockId = addBlockGroupAfterBlock(
-        layout.value,
-        blocks.value,
-        {
-          type: BlockType.Python,
-          source,
-        },
-        getBaseAttributes(block).id
-      );
-
-      const pythonBlock = blocks.value.get(blockId);
-      if (!pythonBlock) {
-        return;
-      }
-
-      props.executionQueue.enqueueBlock(
-        pythonBlock,
-        props.userId,
-        environmentStartedAt,
-        { _tag: "python", isSuggestion: false }
-      );
+      addAndRunPythonBlock(source, getBaseAttributes(block).id);
     },
-    [layout, blocks, props.executionQueue, props.userId, environmentStartedAt]
+    [addAndRunPythonBlock]
+  );
+
+
+  const onUseResultInPythonBlock = useCallback(
+    (sourceBlockId: string) => {
+      const variable = `result_${sourceBlockId.replace(/-/g, "").slice(0, 6)}`;
+      const source = `import pandas as pd
+${variable} = pd.read_parquet("/home/sandwormuser/.sandworm/query-${sourceBlockId}.parquet.gzip")
+${variable}`;
+
+      addAndRunPythonBlock(source, sourceBlockId);
+    },
+    [addAndRunPythonBlock]
   );
 
   const onFileUploadBlockQueryUsage = useCallback(
@@ -763,6 +783,7 @@ file`;
         isApp={props.isApp}
         onFileUploadBlockPythonUsage={onFileUploadBlockPythonUsage}
         onFileUploadBlockQueryUsage={onFileUploadBlockQueryUsage}
+        onUseResultInPythonBlock={onUseResultInPythonBlock}
         currentBlockId={currentBlockId}
         dragPreview={dragPreview}
         userId={props.userId}
@@ -791,6 +812,7 @@ file`;
     props.isApp,
     onFileUploadBlockPythonUsage,
     onFileUploadBlockQueryUsage,
+    onUseResultInPythonBlock,
     currentBlockId,
     dragPreview,
     props.userId,
@@ -1899,6 +1921,7 @@ interface TabRefProps {
     block: Y.XmlElement<FileUploadBlock>,
     filename: string
   ) => void;
+  onUseResultInPythonBlock: (sourceBlockId: string) => void;
   currentBlockId: string | undefined;
   dragPreview: ConnectDragPreview | null;
   userId: string | null;
@@ -1993,6 +2016,9 @@ function TabRef(props: TabRefProps) {
         workspaceId={props.workspaceId}
         modelId="gpt-40"
         onDeleteBlock={() => props.onDeleteBlock(props.tab.blockId)}
+        onUseResultInPythonBlock={() =>
+          props.onUseResultInPythonBlock(props.tab.blockId)
+        }
       />
     ),
     onVisualization: block => (
@@ -2168,6 +2194,9 @@ function TabRef(props: TabRefProps) {
         executionQueue={props.executionQueue}
         isFullScreen={props.isFullScreen}
         onDeleteBlock={() => props.onDeleteBlock(props.tab.blockId)}
+        onUseResultInPythonBlock={() =>
+          props.onUseResultInPythonBlock(props.tab.blockId)
+        }
       />
     ),
   });

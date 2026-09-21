@@ -25,7 +25,7 @@ import {
   isExecutionStatusLoading,
 } from "@sandworm/editor";
 import clsx from "clsx";
-import type { RefObject } from "react";
+import type { ReactNode, RefObject } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ConnectDragPreview } from "react-dnd";
 import { exhaustiveCheck } from "@sandworm/types";
@@ -64,7 +64,12 @@ import EditWithAIForm from "../../EditWithAIForm";
 import ApproveDiffButons from "../../ApproveDiffButtons";
 import { RunningBorderBar } from "../../RunningBorderBar";
 
-import { PythonOutputs, getDataFrameDimensions } from "./PythonOutput";
+import {
+  PythonOutputs,
+  getDataFrameDimensions,
+  hasDataframeOutput,
+} from "./PythonOutput";
+import { DataframeResultActions } from "./DataframeResultActions";
 
 // =====================================
 // ⬢ Types
@@ -90,6 +95,7 @@ interface Props {
   workspaceId: string;
   onDeleteBlock: () => void;
   hideTypePill?: boolean;
+  onUseResultInPythonBlock?: () => void;
 }
 
 // =====================================
@@ -192,11 +198,13 @@ function PythonResultFooter({
   dataframeDimensions,
   isResultHidden,
   toggleResultHidden,
+  actions,
 }: {
   outputCount: number;
   dataframeDimensions: string | null;
   isResultHidden: boolean;
   toggleResultHidden: () => void;
+  actions?: ReactNode;
 }) {
   return (
     <div className="flex items-center px-3 h-10 text-xs text-ink-400 bg-inputBg dark:bg-header-surface border-t border-hover-border dark:border-border-dark">
@@ -211,6 +219,7 @@ function PythonResultFooter({
           collapsed
         </button>
       )}
+      {actions && <div className="ml-auto">{actions}</div>}
     </div>
   );
 }
@@ -317,6 +326,8 @@ function PythonBlock(props: Props) {
   // blocks (e.g. a print + a dataframe) keep the normal padded layout.
   const isTableOnlyOutput =
     results.length > 0 && results.every(result => result.type === "html");
+  const showDataframeActions =
+    hasDataframeOutput(results) && !props.isPublicMode && !props.isPDF;
   const aiSuggestions = getPythonAISuggestions(props.block);
   const editWithAIPrompt = getPythonBlockEditWithAIPrompt(props.block);
   const { title } = getBaseAttributes(props.block);
@@ -906,6 +917,21 @@ function PythonBlock(props: Props) {
               dataframeDimensions={dataframeDimensions}
               isResultHidden={isResultHidden ?? false}
               toggleResultHidden={toggleResultHidden}
+              actions={
+                showDataframeActions && (
+                  <DataframeResultActions
+                    workspaceId={props.document.workspaceId}
+                    documentId={props.document.id}
+                    blockId={blockId}
+                    title={title}
+                    onUseInNewBlock={
+                      props.isEditable
+                        ? props.onUseResultInPythonBlock
+                        : undefined
+                    }
+                  />
+                )
+              }
             />
           )}
           {results.length === 0 && statusIsDisabled && (
