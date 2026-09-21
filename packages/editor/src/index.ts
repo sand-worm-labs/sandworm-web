@@ -36,6 +36,7 @@ import { ascend, descend, head, sortWith } from "ramda";
 import { PowerToolboxBlock } from "./blocks/powertool/index.js";
 export * from "./blocks/powertool/registory.js";
 export * from "./blocks/powertool/renderer.js";
+export * from "./blocks/powertool/constants.js";
 export type * from "./blocks/powertool/types.js";
 
 

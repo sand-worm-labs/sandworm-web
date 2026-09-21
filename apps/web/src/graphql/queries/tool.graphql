@@ -1,0 +1,16 @@
+# Power tool queries
+
+query GetContractAbi($chain: String!, $address: String!) {
+  getContractAbi(chain: $chain, address: $address) {
+    functions {
+      name
+      signature
+      selector
+    }
+    events {
+      name
+      signature
+      topic0
+    }
+  }
+}

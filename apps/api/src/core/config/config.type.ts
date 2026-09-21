@@ -10,6 +10,7 @@ import { OpenRouterConfig } from "@/infrastructure/openrouter/config/openrouter-
 import { AiServiceConfig } from '@/infrastructure/ai/config/ai-service-config.type';
 import { RedisConfig } from '@/infrastructure/redis/redis.config';
 import { TrinoConfig } from '@/infrastructure/datasource/dune/config/trino-config.type';
+import { EtherscanConfig } from '@/infrastructure/datasource/etherscan/config/etherscan-config.type';
 
 export type AllConfigType = {
   app: AppConfig;
@@ -24,4 +25,5 @@ export type AllConfigType = {
   blockExecutor: BlockExecutorConfig
   openrouter: OpenRouterConfig
   trino: TrinoConfig
+  etherscan: EtherscanConfig
 };

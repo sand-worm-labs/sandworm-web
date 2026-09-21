@@ -1,12 +1,14 @@
 "use client";
 
-import { useCallback } from "react";
+import { Fragment, useCallback } from "react";
+import { Listbox, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import type { ParamDefinition } from "@sandworm/editor";
+import { chainIcon } from "@sandworm/editor";
 
 import { FieldLabel, FieldError } from "./AddressField";
 
-function ChevronDown() {
+export function ChevronDown() {
   return (
     <svg viewBox="0 0 14 14" fill="none" className="w-3.5 h-3.5">
       <path
@@ -76,6 +78,112 @@ export function SelectField({
           <ChevronDown />
         </span>
       </div>
+
+      {error && <FieldError message={error} />}
+    </div>
+  );
+}
+
+// =====================================
+// ⬢ Chain Select Field (with logo icons)
+// =====================================
+// Native <option> elements can't render an <img>, so the "chain" type gets
+// its own Listbox-based dropdown instead of reusing the plain <select> in
+// SelectField — every other "select"-typed param keeps the native control.
+interface ChainSelectFieldProps {
+  param: ParamDefinition;
+  value: string;
+  onChange: (value: string) => void;
+  error?: string;
+}
+
+export function ChainSelectField({
+  param,
+  value,
+  onChange,
+  error,
+}: ChainSelectFieldProps) {
+  const options = param.options ?? [];
+  const selected = options.find(opt => opt.value === value);
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <FieldLabel param={param} />
+
+      <Listbox value={value} onChange={onChange}>
+        {({ open }) => (
+          <div className="relative">
+            <Listbox.Button
+              className={clsx(
+                "w-full flex items-center gap-2 px-3 py-2.5 pr-8 rounded-lg text-sm text-left",
+                "bg-white/[0.04] border transition-colors outline-none cursor-pointer",
+                "text-ink-100 ",
+                error
+                  ? "border-error focus:border-red-500/60"
+                  : "border-border-tertiary focus:border-primary/50"
+              )}
+            >
+              {selected ? (
+                <>
+                  <img
+                    src={selected.icon ?? chainIcon(selected.value)}
+                    alt=""
+                    width={28}
+                    height={28}
+                    className="w-3.5 h-3.5 rounded-full shrink-0 object-cover"
+                  />
+                  <span className="truncate">{selected.label}</span>
+                </>
+              ) : (
+                <span className="text-ink-400 ">
+                  Select {param.label.toLowerCase()}...
+                </span>
+              )}
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 ">
+                <ChevronDown />
+              </span>
+            </Listbox.Button>
+
+            <Transition
+              show={open}
+              as={Fragment}
+              leave="transition ease-in duration-100"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Listbox.Options
+                className={clsx(
+                  "absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg py-1",
+                  "bg-base-100 border border-border-tertiary shadow-lg outline-none"
+                )}
+              >
+                {options.map(opt => (
+                  <Listbox.Option
+                    key={opt.value}
+                    value={opt.value}
+                    className={({ active }) =>
+                      clsx(
+                        "flex items-center gap-2 px-3 py-2 text-sm cursor-pointer",
+                        active ? "bg-white/[0.06]" : "",
+                        "text-ink-100 "
+                      )
+                    }
+                  >
+                    <img
+                      src={opt.icon ?? chainIcon(opt.value)}
+                      alt=""
+                      width={28}
+                      height={28}
+                      className="w-3.5 h-3.5 rounded-full shrink-0 object-cover"
+                    />
+                    <span className="truncate">{opt.label}</span>
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </Transition>
+          </div>
+        )}
+      </Listbox>
 
       {error && <FieldError message={error} />}
     </div>

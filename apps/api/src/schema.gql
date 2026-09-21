@@ -244,6 +244,23 @@ type OpenRouterAccountCredits {
   availableCredits: Float!
 }
 
+type ContractFunction {
+  name: String!
+  signature: String!
+  selector: String!
+}
+
+type ContractEvent {
+  name: String!
+  signature: String!
+  topic0: String!
+}
+
+type ContractAbi {
+  functions: [ContractFunction!]!
+  events: [ContractEvent!]!
+}
+
 type AiResult {
   result: String!
   chatId: String!
@@ -444,6 +461,11 @@ type Query {
 
   """Get the power tool category taxonomy"""
   getToolCategories: [ToolCategory!]!
+
+  """
+  Fetch a verified contract's real function and event signatures from its block explorer ABI, for tool params that let a user pick one instead of guessing (e.g. calldata_decoder).
+  """
+  getContractAbi(chain: String!, address: String!): ContractAbi!
 
   """Get a reusable component by ID"""
   getComponent(componentId: String!, workspaceId: String!): ReusableComponent!

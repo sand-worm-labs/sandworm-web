@@ -70,7 +70,11 @@ export class JupyterSessionService {
         //     value: decrypt(v.value, encryptionKey),
         // }));
 
-        await this.setEnvironmentVariables(session.kernel, { add: [], remove: [] });
+        const etherscanApiKey = this.config.get('etherscan.apiKey', { infer: true });
+        await this.setEnvironmentVariables(session.kernel, {
+            add: etherscanApiKey ? [{ name: 'ETHERSCAN_API_KEY', value: etherscanApiKey }] : [],
+            remove: [],
+        });
         await session.kernel.requestExecute({ code: this.buildQueryPreamble(), store_history: false }).done;
 
         return { session, kernel: session.kernel };

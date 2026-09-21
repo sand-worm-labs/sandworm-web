@@ -35,7 +35,10 @@ export function interpolate(template: string, params: ResolvedParams): string {
  */
 export function timeWhere(days: string | number, col = "block_time"): string {
   if (String(days) === "all") return "";
-  return `AND ${col} >= NOW() - INTERVAL '${days} days'`;
+  // Trino rejects Postgres-style `INTERVAL '30 days'` literals (fails at
+  // execution with "Unknown type: interval"). date_add() does the same
+  // timestamp arithmetic without touching the interval type at all.
+  return `AND ${col} >= date_add('day', -${days}, NOW())`;
 }
 
 /**

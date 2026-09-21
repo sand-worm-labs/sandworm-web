@@ -56,6 +56,15 @@ RUN pip install --no-cache-dir ipykernel
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Installed separately, after the pinned requirements.txt graph is already
+# resolved, rather than appended into requirements.txt itself — pip re-solves
+# an entire file together, and that file's grpcio-status/google-cloud-*
+# constraints are already fragile enough that adding one more package (even
+# exactly pinned) can tip resolution into multi-minute-plus backtracking.
+# A separate install treats everything already installed as a fixed
+# constraint instead, so this stays fast regardless.
+RUN pip install --no-cache-dir eth-utils==5.2.0 requests==2.32.3 pycryptodome==3.21.0
+
 # jupyter extension
 COPY ./sandworm_fs_bridge /usr/src/sandworm_fs_bridge
 RUN pip install /usr/src/sandworm_fs_bridge
