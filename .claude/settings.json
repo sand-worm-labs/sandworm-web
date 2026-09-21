@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"arrow\" apps/jupyter/requirements.txt; sed -n 60,125p apps/api/src/features/code-execution/query-engine/duckdb/duckdb-query.service.ts; ls /tmp/claude-1000/-home-daniel-development-sandworm-web/*/scratchpad 2>/dev/null | head -3; docker ps --format '{{.Names}}' 2>&1 | head)",
+      "Read(//tmp/claude-1000/-home-daniel-development-sandworm-web/**)",
+      "Bash(docker exec *)",
+      "Bash(awk '{print $11,$12,$13,$14}')",
+      "Bash(chmod +x scripts/rebuild.sh)",
+      "Bash(bash -n scripts/rebuild.sh)"
+    ]
+  }
+}
