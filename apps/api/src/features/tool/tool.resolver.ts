@@ -1,4 +1,5 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
+import { GraphQLJSON } from 'graphql-type-json';
 import { Public } from '@sandworm/nest-common';
 import { ContractAbi } from './contract-abi.model';
 import { ContractAbiService } from './contract-abi.service';
@@ -29,6 +30,21 @@ export class ToolResolver {
   })
   getToolCategories(): Promise<ToolCategory[]> {
     return this.toolService.getToolCategories();
+  }
+
+  // Not @Public(). Only the source rendered for one tool and one set of
+  // inputs is returned, never the raw template (see the note on Tool in
+  // tool.model.ts).
+  @Query(() => String, {
+    name: 'renderToolSource',
+    description:
+      'Render a power tool\'s generated source for the given inputs. Returns the code the block would run, never the raw template.',
+  })
+  renderToolSource(
+    @Args('toolId') toolId: string,
+    @Args('inputs', { type: () => GraphQLJSON }) inputs: Record<string, unknown>,
+  ): Promise<string> {
+    return this.toolService.renderToolSource(toolId, inputs ?? {});
   }
 
   // Not @Public() — this proxies a rate-limited, API-keyed third-party

@@ -612,6 +612,8 @@ const DraggableTabbedBlock = (props: {
     [props.id, props.onGroup]
   );
 
+  const [, editorAPI] = useEditorAwareness();
+
   const handleAddGroupedBlock = useCallback(
     (blockId: string, blockType: BlockType, position: "before" | "after") => {
       return props.onAddGroupedBlock(blockType, props.id, blockId, position);
@@ -682,6 +684,21 @@ ${variable}`;
       addAndRunPythonBlock(source, sourceBlockId);
     },
     [addAndRunPythonBlock]
+  );
+
+  // Non-running counterpart to addAndRunPythonBlock: opens the new block in
+  // insert mode so the source can be edited before deciding whether to run it.
+  const onOpenToolSourceInPythonBlock = useCallback(
+    (sourceBlockId: string, source: string) => {
+      const blockId = addBlockGroupAfterBlock(
+        layout.value,
+        blocks.value,
+        { type: BlockType.Python, source },
+        sourceBlockId
+      );
+      editorAPI.insert(blockId, { scrollIntoView: true });
+    },
+    [layout, blocks, editorAPI.insert]
   );
 
   const onFileUploadBlockQueryUsage = useCallback(
@@ -784,6 +801,7 @@ ${variable}`;
         onFileUploadBlockPythonUsage={onFileUploadBlockPythonUsage}
         onFileUploadBlockQueryUsage={onFileUploadBlockQueryUsage}
         onUseResultInPythonBlock={onUseResultInPythonBlock}
+        onOpenToolSourceInPythonBlock={onOpenToolSourceInPythonBlock}
         currentBlockId={currentBlockId}
         dragPreview={dragPreview}
         userId={props.userId}
@@ -813,6 +831,7 @@ ${variable}`;
     onFileUploadBlockPythonUsage,
     onFileUploadBlockQueryUsage,
     onUseResultInPythonBlock,
+    onOpenToolSourceInPythonBlock,
     currentBlockId,
     dragPreview,
     props.userId,
@@ -1922,6 +1941,10 @@ interface TabRefProps {
     filename: string
   ) => void;
   onUseResultInPythonBlock: (sourceBlockId: string) => void;
+  onOpenToolSourceInPythonBlock: (
+    sourceBlockId: string,
+    source: string
+  ) => void;
   currentBlockId: string | undefined;
   dragPreview: ConnectDragPreview | null;
   userId: string | null;
@@ -2196,6 +2219,9 @@ function TabRef(props: TabRefProps) {
         onDeleteBlock={() => props.onDeleteBlock(props.tab.blockId)}
         onUseResultInPythonBlock={() =>
           props.onUseResultInPythonBlock(props.tab.blockId)
+        }
+        onOpenToolSourceInPythonBlock={source =>
+          props.onOpenToolSourceInPythonBlock(props.tab.blockId, source)
         }
       />
     ),

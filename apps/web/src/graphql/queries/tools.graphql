@@ -8,3 +8,7 @@ query GetTools {
     params
   }
 }
+
+query RenderToolSource($toolId: String!, $inputs: JSON!) {
+  renderToolSource(toolId: $toolId, inputs: $inputs)
+}

@@ -1,5 +1,5 @@
 import { PlayIcon, StopIcon, ClockIcon } from "@heroicons/react/20/solid";
-import { PiTrash } from "react-icons/pi";
+import { PiCode, PiTrash } from "react-icons/pi";
 import type * as Y from "yjs";
 import {
   type YBlock,
@@ -34,6 +34,7 @@ import { DataframeResultActions } from "../python/DataframeResultActions";
 import { SucceededText, ExecutionFailedText } from "../../ExecutionStatusText";
 
 import { AnalyticsParamForm } from "./AnalyticsparamForm";
+import { ToolSourceModal } from "./ToolSourceModal";
 
 function ExecutionStatusText({
   status,
@@ -183,6 +184,7 @@ interface Props {
   onDeleteBlock: () => void;
   hideTypePill?: boolean;
   onUseResultInPythonBlock?: () => void;
+  onOpenToolSourceInPythonBlock?: (source: string) => void;
 }
 
 function AnalyticsBlock(props: Props) {
@@ -211,6 +213,7 @@ function AnalyticsBlock(props: Props) {
     resultStatus === "success" && !props.isPublicMode && !props.isPDF;
 
   const [resultsHidden, setResultsHidden] = useState(false);
+  const [isSourceOpen, setIsSourceOpen] = useState(false);
 
   const [editorState, editorAPI] = useEditorAwareness();
   const isEditorFocused = editorState.cursorBlockId === blockId;
@@ -563,6 +566,18 @@ function AnalyticsBlock(props: Props) {
           />
         )}
 
+        {attrs.toolId && !props.isPublicMode && (
+          <button
+            type="button"
+            onClick={() => setIsSourceOpen(true)}
+            aria-label="View tool source"
+            title="View tool source"
+            className="rounded-[5px] border-hover-border border h-[24px] min-w-[24px] flex items-center justify-center bg-base-200 dark:bg-header-surface hover:bg-hover-bg hover:border-primary"
+          >
+            <PiCode className="w-[13px] h-[13px] text-ink-navy" />
+          </button>
+        )}
+
         <button
           type="button"
           onClick={props.onDeleteBlock}
@@ -572,6 +587,19 @@ function AnalyticsBlock(props: Props) {
           <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
         </button>
       </div>
+
+      {attrs.toolId && !props.isPublicMode && (
+        <ToolSourceModal
+          isOpen={isSourceOpen}
+          onClose={() => setIsSourceOpen(false)}
+          toolId={attrs.toolId}
+          toolLabel={attrs.toolLabel ?? attrs.toolId}
+          inputs={attrs.inputs ?? {}}
+          onOpenInPythonBlock={
+            props.isEditable ? props.onOpenToolSourceInPythonBlock : undefined
+          }
+        />
+      )}
     </div>
   );
 }

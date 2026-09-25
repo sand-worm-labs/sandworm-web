@@ -463,6 +463,11 @@ type Query {
   getToolCategories: [ToolCategory!]!
 
   """
+  Render a power tool's generated source for the given inputs. Returns the code the block would run, never the raw template.
+  """
+  renderToolSource(toolId: String!, inputs: JSON!): String!
+
+  """
   Fetch a verified contract's real function and event signatures from its block explorer ABI, for tool params that let a user pick one instead of guessing (e.g. calldata_decoder).
   """
   getContractAbi(chain: String!, address: String!): ContractAbi!

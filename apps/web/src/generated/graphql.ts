@@ -15,7 +15,9 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: { input: any; output: any; }
+  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSON: { input: any; output: any; }
 };
 
@@ -894,6 +896,8 @@ export type Query = {
   openRouterModels: Array<OpenRouterModel>;
   /** Get Profile */
   profile: Profile;
+  /** Render a power tool's generated source for the given inputs. Returns the code the block would run, never the raw template. */
+  renderToolSource: Scalars['String']['output'];
   /** Get a single schedule by ID */
   schedule: Schedule;
   /** Get all schedules for a document */
@@ -1095,6 +1099,12 @@ export type QueryOpenRouterModelArgs = {
 
 export type QueryProfileArgs = {
   username: Scalars['String']['input'];
+};
+
+
+export type QueryRenderToolSourceArgs = {
+  inputs: Scalars['JSON']['input'];
+  toolId: Scalars['String']['input'];
 };
 
 
@@ -2080,6 +2090,14 @@ export type GetToolsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetToolsQuery = { __typename?: 'Query', getTools: Array<{ __typename?: 'Tool', toolId: string, categoryId: string, name: string, description: string, tags: Array<string>, params: any }> };
+
+export type RenderToolSourceQueryVariables = Exact<{
+  toolId: Scalars['String']['input'];
+  inputs: Scalars['JSON']['input'];
+}>;
+
+
+export type RenderToolSourceQuery = { __typename?: 'Query', renderToolSource: string };
 
 export type GetUserQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -6141,6 +6159,45 @@ export type GetToolsQueryHookResult = ReturnType<typeof useGetToolsQuery>;
 export type GetToolsLazyQueryHookResult = ReturnType<typeof useGetToolsLazyQuery>;
 export type GetToolsSuspenseQueryHookResult = ReturnType<typeof useGetToolsSuspenseQuery>;
 export type GetToolsQueryResult = Apollo.QueryResult<GetToolsQuery, GetToolsQueryVariables>;
+export const RenderToolSourceDocument = gql`
+    query RenderToolSource($toolId: String!, $inputs: JSON!) {
+  renderToolSource(toolId: $toolId, inputs: $inputs)
+}
+    `;
+
+/**
+ * __useRenderToolSourceQuery__
+ *
+ * To run a query within a React component, call `useRenderToolSourceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRenderToolSourceQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRenderToolSourceQuery({
+ *   variables: {
+ *      toolId: // value for 'toolId'
+ *      inputs: // value for 'inputs'
+ *   },
+ * });
+ */
+export function useRenderToolSourceQuery(baseOptions: Apollo.QueryHookOptions<RenderToolSourceQuery, RenderToolSourceQueryVariables> & ({ variables: RenderToolSourceQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<RenderToolSourceQuery, RenderToolSourceQueryVariables>(RenderToolSourceDocument, options);
+      }
+export function useRenderToolSourceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<RenderToolSourceQuery, RenderToolSourceQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<RenderToolSourceQuery, RenderToolSourceQueryVariables>(RenderToolSourceDocument, options);
+        }
+export function useRenderToolSourceSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<RenderToolSourceQuery, RenderToolSourceQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<RenderToolSourceQuery, RenderToolSourceQueryVariables>(RenderToolSourceDocument, options);
+        }
+export type RenderToolSourceQueryHookResult = ReturnType<typeof useRenderToolSourceQuery>;
+export type RenderToolSourceLazyQueryHookResult = ReturnType<typeof useRenderToolSourceLazyQuery>;
+export type RenderToolSourceSuspenseQueryHookResult = ReturnType<typeof useRenderToolSourceSuspenseQuery>;
+export type RenderToolSourceQueryResult = Apollo.QueryResult<RenderToolSourceQuery, RenderToolSourceQueryVariables>;
 export const GetUserDocument = gql`
     query GetUser($userId: String!) {
   getUser(userId: $userId) {
