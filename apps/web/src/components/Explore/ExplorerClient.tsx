@@ -63,7 +63,7 @@ export function ExploreClient({
   serverError,
   pageSize,
 }: ExploreClientProps) {
-  const { user } = useSession({ redirectToLogin: true });
+  const { user } = useSession({ redirectToLogin: false });
   const userId = user?.id;
   const { sortBy, setSortBy } = useDocumentSortParam();
 

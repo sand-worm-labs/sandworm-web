@@ -8,7 +8,6 @@ import {
 } from "@sandworm/ui/components/avatar";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useState } from "react";
 
@@ -16,10 +15,11 @@ import { ForkToWorkspaceModal } from "@/components/Explore/ForkToWorkspaceModal"
 import { cn } from "@/lib/utils";
 import type { ApiDocument } from "@/types";
 import { formatDate } from "@/lib/date";
+import { useModalStore } from "@/store/auth";
 
 import { useSession } from "../Editor/hooks/useAuth";
 import { useFavorites } from "../Editor/hooks/useFavorites";
-import { useForkDocument } from "../Editor/hooks/usePublicDocuments";
+import { useForkFlow } from "../Editor/PublicHeader/useForkFlow";
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 
 // =====================================
@@ -38,19 +38,25 @@ interface ExploreCardProps {
 // ⬢ Component
 // =====================================
 export const ExploreCard = ({ query }: ExploreCardProps) => {
-  const router = useRouter();
   const workspaceId = useStringQuery("workspace");
 
   const { user } = useSession({ redirectToLogin: false });
   const isOwnDocument = !!user && user.id === query.authorId;
+  const openSignIn = useModalStore(state => state.openSignIn);
 
-  const { forkDocument, loading: forking } = useForkDocument();
   const [, { favoriteDocument, unfavoriteDocument }] = useFavorites(
     workspaceId,
     true
   );
 
-  const [isForkModalOpen, setIsForkModalOpen] = useState(false);
+  const {
+    triggerFork,
+    isForkModalOpen,
+    closeForkModal,
+    handleFork,
+    handleForkSuccess,
+  } = useForkFlow({ id: query.id, title: query.title }, !!user);
+
   const [isFavorited, setIsFavorited] = useState(query.isFavorite ?? false);
   const [favoriteCount, setFavoriteCount] = useState(query.favoriteCount ?? 0);
   const formattedDate = formatDate(query.createdAt);
@@ -59,25 +65,11 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
   const visibleTags = tags.slice(0, MAX_VISIBLE_TAGS);
   const hiddenTagCount = tags.length - visibleTags.length;
 
-  const handleForkClick = () => setIsForkModalOpen(true);
-
-  const handleFork = async ({
-    documentId,
-    workspaceId: targetWorkspaceId,
-  }: {
-    documentId: string;
-    workspaceId: string;
-  }) => {
-    const forked = await forkDocument(documentId, targetWorkspaceId);
-    if (!forked?.id) throw new Error("Fork returned no document.");
-  };
-
-  const handleForkSuccess = (targetWorkspaceId: string) => {
-    toast.success("Notebook forked!");
-    router.push(`/workspace/${targetWorkspaceId}`);
-  };
-
   const handleFavorite = async () => {
+    if (!user) {
+      openSignIn();
+      return;
+    }
     const wasFavorited = isFavorited;
     setIsFavorited(!wasFavorited);
     setFavoriteCount(c => (wasFavorited ? c - 1 : c + 1));
@@ -120,12 +112,18 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
               )}
             </Avatar>
             <div className="min-w-0">
-              <Link
-                href={`/workspace/${workspaceId}/profile/${query.authorId}`}
-                className="text-sm font-medium text-ink-100 dark:text-white hover:underline block truncate"
-              >
-                @{query.author?.username}
-              </Link>
+              {workspaceId ? (
+                <Link
+                  href={`/workspace/${workspaceId}/profile/${query.authorId}`}
+                  className="text-sm font-medium text-ink-100 dark:text-white hover:underline block truncate"
+                >
+                  @{query.author?.username}
+                </Link>
+              ) : (
+                <span className="text-sm font-medium text-ink-100 dark:text-white block truncate">
+                  @{query.author?.username}
+                </span>
+              )}
               <p className="text-xs text-ink-400">Created {formattedDate}</p>
             </div>
           </div>
@@ -183,18 +181,13 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
             {!isOwnDocument && (
               <button
                 type="button"
-                onClick={handleForkClick}
-                disabled={forking}
-                className="flex items-center gap-1 -mx-2 -my-1 px-2 py-1 rounded-full border border-transparent group hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors disabled:opacity-50"
+                onClick={triggerFork}
+                className="flex items-center gap-1 -mx-2 -my-1 px-2 py-1 rounded-full border border-transparent group hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors"
                 aria-label="Fork document"
               >
                 <span className="text-sm">{query.forkCount}</span>
                 <GitFork
-                  className={cn(
-                    "h-4 w-4 transition-colors text-ink-300 dark:text-ink-300",
-                    !forking &&
-                      "group-hover:text-ink-500 dark:group-hover:text-ink-200"
-                  )}
+                  className="h-4 w-4 transition-colors text-ink-300 dark:text-ink-300 group-hover:text-ink-500 dark:group-hover:text-ink-200"
                   strokeWidth={1.2}
                 />
               </button>
@@ -203,13 +196,17 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
         </td>
       </tr>
 
-      <ForkToWorkspaceModal
-        isOpen={isForkModalOpen}
-        onClose={() => setIsForkModalOpen(false)}
-        document={{ id: query.id, title: query.title }}
-        onFork={handleFork}
-        onForkSuccess={handleForkSuccess}
-      />
+      {/* Only mounted for signed-in users: the modal runs an authenticated
+          workspaces query that anonymous visitors on /explore can't make. */}
+      {user && (
+        <ForkToWorkspaceModal
+          isOpen={isForkModalOpen}
+          onClose={closeForkModal}
+          document={{ id: query.id, title: query.title }}
+          onFork={handleFork}
+          onForkSuccess={handleForkSuccess}
+        />
+      )}
     </>
   );
 };

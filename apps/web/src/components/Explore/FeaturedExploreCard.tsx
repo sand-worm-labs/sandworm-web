@@ -10,10 +10,11 @@ import { ForkToWorkspaceModal } from "@/components/Explore/ForkToWorkspaceModal"
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/date";
 import { tintPillDarkClassName } from "@/styles/interactive";
+import { useModalStore } from "@/store/auth";
 
 import { useSession } from "../Editor/hooks/useAuth";
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
-import { useForkDocument } from "../Editor/hooks/usePublicDocuments";
+import { useForkFlow } from "../Editor/PublicHeader/useForkFlow";
 import { useFavorites } from "../Editor/hooks/useFavorites";
 import { BookmarkSimple } from "../Assets/BookmarkSimple";
 import { GitFork } from "../Assets/GitFork";
@@ -69,14 +70,21 @@ export function FeaturedExploreCard({
 
   const { user } = useSession({ redirectToLogin: false });
   const isOwnDocument = !!user && user.id === creator.userId;
+  const openSignIn = useModalStore(state => state.openSignIn);
 
-  const { forkDocument, loading: forking } = useForkDocument();
   const [, { favoriteDocument, unfavoriteDocument }] = useFavorites(
     workspaceId,
     true
   );
 
-  const [isForkModalOpen, setIsForkModalOpen] = useState(false);
+  const {
+    triggerFork,
+    isForkModalOpen,
+    closeForkModal,
+    handleFork,
+    handleForkSuccess,
+  } = useForkFlow({ id, title }, !!user);
+
   const [isFavorited, setIsFavorited] = useState(isFavorite ?? false);
   const [favoriteCount, setFavoriteCount] = useState(stars);
 
@@ -84,6 +92,10 @@ export function FeaturedExploreCard({
 
   const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!user) {
+      openSignIn();
+      return;
+    }
     const wasFavorited = isFavorited;
 
     setIsFavorited(!wasFavorited);
@@ -106,23 +118,7 @@ export function FeaturedExploreCard({
 
   const handleSaveClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsForkModalOpen(true);
-  };
-
-  const handleFork = async ({
-    documentId,
-    workspaceId: targetWorkspaceId,
-  }: {
-    documentId: string;
-    workspaceId: string;
-  }) => {
-    const forked = await forkDocument(documentId, targetWorkspaceId);
-    if (!forked?.id) throw new Error("Fork failed");
-  };
-
-  const handleForkSuccess = (targetWorkspaceId: string) => {
-    toast.success("Notebook forked!");
-    router.push(`/workspace/${targetWorkspaceId}`);
+    triggerFork();
   };
 
   return (
@@ -200,16 +196,27 @@ export function FeaturedExploreCard({
             height={30}
             className="rounded-full"
           />
-          <Link
-            href={`/workspace/${workspaceId}/profile/${creator.userId}`}
-            onClick={e => e.stopPropagation()}
-            className={cn(
-              "text-sm font-medium hover:underline",
-              isPurple ? "text-inputBg" : "text-ink-400"
-            )}
-          >
-            @{creator?.username}
-          </Link>
+          {workspaceId ? (
+            <Link
+              href={`/workspace/${workspaceId}/profile/${creator.userId}`}
+              onClick={e => e.stopPropagation()}
+              className={cn(
+                "text-sm font-medium hover:underline",
+                isPurple ? "text-inputBg" : "text-ink-400"
+              )}
+            >
+              @{creator?.username}
+            </Link>
+          ) : (
+            <span
+              className={cn(
+                "text-sm font-medium",
+                isPurple ? "text-inputBg" : "text-ink-400"
+              )}
+            >
+              @{creator?.username}
+            </span>
+          )}
         </div>
 
         {/* ↓ mt-auto pushes this row to the bottom regardless of card height */}
@@ -240,10 +247,9 @@ export function FeaturedExploreCard({
             <button
               type="button"
               onClick={handleSaveClick}
-              disabled={forking}
               aria-label="Fork to workspace"
               className={cn(
-                "flex items-center gap-1 -mx-2 -my-1 px-2 py-1 rounded-full border border-transparent transition-colors disabled:opacity-50",
+                "flex items-center gap-1 -mx-2 -my-1 px-2 py-1 rounded-full border border-transparent transition-colors",
                 "hover:bg-black/5 hover:border-black/10 dark:hover:bg-white/10 dark:hover:border-white/20"
               )}
             >
@@ -254,13 +260,17 @@ export function FeaturedExploreCard({
         </div>
       </div>
 
-      <ForkToWorkspaceModal
-        isOpen={isForkModalOpen}
-        onClose={() => setIsForkModalOpen(false)}
-        document={{ id, title }}
-        onFork={handleFork}
-        onForkSuccess={handleForkSuccess}
-      />
+      {/* Only mounted for signed-in users: the modal runs an authenticated
+          workspaces query that anonymous visitors on /explore can't make. */}
+      {user && (
+        <ForkToWorkspaceModal
+          isOpen={isForkModalOpen}
+          onClose={closeForkModal}
+          document={{ id, title }}
+          onFork={handleFork}
+          onForkSuccess={handleForkSuccess}
+        />
+      )}
     </>
   );
 }

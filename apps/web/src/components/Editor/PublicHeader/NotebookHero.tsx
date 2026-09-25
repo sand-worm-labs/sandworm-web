@@ -37,7 +37,7 @@ export function NotebookHeroTop({
   const { workspaceInfo } = useCurrentWorkspaceInfo(!isAuthenticated);
   const exploreHref = workspaceInfo?.id
     ? `/workspace/${workspaceInfo.id}/explore`
-    : "/workspace";
+    : "/explore";
 
   const openSignIn = useModalStore(state => state.openSignIn);
   const [, { favoriteDocument, unfavoriteDocument }] = useFavorites(null, true);
