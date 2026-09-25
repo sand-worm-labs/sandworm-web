@@ -184,7 +184,7 @@ interface Props {
   onDeleteBlock: () => void;
   hideTypePill?: boolean;
   onUseResultInPythonBlock?: () => void;
-  onOpenToolSourceInPythonBlock?: (source: string) => void;
+  onOpenToolSourceInPythonBlock?: (source: string) => string;
 }
 
 function AnalyticsBlock(props: Props) {
@@ -221,6 +221,17 @@ function AnalyticsBlock(props: Props) {
   const onClickWithin = useCallback(() => {
     editorAPI.focus(blockId, { scrollIntoView: false });
   }, [blockId, editorAPI]);
+
+  const { onOpenToolSourceInPythonBlock } = props;
+  const onOpenSourceInPython = useCallback(
+    (source: string) => {
+      const newBlockId = onOpenToolSourceInPythonBlock?.(source);
+      if (newBlockId) {
+        editorAPI.insert(newBlockId, { scrollIntoView: true });
+      }
+    },
+    [onOpenToolSourceInPythonBlock, editorAPI]
+  );
 
   const onRun = useCallback(() => {
     props.executionQueue.enqueueBlock(
@@ -596,7 +607,9 @@ function AnalyticsBlock(props: Props) {
           toolLabel={attrs.toolLabel ?? attrs.toolId}
           inputs={attrs.inputs ?? {}}
           onOpenInPythonBlock={
-            props.isEditable ? props.onOpenToolSourceInPythonBlock : undefined
+            props.isEditable && props.onOpenToolSourceInPythonBlock
+              ? onOpenSourceInPython
+              : undefined
           }
         />
       )}

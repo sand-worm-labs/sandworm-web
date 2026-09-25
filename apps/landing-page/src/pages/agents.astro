@@ -32,6 +32,39 @@ const benefits = [
   },
 ];
 
+const pillars = [
+  {
+    title: 'The full onchain picture',
+    description:
+      'One integration gives your agent access to the same data your team explores in Sandworm.',
+    points: [
+      'Base, Ethereum, Sui and other EVM chains in one place',
+      'Compare activity across chains in a single notebook',
+      'Live balances and onchain activity, not stale exports',
+    ],
+  },
+  {
+    title: 'Built for programmatic access',
+    description:
+      'Structured for machines from the start. Query with SQL and Python, and automate it from the CLI or any MCP client.',
+    points: [
+      'Structured results agents can reason over',
+      'Reusable queries and notebooks across sessions',
+      'Scriptable in CI, cron jobs and agent loops',
+    ],
+  },
+  {
+    title: 'Built in the open',
+    description:
+      'The same notebooks analysts use for real analysis, now accessible to your agent with a single connection.',
+    points: [
+      'Open source, so you can read how it works',
+      'Public notebooks and queries you can fork',
+      'Every result traces back to the query behind it',
+    ],
+  },
+];
+
 const steps = [
   { title: 'Ask', description: 'Describe the question in plain language.' },
   { title: 'Query', description: 'The agent pulls the onchain data it needs with SQL.' },
@@ -310,6 +343,45 @@ corr = growth.corr(df.price)</code></pre>
               </div>
             </div>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Everything your agent needs -->
+    <section class="bg-black text-white py-20 px-4" aria-labelledby="pillars-heading">
+      <div class="container mx-auto max-w-6xl">
+        <p class="uppercase mb-5 font-semibold text-center text-[15px] font-primary">
+          <span aria-hidden="true">●</span> Built for agents <span aria-hidden="true">●</span>
+        </p>
+        <h2
+          id="pillars-heading"
+          class="text-[44px] lg:text-6xl text-[#C7C2FF] mb-6 uppercase lg:leading-tight leading-none text-center font-black font-mono max-w-4xl mx-auto"
+        >
+          Everything your agent needs to go onchain
+        </h2>
+        <div class="flex justify-center mb-12" aria-hidden="true">
+          <Dots />
+        </div>
+
+        <div class="grid gap-4 lg:grid-cols-3">
+          {pillars.map(pillar => (
+            <article class="rounded-4xl gradient-border">
+              <div class="inner rounded-[31px] p-8 h-full flex flex-col">
+                <h3 class="uppercase text-[15px] mb-3 font-semibold font-primary">
+                  <span aria-hidden="true">●</span> {pillar.title}
+                </h3>
+                <p class="text-[#8A919E] text-base xl:text-lg leading-relaxed">{pillar.description}</p>
+                <ul class="mt-6 pt-6 border-t border-white/10 space-y-3">
+                  {pillar.points.map(point => (
+                    <li class="flex gap-3 items-start text-[#CDD6E7] font-body">
+                      <span class="mt-0.5 text-primary" aria-hidden="true">✓</span>
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>

@@ -121,6 +121,7 @@ export class DocumentResolver {
     return this.documentService.getForkedDocuments(userId);
   }
 
+  @Public()
   @Query(() => [Document], {
     name: 'getTrendingPublishedDocuments',
     description: 'Get trending published documents across all workspaces',

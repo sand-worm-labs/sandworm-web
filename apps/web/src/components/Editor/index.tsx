@@ -612,8 +612,6 @@ const DraggableTabbedBlock = (props: {
     [props.id, props.onGroup]
   );
 
-  const [, editorAPI] = useEditorAwareness();
-
   const handleAddGroupedBlock = useCallback(
     (blockId: string, blockType: BlockType, position: "before" | "after") => {
       return props.onAddGroupedBlock(blockType, props.id, blockId, position);
@@ -686,19 +684,17 @@ ${variable}`;
     [addAndRunPythonBlock]
   );
 
-  // Non-running counterpart to addAndRunPythonBlock: opens the new block in
-  // insert mode so the source can be edited before deciding whether to run it.
+  // Non-running counterpart to addAndRunPythonBlock, so the source can be
+  // edited before deciding whether to run it. Returns the new block's id.
   const onOpenToolSourceInPythonBlock = useCallback(
-    (sourceBlockId: string, source: string) => {
-      const blockId = addBlockGroupAfterBlock(
+    (sourceBlockId: string, source: string) =>
+      addBlockGroupAfterBlock(
         layout.value,
         blocks.value,
         { type: BlockType.Python, source },
         sourceBlockId
-      );
-      editorAPI.insert(blockId, { scrollIntoView: true });
-    },
-    [layout, blocks, editorAPI.insert]
+      ),
+    [layout, blocks]
   );
 
   const onFileUploadBlockQueryUsage = useCallback(
@@ -1944,7 +1940,7 @@ interface TabRefProps {
   onOpenToolSourceInPythonBlock: (
     sourceBlockId: string,
     source: string
-  ) => void;
+  ) => string;
   currentBlockId: string | undefined;
   dragPreview: ConnectDragPreview | null;
   userId: string | null;
