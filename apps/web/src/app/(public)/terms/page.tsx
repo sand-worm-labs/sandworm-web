@@ -1,7 +1,7 @@
 import React from "react";
 
 export const metadata = {
-  title: "Terms & Conditions – Sandworm",
+  title: "Terms & Conditions | Sandworm",
   description: "Read the terms and conditions for using the Sandworm Web App",
 };
 
