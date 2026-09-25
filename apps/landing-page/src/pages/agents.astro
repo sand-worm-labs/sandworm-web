@@ -1,0 +1,432 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import SectionOnboard from '../components/SectionOnboard.astro';
+import Footer from '../components/Footer.astro';
+import SparkleIcon from '../components/icons/Sparkle.astro';
+import Dots from '../components/icons/Dots.astro';
+import Ellipse from '../components/icons/Ellipse.astro';
+import Wave from '../components/icons/Wave.astro';
+import Users from '../components/icons/Users.astro';
+import '../styles/global.css';
+
+const appUrl = import.meta.env.PUBLIC_APP_URL ?? 'http://localhost:8081';
+const repoUrl = 'https://github.com/sand-worm-labs';
+
+const benefits = [
+  {
+    title: 'From question to finished analysis',
+    description:
+      'Agents do more than fetch rows. They query, crunch the numbers, chart the result and write up what it means, all in one run.',
+  },
+  {
+    title: 'Agents that write real code',
+    description:
+      'Agents write and run SQL, Python and Markdown cells in one notebook: pull data across Base, Ethereum, Sui and other EVM chains, analyze it in Python and explain the result.',
+  },
+  {
+    title: 'Open and reproducible',
+    description:
+      'Sandworm is open source. Every analysis an agent produces is a notebook you can read, fork, re-run and share.',
+  },
+];
+
+const steps = [
+  { title: 'Ask', description: 'Describe the question in plain language.' },
+  { title: 'Query', description: 'The agent pulls the onchain data it needs with SQL.' },
+  { title: 'Analyze', description: 'It writes and runs Python for the calculations.' },
+  { title: 'Visualize', description: 'It builds charts and tables from the results.' },
+  { title: 'Deliver', description: 'Everything is delivered back to your agent.' },
+];
+
+const comparison = [
+  { feature: 'Write and edit SQL, Python and Markdown cells', cli: true, mcp: true },
+  { feature: 'Run queries and Python, read results', cli: true, mcp: true },
+  { feature: 'Build charts and notebooks', cli: true, mcp: true },
+  { feature: 'Fork public notebooks', cli: true, mcp: true },
+  { feature: 'Scriptable in CI and cron jobs', cli: true, mcp: false },
+  { feature: 'Native in Claude, Cursor and other MCP clients', cli: false, mcp: true },
+];
+
+const faqs = [
+  {
+    q: 'What is Sandworm for agents?',
+    a: 'A way for AI agents to run end-to-end onchain analysis: they write SQL to query the data and Python to analyze it, build the charts and hand back a notebook you can check and share.',
+  },
+  {
+    q: 'What is the difference between MCP and the CLI?',
+    a: 'The CLI is a command-line tool for scripts and terminal-based agents. MCP lets MCP-compatible clients call Sandworm as a tool directly from the chat.',
+  },
+  {
+    q: 'Which blockchains are supported?',
+    a: 'Base, Ethereum, Sui and other EVM chains.',
+  },
+  {
+    q: 'Can I see what the agent did?',
+    a: 'Yes. Queries live in notebooks, so you can open, edit and re-run anything an agent produced.',
+  },
+];
+---
+
+<Layout
+  title="Onchain analysis for AI agents – Sandworm"
+  description="Let AI agents run end-to-end onchain analysis: query blockchain data, analyze it, chart it and deliver a notebook you can share."
+  path="/agents"
+>
+  <Header />
+
+  <main>
+    <!-- Hero -->
+    <section
+      class="py-16 pt-12 text-center pb-32 lg:pb-48 lg:pt-28 text-white relative overflow-hidden"
+      aria-labelledby="agents-heading"
+    >
+      <picture class="absolute inset-0 -z-10" aria-hidden="true">
+        <source srcset="/img/herobg.webp" type="image/webp" />
+        <Image
+          src="/img/herobg.webp"
+          alt=""
+          width={1920}
+          height={1080}
+          class="w-full h-full object-cover object-[center_center] lg:scale-100 scale-125"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
+        />
+      </picture>
+
+      <div class="container mx-auto relative flex flex-col items-center">
+        <div class="lg:pt-[8%] pt-16 lg:mt-8 w-full mb-6">
+          <div class="lg:py-6 w-full">
+            <h1 class="mx-auto leading-[1.3] px-3 lg:px-0 lg:text-[2.9rem] text-3xl xxl:text-[3.4rem] font-bold text-[#F8F9FA]" id="agents-heading">
+              Onchain analysis for AI agents
+            </h1>
+            <p class="text-[#CDD6E7] lg:font-light font-medium mt-4 mb-3 lg:max-w-140 xl:max-w-180 mx-auto text-base xxl:text-lg px-5">
+              Your agent takes a question all the way to a finished analysis: data, code, charts and conclusions.
+            </p>
+          </div>
+        </div>
+
+        <!-- Example prompt -->
+        <div class="bg-rainbow-gradient p-1 my-6 mx-auto rounded-full lg:w-207.5 w-[95%]">
+          <div class="rounded-full py-3 flex gap-4 items-center px-6 justify-center text-[13px] bg-hero-base text-[#C5CED9] font-primary font-normal">
+            <SparkleIcon />
+            <p class="truncate overflow-hidden flex-1 min-w-0">
+              Did holder growth drive price for the top Base tokens launched this month? Chart it.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-x-4 mt-8">
+          <a
+            href={repoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="connect sandworm mcp"
+            class="rounded-2xl p-2.5 py-3 h-fit m-0.5 text-black outline-white bg-white px-5 transition-colors duration-200 hover:bg-white/80 border border-white font-medium font-primary lg:text-sm text-sm"
+          >
+            Connect MCP
+          </a>
+          <a
+            href={repoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="install sandworm cli"
+            class="rounded-2xl p-2.5 py-3 h-fit m-0.5 text-white bg-primary px-5 font-medium border border-white transition-colors duration-200 hover:bg-primary/80 font-primary lg:text-sm text-sm"
+          >
+            Install CLI
+          </a>
+        </div>
+
+        <!-- Trusted by -->
+        <div class="mt-16 lg:mt-24 w-full text-center px-5 flex flex-col items-center">
+          <h2 class="uppercase text-sm font-semibold mb-5 text-[#C5C5C5] font-primary">Trusted by</h2>
+          <div class="flex flex-wrap items-center justify-center gap-8">
+            <Image src="/img/base-logo.svg" alt="Base logo" width={98} height={32} class="object-contain" loading="lazy" decoding="async" />
+            <Image src="/img/icn-logo-black.svg" alt="ICN Logo" width={130} height={32} class="object-contain" loading="lazy" decoding="async" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- How it works -->
+    <section class="bg-black text-white py-20 overflow-hidden" aria-labelledby="workflow-heading">
+      <div class="container mx-auto px-4 lg:px-6">
+        <p class="uppercase mb-5 font-semibold text-center text-[15px] font-primary">
+          <span aria-hidden="true">●</span> How agents work <span aria-hidden="true">●</span>
+        </p>
+        <h2
+          id="workflow-heading"
+          class="text-[52px] lg:text-7xl text-[#C7C2FF] mb-6 uppercase lg:leading-tight leading-none text-center font-black font-mono"
+        >
+          From question to finished notebook
+        </h2>
+        <div class="flex justify-center mb-16" aria-hidden="true">
+          <Dots />
+        </div>
+
+        <div class="grid lg:grid-cols-[0.9fr_1.1fr] gap-12 lg:gap-16 items-start max-w-6xl mx-auto">
+          <!-- Timeline -->
+          <ol class="relative">
+            <span
+              class="absolute left-[19px] top-5 bottom-5 w-px bg-linear-to-b from-primary via-[#6368ff]/40 to-transparent"
+              aria-hidden="true"
+            ></span>
+            {steps.map((step, index) => (
+              <li class="relative flex gap-6 pb-10 last:pb-0">
+                <span
+                  class="relative z-10 shrink-0 w-10 h-10 rounded-full bg-[#0B0B12] border border-primary/60 shadow-[0_0_18px_rgba(163,8,240,0.35)] flex items-center justify-center text-sm font-semibold font-primary"
+                >
+                  {index + 1}
+                </span>
+                <div class="pt-1.5">
+                  <h3 class="mb-1.5 font-semibold uppercase text-white text-[15px] font-primary">{step.title}</h3>
+                  <p class="text-[#8A919E] text-base xl:text-lg leading-relaxed">{step.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          <!-- Example notebook -->
+          <div class="rounded-4xl gradient-border lg:sticky lg:top-28">
+            <div class="inner rounded-[31px] overflow-hidden">
+              <div class="flex items-center gap-2 px-5 py-3.5 border-b border-white/10 bg-white/2">
+                <span class="w-2.5 h-2.5 rounded-full bg-white/20" aria-hidden="true"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-white/20" aria-hidden="true"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-white/20" aria-hidden="true"></span>
+                <span class="ml-3 text-xs text-[#8A919E] font-primary">holder-growth-vs-price</span>
+                <span class="ml-auto text-[10px] uppercase tracking-wider text-[#8A919E] font-primary">Example</span>
+              </div>
+
+              <div class="p-5 space-y-4 font-primary text-[12px] leading-relaxed">
+                <!-- Ask -->
+                <div class="flex gap-3 items-start text-[#C5CED9]">
+                  <span class="mt-0.5 shrink-0 rounded-md bg-primary/20 text-[#C7C2FF] px-1.5 py-0.5 text-[10px]">1 ASK</span>
+                  <p>Did holder growth drive price for the top Base tokens launched this month?</p>
+                </div>
+
+                <!-- SQL -->
+                <div class="rounded-xl bg-hero-base border border-white/10 p-4">
+                  <p class="mb-2 text-[10px] text-[#C7C2FF]">2 SQL</p>
+                  <pre class="text-[#C5CED9] overflow-x-auto"><code><span class="text-[#c792ea]">SELECT</span> token, holders, price
+<span class="text-[#c792ea]">FROM</span> base.tokens
+<span class="text-[#c792ea]">WHERE</span> launched_at &gt; now() - <span class="text-[#f78c6c]">interval '30 days'</span></code></pre>
+                </div>
+
+                <!-- Python -->
+                <div class="rounded-xl bg-hero-base border border-white/10 p-4">
+                  <p class="mb-2 text-[10px] text-[#C7C2FF]">3 PYTHON</p>
+                  <pre class="text-[#C5CED9] overflow-x-auto"><code>growth = df.holders.pct_change()
+corr = growth.corr(df.price)</code></pre>
+                </div>
+
+                <!-- Chart -->
+                <div class="rounded-xl bg-hero-base border border-white/10 p-4">
+                  <p class="mb-3 text-[10px] text-[#C7C2FF]">4 CHART</p>
+                  <div class="flex items-end gap-2 h-24" role="img" aria-label="Example bar chart of holder growth by token">
+                    {[38, 62, 48, 84, 70, 100, 56].map(h => (
+                      <span class="flex-1 rounded-t-md bg-linear-to-t from-primary to-[#6368ff]" style={`height:${h}%`}></span>
+                    ))}
+                  </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="flex gap-3 items-start text-[#C5CED9]">
+                  <span class="mt-0.5 shrink-0 rounded-md bg-primary/20 text-[#C7C2FF] px-1.5 py-0.5 text-[10px]">5 DELIVER</span>
+                  <p>Holder growth tracks price for most of the top tokens. Results sent back to the agent.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Benefits -->
+    <section class="pt-28 pb-0 mt-16 text-white relative" aria-labelledby="benefits-heading">
+      <picture class="absolute inset-0" aria-hidden="true">
+        <img src="/img/lines-down.svg" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async" />
+      </picture>
+      <div class="absolute -top-30 left-0 w-full -z-1" aria-hidden="true">
+        <img src="/img/lines-up.svg" width="1560" height="120" class="w-full" alt="" loading="lazy" decoding="async" />
+      </div>
+
+      <!-- Benefit cards -->
+      <div class="container mx-auto px-4 relative">
+        <h3 id="benefits-heading" class="text-[15px] mb-2.5 lg:text-left font-semibold font-primary uppercase text-white text-center">
+          <span aria-hidden="true">●</span> Why agents use Sandworm
+        </h3>
+
+        <div class="grid gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- Card 1 -->
+          <article class="rounded-2xl gradient-border relative overflow-hidden min-h-90 xl:min-h-100">
+            <div class="bg-[#0B0B12] inner rounded-2xl p-5 px-4 xl:px-5 flex flex-col text-left h-full relative z-10">
+              <div class="flex space-x-4 mb-3">
+                <SparkleIcon />
+                <h4 class="text-[14px] font-bold mb-3 font-primary">{benefits[0].title}</h4>
+              </div>
+              <p class="text-[#8A919E] text-base leading-relaxed font-normal font-body xl:text-lg">
+                {benefits[0].description}
+              </p>
+              <div class="absolute bottom-14 left-14" aria-hidden="true">
+                <Ellipse size={115} className="xl:h-28.75" />
+              </div>
+              <div class="absolute -bottom-10 right-5" aria-hidden="true">
+                <Image src="/img/bar-chart.svg" class="xl:h-55.5" alt="" width={188} height={136} loading="lazy" decoding="async" />
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="rounded-2xl gradient-border relative overflow-hidden min-h-90 xl:min-h-100">
+            <div class="bg-[#0B0B12] inner rounded-2xl p-5 px-4 xl:px-5 flex flex-col text-left h-full relative z-10">
+              <div class="flex space-x-4 mb-3">
+                <SparkleIcon />
+                <h4 class="text-[14px] font-bold mb-3 font-primary">{benefits[1].title}</h4>
+              </div>
+              <p class="text-[#8A919E] text-base leading-relaxed font-normal font-body xl:text-lg">
+                {benefits[1].description}
+              </p>
+              <div class="absolute bottom-6 left-0 right-0" aria-hidden="true">
+                <Wave className="w-full" />
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 3 -->
+          <article class="rounded-2xl gradient-border relative overflow-hidden min-h-90 xl:min-h-100">
+            <div class="bg-[#0B0B12] inner rounded-2xl p-5 px-4 xl:px-5 flex flex-col text-left h-full relative z-10">
+              <div class="flex space-x-4 mb-3">
+                <SparkleIcon />
+                <h4 class="text-[14px] font-bold mb-3 font-primary">{benefits[2].title}</h4>
+              </div>
+              <p class="text-[#8A919E] text-base leading-relaxed font-normal font-body xl:text-lg">
+                {benefits[2].description}
+              </p>
+              <div class="absolute bottom-5 right-7" aria-hidden="true">
+                <Users size={168} />
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- MCP vs CLI -->
+    <section class="bg-black text-white py-20 px-4" aria-labelledby="compare-heading">
+      <div class="container mx-auto max-w-4xl">
+        <p class="uppercase mb-5 font-semibold text-center text-[15px] font-primary">
+          <span aria-hidden="true">●</span> MCP and CLI <span aria-hidden="true">●</span>
+        </p>
+        <h2
+          id="compare-heading"
+          class="text-[52px] lg:text-7xl text-[#C7C2FF] mb-6 uppercase lg:leading-tight leading-none text-center font-black font-mono"
+        >
+          Pick how you connect
+        </h2>
+        <div class="flex justify-center mb-12" aria-hidden="true">
+          <Dots />
+        </div>
+
+        <div class="rounded-4xl gradient-border">
+          <div class="inner rounded-[31px] overflow-x-auto">
+            <table class="w-full text-left font-body">
+              <thead>
+                <tr class="text-sm font-primary uppercase text-[#8A919E]">
+                  <th scope="col" class="p-4 font-medium">Capability</th>
+                  <th scope="col" class="p-4 font-medium text-center">CLI</th>
+                  <th scope="col" class="p-4 font-medium text-center">MCP</th>
+                </tr>
+              </thead>
+              <tbody>
+                {comparison.map(row => (
+                  <tr class="border-t border-white/10">
+                    <th scope="row" class="p-4 font-normal">{row.feature}</th>
+                    <td class="p-4 text-center">
+                      {row.cli ? <span aria-label="Yes">✓</span> : <span class="text-[#8A919E]" aria-label="No">—</span>}
+                    </td>
+                    <td class="p-4 text-center">
+                      {row.mcp ? <span aria-label="Yes">✓</span> : <span class="text-[#8A919E]" aria-label="No">—</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="flex justify-center mt-8">
+          <a
+            href={`${appUrl}/explore`}
+            class="rounded-[16px] p-2 py-2.5 m-0.5 bg-white text-black hover:bg-white/90 hover:scale-105 transition-all px-4 font-medium inline-block text-sm font-primary"
+          >
+            Browse public notebooks
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Agentic payments -->
+    <section class="bg-black text-white py-20 px-4" aria-labelledby="payments-heading">
+      <div class="container mx-auto max-w-4xl">
+        <div class="rounded-4xl gradient-border">
+          <div class="inner rounded-[31px] px-6 py-12 lg:px-14 lg:py-16 text-center flex flex-col items-center">
+            <p class="uppercase mb-5 font-semibold text-[15px] font-primary">
+              <span aria-hidden="true">●</span> Pay as you go <span aria-hidden="true">●</span>
+            </p>
+            <h2
+              id="payments-heading"
+              class="text-[44px] lg:text-6xl text-[#C7C2FF] mb-6 uppercase lg:leading-tight leading-none font-black font-mono"
+            >
+              Agentic payments
+            </h2>
+            <p class="text-[#8A919E] text-base xl:text-lg leading-relaxed max-w-2xl">
+              Pay per query, directly from your agent. No signup, no subscriptions. Agents access Sandworm's
+              onchain data and pay per request using the open HTTP 402 payment protocol.
+            </p>
+            <a
+              href={repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mt-8 rounded-2xl p-2.5 py-3 h-fit m-0.5 text-black bg-white px-5 transition-all duration-200 hover:bg-white/80 hover:scale-105 font-medium font-primary text-sm"
+            >
+              Explore docs
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="bg-black text-white py-20 px-4" aria-labelledby="faq-heading">
+      <div class="container mx-auto max-w-3xl">
+        <p class="uppercase mb-5 font-semibold text-center text-[15px] font-primary">
+          <span aria-hidden="true">●</span> Questions <span aria-hidden="true">●</span>
+        </p>
+        <h2
+          id="faq-heading"
+          class="text-[52px] lg:text-7xl text-[#C7C2FF] mb-12 uppercase lg:leading-tight leading-none text-center font-black font-mono"
+        >
+          FAQ
+        </h2>
+        <div class="divide-y divide-white/10 border-y border-white/10">
+          {faqs.map(item => (
+            <details class="group py-5">
+              <summary class="flex justify-between items-center gap-4 cursor-pointer list-none font-medium text-lg font-body">
+                {item.q}
+                <span class="text-primary transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+              </summary>
+              <p class="mt-3 text-[#8A919E] font-body">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <SectionOnboard />
+  </main>
+
+  <Footer />
+</Layout>
