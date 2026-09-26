@@ -31,7 +31,7 @@ for target in "${TARGETS[@]}"; do
       ;;
     web)
       echo "▶ Building Next.js..."
-      NODE_OPTIONS='--max-old-space-size=4096' pnpm turbo run build --filter=@sandworm/web
+      NODE_OPTIONS='--max-old-space-size=6144' pnpm turbo run build --filter=@sandworm/web
       ;;
     landing)
       echo "▶ Building landing page..."
