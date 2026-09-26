@@ -1,0 +1,28 @@
+{
+  "name": "@sandworm/mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pay-per-query MCP server for Sandworm, settled in USDC on Arbitrum via MPP",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "dev": "node --watch --env-file=.env src/index.ts",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "start": "node --env-file=.env dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test src/*.test.ts"
+  },
+  "dependencies": {
+    "@arbitrum/mpp": "0.1.0",
+    "@modelcontextprotocol/sdk": "^1.25.0",
+    "mppx": "^0.6.7",
+    "viem": "^2.48.4",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.9.2"
+  }
+}
