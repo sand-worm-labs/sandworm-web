@@ -36,5 +36,13 @@ module.exports = {
       cwd: '/Users/si/Documents/sandworm-web/apps/ai',
       restart_delay: 5000,
     },
+    {
+      name: 'mcp',
+      script: '/Users/si/Documents/sandworm-web/apps/mcp/dist/index.js',
+      cwd: '/Users/si/Documents/sandworm-web/apps/mcp',
+      env: { NODE_ENV: 'production' },
+      max_memory_restart: '512M',
+      restart_delay: 3000,
+    },
   ],
 };
