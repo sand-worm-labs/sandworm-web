@@ -71,10 +71,13 @@ echo "▶ Building API..."
 pnpm turbo run build --filter=@sandworm/app_api
 
 echo "▶ Building Next.js..."
-NODE_OPTIONS='--max-old-space-size=4096' pnpm turbo run build --filter=@sandworm/web
+NODE_OPTIONS='--max-old-space-size=6144' pnpm turbo run build --filter=@sandworm/web
 
 echo "▶ Building landing page..."
 pnpm turbo run build --filter=@sandworm/landing-page
+
+echo "▶ Building MCP server..."
+pnpm turbo run build --filter=@sandworm/mcp
 
 # ─── PM2 ─────────────────────────────────────────────────────────────────────
 echo "▶ Ensuring PM2 is installed..."
@@ -121,6 +124,19 @@ module.exports = {
       interpreter: 'none',
       cwd: '$ROOT_DIR/apps/ai',
       restart_delay: 5000,
+    },
+    {
+      // Unlike api (NestJS's own ConfigModule reads .env), mcp only gets its
+      // env vars from node's --env-file flag in its own 'start' script — so
+      // it has to run through pnpm, not dist/index.js directly.
+      name: 'mcp',
+      script: 'pnpm',
+      args: 'run start',
+      interpreter: 'none',
+      cwd: '$ROOT_DIR/apps/mcp',
+      env: { NODE_ENV: 'production' },
+      max_memory_restart: '512M',
+      restart_delay: 3000,
     },
   ],
 };
