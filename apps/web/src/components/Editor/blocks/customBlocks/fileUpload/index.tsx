@@ -31,9 +31,13 @@ type UploadFile = {
 };
 
 export type UploadError = {
-  reason: "unexpected" | "file-exists" | "aborted";
+  reason: "unexpected" | "file-exists" | "aborted" | "too-large";
   file: File;
 };
+
+// Matches the API's Fastify `bodyLimit` (apps/api/src/main.ts) so we can
+// reject an oversized file before spending time uploading it.
+export const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 
 export type UploadingFileUploadState = {
   _tag: "uploading";
@@ -176,6 +180,43 @@ function FileUploadBlock(props: Props) {
       return;
     }
 
+    // Reject an oversized file before spending time uploading it — the API
+    // would only reject it later with a 413, after the browser has already
+    // pushed the whole thing over the wire.
+    if (state.current.file.size > MAX_UPLOAD_BYTES) {
+      const oversizedFile = state.current.file;
+      setState(s => {
+        if (s._tag !== "uploading") {
+          return s;
+        }
+
+        const [next, ...rest] = s.rest;
+        const errors: UploadError[] = [
+          ...s.errors,
+          { reason: "too-large", file: oversizedFile },
+        ];
+
+        if (!next) {
+          return { _tag: "idle", errors };
+        }
+
+        return {
+          ...s,
+          current: {
+            file: next,
+            abortController: new AbortController(),
+            uploaded: 0,
+            total: next.size,
+            status: "enqueued",
+            replace: false,
+          },
+          rest,
+          errors,
+        };
+      });
+      return;
+    }
+
     setState({
       ...state,
       current: {
@@ -270,6 +311,14 @@ function FileUploadBlock(props: Props) {
             }
 
             const [next, ...rest] = s.rest;
+            const errors: UploadError[] = [
+              ...s.errors,
+              { reason: "unexpected", file: s.current.file },
+            ];
+
+            if (!next) {
+              return { _tag: "idle", errors };
+            }
 
             return {
               ...s,
@@ -277,18 +326,12 @@ function FileUploadBlock(props: Props) {
                 file: next,
                 abortController: new AbortController(),
                 uploaded: 0,
-                total: next?.size,
+                total: next.size,
                 status: "enqueued",
                 replace: false,
               },
               rest,
-              errors: [
-                ...s.errors,
-                {
-                  reason: "unexpected",
-                  file: s.current.file,
-                },
-              ],
+              errors,
             };
           });
         }
@@ -311,6 +354,43 @@ function FileUploadBlock(props: Props) {
                 ...s.current,
                 status: "asking-replace",
               },
+            };
+          });
+        } else if (errorStatus === 413) {
+          // Belt-and-suspenders: the client-side size check above should
+          // catch this first, but the API's own limit is the source of
+          // truth (e.g. it changes without this file being redeployed).
+          setState(s => {
+            if (s._tag !== "uploading") {
+              return s;
+            }
+
+            if (s.current.status !== "uploading") {
+              return s;
+            }
+
+            const [next, ...rest] = s.rest;
+            const errors: UploadError[] = [
+              ...s.errors,
+              { reason: "too-large", file: s.current.file },
+            ];
+
+            if (!next) {
+              return { _tag: "idle", errors };
+            }
+
+            return {
+              ...s,
+              current: {
+                file: next,
+                abortController: new AbortController(),
+                uploaded: 0,
+                total: next.size,
+                status: "enqueued",
+                replace: false,
+              },
+              rest,
+              errors,
             };
           });
         } else if (err.name === "CanceledError") {

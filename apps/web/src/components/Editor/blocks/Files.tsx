@@ -126,6 +126,8 @@ function UploadResultItem(props: UploadResultItemProps) {
         return "Upload aborted";
       case "file-exists":
         return "File already exists";
+      case "too-large":
+        return "File too large, 20MB max";
       case "unexpected":
         return "An unexpected error occurred";
       case "success":

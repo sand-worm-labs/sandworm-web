@@ -20,9 +20,13 @@ export type UploadFile = {
 };
 
 export type UploadResult = {
-  outcome: "unexpected" | "file-exists" | "aborted" | "success";
+  outcome: "unexpected" | "file-exists" | "aborted" | "too-large" | "success";
   file: File;
 };
+
+// Matches the API's Fastify `bodyLimit` (apps/api/src/main.ts) so we can
+// reject an oversized file before spending time uploading it.
+export const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 
 type UploadingState = {
   _tag: "uploading";
@@ -180,7 +184,7 @@ export const useFiles = (
     });
   }, []);
 
-  const moveToNextFile = (outcome: "success") => {
+  const moveToNextFile = (outcome: UploadResult["outcome"]) => {
     setUploadState(currentState => {
       if (currentState._tag !== "uploading") return currentState;
 
@@ -210,9 +214,15 @@ export const useFiles = (
     setUploadState(currentState => {
       if (currentState._tag !== "uploading") return currentState;
 
-      const outcome = (
-        error.name === "CanceledError" ? "aborted" : "unexpected"
-      ) as "aborted" | "unexpected";
+      // Belt-and-suspenders: the client-side size check below should catch
+      // this first, but the API's own limit is the source of truth (e.g. it
+      // changes without this file being redeployed).
+      const outcome: "aborted" | "unexpected" | "too-large" =
+        error.name === "CanceledError"
+          ? "aborted"
+          : error.response?.status === 413
+            ? "too-large"
+            : "unexpected";
 
       const newResults = [
         ...currentState.results,
@@ -333,6 +343,14 @@ export const useFiles = (
             }
           : state
       );
+      return;
+    }
+
+    // Reject an oversized file before spending time uploading it — the API
+    // would only reject it later with a 413, after the browser has already
+    // pushed the whole thing over the wire.
+    if (currentFile.size > MAX_UPLOAD_BYTES) {
+      moveToNextFile("too-large");
       return;
     }
 

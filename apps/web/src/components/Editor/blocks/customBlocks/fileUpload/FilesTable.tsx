@@ -88,6 +88,8 @@ function getErrorMessage(error: UploadError["reason"]) {
       return "file already exists";
     case "aborted":
       return "upload aborted";
+    case "too-large":
+      return "file too large, 20MB max";
     case "unexpected":
       return "unexpected error, please try again";
     default:
