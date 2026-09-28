@@ -36,6 +36,9 @@ async function bootstrap() {
     requestIdHeader: REQUEST_ID_HEADER,
     genReqId: genReqId(),
     logger: fastifyPinoOptions(process.env.NODE_ENV as FastifyLoggerEnv),
+    // Fastify's default is 1MB, which the workspace file-upload endpoint
+    // (raw octet-stream body) blows past for anything but a tiny file.
+    bodyLimit: 10 * 1024 * 1024, // 10MB
   });
 
   const app = await NestFactory.create<NestFastifyApplication>(

@@ -11,6 +11,7 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "dev:ai": "cd apps/ai && just dev",
+    "dev:mcp": "pnpm --filter @sandworm/mcp dev",
     "test": "turbo test",
     "test:e2e": "turbo test:e2e",
     "lint": "turbo lint",
