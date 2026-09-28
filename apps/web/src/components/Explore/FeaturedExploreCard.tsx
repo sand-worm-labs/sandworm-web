@@ -191,7 +191,7 @@ export function FeaturedExploreCard({
         <div className="flex items-center gap-1.5 mb-3">
           <Image
             src={creator.image || "/img/avatar.svg"}
-            alt={creator?.username}
+            alt={creator?.username || "Creator avatar"}
             width={30}
             height={30}
             className="rounded-full"

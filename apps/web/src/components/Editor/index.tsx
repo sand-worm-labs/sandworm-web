@@ -671,7 +671,6 @@ file`;
     [addAndRunPythonBlock]
   );
 
-
   const onUseResultInPythonBlock = useCallback(
     (sourceBlockId: string) => {
       const variable = `result_${sourceBlockId.replace(/-/g, "").slice(0, 6)}`;
@@ -1894,9 +1893,6 @@ const Editor = (props: Props) => {
       /> */}
       {!props.isPublicViewer && !props.isPDF && (
         <EnvBar
-          onOpenFiles={props.onOpenFiles}
-          onOpenEnvironment={props.onOpenEnvironment}
-          onOpenEnvVariables={props.onOpenEnvVariables}
           publishedAt={props.isApp ? props.document.publishedAt : null}
           lastUpdatedAt={lastUpdatedAt}
           isViewer={props.role === "viewer"}

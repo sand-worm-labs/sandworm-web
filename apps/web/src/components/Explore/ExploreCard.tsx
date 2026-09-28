@@ -99,7 +99,7 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
           <div className="flex items-center gap-2.5 min-w-0">
             <Avatar className="h-8 w-8 flex-shrink-0">
               {query.authorId ? (
-                <AvatarImage src="/img/avatar.svg" />
+                <AvatarImage src="/img/avatar.svg" alt="" />
               ) : (
                 <AvatarFallback>
                   <Image
