@@ -6,7 +6,8 @@
       "Bash(docker exec *)",
       "Bash(awk '{print $11,$12,$13,$14}')",
       "Bash(chmod +x scripts/rebuild.sh)",
-      "Bash(bash -n scripts/rebuild.sh)"
+      "Bash(bash -n scripts/rebuild.sh)",
+      "Bash(pnpm --filter @sandworm/mcp exec node -e \"console.log\\('zod:', require.resolve\\('zod'\\)\\)\")"
     ]
   }
 }

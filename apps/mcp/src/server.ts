@@ -2,27 +2,20 @@ import { createServer, type IncomingMessage, type Server, type ServerResponse } 
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { z } from 'zod';
 
-import { handleRunQuery, type RunQueryDeps } from './run-query.ts';
+import type { ChargeOutcome } from './payments.ts';
 
 const MAX_BODY_BYTES = 1_000_000;
 
-export function createMcpServer(deps: RunQueryDeps, price: { display: string }): McpServer {
-  const server = new McpServer({ name: 'sandworm', version: '0.1.0' });
+export type ServerDeps = {
+  charge: (extra: unknown) => Promise<ChargeOutcome>;
+};
 
-  server.registerTool(
-    'run_query',
-    {
-      title: 'Run a SQL query',
-      description:
-        `Run a read-only SQL query (Trino dialect) against Sandworm's onchain data. Costs ${price.display} per call, ` +
-        'paid in USDC on Arbitrum. Results are capped in size; add a LIMIT and select only the columns you need.',
-      inputSchema: { sql: z.string().describe('A single read-only statement: SELECT, WITH, SHOW or DESCRIBE.') },
-    },
-    // `extra` carries the caller's payment credential in its `_meta`.
-    async ({ sql }, extra) => handleRunQuery({ sql }, extra, deps)
-  );
+// Bare scaffold: payments are wired up, but no paid tool is registered yet.
+// Add tools here with `server.registerTool(...)`, gating each one on
+// `deps.charge(extra)` the way the old run_query tool did.
+export function createMcpServer(_deps: ServerDeps, _price: { display: string }): McpServer {
+  const server = new McpServer({ name: 'sandworm', version: '0.1.0' });
 
   return server;
 }
@@ -45,7 +38,7 @@ function send(res: ServerResponse, status: number, body: unknown) {
 
 // Stateless: every request gets its own MCP server + transport, so nothing is
 // shared between callers and the process can be scaled or restarted freely.
-export function createHttpServer(deps: RunQueryDeps, price: { display: string }): Server {
+export function createHttpServer(deps: ServerDeps, price: { display: string }): Server {
   return createServer(async (req, res) => {
     const path = (req.url ?? '').split('?')[0];
 
