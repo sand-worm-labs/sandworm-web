@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 # Rebuild and restart individual apps without redoing the full start-prod.sh.
 #
-# Usage: scripts/rebuild.sh [web|api|landing|editor|all]...
+# Usage: scripts/rebuild.sh [web|api|landing|editor|mcp|all]...
 #   e.g. scripts/rebuild.sh api web
 set -e
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT_DIR"
 
 if [ "$#" -eq 0 ]; then
-  echo "Usage: $0 [web|api|landing|editor|all]..."
+  echo "Usage: $0 [web|api|landing|editor|mcp|all]..."
   exit 1
 fi
 
 TARGETS=("$@")
 if [[ " ${TARGETS[*]} " == *" all "* ]]; then
-  TARGETS=(editor api web landing)
+  TARGETS=(editor api web landing mcp)
 fi
 
 # Uses turbo (not plain `pnpm --filter`) so workspace deps like @sandworm/types
@@ -37,8 +37,12 @@ for target in "${TARGETS[@]}"; do
       echo "▶ Building landing page..."
       pnpm turbo run build --filter=@sandworm/landing-page
       ;;
+    mcp)
+      echo "▶ Building MCP server..."
+      pnpm turbo run build --filter=@sandworm/mcp
+      ;;
     *)
-      echo "Unknown target: $target (expected web|api|landing|editor|all)"
+      echo "Unknown target: $target (expected web|api|landing|editor|mcp|all)"
       exit 1
       ;;
   esac
