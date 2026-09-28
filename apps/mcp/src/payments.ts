@@ -27,11 +27,12 @@ export type ChargeOutcome =
 export function createCharge(config: Config): (extra: unknown) => Promise<ChargeOutcome> {
   const account = privateKeyToAccount(config.serverPrivateKey);
   const network = NETWORKS[config.network];
+  const recipient = config.recipient ?? account.address;
 
   const mppx = Mppx.create({
     methods: [
       charge({
-        recipient: config.recipient ?? account.address,
+        recipient,
         currency: network.currency,
         methodDetails: { chainId: network.chainId, decimals: 6 },
         account,
@@ -46,6 +47,11 @@ export function createCharge(config: Config): (extra: unknown) => Promise<Charge
   return async extra => {
     const outcome = await mppx.charge({
       amount: config.price,
+      // The `charge()` method above only *registers* currency/recipient as
+      // defaults for the server; mppx's request schema requires each call to
+      // state them explicitly too.
+      currency: network.currency,
+      recipient,
       description: 'Sandworm MCP call',
       // `authorization` (EIP-3009) needs no prior token approval, which is
       // the friction-free option for an agent paying for the first time.

@@ -17,6 +17,12 @@ if [[ " ${TARGETS[*]} " == *" all "* ]]; then
   TARGETS=(editor api web landing mcp)
 fi
 
+# A no-op if the lockfile hasn't changed, but cheap insurance against a
+# package (new or existing) whose node_modules was never linked on this
+# host — that fails as a confusing tsc error deep in the build, not here.
+echo "▶ Installing dependencies..."
+pnpm install --frozen-lockfile
+
 # Uses turbo (not plain `pnpm --filter`) so workspace deps like @sandworm/types
 # get built first per turbo.json's build.dependsOn = ["^build"].
 for target in "${TARGETS[@]}"; do

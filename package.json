@@ -55,6 +55,7 @@
   "packageManager": "pnpm@10.17.0" ,
   "pnpm": {
     "overrides": {
+      "@arbitrum/mpp>typescript": "5.9.3",
       "fastify": "5.12.1",
       "esbuild": "0.28.1",
       "@esbuild/darwin-x64": "0.28.1",
