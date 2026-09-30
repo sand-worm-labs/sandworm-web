@@ -4,7 +4,7 @@ import { ACCESS_TOKEN_COOKIE } from '@/features/auth/core/utils/cookie';
 
 function makeGuard() {
   const authService = { validateTokenAndGetUser: jest.fn() } as any;
-  const guard = new WsJwtGuard(authService);
+  const guard = new WsJwtGuard(authService, { record: jest.fn() } as any);
   return { guard, authService };
 }
 

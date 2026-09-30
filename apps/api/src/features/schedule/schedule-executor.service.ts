@@ -11,6 +11,8 @@ import {
 import { ExecutionQueue, getBlocks, getLayout } from '@sandworm/editor';
 import { LockService } from '@/infrastructure/lock/lock.services';
 import { YjsDocumentService } from '@/features/collaboration/yjs/yjs-document.service';
+import { AuditService } from '@/features/audit/audit.service';
+import { AuditResult } from '@sandworm/postgresql-typeorm';
 import { PersistorFactory } from '@/features/collaboration/yjs/persistors/persistor.factory';
 
 interface JobInfo {
@@ -38,6 +40,7 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
         private readonly lockService: LockService,
         private readonly yjsDocumentService: YjsDocumentService,
         private readonly persistorFactory: PersistorFactory,
+        private readonly audit: AuditService,
     ) { }
 
     async onModuleInit() {
@@ -255,12 +258,32 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
         try {
             await this.executeDocument(schedule, document);
             this.logger.log(`Finished execution for document ${schedule.documentId}`);
+            this.auditRun(schedule, document.workspaceId, AuditResult.SUCCESS);
         } catch (err) {
+            this.auditRun(schedule, document.workspaceId, AuditResult.FAILURE, err);
             this.logger.error(
                 `Failed execution for document ${schedule.documentId}`,
                 err,
             );
         }
+    }
+
+    // Background job: no request, so the actor is the system (null) and the schedule is the resource.
+    private auditRun(
+        schedule: ExecutionScheduleEntity,
+        workspaceId: string,
+        result: AuditResult,
+        err?: unknown,
+    ): void {
+        this.audit.record({
+            action: 'schedule.run',
+            result,
+            workspaceId,
+            resourceType: 'ExecutionSchedule',
+            resourceId: schedule.id,
+            errorMessage: err ? String((err as Error)?.message ?? err).slice(0, 500) : null,
+            metadata: { kind: 'job', documentId: schedule.documentId },
+        });
     }
 
     private async executeDocument(

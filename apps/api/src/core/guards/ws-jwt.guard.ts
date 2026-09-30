@@ -3,12 +3,17 @@ import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from '@/features/auth/core/
 import { Injectable, CanActivate, ExecutionContext, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
+import { AuditService } from '@/features/audit/audit.service';
+import { AuditResult } from '@sandworm/postgresql-typeorm';
 
 @Injectable()
 export class WsJwtGuard implements CanActivate {
   private logger = new Logger(WsJwtGuard.name);
 
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+    private audit: AuditService,
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
@@ -24,6 +29,14 @@ export class WsJwtGuard implements CanActivate {
       client.data.session = { payload, user: payload.user };
       return true;
     } catch (error) {
+      const client: Socket = context.switchToWs().getClient();
+      this.audit.record({
+        action: 'auth.ws_unauthorized',
+        result: AuditResult.DENIED,
+        resourceType: 'ws',
+        ip: client.handshake?.address ?? null,
+        userAgent: client.handshake?.headers?.['user-agent'] ?? null,
+      });
       throw new WsException('Unauthorized');
     }
   }

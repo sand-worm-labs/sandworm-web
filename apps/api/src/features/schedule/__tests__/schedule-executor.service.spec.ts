@@ -68,6 +68,7 @@ function makeService() {
     lockService,
     yjsDocumentService,
     persistorFactory,
+    { record: jest.fn() } as any,
   );
 
   return {

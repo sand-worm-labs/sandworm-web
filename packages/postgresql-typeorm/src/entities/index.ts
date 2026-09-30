@@ -28,3 +28,4 @@ export * from "./user-workspace.entity";
 export * from "./lock.entity";
 export * from "./tool.entity";
 export * from "./tool-category.entity";
+export * from './audit-log.entity';

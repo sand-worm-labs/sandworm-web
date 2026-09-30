@@ -26,6 +26,7 @@ import {
 import { AppModule } from './app.module';
 import { AllConfigType } from './core/config/config.type';
 import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
+import { AuditService } from '@/features/audit/audit.service';
 import { AuthGuard } from './core/guards/auth.guard';
 import { setupSwagger } from './common/utils/setup-swagger';
 import { AuthService } from './features/auth/core/auth.service';
@@ -110,7 +111,7 @@ async function bootstrap() {
   });
 
   // ⬢ Guards, filters, pipes
-  app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthService)));
+  app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthService), app.get(AuditService)));
   app.useGlobalFilters(new GlobalExceptionFilter(httpAdapterHost, debug));
   app.useGlobalPipes(
     new ValidationPipe({
