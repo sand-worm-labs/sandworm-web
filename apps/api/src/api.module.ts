@@ -22,6 +22,7 @@ import { DataSourcesModule } from './infrastructure/datasource/datasource.module
 import { OpenRouterModule } from './infrastructure/openrouter/openrouter.module';
 import { ChatModule } from '@/features/chat/chat.module';
 import { AiExecutionModule } from './features/ai-execution/ai-execution.module';
+import { McpOauthModule } from './features/mcp-oauth/mcp-oauth.module';
 
 @Module({
     imports: [
@@ -36,6 +37,7 @@ import { AiExecutionModule } from './features/ai-execution/ai-execution.module';
         AuthGraphqlModule,
         AuthGoogleModule,
         AuthGithubModule,
+        McpOauthModule,
 
         // Infrastructure
         MailModule,

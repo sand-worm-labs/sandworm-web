@@ -12,7 +12,8 @@
     "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "start": "node --env-file=.env dist/index.js",
     "typecheck": "tsc --noEmit",
-    "test": "node --test src/*.test.ts"
+    "test": "node --test src/*.test.ts",
+    "inspect": "mcp-inspector"
   },
   "dependencies": {
     "@arbitrum/mpp": "0.1.0",
@@ -22,6 +23,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@modelcontextprotocol/inspector": "^2.8.0",
     "@types/node": "^22.10.0",
     "typescript": "^5.9.2"
   }

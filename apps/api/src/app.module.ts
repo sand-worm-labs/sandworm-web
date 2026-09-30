@@ -36,6 +36,7 @@ import { WebsocketModule } from './infrastructure/websocket/websocket.module';
 import openrouterConfig from './infrastructure/openrouter/config/openrouter.config';
 import trinoConfig from './infrastructure/datasource/dune/config/trino.config';
 import etherscanConfig from './infrastructure/datasource/etherscan/config/etherscan.config';
+import mcpOauthConfig from './features/mcp-oauth/config/mcp-oauth.config';
 
 const configModule = ConfigModule.forRoot({
   isGlobal: true,
@@ -50,6 +51,7 @@ const configModule = ConfigModule.forRoot({
     openrouterConfig,
     trinoConfig,
     etherscanConfig,
+    mcpOauthConfig,
   ],
   envFilePath: ['.env'],
 });

@@ -11,6 +11,7 @@ import { AiServiceConfig } from '@/infrastructure/ai/config/ai-service-config.ty
 import { RedisConfig } from '@/infrastructure/redis/redis.config';
 import { TrinoConfig } from '@/infrastructure/datasource/dune/config/trino-config.type';
 import { EtherscanConfig } from '@/infrastructure/datasource/etherscan/config/etherscan-config.type';
+import { McpOauthConfig } from '@/features/mcp-oauth/config/mcp-oauth-config.type';
 
 export type AllConfigType = {
   app: AppConfig;
@@ -26,4 +27,5 @@ export type AllConfigType = {
   openrouter: OpenRouterConfig
   trino: TrinoConfig
   etherscan: EtherscanConfig
+  mcpOauth: McpOauthConfig
 };

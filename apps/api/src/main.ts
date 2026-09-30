@@ -103,7 +103,10 @@ async function bootstrap() {
     ],
   });
   app.setGlobalPrefix('api', {
-    exclude: ['graphiql', 'graphiql/(.*)'],
+    // '.well-known/*' must stay unprefixed — RFC 8414 (OAuth Authorization
+    // Server Metadata, used by apps/mcp's OAuth flow) requires it at a
+    // fixed, discoverable path.
+    exclude: ['graphiql', 'graphiql/(.*)', '.well-known/(.*)'],
   });
 
   // ⬢ Guards, filters, pipes
