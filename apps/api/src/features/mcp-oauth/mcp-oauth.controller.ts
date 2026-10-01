@@ -61,7 +61,7 @@ export class McpOauthController {
       const appUrl = this.configService.getOrThrow('app.url', { infer: true });
       const frontendDomain = this.configService.getOrThrow('app.frontendDomain', { infer: true });
       const returnTo = `${appUrl}${req.url}`;
-      reply.redirect(`${frontendDomain}/signin?callback=${encodeURIComponent(returnTo)}`);
+      reply.redirect(`${frontendDomain}/signin?callback=${encodeURIComponent(returnTo)}`, HttpStatus.FOUND);
       return;
     }
 
@@ -227,6 +227,11 @@ export class McpOauthController {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
+      if (res.status === 401) {
+        // Session expired while the page was open: sign in again, then come back here.
+        window.location.href = '/signin?callback=' + encodeURIComponent(window.location.href);
+        return;
+      }
       const data = await res.json();
       if (data.redirectTo) window.location.href = data.redirectTo;
     });

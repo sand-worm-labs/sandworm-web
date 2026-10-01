@@ -13,7 +13,7 @@
     "start": "node --env-file=.env dist/index.js",
     "typecheck": "tsc --noEmit",
     "test": "node --test src/*.test.ts",
-    "inspect": "mcp-inspector"
+    "inspect": "pnpm dlx @modelcontextprotocol/inspector"
   },
   "dependencies": {
     "@arbitrum/mpp": "0.1.0",

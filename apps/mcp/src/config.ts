@@ -5,6 +5,16 @@ const hex = (length: number) => z.string().regex(new RegExp(`^0x[0-9a-fA-F]{${le
 const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3100),
 
+  // Public URL of this MCP endpoint. Must equal MCP_OAUTH_RESOURCE on the API,
+  // because the authorization server rejects any other `resource`.
+  MCP_PUBLIC_URL: z.url().optional(),
+  // Authorization server (apps/api) as clients see it: its issuer URL.
+  AUTH_SERVER_URL: z.url().default('http://localhost:8081'),
+  // Where this server reaches the API directly, for token introspection.
+  API_URL: z.url().default('http://localhost:8003'),
+  // Shared secret for POST /api/oauth/introspect; equals MCP_OAUTH_INTROSPECT_KEY on the API.
+  MCP_OAUTH_INTROSPECT_KEY: z.string().min(1),
+
   MPP_NETWORK: z.enum(['arbitrum-sepolia', 'arbitrum-one']).default('arbitrum-sepolia'),
   MPP_SECRET_KEY: z.string().min(16, 'use a long random string'),
   MPP_SERVER_PRIVATE_KEY: hex(64),
@@ -22,6 +32,10 @@ export type Config = {
   serverPrivateKey: `0x${string}`;
   recipient: `0x${string}` | undefined;
   price: string;
+  publicUrl: string;
+  authServerUrl: string;
+  apiUrl: string;
+  introspectKey: string;
 };
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
@@ -39,5 +53,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     serverPrivateKey: e.MPP_SERVER_PRIVATE_KEY as `0x${string}`,
     recipient: e.MPP_RECIPIENT as `0x${string}` | undefined,
     price: e.QUERY_PRICE,
+    publicUrl: e.MCP_PUBLIC_URL ?? `http://localhost:${e.PORT}/mcp`,
+    authServerUrl: e.AUTH_SERVER_URL.replace(/\/$/, ''),
+    apiUrl: e.API_URL.replace(/\/$/, ''),
+    introspectKey: e.MCP_OAUTH_INTROSPECT_KEY,
   };
 }
