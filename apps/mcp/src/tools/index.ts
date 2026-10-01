@@ -1,6 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-import type { AuthContext } from '../auth.ts';
+import type { ToolContext } from '../graphql.ts';
 import { registerCommentTools } from './comments.ts';
 import { registerDataSourceTools } from './data-sources.ts';
 import { registerEnvironmentTools } from './environment.ts';
@@ -9,10 +9,11 @@ import { registerNotebookTools } from './notebooks.ts';
 import { registerProjectTools } from './projects.ts';
 import { registerWorkspaceTools } from './workspaces.ts';
 
-// `_auth` is the signed-in user; tools will use `_auth.token` to call the API as them.
-export function registerTools(server: McpServer, _auth: AuthContext): void {
-  registerWorkspaceTools(server);
-  registerProjectTools(server);
+// Tools that are implemented take `ctx` to call the API as the signed-in user;
+// the rest are still stubs.
+export function registerTools(server: McpServer, ctx: ToolContext): void {
+  registerWorkspaceTools(server, ctx);
+  registerProjectTools(server, ctx);
   registerNotebookTools(server);
   registerCommentTools(server);
   registerDataSourceTools(server);

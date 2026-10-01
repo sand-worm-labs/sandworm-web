@@ -5,6 +5,7 @@ import { ApiPublic } from '@sandworm/api/decorators/http.decorators';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { AllConfigType } from '@/config/config.type';
 import { AuthService } from '@/features/auth/core/auth.service';
+import { WorkspaceService } from '@/features/workspace/service/workspace.service';
 import { ACCESS_TOKEN_COOKIE, getTokenFromCookie } from '@/features/auth/core/utils/cookie';
 import { AuthorizeParams, McpOauthService } from './mcp-oauth.service';
 
@@ -24,6 +25,7 @@ export class McpOauthController {
   constructor(
     private readonly mcpOauth: McpOauthService,
     private readonly authService: AuthService,
+    private readonly workspaceService: WorkspaceService,
     private readonly configService: ConfigService<AllConfigType>,
   ) {}
 
@@ -41,6 +43,9 @@ export class McpOauthController {
     }
   }
 
+  // Browser entry point. Validates the request (so a bogus client or redirect_uri
+  // fails here with a 400 instead of reaching the user), then hands off to the
+  // web app's consent page, which handles sign-in and the consent UI.
   @Get('authorize')
   @ApiPublic({ summary: 'Start the MCP OAuth authorization flow (browser-facing)' })
   async authorize(
@@ -48,30 +53,41 @@ export class McpOauthController {
     @Req() req: FastifyRequest,
     @Res() reply: FastifyReply,
   ): Promise<void> {
-    let params: AuthorizeParams;
     try {
-      params = await this.mcpOauth.validateAuthorizeParams(query);
+      await this.mcpOauth.validateAuthorizeParams(query);
     } catch (err) {
       reply.status(HttpStatus.BAD_REQUEST).send({ error: 'invalid_request', error_description: (err as Error).message });
       return;
     }
 
-    const session = await this.getSession(req);
-    if (!session) {
-      const appUrl = this.configService.getOrThrow('app.url', { infer: true });
-      const frontendDomain = this.configService.getOrThrow('app.frontendDomain', { infer: true });
-      const returnTo = `${appUrl}${req.url}`;
-      reply.redirect(`${frontendDomain}/signin?callback=${encodeURIComponent(returnTo)}`, HttpStatus.FOUND);
-      return;
-    }
+    const frontendDomain = this.configService.getOrThrow('app.frontendDomain', { infer: true });
+    const search = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+    reply.redirect(`${frontendDomain}/oauth/authorize${search}`, HttpStatus.FOUND);
+  }
 
-    reply.type('text/html').send(this.renderConsentPage(params, session.user.email ?? session.user.id));
+  // What the consent page shows: who is asking and where they'll be sent back.
+  // Re-validates the same params so the page never trusts the URL on its own.
+  @Get('authorize/context')
+  @ApiPublic({ summary: 'Describe an MCP OAuth authorization request for the consent page' })
+  async authorizeContext(@Query() query: Record<string, unknown>, @Res() reply: FastifyReply): Promise<void> {
+    try {
+      const params = await this.mcpOauth.validateAuthorizeParams(query);
+      const redirect = new URL(params.redirectUri);
+      reply.send({
+        clientName: params.clientName ?? null,
+        redirectHost: redirect.host,
+        redirectProtocol: redirect.protocol,
+        scope: params.scope ?? null,
+      });
+    } catch (err) {
+      reply.status(HttpStatus.BAD_REQUEST).send({ error: 'invalid_request', error_description: (err as Error).message });
+    }
   }
 
   @Post('authorize/confirm')
   @ApiPublic({ summary: 'Confirm or deny the MCP OAuth consent screen' })
   async confirm(
-    @Body() body: Record<string, unknown> & { decision: 'allow' | 'deny' },
+    @Body() body: Record<string, unknown> & { decision: 'allow' | 'deny'; workspace_id?: string },
     @Req() req: FastifyRequest,
     @Res() reply: FastifyReply,
   ): Promise<void> {
@@ -97,6 +113,17 @@ export class McpOauthController {
       if (params.state) redirect.searchParams.set('state', params.state);
       reply.send({ redirectTo: redirect.toString() });
       return;
+    }
+
+    // The workspace picked on the consent page becomes the user's default
+    // (last visited), which MCP tools fall back to. switchWorkspace checks
+    // membership; it returns false (no change) for a workspace they can't use.
+    if (body.workspace_id) {
+      try {
+        await this.workspaceService.switchWorkspace(session.id, body.workspace_id);
+      } catch {
+        // An invalid id must not block authorization; the default just stays as it was.
+      }
     }
 
     const code = await this.mcpOauth.issueCode(params, session.id);
@@ -162,89 +189,5 @@ export class McpOauthController {
     const token = getTokenFromCookie(req, ACCESS_TOKEN_COOKIE);
     if (!token) return null;
     return this.authService.validateTokenAndGetUser(token);
-  }
-
-  private renderConsentPage(params: AuthorizeParams, accountLabel: string): string {
-    // Field names match the OAuth query params verbatim (snake_case) so the
-    // submitted body needs no translation before hitting
-    // validateAuthorizeParams again in confirm().
-    const hidden = (name: string, value: string | undefined) =>
-      value ? `<input type="hidden" name="${name}" value="${this.escapeHtml(value)}">` : '';
-    // Falls back to a generic label for a client that registered (RFC 7591)
-    // without a client_name, or the pre-registered client (which has none).
-    const clientLabel = this.escapeHtml(params.clientName ?? 'This app');
-
-    // Deliberately plain, server-rendered HTML rather than the app's real
-    // design system — a full apps/web consent page (matching the app's real
-    // chrome) is the natural next step here, not built in this pass. Login
-    // itself already goes through the real /signin page unchanged.
-    return `<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Connect to Sandworm</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body { font-family: -apple-system, system-ui, sans-serif; background: #0b0b0c; color: #eee; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-    main { max-width: 360px; padding: 2rem; text-align: center; }
-    h1 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
-    p { color: #999; font-size: 0.9rem; line-height: 1.4; }
-    .actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
-    button { flex: 1; padding: 0.65rem 1rem; border-radius: 8px; border: 1px solid #333; font-size: 0.9rem; cursor: pointer; }
-    button[name="decision"][value="allow"] { background: #fff; color: #000; border: none; }
-    button[name="decision"][value="deny"] { background: transparent; color: #eee; }
-  </style>
-</head>
-<body>
-  <main>
-    <h1>${clientLabel} wants to access your Sandworm account</h1>
-    <p>Signed in as ${this.escapeHtml(accountLabel)}. ${clientLabel} will be able to create and run notebooks in your workspace.</p>
-    <form id="consent-form">
-      ${hidden('response_type', params.responseType)}
-      ${hidden('client_id', params.clientId)}
-      ${hidden('redirect_uri', params.redirectUri)}
-      ${hidden('code_challenge', params.codeChallenge)}
-      ${hidden('code_challenge_method', params.codeChallengeMethod)}
-      ${hidden('resource', params.resource)}
-      ${hidden('state', params.state)}
-      ${hidden('scope', params.scope)}
-      <div class="actions">
-        <button type="submit" name="decision" value="deny">Deny</button>
-        <button type="submit" name="decision" value="allow">Allow</button>
-      </div>
-    </form>
-  </main>
-  <script>
-    document.getElementById('consent-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const decision = e.submitter.value;
-      const form = new FormData(e.target);
-      const body = Object.fromEntries(form.entries());
-      body.decision = decision;
-      const res = await fetch('/api/oauth/authorize/confirm', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      if (res.status === 401) {
-        // Session expired while the page was open: sign in again, then come back here.
-        window.location.href = '/signin?callback=' + encodeURIComponent(window.location.href);
-        return;
-      }
-      const data = await res.json();
-      if (data.redirectTo) window.location.href = data.redirectTo;
-    });
-  </script>
-</body>
-</html>`;
-  }
-
-  private escapeHtml(value: string): string {
-    return value
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
   }
 }

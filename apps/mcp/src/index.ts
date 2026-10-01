@@ -10,6 +10,7 @@ const deps = {
   authenticate: createAuthenticator(config),
   publicUrl: config.publicUrl,
   authServerUrl: config.authServerUrl,
+  apiUrl: config.apiUrl,
 };
 
 // Base units -> dollars for the tool description (USDC has 6 decimals).

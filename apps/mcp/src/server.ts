@@ -15,14 +15,15 @@ export type ServerDeps = {
   // This endpoint's public URL (the OAuth `resource`) and the authorization server's issuer.
   publicUrl: string;
   authServerUrl: string;
+  apiUrl: string;
 };
 
 // Bare scaffold: payments are wired up, but no paid tool is registered yet.
 // Add tools here with `server.registerTool(...)`, gating each one on
 // `deps.charge(extra)` the way the old run_query tool did.
-export function createMcpServer(_deps: ServerDeps, _price: { display: string }, auth: AuthContext): McpServer {
+export function createMcpServer(deps: ServerDeps, _price: { display: string }, auth: AuthContext): McpServer {
   const server = new McpServer({ name: 'sandworm', version: '0.1.0' });
-  registerTools(server, auth);
+  registerTools(server, { auth, apiUrl: deps.apiUrl });
 
   return server;
 }
