@@ -4,6 +4,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 
 import type { ChargeOutcome } from './payments.ts';
+import { registerTools } from './tools/index.ts';
 
 const MAX_BODY_BYTES = 1_000_000;
 
@@ -16,6 +17,7 @@ export type ServerDeps = {
 // `deps.charge(extra)` the way the old run_query tool did.
 export function createMcpServer(_deps: ServerDeps, _price: { display: string }): McpServer {
   const server = new McpServer({ name: 'sandworm', version: '0.1.0' });
+  registerTools(server);
 
   return server;
 }

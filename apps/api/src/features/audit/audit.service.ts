@@ -45,6 +45,9 @@ export function redact(value: unknown, depth = 0): unknown {
   );
 }
 
+/** Master switch: AUDIT_ENABLED=false turns off all audit writes. On by default. */
+export const auditEnabled = () => process.env.AUDIT_ENABLED !== 'false';
+
 @Injectable()
 export class AuditService {
   private readonly logger = new Logger(AuditService.name);
@@ -56,6 +59,7 @@ export class AuditService {
 
   /** Awaitable write. Use for events that must not be lost (e.g. inside a critical flow). */
   async recordStrict(event: AuditEvent): Promise<void> {
+    if (!auditEnabled()) return;
     await this.repo.insert({ ...event, metadata: (redact(event.metadata) as Record<string, unknown>) ?? null });
   }
 

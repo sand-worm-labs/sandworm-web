@@ -11,7 +11,7 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuditResult } from '@sandworm/postgresql-typeorm';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import { AUDIT_ACTION, AUDIT_REASON, NO_AUDIT } from './audit.decorators';
-import { AuditEvent, AuditService } from './audit.service';
+import { AuditEvent, AuditService, auditEnabled } from './audit.service';
 
 const str = (v: unknown) => (typeof v === 'string' && v ? v : undefined);
 const SKIPPED_PATHS = /\/(health|healthz|ping)$/;
@@ -24,6 +24,7 @@ type Base = Omit<AuditEvent, 'result'>;
  * where, and whether it worked.
  *
  * - Only root GraphQL fields are logged (not every nested field resolver).
+ * - Set AUDIT_ENABLED=false to turn auditing off entirely (nothing is stored).
  * - Set AUDIT_LOG_READS=false to drop GraphQL queries / HTTP GETs if volume
  *   becomes a problem; writes are always logged.
  * - @NoAudit() opts a handler or resolver out; @AuditAction / @AuditReason
@@ -39,6 +40,8 @@ export class AuditInterceptor implements NestInterceptor {
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    if (!auditEnabled()) return next.handle();
+
     const targets = [context.getHandler(), context.getClass()];
     if (this.reflector.getAllAndOverride<boolean>(NO_AUDIT, targets)) return next.handle();
 
