@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const id = z.string().describe('ID of the resource');
 export const workspaceId = z
-  .string()
+  .uuid()
   .optional()
   .describe('Workspace to use. Defaults to the user\'s last visited workspace; omit it unless they named another.');
 

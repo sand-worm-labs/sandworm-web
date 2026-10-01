@@ -12,6 +12,8 @@ const envSchema = z.object({
   AUTH_SERVER_URL: z.url().default('http://localhost:8081'),
   // Where this server reaches the API directly, for token introspection.
   API_URL: z.url().default('http://localhost:8003'),
+  // Web app, used to build notebook links returned to the agent.
+  WEB_URL: z.url().default('http://localhost:3000'),
   // Shared secret for POST /api/oauth/introspect; equals MCP_OAUTH_INTROSPECT_KEY on the API.
   MCP_OAUTH_INTROSPECT_KEY: z.string().min(1),
 
@@ -35,6 +37,7 @@ export type Config = {
   publicUrl: string;
   authServerUrl: string;
   apiUrl: string;
+  webUrl: string;
   introspectKey: string;
 };
 
@@ -56,6 +59,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     publicUrl: e.MCP_PUBLIC_URL ?? `http://localhost:${e.PORT}/mcp`,
     authServerUrl: e.AUTH_SERVER_URL.replace(/\/$/, ''),
     apiUrl: e.API_URL.replace(/\/$/, ''),
+    webUrl: e.WEB_URL.replace(/\/$/, ''),
     introspectKey: e.MCP_OAUTH_INTROSPECT_KEY,
   };
 }

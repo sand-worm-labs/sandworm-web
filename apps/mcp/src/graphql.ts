@@ -4,6 +4,7 @@ import type { AuthContext } from './auth.ts';
 export type ToolContext = {
   auth: AuthContext;
   apiUrl: string;
+  webUrl: string;
 };
 
 export class GraphQLError extends Error {}
