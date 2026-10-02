@@ -328,7 +328,7 @@ export function duplicateBlock(
   });
 }
 
-function getExecutedAt(block: YBlock, blocks: Y.Map<YBlock>): Date | null {
+export function getExecutedAt(block: YBlock, blocks: Y.Map<YBlock>): Date | null {
   return switchBlockType(block, {
     onPython: block => getPythonBlockExecutedAt(block),
     onSQL: block => getSQLBlockExecutedAt(block, blocks),

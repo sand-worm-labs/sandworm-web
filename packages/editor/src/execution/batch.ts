@@ -11,13 +11,19 @@ export type YExecutionQueueBatchAttrs = {
   queue: Y.Array<YExecutionQueueItem>
   isRunAll: boolean
   scheduleId: string | null
+  // Max run time per item before the executor aborts it; set for unattended API runs, null for no limit
+  itemTimeoutMs?: number | null
 }
 
 export type YExecutionQueueBatch = Y.XmlElement<YExecutionQueueBatchAttrs>
 
 export function createYExecutionQueueBatch(
   items: YExecutionQueueItem[],
-  { isRunAll, scheduleId }: { isRunAll: boolean; scheduleId: string | null }
+  {
+    isRunAll,
+    scheduleId,
+    itemTimeoutMs = null,
+  }: { isRunAll: boolean; scheduleId: string | null; itemTimeoutMs?: number | null }
 ): YExecutionQueueBatch {
   const queue = new Y.Array<YExecutionQueueItem>()
   queue.insert(0, items)
@@ -27,6 +33,7 @@ export function createYExecutionQueueBatch(
     queue,
     isRunAll,
     scheduleId,
+    itemTimeoutMs,
   }
   const el = new Y.XmlElement<YExecutionQueueBatchAttrs>()
 
@@ -50,6 +57,10 @@ export class ExecutionQueueBatch {
 
   public getScheduleId(): string | null {
     return this.batch.getAttribute('scheduleId') ?? null
+  }
+
+  public getItemTimeoutMs(): number | null {
+    return this.batch.getAttribute('itemTimeoutMs') ?? null
   }
 
   public getCurrent(): ExecutionQueueItem | null {
@@ -131,8 +142,7 @@ export class ExecutionQueueBatch {
       }
       this.batch.observeDeep(onObservation)
 
-      // safe guard, this makes sure we don't wait forever
-      // because we missed an observation
+      // Re-check periodically so a missed observation can't make us wait forever
       interval = setInterval(onObservation, 5000)
     })
   }

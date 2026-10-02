@@ -40,6 +40,10 @@ export type RunAllSource =
   | { _tag: "user"; userId: string }
   | { _tag: "schedule"; scheduleId: string };
 
+export type EnqueueOptions = {
+  itemTimeoutMs?: number | null;
+};
+
 export class ExecutionQueue {
   private readonly queue: YExecutionQueue;
   private readonly blocks: Y.Map<YBlock>;
@@ -224,10 +228,49 @@ export class ExecutionQueue {
   public enqueueRunAll(
     layout: Y.Array<YBlockGroup>,
     blocks: Y.Map<YBlock>,
-    source: RunAllSource
+    source: RunAllSource,
+    options: EnqueueOptions = {}
   ): ExecutionQueueBatch {
-    const items: YExecutionQueueItem[] = [];
     const userId = source._tag === "user" ? source.userId : null;
+    const items = this.itemsInLayoutOrder(layout, blocks, userId, null);
+
+    const batch = createYExecutionQueueBatch(items, {
+      isRunAll: true,
+      scheduleId: source._tag === "schedule" ? source.scheduleId : null,
+      itemTimeoutMs: options.itemTimeoutMs ?? null,
+    });
+    this.queue.push([batch]);
+    return ExecutionQueueBatch.fromYjs(batch);
+  }
+
+  public enqueueBlocks(
+    blockIds: Iterable<string>,
+    userId: string | null,
+    options: EnqueueOptions = {}
+  ): ExecutionQueueBatch {
+    const items = this.itemsInLayoutOrder(
+      this.layout,
+      this.blocks,
+      userId,
+      new Set(blockIds)
+    );
+
+    const batch = createYExecutionQueueBatch(items, {
+      isRunAll: false,
+      scheduleId: null,
+      itemTimeoutMs: options.itemTimeoutMs ?? null,
+    });
+    this.queue.push([batch]);
+    return ExecutionQueueBatch.fromYjs(batch);
+  }
+
+  private itemsInLayoutOrder(
+    layout: Y.Array<YBlockGroup>,
+    blocks: Y.Map<YBlock>,
+    userId: string | null,
+    only: Set<string> | null
+  ): YExecutionQueueItem[] {
+    const items: YExecutionQueueItem[] = [];
 
     layout.forEach(group => {
       const tabs = group.getAttribute("tabs");
@@ -237,7 +280,7 @@ export class ExecutionQueue {
 
       tabs.forEach(tab => {
         const blockId = tab.getAttribute("id");
-        if (!blockId) {
+        if (!blockId || (only && !only.has(blockId))) {
           return;
         }
 
@@ -254,12 +297,7 @@ export class ExecutionQueue {
       });
     });
 
-    const batch = createYExecutionQueueBatch(items, {
-      isRunAll: true,
-      scheduleId: source._tag === "schedule" ? source.scheduleId : null,
-    });
-    this.queue.push([batch]);
-    return ExecutionQueueBatch.fromYjs(batch);
+    return items;
   }
 
   public getBlockExecutions(
