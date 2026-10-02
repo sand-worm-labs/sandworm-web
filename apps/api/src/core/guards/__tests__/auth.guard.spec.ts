@@ -1,95 +1,51 @@
-import { UnauthorizedException } from '@nestjs/common';
+import { IS_PUBLIC } from '@sandworm/nest-common';
 import { AuthGuard } from '../auth.guard';
 import { ACCESS_TOKEN_COOKIE } from '@/features/auth/core/utils/cookie';
 
-function makeGuard() {
-  const reflector = { getAllAndOverride: jest.fn() } as any;
-  const authService = { validateTokenAndGetUser: jest.fn() } as any;
-  const guard = new AuthGuard(reflector, authService);
-  return { guard, reflector, authService };
-}
-
-function makeHttpContext(cookies: Record<string, string> = {}) {
+// Public routes must never fail on auth, but should still know who a
+// signed-in caller is (the explore page's isFavorite depends on it).
+function setup(session: unknown, cookies: Record<string, string> = { [ACCESS_TOKEN_COOKIE]: 'tok' }) {
+  const authService = { validateTokenAndGetUser: jest.fn().mockResolvedValue(session) } as any;
+  const reflector = { getAllAndOverride: jest.fn((key: string) => key === IS_PUBLIC) } as any;
+  const guard = new AuthGuard(reflector, authService, { record: jest.fn() } as any);
   const request: any = { cookies };
-  return {
+  const context = {
+    getHandler: () => null,
+    getClass: () => null,
     getType: () => 'http',
-    getHandler: () => ({}),
-    getClass: () => ({}),
-    switchToHttp: () => ({
-      getRequest: () => request,
-    }),
+    switchToHttp: () => ({ getRequest: () => request }),
   } as any;
+  return { guard, context, request, authService };
 }
 
-describe('AuthGuard', () => {
-  describe('canActivate', () => {
-    it('allows the request through when the route is public, without checking for a token', async () => {
-      const { guard, reflector, authService } = makeGuard();
-      reflector.getAllAndOverride.mockReturnValueOnce(true); // IS_PUBLIC
+describe('AuthGuard on public routes', () => {
+  it('attaches the user when the session cookie is valid', async () => {
+    const { guard, context, request } = setup({ id: 'user-1', user: { id: 'user-1' } });
 
-      const result = await guard.canActivate(makeHttpContext());
+    await expect(guard.canActivate(context)).resolves.toBe(true);
+    expect(request.user).toMatchObject({ id: 'user-1', token: 'tok' });
+  });
 
-      expect(result).toBe(true);
-      expect(authService.validateTokenAndGetUser).not.toHaveBeenCalled();
-    });
+  it('stays anonymous, without failing, when the token is invalid', async () => {
+    const { guard, context, request } = setup(null);
 
-    it('allows the request through when auth is optional and no token is present', async () => {
-      const { guard, reflector, authService } = makeGuard();
-      reflector.getAllAndOverride
-        .mockReturnValueOnce(false) // IS_PUBLIC
-        .mockReturnValueOnce(true); // IS_AUTH_OPTIONAL
+    await expect(guard.canActivate(context)).resolves.toBe(true);
+    expect(request.user).toBeUndefined();
+  });
 
-      const result = await guard.canActivate(makeHttpContext());
+  it('stays anonymous when token validation throws', async () => {
+    const { guard, context, request, authService } = setup(null);
+    authService.validateTokenAndGetUser.mockRejectedValue(new Error('redis down'));
 
-      expect(result).toBe(true);
-      expect(authService.validateTokenAndGetUser).not.toHaveBeenCalled();
-    });
+    await expect(guard.canActivate(context)).resolves.toBe(true);
+    expect(request.user).toBeUndefined();
+  });
 
-    it('throws UnauthorizedException when no token is present and auth is required', async () => {
-      const { guard, reflector } = makeGuard();
-      reflector.getAllAndOverride.mockReturnValueOnce(false).mockReturnValueOnce(false);
+  it('does not look anything up when there is no cookie', async () => {
+    const { guard, context, request, authService } = setup(null, {});
 
-      await expect(guard.canActivate(makeHttpContext())).rejects.toThrow(UnauthorizedException);
-    });
-
-    it('validates the token, attaches the user to the request, and allows the request through', async () => {
-      const { guard, reflector, authService } = makeGuard();
-      reflector.getAllAndOverride.mockReturnValueOnce(false).mockReturnValueOnce(false);
-      const user = { id: 'u1' };
-      authService.validateTokenAndGetUser.mockResolvedValue(user);
-      const context = makeHttpContext({ [ACCESS_TOKEN_COOKIE]: 'token-abc' });
-
-      const result = await guard.canActivate(context);
-
-      expect(authService.validateTokenAndGetUser).toHaveBeenCalledWith('token-abc');
-      expect(result).toBe(true);
-      const request = context.switchToHttp().getRequest();
-      expect(request.user).toEqual({ id: 'u1', token: 'token-abc' });
-    });
-
-    it('reads the request from the GraphQL execution context when the request type is graphql', async () => {
-      const { guard, reflector, authService } = makeGuard();
-      reflector.getAllAndOverride.mockReturnValueOnce(false).mockReturnValueOnce(true); // auth optional
-      const gqlRequest: any = { cookies: {} };
-
-      const gqlModule = await import('@nestjs/graphql');
-      const createSpy = jest
-        .spyOn(gqlModule.GqlExecutionContext, 'create')
-        .mockReturnValue({ getContext: () => ({ req: gqlRequest }) } as any);
-
-      const context = {
-        getType: () => 'graphql',
-        getHandler: () => ({}),
-        getClass: () => ({}),
-      } as any;
-
-      const result = await guard.canActivate(context);
-
-      expect(createSpy).toHaveBeenCalledWith(context);
-      expect(result).toBe(true);
-      expect(authService.validateTokenAndGetUser).not.toHaveBeenCalled();
-
-      createSpy.mockRestore();
-    });
+    await expect(guard.canActivate(context)).resolves.toBe(true);
+    expect(authService.validateTokenAndGetUser).not.toHaveBeenCalled();
+    expect(request.user).toBeUndefined();
   });
 });

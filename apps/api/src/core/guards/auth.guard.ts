@@ -27,7 +27,12 @@ export class AuthGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) return true;
+    if (isPublic) {
+      // Public routes never require a session, but a signed-in caller should
+      // still be recognized (e.g. so the explore page shows their own favorites).
+      await this.attachUserIfSignedIn(this.getRequest(context));
+      return true;
+    }
 
     const isAuthOptional = this.reflector.getAllAndOverride<boolean>(
       IS_AUTH_OPTIONAL,
@@ -55,6 +60,19 @@ export class AuthGuard implements CanActivate {
     };
 
     return true;
+  }
+
+  // Best effort only: a missing, expired or invalid token leaves the request
+  // anonymous and must never fail a public route.
+  private async attachUserIfSignedIn(request: FastifyRequest): Promise<void> {
+    const accessToken = this.extractTokenFromCookie(request);
+    if (!accessToken) return;
+    try {
+      const user = await this.authService.validateTokenAndGetUser(accessToken);
+      if (user?.id) request['user'] = { ...user, token: accessToken };
+    } catch {
+      // stay anonymous
+    }
   }
 
   // Runs before interceptors, so rejected requests would otherwise never be audited.

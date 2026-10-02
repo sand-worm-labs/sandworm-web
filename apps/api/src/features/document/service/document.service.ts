@@ -562,7 +562,10 @@ export class DocumentService {
       .map(Document.fromEntity);
   }
 
-  async isFavoriteDocument(userId: string, documentId: string): Promise<boolean> {
+  async isFavoriteDocument(userId: string | undefined, documentId: string): Promise<boolean> {
+
+    if (!userId) return false;
+
     const favorite = await this.favoriteRepository.findOne({
       where: { userId, documentId },
     });
