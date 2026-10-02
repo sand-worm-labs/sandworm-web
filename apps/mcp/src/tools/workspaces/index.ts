@@ -1,7 +1,8 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
 
-import { graphql, resolveWorkspaceId, type ToolContext } from '../graphql.ts';
-import { errorResult, jsonResult } from './shared.ts';
+import { graphql, resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
+import { errorResult, jsonResult } from '../shared.ts';
 
 type Workspace = { id: string; name: string; icon: string | null; plan: string; ownerId: string };
 
@@ -16,8 +17,6 @@ export function registerWorkspaceTools(server: McpServer, ctx: ToolContext): voi
           ctx,
           `query { getUserWorkspaces { id name icon plan ownerId } }`,
         );
-        // Only look up the default when there are workspaces: that query
-        // creates a workspace for a user who has none.
         const defaultId = data.getUserWorkspaces.length ? await resolveWorkspaceId(ctx) : undefined;
         return jsonResult(
           data.getUserWorkspaces.map(w => ({
@@ -28,6 +27,24 @@ export function registerWorkspaceTools(server: McpServer, ctx: ToolContext): voi
             isDefault: w.id === defaultId,
           })),
         );
+      } catch (err) {
+        return errorResult(err);
+      }
+    },
+  );
+
+  server.registerTool(
+    'create_workspace',
+    { description: 'Create a new workspace, owned by the signed-in user', inputSchema: { name: z.string().min(1) } },
+    async ({ name }) => {
+      try {
+        const data = await graphql<{ createWorkspace: Workspace }>(
+          ctx,
+          `mutation ($name: String!) { createWorkspace(name: $name) { id name icon plan ownerId } }`,
+          { name },
+        );
+        const w = data.createWorkspace;
+        return jsonResult({ id: w.id, name: w.name, plan: w.plan, isOwner: w.ownerId === ctx.auth.userId });
       } catch (err) {
         return errorResult(err);
       }
