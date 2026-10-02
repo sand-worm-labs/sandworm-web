@@ -23,9 +23,6 @@ const DOC_FIELDS = 'id title slug workspaceId visibility publishedAt updatedAt o
 // The API validates these as UUIDs and answers anything else with a bare 422.
 const notebookId = z.uuid().describe('ID (UUID) of the notebook, as returned by list_projects or create_notebook');
 
-// Single-call tools for managing a notebook as a whole. Each takes an optional
-// workspaceId (default: the user's last visited workspace), since the API
-// scopes every document call to a workspace.
 export function registerNotebookManageTools(server: McpServer, ctx: ToolContext): void {
   const links = (d: Pick<Doc, 'id' | 'workspaceId' | 'slug' | 'publishedAt'>) => ({
     url: `${ctx.webUrl}/workspace/${d.workspaceId}/documents/${d.id}/notebook/edit`,
