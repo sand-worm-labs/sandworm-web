@@ -2,6 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
 import { graphql, resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
+import { registerNotebookSearchTools } from './search.ts';
 import { confirm, errorResult, id, jsonResult, notImplemented, workspaceId } from '../shared.ts';
 
 type Doc = {
@@ -24,6 +25,8 @@ const DOC_FIELDS = 'id title slug workspaceId visibility publishedAt updatedAt o
 const notebookId = z.uuid().describe('ID (UUID) of the notebook, as returned by list_projects or create_notebook');
 
 export function registerNotebookTools(server: McpServer, ctx: ToolContext): void {
+  registerNotebookSearchTools(server, ctx);
+
   const links = (d: Pick<Doc, 'id' | 'workspaceId' | 'slug' | 'publishedAt'>) => ({
     url: `${ctx.webUrl}/workspace/${d.workspaceId}/documents/${d.id}/notebook/edit`,
     ...(d.publishedAt && d.slug ? { publicUrl: `${ctx.webUrl}/notebooks/${d.slug}` } : {}),
