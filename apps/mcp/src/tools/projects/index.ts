@@ -1,7 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-import { graphql, resolveWorkspaceId, type ToolContext } from '../graphql.ts';
-import { errorResult, jsonResult, workspaceId } from './shared.ts';
+import { graphql, resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
+import { errorResult, jsonResult, workspaceId } from '../shared.ts';
 
 type Document = {
   id: string;

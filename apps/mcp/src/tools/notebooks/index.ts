@@ -6,9 +6,11 @@ import { registerCreateNotebookTool } from './create.ts';
 import { registerNotebookManageTools } from './manage.ts';
 import { registerPlanTool } from './plan.ts';
 import { registerRunTools } from './run.ts';
+import { registerNotebookSearchTools } from './search.ts';
 import { registerToolSearchTool } from './tools.ts';
 
 export function registerNotebookTools(server: McpServer, ctx: ToolContext): void {
+  registerNotebookSearchTools(server, ctx);
   registerCreateNotebookTool(server, ctx);
   registerPlanTool(server, ctx);
   registerToolSearchTool(server, ctx);

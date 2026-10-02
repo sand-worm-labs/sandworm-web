@@ -1,8 +1,8 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-import { graphql, resolveWorkspaceId, type ToolContext } from '../graphql.ts';
-import { confirm, errorResult, jsonResult, workspaceId } from './shared.ts';
+import { graphql, resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
+import { confirm, errorResult, jsonResult, workspaceId } from '../shared.ts';
 
 type SandwormFile = {
   name: string;

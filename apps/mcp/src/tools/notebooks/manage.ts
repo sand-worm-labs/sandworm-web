@@ -21,9 +21,6 @@ type Doc = {
 
 const DOC_FIELDS = 'id title slug workspaceId visibility publishedAt updatedAt orderIndex parentId description tags';
 
-// Single-call tools for managing a notebook as a whole. Each takes an optional
-// workspaceId (default: the user's last visited workspace), since the API
-// scopes every document call to a workspace.
 export function registerNotebookManageTools(server: McpServer, ctx: ToolContext): void {
   const links = (d: Pick<Doc, 'id' | 'workspaceId' | 'slug' | 'publishedAt'>) => ({
     url: notebookUrl(ctx, d.workspaceId, d.id),
