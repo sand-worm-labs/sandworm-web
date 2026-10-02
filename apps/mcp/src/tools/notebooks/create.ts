@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import { graphql, resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { errorResult, jsonResult, workspaceId } from '../shared.ts';
+import { notebookUrl, setNotebookTitle } from './shared.ts';
 
 // How long to wait for the AI to finish building the notebook before returning
 // what exists so far (generation keeps going server side).
@@ -105,12 +106,13 @@ export function registerCreateNotebookTool(server: McpServer, ctx: ToolContext):
           { workspaceId: resolved, input: { title, version: 2, orderIndex: 0 } },
         );
         const notebookId = created.createDocument.id;
-        const base = `${ctx.webUrl}/workspace/${resolved}/documents/${notebookId}`;
+        await setNotebookTitle(ctx, resolved, notebookId, title);
+        const url = notebookUrl(ctx, resolved, notebookId);
         const result: Record<string, unknown> = {
           notebookId,
           workspaceId: resolved,
           title: created.createDocument.title,
-          url: `${base}/notebook/edit`,
+          url,
         };
         if (!prompt) return jsonResult(result);
 
@@ -143,7 +145,7 @@ export function registerCreateNotebookTool(server: McpServer, ctx: ToolContext):
             prompt,
             model,
             chatId,
-            chatUrl: `${base}/notebook/edit?panel=ai`,
+            chatUrl: `${url}?panel=ai`,
             status: run.error ? 'error' : run.finished ? 'done' : 'still_generating',
             blocks: run.blocks,
             reply: run.text.slice(0, MAX_REPLY_CHARS),

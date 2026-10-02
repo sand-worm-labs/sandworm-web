@@ -24,22 +24,6 @@ export function registerNotebookStubs(server: McpServer): void {
     async () => notImplemented('get_run_results'),
   );
 
-  // Cell-level editing goes through Yjs (POST /yjs/:documentId/create-block),
-  // not GraphQL.
-  server.registerTool(
-    'add_cell',
-    {
-      description: 'Add a cell to a notebook',
-      inputSchema: {
-        notebookId: id,
-        type: z.enum(['sql', 'python', 'markdown']),
-        content: z.string(),
-        position: z.number().int().optional().describe('Index to insert at; appends when omitted'),
-      },
-    },
-    async () => notImplemented('add_cell'),
-  );
-
   server.registerTool(
     'update_cell',
     {

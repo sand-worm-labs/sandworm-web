@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import { graphql, resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { confirm, errorResult, jsonResult, workspaceId } from '../shared.ts';
+import { notebookId, notebookUrl, setNotebookTitle } from './shared.ts';
 
 type Doc = {
   id: string;
@@ -20,15 +21,12 @@ type Doc = {
 
 const DOC_FIELDS = 'id title slug workspaceId visibility publishedAt updatedAt orderIndex parentId description tags';
 
-// The API validates these as UUIDs and answers anything else with a bare 422.
-const notebookId = z.uuid().describe('ID (UUID) of the notebook, as returned by list_projects or create_notebook');
-
 // Single-call tools for managing a notebook as a whole. Each takes an optional
 // workspaceId (default: the user's last visited workspace), since the API
 // scopes every document call to a workspace.
 export function registerNotebookManageTools(server: McpServer, ctx: ToolContext): void {
   const links = (d: Pick<Doc, 'id' | 'workspaceId' | 'slug' | 'publishedAt'>) => ({
-    url: `${ctx.webUrl}/workspace/${d.workspaceId}/documents/${d.id}/notebook/edit`,
+    url: notebookUrl(ctx, d.workspaceId, d.id),
     ...(d.publishedAt && d.slug ? { publicUrl: `${ctx.webUrl}/notebooks/${d.slug}` } : {}),
   });
 
@@ -89,6 +87,7 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
     async ({ notebookId, title, workspaceId }) => {
       try {
         const ws = await resolveWorkspaceId(ctx, workspaceId);
+        await setNotebookTitle(ctx, ws, notebookId, title);
         // UpdateDocumentInput requires orderIndex, so carry over the current one.
         const current = await getDoc(notebookId, ws);
         const data = await graphql<{ updateDocument: Doc }>(

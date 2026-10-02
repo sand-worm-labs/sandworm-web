@@ -190,13 +190,13 @@ function applyTitle(blocks: Y.Map<YBlock>, blockId: string, title: string | unde
   if (block) setTitle(block, title)
 }
 
-export function addBlocks(doc: Y.Doc, specs: BlockSpec[]): string[] {
+export function addBlocks(doc: Y.Doc, specs: BlockSpec[], position?: number): string[] {
   const blocks = getBlocks(doc)
   const layout = getLayout(doc)
   const ids: string[] = []
 
   doc.transact(() => {
-    let idx = layout.length
+    let idx = position === undefined ? layout.length : Math.min(position, layout.length)
 
     for (const spec of specs) {
       let id: string | undefined

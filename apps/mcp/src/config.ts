@@ -13,7 +13,7 @@ const envSchema = z.object({
   // Where this server reaches the API directly, for token introspection.
   API_URL: z.url().default('http://localhost:8003'),
   // Web app, used to build notebook links returned to the agent.
-  WEB_URL: z.url().default('http://localhost:3000'),
+  WEB_URL: z.url().default('http://localhost:8081'),
   // Shared secret for POST /api/oauth/introspect; equals MCP_OAUTH_INTROSPECT_KEY on the API.
   MCP_OAUTH_INTROSPECT_KEY: z.string().min(1),
 

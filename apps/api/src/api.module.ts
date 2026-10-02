@@ -23,6 +23,7 @@ import { OpenRouterModule } from './infrastructure/openrouter/openrouter.module'
 import { ChatModule } from '@/features/chat/chat.module';
 import { AiExecutionModule } from './features/ai-execution/ai-execution.module';
 import { AuditModule } from './features/audit/audit.module';
+import { NotebookBlocksModule } from './features/notebook-blocks/notebook-blocks.module';
 import { McpOauthModule } from './features/mcp-oauth/mcp-oauth.module';
 
 @Module({
@@ -64,7 +65,10 @@ import { McpOauthModule } from './features/mcp-oauth/mcp-oauth.module';
         WebsocketModule,
 
         // Yjs
-        YjsModule
+        YjsModule,
+
+        // Notebook content
+        NotebookBlocksModule,
     ],
 })
 export class ApiModule { }
