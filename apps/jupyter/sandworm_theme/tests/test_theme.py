@@ -51,6 +51,48 @@ def test_stat_card_escapes_and_includes_secondary():
     assert "Chains" in html and tokens.BRAND in html
 
 
+def test_stat_card_keeps_each_secondary_value_with_its_label():
+    html = sw.stat_card("1", "Total", secondary=[("3", "Chains"), ("7", "Protocols")])
+    grid = html.split('class="sw-stat-grid">')[1]
+    assert grid.count('<div class="sw-stat-item">') == 2
+    first = grid.split('<div class="sw-stat-item">')[1]
+    assert ">3<" in first and "Chains" in first and "Protocols" not in first
+
+
+def test_legend_gap_does_not_grow_with_chart_height():
+    sw.use_theme()
+    layout = go.Figure().layout.template.layout
+    # Just above the plot; a larger offset scales with the plot and pushes a
+    # wrapped legend into the title.
+    assert layout.legend.y <= 1.02
+    assert layout.margin.t >= 112
+
+
+def test_charts_carry_the_watermark_by_default():
+    sw.use_theme()
+    layout = go.Figure(go.Bar(y=[1, 2])).layout.template.layout
+    (image,), (label,) = layout.images, layout.annotations
+    assert image.name == label.name == "sandworm-watermark"
+    assert image.source.startswith("data:image/svg+xml;base64,")
+    assert "SANDWORM" in label.text
+
+
+def test_watermark_can_be_switched_off_and_back_on():
+    sw.use_theme(watermark=False)
+    layout = go.Figure().layout.template.layout
+    assert not layout.images and not layout.annotations
+    sw.use_theme()
+    assert go.Figure().layout.template.layout.images
+
+
+def test_watermark_does_not_displace_a_charts_own_annotations():
+    sw.use_theme()
+    fig = go.Figure(go.Scatter(y=[1, 2]))
+    fig.add_annotation(x=0, y=1, text="peak")
+    assert [a.text for a in fig.layout.annotations] == ["peak"]
+    assert len(fig.layout.template.layout.annotations) == 1
+
+
 def test_render_includes_style_once():
     html = sw.render(sw.card("a", "One"), sw.card("b", "Two"))
     assert html.count("<style>") == 1

@@ -14,7 +14,7 @@ _CSS = f"""
 .sw-stat-main {{ border-left: 3px solid var(--sw-accent); padding-left: 20px; }}
 .sw-stat-value {{ font-size: 42px; font-weight: 600; letter-spacing: -.03em; line-height: 1.1; }}
 .sw-stat-label {{ font-size: 13px; color: {t.MUTED}; margin-top: 6px; }}
-.sw-stat-grid {{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }}
+.sw-stat-grid {{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; border-top: 1px solid {t.RULE}; padding-top: 22px; }}
 .sw-stat-grid .sw-stat-value {{ font-size: 19px; letter-spacing: -.01em; }}
 .sw-note {{ font-size: 13px; color: {t.INK_2}; line-height: 1.6; padding: 0 4px; }}
 """
@@ -35,7 +35,9 @@ def stat_card(
     accent: str = t.SERIES[0],
 ) -> str:
     """One headline figure, plus optional (value, label) pairs in a 3-column grid."""
-    cells = "".join(_stat(v, l) for v, l in secondary)
+    # Each pair is one grid cell; unwrapped, the value and its label would
+    # land in separate columns.
+    cells = "".join(f'<div class="sw-stat-item">{_stat(v, l)}</div>' for v, l in secondary)
     grid = f'<div class="sw-stat-grid">{cells}</div>' if cells else ""
     return (
         f'<div class="sw-card sw-stat" style="--sw-accent:{escape(accent)}">'

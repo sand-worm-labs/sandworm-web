@@ -2,6 +2,7 @@
 import copy
 
 from . import tokens as t
+from . import watermark as wm
 
 TEMPLATE_NAME = "sandworm"
 
@@ -27,7 +28,8 @@ _LAYOUT = {
         "font": {"family": t.FONT_STACK, "size": 13, "color": t.PAPER},
     },
     # Title sits at the very top; the legend sits just above the plot, in the
-    # space the top margin leaves below it (96px fits both without overlap).
+    # space the top margin leaves below it. The margin fits the title plus a
+    # legend wrapped onto two rows.
     "title": {
         "x": 0,
         "xanchor": "left",
@@ -66,12 +68,14 @@ _LAYOUT = {
         "x": 0,
         "font": {"size": 12.5, "color": t.MUTED},
         "bgcolor": "rgba(0,0,0,0)",
-        "y": 1.06,
+        # y is a fraction of the plot height, so keep it small: a larger
+        # offset grows with the chart and lifts the legend into the title.
+        "y": 1.02,
         "tracegroupgap": 16,
         "itemsizing": "constant",
     },
     # Roomy on purpose: the title, legend, tick labels and axis titles each need their own space.
-    "margin": {"t": 96, "b": 72, "l": 80, "r": 32, "pad": 6},
+    "margin": {"t": 112, "b": 72, "l": 80, "r": 32, "pad": 6},
     "bargap": 0.3,
     "bargroupgap": 0.08,
 }
@@ -95,21 +99,23 @@ def _bar_defaults():
         return go.Bar(marker={"line": {"width": 0}})
 
 
-def apply(make_default: bool = True) -> None:
+def apply(make_default: bool = True, watermark: bool = True) -> None:
     import plotly.io as pio
 
-    if TEMPLATE_NAME not in pio.templates:
-        pio.templates[TEMPLATE_NAME] = build_template()
+    # Rebuilt on every call, so a later call can switch the watermark on or off.
+    pio.templates[TEMPLATE_NAME] = build_template(watermark)
     if make_default:
         pio.templates.default = TEMPLATE_NAME
 
 
-def build_template():
+def build_template(watermark: bool = True):
     import plotly.graph_objects as go
     import plotly.io as pio
 
     base = pio.templates["plotly_white"].to_plotly_json()
     base["layout"] = _merge(base["layout"], _LAYOUT)
+    if watermark:
+        base["layout"].update(wm.layout())
     template = go.layout.Template(base)
     template.data.bar = [_bar_defaults()]
     return template
