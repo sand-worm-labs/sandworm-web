@@ -480,6 +480,11 @@ type Query {
   """
   getTools: [Tool!]!
 
+  """
+  Semantic search over the power tool catalog. Returns the best matches first.
+  """
+  searchTools(query: String!, limit: Int! = 5): [Tool!]!
+
   """Get the power tool category taxonomy"""
   getToolCategories: [ToolCategory!]!
 

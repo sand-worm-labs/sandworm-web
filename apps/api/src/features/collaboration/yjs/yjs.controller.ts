@@ -15,6 +15,7 @@ import { PersistorFactory } from './persistors/persistor.factory';
 import { BlockType, docToMarkdown } from '@sandworm/editor';
 import type { FastifyReply } from 'fastify/types/reply';
 import { addBlocks } from './shared-doc/ai-blocks';
+import { NoAudit } from '@/features/audit/audit.decorators';
 
 @ApiTags('YjsDocuments')
 @Controller({
@@ -67,6 +68,7 @@ export class YjsDocumentController {
     }
   }
 
+  @NoAudit()
   @Post(':documentId/create-blocks')
   @ApiAuth({
     summary: 'Create a short load of test blocks inside a document',

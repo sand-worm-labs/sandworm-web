@@ -8,7 +8,7 @@ import {
   renderTool,
 } from '@sandworm/editor';
 import { ValidationException } from '@sandworm/graphql';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ErrorCode } from '@/constants/error-code.constant';
 import { Tool } from './tool.model';
 import { ToolCategory } from './tool-category.model';
@@ -24,6 +24,11 @@ export class ToolService {
 
   async getTools(): Promise<Tool[]> {
     const entities = await this.toolRepository.find();
+    return Tool.fromEntities(entities);
+  }
+
+  async getToolsByIds(toolIds: string[]): Promise<Tool[]> {
+    const entities = await this.toolRepository.findBy({ toolId: In(toolIds) });
     return Tool.fromEntities(entities);
   }
 

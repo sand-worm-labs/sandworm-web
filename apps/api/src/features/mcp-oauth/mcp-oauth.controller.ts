@@ -133,30 +133,34 @@ export class McpOauthController {
   }
 
   @Post('token')
-  @ApiPublic({ summary: 'Exchange an authorization code for an access token' })
+  @ApiPublic({ summary: 'Exchange an authorization code or a refresh token for an access token' })
   async token(
     @Body()
     body: {
       grant_type: string;
-      code: string;
-      code_verifier: string;
-      redirect_uri: string;
-      client_id: string;
+      code?: string;
+      code_verifier?: string;
+      redirect_uri?: string;
+      client_id?: string;
+      refresh_token?: string;
     },
     @Res() reply: FastifyReply,
   ): Promise<void> {
-    if (body.grant_type !== 'authorization_code') {
+    if (body.grant_type !== 'authorization_code' && body.grant_type !== 'refresh_token') {
       reply.status(HttpStatus.BAD_REQUEST).send({ error: 'unsupported_grant_type' });
       return;
     }
 
     try {
-      const tokens = await this.mcpOauth.exchangeCode({
-        code: body.code,
-        codeVerifier: body.code_verifier,
-        redirectUri: body.redirect_uri,
-        clientId: body.client_id,
-      });
+      const tokens =
+        body.grant_type === 'refresh_token'
+          ? await this.mcpOauth.refresh(body.refresh_token)
+          : await this.mcpOauth.exchangeCode({
+              code: body.code ?? '',
+              codeVerifier: body.code_verifier ?? '',
+              redirectUri: body.redirect_uri ?? '',
+              clientId: body.client_id ?? '',
+            });
 
       reply.send({
         access_token: tokens.accessToken,

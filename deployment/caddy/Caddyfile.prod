@@ -39,12 +39,20 @@ app.sandwormlab.xyz {
 		}
 	}
 
-	# REST API
 	# OAuth discovery (RFC 8414) for the MCP server: must live at the root, outside /api
 	handle /.well-known/oauth-authorization-server {
 		reverse_proxy host.docker.internal:8003
 	}
 
+	# MCP clients that can't read the metadata above fall back to these default
+	# paths on the issuer (MCP spec), so map them onto the real endpoints
+	@oauth_defaults path /authorize /token /register
+	handle @oauth_defaults {
+		rewrite * /api/oauth{path}
+		reverse_proxy host.docker.internal:8003
+	}
+
+	# REST API
 	handle /api/* {
 		reverse_proxy host.docker.internal:8003
 	}

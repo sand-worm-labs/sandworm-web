@@ -25,6 +25,7 @@ import { DocumentTreeService } from './service/document-tree.service';
 import { Public } from '@sandworm/nest-common';
 import { User } from '../user/model/graphql/user.model';
 import { UserService } from '../user/user.service';
+import { NoAudit } from '@/features/audit/audit.decorators';
 
 @Resolver(() => Document)
 export class DocumentResolver {
@@ -179,6 +180,8 @@ export class DocumentResolver {
     return this.documentService.createDocument(workspaceId, userId, input);
   }
 
+  // Fires on notebook edits (title, settings): too frequent to audit.
+  @NoAudit()
   @Mutation(() => Document, {
     name: 'updateDocument',
     description: 'Update document metadata',

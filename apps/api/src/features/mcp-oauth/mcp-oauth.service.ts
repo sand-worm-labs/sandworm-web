@@ -16,6 +16,17 @@ type PendingAuthorization = {
   scope?: string;
 };
 
+type RegisteredClientResponse = {
+  client_id: string;
+  redirect_uris: string[];
+  client_name?: string;
+  token_endpoint_auth_method: 'none';
+  grant_types: string[];
+  response_types: string[];
+};
+
+type TokenResponse = { accessToken: string; refreshToken: string; expiresIn: number };
+
 export type AuthorizeParams = {
   responseType: string;
   clientId: string;
@@ -64,7 +75,7 @@ export class McpOauthService {
   async registerClient(body: {
     redirect_uris?: unknown;
     client_name?: unknown;
-  }): Promise<{ client_id: string; redirect_uris: string[]; client_name?: string; token_endpoint_auth_method: 'none' }> {
+  }): Promise<RegisteredClientResponse> {
     const redirectUris = Array.isArray(body.redirect_uris) ? body.redirect_uris.map(String) : [];
     if (redirectUris.length === 0) {
       throw new BadRequestException('redirect_uris is required and must be a non-empty array');
@@ -87,7 +98,14 @@ export class McpOauthService {
     // token_endpoint_auth_method 'none': MCP clients are public clients that
     // prove themselves with PKCE, not a client_secret (OAuth 2.1 guidance
     // for clients that can't keep a secret confidential).
-    return { client_id: clientId, redirect_uris: redirectUris, client_name: clientName, token_endpoint_auth_method: 'none' };
+    return {
+      client_id: clientId,
+      redirect_uris: redirectUris,
+      client_name: clientName,
+      token_endpoint_auth_method: 'none',
+      grant_types: ['authorization_code', 'refresh_token'],
+      response_types: ['code'],
+    };
   }
 
   // Every client goes through /oauth/register (RFC 7591) — including our own
@@ -173,7 +191,7 @@ export class McpOauthService {
     codeVerifier: string;
     redirectUri: string;
     clientId: string;
-  }): Promise<{ accessToken: string; refreshToken: string; expiresIn: number }> {
+  }): Promise<TokenResponse> {
     const key = CODE_PREFIX + params.code;
     const raw = await this.redis.get(key);
     if (!raw) {
@@ -195,12 +213,18 @@ export class McpOauthService {
       throw new BadRequestException('code_verifier does not match code_challenge');
     }
 
-    const tokens = await this.authService.issueTokenPair(pending.userId);
-    const expiresIn = Math.max(
-      0,
-      Math.floor((tokens.accessTokenExpires.getTime() - Date.now()) / 1000),
-    );
+    return this.toTokenResponse(await this.authService.issueTokenPair(pending.userId));
+  }
 
+  // Lets a client renew its session without sending the user back through
+  // /authorize, using the same refresh logic as the web app.
+  async refresh(refreshToken: string | undefined): Promise<TokenResponse> {
+    if (!refreshToken) throw new BadRequestException('refresh_token is required');
+    return this.toTokenResponse(await this.authService.refreshTokens(refreshToken));
+  }
+
+  private toTokenResponse(tokens: Awaited<ReturnType<AuthService['issueTokenPair']>>): TokenResponse {
+    const expiresIn = Math.max(0, Math.floor((tokens.accessTokenExpires.getTime() - Date.now()) / 1000));
     return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken, expiresIn };
   }
 

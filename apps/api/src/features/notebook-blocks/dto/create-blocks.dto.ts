@@ -6,6 +6,7 @@ import {
   IsArray,
   IsIn,
   IsInt,
+  IsObject,
   IsOptional,
   IsString,
   Max,
@@ -29,7 +30,10 @@ export class CreateBlockDto {
   @MaxLength(200)
   title?: string;
 
-  @ApiPropertyOptional({ description: 'SQL, Python or Markdown text' })
+  @ApiPropertyOptional({
+    description:
+      'Cell text: SQL, Python, Markdown or rich text. For inputs, the default value (dropdown: one option per line; date: YYYY/MM/DD)',
+  })
   @IsOptional()
   @IsString()
   @MaxLength(MAX_SOURCE_LENGTH)
@@ -40,11 +44,24 @@ export class CreateBlockDto {
   @IsString()
   dataSource?: string;
 
-  @ApiPropertyOptional({ description: 'SQL only: name of the dataframe the result is stored in' })
+  @ApiPropertyOptional({
+    description: 'SQL: name the result is stored under. Visualization and pivot table: the dataframe to read from',
+  })
   @IsOptional()
   @IsString()
   @MaxLength(100)
   dataframeName?: string;
+
+  @ApiPropertyOptional({ description: 'Power toolbox only: id of a tool from the catalog' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  toolId?: string;
+
+  @ApiPropertyOptional({ description: "Power toolbox only: values for the tool's inputs, keyed by input key" })
+  @IsOptional()
+  @IsObject()
+  inputs?: Record<string, string | number | boolean | string[]>;
 }
 
 export class CreateBlocksDto {

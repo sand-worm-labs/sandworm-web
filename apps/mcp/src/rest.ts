@@ -17,8 +17,6 @@ function describe(body: ErrorBody, status: number): string {
   return `Sandworm API returned ${status}`;
 }
 
-// Calls a Sandworm REST route as the signed-in user, the same way graphql()
-// calls the GraphQL API.
 export async function rest<T>(ctx: ToolContext, method: 'GET' | 'POST' | 'PUT', path: string, body?: unknown): Promise<T> {
   const res = await fetch(`${ctx.apiUrl}/api${path}`, {
     method,

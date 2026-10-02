@@ -205,6 +205,12 @@ export function useYDoc(
     [id]
   );
 
+  useEffect(() => {
+    if (willFetchSnapshot) {
+      console.time(`${documentId} snapshot`);
+    }
+  }, [id, willFetchSnapshot, documentId]);
+
   const { data: snapshotData } = useGetDocumentStateQuery({
     variables: { documentId, workspaceId },
     skip: !willFetchSnapshot,
@@ -218,7 +224,8 @@ export function useYDoc(
     Y.applyUpdate(yDoc, base64ToUint8Array(state), "snapshot");
     appliedSnapshotIdRef.current = id;
     setSnapshotApplied(true);
-  }, [snapshotData, yDoc, id, setSnapshotApplied]);
+    console.timeEnd(`${documentId} snapshot`);
+  }, [snapshotData, yDoc, id, documentId, setSnapshotApplied]);
 
   const [, { removeInstance: removeComponentInstance }] =
     useReusableComponents(workspaceId);

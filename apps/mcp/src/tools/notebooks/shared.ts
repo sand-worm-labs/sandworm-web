@@ -11,7 +11,23 @@ export const notebookUrl = (ctx: ToolContext, workspaceId: string, id: string) =
 
 export const notebookApiPath = (workspaceId: string, id: string) => `/workspaces/${workspaceId}/documents/${id}`;
 
-// The editor renders the title from the notebook's collaborative document, not
-// from the database row, so a title has to be written there to show up.
+// The editor shows the title from the collaborative document, not the database row.
 export const setNotebookTitle = (ctx: ToolContext, workspaceId: string, id: string, title: string) =>
   rest(ctx, 'PUT', `${notebookApiPath(workspaceId, id)}/title`, { title });
+
+// Some clients send object arguments as a JSON string.
+export const objectOrJson = <T extends z.ZodType>(schema: T) =>
+  z.union([
+    schema,
+    z
+      .string()
+      .transform((text, ctx) => {
+        try {
+          return JSON.parse(text) as unknown;
+        } catch {
+          ctx.issues.push({ code: 'custom', message: 'Expected an object or a JSON object string', input: text });
+          return z.NEVER;
+        }
+      })
+      .pipe(schema),
+  ]);

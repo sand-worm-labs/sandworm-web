@@ -4,8 +4,11 @@ import { ApiAuth, CurrentUser } from '@sandworm/api';
 import { NotebookBlocksService } from './notebook-blocks.service';
 import { CreateBlocksDto } from './dto/create-blocks.dto';
 import { SetTitleDto } from './dto/set-title.dto';
+import { NoAudit } from '@/features/audit/audit.decorators';
 
 @ApiTags('Notebook blocks')
+// Cell and title edits are high-volume and would flood the audit log.
+@NoAudit()
 @Controller({
   path: 'workspaces/:workspaceId/documents/:documentId',
   version: '1',

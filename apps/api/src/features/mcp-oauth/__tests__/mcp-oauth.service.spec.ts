@@ -1,4 +1,5 @@
 import { randomBytes, createHash } from 'crypto';
+import { UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { McpOauthService } from '../mcp-oauth.service';
 
@@ -43,6 +44,14 @@ function makeService() {
         accessTokenExpires: new Date(now + 15 * 60 * 1000),
         refreshTokenExpires: new Date(now + 7 * 24 * 60 * 60 * 1000),
       };
+    },
+    refreshTokens: async (raw: string) => {
+      try {
+        const { sub } = await jwt.verifyAsync<{ sub: string }>(raw, { secret: SECRET });
+        return authService.issueTokenPair(sub);
+      } catch {
+        throw new UnauthorizedException('Invalid or expired refresh token');
+      }
     },
     validateTokenAndGetUser: async (token: string) => {
       try {
@@ -99,6 +108,13 @@ describe('McpOauthService', () => {
     expect(introspected).toEqual({ active: true, sub: FAKE_USER.id, email: FAKE_USER.email });
   });
 
+  it('tells a newly registered client that refresh tokens are allowed', async () => {
+    const { service } = makeService();
+    const client = await service.registerClient({ redirect_uris: ['http://127.0.0.1:9999/callback'] });
+
+    expect(client.grant_types).toEqual(['authorization_code', 'refresh_token']);
+  });
+
   it('rejects a replayed authorization code', async () => {
     const { service } = makeService();
     const { client, codeVerifier, authorizeParams } = await registerAndAuthorize(service);
@@ -124,6 +140,25 @@ describe('McpOauthService', () => {
         clientId: client.client_id,
       }),
     ).rejects.toThrow(/code_verifier does not match/);
+  });
+
+  it('renews a session from its refresh token, and the new token introspects as active', async () => {
+    const { service } = makeService();
+    const { client, codeVerifier, authorizeParams } = await registerAndAuthorize(service);
+    const code = await service.issueCode(authorizeParams, FAKE_USER.id);
+    const first = await service.exchangeCode({ code, codeVerifier, redirectUri: client.redirect_uris[0], clientId: client.client_id });
+
+    const renewed = await service.refresh(first.refreshToken);
+
+    expect(renewed.accessToken).toBeTruthy();
+    expect(renewed.expiresIn).toBeGreaterThan(0);
+    expect(await service.introspect(renewed.accessToken, 'test-introspect-key')).toMatchObject({ active: true, sub: FAKE_USER.id });
+  });
+
+  it('rejects a refresh with a missing or invalid refresh token', async () => {
+    const { service } = makeService();
+    await expect(service.refresh(undefined)).rejects.toThrow('refresh_token is required');
+    await expect(service.refresh('not-a-token')).rejects.toThrow('Invalid or expired refresh token');
   });
 
   it('rejects introspection with the wrong shared key', async () => {

@@ -54,3 +54,38 @@ describe('McpOauthController.confirm', () => {
     expect(mcpOauth.issueCode).not.toHaveBeenCalled();
   });
 });
+
+describe('McpOauthController.token', () => {
+  const tokens = { accessToken: 'a', refreshToken: 'r', expiresIn: 900 };
+
+  function tokenSetup(mcpOauth: object) {
+    const controller = new McpOauthController(mcpOauth as any, {} as any, {} as any, {} as any);
+    const reply = { send: jest.fn(), status: jest.fn().mockReturnThis() } as any;
+    return { controller, reply };
+  }
+
+  it('answers a refresh_token grant with a new token pair', async () => {
+    const refresh = jest.fn().mockResolvedValue(tokens);
+    const { controller, reply } = tokenSetup({ refresh });
+    await controller.token({ grant_type: 'refresh_token', refresh_token: 'old' }, reply);
+
+    expect(refresh).toHaveBeenCalledWith('old');
+    expect(reply.send).toHaveBeenCalledWith({ access_token: 'a', refresh_token: 'r', token_type: 'Bearer', expires_in: 900 });
+  });
+
+  it('answers 400 invalid_grant when the refresh token is bad', async () => {
+    const { controller, reply } = tokenSetup({ refresh: jest.fn().mockRejectedValue(new Error('Invalid or expired refresh token')) });
+    await controller.token({ grant_type: 'refresh_token', refresh_token: 'bad' }, reply);
+
+    expect(reply.status).toHaveBeenCalledWith(400);
+    expect(reply.send).toHaveBeenCalledWith({ error: 'invalid_grant', error_description: 'Invalid or expired refresh token' });
+  });
+
+  it('still rejects other grant types', async () => {
+    const { controller, reply } = tokenSetup({});
+    await controller.token({ grant_type: 'password' }, reply);
+
+    expect(reply.status).toHaveBeenCalledWith(400);
+    expect(reply.send).toHaveBeenCalledWith({ error: 'unsupported_grant_type' });
+  });
+});

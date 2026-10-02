@@ -71,8 +71,20 @@ class Provider implements IProvider {
   private onSyncCbs: ((synced: boolean) => void)[] = [];
 
   constructor(private wsProvider: WebsocketProvider) {
+    const startedAt = performance.now();
+    const log = (what: string) =>
+      console.log(
+        `[WS] ${wsProvider.roomname} ${what} +${Math.round(performance.now() - startedAt)}ms`
+      );
+
     this._synced = this.wsProvider.synced;
     this.wsProvider.on("sync", this.onWSSynced);
+    this.wsProvider.on("status", ({ status }: { status: string }) =>
+      log(status)
+    );
+    this.wsProvider.on("connection-close", (event: CloseEvent | null) =>
+      log(`closed code=${event?.code} reason="${event?.reason ?? ""}"`)
+    );
     this.wsProvider.on("connection-error", (event: any) => {
       console.error("[WS] connection-error:", event);
     });

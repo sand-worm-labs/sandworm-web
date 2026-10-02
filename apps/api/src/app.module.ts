@@ -127,12 +127,15 @@ const loggerModule = LoggerModule.forRootAsync({
     const env = config.getOrThrow('app.nodeEnv', { infer: true });
     const isLocal = env === Environment.LOCAL;
     const isDev = env === Environment.DEVELOPMENT;
-    const shouldPushToLogdy = isLocal || isDev;
+    const isLocalOrDev = isLocal || isDev;
+    // Off unless LOGDY_ENABLED=true: the Logdy socket runs in a worker thread,
+    // and if Logdy is down its error crashes the whole API.
+    const shouldPushToLogdy = isLocalOrDev && process.env.LOGDY_ENABLED === 'true';
 
     return {
       pinoHttp: {
         level:
-          process.env.LOG_LEVEL ?? (shouldPushToLogdy ? 'debug' : 'info'),
+          process.env.LOG_LEVEL ?? (isLocalOrDev ? 'debug' : 'info'),
         genReqId: (req) =>
           (req.headers[REQUEST_ID_HEADER] as string) ?? undefined,
         customProps: (req) => ({ reqId: req.id }),

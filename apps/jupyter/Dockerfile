@@ -70,6 +70,10 @@ COPY ./sandworm_fs_bridge /usr/src/sandworm_fs_bridge
 RUN pip install /usr/src/sandworm_fs_bridge
 RUN jupyter server extension enable sandworm_fs_bridge --sys-prefix
 
+# default colors and font for notebook charts
+COPY ./sandworm_theme /usr/src/sandworm_theme
+RUN pip install /usr/src/sandworm_theme
+
 
 
 RUN useradd -m -d /home/sandwormuser sandwormuser

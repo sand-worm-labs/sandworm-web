@@ -1,16 +1,18 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Query, Resolver } from '@nestjs/graphql';
 import { GraphQLJSON } from 'graphql-type-json';
 import { Public } from '@sandworm/nest-common';
 import { ContractAbi } from './contract-abi.model';
 import { ContractAbiService } from './contract-abi.service';
 import { Tool } from './tool.model';
 import { ToolCategory } from './tool-category.model';
+import { ToolSearchService } from './tool-search.service';
 import { ToolService } from './tool.service';
 
 @Resolver(() => Tool)
 export class ToolResolver {
   constructor(
     private readonly toolService: ToolService,
+    private readonly toolSearchService: ToolSearchService,
     private readonly contractAbiService: ContractAbiService,
   ) { }
 
@@ -21,6 +23,18 @@ export class ToolResolver {
   })
   getTools(): Promise<Tool[]> {
     return this.toolService.getTools();
+  }
+
+  // Not @Public(): every call pays for an embedding of the query.
+  @Query(() => [Tool], {
+    name: 'searchTools',
+    description: 'Semantic search over the power tool catalog. Returns the best matches first.',
+  })
+  searchTools(
+    @Args('query') query: string,
+    @Args('limit', { type: () => Int, defaultValue: 5 }) limit: number,
+  ): Promise<Tool[]> {
+    return this.toolSearchService.search(query, limit);
   }
 
   @Public()
