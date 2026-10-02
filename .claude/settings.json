@@ -7,7 +7,16 @@
       "Bash(awk '{print $11,$12,$13,$14}')",
       "Bash(chmod +x scripts/rebuild.sh)",
       "Bash(bash -n scripts/rebuild.sh)",
-      "Bash(pnpm --filter @sandworm/mcp exec node -e \"console.log\\('zod:', require.resolve\\('zod'\\)\\)\")"
+      "Bash(pnpm --filter @sandworm/mcp exec node -e \"console.log\\('zod:', require.resolve\\('zod'\\)\\)\")",
+      "Bash(cd /home/daniel/development && grep -rn \"UnprocessableEntity\\\\|422\" apps/api/src packages/*/src 2>/dev/null | grep -v \"spec\\\\|generated\" | head; grep -rn \"export function StringField\\\\b\" -A40 packages 2>/dev/null | grep -v node_modules | head -60; grep -rn \"listFiles\" apps/web/src --include=*.ts* 2>/dev/null | head -5)",
+      "Read(//home/daniel/development/**)",
+      "Bash(sed -i 's|{ input: { workspaceId: resolved } },|// The API rejects a missing path; \"./data\" is what the web app lists too.\\\\n          { input: { workspaceId: resolved, path: \"./data\" } },|' src/tools/files.ts)",
+      "Bash(sed -i \"s|path: \\\\\"./data\\\\\"|path: './data'|\" src/tools/files.ts)",
+      "Bash(python3 -)",
+      "Bash(mkdir notebooks *)",
+      "Bash(rm notebooks.ts)",
+      "Bash(sed -i \"s|'./notebooks.ts'|'./notebooks/index.ts'|\" index.ts)",
+      "Bash(grep -i \"href\\\\|router.push\\\\|\\\\`/\")"
     ]
   }
 }

@@ -5,7 +5,7 @@ import { registerCommentTools } from './comments.ts';
 import { registerDataSourceTools } from './data-sources.ts';
 import { registerEnvironmentTools } from './environment.ts';
 import { registerFileTools } from './files.ts';
-import { registerNotebookTools } from './notebooks.ts';
+import { registerNotebookTools } from './notebooks/index.ts';
 import { registerProjectTools } from './projects.ts';
 import { registerWorkspaceTools } from './workspaces.ts';
 
@@ -17,6 +17,6 @@ export function registerTools(server: McpServer, ctx: ToolContext): void {
   registerNotebookTools(server, ctx);
   registerCommentTools(server);
   registerDataSourceTools(server);
-  registerEnvironmentTools(server);
-  registerFileTools(server);
+  registerEnvironmentTools(server, ctx);
+  registerFileTools(server, ctx);
 }
