@@ -15,7 +15,7 @@ export const notebookApiPath = (workspaceId: string, id: string) => `/workspaces
 export const setNotebookTitle = (ctx: ToolContext, workspaceId: string, id: string, title: string) =>
   rest(ctx, 'PUT', `${notebookApiPath(workspaceId, id)}/title`, { title });
 
-// Some clients send object arguments as a JSON string.
+// Some clients send object and array arguments as a JSON string.
 export const objectOrJson = <T extends z.ZodType>(schema: T) =>
   z.union([
     schema,
@@ -25,7 +25,7 @@ export const objectOrJson = <T extends z.ZodType>(schema: T) =>
         try {
           return JSON.parse(text) as unknown;
         } catch {
-          ctx.issues.push({ code: 'custom', message: 'Expected an object or a JSON object string', input: text });
+          ctx.issues.push({ code: 'custom', message: 'Expected a value or its JSON string', input: text });
           return z.NEVER;
         }
       })

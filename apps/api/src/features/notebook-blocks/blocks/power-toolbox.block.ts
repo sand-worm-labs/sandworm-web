@@ -2,6 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { BlockType, getPowerToolboxAttributes, type ParamDefinition, type PowerToolboxBlock } from '@sandworm/editor';
 import type * as Y from 'yjs';
 import type { BlockDefinition, BlockInput } from './block-definition';
+import { assertOnly, patchTitle } from './update';
 
 export const powerToolboxBlock: BlockDefinition = {
   kind: 'power_toolbox',
@@ -15,6 +16,16 @@ export const powerToolboxBlock: BlockDefinition = {
   describe(block) {
     const { toolId } = getPowerToolboxAttributes(block as Y.XmlElement<PowerToolboxBlock>);
     return { toolId };
+  },
+
+  // The inputs replace the current ones as a set; the service checks them
+  // against the tool's parameters first. The tool itself cannot be swapped.
+  update(block, _blocks, patch) {
+    assertOnly('power_toolbox', patch, ['title', 'inputs']);
+    patchTitle(block, patch);
+    if (patch.inputs !== undefined) {
+      (block as Y.XmlElement<PowerToolboxBlock>).setAttribute('inputs', patch.inputs);
+    }
   },
 };
 

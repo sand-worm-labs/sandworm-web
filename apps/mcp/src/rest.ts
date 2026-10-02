@@ -17,7 +17,16 @@ function describe(body: ErrorBody, status: number): string {
   return `Sandworm API returned ${status}`;
 }
 
-export async function rest<T>(ctx: ToolContext, method: 'GET' | 'POST' | 'PUT', path: string, body?: unknown): Promise<T> {
+const DEFAULT_TIMEOUT_MS = 30_000;
+
+export async function rest<T>(
+  ctx: ToolContext,
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+  path: string,
+  body?: unknown,
+  // For endpoints that hold the request open on purpose, such as waiting on a run.
+  { timeoutMs = DEFAULT_TIMEOUT_MS }: { timeoutMs?: number } = {},
+): Promise<T> {
   const res = await fetch(`${ctx.apiUrl}/api${path}`, {
     method,
     headers: {
@@ -25,7 +34,7 @@ export async function rest<T>(ctx: ToolContext, method: 'GET' | 'POST' | 'PUT', 
       ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
     },
     body: body === undefined ? undefined : JSON.stringify(body),
-    signal: AbortSignal.timeout(30_000),
+    signal: AbortSignal.timeout(timeoutMs),
   });
 
   const json = (await res.json().catch(() => null)) as (T & ErrorBody) | null;

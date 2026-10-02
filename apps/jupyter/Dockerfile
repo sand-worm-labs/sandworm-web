@@ -75,6 +75,11 @@ RUN jupyter server extension enable sandworm_fs_bridge --sys-prefix
 COPY ./sandworm_theme /usr/src/sandworm_theme
 RUN pip install /usr/src/sandworm_theme
 
+# Charts reach the editor as Plotly JSON. Plotly's default notebook renderer
+# also emits a script-only HTML output that loads plotly.js the first time a
+# chart is shown in a session, which the editor renders as an empty frame.
+ENV PLOTLY_RENDERER=plotly_mimetype
+
 
 
 RUN useradd -m -d /home/sandwormuser sandwormuser

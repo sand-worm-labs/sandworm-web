@@ -32,6 +32,10 @@ export const getDefinition = (kind: BlockKind): BlockDefinition => {
   return definition;
 };
 
+// The definition for an existing block, or undefined for a type the API does
+// not create (file uploads, dashboard headers).
+export const getDefinitionFor = (block: YBlock): BlockDefinition | undefined => byType.get(String(block.getAttribute('type')));
+
 // Blocks of a type with no definition (inputs, pivot tables, ...) still
 // summarize, just without kind-specific fields.
 export function summarizeBlock(block: YBlock, blocks: Y.Map<YBlock>): BlockSummary {

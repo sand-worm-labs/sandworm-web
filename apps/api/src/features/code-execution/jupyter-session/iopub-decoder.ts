@@ -3,6 +3,16 @@ import { Logger } from "@nestjs/common"
 import { isDisplayDataMessage, isErrorMessage, isExecuteResultMessage, isStatusMessage, isStreamMessage } from './helpers/jupyter'
 import { Output } from '@sandworm/types';
 
+// Plotly's notebook renderer announces itself, the first time a chart is shown
+// in a session, with an HTML output that only loads plotly.js. The editor
+// draws charts from their JSON, so that output would be megabytes of script
+// stored in the document and shown as an empty frame. Kernel images set
+// PLOTLY_RENDERER to avoid it; this covers the ones that do not. A figure
+// exported with to_html() also configures Plotly but carries its graph div.
+export function isPlotlyLoader(html: string): boolean {
+    return html.includes('window.PlotlyConfig') && !html.includes('plotly-graph-div');
+}
+
 export function decodeIOPubMessage(
     message: services.KernelMessage.IIOPubMessage,
     onOutputs: (outputs: Output[]) => void
@@ -45,6 +55,9 @@ export function decodeIOPubMessage(
         }
 
         if (typeof data['text/html'] === 'string') {
+            if (isPlotlyLoader(data['text/html'])) {
+                return;
+            }
             onOutputs([{ type: 'html', html: data['text/html'] }]);
             return;
         }

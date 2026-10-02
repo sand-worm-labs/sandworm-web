@@ -65,6 +65,11 @@ export class PythonBlockExecutorService {
           abortP = abort().then(() => true);
         }
       });
+      // The abort may have been requested while the kernel session was still
+      // being set up, before the observer above existed.
+      if (executionItem.getStatus()._tag === 'aborting') {
+        abortP = abort().then(() => true);
+      }
 
       await promise;
       const aborted = await abortP;

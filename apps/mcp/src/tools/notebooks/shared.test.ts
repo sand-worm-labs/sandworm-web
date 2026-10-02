@@ -18,3 +18,9 @@ test('rejects text that is not a JSON object', () => {
   assert.equal(schema.safeParse('not json').success, false);
   assert.equal(schema.safeParse('[1,2]').success, false);
 });
+
+test('accepts an array as a JSON string', () => {
+  const ids = objectOrJson(z.array(z.string()).min(1));
+  assert.deepEqual(ids.parse('["a","b"]'), ['a', 'b']);
+  assert.equal(ids.safeParse('[]').success, false);
+});

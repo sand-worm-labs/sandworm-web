@@ -17,7 +17,7 @@ import {
   isPowerToolboxBlock,
   YBlock,
 } from '@sandworm/editor';
-import { exhaustiveCheck } from '@sandworm/types';
+import { exhaustiveCheck, type Output } from '@sandworm/types';
 import { LockService } from '@/infrastructure/lock/lock.services';
 import { PythonBlockExecutorService } from '@/features/block-executor/services/executors/python-block-executor.service';
 import { SqlBlockExecutorService } from '@/features/block-executor/services/executors/sql-block-executor.service';
@@ -147,9 +147,18 @@ export class DocExecutor {
     const status = current.getStatus();
     switch (status._tag) {
       case 'running':
-      case 'enqueued':
-        await this.executeItem(current);
+      case 'enqueued': {
+        const timeout = this.startItemTimeout(batch, current);
+        try {
+          await this.executeItem(current);
+        } finally {
+          timeout.stop();
+        }
+        if (timeout.fired() && current.getCompleteStatus() === 'aborted') {
+          this.markTimedOut(current, timeout.ms);
+        }
         break;
+      }
       case 'completed':
         break;
       case 'unknown':
@@ -168,6 +177,63 @@ export class DocExecutor {
       );
       current.setCompleted('error');
     }
+  }
+
+  // Batches started through the API carry a per-item time limit: nobody is
+  // watching them, so a cell that never returns would otherwise hold this
+  // notebook's queue forever. Aborting goes through the same path as a user
+  // pressing stop.
+  private startItemTimeout(
+    batch: ExecutionQueueBatch,
+    item: ExecutionQueueItem,
+  ): { ms: number; fired: () => boolean; stop: () => void } {
+    const ms = batch.getItemTimeoutMs();
+    if (ms === null) {
+      return { ms: 0, fired: () => false, stop: () => {} };
+    }
+
+    let fired = false;
+    const timer = setTimeout(() => {
+      if (item.getCompleteStatus() !== null) {
+        return;
+      }
+      fired = true;
+      this.logger.warn(
+        { docId: this.docId, blockId: item.getBlockId(), timeoutMs: ms },
+        'Item exceeded its time limit, aborting',
+      );
+      item.setAborting();
+    }, ms);
+
+    return { ms, fired: () => fired, stop: () => clearTimeout(timer) };
+  }
+
+  // An abort leaves no trace on the cell once its batch is gone. Whoever reads
+  // the notebook later, in the editor or through the API, needs to see that
+  // the cell was cut off and why, so the reason is stored as the cell's error.
+  private markTimedOut(item: ExecutionQueueItem, timeoutMs: number): void {
+    const block = this.blocks.get(item.getBlockId());
+    if (!block) {
+      return;
+    }
+
+    const message = `Stopped after running for ${Math.round(timeoutMs / 1000)} seconds, the time limit for a cell in an unattended run`;
+    const now = new Date().toISOString();
+    const error: Output = { type: 'error', ename: 'TimeoutError', evalue: message, traceback: [] };
+
+    this.ydoc.transact(() => {
+      if (isPythonBlock(block)) {
+        block.setAttribute('result', [...(block.getAttribute('result') ?? []), error]);
+        block.setAttribute('lastQuery', block.getAttribute('source')?.toJSON() ?? '');
+        block.setAttribute('lastQueryTime', now);
+      } else if (isPowerToolboxBlock(block)) {
+        block.setAttribute('result', [...(block.getAttribute('result') ?? []), error]);
+        block.setAttribute('executedAt', now);
+      } else if (isSQLBlock(block)) {
+        block.setAttribute('result', { type: 'abort-error', message });
+      }
+      item.setCompleted('error');
+    });
   }
 
   private async executeItem(item: ExecutionQueueItem): Promise<void> {

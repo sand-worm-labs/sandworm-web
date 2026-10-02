@@ -3,6 +3,7 @@ import {
     Logger,
     NotFoundException,
     BadRequestException,
+    ForbiddenException,
     UnprocessableEntityException,
 } from '@nestjs/common';
 import { Equal, In, IsNull, Not, Or, Repository } from 'typeorm';
@@ -488,6 +489,19 @@ export class WorkspaceMembershipService {
         });
         if (!membership) {
             throw new BadRequestException('User is not an active member of this workspace');
+        }
+    }
+
+    // Viewers can read a workspace's notebooks but not change or run them.
+    async assertCanEdit(workspaceId: string, userId: string): Promise<void> {
+        const membership = await this.workspaceMembersRepository.findOne({
+            where: { workspaceId, userId, status: UserWorkspaceStatus.ACTIVE },
+        });
+        if (!membership) {
+            throw new BadRequestException('User is not an active member of this workspace');
+        }
+        if (membership.role === UserWorkspaceRole.VIEWER) {
+            throw new ForbiddenException('Your role in this workspace is view-only');
         }
     }
 
