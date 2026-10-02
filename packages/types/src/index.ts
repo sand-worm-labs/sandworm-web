@@ -547,6 +547,12 @@ export const PythonHTMLOutput = z.object({
 });
 export type PythonHTMLOutput = z.infer<typeof PythonHTMLOutput>;
 
+export const PythonMarkdownOutput = z.object({
+  type: z.literal('markdown'),
+  text: z.string(),
+});
+export type PythonMarkdownOutput = z.infer<typeof PythonMarkdownOutput>;
+
 export const PythonPlotlyOutput = z.object({
   type: z.literal('plotly'),
   data: z.any(),
@@ -563,6 +569,7 @@ export const Output = z.union([
     text: z.string(),
   }),
   PythonHTMLOutput,
+  PythonMarkdownOutput,
   PythonPlotlyOutput,
   z.object({
     type: z.literal('image'),

@@ -22,6 +22,7 @@ RUN apt-get update && \
     curl \
     libaio1t64 \
     alien \
+    fonts-liberation \
     && rm -rf /var/lib/apt/lists/*
 
 # Download Oracle Instant Client RPM, convert to DEB, and install

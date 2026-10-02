@@ -487,6 +487,7 @@ export class AiBlockEventService implements OnModuleInit {
       if (match) return `DataFrame ${match[1]} rows × ${match[2]} cols`;
       return 'produced a table output';
     }
+    if (outputs.some(o => o.type === 'markdown')) return 'produced markdown text';
     if (outputs.some(o => o.type === 'image')) return 'produced an image/chart output';
     if (outputs.some(o => o.type === 'plotly')) return 'produced a plot';
 

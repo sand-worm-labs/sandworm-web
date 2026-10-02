@@ -27,7 +27,7 @@ _LAYOUT = {
         "font": {"family": t.FONT_STACK, "size": 13, "color": t.PAPER},
     },
     # Title sits at the very top; the legend sits just above the plot, in the
-    # space the top margin leaves below it. Before, both fought over a 44px strip.
+    # space the top margin leaves below it (96px fits both without overlap).
     "title": {
         "x": 0,
         "xanchor": "left",
@@ -35,7 +35,7 @@ _LAYOUT = {
         "y": 1,
         "yanchor": "top",
         "yref": "container",
-        "pad": {"t": 24, "b": 8, "l": 0},
+        "pad": {"t": 22, "b": 8, "l": 8},
         "font": {"size": 17, "color": t.INK},
     },
     "xaxis": {
@@ -68,12 +68,10 @@ _LAYOUT = {
         "bgcolor": "rgba(0,0,0,0)",
         "y": 1.06,
         "tracegroupgap": 16,
-        "entrywidthmode": "pixels",
-        "entrywidth": 130,
         "itemsizing": "constant",
     },
     # Roomy on purpose: the title, legend, tick labels and axis titles each need their own space.
-    "margin": {"t": 120, "b": 80, "l": 88, "r": 40, "pad": 8},
+    "margin": {"t": 96, "b": 72, "l": 80, "r": 32, "pad": 6},
     "bargap": 0.3,
     "bargroupgap": 0.08,
 }

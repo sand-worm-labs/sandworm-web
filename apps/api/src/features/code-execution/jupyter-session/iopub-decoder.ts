@@ -49,6 +49,13 @@ export function decodeIOPubMessage(
             return;
         }
 
+        // IPython's Markdown() sends text/markdown plus a text/plain repr
+        // ("<IPython.core.display.Markdown object>"), so this must come first.
+        if (typeof data['text/markdown'] === 'string') {
+            onOutputs([{ type: 'markdown', text: data['text/markdown'] }]);
+            return;
+        }
+
         if (typeof data['text/plain'] === 'string') {
             onOutputs([{ type: 'stdio', name: 'stdout', text: data['text/plain'] }]);
             return;

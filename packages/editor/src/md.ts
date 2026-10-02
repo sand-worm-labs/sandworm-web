@@ -141,6 +141,7 @@ function returnSignature(block: YBlock, meta: BlockMeta, allBlocks: ReturnType<t
       for (const r of attrs.result as any[]) {
         if (r.type === 'error') { sig = `→ **ERROR:** \`${r.ename}: ${r.evalue}\``; return }
         if (r.type === 'image') { sig = '→ *[image output]*'; return }
+        if (r.type === 'markdown') { sig = '→ *[markdown output]*'; return }
         if (r.type === 'html') {
           const countMatch = r.html.match(/(\d[\d,]+)\s+rows\s+×\s+(\d+)\s+col/)
           const theadMatch = r.html.match(/<thead>([\s\S]*?)<\/thead>/)
@@ -289,6 +290,7 @@ function focusedBlockDetail(
         for (const r of attrs.result) {
           if (r.type === 'error') { lines.push(`> **ERROR:** \`${r.ename}: ${r.evalue}\`\n\`\`\`\n${r.traceback ?? ''}\n\`\`\``); continue }
           if (r.type === 'image') { lines.push('*[image output]*'); continue }
+          if (r.type === 'markdown') { lines.push(String(r.text ?? '')); continue }
           //if (r.type === 'stream') { lines.push(`\`\`\`\n${r.text ?? ''}\n\`\`\``); continue }
           if (r.type === 'html') { lines.push(parsePandasHtml(r.html, 10)); continue }
         }

@@ -424,6 +424,14 @@
 /* ╔════════════════════════════════════════════╗
    ║                Rich Text Editor            ║
    ╚════════════════════════════════════════════╝ */
+/* Body size lives here, not inherited: text cells must render the same
+   wherever they sit (e.g. Python markdown output is inside a text-xs area).
+   .report-typography overrides this for the public view. */
+.sandworm-prose {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
 .sandworm-prose.tiptap {
   outline: none;
 }

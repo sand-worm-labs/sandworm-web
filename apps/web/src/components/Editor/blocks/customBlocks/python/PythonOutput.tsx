@@ -10,10 +10,12 @@ import type {
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import React, { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import debounce from "lodash.debounce";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import type { PythonBlock } from "@sandworm/editor";
 
 import { downloadFile } from "@/utils/file";
-import { Shimmer } from "@/components/Skeletons";
+import { ChartSkeleton, Shimmer, TableSkeleton } from "@/components/Skeletons";
 
 import useResettableState from "../../../hooks/useResettableState";
 
@@ -26,13 +28,39 @@ const DEFAULT_PLOT_HEIGHT = 450;
 const HTML_PLACEHOLDER_HEIGHT = 160;
 
 // Plotly is a large lazy chunk and draws asynchronously after mounting, so
-// the output area would otherwise sit blank. Keep a shimmer in place (and
+// the output area would otherwise sit blank. Keep a skeleton in place (and
 // reserve the height, to avoid layout shift) until the first draw finishes.
+//
+// Never rely on a single signal to clear it: onInitialized is skipped when
+// anything after the first draw throws, which used to leave the skeleton on
+// top of a chart that had already rendered. So any draw/update/error event
+// clears it, and a timeout is the last resort.
+const PLOT_SKELETON_TIMEOUT_MS = 4000;
+
+// One shared, debounced nudge: a notebook with many charts initializing
+// together triggers a single window resize, not one per chart.
+const requestPlotResize = debounce(
+  () => window.dispatchEvent(new Event("resize")),
+  120
+);
+
 function PlotWithPlaceholder(
   props: React.ComponentProps<typeof Plot> & { placeholderHeight?: number }
 ) {
-  const { placeholderHeight, onInitialized, ...plotProps } = props;
+  const {
+    placeholderHeight,
+    onInitialized,
+    onAfterPlot,
+    onUpdate,
+    onError,
+    ...plotProps
+  } = props;
   const [ready, setReady] = React.useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setReady(true), PLOT_SKELETON_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div
@@ -40,8 +68,8 @@ function PlotWithPlaceholder(
       style={ready ? undefined : { minHeight: placeholderHeight }}
     >
       {!ready && (
-        <Shimmer
-          className="absolute inset-0 w-full h-full"
+        <ChartSkeleton
+          className="absolute inset-0 w-full h-full z-10 bg-base-100 dark:bg-header-surface"
           aria-label="Loading chart"
         />
       )}
@@ -49,7 +77,25 @@ function PlotWithPlaceholder(
         {...plotProps}
         onInitialized={(figure, graphDiv) => {
           setReady(true);
+          // The first draw can run before the container (and web fonts) have
+          // their final size, which left extra whitespace until the next run.
+          // react-plotly re-measures on window resize, so nudge it once now and
+          // again after fonts load.
+          requestPlotResize();
+          document.fonts?.ready.then(requestPlotResize);
           onInitialized?.(figure, graphDiv);
+        }}
+        onAfterPlot={(...args: unknown[]) => {
+          setReady(true);
+          (onAfterPlot as ((...a: unknown[]) => void) | undefined)?.(...args);
+        }}
+        onUpdate={(figure, graphDiv) => {
+          setReady(true);
+          onUpdate?.(figure, graphDiv);
+        }}
+        onError={err => {
+          setReady(true);
+          onError?.(err);
         }}
       />
     </div>
@@ -195,6 +241,10 @@ export function hasDataframeOutput(outputs: Output[]): boolean {
 }
 
 export const HTML_OUTPUT_HEIGHT_MESSAGE = "sandworm-html-output-height";
+const HTML_OUTPUT_REQUEST_MESSAGE = "sandworm-html-output-request-height";
+// If the iframe never reports a height, show it anyway rather than a skeleton forever.
+const HTML_OUTPUT_FALLBACK_HEIGHT = 320;
+const HTML_OUTPUT_FALLBACK_MS = 3000;
 
 // The iframe is sandboxed without allow-same-origin, so its document is a
 // cross-origin/opaque origin from the parent's perspective — the parent
@@ -212,6 +262,11 @@ const RESIZE_REPORTER_SCRIPT = `
       );
     }
     window.addEventListener("load", reportHeight);
+    // The parent can also ask, in case it was not listening yet for the first report.
+    window.addEventListener("message", function (event) {
+      if (event.data && event.data.type === ${JSON.stringify(HTML_OUTPUT_REQUEST_MESSAGE)}) reportHeight();
+    });
+    reportHeight();
     new ResizeObserver(reportHeight).observe(document.body);
   </script>
 `;
@@ -254,10 +309,21 @@ export function PythonOutputs(props: Props) {
       });
     };
 
-    const anim = requestAnimationFrame(cb);
+    // requestAnimationFrame is paused in background tabs, which would leave the
+    // placeholders on screen indefinitely; a timer guarantees progress. Only
+    // the first of the two to fire advances.
+    let advanced = false;
+    const advanceOnce = () => {
+      if (advanced) return;
+      advanced = true;
+      cb();
+    };
+    const anim = requestAnimationFrame(advanceOnce);
+    const fallback = setTimeout(advanceOnce, 150);
 
     return () => {
       cancelAnimationFrame(anim);
+      clearTimeout(fallback);
     };
   }, [props.outputs, rendered, props.lazyRender]);
 
@@ -292,9 +358,7 @@ export function PythonOutputs(props: Props) {
           key={rendered + i}
           className="w-full"
           style={{
-            height: EXPENSIVE_TYPES.has(output.type)
-              ? DEFAULT_PLOT_HEIGHT
-              : 48,
+            height: EXPENSIVE_TYPES.has(output.type) ? DEFAULT_PLOT_HEIGHT : 48,
           }}
         />
       ))}
@@ -384,6 +448,16 @@ export function PythonOutput(props: ItemProps) {
     case "html": {
       return <HTMLOutput output={props.output} isDark={props.isDark} />;
     }
+    case "markdown":
+      // From IPython's display(Markdown(...)). sandworm-prose carries the
+      // same type scale as rich-text and markdown cells (see globals.scss).
+      return (
+        <div className="sw-markdown-preview max-w-full font-body sandworm-prose px-1 py-1">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {props.output.text}
+          </ReactMarkdown>
+        </div>
+      );
     case "error":
       return (
         <PythonError
@@ -439,7 +513,10 @@ function HTMLOutput(props: { output: PythonHTMLOutput; isDark: boolean }) {
     [props.output.html, props.isDark]
   );
 
-  useEffect(() => {
+  // Layout effect, not useEffect: this must be listening before the iframe can
+  // load and post its one report. A passive effect can run after the load on a
+  // busy page, the message is dropped, and the skeleton never clears.
+  useLayoutEffect(() => {
     const onMessage = (event: MessageEvent) => {
       if (
         event.source !== iframeRef.current?.contentWindow ||
@@ -456,14 +533,23 @@ function HTMLOutput(props: { output: PythonHTMLOutput; isDark: boolean }) {
     return () => window.removeEventListener("message", onMessage);
   }, []);
 
+  // Last resort: if no height ever arrives, stop showing a skeleton.
+  useEffect(() => {
+    const timer = setTimeout(
+      () => setHeight(current => current || HTML_OUTPUT_FALLBACK_HEIGHT),
+      HTML_OUTPUT_FALLBACK_MS
+    );
+    return () => clearTimeout(timer);
+  }, [styledHtml]);
+
   const loaded = height > 0;
 
   return (
     <div className="relative w-full">
       {!loaded && (
-        <Shimmer
+        <TableSkeleton
           className="w-full"
-          style={{ height: HTML_PLACEHOLDER_HEIGHT }}
+          style={{ minHeight: HTML_PLACEHOLDER_HEIGHT }}
           aria-label="Loading output"
         />
       )}
@@ -472,6 +558,13 @@ function HTMLOutput(props: { output: PythonHTMLOutput; isDark: boolean }) {
         srcDoc={styledHtml}
         title="HTML block"
         sandbox="allow-scripts"
+        onLoad={() =>
+          // Ask the page for its height once it has loaded (handshake).
+          iframeRef.current?.contentWindow?.postMessage(
+            { type: HTML_OUTPUT_REQUEST_MESSAGE },
+            "*"
+          )
+        }
         style={{
           width: "100%",
           height,
@@ -535,6 +628,12 @@ function PythonPlotOutput(props: {
       frames={props.output.frames}
       useResizeHandler
       className="w-full printable-block"
+      // autosize reads its container: give it a definite height instead of
+      // "auto", so the first draw and every later one measure the same box.
+      style={{
+        width: "100%",
+        height: props.output.layout?.height ?? DEFAULT_PLOT_HEIGHT,
+      }}
       placeholderHeight={props.output.layout?.height ?? DEFAULT_PLOT_HEIGHT}
     />
   );

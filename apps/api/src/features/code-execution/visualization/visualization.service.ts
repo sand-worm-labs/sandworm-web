@@ -718,6 +718,7 @@ else:
         for (const output of outputs) {
             switch (output.type) {
                 case 'html':
+                case 'markdown':
                 case 'image':
                 case 'plotly':
                     break
