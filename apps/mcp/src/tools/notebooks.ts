@@ -1,22 +1,51 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-import { confirm, id, notImplemented, workspaceId } from './shared.ts';
+import { graphql, resolveWorkspaceId, type ToolContext } from '../graphql.ts';
+import { confirm, errorResult, id, jsonResult, notImplemented, workspaceId } from './shared.ts';
 
-// Skeleton only: each handler should eventually call the Sandworm GraphQL API
-// as the authenticated workspace user and, where paid, gate on `deps.charge`.
-export function registerNotebookTools(server: McpServer): void {
+// Notebook format the web app creates new documents with.
+const NOTEBOOK_VERSION = 2;
+
+// Where the web app opens a notebook; the same route the sidebar navigates to.
+export const notebookUrl = (webUrl: string, workspaceId: string, notebookId: string) =>
+  `${webUrl}/workspace/${workspaceId}/documents/${notebookId}`;
+
+// Only create_notebook is implemented; the rest are stubs. Implemented handlers
+// call the Sandworm GraphQL API as the authenticated user and, where paid,
+// should gate on `deps.charge`.
+export function registerNotebookTools(server: McpServer, ctx: ToolContext): void {
   server.registerTool(
     'create_notebook',
     {
-      description: 'Create a new notebook (SQL, Python and Markdown cells, charts) in a workspace',
+      description:
+        'Create a new, empty notebook in a workspace and return its id and a link to open it. Add cells to it afterwards',
       inputSchema: {
         workspaceId,
-        title: z.string(),
-        prompt: z.string().optional().describe('What the notebook should answer'),
+        title: z.string().trim().min(1).max(200).describe('Title of the notebook'),
       },
     },
-    async () => notImplemented('create_notebook'),
+    async ({ workspaceId, title }) => {
+      try {
+        const resolvedWorkspaceId = await resolveWorkspaceId(ctx, workspaceId);
+        const data = await graphql<{ createDocument: { id: string; title: string } }>(
+          ctx,
+          `mutation ($workspaceId: String!, $input: CreateDocumentInput!) {
+            createDocument(workspaceId: $workspaceId, input: $input) { id title }
+          }`,
+          { workspaceId: resolvedWorkspaceId, input: { title, parentId: null, version: NOTEBOOK_VERSION } },
+        );
+        const { id: notebookId } = data.createDocument;
+        return jsonResult({
+          id: notebookId,
+          title: data.createDocument.title,
+          workspaceId: resolvedWorkspaceId,
+          url: notebookUrl(ctx.webUrl, resolvedWorkspaceId, notebookId),
+        });
+      } catch (err) {
+        return errorResult(err);
+      }
+    },
   );
 
   server.registerTool(

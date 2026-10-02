@@ -13,6 +13,7 @@ import debounce from "lodash.debounce";
 import type { PythonBlock } from "@sandworm/editor";
 
 import { downloadFile } from "@/utils/file";
+import { Shimmer } from "@/components/Skeletons";
 
 import useResettableState from "../../../hooks/useResettableState";
 
@@ -20,6 +21,40 @@ import PythonError from "./PythonError";
 
 // @ts-expect-error @types/react-plotly.js incompatible with @types/react@19
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
+
+const DEFAULT_PLOT_HEIGHT = 450;
+const HTML_PLACEHOLDER_HEIGHT = 160;
+
+// Plotly is a large lazy chunk and draws asynchronously after mounting, so
+// the output area would otherwise sit blank. Keep a shimmer in place (and
+// reserve the height, to avoid layout shift) until the first draw finishes.
+function PlotWithPlaceholder(
+  props: React.ComponentProps<typeof Plot> & { placeholderHeight?: number }
+) {
+  const { placeholderHeight, onInitialized, ...plotProps } = props;
+  const [ready, setReady] = React.useState(false);
+
+  return (
+    <div
+      className="relative w-full"
+      style={ready ? undefined : { minHeight: placeholderHeight }}
+    >
+      {!ready && (
+        <Shimmer
+          className="absolute inset-0 w-full h-full"
+          aria-label="Loading chart"
+        />
+      )}
+      <Plot
+        {...plotProps}
+        onInitialized={(figure, graphDiv) => {
+          setReady(true);
+          onInitialized?.(figure, graphDiv);
+        }}
+      />
+    </div>
+  );
+}
 
 interface Props {
   className?: string;
@@ -251,6 +286,18 @@ export function PythonOutputs(props: Props) {
           />
         </div>
       ))}
+      {props.outputs.slice(rendered).map((output, i) => (
+        <Shimmer
+          // eslint-disable-next-line react/no-array-index-key
+          key={rendered + i}
+          className="w-full"
+          style={{
+            height: EXPENSIVE_TYPES.has(output.type)
+              ? DEFAULT_PLOT_HEIGHT
+              : 48,
+          }}
+        />
+      ))}
     </div>
   );
 }
@@ -409,14 +456,32 @@ function HTMLOutput(props: { output: PythonHTMLOutput; isDark: boolean }) {
     return () => window.removeEventListener("message", onMessage);
   }, []);
 
+  const loaded = height > 0;
+
   return (
-    <iframe
-      ref={iframeRef}
-      srcDoc={styledHtml}
-      title="HTML block"
-      sandbox="allow-scripts"
-      style={{ width: "100%", height, border: "none" }}
-    />
+    <div className="relative w-full">
+      {!loaded && (
+        <Shimmer
+          className="w-full"
+          style={{ height: HTML_PLACEHOLDER_HEIGHT }}
+          aria-label="Loading output"
+        />
+      )}
+      <iframe
+        ref={iframeRef}
+        srcDoc={styledHtml}
+        title="HTML block"
+        sandbox="allow-scripts"
+        style={{
+          width: "100%",
+          height,
+          border: "none",
+          // Keep the iframe loading, but out of the flow until sized.
+          position: loaded ? undefined : "absolute",
+          visibility: loaded ? undefined : "hidden",
+        }}
+      />
+    </div>
   );
 }
 const MAX_PIE_LABELS = 1000;
@@ -463,13 +528,14 @@ function PythonPlotOutput(props: {
   }
 
   return (
-    <Plot
+    <PlotWithPlaceholder
       data={data}
       layout={layout}
       config={config}
       frames={props.output.frames}
       useResizeHandler
       className="w-full printable-block"
+      placeholderHeight={props.output.layout?.height ?? DEFAULT_PLOT_HEIGHT}
     />
   );
 }
@@ -553,12 +619,13 @@ function DashboardPlotOutput(props: { output: PythonPlotlyOutput }) {
 
   return (
     <div ref={container}>
-      <Plot
+      <PlotWithPlaceholder
         data={props.output.data}
         layout={layout}
         config={config}
         frames={props.output.frames}
         useResizeHandler
+        placeholderHeight={layout.height}
       />
     </div>
   );

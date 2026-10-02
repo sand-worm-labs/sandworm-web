@@ -14,7 +14,7 @@ import { registerWorkspaceTools } from './workspaces.ts';
 export function registerTools(server: McpServer, ctx: ToolContext): void {
   registerWorkspaceTools(server, ctx);
   registerProjectTools(server, ctx);
-  registerNotebookTools(server);
+  registerNotebookTools(server, ctx);
   registerCommentTools(server);
   registerDataSourceTools(server);
   registerEnvironmentTools(server);

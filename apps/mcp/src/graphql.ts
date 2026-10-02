@@ -1,9 +1,11 @@
 import type { AuthContext } from './auth.ts';
 
-// What every tool gets: who is calling, and where the Sandworm API lives.
+// What every tool gets: who is calling, where the Sandworm API lives, and
+// where the web app lives (for links back to what a tool created).
 export type ToolContext = {
   auth: AuthContext;
   apiUrl: string;
+  webUrl: string;
 };
 
 export class GraphQLError extends Error {}
