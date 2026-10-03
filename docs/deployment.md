@@ -46,6 +46,7 @@ The start script handles everything in order: env setup → domain config → Do
 | `stop-prod.sh` | Stop all apps and Docker services |
 | `setup-envs.sh` | Create `.env` files from scratch if missing |
 | `setup-domain-envs.sh [dev\|staging\|prod]` | Patch domain-related vars in all `.env` files |
+| `setup-mcp-envs.sh [dev\|staging\|prod]` | Fill `apps/mcp/.env` and the matching MCP vars in `apps/api/.env` (run by `setup-domain-envs.sh`) |
 
 ---
 

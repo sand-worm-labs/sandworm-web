@@ -74,6 +74,9 @@ echo "▶ Updating Landing env ($ENV)..."
 set_env "$LANDING_ENV" PUBLIC_APP_URL "$APP_DOMAIN"
 echo "✅ $LANDING_ENV updated"
 
+# MCP server env, and the API settings that have to match it
+"$ROOT_DIR/scripts/setup-mcp-envs.sh" "$ENV"
+
 echo
 echo "✅ Envs set for $ENV"
 echo "   App:     $APP_DOMAIN"
