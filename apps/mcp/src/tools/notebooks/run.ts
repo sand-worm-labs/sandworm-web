@@ -5,7 +5,7 @@ import { resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { rest } from '../../rest.ts';
 import { handle, workspaceId } from '../shared.ts';
 import { DATA_SOURCE_FALLBACK } from './open-data.ts';
-import { notebookApiPath, notebookId, notebookUrl, objectOrJson } from './shared.ts';
+import { notebookApiPath, notebookId, notebookUrl, objectOrJson, turnRequest } from './shared.ts';
 
 // How long one call waits on a run. Under a minute, because that is where many
 // MCP clients give up on a tool call; a longer run is followed with
@@ -59,6 +59,14 @@ export function describeResults(report: RunReport) {
   return { status, counts, cells };
 }
 
+// The closing reply reaches the notebook's chat only if the agent calls
+// save_reply, and the server instructions alone do not get it called. A
+// finished run is where the work usually ends, so the result says it again.
+const whenDone = (ctx: ToolContext, status: string) =>
+  ctx.logToolCalls && status !== 'running'
+    ? { whenDone: 'If the notebook work is now finished, call save_reply with the closing message you are about to give the user, before you give it. Without that call your reply is not saved to the notebook\'s chat.' }
+    : {};
+
 export function registerRunTools(server: McpServer, ctx: ToolContext): void {
   server.registerTool(
     'run_notebook',
@@ -71,6 +79,7 @@ export function registerRunTools(server: McpServer, ctx: ToolContext): void {
       ].join('\n\n'),
       inputSchema: {
         notebookId,
+        request: turnRequest,
         workspaceId,
         cellIds: cellIds.describe('Run only these cells, in notebook order. Omit to run the whole notebook'),
       },
@@ -84,7 +93,8 @@ export function registerRunTools(server: McpServer, ctx: ToolContext): void {
         { blockIds: cellIds, waitSeconds: WAIT_SECONDS },
         { timeoutMs: REQUEST_TIMEOUT_MS },
       );
-      return { notebookId, url: notebookUrl(ctx, ws, notebookId), ...describeRun(report) };
+      const run = describeRun(report);
+      return { notebookId, url: notebookUrl(ctx, ws, notebookId), ...run, ...whenDone(ctx, run.status) };
     }),
   );
 
@@ -110,7 +120,8 @@ export function registerRunTools(server: McpServer, ctx: ToolContext): void {
       const report = await rest<RunReport>(ctx, 'GET', `${notebookApiPath(ws, notebookId)}/run?${query}`, undefined, {
         timeoutMs: REQUEST_TIMEOUT_MS,
       });
-      return { notebookId, url: notebookUrl(ctx, ws, notebookId), ...describeResults(report) };
+      const results = describeResults(report);
+      return { notebookId, url: notebookUrl(ctx, ws, notebookId), ...results, ...whenDone(ctx, results.status) };
     }),
   );
 }

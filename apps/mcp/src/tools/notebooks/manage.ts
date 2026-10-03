@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { graphql, resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { confirm, handle, workspaceId } from '../shared.ts';
-import { notebookId, notebookUrl, setNotebookTitle } from './shared.ts';
+import { notebookId, notebookUrl, setNotebookTitle, turnRequest } from './shared.ts';
 
 type Doc = {
   id: string;
@@ -52,7 +52,7 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
     'get_notebook',
     {
       description: 'Fetch a notebook: its details, links, and its cells as markdown',
-      inputSchema: { notebookId, workspaceId },
+      inputSchema: { notebookId, workspaceId, request: turnRequest },
     },
     handle(async ({ notebookId, workspaceId }) => {
       const ws = await resolveWorkspaceId(ctx, workspaceId);

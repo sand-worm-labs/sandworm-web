@@ -292,6 +292,9 @@ export class ChatService implements OnModuleInit {
     const entity = await this.chatRepository.findOne({
       where: { id: chatId, userId },
       relations: ['messages'],
+      // Without an order the rows come back as stored, and a message that was
+      // appended to (every assistant message is) moves after later ones.
+      order: { messages: { createdAt: 'ASC' } },
     });
     if (!entity) throw new NotFoundException('Chat not found');
     return Chat.fromEntity(entity, true);

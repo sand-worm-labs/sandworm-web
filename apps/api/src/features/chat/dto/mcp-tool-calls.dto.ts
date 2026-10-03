@@ -27,7 +27,8 @@ export class McpDisplayDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  @MaxLength(5_000)
+  // Holds the closing reply: keep in step with save_reply's limit in apps/mcp.
+  @MaxLength(20_000)
   text?: string;
 
   @ApiPropertyOptional()

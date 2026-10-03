@@ -107,6 +107,7 @@ export function useMiniChat({
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const promptFiredRef = useRef(false);
+  const openedOnHistoryRef = useRef(false);
   // Mirrors of the in-flight request's chatId/loadingId, readable
   // synchronously from handleAbort. activeChatId (React state) lags behind
   // during a brand-new chat's first message — it's only set after
@@ -123,7 +124,11 @@ export function useMiniChat({
     [notebookBlocks]
   );
 
-  const { api: chatApi } = useChat(workspaceId, documentId);
+  const {
+    chats,
+    loading: chatsLoading,
+    api: chatApi,
+  } = useChat(workspaceId, documentId);
   const { startStream, stopStream, abortChat } = useChatStream();
 
   const addMessage = useCallback((msg: Omit<LocalMessage, "id">) => {
@@ -444,6 +449,19 @@ export function useMiniChat({
     if (!chatId || !visible) return;
     loadThread(chatId).catch(console.error);
   }, [sidebarState.rightPanelMeta, visible]);
+
+  // A notebook that already has threads opens on its history, so the user
+  // picks up a past thread instead of landing on an empty chat. Decided once,
+  // on the first open, and not when the panel was opened for a prompt or a
+  // given thread, or a chat is already under way.
+  useEffect(() => {
+    if (openedOnHistoryRef.current || !visible || chatsLoading) return;
+    openedOnHistoryRef.current = true;
+    if (chats.length === 0 || activeChatId || messages.length > 0) return;
+    if (searchParams.get("prompt") || sidebarState.rightPanelMeta?.chatId)
+      return;
+    setView("threads");
+  }, [visible, chatsLoading, chats.length]);
 
   useEffect(() => {
     return () => stopStream();

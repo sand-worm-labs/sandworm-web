@@ -1,4 +1,4 @@
-import { mcpChatTitle, toolCallEvents } from '../mcp-chat-log.service';
+import { mcpChatTitle, placePrompt, toolCallEvents } from '../mcp-chat-log.service';
 
 const call = {
   toolName: 'add_cell',
@@ -82,5 +82,28 @@ describe('mcpChatTitle', () => {
   it('falls back to the plain name until a prompt is known', () => {
     expect(mcpChatTitle(undefined, 'Claude Code')).toBe('MCP session');
     expect(mcpChatTitle('   ', 'Claude Code')).toBe('MCP session');
+  });
+});
+
+describe('placePrompt', () => {
+  const turn = { open: true, hasPrompt: true, samePrompt: false, afterWork: false };
+
+  it('opens a turn when the last one ended with a reply, even for the same words', () => {
+    expect(placePrompt({ ...turn, open: false })).toBe('open');
+    expect(placePrompt({ ...turn, open: false, samePrompt: true, afterWork: true })).toBe('open');
+  });
+
+  it('puts a late prompt ahead of the calls that came before it', () => {
+    expect(placePrompt({ ...turn, hasPrompt: false })).toBe('before');
+    expect(placePrompt({ ...turn, hasPrompt: false, afterWork: true })).toBe('before');
+  });
+
+  it('saves a repeated prompt once', () => {
+    expect(placePrompt({ ...turn, samePrompt: true })).toBe('skip');
+    expect(placePrompt({ ...turn, afterWork: true })).toBe('skip');
+  });
+
+  it('opens a turn for a new prompt while the last one has no reply yet', () => {
+    expect(placePrompt(turn)).toBe('open');
   });
 });

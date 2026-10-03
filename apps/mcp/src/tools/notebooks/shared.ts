@@ -14,6 +14,13 @@ export const request = z
   .max(4000)
   .describe('The user\'s message that led to this work, word for word. It is saved as their message in the notebook\'s chat');
 
+// On the tools an agent starts a follow-up with. The chat cannot tell one user
+// message from the next unless a call carries it, and plan_notebook, which
+// requires it, is not called for a small change.
+export const turnRequest = request
+  .optional()
+  .describe('The user\'s message that led to this call, word for word. Pass it on the first call you make for each new message from the user, so their message is saved in the notebook\'s chat ahead of the work');
+
 export const notebookUrl = (ctx: ToolContext, workspaceId: string, id: string) =>
   `${ctx.webUrl}/workspace/${workspaceId}/documents/${id}/notebook/edit`;
 

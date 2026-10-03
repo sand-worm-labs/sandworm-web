@@ -87,6 +87,28 @@ const eventsText = (events: StreamEvent[]) =>
     .map(delta => delta!.text ?? '')
     .join('');
 
+// Agents repeat the prompt on several calls, not always letter for letter.
+const sameText = (a?: string | null, b?: string | null) =>
+  (a ?? '').replace(/\s+/g, ' ').trim().toLowerCase() === (b ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
+
+// What to do with a prompt that came with a call. `turn` is the assistant
+// message this session is still writing to, if any.
+//  - 'open': a new turn. The prompt is saved now and the calls go in a fresh message.
+//  - 'before': the turn's calls started before its prompt arrived, so the prompt goes ahead of them.
+//  - 'skip': the turn already has its prompt.
+export function placePrompt(turn: {
+  open: boolean;
+  hasPrompt: boolean;
+  samePrompt: boolean;
+  afterWork: boolean;
+}): 'open' | 'before' | 'skip' {
+  if (!turn.open) return 'open';
+  if (!turn.hasPrompt) return 'before';
+  // A prompt worded differently is the user's next message, except with the
+  // closing reply, where the agent is restating the one this turn began with.
+  return turn.samePrompt || turn.afterWork ? 'skip' : 'open';
+}
+
 const runKey = (blockId?: string | null, executedAt?: string | null) => `${blockId}@${executedAt}`;
 const isRun = (display: McpDisplayDto) => display.kind === 'block' && display.action === 'ran' && !!display.executedAt;
 
@@ -120,8 +142,12 @@ export class McpChatLogService {
           updatedAt: MoreThan(new Date(Date.now() - SESSION_GAP_MS)),
         },
         order: { createdAt: 'DESC' },
-        select: { id: true, createdAt: true },
+        select: { id: true, createdAt: true, content: true },
       });
+      // `content` is the closing reply (save_reply). A message that has one is
+      // a finished turn: what the agent does next belongs to the user's next
+      // message, not under this reply.
+      if (message?.content?.trim()) message = null;
 
       if (prompt && (await this.savePrompt(em, chat.id, prompt, message))) message = null;
 
@@ -177,9 +203,8 @@ export class McpChatLogService {
   }
 
   // Saves what the user asked as their message, the way an AI turn starts with
-  // one. Agents repeat the prompt on several calls, so one already saved is
-  // left alone. Returns true when the prompt opens a new turn, whose calls
-  // then go in a fresh assistant message.
+  // one (see placePrompt). Returns true when the prompt opens a new turn, whose
+  // calls then go in a fresh assistant message.
   private async savePrompt(
     em: EntityManager,
     chatId: string,
@@ -191,28 +216,33 @@ export class McpChatLogService {
       order: { createdAt: 'DESC' },
       select: { id: true, content: true, createdAt: true },
     });
-    if (last?.content === prompt.text) return false;
 
-    const save = (createdAt: Date) =>
-      em.save(em.create(MessageEntity, { chat: { id: chatId }, role: MessageRole.USER, content: prompt.text, createdAt }));
-
-    if (!prompt.afterWork || !message) {
-      await save(new Date());
-      return true;
-    }
-
-    // The prompt came with the closing reply. It goes before the work, unless
-    // this turn already opened with one (worded differently by the agent).
-    const turnHasPrompt =
-      last &&
+    // The turn has its prompt when the latest user message sits right before it.
+    const hasPrompt =
+      !!message &&
+      !!last &&
       last.createdAt < message.createdAt &&
       !(await em.existsBy(MessageEntity, {
         chat: { id: chatId },
         role: MessageRole.ASSISTANT,
         createdAt: Between(new Date(last.createdAt.getTime() + 1), new Date(message.createdAt.getTime() - 1)),
       }));
-    if (!turnHasPrompt) await save(new Date(message.createdAt.getTime() - 1));
-    return false;
+    // A user message after the turn (typed in the web chat) ends it too.
+    const open = !!message && !(last && last.createdAt > message.createdAt);
+
+    const save = (createdAt: Date) =>
+      em.save(em.create(MessageEntity, { chat: { id: chatId }, role: MessageRole.USER, content: prompt.text, createdAt }));
+
+    switch (placePrompt({ open, hasPrompt, samePrompt: sameText(last?.content, prompt.text), afterWork: prompt.afterWork })) {
+      case 'open':
+        await save(new Date());
+        return true;
+      case 'before':
+        await save(new Date(message!.createdAt.getTime() - 1));
+        return false;
+      default:
+        return false;
+    }
   }
 
   // An agent polling get_run_results reports the same run again: show it once.

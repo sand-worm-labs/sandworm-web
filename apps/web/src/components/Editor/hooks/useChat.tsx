@@ -182,7 +182,14 @@ export const useChat = (workspaceId: string, documentId: string): UseChat => {
 
   const fetchChat = useCallback(
     async (chatId: string): Promise<Chat> => {
-      const result = await fetchChatQuery({ variables: { chatId } });
+      // Always from the server. The cached chat only gains the messages the
+      // user sends (see sendMessage below): the assistant's reply arrives over
+      // the stream and never reaches the cache, so reading a thread back from
+      // it shows the turn without its reply.
+      const result = await fetchChatQuery({
+        variables: { chatId },
+        fetchPolicy: "network-only",
+      });
       const chat = result.data?.chat;
       if (!chat) throw new Error(`Chat ${chatId} not found`);
       return chat as Chat;
@@ -192,7 +199,10 @@ export const useChat = (workspaceId: string, documentId: string): UseChat => {
 
   const fetchChatMessages = useCallback(
     async (chatId: string): Promise<Message[]> => {
-      const result = await fetchChatMessagesQuery({ variables: { chatId } });
+      const result = await fetchChatMessagesQuery({
+        variables: { chatId },
+        fetchPolicy: "network-only",
+      });
       return (result.data?.chatMessages ?? []) as Message[];
     },
     [fetchChatMessagesQuery]

@@ -185,6 +185,9 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
         next: [
           'Create the cells with add_cell in step order (pass position to keep that order), then check the notebook with get_notebook.',
           ...(blocks.some(b => b.type === 'python') ? [OPEN_DATA_USAGE] : []),
+          ...(ctx.logToolCalls
+            ? ['Last step, every time: when the work is finished, call save_reply with the closing message you are about to give the user, before you give it. Without it your reply is missing from the notebook\'s chat.']
+            : []),
         ].join(' '),
       };
     }),

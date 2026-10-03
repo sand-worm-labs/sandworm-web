@@ -6,7 +6,7 @@ import { rest } from '../../rest.ts';
 import { confirm, handle, workspaceId } from '../shared.ts';
 import { DATA_SOURCE_FALLBACK, OPEN_DATA_USAGE } from './open-data.ts';
 import { printedTableProblem } from './printed-table.ts';
-import { notebookApiPath, notebookId, notebookUrl, objectOrJson } from './shared.ts';
+import { notebookApiPath, notebookId, notebookUrl, objectOrJson, turnRequest } from './shared.ts';
 
 const CELL_TYPES = [
   'sql',
@@ -70,6 +70,7 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
           .optional()
           .describe("power_toolbox cells only: values for the tool's inputs, keyed by input key (see search_tools)"),
         position: z.number().int().min(0).optional().describe('Index to insert at; appends when omitted'),
+        request: turnRequest,
       },
     },
     handle(async ({ notebookId, workspaceId, type, title, content, dataSource, dataframeName, toolId, inputs, position }) => {
@@ -108,6 +109,7 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
         inputs: objectOrJson(z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.array(z.string())])))
           .optional()
           .describe("power_toolbox cells only: values for all of the tool's inputs, keyed by input key (see search_tools)"),
+        request: turnRequest,
       },
     },
     handle(async ({ notebookId, workspaceId, cellId, title, content, dataSource, dataframeName, inputs }) => {
