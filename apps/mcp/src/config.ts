@@ -29,6 +29,10 @@ const envSchema = z.object({
   // Set while Dune, Sandworm Cloud and the power tools are offline: notebooks
   // are then planned from public APIs only (see tools/notebooks/open-data.ts).
   OPEN_DATA_ONLY: z.stringbool().default(false),
+
+  // Save every tool call (arguments, result, timing) to a chat on the
+  // notebook it touched, so a session can be debugged afterwards.
+  LOG_TOOL_CALLS: z.stringbool().default(true),
 });
 
 export type Config = {
@@ -44,6 +48,7 @@ export type Config = {
   webUrl: string;
   introspectKey: string;
   openDataOnly: boolean;
+  logToolCalls: boolean;
 };
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
@@ -67,5 +72,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     webUrl: e.WEB_URL.replace(/\/$/, ''),
     introspectKey: e.MCP_OAUTH_INTROSPECT_KEY,
     openDataOnly: e.OPEN_DATA_ONLY,
+    logToolCalls: e.LOG_TOOL_CALLS,
   };
 }

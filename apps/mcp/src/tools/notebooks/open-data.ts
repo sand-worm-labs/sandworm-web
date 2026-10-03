@@ -13,7 +13,7 @@ export type OpenDataSource = {
   keywords: string[];
   baseUrl: string;
   // No key: works as is. Optional key: works without, better with. Required: needs the env var set.
-  key?: { env: string; required: boolean; signup: string };
+  key?: { env: string; required: boolean; send: string; signup: string };
   limits?: string;
   endpoints: { path: string; gives: string }[];
   notes?: string;
@@ -53,7 +53,7 @@ export const OPEN_DATA_SOURCES: OpenDataSource[] = [
     covers: 'prices, market caps, volumes and price history for every listed coin, global market cap, trending coins, sector categories',
     keywords: ['price', 'market', 'cap', 'mcap', 'coin', 'token', 'volume', 'history', 'trending', 'category', 'sector', 'dominance', 'rank'],
     baseUrl: 'https://api.coingecko.com/api/v3',
-    key: { env: 'COINGECKO_API_KEY', required: false, signup: 'Free Demo key at coingecko.com/en/api' },
+    key: { env: 'COINGECKO_API_KEY', required: false, send: 'header x-cg-demo-api-key', signup: 'Free Demo key at coingecko.com/en/api' },
     limits: 'Keyless works but is throttled hard; a free Demo key gives 100 calls/min, 10k/month. History is limited to the last 365 days.',
     endpoints: [
       { path: '/simple/price?ids={ids}&vs_currencies=usd&include_24hr_change=true', gives: 'live prices' },
@@ -223,7 +223,7 @@ export const OPEN_DATA_SOURCES: OpenDataSource[] = [
     covers: 'per-address and per-contract activity on ~60 EVM chains with one key: transactions, token transfers, balances, gas',
     keywords: ['address', 'wallet', 'transaction', 'transfer', 'contract', 'balance', 'gas', 'holder', 'evm', 'explorer'],
     baseUrl: 'https://api.etherscan.io/v2/api',
-    key: { env: 'ETHERSCAN_API_KEY', required: true, signup: 'Free key at etherscan.io/myapikey' },
+    key: { env: 'ETHERSCAN_API_KEY', required: true, send: 'query param apikey', signup: 'Free key at etherscan.io/myapikey' },
     limits: '3 calls/s, 100k/day. Some chains are paid-only.',
     endpoints: [
       { path: '?chainid=1&module=account&action=tokentx&address={address}&sort=desc', gives: 'token transfers of an address' },
@@ -237,7 +237,7 @@ export const OPEN_DATA_SOURCES: OpenDataSource[] = [
     covers: 'protocol subgraphs (Uniswap, Aave, Curve...): pools, swaps, positions, protocol-level history',
     keywords: ['subgraph', 'uniswap', 'aave', 'curve', 'swap', 'pool', 'position', 'protocol', 'graphql'],
     baseUrl: 'https://gateway.thegraph.com/api/subgraphs/id/{subgraph_id}',
-    key: { env: 'THEGRAPH_API_KEY', required: true, signup: 'Free key in Subgraph Studio (100k queries/month)' },
+    key: { env: 'THEGRAPH_API_KEY', required: true, send: 'header Authorization: Bearer <key>', signup: 'Free key in Subgraph Studio (100k queries/month)' },
     endpoints: [{ path: 'POST {"query": "..."}', gives: 'GraphQL over a subgraph; find ids on thegraph.com/explorer' }],
   },
   {
@@ -246,7 +246,7 @@ export const OPEN_DATA_SOURCES: OpenDataSource[] = [
     covers: 'macro: interest rates, Treasury yields, inflation, M2 money supply, dollar index',
     keywords: ['macro', 'interest', 'rate', 'yield', 'treasury', 'inflation', 'cpi', 'fed', 'm2', 'dollar', 'economy'],
     baseUrl: 'https://api.stlouisfed.org/fred',
-    key: { env: 'FRED_API_KEY', required: true, signup: 'Free key at fred.stlouisfed.org/docs/api/api_key.html' },
+    key: { env: 'FRED_API_KEY', required: true, send: 'query param api_key', signup: 'Free key at fred.stlouisfed.org/docs/api/api_key.html' },
     endpoints: [{ path: '/series/observations?series_id=DGS10&file_type=json', gives: 'a daily series; e.g. DGS10 (10y yield), CPIAUCSL (CPI), M2SL, DFF (fed funds)' }],
   },
 ];
@@ -274,7 +274,7 @@ export function matchOpenData(query: string, limit = MATCHES_PER_SUB_GOAL): Open
 // What the agent sees: drops the matching keywords, and says plainly whether a key is needed.
 export const describeOpenData = ({ keywords: _, key, ...source }: OpenDataSource) => ({
   ...source,
-  key: key ? `${key.env} (${key.required ? 'required' : 'optional'}; ${key.signup})` : 'none needed',
+  key: key ? `${key.env} (${key.required ? 'required' : 'optional'}; send as ${key.send}; ${key.signup})` : 'none needed',
 });
 
 export const OPEN_DATA_USAGE = [

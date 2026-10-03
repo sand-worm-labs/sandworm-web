@@ -3,14 +3,14 @@ import { z } from 'zod';
 
 import { graphql, resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { errorResult, jsonResult, workspaceId } from '../shared.ts';
-import { notebookUrl, setNotebookTitle } from './shared.ts';
+import { notebookUrl, request, setNotebookTitle } from './shared.ts';
 
 export function registerCreateNotebookTool(server: McpServer, ctx: ToolContext): void {
   server.registerTool(
     'create_notebook',
     {
       description: 'Create a new, empty notebook in a workspace',
-      inputSchema: { workspaceId, title: z.string().min(1) },
+      inputSchema: { workspaceId, title: z.string().min(1), request: request.optional() },
     },
     async ({ workspaceId, title }) => {
       try {

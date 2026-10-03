@@ -13,6 +13,7 @@ const deps = {
   apiUrl: config.apiUrl,
   webUrl: config.webUrl,
   openDataOnly: config.openDataOnly,
+  logToolCalls: config.logToolCalls,
 };
 
 // Base units -> dollars for the tool description (USDC has 6 decimals).

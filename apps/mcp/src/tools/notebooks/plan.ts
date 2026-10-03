@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import type { ToolContext } from '../../graphql.ts';
 import { errorResult, jsonResult } from '../shared.ts';
+import { request } from './shared.ts';
 import { OPEN_DATA_USAGE } from './open-data.ts';
 import { checkTools, research } from './plan-tools.ts';
 
@@ -56,7 +57,7 @@ const DESCRIPTION_PARTS = [
 ];
 
 const OFFLINE_NOTE =
-  'Chain data (Dune, Sandworm Cloud) and power tools are offline right now. Plan every data block as python that fetches from the openData sources the research step returns, combining sources when one does not cover a sub-goal. Do not plan sql or power_toolbox blocks; the plan is rejected if it has any.';
+  'Chain data (Dune, Sandworm Cloud) and power tools are offline right now. Get all data with python blocks that fetch from the openData sources the research step returns, combining sources when one does not cover a sub-goal. A sql block may then depend on a python block and query its dataframe with duckdb. Do not plan power_toolbox blocks, or sql blocks that depend on nothing; the plan is rejected if it has any.';
 
 const describePlanTool = (ctx: ToolContext) => [...DESCRIPTION_PARTS, ...(ctx.openDataOnly ? [OFFLINE_NOTE] : [])].join('\n\n');
 
@@ -107,7 +108,7 @@ function validate(blocks: PlannedBlock[]): string[] {
 
 const researchNext = (ctx: ToolContext, subGoalTools: { tools: unknown[] }[]) => {
   if (ctx.openDataOnly) {
-    return `Chain data and power tools are offline. Plan python blocks that fetch from each sub-goal's openData sources, then call plan_notebook again with the same goal and your blocks. ${OPEN_DATA_USAGE}`;
+    return `Chain data and power tools are offline. Plan python blocks that fetch from each sub-goal's openData sources (sql blocks may query their dataframes with duckdb), then call plan_notebook again with the same goal and your blocks. ${OPEN_DATA_USAGE}`;
   }
   if (subGoalTools.some(g => g.tools.length)) {
     return 'For each sub-goal, plan one of its tools as a power_toolbox block with its toolId when it fits. Plan sql/python only for sub-goals no tool covers; a python block can fetch from that sub-goal\'s openData sources. Then call plan_notebook again with the same goal and your blocks.';
@@ -122,6 +123,8 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
       description: describePlanTool(ctx),
       inputSchema: {
         goal: z.string().min(1).describe('What the notebook should answer, in one sentence'),
+        // Only saved when calls are logged, so only asked for then.
+        request: ctx.logToolCalls ? request : request.optional(),
         subGoals: z
           .array(z.object({ goal: z.string(), feasible: z.boolean(), reason: z.string().optional() }))
           .optional()

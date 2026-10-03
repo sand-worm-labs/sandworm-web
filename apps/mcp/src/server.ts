@@ -6,6 +6,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import type { AuthContext, Authenticator } from './auth.ts';
 import type { ChargeOutcome } from './payments.ts';
 import { registerTools } from './tools/index.ts';
+import { SAVE_REPLY_INSTRUCTIONS } from './tools/notebooks/reply.ts';
 
 const MAX_BODY_BYTES = 1_000_000;
 
@@ -18,14 +19,30 @@ export type ServerDeps = {
   apiUrl: string;
   webUrl: string;
   openDataOnly?: boolean;
+  logToolCalls?: boolean;
 };
 
 // Bare scaffold: payments are wired up, but no paid tool is registered yet.
 // Add tools here with `server.registerTool(...)`, gating each one on
 // `deps.charge(extra)` the way the old run_query tool did.
-export function createMcpServer(deps: ServerDeps, _price: { display: string }, auth: AuthContext): McpServer {
-  const server = new McpServer({ name: 'sandworm', version: '0.1.0' });
-  registerTools(server, { auth, apiUrl: deps.apiUrl, webUrl: deps.webUrl, openDataOnly: deps.openDataOnly ?? false });
+export function createMcpServer(
+  deps: ServerDeps,
+  _price: { display: string },
+  auth: AuthContext,
+  userAgent?: string,
+): McpServer {
+  const server = new McpServer(
+    { name: 'sandworm', version: '0.1.0' },
+    deps.logToolCalls ? { instructions: SAVE_REPLY_INSTRUCTIONS } : undefined,
+  );
+  registerTools(server, {
+    auth,
+    apiUrl: deps.apiUrl,
+    webUrl: deps.webUrl,
+    openDataOnly: deps.openDataOnly ?? false,
+    logToolCalls: deps.logToolCalls ?? false,
+    userAgent,
+  });
 
   return server;
 }
@@ -90,7 +107,7 @@ export function createHttpServer(deps: ServerDeps, price: { display: string }): 
 
     try {
       const body = await readJsonBody(req);
-      const mcp = createMcpServer(deps, price, auth);
+      const mcp = createMcpServer(deps, price, auth, req.headers['user-agent']);
       const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
       res.on('close', () => {
         void transport.close();

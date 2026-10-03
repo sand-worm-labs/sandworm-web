@@ -5,6 +5,7 @@ import { registerCellTools } from './cells.ts';
 import { registerCreateNotebookTool } from './create.ts';
 import { registerNotebookManageTools } from './manage.ts';
 import { registerPlanTool } from './plan.ts';
+import { registerReplyTool } from './reply.ts';
 import { registerRunTools } from './run.ts';
 import { registerNotebookSearchTools } from './search.ts';
 import { registerToolSearchTool } from './tools.ts';
@@ -17,4 +18,5 @@ export function registerNotebookTools(server: McpServer, ctx: ToolContext): void
   registerNotebookManageTools(server, ctx);
   registerCellTools(server, ctx);
   registerRunTools(server, ctx);
+  if (ctx.logToolCalls) registerReplyTool(server, ctx);
 }

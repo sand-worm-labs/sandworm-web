@@ -8,6 +8,10 @@ export type ToolContext = {
   webUrl: string;
   // Chain data and power tools are offline; build notebooks from public APIs only.
   openDataOnly?: boolean;
+  // Save every tool call to the notebook's MCP chat (see tools/call-log.ts).
+  logToolCalls?: boolean;
+  // The MCP client's User-Agent, saved with the logged calls.
+  userAgent?: string;
 };
 
 export class GraphQLError extends Error {}

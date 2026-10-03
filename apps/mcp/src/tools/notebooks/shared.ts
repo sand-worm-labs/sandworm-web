@@ -6,6 +6,14 @@ import { rest } from '../../rest.ts';
 // The API validates these as UUIDs and answers anything else with a bare 422.
 export const notebookId = z.uuid().describe('ID (UUID) of the notebook, as returned by list_projects or create_notebook');
 
+// The server never sees the conversation, so the prompt reaches the notebook's
+// chat only if the agent passes it along (see ../call-display.ts).
+export const request = z
+  .string()
+  .min(1)
+  .max(4000)
+  .describe('The user\'s message that led to this work, word for word. It is saved as their message in the notebook\'s chat');
+
 export const notebookUrl = (ctx: ToolContext, workspaceId: string, id: string) =>
   `${ctx.webUrl}/workspace/${workspaceId}/documents/${id}/notebook/edit`;
 

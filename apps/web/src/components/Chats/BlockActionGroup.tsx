@@ -68,7 +68,9 @@ export function BlockActionGroup({ parts }: BlockActionGroupProps) {
         {/* ─── Rows ─── */}
         {visible.map((part, i) => (
           <motion.div
-            key={`${part.blockId}-${part.action}`}
+            // The index keeps keys unique when a block has the same action
+            // twice in one message (edited or ran again).
+            key={`${part.blockId}-${part.action}-${i}`}
             variants={ROW_VARIANTS}
             initial="hidden"
             animate="visible"

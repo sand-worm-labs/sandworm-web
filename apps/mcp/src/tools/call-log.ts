@@ -1,0 +1,131 @@
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+
+import type { ToolContext } from '../graphql.ts';
+import { rest } from '../rest.ts';
+import { describeCall, type Display } from './call-display.ts';
+
+export type ToolCall = {
+  toolName: string;
+  arguments: Record<string, unknown>;
+  result: string;
+  isError: boolean;
+  durationMs: number;
+  at: string;
+  requestId?: string;
+  // How the call is shown in the notebook's chat.
+  display: Display[];
+};
+
+// Saves calls to the MCP chat of one notebook.
+export type Recorder = (notebookId: string, calls: ToolCall[], userAgent?: string) => void;
+
+// `value` covers set_env_vars, whose variables are { name, value } pairs.
+const SENSITIVE_KEY = /pass(word)?|secret|token|api[-_]?key|authorization|cookie|credential|private[-_]?key|^value$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const MAX_RESULT_CHARS = 20_000;
+const MAX_PENDING = 20;
+const PENDING_TTL_MS = 15 * 60 * 1000;
+
+export function redact(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(redact);
+  if (value === null || typeof value !== 'object') return value;
+  return Object.fromEntries(
+    Object.entries(value).map(([k, v]) => [k, SENSITIVE_KEY.test(k) ? '[redacted]' : redact(v)]),
+  );
+}
+
+const uuidOrUndefined = (value: unknown) => (typeof value === 'string' && UUID.test(value) ? value : undefined);
+
+// create_notebook and fork_notebook take no notebookId but return one.
+function notebookIdFromResult(text: string): string | undefined {
+  try {
+    return uuidOrUndefined((JSON.parse(text) as { notebookId?: unknown } | null)?.notebookId);
+  } catch {
+    return undefined;
+  }
+}
+
+type ToolResult = { isError?: boolean; content?: { type: string; text?: string }[] };
+
+const resultText = (result: ToolResult) => (result.content ?? []).map(part => part.text ?? `[${part.type}]`).join('\n');
+
+// A chat belongs to a notebook, so calls made before one is known
+// (plan_notebook, list_workspaces) wait here, per user, and are saved with
+// that user's next call that names a notebook. Best effort: held in this
+// process only, and dropped after PENDING_TTL_MS.
+export type PendingCalls = Map<string, ToolCall[]>;
+const sharedPending: PendingCalls = new Map();
+
+function takePending(pending: PendingCalls, userId: string): ToolCall[] {
+  const calls = pending.get(userId) ?? [];
+  pending.delete(userId);
+  const cutoff = Date.now() - PENDING_TTL_MS;
+  return calls.filter(call => Date.parse(call.at) >= cutoff);
+}
+
+export type CallLogOptions = {
+  userId: string;
+  record: Recorder;
+  userAgent?: string;
+  pending?: PendingCalls;
+};
+
+// Wraps every tool registered after this call, so each call is saved with its
+// arguments, what it returned and how long it took. Call it before the tools
+// are registered.
+export function logToolCalls(
+  server: McpServer,
+  { userId, record, userAgent, pending = sharedPending }: CallLogOptions,
+): void {
+  const register = server.registerTool.bind(server) as (...args: unknown[]) => unknown;
+
+  server.registerTool = ((name: string, config: unknown, handler: (...params: unknown[]) => unknown) =>
+    register(name, config, async (...params: unknown[]) => {
+      // Handlers get (args, extra), or just (extra) when the tool has no input schema.
+      const args = (params.length > 1 ? params[0] : {}) as Record<string, unknown>;
+      const extra = params.at(-1) as { requestId?: string | number } | undefined;
+      const started = Date.now();
+
+      const save = (text: string, isError: boolean) => {
+        // Logging must never break the tool call it describes.
+        try {
+          const call: ToolCall = {
+            toolName: name,
+            arguments: redact(args) as Record<string, unknown>,
+            result: text.slice(0, MAX_RESULT_CHARS),
+            isError,
+            durationMs: Date.now() - started,
+            at: new Date(started).toISOString(),
+            requestId: extra?.requestId === undefined ? undefined : String(extra.requestId),
+            display: describeCall(name, args, text, isError),
+          };
+          const notebookId = uuidOrUndefined(args.notebookId) ?? notebookIdFromResult(text);
+          if (notebookId) {
+            record(notebookId, [...takePending(pending, userId), call], userAgent);
+          } else {
+            pending.set(userId, [...takePending(pending, userId), call].slice(-MAX_PENDING));
+          }
+        } catch (err) {
+          console.error('Tool call log failed', err);
+        }
+      };
+
+      try {
+        const result = (await handler(...params)) as ToolResult;
+        save(resultText(result), result.isError === true);
+        return result;
+      } catch (err) {
+        save(err instanceof Error ? err.message : String(err), true);
+        throw err;
+      }
+    })) as typeof server.registerTool;
+}
+
+// Fire and forget: the agent gets its answer without waiting on the write.
+export const apiRecorder =
+  (ctx: ToolContext): Recorder =>
+  (notebookId, calls, userAgent) => {
+    rest(ctx, 'POST', '/chat/mcp/tool-calls', { documentId: notebookId, calls, userAgent }).catch(err =>
+      console.error(`Tool call log failed for notebook ${notebookId}: ${err instanceof Error ? err.message : err}`),
+    );
+  };

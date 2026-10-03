@@ -50,15 +50,20 @@ test('offline, research skips the power tools and returns public APIs for each s
   }
 });
 
-test('offline, sql and power_toolbox blocks are rejected and python is accepted', async () => {
+test('offline, power tools and sql with nothing to query are rejected; sql over a python block is fine', async () => {
   const realFetch = globalThis.fetch;
   globalThis.fetch = noNetwork;
   try {
-    const block = (type: 'sql' | 'python' | 'power_toolbox', title: string) => ({ type, title, description: 'd', dependsOn: [] });
-    const { problems } = await checkTools(offline, [block('python', 'Fetch TVL'), block('sql', 'Query Dune'), block('power_toolbox', 'Tool')]);
+    const block = (type: 'sql' | 'python' | 'power_toolbox', title: string, dependsOn: number[] = []) => ({ type, title, description: 'd', dependsOn });
+    const { problems } = await checkTools(offline, [
+      block('python', 'Fetch TVL'),
+      block('sql', 'Rank chains', [0]),
+      block('sql', 'Query Dune'),
+      block('power_toolbox', 'Tool'),
+    ]);
     assert.equal(problems.length, 2);
-    assert.match(problems[0]!, /Block 1 .* sql/);
-    assert.match(problems[1]!, /Block 2 .* power_toolbox/);
+    assert.match(problems[0]!, /Block 2 .* sql with nothing to query/);
+    assert.match(problems[1]!, /Block 3 .* power_toolbox/);
   } finally {
     globalThis.fetch = realFetch;
   }
