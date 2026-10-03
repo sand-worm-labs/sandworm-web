@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { rest } from '../../rest.ts';
 import { confirm, errorResult, jsonResult, workspaceId } from '../shared.ts';
-import { guidanceFor } from './cell-guidance.ts';
 import { notebookApiPath, notebookId, notebookUrl, objectOrJson } from './shared.ts';
 
 const CELL_TYPES = [
@@ -23,6 +22,16 @@ const DATA_SOURCES = ['dune', 'duckdb', 'sandworm_cloud'] as const;
 
 type Cell = { id: string; kind: string; title: string } & Record<string, unknown>;
 
+// Defaults for writing Python cells, appended to the add and update tool
+// descriptions; phrased so the agent can depart from them.
+const PYTHON_GUIDANCE = [
+  'Python cells.',
+  'Charts: prefer Plotly (interactive, any chart type that suits the data); matplotlib also works.',
+  'Call `from sandworm_theme import use_theme; use_theme()` once, before drawing, to get Sandworm\'s default colors and font on Plotly and matplotlib charts. Do not hard-code your own palette or fonts unless the data needs something else.',
+  'With Plotly Express bars, `color=` on a column other than the category axis gives every colour its own slot and makes each bar thin: add `fig.update_layout(barmode="overlay")` when each category has a single bar.',
+  'For HTML summaries, `from sandworm_theme import show, stat_card, card, note` give styled stat cards and cards: `show(stat_card(value, label, secondary=[(value, label), ...]))`. Optional.',
+].join(' ');
+
 const cellId = z.uuid().describe('ID (UUID) of the cell, as returned by add_cell, get_notebook or run_notebook');
 
 export function registerCellTools(server: McpServer, ctx: ToolContext): void {
@@ -31,7 +40,7 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
     {
       description: [
         'Add a cell to a notebook. It appears live in the editor next to cells added by hand. Returns the new cell\'s id. For a new analysis or any multi-cell build, call plan_notebook first and add cells in the order it returns. Cell types: sql, python, markdown, rich_text, visualization, pivot_table, input, dropdown_input, date_input, power_toolbox. For power_toolbox, find the toolId with search_tools first. Adding a cell does not run it: call run_notebook for that.',
-        guidanceFor('python'),
+        PYTHON_GUIDANCE,
       ].join('\n\n'),
       inputSchema: {
         notebookId,
@@ -79,7 +88,7 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
         'Change a cell in place: it keeps its id and position. Send only what should change; anything omitted stays as it is. `content` replaces the whole text of the cell, so send the complete new text, not a fragment. The type of a cell cannot be changed: delete it and add another.',
         'What each type accepts: sql takes title, content, dataSource, dataframeName (renaming resets its result). python, markdown and rich_text take title, content. visualization and pivot_table take title, dataframeName. input, dropdown_input and date_input take title (the label) and content (the value; dropdown_input: the full list of options, one per line; date_input: YYYY/MM/DD). power_toolbox takes title and inputs (the full set of inputs, not a partial one).',
         'An edit does not run the cell: call run_notebook afterwards, and until then run results for the cell are marked stale. Fails while the cell is queued or running.',
-        guidanceFor('python'),
+        PYTHON_GUIDANCE,
       ].join('\n\n'),
       inputSchema: {
         notebookId,

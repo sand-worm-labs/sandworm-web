@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { z } from 'zod';
 
-import { objectOrJson } from './shared.ts';
+import { objectOrJson } from '../shared.ts';
 
 const schema = objectOrJson(z.record(z.string(), z.string()));
 

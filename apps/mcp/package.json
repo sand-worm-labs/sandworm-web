@@ -12,7 +12,7 @@
     "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "start": "node --env-file=.env dist/index.js",
     "typecheck": "tsc --noEmit",
-    "test": "node --test src/**/*.test.ts",
+    "test": "node --test 'src/**/*.test.ts'",
     "inspect": "pnpm dlx @modelcontextprotocol/inspector"
   },
   "dependencies": {

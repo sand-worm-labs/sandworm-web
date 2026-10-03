@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import type { ToolContext } from '../../graphql.ts';
-import { research } from './plan-tools.ts';
+import type { ToolContext } from '../../../graphql.ts';
+import { research } from '../plan-tools.ts';
 
 const tool = (toolId: string) => ({ toolId, name: toolId, description: '', tags: [], g1: null, g2: null, g3: null, g4: null, g5: null, params: [], returns: [] });
 const BY_QUERY: Record<string, string[]> = {

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { describeResults, describeRun, type RunReport } from './run.ts';
+import { describeResults, describeRun, type RunReport } from '../run.ts';
 
 const cell = (state: string) => ({ id: 'c1', kind: 'python', title: '', state });
 

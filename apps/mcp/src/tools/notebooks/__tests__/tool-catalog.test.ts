@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import type { ToolContext } from '../../graphql.ts';
-import { keywordSearch, searchCatalog } from './tool-catalog.ts';
+import type { ToolContext } from '../../../graphql.ts';
+import { keywordSearch, searchCatalog } from '../tool-catalog.ts';
 
 const tool = (toolId: string, description: string, g1 = 'infra') => ({
   toolId, name: toolId.split('.')[1]!.split('_').map(w => w[0]!.toUpperCase() + w.slice(1)).join(' '),
