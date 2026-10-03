@@ -49,15 +49,15 @@ export async function checkTools(ctx: ToolContext, blocks: PlannedBlock[]) {
   return { problems, suggestions };
 }
 
-// With chain data offline, a power tool or a sql pull from Dune would only fail
-// at run time. sql that depends on an earlier block is fine: it queries that
-// block's dataframe with duckdb.
+// On open data only, a power tool or a sql pull from Dune has no place (and
+// fails at run time when chain data is offline). sql that depends on an earlier
+// block is fine: it queries that block's dataframe with duckdb.
 function offlineCheck(blocks: PlannedBlock[]) {
   const problems = blocks.flatMap((b, i) => {
     const at = `Block ${i} ("${b.title}")`;
-    if (b.type === 'power_toolbox') return [`${at} is a power_toolbox, but power tools are offline. Make it a python block that fetches from the openData sources.`];
+    if (b.type === 'power_toolbox') return [`${at} is a power_toolbox, but this plan uses open data only. Make it a python block that fetches from the openData sources.`];
     if (b.type === 'sql' && !b.dependsOn.length) {
-      return [`${at} is sql with nothing to query: chain data is offline. Fetch the data in a python block first and make this block depend on it, to query its dataframe with duckdb.`];
+      return [`${at} is sql with nothing to query: this plan uses open data only. Fetch the data in a python block first and make this block depend on it, to query its dataframe with duckdb.`];
     }
     return [];
   });

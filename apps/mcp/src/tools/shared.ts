@@ -11,11 +11,11 @@ export const workspaceId = z
 // these should also write an audit entry once implemented.
 export const confirm = z.literal(true).describe('Must be true to confirm this destructive action');
 
-export const jsonResult = (value: unknown) => ({
+const jsonResult = (value: unknown) => ({
   content: [{ type: 'text' as const, text: JSON.stringify(value, null, 2) }],
 });
 
-export const errorResult = (err: unknown) => ({
+const errorResult = (err: unknown) => ({
   isError: true,
   content: [{ type: 'text' as const, text: err instanceof Error ? err.message : String(err) }],
 });

@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import type { ToolContext } from '../../graphql.ts';
 import { handle } from '../shared.ts';
+import { data, resolveDataMode } from './data-mode.ts';
 import { describeOpenData, matchOpenData, OPEN_DATA_USAGE } from './open-data.ts';
 import { describeTool, searchCatalog, tokens } from './tool-catalog.ts';
 
@@ -17,14 +18,15 @@ export function registerToolSearchTool(server: McpServer, ctx: ToolContext): voi
       inputSchema: {
         query: z.string().min(1).describe('What you want to do, in plain words, e.g. "decode calldata" or "token holders by chain"'),
         limit: z.number().int().min(1).max(15).default(5),
+        data,
       },
     },
-    handle(async ({ query, limit }) => {
+    handle(async ({ query, limit, data }) => {
       if (!tokens(query).length) throw new Error('Give a query with at least one word of two letters or more.');
 
       const openData = { openData: matchOpenData(query).map(describeOpenData), usage: OPEN_DATA_USAGE };
-      if (ctx.openDataOnly) {
-        return { query, matches: [], hint: 'Power tools are offline. Fetch from one of these public APIs in a python cell instead.', ...openData };
+      if ((await resolveDataMode(ctx, { data })) === 'open') {
+        return { query, matches: [], hint: 'Using open data only, so no power tools. Fetch from one of these public APIs in a python cell instead.', ...openData };
       }
 
       const matches = await searchCatalog(ctx, query, limit);

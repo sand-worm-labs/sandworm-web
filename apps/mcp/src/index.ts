@@ -12,7 +12,6 @@ const deps = {
   authServerUrl: config.authServerUrl,
   apiUrl: config.apiUrl,
   webUrl: config.webUrl,
-  openDataOnly: config.openDataOnly,
   logToolCalls: config.logToolCalls,
 };
 

@@ -28,7 +28,7 @@ type Cell = { id: string; kind: string; title: string } & Record<string, unknown
 const PYTHON_GUIDANCE = [
   'Python cells.',
   'Charts: prefer Plotly (interactive, any chart type that suits the data); matplotlib also works.',
-  'Call `from sandworm_theme import use_theme; use_theme()` once, before drawing, to get Sandworm\'s default colors and font on Plotly and matplotlib charts. Do not hard-code your own palette or fonts unless the data needs something else.',
+  'Plotly and matplotlib charts already get Sandworm\'s colors and font: the theme is applied when the session starts, so do not import or call it. Do not hard-code your own palette or fonts unless the data needs something else.',
   'With Plotly Express bars, `color=` on a column other than the category axis gives every colour its own slot and makes each bar thin: add `fig.update_layout(barmode="overlay")` when each category has a single bar.',
   'For HTML summaries, `from sandworm_theme import show, stat_card, card, note` give styled stat cards and cards: `show(stat_card(value, label, secondary=[(value, label), ...]))`. Optional.',
   `Data from public APIs: ${OPEN_DATA_USAGE}`,

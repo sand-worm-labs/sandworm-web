@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import type { ToolContext } from '../../graphql.ts';
 import { handle } from '../shared.ts';
+import { data, resolveDataMode, withDataMode } from './data-mode.ts';
 import { request } from './shared.ts';
 import { describeOpenData, OPEN_DATA_SOURCES, OPEN_DATA_USAGE } from './open-data.ts';
 import { checkTools, research } from './plan-tools.ts';
@@ -55,10 +56,13 @@ const DESCRIPTION_PARTS = [
   'Rules: (1) a visualization or pivot_table must depend on a sql or python block; (2) each sql/python block has at most one visualization; (3) prefer chained sql blocks over one large query; (4) open with a dashboard_header when there are 3+ other blocks, and do not restate its topic in other titles; (5) add input/dropdown_input/date_input only for a value meant to be adjustable, and put them before any sql block; (6) titles of 8 words or fewer; descriptions say what, not how; (7) skip sub-goals that are not feasible.',
 ];
 
-const OFFLINE_NOTE =
-  'Chain data (Dune, Sandworm Cloud) and power tools are offline right now. Get all data with python blocks that fetch from the openData sources the research step returns, combining sources when one does not cover a sub-goal. A sql block may then depend on a python block and query its dataframe with duckdb. Do not plan power_toolbox blocks, or sql blocks that depend on nothing; the plan is rejected if it has any.';
+const OPEN_DATA_RULES =
+  'With data "open", get all data with python blocks that fetch from the openData sources the research step returns, combining sources when one does not cover a sub-goal. A sql block may then depend on a python block and query its dataframe with duckdb. Do not plan power_toolbox blocks, or sql blocks that depend on nothing; the plan is rejected if it has any.';
 
-const describePlanTool = (ctx: ToolContext) => [...DESCRIPTION_PARTS, ...(ctx.openDataOnly ? [OFFLINE_NOTE] : [])].join('\n\n');
+const DESCRIPTION = [
+  ...DESCRIPTION_PARTS,
+  `Data: pass data "open" or "sandworm" when the user says which to use, on both calls. Left out, it is read from the request; the result says which was used. ${OPEN_DATA_RULES}`,
+].join('\n\n');
 
 const planBlock = z.object({
   type: z.enum(PLAN_BLOCK_TYPES),
@@ -106,7 +110,7 @@ function validate(blocks: PlannedBlock[]): string[] {
 
 const researchNext = (ctx: ToolContext, subGoalTools: { tools: unknown[] }[]) => {
   if (ctx.openDataOnly) {
-    return `Chain data and power tools are offline. Plan python blocks that fetch from each sub-goal's openData sources, described under openDataSources (sql blocks may query their dataframes with duckdb), then call plan_notebook again with the same goal and your blocks. ${OPEN_DATA_USAGE}`;
+    return `This plan uses open data only. Plan python blocks that fetch from each sub-goal's openData sources, described under openDataSources (sql blocks may query their dataframes with duckdb), then call plan_notebook again with the same goal, data "open" and your blocks. ${OPEN_DATA_USAGE}`;
   }
   if (subGoalTools.some(g => g.tools.length)) {
     return 'For each sub-goal, plan one of its tools as a power_toolbox block with its toolId when it fits. Plan sql/python only for sub-goals no tool covers; a python block can fetch from that sub-goal\'s openData sources, described under openDataSources. Then call plan_notebook again with the same goal and your blocks.';
@@ -118,7 +122,7 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
   server.registerTool(
     'plan_notebook',
     {
-      description: describePlanTool(ctx),
+      description: DESCRIPTION,
       inputSchema: {
         goal: z.string().min(1).describe('What the notebook should answer, in one sentence'),
         // Only saved when calls are logged, so only asked for then.
@@ -127,23 +131,28 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
           .array(z.object({ goal: z.string(), feasible: z.boolean(), reason: z.string().optional() }))
           .optional()
           .describe('The goal split into its parts, ideally 2 to 6. Each one is searched in the tool catalog on its own. Mark a sub-goal feasible: false when the data is not available; no blocks are planned for it.'),
+        data,
         blocks: z.array(planBlock).min(1).max(40).optional().describe('Omit on the first call to get candidate tools; send the plan on the second'),
       },
     },
-    handle(async ({ goal, subGoals, blocks }) => {
+    handle(async ({ goal, subGoals, blocks, data, request }) => {
+      const mode = await resolveDataMode(ctx, { data, request });
+      const scoped = withDataMode(ctx, mode);
+
       if (!blocks) {
-        const subGoalTools = await research(ctx, goal, subGoals ?? []);
+        const subGoalTools = await research(scoped, goal, subGoals ?? []);
         return {
           step: 'research',
           goal,
+          data: mode,
           subGoals: subGoalTools,
           // Each sub-goal names its sources by id; they are described here once.
           openDataSources: OPEN_DATA_SOURCES.filter(s => subGoalTools.some(g => g.openData.includes(s.id))).map(describeOpenData),
-          next: researchNext(ctx, subGoalTools),
+          next: researchNext(scoped, subGoalTools),
         };
       }
 
-      const toolCheck = await checkTools(ctx, blocks);
+      const toolCheck = await checkTools(scoped, blocks);
       const problems = [...validate(blocks), ...toolCheck.problems];
       if (problems.length) {
         return {
@@ -170,6 +179,7 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
 
       return {
         goal,
+        data: mode,
         skippedSubGoals: (subGoals ?? []).filter(s => !s.feasible),
         steps,
         next: [

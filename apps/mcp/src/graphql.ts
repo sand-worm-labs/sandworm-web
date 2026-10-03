@@ -5,7 +5,7 @@ export type ToolContext = {
   auth: AuthContext;
   apiUrl: string;
   webUrl: string;
-  // Chain data and power tools are offline; build notebooks from public APIs only.
+  // Set per call from the data mode (tools/notebooks/data-mode.ts): build from public APIs only.
   openDataOnly?: boolean;
   // Save every tool call to the notebook's MCP chat (see tools/call-log.ts).
   logToolCalls?: boolean;

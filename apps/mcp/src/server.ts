@@ -18,7 +18,6 @@ export type ServerDeps = {
   authServerUrl: string;
   apiUrl: string;
   webUrl: string;
-  openDataOnly?: boolean;
   logToolCalls?: boolean;
 };
 
@@ -36,7 +35,6 @@ export function createMcpServer(
     auth,
     apiUrl: deps.apiUrl,
     webUrl: deps.webUrl,
-    openDataOnly: deps.openDataOnly ?? false,
     logToolCalls: deps.logToolCalls ?? false,
     client,
   });
