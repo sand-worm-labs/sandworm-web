@@ -25,7 +25,7 @@ const PLAN_BLOCK_TYPES = [
 type PlanBlockType = (typeof PLAN_BLOCK_TYPES)[number];
 
 // How each planned block type maps onto what add_cell creates.
-const CELL_FOR: Record<PlanBlockType, { type: PlanBlockType | 'sql' | 'python' | 'markdown'; note?: string }> = {
+const CELL_FOR: Record<PlanBlockType, { type: PlanBlockType; note?: string }> = {
   sql: { type: 'sql' },
   python: { type: 'python' },
   visualization: {
@@ -105,6 +105,16 @@ function validate(blocks: PlannedBlock[]): string[] {
   return problems;
 }
 
+const researchNext = (ctx: ToolContext, subGoalTools: { tools: unknown[] }[]) => {
+  if (ctx.openDataOnly) {
+    return `Chain data and power tools are offline. Plan python blocks that fetch from each sub-goal's openData sources, then call plan_notebook again with the same goal and your blocks. ${OPEN_DATA_USAGE}`;
+  }
+  if (subGoalTools.some(g => g.tools.length)) {
+    return 'For each sub-goal, plan one of its tools as a power_toolbox block with its toolId when it fits. Plan sql/python only for sub-goals no tool covers; a python block can fetch from that sub-goal\'s openData sources. Then call plan_notebook again with the same goal and your blocks.';
+  }
+  return 'No catalog tool matched. Try search_tools with other words, or plan sql blocks, or python blocks that fetch from the openData sources, and call plan_notebook again with your blocks.';
+};
+
 export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
   server.registerTool(
     'plan_notebook',
@@ -127,11 +137,7 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
             step: 'research',
             goal,
             subGoals: subGoalTools,
-            next: ctx.openDataOnly
-              ? `Chain data and power tools are offline. Plan python blocks that fetch from each sub-goal's openData sources, then call plan_notebook again with the same goal and your blocks. ${OPEN_DATA_USAGE}`
-              : subGoalTools.some(g => g.tools.length)
-                ? 'For each sub-goal, plan one of its tools as a power_toolbox block with its toolId when it fits. Plan sql/python only for sub-goals no tool covers; a python block can fetch from that sub-goal\'s openData sources. Then call plan_notebook again with the same goal and your blocks.'
-                : 'No catalog tool matched. Try search_tools with other words, or plan sql blocks, or python blocks that fetch from the openData sources, and call plan_notebook again with your blocks.',
+            next: researchNext(ctx, subGoalTools),
           });
         }
 

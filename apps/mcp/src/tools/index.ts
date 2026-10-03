@@ -9,8 +9,7 @@ import { registerNotebookTools } from './notebooks/index.ts';
 import { registerProjectTools } from './projects/index.ts';
 import { registerWorkspaceTools } from './workspaces/index.ts';
 
-// Tools that are implemented take `ctx` to call the API as the signed-in user;
-// the rest are still stubs.
+// Every tool takes `ctx` to call the API as the signed-in user.
 export function registerTools(server: McpServer, ctx: ToolContext): void {
   registerWorkspaceTools(server, ctx);
   registerProjectTools(server, ctx);

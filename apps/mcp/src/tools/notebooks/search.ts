@@ -30,9 +30,12 @@ export function registerNotebookSearchTools(server: McpServer, ctx: ToolContext)
           `query { getTrendingPublishedDocuments(limit: 100, offset: 0) { title slug description tags forkCount } }`,
         );
         const terms = query.toLowerCase().split(/\W+/).filter(Boolean);
+        // A term in the title counts most, then tags, then the description.
         const score = (d: Explored) => {
-          const [title, tags, desc] = [d.title, d.tags.join(' '), d.description ?? ''].map((s) => s.toLowerCase());
-          return terms.reduce((n, t) => n + +title!.includes(t) * 3 + +tags!.includes(t) * 2 + +desc!.includes(t), 0);
+          const title = d.title.toLowerCase();
+          const tags = d.tags.join(' ').toLowerCase();
+          const description = (d.description ?? '').toLowerCase();
+          return terms.reduce((sum, t) => sum + (title.includes(t) ? 3 : 0) + (tags.includes(t) ? 2 : 0) + (description.includes(t) ? 1 : 0), 0);
         };
         const results = feed
           .map((d) => ({ d, s: score(d) }))

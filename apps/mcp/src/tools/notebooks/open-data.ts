@@ -1,9 +1,9 @@
 import { tokens } from './tool-catalog.ts';
 
-// Public data APIs a python cell can fetch from with plain `requests`.
-// Suggested when no power tool fits a sub-goal,
-// and for everything when chain data (Dune, Sandworm Cloud) is offline. Every
-// endpoint here was checked from the notebook environment; keep it that way.
+// Public data APIs a python cell can fetch from with plain `requests`. They are
+// suggested when no power tool fits a sub-goal, and for everything when chain
+// data (Dune, Sandworm Cloud) is offline. Every endpoint here was checked from
+// the notebook environment; keep it that way.
 
 export type OpenDataSource = {
   id: string;
