@@ -1,47 +1,43 @@
 import { ForbiddenException } from '@nestjs/common';
 import { SandwormCloudQueryService } from '../sandworm-cloud-query.service';
 
-function makeService() {
-  const configService = {} as any;
-  return new SandwormCloudQueryService(configService);
+const mockConnection = { isInitialized: false, initialize: jest.fn(), query: jest.fn(), destroy: jest.fn() };
+jest.mock('typeorm', () => ({ ...jest.requireActual('typeorm'), DataSource: jest.fn(() => mockConnection) }));
+
+function makeService(env: Record<string, string> = { SANDWORM_CLOUD_DB_HOST: 'db.example.com' }) {
+  return new SandwormCloudQueryService({ get: (k: string) => env[k] } as any);
 }
 
 describe('SandwormCloudQueryService', () => {
-  describe('executeQuery', () => {
-    it('returns mock columns/rows for a valid query (real execution not implemented yet)', async () => {
-      const service = makeService();
+  beforeEach(() => jest.clearAllMocks());
 
-      const result = await service.executeQuery('SELECT * FROM example_table', 'u1', 'w1');
+  it('is unconfigured without a host and refuses to connect', async () => {
+    const service = makeService({});
 
-      expect(result).toEqual({
-        columns: ['id', 'name', 'value'],
-        rows: [
-          [1, 'Example', 100],
-          [2, 'Test', 200],
-        ],
-      });
-    });
+    expect(service.isConfigured).toBe(false);
+    await expect(service.ping()).rejects.toThrow(ForbiddenException);
+  });
 
-    it.each(['DROP TABLE foo', 'DELETE FROM foo', 'UPDATE foo SET x=1', 'INSERT INTO foo VALUES (1)', 'ALTER TABLE foo', 'TRUNCATE foo', 'CREATE TABLE foo (id int)'])(
-      'rejects a mutating statement: %s',
-      async (query) => {
-        const service = makeService();
+  it('pings with SELECT 1', async () => {
+    await makeService().ping();
 
-        await expect(service.executeQuery(query, 'u1', 'w1')).rejects.toThrow(ForbiddenException);
-      },
-    );
+    expect(mockConnection.initialize).toHaveBeenCalled();
+    expect(mockConnection.query).toHaveBeenCalledWith('SELECT 1');
   });
 
   describe('getSchema', () => {
-    it('returns the mock schema with a main schema and default schema name', async () => {
-      const service = makeService();
+    it('groups information_schema columns by schema and table', async () => {
+      mockConnection.query.mockResolvedValue([
+        { table_schema: 'public', table_name: 't', column_name: 'id', data_type: 'bigint' },
+        { table_schema: 'public', table_name: 't', column_name: 'name', data_type: 'text' },
+      ]);
 
-      const result = await service.getSchema();
+      const result = await makeService().getSchema();
 
-      expect(result.defaultSchema).toBe('main');
-      expect(result.tables.has('main')).toBe(true);
-      expect(result.tables.get('main').has('example_table')).toBe(true);
-      expect(result.tables.get('main').has('another_table')).toBe(true);
+      expect(result).toEqual({
+        defaultSchema: 'public',
+        tables: { public: { t: { columns: [{ name: 'id', type: 'bigint' }, { name: 'name', type: 'text' }] } } },
+      });
     });
   });
 });

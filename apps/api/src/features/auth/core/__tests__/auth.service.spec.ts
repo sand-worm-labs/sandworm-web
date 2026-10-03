@@ -10,7 +10,7 @@ jest.mock('@sandworm/nest-common', () => ({
 import {
   NotFoundException,
   UnauthorizedException,
-  UnprocessableEntityException,
+  ForbiddenException, UnprocessableEntityException,
 } from '@nestjs/common';
 import { verifyPassword } from '@sandworm/nest-common';
 import { AuthService } from '../auth.service';
@@ -56,8 +56,16 @@ function makeService() {
     getOrThrow: jest.fn(() => AUTH_CONFIG),
   } as any;
 
-  const service = new AuthService(jwtService, usersService, mailService, configService);
-  return { service, jwtService, usersService, mailService, configService };
+  const update = { set: jest.fn().mockReturnThis(), where: jest.fn().mockReturnThis(), execute: jest.fn(async () => ({ affected: 1 })) };
+  const referralRepository = {
+    createQueryBuilder: jest.fn(() => ({ update: () => update })),
+    decrement: jest.fn(),
+  } as any;
+
+  const referralUseRepository = { insert: jest.fn() } as any;
+
+  const service = new AuthService(jwtService, usersService, mailService, configService, referralRepository, referralUseRepository);
+  return { service, jwtService, usersService, mailService, configService, referralRepository, referralUseRepository, referralUpdate: update };
 }
 
 describe('AuthService', () => {
@@ -197,7 +205,7 @@ describe('AuthService', () => {
       usersService.findById.mockResolvedValue({ id: 'u3', email: 'social@example.com' });
       usersService.getUserWorkspaceRoles.mockResolvedValue([]);
 
-      const result = await service.validateSocialLogin('github', socialData as any);
+      const result = await service.validateSocialLogin('github', socialData as any, 'invite');
 
       expect(usersService.create).toHaveBeenCalledWith(
         expect.objectContaining({ socialId: 'social-1', provider: 'github' }),
@@ -221,13 +229,42 @@ describe('AuthService', () => {
       usersService.create.mockResolvedValue({ id: 'u1' });
       jwtService.signAsync.mockResolvedValue('confirm-hash');
 
-      await service.register({ email: 'a@b.com' } as any);
+      await service.register({ email: 'a@b.com', referralCode: 'invite' } as any);
 
       expect(jwtService.signAsync).toHaveBeenCalledWith(
         { confirmEmailUserId: 'u1' },
         { secret: AUTH_CONFIG.confirmEmailSecret, expiresIn: AUTH_CONFIG.confirmEmailExpires },
       );
       expect(mailService.userSignUp).toHaveBeenCalledWith({ to: 'a@b.com', data: { hash: 'confirm-hash' } });
+    });
+
+    it('records which user spent the referral code', async () => {
+      const { service, usersService, jwtService, referralUseRepository } = makeService();
+      usersService.create.mockResolvedValue({ id: 'u1' });
+      jwtService.signAsync.mockResolvedValue('h');
+
+      await service.register({ email: 'a@b.com', referralCode: ' invite ' } as any);
+
+      expect(referralUseRepository.insert).toHaveBeenCalledWith({ code: 'invite', userId: 'u1' });
+    });
+  });
+
+  describe('referral wall', () => {
+    it('refuses sign-up without a valid code and creates nothing', async () => {
+      const { service, usersService, referralUpdate } = makeService();
+      referralUpdate.execute.mockResolvedValue({ affected: 0 });
+
+      await expect(service.register({ email: 'a@b.com', referralCode: 'nope' } as any)).rejects.toThrow(ForbiddenException);
+      await expect(service.register({ email: 'a@b.com' } as any)).rejects.toThrow(ForbiddenException);
+      expect(usersService.create).not.toHaveBeenCalled();
+    });
+
+    it('gives the use back when creating the user fails', async () => {
+      const { service, usersService, referralRepository } = makeService();
+      usersService.create.mockRejectedValue(new Error('dup'));
+
+      await expect(service.register({ email: 'a@b.com', referralCode: 'invite' } as any)).rejects.toThrow('dup');
+      expect(referralRepository.decrement).toHaveBeenCalledWith({ code: 'invite' }, 'uses', 1);
     });
   });
 

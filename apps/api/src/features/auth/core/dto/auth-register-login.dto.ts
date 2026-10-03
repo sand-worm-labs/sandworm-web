@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, MinLength, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { lowerCaseTransformer } from '@/common/utils/transformers/lower-case.transformer';
 
@@ -24,4 +24,9 @@ export class AuthRegisterLoginDto {
   @ApiProperty({ example: 'john_doe' })
   @IsNotEmpty()
   username: string;
+
+  @ApiProperty({ required: false, description: 'Required to create a new account' })
+  @IsOptional()
+  @IsString()
+  referralCode?: string;
 }

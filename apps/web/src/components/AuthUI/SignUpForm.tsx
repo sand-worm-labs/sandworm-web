@@ -91,9 +91,11 @@ export default function SignUpForm() {
   };
 
   const displayError =
-    state.error === "unexpected"
-      ? "An unexpected error occurred. Please try again."
-      : localError;
+    state.error === "invalidReferralCode"
+      ? "A valid referral code is required to sign up."
+      : state.error === "unexpected"
+        ? "An unexpected error occurred. Please try again."
+        : localError;
 
   if (step === 3) {
     return (

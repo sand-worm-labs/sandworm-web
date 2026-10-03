@@ -1,85 +1,63 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DataSource } from 'typeorm';
 
+// Sandworm Cloud is a separate, plain Postgres database from the app's own,
+// configured with SANDWORM_CLOUD_DB_{HOST,PORT,NAME,USER,PASSWORD} (SSL on
+// unless SANDWORM_CLOUD_DB_SSL=false). SQL blocks run against it through
+// PostgresQueryService; this service only handles ping and schema browsing.
 @Injectable()
-export class SandwormCloudQueryService {
-    constructor(private configService: ConfigService) {
-        // TODO: Initialize your actual data source client here
-        // For now, just a placeholder
+export class SandwormCloudQueryService implements OnModuleDestroy {
+    private connection?: DataSource;
+
+    constructor(private configService: ConfigService) { }
+
+    get isConfigured(): boolean {
+        return !!this.configService.get('SANDWORM_CLOUD_DB_HOST');
     }
 
-    async executeQuery(query: string, userId: string, workspaceId: string) {
-        // Validate query
-        this.validateQuery(query);
+    private async getConnection(): Promise<DataSource> {
+        if (!this.isConfigured) {
+            throw new ForbiddenException('Sandworm Cloud is not configured');
+        }
+        this.connection ??= new DataSource({
+            type: 'postgres',
+            host: this.configService.get('SANDWORM_CLOUD_DB_HOST'),
+            port: Number(this.configService.get('SANDWORM_CLOUD_DB_PORT') ?? 5432),
+            database: this.configService.get('SANDWORM_CLOUD_DB_NAME') ?? 'postgres',
+            username: this.configService.get('SANDWORM_CLOUD_DB_USER') ?? 'postgres',
+            password: this.configService.get('SANDWORM_CLOUD_DB_PASSWORD'),
+            ssl: this.configService.get('SANDWORM_CLOUD_DB_SSL') === 'false' ? false : { rejectUnauthorized: false },
+            extra: { max: 5 },
+        });
+        if (!this.connection.isInitialized) await this.connection.initialize();
+        return this.connection;
+    }
 
-        // Add row limit
-        const limitedQuery = this.addRowLimit(query, 10000);
+    async onModuleDestroy() {
+        if (this.connection?.isInitialized) await this.connection.destroy();
+    }
 
-        // TODO: Implement actual query execution
-        // For now, return mock data
-        return {
-            columns: ['id', 'name', 'value'],
-            rows: [
-                [1, 'Example', 100],
-                [2, 'Test', 200],
-            ],
-        };
+    async ping(): Promise<void> {
+        await (await this.getConnection()).query('SELECT 1');
     }
 
     async getSchema() {
-        // TODO: Implement actual schema fetching
-        // For now, return mock schema
-        const tables = new Map();
+        const rows: { table_schema: string; table_name: string; column_name: string; data_type: string }[] =
+            await (await this.getConnection()).query(
+                `SELECT table_schema, table_name, column_name, data_type
+                 FROM information_schema.columns
+                 WHERE table_schema NOT IN ('pg_catalog', 'information_schema', 'pg_toast')
+                 ORDER BY table_schema, table_name, ordinal_position`,
+            );
 
-        const mainSchema = new Map();
-
-        mainSchema.set('example_table', {
-            columns: [
-                { name: 'id', type: 'bigint' },
-                { name: 'name', type: 'varchar' },
-                { name: 'value', type: 'decimal' },
-                { name: 'created_at', type: 'timestamp' },
-            ],
-        });
-
-        mainSchema.set('another_table', {
-            columns: [
-                { name: 'id', type: 'bigint' },
-                { name: 'description', type: 'varchar' },
-            ],
-        });
-
-        tables.set('main', mainSchema);
-
-        return {
-            tables,
-            defaultSchema: 'main',
-        };
-    }
-
-    private validateQuery(query: string) {
-        const forbidden = [
-            'DROP',
-            'DELETE',
-            'UPDATE',
-            'INSERT',
-            'ALTER',
-            'TRUNCATE',
-            'CREATE',
-        ];
-        const upper = query.toUpperCase();
-
-        for (const keyword of forbidden) {
-            if (upper.includes(keyword)) {
-                throw new ForbiddenException(`${keyword} statements not allowed`);
-            }
+        const tables: Record<string, Record<string, { columns: { name: string; type: string }[] }>> = {};
+        for (const r of rows) {
+            ((tables[r.table_schema] ??= {})[r.table_name] ??= { columns: [] }).columns.push({
+                name: r.column_name,
+                type: r.data_type,
+            });
         }
-    }
-
-    private addRowLimit(query: string, maxRows: number): string {
-        if (!query.toUpperCase().includes('LIMIT')) {
-            return `${query.trim().replace(/;$/, '')} LIMIT ${maxRows}`;
-        }
-        return query;
+        return { tables, defaultSchema: 'public' };
     }
 }

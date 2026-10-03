@@ -35,7 +35,7 @@ describe('AuthGoogleController', () => {
       const result = await controller.login({ code: 'abc' } as any, response);
 
       expect(authGoogleService.getProfileByToken).toHaveBeenCalledWith({ code: 'abc' });
-      expect(authService.validateSocialLogin).toHaveBeenCalledWith('google', socialData);
+      expect(authService.validateSocialLogin).toHaveBeenCalledWith('google', socialData, undefined);
       expect(authService.issueTokenPair).toHaveBeenCalledWith('u1');
       expect(response.setCookie).toHaveBeenCalledWith(ACCESS_TOKEN_COOKIE, tokens.accessToken, expect.any(Object));
       expect(response.setCookie).toHaveBeenCalledWith(REFRESH_TOKEN_COOKIE, tokens.refreshToken, expect.any(Object));

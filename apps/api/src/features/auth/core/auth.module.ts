@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ReferralCodeEntity, ReferralCodeUseEntity } from '@sandworm/postgresql-typeorm';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
@@ -12,6 +14,7 @@ import { UserModule } from '@/features/user/user.module';
 @Module({
   imports: [
     UserModule,
+    TypeOrmModule.forFeature([ReferralCodeEntity, ReferralCodeUseEntity]),
     PassportModule,
     MailModule,
     JwtModule.register({}),

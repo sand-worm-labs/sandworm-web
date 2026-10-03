@@ -8,6 +8,7 @@ import { PythonExecutorService } from './python-executor.service';
 import { DataFrameService } from './query-engine/dataframe/dataframe.service';
 import { DuckDBQueryService } from './query-engine/duckdb/duckdb-query.service';
 import { TrinoQueryService } from './query-engine/trino/trino-query.service';
+import { PostgresQueryService } from './query-engine/postgres/postgres-query.service';
 import { PythonQueryRunnerService } from './query-engine/python/python-query-runner.service';
 import { QueryExecutionService } from './query-engine/query-execution.service';
 import { VisualizationService } from './visualization/visualization.service';
@@ -29,6 +30,7 @@ import { PythonCompletionService } from './python-completion.service';
       DataFrameService,
       DuckDBQueryService,
       TrinoQueryService,
+      PostgresQueryService,
       PythonQueryRunnerService,
       QueryExecutionService,
       VisualizationService,

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useGoogleLogin } from "@react-oauth/google";
 import { toast } from "sonner";
 
+import { getReferralCode } from "@/utils/referral";
 import { useSessionStore } from "@/store/session";
 import {
   NEXT_PUBLIC_API_URL,
@@ -45,10 +46,16 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ code, intent: variant }),
+          body: JSON.stringify({
+            code,
+            intent: variant,
+            referralCode: getReferralCode(),
+          }),
         }
       );
 
+      if (res.status === 403)
+        throw new Error("A valid referral code is required to sign up");
       if (!res.ok) throw new Error("Login failed");
 
       const data = await res.json();

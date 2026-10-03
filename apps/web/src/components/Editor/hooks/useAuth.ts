@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useApolloClient } from "@apollo/client";
 
+import { getReferralCode } from "@/utils/referral";
 import type { ApiUser, UserWorkspaceRole } from "@/types";
 import { useCurrentUserQuery } from "@/generated/graphql";
 
@@ -20,7 +21,8 @@ export type UseAuthError =
   | "invalid-creds"
   | "network-error"
   | "invalid-token"
-  | "expired-token";
+  | "expired-token"
+  | "invalidReferralCode";
 
 type AuthState<T = { email: string; loginLink?: string }> = {
   loading: boolean;
@@ -129,7 +131,7 @@ export const useSignup = (): UseSignup => {
   const [state, setState] = useState<{
     loading: boolean;
     data?: { email: string };
-    error?: "unexpected";
+    error?: UseAuthError;
   }>({
     loading: false,
     data: undefined,
@@ -155,12 +157,22 @@ export const useSignup = (): UseSignup => {
           firstName,
           lastName,
           username,
+          referralCode: getReferralCode(),
           callback: NEXT_PUBLIC_PUBLIC_URL(),
         }),
       })
         .then(async res => {
           if (res.ok) {
             setState({ loading: false, data: { email }, error: undefined });
+            return;
+          }
+
+          if (res.status === 403) {
+            setState(s => ({
+              ...s,
+              loading: false,
+              error: "invalidReferralCode",
+            }));
             return;
           }
 
