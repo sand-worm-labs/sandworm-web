@@ -17,6 +17,7 @@ export type ServerDeps = {
   authServerUrl: string;
   apiUrl: string;
   webUrl: string;
+  openDataOnly?: boolean;
 };
 
 // Bare scaffold: payments are wired up, but no paid tool is registered yet.
@@ -24,7 +25,7 @@ export type ServerDeps = {
 // `deps.charge(extra)` the way the old run_query tool did.
 export function createMcpServer(deps: ServerDeps, _price: { display: string }, auth: AuthContext): McpServer {
   const server = new McpServer({ name: 'sandworm', version: '0.1.0' });
-  registerTools(server, { auth, apiUrl: deps.apiUrl, webUrl: deps.webUrl });
+  registerTools(server, { auth, apiUrl: deps.apiUrl, webUrl: deps.webUrl, openDataOnly: deps.openDataOnly ?? false });
 
   return server;
 }

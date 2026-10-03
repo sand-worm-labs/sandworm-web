@@ -1,5 +1,6 @@
 import type { ToolContext } from '../../graphql.ts';
 import type { PlannedBlock } from './plan.ts';
+import { describeOpenData, matchOpenData } from './open-data.ts';
 import { describeTool, keywordSearch, loadCatalog, searchCatalog } from './tool-catalog.ts';
 
 const TOOLS_PER_SUB_GOAL = 3;
@@ -17,16 +18,20 @@ export async function research(ctx: ToolContext, goal: string, subGoals: { goal:
   const parts = given.length ? given : splitGoal(goal);
   const queries = (parts.length > 1 ? parts : [goal]).slice(0, MAX_SUB_GOALS);
 
+  // Public APIs come back alongside the power tools, so a sub-goal no tool covers
+  // still has somewhere to get data from; with chain data offline they are all there is.
   return Promise.all(
     queries.map(async subGoal => ({
       subGoal,
-      tools: (await searchCatalog(ctx, subGoal, TOOLS_PER_SUB_GOAL)).map(m => describeTool(m.tool)),
+      tools: ctx.openDataOnly ? [] : (await searchCatalog(ctx, subGoal, TOOLS_PER_SUB_GOAL)).map(m => describeTool(m.tool)),
+      openData: matchOpenData(subGoal).map(describeOpenData),
     })),
   );
 }
 
 // A planned tool must exist; a sql/python block whose title fully matches a tool is flagged as replaceable.
 export async function checkTools(ctx: ToolContext, blocks: PlannedBlock[]) {
+  if (ctx.openDataOnly) return offlineCheck(blocks);
   const catalog = new Map((await loadCatalog(ctx)).map(t => [t.toolId, t]));
   const problems: string[] = [];
   const suggestions = new Map<number, { toolId: string; name: string }>();
@@ -41,4 +46,14 @@ export async function checkTools(ctx: ToolContext, blocks: PlannedBlock[]) {
     }
   }
   return { problems, suggestions };
+}
+
+// With chain data offline, sql against Dune and power tools would only fail at run time.
+function offlineCheck(blocks: PlannedBlock[]) {
+  const problems = blocks.flatMap((b, i) =>
+    b.type === 'power_toolbox' || b.type === 'sql'
+      ? [`Block ${i} ("${b.title}") is ${b.type}, but chain data and power tools are offline. Make it a python block that fetches from the openData sources.`]
+      : [],
+  );
+  return { problems, suggestions: new Map<number, { toolId: string; name: string }>() };
 }

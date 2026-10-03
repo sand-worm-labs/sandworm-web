@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import type { ToolContext } from '../../graphql.ts';
 import { errorResult, jsonResult } from '../shared.ts';
+import { describeOpenData, matchOpenData, OPEN_DATA_USAGE } from './open-data.ts';
 import { describeTool, searchCatalog, tokens } from './tool-catalog.ts';
 
 export function registerToolSearchTool(server: McpServer, ctx: ToolContext): void {
@@ -22,11 +23,18 @@ export function registerToolSearchTool(server: McpServer, ctx: ToolContext): voi
       try {
         if (!tokens(query).length) return errorResult(new Error('Give a query with at least one word of two letters or more.'));
 
+        const openData = { openData: matchOpenData(query).map(describeOpenData), usage: OPEN_DATA_USAGE };
+        if (ctx.openDataOnly) {
+          return jsonResult({ query, matches: [], hint: 'Power tools are offline. Fetch from one of these public APIs in a python cell instead.', ...openData });
+        }
+
         const matches = await searchCatalog(ctx, query, limit);
         return jsonResult({
           query,
           matches: matches.map(m => describeTool(m.tool)),
-          ...(matches.length ? {} : { hint: 'No tool matched. Try fewer or different words, or write a sql or python cell instead.' }),
+          ...(matches.length
+            ? {}
+            : { hint: 'No tool matched. Try fewer or different words, or write a sql cell, or a python cell that fetches from one of these public APIs.', ...openData }),
         });
       } catch (err) {
         return errorResult(err);

@@ -6,6 +6,8 @@ export type ToolContext = {
   auth: AuthContext;
   apiUrl: string;
   webUrl: string;
+  // Chain data and power tools are offline; build notebooks from public APIs only.
+  openDataOnly?: boolean;
 };
 
 export class GraphQLError extends Error {}

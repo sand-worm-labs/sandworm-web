@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { rest } from '../../rest.ts';
 import { confirm, errorResult, jsonResult, workspaceId } from '../shared.ts';
+import { OPEN_DATA_USAGE } from './open-data.ts';
 import { notebookApiPath, notebookId, notebookUrl, objectOrJson } from './shared.ts';
 
 const CELL_TYPES = [
@@ -30,6 +31,7 @@ const PYTHON_GUIDANCE = [
   'Call `from sandworm_theme import use_theme; use_theme()` once, before drawing, to get Sandworm\'s default colors and font on Plotly and matplotlib charts. Do not hard-code your own palette or fonts unless the data needs something else.',
   'With Plotly Express bars, `color=` on a column other than the category axis gives every colour its own slot and makes each bar thin: add `fig.update_layout(barmode="overlay")` when each category has a single bar.',
   'For HTML summaries, `from sandworm_theme import show, stat_card, card, note` give styled stat cards and cards: `show(stat_card(value, label, secondary=[(value, label), ...]))`. Optional.',
+  `Data from public APIs: ${OPEN_DATA_USAGE}`,
 ].join(' ');
 
 const cellId = z.uuid().describe('ID (UUID) of the cell, as returned by add_cell, get_notebook or run_notebook');

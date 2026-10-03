@@ -25,6 +25,10 @@ const envSchema = z.object({
   // tool is registered yet — rename/split if different tools need different
   // prices.
   QUERY_PRICE: z.string().regex(/^[1-9]\d*$/, 'must be a positive integer of USDC base units'),
+
+  // Set while Dune, Sandworm Cloud and the power tools are offline: notebooks
+  // are then planned from public APIs only (see tools/notebooks/open-data.ts).
+  OPEN_DATA_ONLY: z.stringbool().default(false),
 });
 
 export type Config = {
@@ -39,6 +43,7 @@ export type Config = {
   apiUrl: string;
   webUrl: string;
   introspectKey: string;
+  openDataOnly: boolean;
 };
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
@@ -61,5 +66,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     apiUrl: e.API_URL.replace(/\/$/, ''),
     webUrl: e.WEB_URL.replace(/\/$/, ''),
     introspectKey: e.MCP_OAUTH_INTROSPECT_KEY,
+    openDataOnly: e.OPEN_DATA_ONLY,
   };
 }

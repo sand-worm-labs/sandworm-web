@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import type { ToolContext } from '../../graphql.ts';
 import { errorResult, jsonResult } from '../shared.ts';
+import { OPEN_DATA_USAGE } from './open-data.ts';
 import { checkTools, research } from './plan-tools.ts';
 
 // Ported from apps/ai's block planner (services/block_planner). There the
@@ -47,12 +48,17 @@ const CELL_FOR: Record<PlanBlockType, { type: PlanBlockType | 'sql' | 'python' |
   },
 };
 
-const DESCRIPTION = [
+const DESCRIPTION_PARTS = [
   'Plan a notebook BEFORE adding cells. Call this first for any new analysis or multi-cell build, then create the cells with add_cell in the order returned. Skip it for a single small edit.',
   'Two calls. First call with the goal, split into subGoals, and no blocks: it searches the catalog of ready-made tools separately for each sub-goal and returns the tools that may fit each one, so you plan with them in view. Second call with the same goal plus blocks: it validates the plan, checks every power_toolbox block\'s toolId against the catalog, and flags sql/python blocks that an existing tool already covers.',
-  'Block types: sql (first sql block for a sub-goal pulls chain data from dune; a later sql block may depend on an earlier one and query its result with duckdb), python (pandas/numpy transforms, or a plain HTTP fetch for a named off-chain API such as DeFiLlama), visualization (plotly chart from a prior sql/python block), pivot_table, markdown, rich_text, dashboard_header, input, dropdown_input, date_input, power_toolbox (a ready-made tool: call search_tools before planning one, and plan it only if a result fits).',
+  'Block types: sql (first sql block for a sub-goal pulls chain data from dune; a later sql block may depend on an earlier one and query its result with duckdb), python (pandas/numpy transforms, or a fetch from a public API: the research step lists the ones that fit each sub-goal under openData), visualization (plotly chart from a prior sql/python block), pivot_table, markdown, rich_text, dashboard_header, input, dropdown_input, date_input, power_toolbox (a ready-made tool: call search_tools before planning one, and plan it only if a result fits).',
   'Rules: (1) a visualization or pivot_table must depend on a sql or python block; (2) each sql/python block has at most one visualization; (3) prefer chained sql blocks over one large query; (4) open with a dashboard_header when there are 3+ other blocks, and do not restate its topic in other titles; (5) add input/dropdown_input/date_input only for a value meant to be adjustable, and put them before any sql block; (6) titles of 8 words or fewer; descriptions say what, not how; (7) skip sub-goals that are not feasible.',
-].join('\n\n');
+];
+
+const OFFLINE_NOTE =
+  'Chain data (Dune, Sandworm Cloud) and power tools are offline right now. Plan every data block as python that fetches from the openData sources the research step returns, combining sources when one does not cover a sub-goal. Do not plan sql or power_toolbox blocks; the plan is rejected if it has any.';
+
+const describePlanTool = (ctx: ToolContext) => [...DESCRIPTION_PARTS, ...(ctx.openDataOnly ? [OFFLINE_NOTE] : [])].join('\n\n');
 
 const planBlock = z.object({
   type: z.enum(PLAN_BLOCK_TYPES),
@@ -103,7 +109,7 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
   server.registerTool(
     'plan_notebook',
     {
-      description: DESCRIPTION,
+      description: describePlanTool(ctx),
       inputSchema: {
         goal: z.string().min(1).describe('What the notebook should answer, in one sentence'),
         subGoals: z
@@ -121,9 +127,11 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
             step: 'research',
             goal,
             subGoals: subGoalTools,
-            next: subGoalTools.some(g => g.tools.length)
-              ? 'For each sub-goal, plan one of its tools as a power_toolbox block with its toolId when it fits. Plan sql/python only for sub-goals no tool covers. Then call plan_notebook again with the same goal and your blocks.'
-              : 'No catalog tool matched. Try search_tools with other words, or plan sql/python blocks and call plan_notebook again with your blocks.',
+            next: ctx.openDataOnly
+              ? `Chain data and power tools are offline. Plan python blocks that fetch from each sub-goal's openData sources, then call plan_notebook again with the same goal and your blocks. ${OPEN_DATA_USAGE}`
+              : subGoalTools.some(g => g.tools.length)
+                ? 'For each sub-goal, plan one of its tools as a power_toolbox block with its toolId when it fits. Plan sql/python only for sub-goals no tool covers; a python block can fetch from that sub-goal\'s openData sources. Then call plan_notebook again with the same goal and your blocks.'
+                : 'No catalog tool matched. Try search_tools with other words, or plan sql blocks, or python blocks that fetch from the openData sources, and call plan_notebook again with your blocks.',
           });
         }
 
@@ -156,7 +164,10 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
           goal,
           skippedSubGoals: (subGoals ?? []).filter(s => !s.feasible),
           steps,
-          next: 'Create the cells with add_cell in step order (pass position to keep that order), then check the notebook with get_notebook.',
+          next: [
+            'Create the cells with add_cell in step order (pass position to keep that order), then check the notebook with get_notebook.',
+            ...(blocks.some(b => b.type === 'python') ? [OPEN_DATA_USAGE] : []),
+          ].join(' '),
         });
       } catch (err) {
         return errorResult(err);
