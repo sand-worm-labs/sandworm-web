@@ -2,9 +2,9 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
 import type { ToolContext } from '../../graphql.ts';
-import { errorResult, jsonResult } from '../shared.ts';
+import { handle } from '../shared.ts';
 import { request } from './shared.ts';
-import { OPEN_DATA_USAGE } from './open-data.ts';
+import { describeOpenData, OPEN_DATA_SOURCES, OPEN_DATA_USAGE } from './open-data.ts';
 import { checkTools, research } from './plan-tools.ts';
 
 // Ported from apps/ai's block planner (services/block_planner). There the
@@ -25,7 +25,6 @@ const PLAN_BLOCK_TYPES = [
 ] as const;
 type PlanBlockType = (typeof PLAN_BLOCK_TYPES)[number];
 
-// How each planned block type maps onto what add_cell creates.
 const CELL_FOR: Record<PlanBlockType, { type: PlanBlockType; note?: string }> = {
   sql: { type: 'sql' },
   python: { type: 'python' },
@@ -52,7 +51,7 @@ const CELL_FOR: Record<PlanBlockType, { type: PlanBlockType; note?: string }> = 
 const DESCRIPTION_PARTS = [
   'Plan a notebook BEFORE adding cells. Call this first for any new analysis or multi-cell build, then create the cells with add_cell in the order returned. Skip it for a single small edit.',
   'Two calls. First call with the goal, split into subGoals, and no blocks: it searches the catalog of ready-made tools separately for each sub-goal and returns the tools that may fit each one, so you plan with them in view. Second call with the same goal plus blocks: it validates the plan, checks every power_toolbox block\'s toolId against the catalog, and flags sql/python blocks that an existing tool already covers.',
-  'Block types: sql (first sql block for a sub-goal pulls chain data from dune; a later sql block may depend on an earlier one and query its result with duckdb), python (pandas/numpy transforms, or a fetch from a public API: the research step lists the ones that fit each sub-goal under openData), visualization (plotly chart from a prior sql/python block), pivot_table, markdown, rich_text, dashboard_header, input, dropdown_input, date_input, power_toolbox (a ready-made tool: call search_tools before planning one, and plan it only if a result fits).',
+  'Block types: sql (first sql block for a sub-goal pulls chain data from dune; a later sql block may depend on an earlier one and query its result with duckdb), python (pandas/numpy transforms, or a fetch from a public API: the research step names the ones that fit each sub-goal under openData), visualization (plotly chart from a prior sql/python block), pivot_table, markdown, rich_text, dashboard_header, input, dropdown_input, date_input, power_toolbox (a ready-made tool: call search_tools before planning one, and plan it only if a result fits).',
   'Rules: (1) a visualization or pivot_table must depend on a sql or python block; (2) each sql/python block has at most one visualization; (3) prefer chained sql blocks over one large query; (4) open with a dashboard_header when there are 3+ other blocks, and do not restate its topic in other titles; (5) add input/dropdown_input/date_input only for a value meant to be adjustable, and put them before any sql block; (6) titles of 8 words or fewer; descriptions say what, not how; (7) skip sub-goals that are not feasible.',
 ];
 
@@ -72,7 +71,6 @@ export type PlannedBlock = z.infer<typeof planBlock>;
 
 const WORD_LIMIT = 8;
 
-// Returns every rule the plan breaks; an empty list means it is good to go.
 function validate(blocks: PlannedBlock[]): string[] {
   const problems: string[] = [];
   const isData = (t: PlanBlockType) => t === 'sql' || t === 'python';
@@ -108,12 +106,12 @@ function validate(blocks: PlannedBlock[]): string[] {
 
 const researchNext = (ctx: ToolContext, subGoalTools: { tools: unknown[] }[]) => {
   if (ctx.openDataOnly) {
-    return `Chain data and power tools are offline. Plan python blocks that fetch from each sub-goal's openData sources (sql blocks may query their dataframes with duckdb), then call plan_notebook again with the same goal and your blocks. ${OPEN_DATA_USAGE}`;
+    return `Chain data and power tools are offline. Plan python blocks that fetch from each sub-goal's openData sources, described under openDataSources (sql blocks may query their dataframes with duckdb), then call plan_notebook again with the same goal and your blocks. ${OPEN_DATA_USAGE}`;
   }
   if (subGoalTools.some(g => g.tools.length)) {
-    return 'For each sub-goal, plan one of its tools as a power_toolbox block with its toolId when it fits. Plan sql/python only for sub-goals no tool covers; a python block can fetch from that sub-goal\'s openData sources. Then call plan_notebook again with the same goal and your blocks.';
+    return 'For each sub-goal, plan one of its tools as a power_toolbox block with its toolId when it fits. Plan sql/python only for sub-goals no tool covers; a python block can fetch from that sub-goal\'s openData sources, described under openDataSources. Then call plan_notebook again with the same goal and your blocks.';
   }
-  return 'No catalog tool matched. Try search_tools with other words, or plan sql blocks, or python blocks that fetch from the openData sources, and call plan_notebook again with your blocks.';
+  return 'No catalog tool matched. Try search_tools with other words, or plan sql blocks, or python blocks that fetch from the openData sources (described under openDataSources), and call plan_notebook again with your blocks.';
 };
 
 export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
@@ -132,55 +130,53 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
         blocks: z.array(planBlock).min(1).max(40).optional().describe('Omit on the first call to get candidate tools; send the plan on the second'),
       },
     },
-    async ({ goal, subGoals, blocks }) => {
-      try {
-        if (!blocks) {
-          const subGoalTools = await research(ctx, goal, subGoals ?? []);
-          return jsonResult({
-            step: 'research',
-            goal,
-            subGoals: subGoalTools,
-            next: researchNext(ctx, subGoalTools),
-          });
-        }
-
-        const toolCheck = await checkTools(ctx, blocks);
-        const problems = [...validate(blocks), ...toolCheck.problems];
-        if (problems.length) {
-          return {
-            isError: true,
-            content: [{ type: 'text' as const, text: `Plan not accepted. Fix these and call plan_notebook again:\n- ${problems.join('\n- ')}` }],
-          };
-        }
-
-        const steps = blocks.map((b, i) => {
-          const cell = CELL_FOR[b.type];
-          return {
-            step: i,
-            plannedType: b.type,
-            title: b.title,
-            description: b.description,
-            dependsOn: b.dependsOn,
-            addCell: { type: cell.type, ...(cell.note ? { note: cell.note } : {}) },
-            ...(b.toolId ? { toolId: b.toolId } : {}),
-            ...(toolCheck.suggestions.has(i)
-              ? { toolSuggestion: { ...toolCheck.suggestions.get(i), note: 'An existing tool may already do this. Plan it as power_toolbox instead, or keep this block if the tool does not fit.' } }
-              : {}),
-          };
-        });
-
-        return jsonResult({
+    handle(async ({ goal, subGoals, blocks }) => {
+      if (!blocks) {
+        const subGoalTools = await research(ctx, goal, subGoals ?? []);
+        return {
+          step: 'research',
           goal,
-          skippedSubGoals: (subGoals ?? []).filter(s => !s.feasible),
-          steps,
-          next: [
-            'Create the cells with add_cell in step order (pass position to keep that order), then check the notebook with get_notebook.',
-            ...(blocks.some(b => b.type === 'python') ? [OPEN_DATA_USAGE] : []),
-          ].join(' '),
-        });
-      } catch (err) {
-        return errorResult(err);
+          subGoals: subGoalTools,
+          // Each sub-goal names its sources by id; they are described here once.
+          openDataSources: OPEN_DATA_SOURCES.filter(s => subGoalTools.some(g => g.openData.includes(s.id))).map(describeOpenData),
+          next: researchNext(ctx, subGoalTools),
+        };
       }
-    },
+
+      const toolCheck = await checkTools(ctx, blocks);
+      const problems = [...validate(blocks), ...toolCheck.problems];
+      if (problems.length) {
+        return {
+          isError: true,
+          content: [{ type: 'text' as const, text: `Plan not accepted. Fix these and call plan_notebook again:\n- ${problems.join('\n- ')}` }],
+        };
+      }
+
+      const steps = blocks.map((b, i) => {
+        const cell = CELL_FOR[b.type];
+        return {
+          step: i,
+          plannedType: b.type,
+          title: b.title,
+          description: b.description,
+          dependsOn: b.dependsOn,
+          addCell: { type: cell.type, ...(cell.note ? { note: cell.note } : {}) },
+          ...(b.toolId ? { toolId: b.toolId } : {}),
+          ...(toolCheck.suggestions.has(i)
+            ? { toolSuggestion: { ...toolCheck.suggestions.get(i), note: 'An existing tool may already do this. Plan it as power_toolbox instead, or keep this block if the tool does not fit.' } }
+            : {}),
+        };
+      });
+
+      return {
+        goal,
+        skippedSubGoals: (subGoals ?? []).filter(s => !s.feasible),
+        steps,
+        next: [
+          'Create the cells with add_cell in step order (pass position to keep that order), then check the notebook with get_notebook.',
+          ...(blocks.some(b => b.type === 'python') ? [OPEN_DATA_USAGE] : []),
+        ].join(' '),
+      };
+    }),
   );
 }

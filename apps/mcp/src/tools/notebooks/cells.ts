@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { rest } from '../../rest.ts';
-import { confirm, errorResult, jsonResult, workspaceId } from '../shared.ts';
+import { confirm, handle, workspaceId } from '../shared.ts';
 import { OPEN_DATA_USAGE } from './open-data.ts';
 import { notebookApiPath, notebookId, notebookUrl, objectOrJson } from './shared.ts';
 
@@ -69,18 +69,14 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
         position: z.number().int().min(0).optional().describe('Index to insert at; appends when omitted'),
       },
     },
-    async ({ notebookId, workspaceId, type, title, content, dataSource, dataframeName, toolId, inputs, position }) => {
-      try {
-        const ws = await resolveWorkspaceId(ctx, workspaceId);
-        const { blocks } = await rest<{ blocks: Cell[] }>(ctx, 'POST', `${notebookApiPath(ws, notebookId)}/blocks`, {
-          blocks: [{ kind: type, title, source: content, dataSource, dataframeName, toolId, inputs }],
-          position,
-        });
-        return jsonResult({ notebookId, cell: blocks[0], url: notebookUrl(ctx, ws, notebookId) });
-      } catch (err) {
-        return errorResult(err);
-      }
-    },
+    handle(async ({ notebookId, workspaceId, type, title, content, dataSource, dataframeName, toolId, inputs, position }) => {
+      const ws = await resolveWorkspaceId(ctx, workspaceId);
+      const { blocks } = await rest<{ blocks: Cell[] }>(ctx, 'POST', `${notebookApiPath(ws, notebookId)}/blocks`, {
+        blocks: [{ kind: type, title, source: content, dataSource, dataframeName, toolId, inputs }],
+        position,
+      });
+      return { notebookId, cell: blocks[0], url: notebookUrl(ctx, ws, notebookId) };
+    }),
   );
 
   server.registerTool(
@@ -109,21 +105,17 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
           .describe("power_toolbox cells only: values for all of the tool's inputs, keyed by input key (see search_tools)"),
       },
     },
-    async ({ notebookId, workspaceId, cellId, title, content, dataSource, dataframeName, inputs }) => {
-      try {
-        const ws = await resolveWorkspaceId(ctx, workspaceId);
-        const { block } = await rest<{ block: Cell }>(ctx, 'PATCH', `${notebookApiPath(ws, notebookId)}/blocks/${cellId}`, {
-          title,
-          source: content,
-          dataSource,
-          dataframeName,
-          inputs,
-        });
-        return jsonResult({ notebookId, cell: block, url: notebookUrl(ctx, ws, notebookId) });
-      } catch (err) {
-        return errorResult(err);
-      }
-    },
+    handle(async ({ notebookId, workspaceId, cellId, title, content, dataSource, dataframeName, inputs }) => {
+      const ws = await resolveWorkspaceId(ctx, workspaceId);
+      const { block } = await rest<{ block: Cell }>(ctx, 'PATCH', `${notebookApiPath(ws, notebookId)}/blocks/${cellId}`, {
+        title,
+        source: content,
+        dataSource,
+        dataframeName,
+        inputs,
+      });
+      return { notebookId, cell: block, url: notebookUrl(ctx, ws, notebookId) };
+    }),
   );
 
   server.registerTool(
@@ -139,15 +131,11 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
         confirm,
       },
     },
-    async ({ notebookId, workspaceId, cellId, removeFromDashboard }) => {
-      try {
-        const ws = await resolveWorkspaceId(ctx, workspaceId);
-        const query = removeFromDashboard ? '?removeFromDashboard=true' : '';
-        await rest(ctx, 'DELETE', `${notebookApiPath(ws, notebookId)}/blocks/${cellId}${query}`);
-        return jsonResult({ notebookId, deleted: cellId, url: notebookUrl(ctx, ws, notebookId) });
-      } catch (err) {
-        return errorResult(err);
-      }
-    },
+    handle(async ({ notebookId, workspaceId, cellId, removeFromDashboard }) => {
+      const ws = await resolveWorkspaceId(ctx, workspaceId);
+      const query = removeFromDashboard ? '?removeFromDashboard=true' : '';
+      await rest(ctx, 'DELETE', `${notebookApiPath(ws, notebookId)}/blocks/${cellId}${query}`);
+      return { notebookId, deleted: cellId, url: notebookUrl(ctx, ws, notebookId) };
+    }),
   );
 }

@@ -3,10 +3,10 @@ import { test } from 'node:test';
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-import { logToolCalls, redact, type PendingCalls, type ToolCall } from '../call-log.ts';
+import { logToolCalls, redact, type PendingCalls, type Session } from '../call-log.ts';
 
 type Handler = (...params: unknown[]) => Promise<unknown>;
-type Saved = { notebookId: string; calls: ToolCall[]; userAgent?: string };
+type Saved = Session & { notebookId: string };
 
 const NOTEBOOK_ID = '4de66e69-90c7-411f-aa7e-d6c50b014160';
 const text = (value: string) => ({ content: [{ type: 'text', text: value }] });
@@ -22,9 +22,9 @@ function setup(record?: () => void) {
 
   logToolCalls(server, {
     userId: 'user-1',
-    userAgent: 'claude-code/2.1',
+    client: { name: 'Claude Code', version: '2.1' },
     pending,
-    record: record ?? ((notebookId, calls, userAgent) => saved.push({ notebookId, calls, userAgent })),
+    record: record ?? ((notebookId, session) => saved.push({ notebookId, ...session })),
   });
 
   const tool = (name: string, handler: Handler) => {
@@ -44,7 +44,7 @@ test('a call that names a notebook is saved to that notebook', async () => {
   assert.equal(returned, result);
   assert.equal(saved.length, 1);
   assert.equal(saved[0].notebookId, NOTEBOOK_ID);
-  assert.equal(saved[0].userAgent, 'claude-code/2.1');
+  assert.deepEqual(saved[0].client, { name: 'Claude Code', version: '2.1' });
   const [call] = saved[0].calls;
   assert.equal(call.toolName, 'add_cell');
   assert.deepEqual(call.arguments, { notebookId: NOTEBOOK_ID, content: 'select 1' });
@@ -58,13 +58,15 @@ test('calls made before a notebook exists are saved with the first one that has 
   const plan = tool('plan_notebook', async () => text('{"step":"research"}'));
   const create = tool('create_notebook', async () => text(JSON.stringify({ notebookId: NOTEBOOK_ID })));
 
-  await plan({ goal: 'market mood' }, {});
+  await plan({ goal: 'market mood', request: 'make a mood notebook' }, {});
   assert.equal(saved.length, 0);
 
   await create({ title: 'Crypto Market Mood' }, {});
   assert.equal(saved.length, 1);
   assert.equal(saved[0].notebookId, NOTEBOOK_ID);
   assert.deepEqual(saved[0].calls.map(c => c.toolName), ['plan_notebook', 'create_notebook']);
+  // The prompt came with the held call and is sent with the batch.
+  assert.deepEqual(saved[0].prompt, { text: 'make a mood notebook', afterWork: false });
   assert.equal(pending.size, 0);
 });
 

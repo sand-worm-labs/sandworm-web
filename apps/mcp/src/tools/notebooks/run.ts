@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { rest } from '../../rest.ts';
-import { errorResult, jsonResult, workspaceId } from '../shared.ts';
+import { handle, workspaceId } from '../shared.ts';
 import { notebookApiPath, notebookId, notebookUrl, objectOrJson } from './shared.ts';
 
 // How long one call waits on a run. Under a minute, because that is where many
@@ -28,7 +28,6 @@ const cellIds = objectOrJson(z.array(z.uuid()).min(1).max(200)).optional();
 const CELL_STATES =
   'Each cell has a state: success, error, aborted (stopped by a user), not_run, or queued / running / stopping while a run is in progress. Python cells carry `outputs` (printed text, rendered tables as text, chart and image summaries), SQL cells carry `result` (row count, columns and the first rows), and failed cells carry `error` with the traceback. Long output is shortened; the notebook keeps all of it.';
 
-// What run_notebook answers: the run it started, finished or not.
 export function describeRun(report: RunReport) {
   const { status, progress, cellTimeoutSeconds, counts, cells } = report;
   if (cells.length === 0) {
@@ -46,7 +45,6 @@ export function describeRun(report: RunReport) {
   return { status: 'finished', cellTimeoutSeconds, counts, cells };
 }
 
-// What get_run_results answers: the notebook as it stands.
 export function describeResults(report: RunReport) {
   const { status, progress, counts, cells } = report;
   if (status === 'running') {
@@ -75,21 +73,17 @@ export function registerRunTools(server: McpServer, ctx: ToolContext): void {
         cellIds: cellIds.describe('Run only these cells, in notebook order. Omit to run the whole notebook'),
       },
     },
-    async ({ notebookId, workspaceId, cellIds }) => {
-      try {
-        const ws = await resolveWorkspaceId(ctx, workspaceId);
-        const report = await rest<RunReport>(
-          ctx,
-          'POST',
-          `${notebookApiPath(ws, notebookId)}/run`,
-          { blockIds: cellIds, waitSeconds: WAIT_SECONDS },
-          { timeoutMs: REQUEST_TIMEOUT_MS },
-        );
-        return jsonResult({ notebookId, url: notebookUrl(ctx, ws, notebookId), ...describeRun(report) });
-      } catch (err) {
-        return errorResult(err);
-      }
-    },
+    handle(async ({ notebookId, workspaceId, cellIds }) => {
+      const ws = await resolveWorkspaceId(ctx, workspaceId);
+      const report = await rest<RunReport>(
+        ctx,
+        'POST',
+        `${notebookApiPath(ws, notebookId)}/run`,
+        { blockIds: cellIds, waitSeconds: WAIT_SECONDS },
+        { timeoutMs: REQUEST_TIMEOUT_MS },
+      );
+      return { notebookId, url: notebookUrl(ctx, ws, notebookId), ...describeRun(report) };
+    }),
   );
 
   server.registerTool(
@@ -106,18 +100,14 @@ export function registerRunTools(server: McpServer, ctx: ToolContext): void {
         wait: z.boolean().default(true).describe('Set false to get the current state at once instead of waiting for a run in progress'),
       },
     },
-    async ({ notebookId, workspaceId, cellIds, wait }) => {
-      try {
-        const ws = await resolveWorkspaceId(ctx, workspaceId);
-        const query = new URLSearchParams({ waitSeconds: String(wait ? WAIT_SECONDS : 0) });
-        if (cellIds) query.set('blockIds', cellIds.join(','));
-        const report = await rest<RunReport>(ctx, 'GET', `${notebookApiPath(ws, notebookId)}/run?${query}`, undefined, {
-          timeoutMs: REQUEST_TIMEOUT_MS,
-        });
-        return jsonResult({ notebookId, url: notebookUrl(ctx, ws, notebookId), ...describeResults(report) });
-      } catch (err) {
-        return errorResult(err);
-      }
-    },
+    handle(async ({ notebookId, workspaceId, cellIds, wait }) => {
+      const ws = await resolveWorkspaceId(ctx, workspaceId);
+      const query = new URLSearchParams({ waitSeconds: String(wait ? WAIT_SECONDS : 0) });
+      if (cellIds) query.set('blockIds', cellIds.join(','));
+      const report = await rest<RunReport>(ctx, 'GET', `${notebookApiPath(ws, notebookId)}/run?${query}`, undefined, {
+        timeoutMs: REQUEST_TIMEOUT_MS,
+      });
+      return { notebookId, url: notebookUrl(ctx, ws, notebookId), ...describeResults(report) };
+    }),
   );
 }

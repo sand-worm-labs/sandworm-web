@@ -1,8 +1,9 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
+import type { ClientInfo } from '../client.ts';
 import type { ToolContext } from '../graphql.ts';
 import { rest } from '../rest.ts';
-import { describeCall, type Display } from './call-display.ts';
+import { describeCall, parseResult, promptOf, type Display, type Prompt } from './call-display.ts';
 
 export type ToolCall = {
   toolName: string;
@@ -12,12 +13,12 @@ export type ToolCall = {
   durationMs: number;
   at: string;
   requestId?: string;
-  // How the call is shown in the notebook's chat.
   display: Display[];
 };
 
-// Saves calls to the MCP chat of one notebook.
-export type Recorder = (notebookId: string, calls: ToolCall[], userAgent?: string) => void;
+type Held = { calls: ToolCall[]; prompt?: Prompt };
+export type Session = Held & { client?: ClientInfo };
+export type Recorder = (notebookId: string, session: Session) => void;
 
 // `value` covers set_env_vars, whose variables are { name, value } pairs.
 const SENSITIVE_KEY = /pass(word)?|secret|token|api[-_]?key|authorization|cookie|credential|private[-_]?key|^value$/i;
@@ -34,16 +35,8 @@ export function redact(value: unknown): unknown {
   );
 }
 
-const uuidOrUndefined = (value: unknown) => (typeof value === 'string' && UUID.test(value) ? value : undefined);
-
-// create_notebook and fork_notebook take no notebookId but return one.
-function notebookIdFromResult(text: string): string | undefined {
-  try {
-    return uuidOrUndefined((JSON.parse(text) as { notebookId?: unknown } | null)?.notebookId);
-  } catch {
-    return undefined;
-  }
-}
+const uuid = (value: unknown) => (typeof value === 'string' && UUID.test(value) ? value : undefined);
+const errorMessage = (err: unknown) => (err instanceof Error ? err.message : String(err));
 
 type ToolResult = { isError?: boolean; content?: { type: string; text?: string }[] };
 
@@ -53,29 +46,28 @@ const resultText = (result: ToolResult) => (result.content ?? []).map(part => pa
 // (plan_notebook, list_workspaces) wait here, per user, and are saved with
 // that user's next call that names a notebook. Best effort: held in this
 // process only, and dropped after PENDING_TTL_MS.
-export type PendingCalls = Map<string, ToolCall[]>;
+export type PendingCalls = Map<string, Held>;
 const sharedPending: PendingCalls = new Map();
 
-function takePending(pending: PendingCalls, userId: string): ToolCall[] {
-  const calls = pending.get(userId) ?? [];
+function takePending(pending: PendingCalls, userId: string): Held {
+  const held = pending.get(userId);
   pending.delete(userId);
   const cutoff = Date.now() - PENDING_TTL_MS;
-  return calls.filter(call => Date.parse(call.at) >= cutoff);
+  const calls = (held?.calls ?? []).filter(call => Date.parse(call.at) >= cutoff);
+  return { calls, prompt: calls.length ? held?.prompt : undefined };
 }
 
 export type CallLogOptions = {
   userId: string;
   record: Recorder;
-  userAgent?: string;
+  client?: ClientInfo;
   pending?: PendingCalls;
 };
 
-// Wraps every tool registered after this call, so each call is saved with its
-// arguments, what it returned and how long it took. Call it before the tools
-// are registered.
+// Wraps every tool registered after this call, so call it before the tools are registered.
 export function logToolCalls(
   server: McpServer,
-  { userId, record, userAgent, pending = sharedPending }: CallLogOptions,
+  { userId, record, client, pending = sharedPending }: CallLogOptions,
 ): void {
   const register = server.registerTool.bind(server) as (...args: unknown[]) => unknown;
 
@@ -87,24 +79,30 @@ export function logToolCalls(
       const started = Date.now();
 
       const save = (text: string, isError: boolean) => {
-        // Logging must never break the tool call it describes.
+        const call: ToolCall = {
+          toolName: name,
+          arguments: redact(args) as Record<string, unknown>,
+          result: text.slice(0, MAX_RESULT_CHARS),
+          isError,
+          durationMs: Date.now() - started,
+          at: new Date(started).toISOString(),
+          requestId: extra?.requestId === undefined ? undefined : String(extra.requestId),
+          display: describeCall(name, args, text, isError),
+        };
+        const held = takePending(pending, userId);
+        const calls = [...held.calls, call];
+        const prompt = held.prompt ?? promptOf(name, args);
+        // create_notebook and fork_notebook take no notebookId but return one.
+        const notebookId = uuid(args.notebookId) ?? uuid(parseResult(text).notebookId);
+
+        if (notebookId) record(notebookId, { calls, prompt, client });
+        else pending.set(userId, { calls: calls.slice(-MAX_PENDING), prompt });
+      };
+
+      // Logging must never break the tool call it describes.
+      const saveSafely = (text: string, isError: boolean) => {
         try {
-          const call: ToolCall = {
-            toolName: name,
-            arguments: redact(args) as Record<string, unknown>,
-            result: text.slice(0, MAX_RESULT_CHARS),
-            isError,
-            durationMs: Date.now() - started,
-            at: new Date(started).toISOString(),
-            requestId: extra?.requestId === undefined ? undefined : String(extra.requestId),
-            display: describeCall(name, args, text, isError),
-          };
-          const notebookId = uuidOrUndefined(args.notebookId) ?? notebookIdFromResult(text);
-          if (notebookId) {
-            record(notebookId, [...takePending(pending, userId), call], userAgent);
-          } else {
-            pending.set(userId, [...takePending(pending, userId), call].slice(-MAX_PENDING));
-          }
+          save(text, isError);
         } catch (err) {
           console.error('Tool call log failed', err);
         }
@@ -112,10 +110,10 @@ export function logToolCalls(
 
       try {
         const result = (await handler(...params)) as ToolResult;
-        save(resultText(result), result.isError === true);
+        saveSafely(resultText(result), result.isError === true);
         return result;
       } catch (err) {
-        save(err instanceof Error ? err.message : String(err), true);
+        saveSafely(errorMessage(err), true);
         throw err;
       }
     })) as typeof server.registerTool;
@@ -124,8 +122,8 @@ export function logToolCalls(
 // Fire and forget: the agent gets its answer without waiting on the write.
 export const apiRecorder =
   (ctx: ToolContext): Recorder =>
-  (notebookId, calls, userAgent) => {
-    rest(ctx, 'POST', '/chat/mcp/tool-calls', { documentId: notebookId, calls, userAgent }).catch(err =>
-      console.error(`Tool call log failed for notebook ${notebookId}: ${err instanceof Error ? err.message : err}`),
+  (notebookId, session) => {
+    rest(ctx, 'POST', '/chat/mcp/tool-calls', { documentId: notebookId, ...session }).catch(err =>
+      console.error(`Tool call log failed for notebook ${notebookId}: ${errorMessage(err)}`),
     );
   };

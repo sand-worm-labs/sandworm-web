@@ -21,9 +21,7 @@ const envSchema = z.object({
   MPP_SECRET_KEY: z.string().min(16, 'use a long random string'),
   MPP_SERVER_PRIVATE_KEY: hex(64),
   MPP_RECIPIENT: hex(40).optional(),
-  // Per-call price, in USDC base units (6 decimals). Kept generic now that no
-  // tool is registered yet — rename/split if different tools need different
-  // prices.
+  // Per-call price, in USDC base units (6 decimals).
   QUERY_PRICE: z.string().regex(/^[1-9]\d*$/, 'must be a positive integer of USDC base units'),
 
   // Set while Dune, Sandworm Cloud and the power tools are offline: notebooks

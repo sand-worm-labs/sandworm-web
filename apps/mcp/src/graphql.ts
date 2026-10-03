@@ -1,7 +1,6 @@
 import type { AuthContext } from './auth.ts';
+import type { ClientInfo } from './client.ts';
 
-// What every tool gets: who is calling, where the Sandworm API lives, and
-// where the web app lives (for links back to what a tool created).
 export type ToolContext = {
   auth: AuthContext;
   apiUrl: string;
@@ -10,8 +9,7 @@ export type ToolContext = {
   openDataOnly?: boolean;
   // Save every tool call to the notebook's MCP chat (see tools/call-log.ts).
   logToolCalls?: boolean;
-  // The MCP client's User-Agent, saved with the logged calls.
-  userAgent?: string;
+  client?: ClientInfo;
 };
 
 export class GraphQLError extends Error {}

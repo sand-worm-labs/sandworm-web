@@ -19,3 +19,14 @@ export const errorResult = (err: unknown) => ({
   isError: true,
   content: [{ type: 'text' as const, text: err instanceof Error ? err.message : String(err) }],
 });
+
+// Wraps a tool handler: what it returns becomes the JSON result, what it throws the error result.
+export const handle =
+  <Args extends unknown[]>(fn: (...args: Args) => Promise<unknown>) =>
+  async (...args: Args) => {
+    try {
+      return jsonResult(await fn(...args));
+    } catch (err) {
+      return errorResult(err);
+    }
+  };

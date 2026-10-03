@@ -1,4 +1,4 @@
-import { toolCallEvents } from '../mcp-chat-log.service';
+import { mcpChatTitle, toolCallEvents } from '../mcp-chat-log.service';
 
 const call = {
   toolName: 'add_cell',
@@ -56,12 +56,31 @@ describe('toolCallEvents', () => {
     });
   });
 
-  it('adds nothing to the assistant message for the prompt, which is the user\'s message', () => {
-    expect(toolCallEvents({ ...call, display: [{ kind: 'prompt', text: 'make a notebook', afterWork: false }] })).toHaveLength(1);
-  });
-
   it('shows text as a text delta', () => {
     const [, delta] = toolCallEvents({ ...call, display: [{ kind: 'text', text: 'Published: http://x' }] });
     expect(delta.delta).toEqual({ type: 'text_delta', text: 'Published: http://x\n\n' });
+  });
+});
+
+describe('mcpChatTitle', () => {
+  it('names the chat after what the user asked, with the agent it came through', () => {
+    expect(mcpChatTitle('so an abirtume anaklis with the sandwoem tool', 'Claude Code')).toBe(
+      'so an abirtume anaklis with the sandwoem tool (Claude Code MCP)',
+    );
+  });
+
+  it('says only MCP when the agent did not name itself', () => {
+    expect(mcpChatTitle('stablecoin supply', undefined)).toBe('stablecoin supply (MCP)');
+    expect(mcpChatTitle('stablecoin supply', null)).toBe('stablecoin supply (MCP)');
+  });
+
+  it('cuts a long prompt and flattens line breaks', () => {
+    const title = mcpChatTitle(`create a notebook for stablecoins on defillama.\nuse good charts so normies understand`, 'Cursor');
+    expect(title).toBe('create a notebook for stablecoins on defillama. us… (Cursor MCP)');
+  });
+
+  it('falls back to the plain name until a prompt is known', () => {
+    expect(mcpChatTitle(undefined, 'Claude Code')).toBe('MCP session');
+    expect(mcpChatTitle('   ', 'Claude Code')).toBe('MCP session');
   });
 });

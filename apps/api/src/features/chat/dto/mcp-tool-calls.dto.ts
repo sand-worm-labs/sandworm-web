@@ -21,14 +21,8 @@ import {
 // How a call is shown in the chat (built by apps/mcp, tools/call-display.ts).
 export class McpDisplayDto {
   @ApiProperty()
-  @IsIn(['thinking', 'block', 'text', 'prompt'])
-  kind: 'thinking' | 'block' | 'text' | 'prompt';
-
-  // On a prompt: it arrived with the closing reply, after the work it asked for.
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  afterWork?: boolean;
+  @IsIn(['thinking', 'block', 'text'])
+  kind: 'thinking' | 'block' | 'text';
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -111,6 +105,35 @@ export class McpToolCallDto {
   display?: McpDisplayDto[];
 }
 
+// What the user asked the agent, saved as their message in the chat.
+export class McpPromptDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(4000)
+  text: string;
+
+  // It arrived with the closing reply, after the work it asked for.
+  @ApiProperty()
+  @IsBoolean()
+  afterWork: boolean;
+}
+
+// What the MCP client calls itself (clientInfo from its `initialize`).
+export class McpClientDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(100)
+  name: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  version?: string;
+}
+
 export class RecordMcpToolCallsDto {
   @ApiProperty()
   @IsUUID()
@@ -124,10 +147,15 @@ export class RecordMcpToolCallsDto {
   @Type(() => McpToolCallDto)
   calls: McpToolCallDto[];
 
-  // The MCP client, e.g. "claude-code/2.1".
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: McpPromptDto })
   @IsOptional()
-  @IsString()
-  @MaxLength(500)
-  userAgent?: string;
+  @ValidateNested()
+  @Type(() => McpPromptDto)
+  prompt?: McpPromptDto;
+
+  @ApiPropertyOptional({ type: McpClientDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => McpClientDto)
+  client?: McpClientDto;
 }

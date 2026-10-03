@@ -2,8 +2,9 @@ import { tokens } from './tool-catalog.ts';
 
 // Public data APIs a python cell can fetch from with plain `requests`. They are
 // suggested when no power tool fits a sub-goal, and for everything when chain
-// data (Dune, Sandworm Cloud) is offline. Every endpoint here was checked from
-// the notebook environment; keep it that way.
+// data (Dune, Sandworm Cloud) is offline. Every keyless endpoint here was
+// checked from the notebook environment; Etherscan's follow its docs. Check a
+// source the same way before adding it.
 
 export type OpenDataSource = {
   id: string;
@@ -62,18 +63,6 @@ export const OPEN_DATA_SOURCES: OpenDataSource[] = [
       { path: '/global', gives: 'total crypto market cap, BTC/ETH dominance' },
       { path: '/search/trending', gives: 'trending coins' },
       { path: '/coins/categories', gives: 'sectors (DeFi, L2, AI, memes...) with market cap and 24h change' },
-    ],
-  },
-  {
-    id: 'coinpaprika',
-    name: 'CoinPaprika',
-    covers: 'prices, market caps, supply and global market stats, as a second price source',
-    keywords: ['price', 'market', 'cap', 'supply', 'global', 'dominance', 'coin', 'ticker'],
-    baseUrl: 'https://api.coinpaprika.com/v1',
-    endpoints: [
-      { path: '/global', gives: 'total market cap, volume, BTC dominance' },
-      { path: '/tickers?limit=100', gives: 'top coins: price, mcap, supply, % changes' },
-      { path: '/tickers/{id}', gives: 'one coin, ids like btc-bitcoin, eth-ethereum' },
     ],
   },
   {
@@ -207,17 +196,6 @@ export const OPEN_DATA_SOURCES: OpenDataSource[] = [
     ],
   },
   {
-    id: 'rpc',
-    name: 'Public RPC nodes',
-    covers: 'direct contract reads: balances, total supply, latest block, any view function',
-    keywords: ['rpc', 'contract', 'balance', 'call', 'block', 'onchain', 'supply', 'read'],
-    baseUrl: 'https://ethereum-rpc.publicnode.com',
-    endpoints: [
-      { path: 'POST {"jsonrpc": "2.0", "id": 1, "method": "eth_call", "params": [...]}', gives: 'Ethereum JSON-RPC (mainnet.base.org for Base)' },
-    ],
-    notes: 'Live state only; not for history.',
-  },
-  {
     id: 'etherscan',
     name: 'Etherscan V2',
     covers: 'per-address and per-contract activity on ~60 EVM chains with one key: transactions, token transfers, balances, gas',
@@ -230,24 +208,6 @@ export const OPEN_DATA_SOURCES: OpenDataSource[] = [
       { path: '?chainid=1&module=account&action=txlist&address={address}', gives: 'transactions of an address' },
       { path: '?chainid=1&module=gastracker&action=gasoracle', gives: 'gas prices' },
     ],
-  },
-  {
-    id: 'thegraph',
-    name: 'The Graph',
-    covers: 'protocol subgraphs (Uniswap, Aave, Curve...): pools, swaps, positions, protocol-level history',
-    keywords: ['subgraph', 'uniswap', 'aave', 'curve', 'swap', 'pool', 'position', 'protocol', 'graphql'],
-    baseUrl: 'https://gateway.thegraph.com/api/subgraphs/id/{subgraph_id}',
-    key: { env: 'THEGRAPH_API_KEY', required: true, send: 'header Authorization: Bearer <key>', signup: 'Free key in Subgraph Studio (100k queries/month)' },
-    endpoints: [{ path: 'POST {"query": "..."}', gives: 'GraphQL over a subgraph; find ids on thegraph.com/explorer' }],
-  },
-  {
-    id: 'fred',
-    name: 'FRED (US Federal Reserve data)',
-    covers: 'macro: interest rates, Treasury yields, inflation, M2 money supply, dollar index',
-    keywords: ['macro', 'interest', 'rate', 'yield', 'treasury', 'inflation', 'cpi', 'fed', 'm2', 'dollar', 'economy'],
-    baseUrl: 'https://api.stlouisfed.org/fred',
-    key: { env: 'FRED_API_KEY', required: true, send: 'query param api_key', signup: 'Free key at fred.stlouisfed.org/docs/api/api_key.html' },
-    endpoints: [{ path: '/series/observations?series_id=DGS10&file_type=json', gives: 'a daily series; e.g. DGS10 (10y yield), CPIAUCSL (CPI), M2SL, DFF (fed funds)' }],
   },
 ];
 
@@ -262,13 +222,13 @@ function score(source: OpenDataSource, words: string[]): number {
   return words.reduce((sum, w) => sum + (strong.has(w) ? 3 : weak.has(w) ? 1 : 0), 0);
 }
 
-export function matchOpenData(query: string, limit = MATCHES_PER_SUB_GOAL): OpenDataSource[] {
+export function matchOpenData(query: string): OpenDataSource[] {
   const words = tokens(query);
   const ranked = OPEN_DATA_SOURCES.map(source => ({ source, score: score(source, words) }))
     .filter(m => m.score > 0)
     .sort((a, b) => b.score - a.score)
     .map(m => m.source);
-  return (ranked.length ? ranked : OPEN_DATA_SOURCES.filter(s => FALLBACK_IDS.includes(s.id))).slice(0, limit);
+  return (ranked.length ? ranked : OPEN_DATA_SOURCES.filter(s => FALLBACK_IDS.includes(s.id))).slice(0, MATCHES_PER_SUB_GOAL);
 }
 
 // What the agent sees: drops the matching keywords, and says plainly whether a key is needed.

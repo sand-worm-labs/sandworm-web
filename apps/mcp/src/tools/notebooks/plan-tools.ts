@@ -1,6 +1,6 @@
 import type { ToolContext } from '../../graphql.ts';
 import type { PlannedBlock } from './plan.ts';
-import { describeOpenData, matchOpenData } from './open-data.ts';
+import { matchOpenData } from './open-data.ts';
 import { describeTool, keywordSearch, loadCatalog, searchCatalog } from './tool-catalog.ts';
 
 const TOOLS_PER_SUB_GOAL = 3;
@@ -20,11 +20,12 @@ export async function research(ctx: ToolContext, goal: string, subGoals: { goal:
 
   // Public APIs come back alongside the power tools, so a sub-goal no tool covers
   // still has somewhere to get data from; with chain data offline they are all there is.
+  // By id only: several sub-goals usually share a source, which the caller describes once.
   return Promise.all(
     queries.map(async subGoal => ({
       subGoal,
       tools: ctx.openDataOnly ? [] : (await searchCatalog(ctx, subGoal, TOOLS_PER_SUB_GOAL)).map(m => describeTool(m.tool)),
-      openData: matchOpenData(subGoal).map(describeOpenData),
+      openData: matchOpenData(subGoal).map(source => source.id),
     })),
   );
 }

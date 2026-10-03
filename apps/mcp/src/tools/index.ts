@@ -10,10 +10,9 @@ import { registerNotebookTools } from './notebooks/index.ts';
 import { registerProjectTools } from './projects/index.ts';
 import { registerWorkspaceTools } from './workspaces/index.ts';
 
-// Every tool takes `ctx` to call the API as the signed-in user.
 export function registerTools(server: McpServer, ctx: ToolContext): void {
   if (ctx.logToolCalls) {
-    logToolCalls(server, { userId: ctx.auth.userId, userAgent: ctx.userAgent, record: apiRecorder(ctx) });
+    logToolCalls(server, { userId: ctx.auth.userId, client: ctx.client, record: apiRecorder(ctx) });
   }
 
   registerWorkspaceTools(server, ctx);

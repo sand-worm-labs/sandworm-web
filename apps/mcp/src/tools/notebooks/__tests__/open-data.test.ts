@@ -44,7 +44,7 @@ test('offline, research skips the power tools and returns public APIs for each s
       { goal: 'bitcoin miner revenue', feasible: true },
     ]);
     assert.deepEqual(groups.map(g => g.tools.length), [0, 0]);
-    assert.deepEqual(groups.map(g => g.openData[0]!.id), ['defillama', 'bitcoin']);
+    assert.deepEqual(groups.map(g => g.openData[0]), ['defillama', 'bitcoin']);
   } finally {
     globalThis.fetch = realFetch;
   }

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { describeCall } from '../call-display.ts';
+import { describeCall, promptOf } from '../call-display.ts';
 
 const json = (value: unknown) => JSON.stringify(value);
 
@@ -77,12 +77,14 @@ test('every other call is shown as one step, so nothing is missing from the proc
   ]);
 });
 
-test('the user\'s request is saved as the prompt, ahead of the work', () => {
-  const [prompt, plan] = describeCall('plan_notebook', { goal: 'market mood', request: ' make a mood notebook ' }, '{}', false);
-  assert.deepEqual(prompt, { kind: 'prompt', text: 'make a mood notebook', afterWork: false });
-  assert.equal(plan.kind, 'thinking');
-
-  const [late, reply] = describeCall('save_reply', { message: 'Done.', request: 'make a mood notebook' }, '{}', false);
-  assert.deepEqual(late, { kind: 'prompt', text: 'make a mood notebook', afterWork: true });
-  assert.deepEqual(reply, { kind: 'text', text: 'Done.' });
+test('the user\'s request is the prompt; one that comes with the reply is marked as after the work', () => {
+  assert.deepEqual(promptOf('plan_notebook', { goal: 'market mood', request: ' make a mood notebook ' }), {
+    text: 'make a mood notebook',
+    afterWork: false,
+  });
+  assert.deepEqual(promptOf('save_reply', { message: 'Done.', request: 'make a mood notebook' }), {
+    text: 'make a mood notebook',
+    afterWork: true,
+  });
+  assert.equal(promptOf('add_cell', { content: 'select 1' }), undefined);
 });

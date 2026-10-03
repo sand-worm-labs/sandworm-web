@@ -22,8 +22,6 @@ export type ChargeOutcome =
   | { status: 402; challenge: unknown }
   | { status: 200; withReceipt: (result: ToolResult) => ToolResult };
 
-// Returns a function that checks one tool call's payment: unpaid calls get a
-// challenge, paid calls get a receipt to attach to the result.
 export function createCharge(config: Config): (extra: unknown) => Promise<ChargeOutcome> {
   const account = privateKeyToAccount(config.serverPrivateKey);
   const network = NETWORKS[config.network];

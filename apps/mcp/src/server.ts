@@ -4,6 +4,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 
 import type { AuthContext, Authenticator } from './auth.ts';
+import { clientOf, type ClientInfo } from './client.ts';
 import type { ChargeOutcome } from './payments.ts';
 import { registerTools } from './tools/index.ts';
 import { SAVE_REPLY_INSTRUCTIONS } from './tools/notebooks/reply.ts';
@@ -13,7 +14,6 @@ const MAX_BODY_BYTES = 1_000_000;
 export type ServerDeps = {
   charge: (extra: unknown) => Promise<ChargeOutcome>;
   authenticate: Authenticator;
-  // This endpoint's public URL (the OAuth `resource`) and the authorization server's issuer.
   publicUrl: string;
   authServerUrl: string;
   apiUrl: string;
@@ -22,14 +22,11 @@ export type ServerDeps = {
   logToolCalls?: boolean;
 };
 
-// Bare scaffold: payments are wired up, but no paid tool is registered yet.
-// Add tools here with `server.registerTool(...)`, gating each one on
-// `deps.charge(extra)` the way the old run_query tool did.
 export function createMcpServer(
   deps: ServerDeps,
   _price: { display: string },
   auth: AuthContext,
-  userAgent?: string,
+  client?: ClientInfo,
 ): McpServer {
   const server = new McpServer(
     { name: 'sandworm', version: '0.1.0' },
@@ -41,7 +38,7 @@ export function createMcpServer(
     webUrl: deps.webUrl,
     openDataOnly: deps.openDataOnly ?? false,
     logToolCalls: deps.logToolCalls ?? false,
-    userAgent,
+    client,
   });
 
   return server;
@@ -107,7 +104,7 @@ export function createHttpServer(deps: ServerDeps, price: { display: string }): 
 
     try {
       const body = await readJsonBody(req);
-      const mcp = createMcpServer(deps, price, auth, req.headers['user-agent']);
+      const mcp = createMcpServer(deps, price, auth, clientOf(req, res, body));
       const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
       res.on('close', () => {
         void transport.close();

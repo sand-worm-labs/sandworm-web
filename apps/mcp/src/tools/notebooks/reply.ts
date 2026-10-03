@@ -2,16 +2,15 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
 import type { ToolContext } from '../../graphql.ts';
-import { jsonResult } from '../shared.ts';
+import { handle } from '../shared.ts';
 import { notebookId, request } from './shared.ts';
 
 export const SAVE_REPLY_INSTRUCTIONS =
   'Every tool call is saved to the notebook\'s chat in Sandworm. Pass the user\'s message as `request` where a tool takes it. When you finish working on a notebook, call save_reply with the closing message you are about to give the user, before you give it.';
 
-// The server never sees what the agent tells the user: that stays in the
-// client. This tool is how the closing message reaches the notebook's chat.
-// It does nothing itself; the call log (../call-log.ts) saves it like any
-// other call, and call-display.ts shows `message` as the reply text.
+// The server never sees what the agent tells the user, so the agent hands its
+// closing message over here. The tool does nothing itself: the call log
+// (../call-log.ts) saves it like any other call.
 export function registerReplyTool(server: McpServer, _ctx: ToolContext): void {
   server.registerTool(
     'save_reply',
@@ -28,6 +27,6 @@ export function registerReplyTool(server: McpServer, _ctx: ToolContext): void {
         request,
       },
     },
-    async ({ notebookId }) => jsonResult({ notebookId, saved: true }),
+    handle(async ({ notebookId }) => ({ notebookId, saved: true })),
   );
 }
