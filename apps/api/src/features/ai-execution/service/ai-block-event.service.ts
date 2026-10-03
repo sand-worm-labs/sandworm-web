@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ChatEntity } from '@sandworm/postgresql-typeorm';
-import { BlockType, ExecutionQueue, getBlocks, getPythonAttributes, getSQLAttributes, updateYText } from '@sandworm/editor';
+import { BlockType, ExecutionQueue, getBlocks, getDataframes, getPythonAttributes, getSQLAttributes, updateYText } from '@sandworm/editor';
 import type { PivotTableMetric, PowerToolboxInputs, PythonBlock, SQLBlock } from '@sandworm/editor';
 import { DATA_SOURCE_DIALECT, DataSourceId } from '@sandworm/types';
 import type { DataFrameColumn, Output, RunQueryResult } from '@sandworm/types';
@@ -157,7 +157,7 @@ export class AiBlockEventService implements OnModuleInit {
       if (blockType === BlockType.SQL) {
         void this.runSqlWithAutoFix(sharedDoc.ydoc, blockId, chat.userId, ctx);
       } else {
-        void this.runPythonWithAutoFix(sharedDoc.ydoc, blockId, chat.userId, ctx);
+        void this.runPythonWithAutoFix(sharedDoc.ydoc, blockId, chat.userId, ctx, event.dataframeName);
       }
     }
   }
@@ -355,6 +355,7 @@ export class AiBlockEventService implements OnModuleInit {
     blockId: string,
     userId: string,
     ctx: GeneratorContext,
+    dataframeName?: string | null,
   ): Promise<void> {
     const blocks = getBlocks(ydoc);
     let previousQueryTime: string | null = null;
@@ -375,7 +376,11 @@ export class AiBlockEventService implements OnModuleInit {
       const errorOutput = result.find((o): o is Extract<Output, { type: 'error' }> => o.type === 'error');
       if (!errorOutput) {
         const summary = this.summarizePythonOutputs(result);
-        await this.publishBlockResult(blockId, 'success', summary);
+        // The DataFrame the block was told to leave behind: its columns are
+        // what a pivot_table depending on this block gets configured from.
+        const dataframe = dataframeName ? getDataframes(ydoc).get(dataframeName) : undefined;
+        const columns = dataframe?.columns.map(c => ({ name: String(c.name), type: c.type }));
+        await this.publishBlockResult(blockId, 'success', summary, columns);
         return;
       }
 

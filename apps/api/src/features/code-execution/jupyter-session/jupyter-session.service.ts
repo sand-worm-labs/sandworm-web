@@ -75,7 +75,7 @@ export class JupyterSessionService {
             add: etherscanApiKey ? [{ name: 'ETHERSCAN_API_KEY', value: etherscanApiKey }] : [],
             remove: [],
         });
-        await session.kernel.requestExecute({ code: this.buildQueryPreamble(), store_history: false }).done;
+        await session.kernel.requestExecute({ code: this.buildSessionPreamble(), store_history: false }).done;
 
         return { session, kernel: session.kernel };
     }
@@ -93,8 +93,20 @@ export class JupyterSessionService {
     // "duckdb" to query a dataframe this session already loaded (e.g. a
     // variable another block put in scope) without round-tripping to Dune.
     // Defaults to "trino" since most tool templates are a first-touch pull.
-    private buildQueryPreamble(): string {
+    //
+    // The theme is applied here too, once, so every chart drawn in the session
+    // gets Sandworm's colors and font with no import in the cell: power tools,
+    // Python cells and AI-written cells alike. A chart that sets its own style
+    // still wins; an image built without the package just skips it.
+    private buildSessionPreamble(): string {
         return `
+try:
+    from sandworm_theme import use_theme as _sandworm_use_theme
+    _sandworm_use_theme()
+    del _sandworm_use_theme
+except ImportError:
+    pass
+
 def _sandworm_query(sql, datasource="trino"):
     import pandas as pd
 
