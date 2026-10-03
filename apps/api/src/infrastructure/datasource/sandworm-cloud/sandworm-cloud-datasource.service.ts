@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { DataSourceId, DataSourceName, DataSourceType } from '@sandworm/types';
+import { SandwormCloudQueryService } from './sandworm-cloud-query.service';
 
 @Injectable()
 export class SandwormCloudDataSourceService {
+    constructor(private readonly queryService: SandwormCloudQueryService) { }
 
     getDataSource(workspaceId: string) {
+        const configured = this.queryService.isConfigured;
         return {
             type: DataSourceType.sandwormCloud,
             data: {
                 id: DataSourceId.sandwormCloud,
                 workspaceId: workspaceId,
                 name: DataSourceName.sandwormCloud,
-                // Disabled for now — SandwormCloudQueryService is still a
-                // mock (fake schema, no real query execution wired up), so
-                // this stays visible but unselectable until it's real.
-                disabled: true,
-                connStatus: 'offline',
+                disabled: !configured,
+                connStatus: configured ? 'online' : 'offline',
                 lastConnection: null,
-                connError: { name: 'NotAvailable', message: 'Sandworm Cloud is not available yet' },
+                connError: configured ? null : { name: 'NotAvailable', message: 'Sandworm Cloud is not configured' },
                 isDefault: false,
                 isDemo: false,
                 createdAt: new Date(0).toISOString(),
@@ -28,7 +28,7 @@ export class SandwormCloudDataSourceService {
 
     async ping() {
         try {
-            // Check connection without exposing credentials
+            await this.queryService.ping();
             return {
                 connStatus: 'online' as const,
                 lastConnection: new Date(),
@@ -38,7 +38,7 @@ export class SandwormCloudDataSourceService {
                 connStatus: 'offline' as const,
                 connError: {
                     name: 'ConnectionError',
-                    message: "Workspace Id ",
+                    message: error instanceof Error ? error.message : 'Could not connect to Sandworm Cloud',
                 },
             };
         }

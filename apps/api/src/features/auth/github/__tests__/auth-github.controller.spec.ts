@@ -35,7 +35,7 @@ describe('AuthGithubController', () => {
       const result = await controller.login({ code: 'abc' } as any, response);
 
       expect(authGithubService.getProfileByToken).toHaveBeenCalledWith({ code: 'abc' });
-      expect(authService.validateSocialLogin).toHaveBeenCalledWith('github', socialData);
+      expect(authService.validateSocialLogin).toHaveBeenCalledWith('github', socialData, undefined);
       expect(authService.issueTokenPair).toHaveBeenCalledWith('u1');
       expect(response.setCookie).toHaveBeenCalledWith(ACCESS_TOKEN_COOKIE, tokens.accessToken, expect.any(Object));
       expect(response.setCookie).toHaveBeenCalledWith(REFRESH_TOKEN_COOKIE, tokens.refreshToken, expect.any(Object));

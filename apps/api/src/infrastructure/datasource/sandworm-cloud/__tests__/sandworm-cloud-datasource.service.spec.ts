@@ -1,35 +1,44 @@
 import { DataSourceId, DataSourceName, DataSourceType } from '@sandworm/types';
 import { SandwormCloudDataSourceService } from '../sandworm-cloud-datasource.service';
 
+function makeService(configured: boolean, ping = jest.fn()) {
+  return new SandwormCloudDataSourceService({ isConfigured: configured, ping } as any);
+}
+
 describe('SandwormCloudDataSourceService', () => {
   describe('getDataSource', () => {
-    it('returns a disabled/offline data source descriptor (not yet wired up)', () => {
-      const service = new SandwormCloudDataSourceService();
-
-      const result = service.getDataSource('w1');
+    it('is enabled and online when configured', () => {
+      const result = makeService(true).getDataSource('w1');
 
       expect(result.type).toBe(DataSourceType.sandwormCloud);
       expect(result.data).toMatchObject({
         id: DataSourceId.sandwormCloud,
         workspaceId: 'w1',
         name: DataSourceName.sandwormCloud,
-        disabled: true,
-        connStatus: 'offline',
-        connError: { name: 'NotAvailable', message: 'Sandworm Cloud is not available yet' },
-        isDefault: false,
-        isDemo: false,
+        disabled: false,
+        connStatus: 'online',
+        connError: null,
       });
+    });
+
+    it('is disabled and offline when not configured', () => {
+      const result = makeService(false).getDataSource('w1');
+
+      expect(result.data).toMatchObject({ disabled: true, connStatus: 'offline' });
     });
   });
 
   describe('ping', () => {
-    it('always reports online (no real connectivity check implemented yet)', async () => {
-      const service = new SandwormCloudDataSourceService();
-
-      const result = await service.ping();
+    it('reports online when the database answers', async () => {
+      const result = await makeService(true, jest.fn().mockResolvedValue(undefined)).ping();
 
       expect(result.connStatus).toBe('online');
-      expect(result).toHaveProperty('lastConnection');
+    });
+
+    it('reports offline with the error when it does not', async () => {
+      const result = await makeService(true, jest.fn().mockRejectedValue(new Error('boom'))).ping();
+
+      expect(result).toMatchObject({ connStatus: 'offline', connError: { name: 'ConnectionError', message: 'boom' } });
     });
   });
 });

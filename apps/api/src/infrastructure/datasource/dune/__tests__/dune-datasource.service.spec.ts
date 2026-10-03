@@ -66,23 +66,14 @@ describe('DuneDataSourceService', () => {
   });
 
   describe('executeQuery', () => {
-    it('adds a row limit and delegates to TrinoQueryService', async () => {
+    it('delegates to TrinoQueryService as-is, with no row limit', async () => {
       const { service, trinoQueryService } = makeService();
       trinoQueryService.executeQuery.mockResolvedValue({ columns: ['a'], rows: [[1]] });
 
       const result = await service.executeQuery('SELECT * FROM t', 'u1', 'w1');
 
-      expect(trinoQueryService.executeQuery).toHaveBeenCalledWith('w1', 'dune-query-u1', 'SELECT * FROM t LIMIT 10000');
+      expect(trinoQueryService.executeQuery).toHaveBeenCalledWith('SELECT * FROM t');
       expect(result).toEqual({ columns: ['a'], rows: [[1]] });
-    });
-
-    it('does not append LIMIT when the query already has one', async () => {
-      const { service, trinoQueryService } = makeService();
-      trinoQueryService.executeQuery.mockResolvedValue({ columns: [], rows: [] });
-
-      await service.executeQuery('SELECT * FROM t LIMIT 5', 'u1', 'w1');
-
-      expect(trinoQueryService.executeQuery).toHaveBeenCalledWith('w1', 'dune-query-u1', 'SELECT * FROM t LIMIT 5');
     });
 
     it.each(['DROP TABLE t', 'DELETE FROM t', 'UPDATE t SET x=1', 'INSERT INTO t VALUES (1)', 'ALTER TABLE t', 'TRUNCATE t', 'CREATE TABLE t (id int)'])(

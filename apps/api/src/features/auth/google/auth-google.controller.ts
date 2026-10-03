@@ -38,7 +38,7 @@ export class AuthGoogleController {
     @Res({ passthrough: true }) response: FastifyReplyType,
   ): Promise<LoginResponseDto> {
     const socialData = await this.authGoogleService.getProfileByToken(loginDto);
-    const { user, roles } = await this.authService.validateSocialLogin('google', socialData);
+    const { user, roles } = await this.authService.validateSocialLogin('google', socialData, loginDto.referralCode);
 
     const { accessToken, refreshToken, accessTokenExpires, refreshTokenExpires } =
       await this.authService.issueTokenPair(user.id);

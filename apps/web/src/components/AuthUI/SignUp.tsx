@@ -7,6 +7,7 @@ import { TERMS_URL, PRIVACY_URL } from "@/utils/env";
 
 import { SandwormLogo } from "../Assets";
 
+import { ReferralCodeInput } from "./ReferralCodeInput";
 import { SocialLogin } from "./SocialLogin";
 import SignUpForm from "./SignUpForm";
 
@@ -30,6 +31,8 @@ export const SignUp = () => {
           <p className="text-ink-200 font-body font-medium text-sm mt-1 xl:mb-6 mb-2.5">
             Sign up in 3 steps
           </p>
+
+          <ReferralCodeInput />
 
           <SocialLogin variant="signup" />
 

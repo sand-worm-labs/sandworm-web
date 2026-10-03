@@ -4,38 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-catalogs:
-  default:
-    '@types/node':
-      specifier: 20.19.9
-      version: 20.19.9
-    typescript:
-      specifier: 5.9.2
-      version: 5.9.2
-  react:
-    '@types/react':
-      specifier: ^18.2.28
-      version: 18.3.26
-    '@types/react-dom':
-      specifier: ^18.2.7
-      version: 18.3.7
-    next:
-      specifier: 15.5.25
-      version: 15.5.25
-    next-themes:
-      specifier: 0.4.6
-      version: 0.4.6
-    react:
-      specifier: 18.3.1
-      version: 18.3.1
-    react-dom:
-      specifier: 18.3.1
-      version: 18.3.1
-  ui:
-    tailwindcss:
-      specifier: 3.4.17
-      version: 3.4.17
-
 overrides:
   '@arbitrum/mpp>typescript': 5.9.3
   fastify: 5.12.1
@@ -6577,8 +6545,8 @@ packages:
   '@types/pbf@3.0.5':
     resolution: {integrity: sha512-j3pOPiEcWZ34R6a6mN07mUkM4o4Lwf6hPNt8eilOeZhTFbxFXmKhvXl9Y28jotFPaI1bpPDJsbCprUoNke6OrA==}
 
-  '@types/pg@8.15.5':
-    resolution: {integrity: sha512-LF7lF6zWEKxuT3/OR8wAZGzkg4ENGXFNyiV/JeOt9z5B+0ZVwbql9McqX5c/WStFq1GaGso7H1AzP/qSzmlCKQ==}
+  '@types/pg@8.23.1':
+    resolution: {integrity: sha512-fKVHpikPdg4GKks3JuLEhvwSyvwzF23hnabPy6DD8ljVbC7+6J5dQzdv4arV6jqq57djnMgs1HKBxX4P8aBI3A==}
 
   '@types/plotly.js@3.0.10':
     resolution: {integrity: sha512-q+MgO4aajC2HrO7FllTYWzrpdfbTjboSMfjkz/aXKjg1v7HNo1zMEFfAW7quKfk6SL+bH74A5ThBEps/7hZxOA==}
@@ -20715,7 +20683,7 @@ snapshots:
   '@socket.io/postgres-adapter@0.5.0(socket.io-adapter@2.5.5)':
     dependencies:
       '@msgpack/msgpack': 2.8.0
-      '@types/pg': 8.15.5
+      '@types/pg': 8.23.1
       debug: 4.3.7
       pg: 8.16.3
       socket.io-adapter: 2.5.5
@@ -21695,7 +21663,7 @@ snapshots:
 
   '@types/pbf@3.0.5': {}
 
-  '@types/pg@8.15.5':
+  '@types/pg@8.23.1':
     dependencies:
       '@types/node': 24.7.2
       pg-protocol: 1.10.3

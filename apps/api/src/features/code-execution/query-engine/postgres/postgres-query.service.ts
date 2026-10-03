@@ -1,26 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RunQueryResult, SuccessRunQueryResult } from '@sandworm/types';
-import { AllConfigType } from '@/core/config/config.type';
 import { PythonExecutorService } from '../../python-executor.service';
 import { PythonQueryRunnerService } from '../python/python-query-runner.service';
-import { buildTrinoConnectionUrl } from './trino-connection-url.util';
 
-export interface AdhocQueryResult {
-  columns: string[];
-  rows: unknown[][];
-}
-
+// Runs SQL blocks against the Sandworm Cloud Postgres database, the same way
+// TrinoQueryService does for Dune: the query runs in the kernel via
+// SQLAlchemy and lands in a dataframe. Connection comes from
+// SANDWORM_CLOUD_DB_{HOST,PORT,NAME,USER,PASSWORD}.
 @Injectable()
-export class TrinoQueryService {
+export class PostgresQueryService {
   constructor(
     private readonly pythonExecutor: PythonExecutorService,
     private readonly queryRunner: PythonQueryRunnerService,
-    private readonly configService: ConfigService<AllConfigType>,
+    private readonly configService: ConfigService,
   ) { }
 
   buildConnectionUrl(): string {
-    return buildTrinoConnectionUrl(this.configService.getOrThrow('trino', { infer: true }));
+    const get = (k: string) => this.configService.get<string>(`SANDWORM_CLOUD_DB_${k}`);
+    const host = get('HOST');
+    if (!host) throw new ForbiddenException('Sandworm Cloud is not configured');
+
+    const user = encodeURIComponent(get('USER') ?? 'postgres');
+    const password = get('PASSWORD');
+    const auth = password ? `${user}:${encodeURIComponent(password)}` : user;
+    const sslmode = get('SSL') === 'false' ? 'disable' : 'require';
+    return `postgresql+psycopg2://${auth}@${host}:${get('PORT') ?? 5432}/${get('NAME') ?? 'postgres'}?sslmode=${sslmode}`;
   }
 
   async execute(
@@ -63,7 +68,7 @@ export class TrinoQueryService {
     databaseUrl: string,
   ): string {
     return `
-def _sandworm_make_trino_query():
+def _sandworm_make_postgres_query():
     import json, pandas as pd, os
     from sqlalchemy import create_engine, text
 
@@ -76,9 +81,8 @@ def _sandworm_make_trino_query():
     dashboard_page_size = ${resultOptions.dashboardPageSize}
 
     def hexlify_binary_columns(df):
-        # Trino VARBINARY columns (hashes, addresses, raw calldata) come back
-        # as raw bytes — pandas' to_json can't encode those as UTF-8. Hex
-        # them, matching how blockchain data is normally displayed.
+        # bytea columns come back as raw bytes — pandas' to_json can't encode
+        # those as UTF-8. Hex them, matching how the Trino path displays them.
         for column in df.columns:
             if df[column].dtype != "object":
                 continue
@@ -124,56 +128,12 @@ def _sandworm_make_trino_query():
         df.to_csv(csv, index=False)
 
     except Exception as e:
-        print(json.dumps({"type": "syntax-error", "message": f"[Trino] {e}"}))
+        print(json.dumps({"type": "syntax-error", "message": f"[Postgres] {e}"}))
     finally:
         engine.dispose()
 
-_sandworm_make_trino_query()
+_sandworm_make_postgres_query()
 `;
-  }
-
-  // For ad-hoc use outside the block-execution system (e.g. a "test query"
-  // action). Talks to Trino's REST protocol directly — no Python kernel, no
-  // row cap, no timeout.
-  async executeQuery(sql: string): Promise<AdhocQueryResult> {
-    const { host, port, catalog, schema, user, password, httpScheme } = this.configService.getOrThrow('trino', {
-      infer: true,
-    });
-    const headers: Record<string, string> = {
-      'X-Trino-User': user,
-      'X-Trino-Catalog': catalog,
-      'Content-Type': 'text/plain',
-      ...(schema ? { 'X-Trino-Schema': schema } : {}),
-      ...(password ? { Authorization: `Basic ${Buffer.from(`${user}:${password}`).toString('base64')}` } : {}),
-    };
-
-    let res = await fetch(`${httpScheme}://${host}:${port}/v1/statement`, { method: 'POST', headers, body: sql });
-    let columns: { name: string; type: string }[] = [];
-    const rows: unknown[][] = [];
-
-    for (;;) {
-      if (!res.ok) throw new Error(`[Trino] HTTP ${res.status}: ${(await res.text()).slice(0, 500)}`);
-      const page = (await res.json()) as {
-        columns?: { name: string; type: string }[];
-        data?: unknown[][];
-        error?: { message: string };
-        nextUri?: string;
-      };
-      if (page.error) throw new Error(`[Trino] ${page.error.message}`);
-      if (page.columns) columns = page.columns;
-      if (page.data) rows.push(...page.data);
-      if (!page.nextUri) break;
-      res = await fetch(page.nextUri, { headers });
-    }
-
-    // VARBINARY comes back base64: show it as 0x-hex like the block path does.
-    const binary = columns.map(c => c.type === 'varbinary');
-    return {
-      columns: columns.map(c => c.name),
-      rows: binary.some(Boolean)
-        ? rows.map(r => r.map((v, i) => (binary[i] && typeof v === 'string' ? '0x' + Buffer.from(v, 'base64').toString('hex') : v)))
-        : rows,
-    };
   }
 
   buildLoadDataframeCode(queryId: string, dataframeName: string): string {

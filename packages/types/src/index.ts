@@ -241,28 +241,23 @@ export const DATA_SOURCE_ID_BY_NAME: Partial<Record<string, DataSourceId>> = {
   sandworm_cloud: DataSourceId.sandwormCloud,
 };
 
-// Which real query engine executes a SQL block for a given dataSourceId.
-// Only "dune-datasource" is Trino-backed today; duckdb and sandwormCloud
-// both run against the local DuckDB session — sandwormCloud because
-// SandwormCloudQueryService is still a mock (no real query execution wired
-// up, disabled in the datasource picker; see sandworm-cloud-datasource.
-// service.ts), not because DuckDB is actually the right engine for it. When
-// that becomes real, add its own engine here instead of leaving it folded
-// into duckdb.
-export const DATA_SOURCE_QUERY_ENGINE: Record<DataSourceId, 'trino' | 'duckdb'> = {
+// Which real query engine executes a SQL block for a given dataSourceId:
+// "dune-datasource" runs on Trino, "sandwormcloud-datasource" on Postgres,
+// and duckdb on the local DuckDB session.
+export const DATA_SOURCE_QUERY_ENGINE: Record<DataSourceId, 'trino' | 'duckdb' | 'postgres'> = {
   [DataSourceId.dune]: 'trino',
   [DataSourceId.duckdb]: 'duckdb',
-  [DataSourceId.sandwormCloud]: 'duckdb',
+  [DataSourceId.sandwormCloud]: 'postgres',
 };
 
 // The dialect name shown to the AI when describing a query back to it (e.g.
 // SqlAiExecutorService's edit/fix prompts) — same split as
 // DATA_SOURCE_QUERY_ENGINE, just in the vocabulary an LLM prompt uses
-// ("sql" for Trino, not "trino").
+// ("sql" for Trino and Postgres, not the engine name).
 export const DATA_SOURCE_DIALECT: Record<DataSourceId, 'sql' | 'duckdb'> = {
   [DataSourceId.dune]: 'sql',
   [DataSourceId.duckdb]: 'duckdb',
-  [DataSourceId.sandwormCloud]: 'duckdb',
+  [DataSourceId.sandwormCloud]: 'sql',
 };
 
 export const DataSourceType = {

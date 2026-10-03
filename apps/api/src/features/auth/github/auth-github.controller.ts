@@ -39,7 +39,7 @@ export class AuthGithubController {
     @Res({ passthrough: true }) response: FastifyReplyType,
   ): Promise<LoginResponseDto> {
     const socialData = await this.authGithubService.getProfileByToken(loginDto);
-    const { user, roles } = await this.authService.validateSocialLogin('github', socialData);
+    const { user, roles } = await this.authService.validateSocialLogin('github', socialData, loginDto.referralCode);
 
     const { accessToken, refreshToken, accessTokenExpires, refreshTokenExpires } =
       await this.authService.issueTokenPair(user.id);

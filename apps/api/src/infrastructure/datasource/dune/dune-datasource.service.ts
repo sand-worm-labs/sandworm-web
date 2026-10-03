@@ -5,7 +5,6 @@ import { AllConfigType } from '@/core/config/config.type';
 import { AdhocQueryResult, TrinoQueryService } from '@/features/code-execution/query-engine/trino/trino-query.service';
 
 const FORBIDDEN_KEYWORDS = ['DROP', 'DELETE', 'UPDATE', 'INSERT', 'ALTER', 'TRUNCATE', 'CREATE'];
-const MAX_ROWS = 10000;
 
 @Injectable()
 export class DuneDataSourceService {
@@ -64,12 +63,11 @@ export class DuneDataSourceService {
     }
 
     // Ad-hoc execution (schema browser "test query", API callers, etc.) —
-    // not tied to a notebook block, so it gets its own guardrails: no
-    // mutating statements, and a hard cap on rows returned.
+    // not tied to a notebook block, so it gets its own guardrail: no
+    // mutating statements. No row cap or timeout.
     async executeQuery(query: string, userId: string, workspaceId: string): Promise<AdhocQueryResult> {
         this.validateQuery(query);
-        const limitedQuery = this.addRowLimit(query, MAX_ROWS);
-        return this.trinoQueryService.executeQuery(workspaceId, `dune-query-${userId}`, limitedQuery);
+        return this.trinoQueryService.executeQuery(query);
     }
 
     private validateQuery(query: string): void {
@@ -79,12 +77,5 @@ export class DuneDataSourceService {
                 throw new ForbiddenException(`${keyword} statements not allowed`);
             }
         }
-    }
-
-    private addRowLimit(query: string, maxRows: number): string {
-        if (!query.toUpperCase().includes('LIMIT')) {
-            return `${query.trim().replace(/;$/, '')} LIMIT ${maxRows}`;
-        }
-        return query;
     }
 }

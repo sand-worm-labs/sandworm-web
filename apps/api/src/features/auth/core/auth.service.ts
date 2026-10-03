@@ -2,12 +2,16 @@ import { UserService } from '@/features/user/user.service';
 import { AllConfigType } from '@/config/config.type';
 import { NullableType } from '@/common/types/nullable.type';
 import { 
+  ForbiddenException,
   HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ReferralCodeEntity, ReferralCodeUseEntity } from '@sandworm/postgresql-typeorm';
+import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { verifyPassword } from '@sandworm/nest-common';
@@ -32,7 +36,46 @@ export class AuthService {
     private usersService: UserService,
     private mailService: MailService,
     private configService: ConfigService<AllConfigType>,
+    @InjectRepository(ReferralCodeEntity)
+    private referralRepository: Repository<ReferralCodeEntity>,
+    @InjectRepository(ReferralCodeUseEntity)
+    private referralUseRepository: Repository<ReferralCodeUseEntity>,
   ) { }
+
+  // Sign-up is invite-only: spend one use of the code, atomically, or refuse.
+  private async consumeReferralCode(code?: string): Promise<string> {
+    const res = code
+      ? await this.referralRepository
+          .createQueryBuilder()
+          .update()
+          .set({ uses: () => 'uses + 1' })
+          .where('code = :code AND uses < max_uses AND (expires_at IS NULL OR expires_at > now())', { code: code.trim() })
+          .execute()
+      : null;
+    if (!res?.affected) {
+      throw new ForbiddenException({ errors: { referralCode: 'invalidReferralCode' } });
+    }
+    return code!.trim();
+  }
+
+  private async releaseReferralCode(code: string): Promise<void> {
+    await this.referralRepository.decrement({ code }, 'uses', 1);
+  }
+
+  private async createGated<T extends { id: string }>(
+    referralCode: string | undefined,
+    create: () => Promise<T>,
+  ): Promise<T> {
+    const code = await this.consumeReferralCode(referralCode);
+    try {
+      const user = await create();
+      await this.referralUseRepository.insert({ code, userId: user.id });
+      return user;
+    } catch (err) {
+      await this.releaseReferralCode(code);
+      throw err;
+    }
+  }
 
    async issueTokenPair(userId: string): Promise<TokenPair> {
     const authConfig = this.configService.getOrThrow('auth', { infer: true });
@@ -118,6 +161,7 @@ export class AuthService {
   async validateSocialLogin(
     authProvider: string,
     socialData: SocialInterface,
+    referralCode?: string,
   ): Promise<LoginResponseDto> {
     let user: NullableType<UserResponse> = null;
     const socialEmail = socialData.email?.toLowerCase();
@@ -154,14 +198,17 @@ export class AuthService {
       }
       user = userByEmail;
     } else if (socialData.id) {
-      user = await this.usersService.create({
-        email: socialEmail ?? null,
-        firstName: socialData.firstName ?? null,
-        lastName: socialData.lastName ?? null,
-        avater: socialData.avatar ?? null,
-        socialId: socialData.id,
-        provider: authProvider,
-      });
+      const created = await this.createGated(referralCode, () =>
+        this.usersService.create({
+          email: socialEmail ?? null,
+          firstName: socialData.firstName ?? null,
+          lastName: socialData.lastName ?? null,
+          avater: socialData.avatar ?? null,
+          socialId: socialData.id,
+          provider: authProvider,
+        }),
+      );
+      user = created;
 
       user = await this.usersService.findById(user.id);
     }
@@ -184,10 +231,10 @@ export class AuthService {
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
-    const user = await this.usersService.create({
-      ...dto,
-      email: dto.email,
-    });
+    const { referralCode, ...rest } = dto;
+    const user = await this.createGated(referralCode, () =>
+      this.usersService.create({ ...rest, email: dto.email }),
+    );
 
     const authConfig = this.configService.getOrThrow('auth', { infer: true });
     const hash = await this.jwtService.signAsync(

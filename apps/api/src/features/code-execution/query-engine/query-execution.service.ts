@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DuckDBQueryService } from './duckdb/duckdb-query.service';
 import { TrinoQueryService } from './trino/trino-query.service';
+import { PostgresQueryService } from './postgres/postgres-query.service';
 import {
     RunQueryResult,
     SuccessRunQueryResult,
@@ -12,6 +13,7 @@ export class QueryExecutionService {
     constructor(
         private readonly duckdbQueryService: DuckDBQueryService,
         private readonly trinoQueryService: TrinoQueryService,
+        private readonly postgresQueryService: PostgresQueryService,
     ) { }
 
     async makeSQLQuery(
@@ -19,7 +21,7 @@ export class QueryExecutionService {
         sessionId: string,
         queryId: string,
         dataframeName: string,
-        datasource: 'duckdb' | 'trino',
+        datasource: 'duckdb' | 'trino' | 'postgres',
         sql: string,
         resultOptions: { pageSize: number; dashboardPageSize: number },
         onProgress: (result: SuccessRunQueryResult) => void,
@@ -28,6 +30,18 @@ export class QueryExecutionService {
     ): Promise<[Promise<RunQueryResult>, () => Promise<void>]> {
         if (datasource === 'trino') {
             return this.trinoQueryService.execute(
+                workspaceId,
+                sessionId,
+                queryId,
+                dataframeName,
+                sql,
+                resultOptions,
+                onProgress,
+            );
+        }
+
+        if (datasource === 'postgres') {
+            return this.postgresQueryService.execute(
                 workspaceId,
                 sessionId,
                 queryId,
