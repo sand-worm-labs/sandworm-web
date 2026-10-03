@@ -1,0 +1,197 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css'
+
+const appUrl = import.meta.env.PUBLIC_APP_URL ?? 'http://localhost:8081';
+const mcpUrl = import.meta.env.PUBLIC_MCP_URL ?? 'https://mcp.sandwormlab.xyz/mcp';
+
+const clients = [
+	{
+		name: 'Claude Code',
+		note: 'Run this in your terminal, then type /mcp inside Claude Code and sign in.',
+		code: `claude mcp add --transport http sandworm ${mcpUrl}`,
+	},
+	{
+		name: 'Claude (web and desktop)',
+		note: 'Settings → Connectors → Add custom connector, then paste the address.',
+		code: mcpUrl,
+	},
+	{
+		name: 'Cursor',
+		note: 'Add this to ~/.cursor/mcp.json (or .cursor/mcp.json in a project).',
+		code: `{
+  "mcpServers": {
+    "sandworm": { "url": "${mcpUrl}" }
+  }
+}`,
+	},
+	{
+		name: 'Any other MCP client',
+		note: 'Add a remote server with the HTTP (streamable HTTP) transport. The older SSE transport is not supported.',
+		code: mcpUrl,
+	},
+];
+
+const prompts = [
+	'Build a notebook on Arbitrum: daily activity, DEX volume and value locked. Explain each chart in plain words.',
+	'Using open data, compare stablecoin supply on Base and Ethereum over the last year.',
+	'Using our tools, show the top Uniswap pairs on Base by volume this month.',
+	'Open my "Market mood" notebook, add a funding-rate chart and re-run it.',
+	'Publish the notebook and send me the link.',
+];
+
+const toolGroups = [
+	{
+		title: 'Plan and build',
+		tools: ['plan_notebook', 'search_tools', 'create_notebook', 'add_cell', 'update_cell', 'delete_cell'],
+		description: 'Plan an analysis, find ready-made tools, and write SQL, Python, Markdown, chart and input cells.',
+	},
+	{
+		title: 'Run',
+		tools: ['run_notebook', 'get_run_results', 'get_environment_status', 'restart_environment'],
+		description: 'Run a notebook or single cells and read back tables, chart summaries and errors.',
+	},
+	{
+		title: 'Manage notebooks',
+		tools: ['search_notebooks', 'get_notebook', 'edit_notebook', 'fork_notebook', 'publish_notebook', 'unpublish_notebook', 'schedule_notebook', 'unschedule_notebook', 'delete_notebook'],
+		description: 'Find, rename, fork, publish, schedule and delete notebooks.',
+	},
+	{
+		title: 'Data and files',
+		tools: ['list_data_sources', 'get_data_source_schema', 'upload_file', 'list_files', 'read_file', 'delete_file', 'set_env_vars', 'delete_env_var'],
+		description: 'See which data sources are available, upload files, and store API keys as environment variables.',
+	},
+	{
+		title: 'Workspaces and comments',
+		tools: ['list_workspaces', 'create_workspace', 'list_projects', 'list_comments', 'add_comment', 'delete_comment', 'save_reply'],
+		description: 'Choose a workspace, leave comments, and save the agent\'s closing message to the notebook\'s chat.',
+	},
+];
+
+const troubleshooting = [
+	{
+		q: 'SSE error: Non-200 status code (405)',
+		a: 'The client is set to the SSE transport. Remove the server and add it again as HTTP (streamable HTTP).',
+	},
+	{
+		q: 'It says the server needs authentication',
+		a: 'Sign in from the client (in Claude Code: /mcp, pick sandworm, authenticate). A browser window opens on Sandworm to approve access.',
+	},
+	{
+		q: 'A SQL cell failed',
+		a: 'Ask the agent to rebuild the notebook "using open data". It will fetch from public APIs in Python instead.',
+	},
+];
+
+const h2 = 'text-2xl font-medium mt-10 mb-4 text-white';
+const pre = 'rounded-xl bg-hero-base border border-white/10 p-4 text-sm text-[#C5CED9] overflow-x-auto font-mono';
+const inline = 'text-[#C7C2FF] font-mono text-sm';
+---
+
+<Layout
+	title="MCP docs | Sandworm"
+	description="Connect Claude, Cursor or any MCP client to Sandworm and let your agent build, run and publish onchain analysis notebooks."
+	path="/mcp"
+>
+	<Header />
+	<main class="bg-black text-[#7D8791] min-h-screen p-8 font-body pt-28 lg:pt-36 pb-20">
+		<div class="max-w-4xl mx-auto space-y-4">
+			<h1 class="lg:text-4xl text-3xl font-bold mb-4 text-[#C7C2FF] font-mono uppercase">
+				Sandworm MCP
+			</h1>
+			<p class="text-[#C5CED9]">
+				Connect your AI agent to Sandworm. It can plan an analysis, write and run SQL and Python,
+				build charts and publish the notebook, all from the chat. You get a notebook you can open,
+				edit and re-run.
+			</p>
+			<p class="text-sm">
+				These docs are an early draft and will change.
+			</p>
+
+			<h2 class={h2}>1. Server address</h2>
+			<pre class={pre}><code>{mcpUrl}</code></pre>
+			<p>
+				Transport: HTTP (streamable HTTP). Sign-in: OAuth with your Sandworm account, so there is no
+				API key to copy. You need a Sandworm account first:
+				<a href={`${appUrl}/workspace`} class="text-[#C7C2FF] underline hover:text-white">create one here</a>.
+			</p>
+
+			<h2 class={h2}>2. Connect your client</h2>
+			<div class="space-y-6">
+				{clients.map(client => (
+					<div>
+						<h3 class="text-lg font-medium text-white mb-1">{client.name}</h3>
+						<p class="mb-2">{client.note}</p>
+						<pre class={pre}><code>{client.code}</code></pre>
+					</div>
+				))}
+			</div>
+			<p>
+				The first time you connect, a Sandworm page opens in your browser asking you to approve access.
+				The agent then works in your default workspace unless you name another.
+			</p>
+
+			<h2 class={h2}>3. Try it</h2>
+			<p>Ask in plain language. Some prompts to start with:</p>
+			<ul class="list-disc pl-6 space-y-2 text-[#C5CED9]">
+				{prompts.map(prompt => <li>{prompt}</li>)}
+			</ul>
+
+			<h2 class={h2}>4. Choosing the data</h2>
+			<p>A notebook can be built from two kinds of data. Say which you want in your prompt:</p>
+			<ul class="list-disc pl-6 space-y-2">
+				<li>
+					<strong class="text-white">Sandworm data and tools</strong> ("using our tools", "using Dune"):
+					chain data queried with SQL, plus ready-made power tools.
+				</li>
+				<li>
+					<strong class="text-white">Open data</strong> ("using open data", "public APIs"):
+					public sources such as DefiLlama, CoinGecko and growthepie, fetched in Python cells.
+				</li>
+			</ul>
+			<p>
+				If you say nothing, Sandworm data is used, and open data is the fallback when chain SQL is not available.
+			</p>
+
+			<h2 class={h2}>5. What the agent can do</h2>
+			<div class="space-y-5">
+				{toolGroups.map(group => (
+					<div>
+						<h3 class="text-lg font-medium text-white mb-1">{group.title}</h3>
+						<p class="mb-2">{group.description}</p>
+						<p class="leading-7">
+							{group.tools.map((tool, i) => (
+								<Fragment><code class={inline}>{tool}</code>{i < group.tools.length - 1 ? ', ' : ''}</Fragment>
+							))}
+						</p>
+					</div>
+				))}
+			</div>
+
+			<h2 class={h2}>6. Session history</h2>
+			<p>
+				Every MCP session is saved to the notebook's chat in Sandworm: your request, the plan, each cell
+				the agent created or ran, and its closing message. Open the notebook and its chat panel to see
+				what the agent did. Values that look like secrets are redacted.
+			</p>
+
+			<h2 class={h2}>7. Troubleshooting</h2>
+			<dl class="space-y-4">
+				{troubleshooting.map(item => (
+					<div>
+						<dt class="text-white font-medium">{item.q}</dt>
+						<dd class="mt-1">{item.a}</dd>
+					</div>
+				))}
+			</dl>
+
+			<p class="pt-6">
+				Questions or something broken? Ask in our
+				<a href="https://discord.gg/pftQtpcjK2" class="text-[#C7C2FF] underline hover:text-white" target="_blank" rel="noopener noreferrer">Discord</a>.
+			</p>
+		</div>
+	</main>
+	<Footer />
+</Layout>
