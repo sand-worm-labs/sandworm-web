@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { rest } from '../../rest.ts';
 import { handle, workspaceId } from '../shared.ts';
+import { DATA_SOURCE_FALLBACK } from './open-data.ts';
 import { notebookApiPath, notebookId, notebookUrl, objectOrJson } from './shared.ts';
 
 // How long one call waits on a run. Under a minute, because that is where many
@@ -66,6 +67,7 @@ export function registerRunTools(server: McpServer, ctx: ToolContext): void {
         `Run a notebook on the workspace's Python environment and return each cell's result. Runs every cell top to bottom, or only \`cellIds\` (ids come from add_cell and get_notebook). A failing cell does not stop the cells after it. Results are saved in the notebook, as if the user had pressed Run.`,
         `Waits up to ${WAIT_SECONDS} seconds. If the run takes longer, status is "running" and it carries on in the background: call get_run_results to follow it. A cell that runs past the time limit (cellTimeoutSeconds) is stopped and fails with a TimeoutError. Fails if this notebook already has a run in progress.`,
         CELL_STATES,
+        DATA_SOURCE_FALLBACK,
       ].join('\n\n'),
       inputSchema: {
         notebookId,
@@ -92,6 +94,7 @@ export function registerRunTools(server: McpServer, ctx: ToolContext): void {
       description: [
         `Get the latest result of each runnable cell in a notebook, and whether anything is running. If a run is in progress this waits up to ${WAIT_SECONDS} seconds for it to finish; when status is still "running" afterwards, call it again. Does not run anything: use run_notebook for that.`,
         CELL_STATES,
+        DATA_SOURCE_FALLBACK,
       ].join('\n\n'),
       inputSchema: {
         notebookId,

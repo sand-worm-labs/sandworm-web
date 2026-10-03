@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { rest } from '../../rest.ts';
 import { confirm, handle, workspaceId } from '../shared.ts';
-import { OPEN_DATA_USAGE } from './open-data.ts';
+import { DATA_SOURCE_FALLBACK, OPEN_DATA_USAGE } from './open-data.ts';
 import { notebookApiPath, notebookId, notebookUrl, objectOrJson } from './shared.ts';
 
 const CELL_TYPES = [
@@ -30,6 +30,7 @@ const PYTHON_GUIDANCE = [
   'Charts: prefer Plotly (interactive, any chart type that suits the data); matplotlib also works.',
   'Plotly and matplotlib charts already get Sandworm\'s colors and font: the theme is applied when the session starts, so do not import or call it. Do not hard-code your own palette or fonts unless the data needs something else.',
   'With Plotly Express bars, `color=` on a column other than the category axis gives every colour its own slot and makes each bar thin: add `fig.update_layout(barmode="overlay")` when each category has a single bar.',
+  'Tables: show a table as a DataFrame, never with print(). Make it the last expression of the cell so the notebook renders a real table instead of plain text. One table per cell: for several tables add several cells, not one cell that shows them all. A Series becomes a table with `.reset_index()` or `.to_frame()`; give columns clear names with units (e.g. "Volume (USD bn)"), round numbers, and show a date as a column, not as the index. Put a table\'s title and source in a markdown cell or a `note()`, not in a print().',
   'For HTML summaries, `from sandworm_theme import show, stat_card, card, note` give styled stat cards and cards: `show(stat_card(value, label, secondary=[(value, label), ...]))`. Optional.',
   `Data from public APIs: ${OPEN_DATA_USAGE}`,
 ].join(' ');
@@ -43,6 +44,7 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
       description: [
         'Add a cell to a notebook. It appears live in the editor next to cells added by hand. Returns the new cell\'s id. For a new analysis or any multi-cell build, call plan_notebook first and add cells in the order it returns. Cell types: sql, python, markdown, rich_text, visualization, pivot_table, input, dropdown_input, date_input, power_toolbox. For power_toolbox, find the toolId with search_tools first. Adding a cell does not run it: call run_notebook for that.',
         PYTHON_GUIDANCE,
+        DATA_SOURCE_FALLBACK,
       ].join('\n\n'),
       inputSchema: {
         notebookId,

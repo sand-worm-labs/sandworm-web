@@ -242,3 +242,10 @@ export const OPEN_DATA_USAGE = [
   'Read API keys from os.environ (e.g. os.environ["ETHERSCAN_API_KEY"], set with set_env_vars); never write a key into a cell.',
   'Combine sources when one does not cover everything, and name each source in a note under its chart.',
 ].join(' ');
+
+// For a sql cell whose data source is down rather than whose query is wrong.
+export const DATA_SOURCE_FALLBACK = [
+  'If a sql cell on Dune or Sandworm Cloud fails because the data source itself cannot be used (connection refused or timed out, authentication failed, source unavailable or not configured), not because the query is wrong, delete that cell with delete_cell and replace it with a python cell that gets the same data from the public APIs (open data).',
+  'Find the right API with plan_notebook or search_tools, which list the open data sources for a sub-goal. A query error such as a bad column or syntax is not this case: fix the SQL instead.',
+  'If no open data source covers what the cell needed, do not make up data. Delete nothing further, and tell the user which data could not be retrieved and why.',
+].join(' ');
