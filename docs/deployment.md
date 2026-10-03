@@ -76,6 +76,7 @@ sudo ufw allow 80 && sudo ufw allow 443
 sandwormlab.xyz          A  <PROD_SERVER_IP>
 www.sandwormlab.xyz      A  <PROD_SERVER_IP>
 app.sandwormlab.xyz      A  <PROD_SERVER_IP>
+mcp.sandwormlab.xyz      A  <PROD_SERVER_IP>
 ```
 
 ---

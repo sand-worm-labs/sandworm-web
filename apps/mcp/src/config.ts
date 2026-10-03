@@ -3,7 +3,7 @@ import { z } from 'zod';
 const hex = (length: number) => z.string().regex(new RegExp(`^0x[0-9a-fA-F]{${length}}$`));
 
 const envSchema = z.object({
-  PORT: z.coerce.number().int().positive().default(3100),
+  PORT: z.coerce.number().int().positive().default(6789),
 
   // Public URL of this MCP endpoint. Must equal MCP_OAUTH_RESOURCE on the API,
   // because the authorization server rejects any other `resource`.

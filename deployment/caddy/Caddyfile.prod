@@ -62,3 +62,16 @@ app.sandwormlab.xyz {
 		reverse_proxy host.docker.internal:3000
 	}
 }
+
+# ─── MCP server (apps/mcp) ───────────────────────────────────────────────────
+# Its OAuth authorization server is the app domain above.
+mcp.sandwormlab.xyz {
+	# Responses stream, so flush immediately and allow long calls
+	reverse_proxy host.docker.internal:6789 {
+		flush_interval -1
+		transport http {
+			read_timeout  1h
+			write_timeout 1h
+		}
+	}
+}
