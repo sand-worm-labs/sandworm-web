@@ -6,14 +6,14 @@ import { dataModeFromPrompt, resolveDataMode } from '../data-mode.ts';
 
 const ctx = { auth: { userId: 'u', token: 't' }, apiUrl: 'http://api', webUrl: '' } as ToolContext;
 
-// Answers the two API calls the SQL check makes: the default workspace, then the Dune ping.
-async function withDune<T>(connStatus: string | Error, run: () => Promise<T>): Promise<T> {
+// Answers the two API calls the SQL check makes: the default workspace, then the chain SQL status.
+async function withChainSql<T>(available: boolean | Error, run: () => Promise<T>): Promise<T> {
   const realFetch = globalThis.fetch;
   globalThis.fetch = (async (url: string) => {
-    if (connStatus instanceof Error) throw connStatus;
+    if (available instanceof Error) throw available;
     const body = String(url).endsWith('/graphql')
       ? { data: { getUserWorkspaceInfo: { id: 'w1' } } }
-      : { connStatus };
+      : { available, sources: { dune: available, sandworm_cloud: false } };
     return new Response(JSON.stringify(body), { status: 200 });
   }) as typeof fetch;
   try {
@@ -38,14 +38,14 @@ test('a prompt that names neither, or both, does not decide', () => {
 });
 
 test('the call\'s own choice beats the prompt, and the prompt beats the SQL check', async () => {
-  await withDune(new Error('must not be called'), async () => {
+  await withChainSql(new Error('must not be called'), async () => {
     assert.equal(await resolveDataMode(ctx, { data: 'sandworm', request: 'use open data' }), 'sandworm');
     assert.equal(await resolveDataMode(ctx, { request: 'use open data' }), 'open');
   });
 });
 
-test('with nothing said, it is open data only when SQL cannot run', async () => {
-  assert.equal(await withDune('offline', () => resolveDataMode(ctx, { request: 'stablecoin supply' })), 'open');
-  assert.equal(await withDune('online', () => resolveDataMode(ctx, {})), 'sandworm');
-  assert.equal(await withDune(new Error('api down'), () => resolveDataMode(ctx, {})), 'sandworm');
+test('with nothing said, it is open data only when neither Dune nor Sandworm Cloud can run SQL', async () => {
+  assert.equal(await withChainSql(false, () => resolveDataMode(ctx, { request: 'stablecoin supply' })), 'open');
+  assert.equal(await withChainSql(true, () => resolveDataMode(ctx, {})), 'sandworm');
+  assert.equal(await withChainSql(new Error('api down'), () => resolveDataMode(ctx, {})), 'sandworm');
 });
