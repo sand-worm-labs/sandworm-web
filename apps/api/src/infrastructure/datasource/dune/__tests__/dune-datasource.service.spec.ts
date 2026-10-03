@@ -1,3 +1,17 @@
+import { EventEmitter } from 'node:events';
+import { connect } from 'node:net';
+
+jest.mock('node:net', () => ({ connect: jest.fn() }));
+
+// Stands in for the TCP check: the socket either connects or errors.
+function endpoint(outcome: 'connect' | 'error') {
+  (connect as jest.Mock).mockImplementation(() => {
+    const socket = Object.assign(new EventEmitter(), { setTimeout: jest.fn(), destroy: jest.fn() });
+    setImmediate(() => socket.emit(outcome, new Error('refused')));
+    return socket;
+  });
+}
+
 import { ForbiddenException } from '@nestjs/common';
 import { DataSourceId, DataSourceName, DataSourceType } from '@sandworm/types';
 import { DuneDataSourceService } from '../dune-datasource.service';
@@ -44,13 +58,25 @@ describe('DuneDataSourceService', () => {
   });
 
   describe('ping', () => {
-    it('returns online with a lastConnection when configured', async () => {
+    it('returns online with a lastConnection when the endpoint accepts a connection', async () => {
       const { service } = makeService(CONFIGURED_TRINO);
+      endpoint('connect');
 
       const result = await service.ping();
 
       expect(result.connStatus).toBe('online');
       expect(result).toHaveProperty('lastConnection');
+    });
+
+    it('returns offline when configured but the endpoint cannot be reached', async () => {
+      const { service } = makeService(CONFIGURED_TRINO);
+      endpoint('error');
+
+      const result = await service.ping();
+
+      expect(result.connStatus).toBe('offline');
+      expect(result.connError?.name).toBe('Unreachable');
+      expect(await service.canRunSql()).toBe(false);
     });
 
     it('returns offline with a NotConfigured error when not configured', async () => {

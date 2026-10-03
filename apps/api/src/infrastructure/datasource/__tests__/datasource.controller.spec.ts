@@ -13,6 +13,7 @@ function makeController() {
     dataSourceService,
     duckdbDataSourceService,
     duneDataSourceService,
+    { status: jest.fn() } as any,
   );
 
   return { controller, queryService, dataSourceService, duckdbDataSourceService, duneDataSourceService };

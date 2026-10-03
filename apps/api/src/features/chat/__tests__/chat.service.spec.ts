@@ -10,6 +10,10 @@ jest.mock('../../workspace/service/workspace.service', () => ({
   WorkspaceService: jest.fn(),
 }));
 
+jest.mock('@/infrastructure/datasource/chain-sql.service', () => ({
+  ChainSqlService: jest.fn(),
+}));
+
 import { ChatService, SseEvent } from '../chat.service';
 
 function makeService(): ChatService {
@@ -26,6 +30,7 @@ function makeService(): ChatService {
     {} as any, // httpService
     {} as any, // workspaceService
     {} as any, // redisService
+    {} as any, // chainSqlService
   );
 }
 

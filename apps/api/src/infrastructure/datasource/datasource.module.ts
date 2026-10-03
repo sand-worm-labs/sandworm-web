@@ -3,10 +3,12 @@ import { DataSourcesController } from './datasource.controller';
 import { SandwormCloudModule } from './sandworm-cloud/sandworm-cloud.module';
 import { DuckDBModule } from './duck-db/duckdb.module';
 import { DuneModule } from './dune/dune.module';
+import { ChainSqlService } from './chain-sql.service';
 
 @Module({
     imports: [SandwormCloudModule, DuckDBModule, DuneModule],
     controllers: [DataSourcesController],
-    exports: [SandwormCloudModule, DuckDBModule, DuneModule],
+    providers: [ChainSqlService],
+    exports: [SandwormCloudModule, DuckDBModule, DuneModule, ChainSqlService],
 })
 export class DataSourcesModule { }

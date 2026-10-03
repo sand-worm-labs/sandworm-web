@@ -12,6 +12,7 @@ import { HttpModule } from '@nestjs/axios';
 import { WorkspaceModule } from '../workspace/workspace.module';
 import { AiExecutionModule } from '../ai-execution/ai-execution.module';
 import { ChatController } from './chat.controller';
+import { DataSourcesModule } from '@/infrastructure/datasource/datasource.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
@@ -21,6 +22,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     HttpModule,
     AuthGraphqlModule,
     WorkspaceModule,
+    DataSourcesModule,
     EventEmitterModule,
     forwardRef(() => AiExecutionModule)
     

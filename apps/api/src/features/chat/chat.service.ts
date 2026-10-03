@@ -35,6 +35,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AiJobEvent, AiJobEventNames } from '@/core/events/ai-job.events';
 import { MessageCreatedEvent, MessageEventNames } from '@/core/events/message.events';
 import { RedisService } from '@/infrastructure/redis/redis.service';
+import { ChainSqlService } from '@/infrastructure/datasource/chain-sql.service';
 import { AiStreamEvent } from './types/stream.types';
 
 // Same key the sidecar checks (src/util/cache.py: request_job_cancel /
@@ -81,6 +82,7 @@ export class ChatService implements OnModuleInit {
     private readonly httpService: HttpService,
     private readonly workspaceService: WorkspaceService,
     private readonly redisService: RedisService,
+    private readonly chainSqlService: ChainSqlService,
   ) {
     this.aiBaseUrl        = this.configService.getOrThrow('ai.url',             { infer: true });
     this.handshakeToken   = this.configService.getOrThrow('ai.handshakeToken',  { infer: true });
@@ -133,6 +135,9 @@ export class ChatService implements OnModuleInit {
         document_id:       chat.documentId,
         focused_block_ids: focusedBlockIds,
         chat_id:           chat.id,
+        // The sidecar builds from public APIs when neither Dune nor Sandworm
+        // Cloud can run SQL.
+        sql_available:     (await this.chainSqlService.status()).available,
       },
       stream:          this.chatStream,
       temperature:     this.chatTemperature,

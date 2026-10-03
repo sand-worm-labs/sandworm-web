@@ -23,13 +23,11 @@ describe('SandwormCloudDataSourceService', () => {
   });
 
   describe('ping', () => {
-    it('always reports online (no real connectivity check implemented yet)', async () => {
+    it('reports offline, matching the descriptor, until it can run real queries', async () => {
       const service = new SandwormCloudDataSourceService();
 
-      const result = await service.ping();
-
-      expect(result.connStatus).toBe('online');
-      expect(result).toHaveProperty('lastConnection');
+      expect(await service.canRunSql()).toBe(false);
+      expect((await service.ping()).connStatus).toBe('offline');
     });
   });
 });

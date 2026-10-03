@@ -10,6 +10,7 @@ import { SandwormCloudDataSourceService } from './sandworm-cloud/sandworm-cloud-
 import { SandwormCloudQueryService } from './sandworm-cloud/sandworm-cloud-query.service';
 import { DuckDBDataSourceService } from './duck-db/duckdb-datasource.service';
 import { DuneDataSourceService } from './dune/dune-datasource.service';
+import { ChainSqlService } from './chain-sql.service';
 
 @Controller('v1/workspaces/:workspaceId/data-sources')
 export class DataSourcesController {
@@ -18,6 +19,7 @@ export class DataSourcesController {
         private readonly dataSourceService: SandwormCloudDataSourceService,
         private readonly duckdbDataSourceService: DuckDBDataSourceService,
         private readonly duneDataSourceService: DuneDataSourceService,
+        private readonly chainSqlService: ChainSqlService,
     ) {}
 
     @Get()
@@ -27,6 +29,12 @@ export class DataSourcesController {
             this.dataSourceService.getDataSource(workspaceId),
             this.duneDataSourceService.getDataSource(workspaceId),
         ];
+    }
+
+    // Declared before :dataSourceId so it is not read as an id.
+    @Get('chain-sql')
+    async chainSql() {
+        return this.chainSqlService.status();
     }
 
     @Get(':dataSourceId')

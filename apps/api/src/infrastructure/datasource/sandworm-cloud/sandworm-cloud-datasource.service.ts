@@ -26,21 +26,19 @@ export class SandwormCloudDataSourceService {
         };
     }
 
+    // False until SandwormCloudQueryService runs real queries (see getDataSource
+    // above). This is the one place to change when it does.
+    async canRunSql(): Promise<boolean> {
+        return false;
+    }
+
     async ping() {
-        try {
-            // Check connection without exposing credentials
-            return {
-                connStatus: 'online' as const,
-                lastConnection: new Date(),
-            };
-        } catch (error) {
-            return {
-                connStatus: 'offline' as const,
-                connError: {
-                    name: 'ConnectionError',
-                    message: "Workspace Id ",
-                },
-            };
+        if (await this.canRunSql()) {
+            return { connStatus: 'online' as const, lastConnection: new Date() };
         }
+        return {
+            connStatus: 'offline' as const,
+            connError: { name: 'NotAvailable', message: 'Sandworm Cloud is not available yet' },
+        };
     }
 }
