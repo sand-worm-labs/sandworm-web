@@ -5,6 +5,7 @@ import { resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { rest } from '../../rest.ts';
 import { confirm, handle, workspaceId } from '../shared.ts';
 import { DATA_SOURCE_FALLBACK, OPEN_DATA_USAGE } from './open-data.ts';
+import { printedTableProblem } from './printed-table.ts';
 import { notebookApiPath, notebookId, notebookUrl, objectOrJson } from './shared.ts';
 
 const CELL_TYPES = [
@@ -30,7 +31,7 @@ const PYTHON_GUIDANCE = [
   'Charts: prefer Plotly (interactive, any chart type that suits the data); matplotlib also works.',
   'Plotly and matplotlib charts already get Sandworm\'s colors and font: the theme is applied when the session starts, so do not import or call it. Do not hard-code your own palette or fonts unless the data needs something else.',
   'With Plotly Express bars, `color=` on a column other than the category axis gives every colour its own slot and makes each bar thin: add `fig.update_layout(barmode="overlay")` when each category has a single bar.',
-  'Tables: show a table as a DataFrame, never with print(). Make it the last expression of the cell so the notebook renders a real table instead of plain text. One table per cell: for several tables add several cells, not one cell that shows them all. A Series becomes a table with `.reset_index()` or `.to_frame()`; give columns clear names with units (e.g. "Volume (USD bn)"), round numbers, and show a date as a column, not as the index. Put a table\'s title and source in a markdown cell or a `note()`, not in a print().',
+  'Tables: return the DataFrame, never print it. No `print(df)`, and never `print(df.to_string())` or `print(df.to_markdown())`: a cell that does is rejected. End the cell with just the variable on its own line (e.g. `yr`), with no print() or display() around it, so the notebook renders a real table instead of plain text. One table per cell, in a cell of its own: for several tables add several cells, not one cell that shows them all. A Series becomes a table with `.reset_index()` or `.to_frame()`; give columns clear names with units (e.g. "Volume (USD bn)"), round numbers, and show a date as a column, not as the index. Put a table\'s title and source in a markdown cell or a `note()`, not in a print().',
   'For HTML summaries, `from sandworm_theme import show, stat_card, card, note` give styled stat cards and cards: `show(stat_card(value, label, secondary=[(value, label), ...]))`. Optional.',
   `Data from public APIs: ${OPEN_DATA_USAGE}`,
 ].join(' ');
@@ -72,6 +73,8 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
       },
     },
     handle(async ({ notebookId, workspaceId, type, title, content, dataSource, dataframeName, toolId, inputs, position }) => {
+      const problem = type === 'python' ? printedTableProblem(content) : undefined;
+      if (problem) throw new Error(problem);
       const ws = await resolveWorkspaceId(ctx, workspaceId);
       const { blocks } = await rest<{ blocks: Cell[] }>(ctx, 'POST', `${notebookApiPath(ws, notebookId)}/blocks`, {
         blocks: [{ kind: type, title, source: content, dataSource, dataframeName, toolId, inputs }],
@@ -108,6 +111,9 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
       },
     },
     handle(async ({ notebookId, workspaceId, cellId, title, content, dataSource, dataframeName, inputs }) => {
+      // The cell's type is not known here; only python is likely to match.
+      const problem = printedTableProblem(content);
+      if (problem) throw new Error(problem);
       const ws = await resolveWorkspaceId(ctx, workspaceId);
       const { block } = await rest<{ block: Cell }>(ctx, 'PATCH', `${notebookApiPath(ws, notebookId)}/blocks/${cellId}`, {
         title,
