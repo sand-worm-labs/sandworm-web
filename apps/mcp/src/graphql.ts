@@ -7,6 +7,8 @@ export type ToolContext = {
   webUrl: string;
   // Set per call from the data mode (tools/notebooks/data-mode.ts): build from public APIs only.
   openDataOnly?: boolean;
+  // The workspace is on the free plan, which is why chain SQL is off.
+  freePlan?: boolean;
   // Save every tool call to the notebook's MCP chat (see tools/call-log.ts).
   logToolCalls?: boolean;
   client?: ClientInfo;

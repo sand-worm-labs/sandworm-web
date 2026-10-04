@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import type { ToolContext } from '../../graphql.ts';
 import { handle } from '../shared.ts';
-import { data, resolveDataMode, withDataMode } from './data-mode.ts';
+import { data, PAID_PLAN_REASON, resolveDataScope, upgradeUrl, withDataMode } from './data-mode.ts';
 import { request } from './shared.ts';
 import { describeOpenData, OPEN_DATA_SOURCES, OPEN_DATA_USAGE } from './open-data.ts';
 import { checkTools, research } from './plan-tools.ts';
@@ -108,9 +108,15 @@ function validate(blocks: PlannedBlock[]): string[] {
   return problems;
 }
 
-const researchNext = (ctx: ToolContext, subGoalTools: { tools: unknown[] }[]) => {
+const freePlanNote = (url: string) =>
+  `This workspace is on the free plan, so Dune and Sandworm Cloud are off. If a sub-goal needs chain data that none of these public APIs provide (decoded contract events, every transaction or transfer of a contract, wallet-level histories, holder lists), do not stand in a different metric: mark it feasible: false with reason "${PAID_PLAN_REASON}", and tell the user that part needs a paid plan, with this link to upgrade: ${url}`;
+
+const researchNext = (ctx: ToolContext, subGoalTools: { tools: unknown[] }[], url?: string) => {
   if (ctx.openDataOnly) {
-    return `This plan uses open data only. Plan python blocks that fetch from each sub-goal's openData sources, described under openDataSources (sql blocks may query their dataframes with duckdb), then call plan_notebook again with the same goal, data "open" and your blocks. ${OPEN_DATA_USAGE}`;
+    return [
+      `This plan uses open data only. Plan python blocks that fetch from each sub-goal's openData sources, described under openDataSources (sql blocks may query their dataframes with duckdb), then call plan_notebook again with the same goal, data "open" and your blocks. ${OPEN_DATA_USAGE}`,
+      ...(url ? [freePlanNote(url)] : []),
+    ].join(' ');
   }
   if (subGoalTools.some(g => g.tools.length)) {
     return 'For each sub-goal, plan one of its tools as a power_toolbox block with its toolId when it fits. Plan sql/python only for sub-goals no tool covers; a python block can fetch from that sub-goal\'s openData sources, described under openDataSources. Then call plan_notebook again with the same goal and your blocks.';
@@ -136,8 +142,10 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
       },
     },
     handle(async ({ goal, subGoals, blocks, data, request }) => {
-      const mode = await resolveDataMode(ctx, { data, request });
-      const scoped = withDataMode(ctx, mode);
+      const scope = await resolveDataScope(ctx, { data, request });
+      const scoped = withDataMode(ctx, scope);
+      const { mode } = scope;
+      const url = scope.freePlan ? await upgradeUrl(ctx) : undefined;
 
       if (!blocks) {
         const subGoalTools = await research(scoped, goal, subGoals ?? []);
@@ -148,7 +156,7 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
           subGoals: subGoalTools,
           // Each sub-goal names its sources by id; they are described here once.
           openDataSources: OPEN_DATA_SOURCES.filter(s => subGoalTools.some(g => g.openData.includes(s.id))).map(describeOpenData),
-          next: researchNext(scoped, subGoalTools),
+          next: researchNext(scoped, subGoalTools, url),
         };
       }
 
@@ -177,13 +185,20 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
         };
       });
 
+      const skippedSubGoals = (subGoals ?? []).filter(s => !s.feasible);
+      const upgrade = url && skippedSubGoals.length ? { reason: 'Some sub-goals need Sandworm chain data, which needs a paid plan.', url } : undefined;
+
       return {
         goal,
         data: mode,
-        skippedSubGoals: (subGoals ?? []).filter(s => !s.feasible),
+        skippedSubGoals,
+        ...(upgrade ? { upgrade } : {}),
         steps,
         next: [
           'Create the cells with add_cell in step order (pass position to keep that order), then check the notebook with get_notebook.',
+          ...(upgrade
+            ? [`In your closing message, name the skipped sub-goals and tell the user they need a paid plan, with this link to upgrade: ${upgrade.url}`]
+            : []),
           ...(blocks.some(b => b.type === 'python') ? [OPEN_DATA_USAGE] : []),
           ...(ctx.logToolCalls
             ? ['Last step, every time: when the work is finished, call save_reply with the closing message you are about to give the user, before you give it. Without it your reply is missing from the notebook\'s chat.']

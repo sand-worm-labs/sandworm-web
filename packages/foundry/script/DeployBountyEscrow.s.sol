@@ -9,12 +9,15 @@ import { MockToken } from "../test/mocks/MockToken.sol";
  * @notice Deploys BountyEscrow and allows the stablecoins it accepts on the chain.
  * TREASURY and ARBITER in .env default to the deployer. FEE_BPS defaults to 500 (5%).
  * Example:
- * yarn deploy --file DeployBountyEscrow.s.sol --network arbitrumSepolia
+ * yarn deploy --file DeployBountyEscrow.s.sol --network robinhoodTestnet
  */
 contract DeployBountyEscrow is ScaffoldETHDeploy {
     address constant USDC_ARBITRUM = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
     address constant USDG_ARBITRUM = 0x004B506865409877C9fA29bfb1ebA929984B9bbC;
     address constant USDC_ARBITRUM_SEPOLIA = 0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d;
+    address constant USDG_ARBITRUM_SEPOLIA = 0xFFC95faa3d63Cde504a05B567C600B78C0b41892;
+    address constant USDG_ROBINHOOD = 0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168;
+    address constant USDG_ROBINHOOD_TESTNET = 0x7E955252E15c84f5768B83c41a71F9eba181802F;
 
     function run() external ScaffoldEthDeployerRunner {
         address treasury = vm.envOr("TREASURY", deployer);
@@ -29,6 +32,11 @@ contract DeployBountyEscrow is ScaffoldETHDeploy {
             escrow.setTokenAllowed(USDG_ARBITRUM, true);
         } else if (block.chainid == 421614) {
             escrow.setTokenAllowed(USDC_ARBITRUM_SEPOLIA, true);
+            escrow.setTokenAllowed(USDG_ARBITRUM_SEPOLIA, true);
+        } else if (block.chainid == 4663) {
+            escrow.setTokenAllowed(USDG_ROBINHOOD, true);
+        } else if (block.chainid == 46630) {
+            escrow.setTokenAllowed(USDG_ROBINHOOD_TESTNET, true);
         } else if (block.chainid == 31337) {
             MockToken token = new MockToken();
             token.mint(deployer, 1_000_000e6);

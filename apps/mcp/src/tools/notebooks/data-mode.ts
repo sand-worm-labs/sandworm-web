@@ -23,22 +23,44 @@ export function dataModeFromPrompt(prompt = ''): DataMode | undefined {
   return open ? 'open' : 'sandworm';
 }
 
+type ChainSql = { available: boolean; paidPlanRequired: boolean };
+
 // Chain SQL runs on Dune or Sandworm Cloud; the API says whether either can
-// be reached. If the check itself fails, assume one can.
-async function canRunSql(ctx: ToolContext): Promise<boolean> {
+// be reached, and whether the free plan is why not. If the check itself
+// fails, assume one can.
+async function chainSql(ctx: ToolContext): Promise<ChainSql> {
   try {
     const workspaceId = await resolveWorkspaceId(ctx);
-    const status = await rest<{ available: boolean }>(ctx, 'GET', `/v1/workspaces/${workspaceId}/data-sources/chain-sql`);
-    return status.available;
+    const status = await rest<Partial<ChainSql>>(ctx, 'GET', `/v1/workspaces/${workspaceId}/data-sources/chain-sql`);
+    return { available: status.available ?? true, paidPlanRequired: status.paidPlanRequired ?? false };
   } catch {
-    return true;
+    return { available: true, paidPlanRequired: false };
   }
 }
 
-// The call's own `data` wins, then what the prompt says. With neither, it is
-// Sandworm's data unless neither Dune nor Sandworm Cloud can run SQL.
-export async function resolveDataMode(ctx: ToolContext, given: { data?: DataMode; request?: string }): Promise<DataMode> {
-  return given.data ?? dataModeFromPrompt(given.request) ?? ((await canRunSql(ctx)) ? 'sandworm' : 'open');
+export type DataScope = { mode: DataMode; freePlan: boolean };
+
+// A free workspace always gets open data. Otherwise the call's own `data` wins,
+// then what the prompt says, and with neither it is Sandworm's data unless
+// neither Dune nor Sandworm Cloud can run SQL.
+export async function resolveDataScope(ctx: ToolContext, given: { data?: DataMode; request?: string }): Promise<DataScope> {
+  const sql = await chainSql(ctx);
+  if (sql.paidPlanRequired) return { mode: 'open', freePlan: true };
+  const mode = given.data ?? dataModeFromPrompt(given.request) ?? (sql.available ? 'sandworm' : 'open');
+  return { mode, freePlan: false };
 }
 
-export const withDataMode = (ctx: ToolContext, mode: DataMode): ToolContext => ({ ...ctx, openDataOnly: mode === 'open' });
+export async function resolveDataMode(ctx: ToolContext, given: { data?: DataMode; request?: string }): Promise<DataMode> {
+  return (await resolveDataScope(ctx, given)).mode;
+}
+
+export const withDataMode = (ctx: ToolContext, scope: DataScope): ToolContext => ({
+  ...ctx,
+  openDataOnly: scope.mode === 'open',
+  freePlan: scope.freePlan,
+});
+
+export const upgradeUrl = async (ctx: ToolContext) =>
+  `${ctx.webUrl}/workspace/${await resolveWorkspaceId(ctx)}/settings/plan`;
+
+export const PAID_PLAN_REASON = 'needs Sandworm chain data (paid plan)';
