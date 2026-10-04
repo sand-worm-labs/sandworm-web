@@ -36,21 +36,48 @@ export class BountyEntity extends AbstractEntity {
   @Column({ default: 'open' })
   status!: string;
 
+  // One or two sentences, for the cards
   @Column({ type: 'text' })
   summary!: string;
 
-  // Prize tiers and selection criteria, one per line
+  // Why the sponsor wants it, for the detail page
+  @Column({ type: 'text', nullable: true })
+  background!: string | null;
+
+  // The questions the work must answer, one per line
+  @Column({ type: 'jsonb', default: '[]' })
+  requirements!: string[];
+
+  // What an entry must hand in, one per line
+  @Column({ type: 'jsonb', default: '[]' })
+  deliverables!: string[];
+
+  // Prize tiers, one per line
+  @Column({ type: 'jsonb', default: '[]' })
+  prizes!: string[];
+
+  // Selection criteria, one per line
   @Column({ type: 'jsonb', default: '[]' })
   judging!: string[];
+
+  // Where in Sandworm the data can be found, one per line
+  @Column({ name: 'data_hints', type: 'jsonb', default: '[]' })
+  dataHints!: string[];
 
   @Column({ type: 'jsonb', default: '[]' })
   winners!: BountyWinner[];
 
-  // Where the original bounty was posted, for the ones taken from elsewhere
+  // When the sponsor first posted it, as free text ("May 2024")
+  @Column({ name: 'posted_on', type: 'varchar', nullable: true })
+  postedOn!: string | null;
+
+  // Where the original bounty was posted, for the ones taken from elsewhere.
+  // Kept to check the brief against; not shown on the site.
   @Column({ name: 'source_url', type: 'varchar', nullable: true })
   sourceUrl!: string | null;
 
-  // A past bounty from another organisation's programme, not a live Sandworm bounty
+  // A bounty from another organisation's programme, listed as an example;
+  // Sandworm does not pay its reward
   @Column({ default: false })
   sample!: boolean;
 

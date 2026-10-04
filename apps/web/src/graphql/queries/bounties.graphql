@@ -7,13 +7,36 @@ query GetBounties {
     reward
     status
     summary
-    judging
     winners {
       place
       author
       notebookSlug
     }
-    sourceUrl
+    sample
+  }
+}
+
+query GetBounty($slug: String!) {
+  getBounty(slug: $slug) {
+    slug
+    title
+    sponsor
+    type
+    reward
+    status
+    summary
+    background
+    requirements
+    deliverables
+    prizes
+    judging
+    dataHints
+    winners {
+      place
+      author
+      notebookSlug
+    }
+    postedOn
     sample
   }
 }

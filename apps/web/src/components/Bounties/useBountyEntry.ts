@@ -2,8 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-// Bounty slug -> id of the notebook the user started for it. Kept in this
-// browser only until entries are stored on the server.
 type Entries = Record<string, string>;
 
 const storageKey = (workspaceId: string) =>
@@ -35,8 +33,8 @@ export function useBountyEntries(workspaceId: string) {
             storageKey(workspaceId),
             JSON.stringify(next)
           );
-        } catch {
-          // Storage can be blocked; the entry then lasts for this visit only.
+        } catch (err) {
+          console.error(err);
         }
         return next;
       });

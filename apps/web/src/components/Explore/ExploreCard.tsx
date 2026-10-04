@@ -11,6 +11,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useState } from "react";
 
+import { Tag } from "@/components/Tag";
 import { ForkToWorkspaceModal } from "@/components/Explore/ForkToWorkspaceModal";
 import { cn } from "@/lib/utils";
 import type { ApiDocument } from "@/types";
@@ -142,12 +143,7 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
           {tags.length > 0 && (
             <div className="flex flex-wrap items-center gap-1.5 max-w-xs">
               {visibleTags.map(tag => (
-                <span
-                  key={tag}
-                  className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-base-300 dark:bg-base-700 text-ink-400 whitespace-nowrap"
-                >
-                  #{tag}
-                </span>
+                <Tag key={tag}>#{tag}</Tag>
               ))}
               {hiddenTagCount > 0 && (
                 <span className="text-[11px] text-ink-300 dark:text-ink-500">

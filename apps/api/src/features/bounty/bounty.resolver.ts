@@ -18,4 +18,14 @@ export class BountyResolver {
   ): Promise<Bounty[]> {
     return this.bountyService.getBounties(featured);
   }
+
+  @Public()
+  @Query(() => Bounty, {
+    name: 'getBounty',
+    nullable: true,
+    description: 'Get one bounty by its slug, or null when there is none.',
+  })
+  getBounty(@Args('slug') slug: string): Promise<Bounty | null> {
+    return this.bountyService.getBounty(slug);
+  }
 }

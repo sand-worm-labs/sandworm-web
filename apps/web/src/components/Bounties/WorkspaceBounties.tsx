@@ -10,11 +10,14 @@ import { useDocuments } from "@/components/Editor/hooks/useDocuments";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 
 import { BountiesBoard } from "./BountiesBoard";
-import { bountyTag, type Bounty } from "./bounties";
+import { bountyButtonClass, bountyPrimaryButtonClass } from "./BountyCard";
+import { bountyTag, type BountyRef } from "./bounties";
 import { useBountyEntries } from "./useBountyEntry";
 
-// Bounties for a signed-in member: start an entry, carry on with it, submit it.
-export const WorkspaceBounties = () => {
+// =====================================
+// ⬢ Use Workspace Bounty Actions
+// =====================================
+export const useWorkspaceBountyActions = () => {
   const workspaceId = useStringQuery("workspace");
   const router = useRouter();
   const [documentsState, { createDocument, publish }] =
@@ -23,7 +26,7 @@ export const WorkspaceBounties = () => {
   const [busy, setBusy] = useState<string | null>(null);
 
   const onStart = useCallback(
-    async (bounty: Bounty) => {
+    async (bounty: BountyRef) => {
       if (documentsState.loading) return;
       setBusy(bounty.slug);
       try {
@@ -43,7 +46,7 @@ export const WorkspaceBounties = () => {
   );
 
   const onSubmit = useCallback(
-    async (bounty: Bounty, documentId: string) => {
+    async (bounty: BountyRef, documentId: string) => {
       setBusy(bounty.slug);
       try {
         await publish(documentId, {
@@ -61,9 +64,8 @@ export const WorkspaceBounties = () => {
     [publish]
   );
 
-  const renderActions = (bounty: Bounty) => {
+  return (bounty: BountyRef) => {
     const isBusy = busy === bounty.slug;
-    // An entry whose notebook was deleted counts as not started.
     const entry = documentsState.documents.find(
       doc => doc.id === entries[bounty.slug] && doc.deletedAt === null
     );
@@ -74,6 +76,7 @@ export const WorkspaceBounties = () => {
       return (
         <Button
           size="sm"
+          className={bountyPrimaryButtonClass}
           disabled={isBusy || documentsState.loading}
           onClick={() => onStart(bounty)}
         >
@@ -87,13 +90,23 @@ export const WorkspaceBounties = () => {
 
     return (
       <>
-        <Button asChild size="sm" variant="secondary">
+        <Button
+          asChild
+          size="sm"
+          variant="secondary"
+          className={bountyButtonClass}
+        >
           <Link href={`/workspace/${workspaceId}/documents/${entry.id}`}>
             {submitted ? "Edit entry" : "Continue entry"}
           </Link>
         </Button>
         {submitted ? (
-          <Button asChild size="sm" variant="secondary">
+          <Button
+            asChild
+            size="sm"
+            variant="secondary"
+            className={bountyButtonClass}
+          >
             <Link href={`/notebooks/${entry.slug ?? entry.id}`}>
               View submission
             </Link>
@@ -102,6 +115,7 @@ export const WorkspaceBounties = () => {
           bounty.status === "open" && (
             <Button
               size="sm"
+              className={bountyPrimaryButtonClass}
               disabled={isBusy}
               title="Publishes this notebook so anyone can view it"
               onClick={() => onSubmit(bounty, entry.id)}
@@ -113,6 +127,19 @@ export const WorkspaceBounties = () => {
       </>
     );
   };
+};
 
-  return <BountiesBoard renderActions={renderActions} />;
+// =====================================
+// ⬢ Workspace Bounties
+// =====================================
+export const WorkspaceBounties = () => {
+  const workspaceId = useStringQuery("workspace");
+  const renderActions = useWorkspaceBountyActions();
+
+  return (
+    <BountiesBoard
+      renderActions={renderActions}
+      detailHref={slug => `/workspace/${workspaceId}/bounties/${slug}`}
+    />
+  );
 };

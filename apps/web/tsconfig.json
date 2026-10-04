@@ -8,6 +8,8 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
     "noPropertyAccessFromIndexSignature": false,
     "esModuleInterop": true,
     "module": "esnext",

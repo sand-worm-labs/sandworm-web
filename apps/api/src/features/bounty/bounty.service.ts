@@ -18,4 +18,9 @@ export class BountyService {
     });
     return Bounty.fromEntities(entities);
   }
+
+  async getBounty(slug: string): Promise<Bounty | null> {
+    const entity = await this.bountyRepository.findOneBy({ slug });
+    return entity ? Bounty.fromEntity(entity) : null;
+  }
 }

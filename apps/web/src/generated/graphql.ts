@@ -57,13 +57,18 @@ export type AuthPayload = {
 
 export type Bounty = {
   __typename?: 'Bounty';
+  background?: Maybe<Scalars['String']['output']>;
+  dataHints: Array<Scalars['String']['output']>;
+  deliverables: Array<Scalars['String']['output']>;
   featured: Scalars['Boolean']['output'];
   judging: Array<Scalars['String']['output']>;
   position: Scalars['Int']['output'];
+  postedOn?: Maybe<Scalars['String']['output']>;
+  prizes: Array<Scalars['String']['output']>;
+  requirements: Array<Scalars['String']['output']>;
   reward?: Maybe<Scalars['String']['output']>;
   sample: Scalars['Boolean']['output'];
   slug: Scalars['String']['output'];
-  sourceUrl?: Maybe<Scalars['String']['output']>;
   sponsor: Scalars['String']['output'];
   status: Scalars['String']['output'];
   summary: Scalars['String']['output'];
@@ -879,6 +884,8 @@ export type Query = {
   getAdminWorkspacesWithMembers: Array<WorkspaceMember>;
   /** Get the bounties, in display order. Pass featured to get only the ones shown on the home page. */
   getBounties: Array<Bounty>;
+  /** Get one bounty by its slug, or null when there is none. */
+  getBounty?: Maybe<Bounty>;
   /** Get a reusable component by ID */
   getComponent: ReusableComponent;
   /** Fetch a verified contract's real function and event signatures from its block explorer ABI, for tool params that let a user pick one instead of guessing (e.g. calldata_decoder). */
@@ -1021,6 +1028,11 @@ export type QueryFileExistsArgs = {
 
 export type QueryGetBountiesArgs = {
   featured?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type QueryGetBountyArgs = {
+  slug: Scalars['String']['input'];
 };
 
 
@@ -1950,7 +1962,14 @@ export type GetUserFollowingQuery = { __typename?: 'Query', getUserFollowing: Ar
 export type GetBountiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBountiesQuery = { __typename?: 'Query', getBounties: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, judging: Array<string>, sourceUrl?: string | null, sample: boolean, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string }> }> };
+export type GetBountiesQuery = { __typename?: 'Query', getBounties: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, sample: boolean, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string }> }> };
+
+export type GetBountyQueryVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type GetBountyQuery = { __typename?: 'Query', getBounty?: { __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, background?: string | null, requirements: Array<string>, deliverables: Array<string>, prizes: Array<string>, judging: Array<string>, dataHints: Array<string>, postedOn?: string | null, sample: boolean, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string }> } | null };
 
 export type GetChatsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -4805,13 +4824,11 @@ export const GetBountiesDocument = gql`
     reward
     status
     summary
-    judging
     winners {
       place
       author
       notebookSlug
     }
-    sourceUrl
     sample
   }
 }
@@ -4848,6 +4865,65 @@ export type GetBountiesQueryHookResult = ReturnType<typeof useGetBountiesQuery>;
 export type GetBountiesLazyQueryHookResult = ReturnType<typeof useGetBountiesLazyQuery>;
 export type GetBountiesSuspenseQueryHookResult = ReturnType<typeof useGetBountiesSuspenseQuery>;
 export type GetBountiesQueryResult = Apollo.QueryResult<GetBountiesQuery, GetBountiesQueryVariables>;
+export const GetBountyDocument = gql`
+    query GetBounty($slug: String!) {
+  getBounty(slug: $slug) {
+    slug
+    title
+    sponsor
+    type
+    reward
+    status
+    summary
+    background
+    requirements
+    deliverables
+    prizes
+    judging
+    dataHints
+    winners {
+      place
+      author
+      notebookSlug
+    }
+    postedOn
+    sample
+  }
+}
+    `;
+
+/**
+ * __useGetBountyQuery__
+ *
+ * To run a query within a React component, call `useGetBountyQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetBountyQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetBountyQuery({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *   },
+ * });
+ */
+export function useGetBountyQuery(baseOptions: Apollo.QueryHookOptions<GetBountyQuery, GetBountyQueryVariables> & ({ variables: GetBountyQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetBountyQuery, GetBountyQueryVariables>(GetBountyDocument, options);
+      }
+export function useGetBountyLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetBountyQuery, GetBountyQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetBountyQuery, GetBountyQueryVariables>(GetBountyDocument, options);
+        }
+export function useGetBountySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetBountyQuery, GetBountyQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetBountyQuery, GetBountyQueryVariables>(GetBountyDocument, options);
+        }
+export type GetBountyQueryHookResult = ReturnType<typeof useGetBountyQuery>;
+export type GetBountyLazyQueryHookResult = ReturnType<typeof useGetBountyLazyQuery>;
+export type GetBountySuspenseQueryHookResult = ReturnType<typeof useGetBountySuspenseQuery>;
+export type GetBountyQueryResult = Apollo.QueryResult<GetBountyQuery, GetBountyQueryVariables>;
 export const GetChatsDocument = gql`
     query GetChats($workspaceId: String!, $documentId: String!) {
   chats(workspaceId: $workspaceId, documentId: $documentId) {
