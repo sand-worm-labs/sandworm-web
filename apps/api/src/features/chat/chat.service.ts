@@ -125,6 +125,7 @@ export class ChatService implements OnModuleInit {
     // cheap to find; the AI sidecar's pipeline (apps/ai .../pipeline/service.py)
     // expects chronological order to locate the current turn via
     // reversed(messages) + messages[:-1], so reverse it back here.
+    const chainSql = await this.chainSqlService.status(chat.workspaceId);
     const payload = {
       messages:           [...messages].reverse().map(m => ({ role: m.role, content: m.content ?? '' })),
       model:              lastUserMessage?.model ?? '',
@@ -137,7 +138,8 @@ export class ChatService implements OnModuleInit {
         chat_id:           chat.id,
         // The sidecar builds from public APIs when neither Dune nor Sandworm
         // Cloud can run SQL, which includes every workspace on the free plan.
-        sql_available:     (await this.chainSqlService.status(chat.workspaceId)).available,
+        sql_available:     chainSql.available,
+        paid_plan_required: chainSql.paidPlanRequired,
       },
       stream:          this.chatStream,
       temperature:     this.chatTemperature,
