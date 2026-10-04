@@ -2,7 +2,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { DataSourceId } from '@sandworm/types';
 import { DataSourcesController } from '../datasource.controller';
 
-function makeController() {
+function makeController(paid = true) {
   const queryService = { getSchema: jest.fn() } as any;
   const dataSourceService = { getDataSource: jest.fn(), ping: jest.fn() } as any;
   const duckdbDataSourceService = { getDataSource: jest.fn(), ping: jest.fn() } as any;
@@ -14,6 +14,7 @@ function makeController() {
     duckdbDataSourceService,
     duneDataSourceService,
     { status: jest.fn() } as any,
+    { isPaid: jest.fn().mockResolvedValue(paid) } as any,
   );
 
   return { controller, queryService, dataSourceService, duckdbDataSourceService, duneDataSourceService };
@@ -129,6 +130,41 @@ describe('DataSourcesController', () => {
       const { controller } = makeController();
 
       await expect(controller.ping(WORKSPACE_ID, 'unknown' as any)).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe('on the free plan', () => {
+    const dune = { type: 'dune', data: { id: DataSourceId.dune, name: 'Dune', connStatus: 'checking', connError: null } };
+    const cloud = { type: 'sandwormcloud', data: { id: DataSourceId.sandwormCloud, name: 'Sandworm Cloud', connStatus: 'online', connError: null } };
+
+    it('lists Dune and Sandworm Cloud as off, and leaves DuckDB alone', async () => {
+      const { controller, dataSourceService, duckdbDataSourceService, duneDataSourceService } = makeController(false);
+      duckdbDataSourceService.getDataSource.mockReturnValue({ type: 'duckdb' });
+      dataSourceService.getDataSource.mockReturnValue(cloud);
+      duneDataSourceService.getDataSource.mockReturnValue(dune);
+
+      const [duckdb, lockedCloud, lockedDune] = (await controller.listDataSources(WORKSPACE_ID)) as any[];
+
+      expect(duckdb).toEqual({ type: 'duckdb' });
+      for (const source of [lockedCloud, lockedDune]) {
+        expect(source.data).toMatchObject({ disabled: true, connStatus: 'offline', connError: { name: 'PaidPlanRequired' } });
+      }
+      expect(lockedDune.data.connError.message).toContain('Dune needs a paid plan');
+    });
+
+    it('refuses the Sandworm Cloud schema', async () => {
+      const { controller, queryService } = makeController(false);
+
+      await expect(controller.getSchema(WORKSPACE_ID, DataSourceId.sandwormCloud)).rejects.toThrow(ForbiddenException);
+      expect(queryService.getSchema).not.toHaveBeenCalled();
+    });
+
+    it('answers a ping as offline without reaching the source', async () => {
+      const { controller, duneDataSourceService } = makeController(false);
+      duneDataSourceService.getDataSource.mockReturnValue(dune);
+
+      expect(await controller.ping(WORKSPACE_ID, DataSourceId.dune)).toMatchObject({ connStatus: 'offline', connError: { name: 'PaidPlanRequired' } });
+      expect(duneDataSourceService.ping).not.toHaveBeenCalled();
     });
   });
 });

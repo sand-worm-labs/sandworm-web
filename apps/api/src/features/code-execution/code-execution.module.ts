@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DocumentEntity, EnvironmentVariableEntity } from '@sandworm/postgresql-typeorm';
+import { DocumentEntity, EnvironmentVariableEntity, WorkspaceEntity } from '@sandworm/postgresql-typeorm';
 import { JupyterSessionService } from './jupyter-session/jupyter-session.service';
 import { KernelLifecycleService } from './jupyter-session/kernel-lifecycle.service';
 import { JupyterCompletionService } from './jupyter-session/jupyter-completion.service';
@@ -11,6 +11,7 @@ import { TrinoQueryService } from './query-engine/trino/trino-query.service';
 import { PostgresQueryService } from './query-engine/postgres/postgres-query.service';
 import { PythonQueryRunnerService } from './query-engine/python/python-query-runner.service';
 import { QueryExecutionService } from './query-engine/query-execution.service';
+import { PaidPlanService } from './query-engine/paid-plan.service';
 import { VisualizationService } from './visualization/visualization.service';
 import { PivotTableService } from './pivot-table/pivot-table.service';
 import { VariableService } from './variable.service';
@@ -19,7 +20,7 @@ import { PythonCompletionService } from './python-completion.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([EnvironmentVariableEntity, DocumentEntity]),
+    TypeOrmModule.forFeature([EnvironmentVariableEntity, DocumentEntity, WorkspaceEntity]),
     JupyterModule
   ],
   providers: [
@@ -33,6 +34,7 @@ import { PythonCompletionService } from './python-completion.service';
       PostgresQueryService,
       PythonQueryRunnerService,
       QueryExecutionService,
+      PaidPlanService,
       VisualizationService,
       PivotTableService,
       VariableService,
@@ -42,6 +44,7 @@ import { PythonCompletionService } from './python-completion.service';
       JupyterCompletionService,
       PythonExecutorService,
       QueryExecutionService,
+      PaidPlanService,
       TrinoQueryService,
       DataFrameService,
       VisualizationService,

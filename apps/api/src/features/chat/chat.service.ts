@@ -136,8 +136,8 @@ export class ChatService implements OnModuleInit {
         focused_block_ids: focusedBlockIds,
         chat_id:           chat.id,
         // The sidecar builds from public APIs when neither Dune nor Sandworm
-        // Cloud can run SQL.
-        sql_available:     (await this.chainSqlService.status()).available,
+        // Cloud can run SQL, which includes every workspace on the free plan.
+        sql_available:     (await this.chainSqlService.status(chat.workspaceId)).available,
       },
       stream:          this.chatStream,
       temperature:     this.chatTemperature,
