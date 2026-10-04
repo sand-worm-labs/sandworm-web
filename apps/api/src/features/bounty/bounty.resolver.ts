@@ -1,13 +1,17 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
 import { Public } from '@sandworm/nest-common';
 import { Bounty } from './bounty.model';
 import { BountyService } from './bounty.service';
+import { BountyEscrowService } from './bounty-escrow.service';
 import { CreateBountyInput } from './dto/bounty.dto';
 
 @Resolver(() => Bounty)
 export class BountyResolver {
-  constructor(private readonly bountyService: BountyService) { }
+  constructor(
+    private readonly bountyService: BountyService,
+    private readonly escrowService: BountyEscrowService,
+  ) { }
 
   @Public()
   @Query(() => [Bounty], {
@@ -53,5 +57,18 @@ export class BountyResolver {
     @Args('input') input: CreateBountyInput,
   ): Promise<Bounty> {
     return this.bountyService.createBounty(input, userId);
+  }
+
+  @Mutation(() => Bounty, {
+    name: 'confirmBountyFunding',
+    description: 'Check a funding transaction onchain and open the bounty. Everything is read from the chain.',
+  })
+  confirmBountyFunding(
+    @CurrentUser('id') userId: string,
+    @Args('slug') slug: string,
+    @Args('chainId', { type: () => Int }) chainId: number,
+    @Args('txHash') txHash: string,
+  ): Promise<Bounty> {
+    return this.escrowService.confirmFunding(slug, chainId, txHash, userId);
   }
 }

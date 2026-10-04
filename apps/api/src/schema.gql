@@ -302,6 +302,10 @@ type Bounty {
   rewardAmount: String
   deadline: DateTime
   details: String
+  chainId: Int
+  onchainId: String
+  sponsorAddress: String
+  fundTxHash: String
 }
 
 type Comment {
@@ -762,6 +766,11 @@ type Mutation {
   Create a bounty as a draft. It is listed once its reward is funded in escrow.
   """
   createBounty(input: CreateBountyInput!): Bounty!
+
+  """
+  Check a funding transaction onchain and open the bounty. Everything is read from the chain.
+  """
+  confirmBountyFunding(slug: String!, chainId: Int!, txHash: String!): Bounty!
 
   """Create a new execution schedule for a document"""
   createSchedule(workspaceId: String!, input: CreateScheduleInput!): Schedule!

@@ -1,9 +1,10 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { ArrayMaxSize, IsDate, IsIn, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import { StringField, StringFieldOptional, UUIDField } from '@sandworm/graphql';
+import { escrowTokens } from '@sandworm/types/escrow';
 
 export const BOUNTY_TYPES = ['Dashboard', 'Research', 'Investigation'] as const;
-export const BOUNTY_TOKENS = ['USDC', 'USDG'] as const;
+export const BOUNTY_TOKENS = [...new Set(Object.values(escrowTokens).flatMap(tokens => tokens.map(token => token.symbol)))];
 
 @InputType()
 export class CreateBountyInput {

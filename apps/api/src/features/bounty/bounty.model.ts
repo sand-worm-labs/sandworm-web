@@ -84,6 +84,18 @@ export class Bounty {
   @StringFieldOptional()
   details?: string | null;
 
+  @Field(() => Int, { nullable: true })
+  chainId?: number | null;
+
+  @StringFieldOptional()
+  onchainId?: string | null;
+
+  @StringFieldOptional()
+  sponsorAddress?: string | null;
+
+  @StringFieldOptional()
+  fundTxHash?: string | null;
+
   static fromEntity(entity: BountyEntity): Bounty {
     const bounty = new Bounty();
     bounty.slug = entity.slug;
@@ -108,6 +120,10 @@ export class Bounty {
     bounty.rewardAmount = entity.rewardAmount;
     bounty.deadline = entity.deadline;
     bounty.details = entity.details;
+    bounty.chainId = entity.chainId;
+    bounty.onchainId = entity.onchainId;
+    bounty.sponsorAddress = entity.sponsorAddress;
+    bounty.fundTxHash = entity.fundTxHash;
     return bounty;
   }
 
