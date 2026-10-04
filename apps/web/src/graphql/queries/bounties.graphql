@@ -1,0 +1,19 @@
+query GetBounties {
+  getBounties {
+    slug
+    title
+    sponsor
+    type
+    reward
+    status
+    summary
+    judging
+    winners {
+      place
+      author
+      notebookSlug
+    }
+    sourceUrl
+    sample
+  }
+}

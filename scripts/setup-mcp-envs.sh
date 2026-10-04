@@ -83,25 +83,9 @@ set_env "$MCP_ENV" WEB_URL "$APP_DOMAIN"
 set_env "$MCP_ENV" API_URL "http://localhost:8003"
 set_env "$MCP_ENV" MCP_OAUTH_INTROSPECT_KEY "$INTROSPECT_KEY"
 set_if_empty "$MCP_ENV" LOG_TOOL_CALLS "true"
-
-# Payments (Arbitrum MPP). The server will not start without these.
-set_if_empty "$MCP_ENV" MPP_NETWORK "arbitrum-sepolia"
-set_if_empty "$MCP_ENV" MPP_SECRET_KEY "$(openssl rand -hex 32)"
-set_if_empty "$MCP_ENV" QUERY_PRICE "10000"
-GENERATED_WALLET=false
-if [ -z "$(get_env "$MCP_ENV" MPP_SERVER_PRIVATE_KEY)" ]; then
-  set_env "$MCP_ENV" MPP_SERVER_PRIVATE_KEY "0x$(openssl rand -hex 32)"
-  GENERATED_WALLET=true
-fi
 echo "✅ $MCP_ENV updated"
 
 echo
 echo "✅ MCP envs set for $ENV"
 echo "   MCP:  $MCP_URL (port $MCP_PORT)"
 echo "   Auth: $APP_DOMAIN"
-if [ "$GENERATED_WALLET" = true ]; then
-  echo
-  echo "⚠ MPP_SERVER_PRIVATE_KEY was missing, so a new empty wallet key was generated."
-  echo "  The server starts with it, but paid calls cannot settle until you replace it"
-  echo "  with a funded wallet's key in $MCP_ENV."
-fi

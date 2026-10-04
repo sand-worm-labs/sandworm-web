@@ -273,6 +273,28 @@ type Profile {
   following: Boolean!
 }
 
+type BountyWinner {
+  place: String!
+  author: String!
+  notebookSlug: String!
+}
+
+type Bounty {
+  slug: String!
+  title: String!
+  sponsor: String!
+  type: String!
+  reward: String
+  status: String!
+  summary: String!
+  judging: [String!]!
+  winners: [BountyWinner!]!
+  sourceUrl: String
+  sample: Boolean!
+  featured: Boolean!
+  position: Int!
+}
+
 type Comment {
   id: String!
   body: String!
@@ -525,6 +547,11 @@ type Query {
   """Check if a file exists"""
   fileExists(workspaceId: String!, fileName: String!): Boolean!
   tags: [String!]!
+
+  """
+  Get the bounties, in display order. Pass featured to get only the ones shown on the home page.
+  """
+  getBounties(featured: Boolean): [Bounty!]!
 
   """Get a single schedule by ID"""
   schedule(scheduleId: String!): Schedule!

@@ -5,14 +5,12 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 
 import type { AuthContext, Authenticator } from './auth.ts';
 import { clientOf, type ClientInfo } from './client.ts';
-import type { ChargeOutcome } from './payments.ts';
 import { registerTools } from './tools/index.ts';
 import { SAVE_REPLY_INSTRUCTIONS } from './tools/notebooks/reply.ts';
 
 const MAX_BODY_BYTES = 1_000_000;
 
 export type ServerDeps = {
-  charge: (extra: unknown) => Promise<ChargeOutcome>;
   authenticate: Authenticator;
   publicUrl: string;
   authServerUrl: string;
@@ -21,12 +19,7 @@ export type ServerDeps = {
   logToolCalls?: boolean;
 };
 
-export function createMcpServer(
-  deps: ServerDeps,
-  _price: { display: string },
-  auth: AuthContext,
-  client?: ClientInfo,
-): McpServer {
+export function createMcpServer(deps: ServerDeps, auth: AuthContext, client?: ClientInfo): McpServer {
   const server = new McpServer(
     { name: 'sandworm', version: '0.1.0' },
     deps.logToolCalls ? { instructions: SAVE_REPLY_INSTRUCTIONS } : undefined,
@@ -60,14 +53,14 @@ function send(res: ServerResponse, status: number, body: unknown) {
 
 // Stateless: every request gets its own MCP server + transport, so nothing is
 // shared between callers and the process can be scaled or restarted freely.
-export function createHttpServer(deps: ServerDeps, price: { display: string }): Server {
+export function createHttpServer(deps: ServerDeps): Server {
   return createServer(async (req, res) => {
     const path = (req.url ?? '').split('?')[0];
 
     // Browser-based MCP clients (the inspector, web UIs) need CORS. No cookies
-    // are used, so allowing any origin is safe; payments ride on headers.
+    // are used, so allowing any origin is safe.
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Expose-Headers', 'WWW-Authenticate, Payment-Receipt, Mcp-Session-Id');
+    res.setHeader('Access-Control-Expose-Headers', 'WWW-Authenticate, Mcp-Session-Id');
     if (req.method === 'OPTIONS') {
       res.writeHead(204, {
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -102,7 +95,7 @@ export function createHttpServer(deps: ServerDeps, price: { display: string }): 
 
     try {
       const body = await readJsonBody(req);
-      const mcp = createMcpServer(deps, price, auth, clientOf(req, res, body));
+      const mcp = createMcpServer(deps, auth,clientOf(req, res, body));
       const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
       res.on('close', () => {
         void transport.close();

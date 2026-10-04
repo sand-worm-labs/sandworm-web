@@ -1,6 +1,8 @@
 ---
 // src/components/MainFooter.astro
 import  SandwormLogo  from '../assets/sandworm.svg';
+
+const appUrl = import.meta.env.PUBLIC_APP_URL ?? 'http://localhost:8081';
 ---
 
 <footer class="p-4 px-5 lg:text-sm text-base text-white border-t bg-black font-body font-medium z-10 relative border-black">
@@ -19,6 +21,9 @@ import  SandwormLogo  from '../assets/sandworm.svg';
       </a>
       <a href="/mcp" class="hover:text-primary transition-colors text-[#E1E9F1]">
         MCP
+      </a>
+      <a href={`${appUrl}/bounties`} class="hover:text-primary transition-colors text-[#E1E9F1]">
+        Bounties
       </a>
       <a href="https://sandwormlabs.substack.com/" class="hover:text-primary transition-colors text-[#E1E9F1]" target="_blank" rel="noopener noreferrer">
         Blog

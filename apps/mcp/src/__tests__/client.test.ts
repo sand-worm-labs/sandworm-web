@@ -45,17 +45,13 @@ test('a request with no session, or a session id that is not ours, has no client
 // request that sends it back.
 test('the session id reaches the client and is accepted on later requests', async () => {
   const { createHttpServer } = await import('../server.ts');
-  const server = createHttpServer(
-    {
-      charge: async () => ({ ok: true }) as never,
-      authenticate: async () => ({ userId: 'user-1', token: 't' }),
-      publicUrl: 'http://localhost/mcp',
-      authServerUrl: 'http://localhost',
-      apiUrl: 'http://localhost:1',
-      webUrl: 'http://localhost',
-    },
-    { display: '0 USDC' },
-  );
+  const server = createHttpServer({
+    authenticate: async () => ({ userId: 'user-1', token: 't' }),
+    publicUrl: 'http://localhost/mcp',
+    authServerUrl: 'http://localhost',
+    apiUrl: 'http://localhost:1',
+    webUrl: 'http://localhost',
+  });
   await new Promise<void>(resolve => server.listen(0, resolve));
   const { port } = server.address() as { port: number };
   const post = (body: unknown, sessionId?: string) =>

@@ -130,6 +130,7 @@ type API = {
       id?: string;
       parentId?: string | null;
       version: number;
+      title?: string;
     },
     skipAddingToDocument?: boolean
   ) => Promise<Document>;
@@ -297,7 +298,11 @@ export function useDocuments(workspaceId: string): UseDocuments {
   // ⬢ Create Document
   // =====================================
   const createDocument = useCallback(
-    async (data: { parentId?: string | null; version: number }) => {
+    async (data: {
+      parentId?: string | null;
+      version: number;
+      title?: string;
+    }) => {
       if (loading) {
         throw new Error("Cannot create document while loading");
       }
@@ -307,7 +312,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
           variables: {
             workspaceId,
             input: {
-              title: "Untitled",
+              title: data.title ?? "Untitled",
               parentId: data.parentId ?? null,
               version: data.version,
             },

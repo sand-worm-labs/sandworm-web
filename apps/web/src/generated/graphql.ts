@@ -15,9 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: { input: any; output: any; }
-  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSON: { input: any; output: any; }
 };
 
@@ -27,12 +25,58 @@ export type AiResult = {
   result: Scalars['String']['output'];
 };
 
+export type AuditLog = {
+  __typename?: 'AuditLog';
+  action: Scalars['String']['output'];
+  actorId?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  errorMessage?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  ip?: Maybe<Scalars['String']['output']>;
+  metadata?: Maybe<Scalars['JSON']['output']>;
+  requestId?: Maybe<Scalars['String']['output']>;
+  resourceId?: Maybe<Scalars['String']['output']>;
+  resourceType?: Maybe<Scalars['String']['output']>;
+  result: AuditResult;
+  workspaceId?: Maybe<Scalars['String']['output']>;
+};
+
+export enum AuditResult {
+  Denied = 'DENIED',
+  Failure = 'FAILURE',
+  Success = 'SUCCESS'
+}
+
 export type AuthPayload = {
   __typename?: 'AuthPayload';
   id: Scalars['String']['output'];
   roles?: Maybe<Scalars['JSON']['output']>;
   token?: Maybe<Scalars['String']['output']>;
   user: User;
+};
+
+export type Bounty = {
+  __typename?: 'Bounty';
+  featured: Scalars['Boolean']['output'];
+  judging: Array<Scalars['String']['output']>;
+  position: Scalars['Int']['output'];
+  reward?: Maybe<Scalars['String']['output']>;
+  sample: Scalars['Boolean']['output'];
+  slug: Scalars['String']['output'];
+  sourceUrl?: Maybe<Scalars['String']['output']>;
+  sponsor: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  summary: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+  winners: Array<BountyWinner>;
+};
+
+export type BountyWinner = {
+  __typename?: 'BountyWinner';
+  author: Scalars['String']['output'];
+  notebookSlug: Scalars['String']['output'];
+  place: Scalars['String']['output'];
 };
 
 export type Chat = {
@@ -805,6 +849,8 @@ export type PublishDocumentMetaInput = {
 
 export type Query = {
   __typename?: 'Query';
+  /** Workspace audit trail (admins only), newest first */
+  auditLogs: Array<AuditLog>;
   /** Get a chat with its messages */
   chat: Chat;
   /** Get messages for a chat */
@@ -831,6 +877,8 @@ export type Query = {
   fileExists: Scalars['Boolean']['output'];
   /** Get all workspaces the current user is an admin of, with their members */
   getAdminWorkspacesWithMembers: Array<WorkspaceMember>;
+  /** Get the bounties, in display order. Pass featured to get only the ones shown on the home page. */
+  getBounties: Array<Bounty>;
   /** Get a reusable component by ID */
   getComponent: ReusableComponent;
   /** Fetch a verified contract's real function and event signatures from its block explorer ABI, for tool params that let a user pick one instead of guessing (e.g. calldata_decoder). */
@@ -902,7 +950,19 @@ export type Query = {
   schedule: Schedule;
   /** Get all schedules for a document */
   schedules: Array<Schedule>;
+  /** Semantic search over the power tool catalog. Returns the best matches first. */
+  searchTools: Array<Tool>;
   tags: Array<Scalars['String']['output']>;
+};
+
+
+export type QueryAuditLogsArgs = {
+  action?: InputMaybe<Scalars['String']['input']>;
+  actorId?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['DateTime']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  result?: InputMaybe<AuditResult>;
+  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -956,6 +1016,11 @@ export type QueryEnvironmentVariablesArgs = {
 export type QueryFileExistsArgs = {
   fileName: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type QueryGetBountiesArgs = {
+  featured?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -1115,6 +1180,12 @@ export type QueryScheduleArgs = {
 
 export type QuerySchedulesArgs = {
   input: ListSchedulesInput;
+};
+
+
+export type QuerySearchToolsArgs = {
+  limit?: Scalars['Int']['input'];
+  query: Scalars['String']['input'];
 };
 
 export type RemoveUserFromWorkspaceInput = {
@@ -1875,6 +1946,11 @@ export type GetUserFollowingQueryVariables = Exact<{
 
 
 export type GetUserFollowingQuery = { __typename?: 'Query', getUserFollowing: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null, followersCount: number, followingCount: number }> };
+
+export type GetBountiesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetBountiesQuery = { __typename?: 'Query', getBounties: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, judging: Array<string>, sourceUrl?: string | null, sample: boolean, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string }> }> };
 
 export type GetChatsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -4719,6 +4795,59 @@ export type GetUserFollowingQueryHookResult = ReturnType<typeof useGetUserFollow
 export type GetUserFollowingLazyQueryHookResult = ReturnType<typeof useGetUserFollowingLazyQuery>;
 export type GetUserFollowingSuspenseQueryHookResult = ReturnType<typeof useGetUserFollowingSuspenseQuery>;
 export type GetUserFollowingQueryResult = Apollo.QueryResult<GetUserFollowingQuery, GetUserFollowingQueryVariables>;
+export const GetBountiesDocument = gql`
+    query GetBounties {
+  getBounties {
+    slug
+    title
+    sponsor
+    type
+    reward
+    status
+    summary
+    judging
+    winners {
+      place
+      author
+      notebookSlug
+    }
+    sourceUrl
+    sample
+  }
+}
+    `;
+
+/**
+ * __useGetBountiesQuery__
+ *
+ * To run a query within a React component, call `useGetBountiesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetBountiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetBountiesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetBountiesQuery(baseOptions?: Apollo.QueryHookOptions<GetBountiesQuery, GetBountiesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetBountiesQuery, GetBountiesQueryVariables>(GetBountiesDocument, options);
+      }
+export function useGetBountiesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetBountiesQuery, GetBountiesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetBountiesQuery, GetBountiesQueryVariables>(GetBountiesDocument, options);
+        }
+export function useGetBountiesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetBountiesQuery, GetBountiesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetBountiesQuery, GetBountiesQueryVariables>(GetBountiesDocument, options);
+        }
+export type GetBountiesQueryHookResult = ReturnType<typeof useGetBountiesQuery>;
+export type GetBountiesLazyQueryHookResult = ReturnType<typeof useGetBountiesLazyQuery>;
+export type GetBountiesSuspenseQueryHookResult = ReturnType<typeof useGetBountiesSuspenseQuery>;
+export type GetBountiesQueryResult = Apollo.QueryResult<GetBountiesQuery, GetBountiesQueryVariables>;
 export const GetChatsDocument = gql`
     query GetChats($workspaceId: String!, $documentId: String!) {
   chats(workspaceId: $workspaceId, documentId: $documentId) {
