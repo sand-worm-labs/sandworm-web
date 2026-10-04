@@ -1,17 +1,6 @@
-import Youtube from "@tiptap/extension-youtube";
 import type * as Y from "yjs";
-import { EditorContent, Extension, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
+import { EditorContent, useEditor } from "@tiptap/react";
 import Collaboration from "@tiptap/extension-collaboration";
-import Underline from "@tiptap/extension-underline";
-import Placeholder from "@tiptap/extension-placeholder";
-import Link from "@tiptap/extension-link";
-import Highlight from "@tiptap/extension-highlight";
-import { TextStyleKit } from "@tiptap/extension-text-style";
-import TaskList from "@tiptap/extension-task-list";
-import TaskItem from "@tiptap/extension-task-item";
-import Color from "@tiptap/extension-color";
-import MathExtension from "@aarkue/tiptap-math-extension";
 import { getRichTextAttributes, type RichTextBlock } from "@sandworm/editor";
 import clsx from "clsx";
 import { useCallback, useEffect, useState } from "react";
@@ -25,9 +14,8 @@ import useEditorAwareness from "../../../hooks/useEditorAwareness";
 import type { DashboardMode } from "../../Dashboard";
 import { BlockTypePill } from "../../BlockTypePill";
 
-import ImageExtension from "./ImageExtension";
 import FormattingToolbar from "./FormattingToolbar";
-import { MarkdownExtension } from "./MarkdownExtention";
+import { richTextExtensions } from "./extensions";
 
 // =====================================
 // ⬢ Types
@@ -68,48 +56,11 @@ const useBlockEditor = ({
       autofocus: false,
       editable: isEditable,
       extensions: [
-        TaskList,
-        TaskItem.configure({ nested: true }),
-
-        StarterKit.configure({
-          undoRedo: false,
-          dropcursor: false,
-        }),
-
-        Collaboration.configure({ fragment: content }),
-
-        Underline.configure({
-          HTMLAttributes: { class: "my-custom-class" },
-        }),
-        TextStyleKit,
-        Color.configure({ types: ["textStyle"] }),
-        Highlight.configure({ multicolor: true }),
-
-        Link.extend({ inclusive: false }).configure({
-          HTMLAttributes: {
-            class: "cursor-pointer text-ink-400 hover:text-gray-700",
-            target: "_blank",
-          },
-        }),
-        ImageExtension.configure({ inline: true, allowBase64: true }),
-        Youtube.configure({ inline: true }),
-
-        MathExtension.configure({ evaluation: false }),
-
-        MarkdownExtension,
-
-        Placeholder.configure({
+        ...richTextExtensions({
           placeholder: "Click here to start adding content.",
+          undoRedo: false,
         }),
-        Extension.create({
-          name: "sandwormKeyboardShortcuts",
-          addKeyboardShortcuts: () => ({
-            Escape: args => {
-              args.editor.commands.blur();
-              return true;
-            },
-          }),
-        }),
+        Collaboration.configure({ fragment: content }),
       ],
 
       onUpdate({ editor: currentEditor }) {

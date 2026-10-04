@@ -441,7 +441,13 @@ const AddLinkButton = (props: {
   );
 };
 
-const FormattingToolbar = ({ editor }: { editor: Editor }) => {
+const FormattingToolbar = ({
+  editor,
+  showImage = true,
+}: {
+  editor: Editor;
+  showImage?: boolean;
+}) => {
   const [openMenu, setOpenMenu] = useState<OpenMenu>(null);
 
   return (
@@ -512,7 +518,7 @@ const FormattingToolbar = ({ editor }: { editor: Editor }) => {
         >
           <LinkIcon className="h-4 w-4" />
         </AddLinkButton>
-        <AddImageButton editor={editor} />
+        {showImage && <AddImageButton editor={editor} />}
       </div>
     </div>
   );

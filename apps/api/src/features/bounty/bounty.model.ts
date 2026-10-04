@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { BooleanField, StringField, StringFieldOptional } from '@sandworm/graphql';
+import { BooleanField, DateFieldOptional, StringField, StringFieldOptional } from '@sandworm/graphql';
 import { BountyEntity } from '@sandworm/postgresql-typeorm';
 
 @ObjectType()
@@ -72,6 +72,18 @@ export class Bounty {
   @Field(() => Int)
   position!: number;
 
+  @StringFieldOptional()
+  rewardToken?: string | null;
+
+  @StringFieldOptional()
+  rewardAmount?: string | null;
+
+  @DateFieldOptional()
+  deadline?: Date | null;
+
+  @StringFieldOptional()
+  details?: string | null;
+
   static fromEntity(entity: BountyEntity): Bounty {
     const bounty = new Bounty();
     bounty.slug = entity.slug;
@@ -92,6 +104,10 @@ export class Bounty {
     bounty.sample = entity.sample;
     bounty.featured = entity.featured;
     bounty.position = entity.position;
+    bounty.rewardToken = entity.rewardToken;
+    bounty.rewardAmount = entity.rewardAmount;
+    bounty.deadline = entity.deadline;
+    bounty.details = entity.details;
     return bounty;
   }
 

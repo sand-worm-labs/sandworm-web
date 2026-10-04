@@ -3,15 +3,22 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
+import { PiPlus } from "react-icons/pi";
 import { toast } from "sonner";
 import { Button } from "@sandworm/ui/components/button";
 
 import { useDocuments } from "@/components/Editor/hooks/useDocuments";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
+import { useGetBountyDraftsQuery } from "@/generated/graphql";
 
 import { BountiesBoard } from "./BountiesBoard";
-import { bountyButtonClass, bountyPrimaryButtonClass } from "./BountyCard";
+import {
+  BountyCard,
+  bountyButtonClass,
+  bountyPrimaryButtonClass,
+} from "./BountyCard";
 import { bountyTag, type BountyRef } from "./bounties";
+import CreateBountyModal from "./CreateBountyModal";
 import { useBountyEntries } from "./useBountyEntry";
 
 // =====================================
@@ -134,12 +141,72 @@ export const useWorkspaceBountyActions = () => {
 // =====================================
 export const WorkspaceBounties = () => {
   const workspaceId = useStringQuery("workspace");
+  const router = useRouter();
   const renderActions = useWorkspaceBountyActions();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const { data: draftsData, refetch: refetchDrafts } = useGetBountyDraftsQuery({
+    variables: { workspaceId },
+    skip: !workspaceId,
+  });
+  const drafts = draftsData?.getBountyDrafts ?? [];
+  const detailHref = (slug: string) =>
+    `/workspace/${workspaceId}/bounties/${slug}`;
+
+  const onCreated = (slug: string) => {
+    refetchDrafts();
+    router.push(detailHref(slug));
+  };
 
   return (
-    <BountiesBoard
-      renderActions={renderActions}
-      detailHref={slug => `/workspace/${workspaceId}/bounties/${slug}`}
-    />
+    <>
+      <BountiesBoard
+        renderActions={renderActions}
+        detailHref={detailHref}
+        headerAction={
+          <button
+            type="button"
+            onClick={() => setIsCreateOpen(true)}
+            className="py-2 px-6 bg-primary-tint-75 dark:bg-base-700 hover:bg-primary/5 dark:hover:bg-base-600 rounded-xl hover:cursor-pointer text-sm border mt-6 flex items-center shrink-0 border-accent-fuchsia dark:border-white/15 text-accent-fuchsia dark:text-white font-body font-medium gap-2 shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.04),0px_4px_4px_-2px_rgba(0,0,0,0.02)] dark:shadow-[0px_2px_2px_-1px_rgba(0,0,0,0.12),0px_4px_4px_-2px_rgba(0,0,0,0.12)]"
+          >
+            <PiPlus className="h-4 w-4" />
+            Create Bounty
+          </button>
+        }
+      >
+        {drafts.length > 0 && (
+          <section className="mb-8">
+            <h2 className="text-sm font-bold text-ink-100 dark:text-white mb-3">
+              Your drafts
+            </h2>
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {drafts.map(draft => (
+                <BountyCard
+                  key={draft.slug}
+                  bounty={draft}
+                  href={detailHref(draft.slug)}
+                  actions={
+                    <Button
+                      size="sm"
+                      disabled
+                      className={bountyPrimaryButtonClass}
+                      title="Escrow funding is coming next"
+                    >
+                      Fund escrow
+                    </Button>
+                  }
+                />
+              ))}
+            </div>
+          </section>
+        )}
+      </BountiesBoard>
+
+      <CreateBountyModal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        workspaceId={workspaceId}
+        onCreated={onCreated}
+      />
+    </>
   );
 };

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { PiArrowLeft, PiTrophy } from "react-icons/pi";
 
+import { RichTextView } from "@/components/RichTextField";
 import { useGetBountyQuery } from "@/generated/graphql";
 
 import type { BountyRef } from "./bounties";
@@ -109,6 +110,12 @@ export const BountyDetail = ({
 
       <div className="mt-2 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] items-start">
         <div className="min-w-0 max-w-3xl">
+          {bounty.details && (
+            <section className="mt-8">
+              <RichTextView markdown={bounty.details} />
+            </section>
+          )}
+
           {bounty.background && (
             <Section title="Background">
               <p className="text-[0.85rem] leading-relaxed text-ink-400 dark:text-gray-300 break-words">

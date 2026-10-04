@@ -14,11 +14,15 @@ import { BountyCard } from "./BountyCard";
 interface BountiesBoardProps {
   renderActions: (bounty: BountyRef) => React.ReactNode;
   detailHref: (slug: string) => string;
+  headerAction?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const BountiesBoard = ({
   renderActions,
   detailHref,
+  headerAction,
+  children,
 }: BountiesBoardProps) => {
   const [type, setType] = useState("All");
   const { data, loading, error } = useGetBountiesQuery();
@@ -28,13 +32,20 @@ export const BountiesBoard = ({
 
   return (
     <div className="container mx-auto font-body">
-      <h1 className="text-xl font-bold text-ink-100 dark:text-white mt-4">
-        Bounties
-      </h1>
-      <p className="text-ink-200 dark:text-placeholder-muted text-sm mt-1 mb-6">
-        Answer a sponsor&apos;s question with a notebook and compete for the
-        reward.
-      </p>
+      <div className="flex items-start justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-xl font-bold text-ink-100 dark:text-white mt-4">
+            Bounties
+          </h1>
+          <p className="text-ink-200 dark:text-placeholder-muted text-sm mt-1">
+            Answer a sponsor&apos;s question with a notebook and compete for the
+            reward.
+          </p>
+        </div>
+        {headerAction}
+      </div>
+
+      {children}
 
       <div
         className={`${segmentedTabsClass} px-1.5 py-1.5 w-fit max-w-full overflow-x-auto mb-6`}

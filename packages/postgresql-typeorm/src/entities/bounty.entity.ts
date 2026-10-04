@@ -32,7 +32,7 @@ export class BountyEntity extends AbstractEntity {
   @Column({ type: 'varchar', nullable: true })
   reward!: string | null;
 
-  // open, judging or closed
+  // draft, open, judging or closed
   @Column({ default: 'open' })
   status!: string;
 
@@ -88,4 +88,22 @@ export class BountyEntity extends AbstractEntity {
   // Order on the bounties pages, lowest first
   @Column({ type: 'int', default: 0 })
   position!: number;
+
+  @Column({ name: 'creator_id', type: 'uuid', nullable: true })
+  creatorId!: string | null;
+
+  @Column({ name: 'workspace_id', type: 'uuid', nullable: true })
+  workspaceId!: string | null;
+
+  @Column({ name: 'reward_token', type: 'varchar', nullable: true })
+  rewardToken!: string | null;
+
+  @Column({ name: 'reward_amount', type: 'numeric', precision: 36, scale: 6, nullable: true })
+  rewardAmount!: string | null;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  deadline!: Date | null;
+
+  @Column({ type: 'text', nullable: true })
+  details!: string | null;
 }

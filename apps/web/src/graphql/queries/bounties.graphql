@@ -38,5 +38,25 @@ query GetBounty($slug: String!) {
     }
     postedOn
     sample
+    details
+    deadline
+  }
+}
+
+query GetBountyDrafts($workspaceId: String!) {
+  getBountyDrafts(workspaceId: $workspaceId) {
+    slug
+    title
+    sponsor
+    type
+    reward
+    status
+    summary
+    winners {
+      place
+      author
+      notebookSlug
+    }
+    sample
   }
 }

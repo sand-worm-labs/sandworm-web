@@ -59,7 +59,9 @@ export type Bounty = {
   __typename?: 'Bounty';
   background?: Maybe<Scalars['String']['output']>;
   dataHints: Array<Scalars['String']['output']>;
+  deadline?: Maybe<Scalars['DateTime']['output']>;
   deliverables: Array<Scalars['String']['output']>;
+  details?: Maybe<Scalars['String']['output']>;
   featured: Scalars['Boolean']['output'];
   judging: Array<Scalars['String']['output']>;
   position: Scalars['Int']['output'];
@@ -67,6 +69,8 @@ export type Bounty = {
   prizes: Array<Scalars['String']['output']>;
   requirements: Array<Scalars['String']['output']>;
   reward?: Maybe<Scalars['String']['output']>;
+  rewardAmount?: Maybe<Scalars['String']['output']>;
+  rewardToken?: Maybe<Scalars['String']['output']>;
   sample: Scalars['Boolean']['output'];
   slug: Scalars['String']['output'];
   sponsor: Scalars['String']['output'];
@@ -127,6 +131,21 @@ export type ContractFunction = {
   name: Scalars['String']['output'];
   selector: Scalars['String']['output'];
   signature: Scalars['String']['output'];
+};
+
+export type CreateBountyInput = {
+  background?: InputMaybe<Scalars['String']['input']>;
+  deadline: Scalars['DateTime']['input'];
+  deliverables?: InputMaybe<Array<Scalars['String']['input']>>;
+  details: Scalars['String']['input'];
+  requirements?: InputMaybe<Array<Scalars['String']['input']>>;
+  rewardAmount: Scalars['String']['input'];
+  rewardToken: Scalars['String']['input'];
+  sponsor: Scalars['String']['input'];
+  summary: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  type: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
 };
 
 export type CreateChatInput = {
@@ -361,6 +380,8 @@ export type Mutation = {
   approveRoleRequest: Scalars['Boolean']['output'];
   /** Remove multiple users from workspaces */
   batchRemoveUsersFromWorkspace: Scalars['Boolean']['output'];
+  /** Create a bounty as a draft. It is listed once its reward is funded in escrow. */
+  createBounty: Bounty;
   /** Create a new chat */
   createChat: Chat;
   /** Create a new comment on a document */
@@ -494,6 +515,11 @@ export type MutationApproveRoleRequestArgs = {
 
 export type MutationBatchRemoveUsersFromWorkspaceArgs = {
   removals: Array<RemoveUserFromWorkspaceInput>;
+};
+
+
+export type MutationCreateBountyArgs = {
+  input: CreateBountyInput;
 };
 
 
@@ -882,10 +908,12 @@ export type Query = {
   fileExists: Scalars['Boolean']['output'];
   /** Get all workspaces the current user is an admin of, with their members */
   getAdminWorkspacesWithMembers: Array<WorkspaceMember>;
-  /** Get the bounties, in display order. Pass featured to get only the ones shown on the home page. */
+  /** Get the listed bounties, in display order. Pass featured to get only the ones shown on the home page. */
   getBounties: Array<Bounty>;
-  /** Get one bounty by its slug, or null when there is none. */
+  /** Get one bounty by its slug. A draft is returned only to its creator. */
   getBounty?: Maybe<Bounty>;
+  /** Get the bounties the current user drafted in a workspace and has not funded yet. */
+  getBountyDrafts: Array<Bounty>;
   /** Get a reusable component by ID */
   getComponent: ReusableComponent;
   /** Fetch a verified contract's real function and event signatures from its block explorer ABI, for tool params that let a user pick one instead of guessing (e.g. calldata_decoder). */
@@ -1033,6 +1061,11 @@ export type QueryGetBountiesArgs = {
 
 export type QueryGetBountyArgs = {
   slug: Scalars['String']['input'];
+};
+
+
+export type QueryGetBountyDraftsArgs = {
+  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -1581,6 +1614,13 @@ export type UnfollowUserMutationVariables = Exact<{
 
 export type UnfollowUserMutation = { __typename?: 'Mutation', unfollowUser: { __typename?: 'Profile', username: string, bio: string, image: string, following: boolean } };
 
+export type CreateBountyMutationVariables = Exact<{
+  input: CreateBountyInput;
+}>;
+
+
+export type CreateBountyMutation = { __typename?: 'Mutation', createBounty: { __typename?: 'Bounty', slug: string, title: string, status: string } };
+
 export type CreateChatMutationVariables = Exact<{
   input: CreateChatInput;
 }>;
@@ -1969,7 +2009,14 @@ export type GetBountyQueryVariables = Exact<{
 }>;
 
 
-export type GetBountyQuery = { __typename?: 'Query', getBounty?: { __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, background?: string | null, requirements: Array<string>, deliverables: Array<string>, prizes: Array<string>, judging: Array<string>, dataHints: Array<string>, postedOn?: string | null, sample: boolean, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string }> } | null };
+export type GetBountyQuery = { __typename?: 'Query', getBounty?: { __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, background?: string | null, requirements: Array<string>, deliverables: Array<string>, prizes: Array<string>, judging: Array<string>, dataHints: Array<string>, postedOn?: string | null, sample: boolean, details?: string | null, deadline?: any | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string }> } | null };
+
+export type GetBountyDraftsQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type GetBountyDraftsQuery = { __typename?: 'Query', getBountyDrafts: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, sample: boolean, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string }> }> };
 
 export type GetChatsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -2845,6 +2892,41 @@ export function useUnfollowUserMutation(baseOptions?: Apollo.MutationHookOptions
 export type UnfollowUserMutationHookResult = ReturnType<typeof useUnfollowUserMutation>;
 export type UnfollowUserMutationResult = Apollo.MutationResult<UnfollowUserMutation>;
 export type UnfollowUserMutationOptions = Apollo.BaseMutationOptions<UnfollowUserMutation, UnfollowUserMutationVariables>;
+export const CreateBountyDocument = gql`
+    mutation CreateBounty($input: CreateBountyInput!) {
+  createBounty(input: $input) {
+    slug
+    title
+    status
+  }
+}
+    `;
+export type CreateBountyMutationFn = Apollo.MutationFunction<CreateBountyMutation, CreateBountyMutationVariables>;
+
+/**
+ * __useCreateBountyMutation__
+ *
+ * To run a mutation, you first call `useCreateBountyMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateBountyMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createBountyMutation, { data, loading, error }] = useCreateBountyMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateBountyMutation(baseOptions?: Apollo.MutationHookOptions<CreateBountyMutation, CreateBountyMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateBountyMutation, CreateBountyMutationVariables>(CreateBountyDocument, options);
+      }
+export type CreateBountyMutationHookResult = ReturnType<typeof useCreateBountyMutation>;
+export type CreateBountyMutationResult = Apollo.MutationResult<CreateBountyMutation>;
+export type CreateBountyMutationOptions = Apollo.BaseMutationOptions<CreateBountyMutation, CreateBountyMutationVariables>;
 export const CreateChatDocument = gql`
     mutation CreateChat($input: CreateChatInput!) {
   createChat(input: $input) {
@@ -4888,6 +4970,8 @@ export const GetBountyDocument = gql`
     }
     postedOn
     sample
+    details
+    deadline
   }
 }
     `;
@@ -4924,6 +5008,58 @@ export type GetBountyQueryHookResult = ReturnType<typeof useGetBountyQuery>;
 export type GetBountyLazyQueryHookResult = ReturnType<typeof useGetBountyLazyQuery>;
 export type GetBountySuspenseQueryHookResult = ReturnType<typeof useGetBountySuspenseQuery>;
 export type GetBountyQueryResult = Apollo.QueryResult<GetBountyQuery, GetBountyQueryVariables>;
+export const GetBountyDraftsDocument = gql`
+    query GetBountyDrafts($workspaceId: String!) {
+  getBountyDrafts(workspaceId: $workspaceId) {
+    slug
+    title
+    sponsor
+    type
+    reward
+    status
+    summary
+    winners {
+      place
+      author
+      notebookSlug
+    }
+    sample
+  }
+}
+    `;
+
+/**
+ * __useGetBountyDraftsQuery__
+ *
+ * To run a query within a React component, call `useGetBountyDraftsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetBountyDraftsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetBountyDraftsQuery({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useGetBountyDraftsQuery(baseOptions: Apollo.QueryHookOptions<GetBountyDraftsQuery, GetBountyDraftsQueryVariables> & ({ variables: GetBountyDraftsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetBountyDraftsQuery, GetBountyDraftsQueryVariables>(GetBountyDraftsDocument, options);
+      }
+export function useGetBountyDraftsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetBountyDraftsQuery, GetBountyDraftsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetBountyDraftsQuery, GetBountyDraftsQueryVariables>(GetBountyDraftsDocument, options);
+        }
+export function useGetBountyDraftsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetBountyDraftsQuery, GetBountyDraftsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetBountyDraftsQuery, GetBountyDraftsQueryVariables>(GetBountyDraftsDocument, options);
+        }
+export type GetBountyDraftsQueryHookResult = ReturnType<typeof useGetBountyDraftsQuery>;
+export type GetBountyDraftsLazyQueryHookResult = ReturnType<typeof useGetBountyDraftsLazyQuery>;
+export type GetBountyDraftsSuspenseQueryHookResult = ReturnType<typeof useGetBountyDraftsSuspenseQuery>;
+export type GetBountyDraftsQueryResult = Apollo.QueryResult<GetBountyDraftsQuery, GetBountyDraftsQueryVariables>;
 export const GetChatsDocument = gql`
     query GetChats($workspaceId: String!, $documentId: String!) {
   chats(workspaceId: $workspaceId, documentId: $documentId) {

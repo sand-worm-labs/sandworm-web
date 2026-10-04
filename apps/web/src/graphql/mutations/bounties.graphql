@@ -1,0 +1,7 @@
+mutation CreateBounty($input: CreateBountyInput!) {
+  createBounty(input: $input) {
+    slug
+    title
+    status
+  }
+}

@@ -14,6 +14,7 @@ export type BountyRef = Pick<Bounty, "slug" | "title" | "status">;
 export const bountyTag = (slug: string) => `bounty-${slug}`;
 
 export const STATUS_LABEL: Record<string, string> = {
+  draft: "Draft",
   open: "Open",
   judging: "Judging",
   closed: "Closed",
@@ -29,12 +30,18 @@ export type RewardToken = {
 // =====================================
 // ⬢ Reward Tokens
 // =====================================
-const REWARD_TOKENS: RewardToken[] = [
+export const REWARD_TOKENS: RewardToken[] = [
   {
     symbol: "USDC",
     name: "USD Coin",
     logo: "/img/tokens/usdc.png",
     arbitrum: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+  },
+  {
+    symbol: "USDG",
+    name: "Global Dollar",
+    logo: "/img/tokens/usdg.png",
+    arbitrum: "0x004B506865409877C9fA29bfb1ebA929984B9bbC",
   },
   {
     symbol: "ARB",

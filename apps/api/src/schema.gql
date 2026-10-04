@@ -298,6 +298,10 @@ type Bounty {
   sample: Boolean!
   featured: Boolean!
   position: Int!
+  rewardToken: String
+  rewardAmount: String
+  deadline: DateTime
+  details: String
 }
 
 type Comment {
@@ -554,12 +558,17 @@ type Query {
   tags: [String!]!
 
   """
-  Get the bounties, in display order. Pass featured to get only the ones shown on the home page.
+  Get the listed bounties, in display order. Pass featured to get only the ones shown on the home page.
   """
   getBounties(featured: Boolean): [Bounty!]!
 
-  """Get one bounty by its slug, or null when there is none."""
+  """Get one bounty by its slug. A draft is returned only to its creator."""
   getBounty(slug: String!): Bounty
+
+  """
+  Get the bounties the current user drafted in a workspace and has not funded yet.
+  """
+  getBountyDrafts(workspaceId: String!): [Bounty!]!
 
   """Get a single schedule by ID"""
   schedule(scheduleId: String!): Schedule!
@@ -748,6 +757,11 @@ type Mutation {
 
   """Delete a file from the workspace"""
   deleteFile(input: DeleteFileInput!): Boolean!
+
+  """
+  Create a bounty as a draft. It is listed once its reward is funded in escrow.
+  """
+  createBounty(input: CreateBountyInput!): Bounty!
 
   """Create a new execution schedule for a document"""
   createSchedule(workspaceId: String!, input: CreateScheduleInput!): Schedule!
@@ -941,6 +955,21 @@ input DeleteCommentInput {
 input DeleteFileInput {
   workspaceId: String!
   path: String!
+}
+
+input CreateBountyInput {
+  workspaceId: String!
+  title: String!
+  sponsor: String!
+  type: String!
+  summary: String!
+  background: String
+  details: String!
+  requirements: [String!]
+  deliverables: [String!]
+  rewardToken: String!
+  rewardAmount: String!
+  deadline: DateTime!
 }
 
 input CreateScheduleInput {

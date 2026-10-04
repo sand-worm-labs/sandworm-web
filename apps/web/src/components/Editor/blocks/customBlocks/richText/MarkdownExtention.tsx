@@ -53,7 +53,7 @@ const mathSerializers = {
 //   2. Register math node serializers so copy → markdown round-trips cleanly
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const MarkdownExtension = Markdown.extend({
+const MarkdownWithMath = Markdown.extend({
   onCreate() {
     const storage = this.storage as MarkdownStorage;
 
@@ -78,12 +78,15 @@ export const MarkdownExtension = Markdown.extend({
       Object.assign(serializer.nodes, mathSerializers.nodes);
     }
   },
-}).configure({
-  html: true,
-  transformPastedText: true,
-  transformCopiedText: true,
-  tightLists: true,
-  bulletListMarker: "-",
-  linkify: false,
-  breaks: false,
 });
+
+export const createMarkdownExtension = ({ html }: { html: boolean }) =>
+  MarkdownWithMath.configure({
+    html,
+    transformPastedText: true,
+    transformCopiedText: true,
+    tightLists: true,
+    bulletListMarker: "-",
+    linkify: false,
+    breaks: false,
+  });
