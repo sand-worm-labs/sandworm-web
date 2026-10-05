@@ -68,6 +68,24 @@ export const REWARD_TOKENS: RewardToken[] = [
     arbitrum: null,
   },
   {
+    symbol: "USDT",
+    name: "Tether USD",
+    logo: "/img/tokens/usdt.png",
+    arbitrum: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+  },
+  {
+    symbol: "DAI",
+    name: "Dai",
+    logo: "/img/tokens/dai.png",
+    arbitrum: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+  },
+  {
+    symbol: "WETH",
+    name: "Wrapped Ether",
+    logo: "/img/tokens/weth.png",
+    arbitrum: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+  },
+  {
     symbol: "OP",
     name: "Optimism",
     logo: "/img/tokens/op.png",

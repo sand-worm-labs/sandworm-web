@@ -7,6 +7,7 @@ import {
   segmentedTabClass,
   segmentedTabsClass,
 } from "@/components/SegmentedTabs";
+import { ConnectWalletButton } from "@/web3/components/ConnectWalletButton";
 
 import type { BountyRef } from "./bounties";
 import { BountyCard } from "./BountyCard";
@@ -42,7 +43,10 @@ export const BountiesBoard = ({
             reward.
           </p>
         </div>
-        {headerAction}
+        <div className="flex shrink-0 items-start gap-3 pt-6">
+          <ConnectWalletButton />
+          {headerAction}
+        </div>
       </div>
 
       {children}

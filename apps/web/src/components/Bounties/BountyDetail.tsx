@@ -5,6 +5,7 @@ import { PiArrowLeft, PiTrophy } from "react-icons/pi";
 
 import { RichTextView } from "@/components/RichTextField";
 import { useGetBountyQuery } from "@/generated/graphql";
+import { EscrowPanel } from "@/web3/components/EscrowPanel";
 
 import type { BountyRef } from "./bounties";
 import { BountyChips, BountyReward, BountyWinners } from "./BountyCard";
@@ -59,7 +60,7 @@ export const BountyDetail = ({
   backHref,
   renderActions,
 }: BountyDetailProps) => {
-  const { data, loading, error } = useGetBountyQuery({
+  const { data, loading, error, refetch } = useGetBountyQuery({
     variables: { slug },
     skip: !slug,
   });
@@ -169,6 +170,8 @@ export const BountyDetail = ({
               ))}
             </ul>
           )}
+
+          <EscrowPanel bounty={bounty} onChanged={() => refetch()} />
 
           {actions && (
             <div className="mt-5 flex flex-wrap items-center gap-2">

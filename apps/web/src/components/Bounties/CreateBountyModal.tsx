@@ -11,6 +11,7 @@ import clsx from "clsx";
 import { Fragment } from "react";
 import { PiCheck } from "react-icons/pi";
 import { toast } from "sonner";
+import { escrowTokens } from "@sandworm/types/escrow";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
 import { RichTextField } from "@/components/RichTextField";
@@ -25,6 +26,7 @@ import {
   type BountyDraftForm,
 } from "@/store/bountyDraft";
 import { tintPillDarkClassName } from "@/styles/interactive";
+import { escrowChains } from "@/web3/config";
 
 import { REWARD_TOKENS } from "./bounties";
 import { TokenLogo } from "./BountyLogos";
@@ -34,8 +36,13 @@ import { TokenLogo } from "./BountyLogos";
 // =====================================
 const STEPS = ["Basics", "Details", "Reward"];
 const TYPES = ["Dashboard", "Research", "Investigation"];
+const ESCROW_SYMBOLS = new Set(
+  escrowChains.flatMap(chain =>
+    (escrowTokens[chain.id] ?? []).map(token => token.symbol)
+  )
+);
 const ESCROW_TOKENS = REWARD_TOKENS.filter(token =>
-  ["USDC", "USDG"].includes(token.symbol)
+  ESCROW_SYMBOLS.has(token.symbol)
 );
 const AMOUNT_PATTERN = /^\d+(\.\d{1,6})?$/;
 
@@ -127,7 +134,8 @@ export default function CreateBountyModal({
     update(workspaceId, { form: { ...form, ...patch } });
   const setStep = (next: number) => update(workspaceId, { step: next });
   const isLastStep = step === STEPS.length - 1;
-  const token = ESCROW_TOKENS.find(t => t.symbol === form.token);
+  const token =
+    ESCROW_TOKENS.find(t => t.symbol === form.token) ?? ESCROW_TOKENS[0];
 
   const handleSave = async () => {
     try {
@@ -140,7 +148,7 @@ export default function CreateBountyModal({
             type: form.type,
             summary: form.summary.trim(),
             details: form.details.trim(),
-            rewardToken: form.token,
+            rewardToken: token?.symbol ?? form.token,
             rewardAmount: form.amount,
             deadline: new Date(`${form.deadline}T23:59:59`).toISOString(),
           },
@@ -332,12 +340,12 @@ export default function CreateBountyModal({
                               <button
                                 key={option.symbol}
                                 type="button"
-                                aria-pressed={form.token === option.symbol}
+                                aria-pressed={token?.symbol === option.symbol}
                                 onClick={() =>
                                   setForm({ token: option.symbol })
                                 }
                                 className={segmentedTabClass(
-                                  form.token === option.symbol
+                                  token?.symbol === option.symbol
                                 )}
                               >
                                 <TokenLogo token={option} size={14} />
@@ -374,7 +382,7 @@ export default function CreateBountyModal({
                         </p>
                         <p className="mt-3 flex items-center gap-1.5 font-semibold text-ink-100 dark:text-white">
                           {token && <TokenLogo token={token} size={16} />}
-                          {form.amount || "0"} {form.token}
+                          {form.amount || "0"} {token?.symbol}
                           <span className="font-normal text-ink-400">
                             {form.deadline && `· until ${form.deadline}`}
                           </span>
