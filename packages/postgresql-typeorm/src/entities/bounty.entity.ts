@@ -106,4 +106,16 @@ export class BountyEntity extends AbstractEntity {
 
   @Column({ type: 'text', nullable: true })
   details!: string | null;
+
+  @Column({ name: 'chain_id', type: 'int', nullable: true })
+  chainId!: number | null;
+
+  @Column({ name: 'onchain_id', type: 'varchar', nullable: true })
+  onchainId!: string | null;
+
+  @Column({ name: 'sponsor_address', type: 'varchar', nullable: true })
+  sponsorAddress!: string | null;
+
+  @Column({ name: 'fund_tx_hash', type: 'varchar', nullable: true })
+  fundTxHash!: string | null;
 }

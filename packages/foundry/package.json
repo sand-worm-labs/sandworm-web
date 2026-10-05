@@ -17,7 +17,8 @@
     "postinstall": "shx cp -n .env.example .env",
     "lint": "make lint",
     "test": "forge test",
-    "verify": "make verify RPC_URL=${1:-localhost}"
+    "verify": "make verify RPC_URL=${1:-localhost}",
+    "export": "forge build && node scripts-js/exportEscrow.js"
   },
   "dependencies": {
     "dotenv": "~16.3.1",
