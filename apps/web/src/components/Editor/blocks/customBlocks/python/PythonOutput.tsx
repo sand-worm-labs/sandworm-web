@@ -639,43 +639,51 @@ function PythonPlotOutput(props: {
   );
 }
 
+// Below this a measured box is a failed measurement (e.g. a percentage height
+// that did not resolve), not a real tile: drawing into it would give Plotly a
+// zero/negative height and an invisible chart.
+const MIN_MEASURED_PX = 24;
+
 function DashboardPlotOutput(props: { output: PythonPlotlyOutput }) {
-  const [size, setSize] = useResettableState(
-    () => null as { width: number; height: number } | null,
-    [props.output.layout]
-  );
+  const [size, setSize] = React.useState<{
+    width: number;
+    height: number;
+  } | null>(null);
 
-  const measureDiv = useRef<HTMLDivElement>(null);
-  const container = useRef<HTMLDivElement>(null);
+  // A state-backed callback ref: the effect below runs when the box mounts,
+  // instead of depending on a ref's `.current`, which never triggers a render.
+  const [box, setBox] = React.useState<HTMLDivElement | null>(null);
+
   useLayoutEffect(() => {
-    if (!size && measureDiv.current) {
-      const { width, height } = measureDiv.current.getBoundingClientRect();
-      setSize({ width, height });
-    }
-  }, [measureDiv.current, size]);
-
-  useEffect(() => {
-    if (!container.current) {
+    if (!box) {
       return () => {};
     }
 
-    const parent = container.current.parentElement;
-    if (!parent) {
-      return () => {};
-    }
+    const measure = () => {
+      const { width, height } = box.getBoundingClientRect();
+      setSize(prev =>
+        prev &&
+        Math.abs(prev.width - width) < 1 &&
+        Math.abs(prev.height - height) < 1
+          ? prev
+          : { width, height }
+      );
+    };
 
-    const observer = new ResizeObserver(
-      debounce(() => {
-        setSize(null);
-      }, 500)
-    );
+    // Draw at the right size on the first paint; only later resizes are debounced.
+    measure();
 
-    observer.observe(parent);
+    // The plot is absolutely positioned inside the box, so it never feeds back
+    // into the box's own size and this cannot loop.
+    const onResize = debounce(measure, 100);
+    const observer = new ResizeObserver(onResize);
+    observer.observe(box);
 
     return () => {
+      onResize.cancel();
       observer.disconnect();
     };
-  }, [container]);
+  }, [box]);
 
   const config = useMemo(
     () => ({
@@ -689,11 +697,13 @@ function DashboardPlotOutput(props: { output: PythonPlotlyOutput }) {
   const layout = useMemo(() => {
     const defaultWidth = 700;
     const givenWidth = props.output.layout.width ?? defaultWidth;
-    const actualWidth = size?.width ?? givenWidth;
+    const actualWidth =
+      size && size.width >= MIN_MEASURED_PX ? size.width : givenWidth;
 
     const defaultHeight = 450;
     const givenHeight = props.output.layout.height ?? defaultHeight;
-    const actualHeight = (size?.height ?? givenHeight) - 6;
+    const actualHeight =
+      (size && size.height >= MIN_MEASURED_PX ? size.height : givenHeight) - 6;
 
     const wScale = actualWidth / givenWidth;
     const hScale = actualHeight / givenHeight;
@@ -706,26 +716,39 @@ function DashboardPlotOutput(props: { output: PythonPlotlyOutput }) {
       autosize: true,
       width: actualWidth,
       height: actualHeight,
+      // Plotly's default margins (~100px top, 80px elsewhere) are sized for a
+      // full notebook figure and leave almost no plot area in a small tile.
+      // Keep a figure's own margins; otherwise use compact ones. Legends still
+      // expand the margin themselves.
+      margin: props.output.layout.margin ?? {
+        l: 56,
+        r: 24,
+        t: props.output.layout.title ? 48 : 24,
+        b: 44,
+      },
       font: props.output.layout.font ?? {
         size: defaultFontSize * Math.min(wScale, hScale, 1),
       },
     };
   }, [props.output.layout, size]);
 
-  if (!size) {
-    return <div className="w-full h-full" ref={measureDiv} />;
-  }
-
   return (
-    <div ref={container}>
-      <PlotWithPlaceholder
-        data={props.output.data}
-        layout={layout}
-        config={config}
-        frames={props.output.frames}
-        useResizeHandler
-        placeholderHeight={layout.height}
-      />
+    <div ref={setBox} className="relative w-full h-full">
+      {size && (
+        <div className="absolute inset-0 overflow-hidden">
+          <PlotWithPlaceholder
+            data={props.output.data}
+            layout={layout}
+            config={config}
+            frames={props.output.frames}
+            useResizeHandler
+            // Match the pixel size we hand Plotly, so its own window-resize
+            // handling re-reads the same box instead of an auto-sized one.
+            style={{ width: layout.width, height: layout.height }}
+            placeholderHeight={layout.height}
+          />
+        </div>
+      )}
     </div>
   );
 }
