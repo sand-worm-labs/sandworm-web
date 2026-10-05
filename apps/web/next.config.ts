@@ -5,8 +5,21 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
 
+// Wagmi's Base Account connector pulls in Coinbase's CDP SDK, which needs optional
+// x402 packages we do not install. We do not use that connector, so it gets a stub.
+const baseAccountStub = "./src/web3/stubs/base-account.ts";
+
 const nextConfig = {
   reactStrictMode: true,
+  turbopack: {
+    resolveAlias: { "@base-org/account": baseAccountStub },
+  },
+  webpack: (config: { resolve: { alias: Record<string, string> } }) => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { resolve } = require("path");
+    config.resolve.alias["@base-org/account"] = resolve(__dirname, baseAccountStub);
+    return config;
+  },
   transpilePackages: ["@sandworm/editor", "@sandworm/types"],
   // Next spawns a worker per CPU for static generation; on memory-constrained
   // build hosts that fans out enough to get SIGKILL'd by the OOM killer

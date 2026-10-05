@@ -5,3 +5,12 @@ mutation CreateBounty($input: CreateBountyInput!) {
     status
   }
 }
+
+mutation ConfirmBountyFunding($slug: String!, $chainId: Int!, $txHash: String!) {
+  confirmBountyFunding(slug: $slug, chainId: $chainId, txHash: $txHash) {
+    slug
+    status
+    chainId
+    onchainId
+  }
+}

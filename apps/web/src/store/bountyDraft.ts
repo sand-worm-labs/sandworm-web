@@ -35,7 +35,7 @@ export const EMPTY_BOUNTY_DRAFT: BountyDraft = {
     summary: "",
     details: "",
     amount: "",
-    token: "USDC",
+    token: "USDG",
     deadline: "",
   },
 };

@@ -58,12 +58,15 @@ export type AuthPayload = {
 export type Bounty = {
   __typename?: 'Bounty';
   background?: Maybe<Scalars['String']['output']>;
+  chainId?: Maybe<Scalars['Int']['output']>;
   dataHints: Array<Scalars['String']['output']>;
   deadline?: Maybe<Scalars['DateTime']['output']>;
   deliverables: Array<Scalars['String']['output']>;
   details?: Maybe<Scalars['String']['output']>;
   featured: Scalars['Boolean']['output'];
+  fundTxHash?: Maybe<Scalars['String']['output']>;
   judging: Array<Scalars['String']['output']>;
+  onchainId?: Maybe<Scalars['String']['output']>;
   position: Scalars['Int']['output'];
   postedOn?: Maybe<Scalars['String']['output']>;
   prizes: Array<Scalars['String']['output']>;
@@ -74,6 +77,7 @@ export type Bounty = {
   sample: Scalars['Boolean']['output'];
   slug: Scalars['String']['output'];
   sponsor: Scalars['String']['output'];
+  sponsorAddress?: Maybe<Scalars['String']['output']>;
   status: Scalars['String']['output'];
   summary: Scalars['String']['output'];
   title: Scalars['String']['output'];
@@ -380,6 +384,8 @@ export type Mutation = {
   approveRoleRequest: Scalars['Boolean']['output'];
   /** Remove multiple users from workspaces */
   batchRemoveUsersFromWorkspace: Scalars['Boolean']['output'];
+  /** Check a funding transaction onchain and open the bounty. Everything is read from the chain. */
+  confirmBountyFunding: Bounty;
   /** Create a bounty as a draft. It is listed once its reward is funded in escrow. */
   createBounty: Bounty;
   /** Create a new chat */
@@ -515,6 +521,13 @@ export type MutationApproveRoleRequestArgs = {
 
 export type MutationBatchRemoveUsersFromWorkspaceArgs = {
   removals: Array<RemoveUserFromWorkspaceInput>;
+};
+
+
+export type MutationConfirmBountyFundingArgs = {
+  chainId: Scalars['Int']['input'];
+  slug: Scalars['String']['input'];
+  txHash: Scalars['String']['input'];
 };
 
 
@@ -1621,6 +1634,15 @@ export type CreateBountyMutationVariables = Exact<{
 
 export type CreateBountyMutation = { __typename?: 'Mutation', createBounty: { __typename?: 'Bounty', slug: string, title: string, status: string } };
 
+export type ConfirmBountyFundingMutationVariables = Exact<{
+  slug: Scalars['String']['input'];
+  chainId: Scalars['Int']['input'];
+  txHash: Scalars['String']['input'];
+}>;
+
+
+export type ConfirmBountyFundingMutation = { __typename?: 'Mutation', confirmBountyFunding: { __typename?: 'Bounty', slug: string, status: string, chainId?: number | null, onchainId?: string | null } };
+
 export type CreateChatMutationVariables = Exact<{
   input: CreateChatInput;
 }>;
@@ -2009,14 +2031,14 @@ export type GetBountyQueryVariables = Exact<{
 }>;
 
 
-export type GetBountyQuery = { __typename?: 'Query', getBounty?: { __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, background?: string | null, requirements: Array<string>, deliverables: Array<string>, prizes: Array<string>, judging: Array<string>, dataHints: Array<string>, postedOn?: string | null, sample: boolean, details?: string | null, deadline?: any | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string }> } | null };
+export type GetBountyQuery = { __typename?: 'Query', getBounty?: { __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, background?: string | null, requirements: Array<string>, deliverables: Array<string>, prizes: Array<string>, judging: Array<string>, dataHints: Array<string>, postedOn?: string | null, sample: boolean, details?: string | null, deadline?: any | null, chainId?: number | null, onchainId?: string | null, sponsorAddress?: string | null, fundTxHash?: string | null, rewardToken?: string | null, rewardAmount?: string | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string }> } | null };
 
 export type GetBountyDraftsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
 }>;
 
 
-export type GetBountyDraftsQuery = { __typename?: 'Query', getBountyDrafts: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, sample: boolean, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string }> }> };
+export type GetBountyDraftsQuery = { __typename?: 'Query', getBountyDrafts: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, sample: boolean, rewardToken?: string | null, rewardAmount?: string | null, deadline?: any | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string }> }> };
 
 export type GetChatsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -2927,6 +2949,44 @@ export function useCreateBountyMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreateBountyMutationHookResult = ReturnType<typeof useCreateBountyMutation>;
 export type CreateBountyMutationResult = Apollo.MutationResult<CreateBountyMutation>;
 export type CreateBountyMutationOptions = Apollo.BaseMutationOptions<CreateBountyMutation, CreateBountyMutationVariables>;
+export const ConfirmBountyFundingDocument = gql`
+    mutation ConfirmBountyFunding($slug: String!, $chainId: Int!, $txHash: String!) {
+  confirmBountyFunding(slug: $slug, chainId: $chainId, txHash: $txHash) {
+    slug
+    status
+    chainId
+    onchainId
+  }
+}
+    `;
+export type ConfirmBountyFundingMutationFn = Apollo.MutationFunction<ConfirmBountyFundingMutation, ConfirmBountyFundingMutationVariables>;
+
+/**
+ * __useConfirmBountyFundingMutation__
+ *
+ * To run a mutation, you first call `useConfirmBountyFundingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useConfirmBountyFundingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [confirmBountyFundingMutation, { data, loading, error }] = useConfirmBountyFundingMutation({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *      chainId: // value for 'chainId'
+ *      txHash: // value for 'txHash'
+ *   },
+ * });
+ */
+export function useConfirmBountyFundingMutation(baseOptions?: Apollo.MutationHookOptions<ConfirmBountyFundingMutation, ConfirmBountyFundingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ConfirmBountyFundingMutation, ConfirmBountyFundingMutationVariables>(ConfirmBountyFundingDocument, options);
+      }
+export type ConfirmBountyFundingMutationHookResult = ReturnType<typeof useConfirmBountyFundingMutation>;
+export type ConfirmBountyFundingMutationResult = Apollo.MutationResult<ConfirmBountyFundingMutation>;
+export type ConfirmBountyFundingMutationOptions = Apollo.BaseMutationOptions<ConfirmBountyFundingMutation, ConfirmBountyFundingMutationVariables>;
 export const CreateChatDocument = gql`
     mutation CreateChat($input: CreateChatInput!) {
   createChat(input: $input) {
@@ -4972,6 +5032,13 @@ export const GetBountyDocument = gql`
     sample
     details
     deadline
+    status
+    chainId
+    onchainId
+    sponsorAddress
+    fundTxHash
+    rewardToken
+    rewardAmount
   }
 }
     `;
@@ -5024,6 +5091,9 @@ export const GetBountyDraftsDocument = gql`
       notebookSlug
     }
     sample
+    rewardToken
+    rewardAmount
+    deadline
   }
 }
     `;

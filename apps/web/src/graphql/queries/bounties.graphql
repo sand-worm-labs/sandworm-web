@@ -40,6 +40,13 @@ query GetBounty($slug: String!) {
     sample
     details
     deadline
+    status
+    chainId
+    onchainId
+    sponsorAddress
+    fundTxHash
+    rewardToken
+    rewardAmount
   }
 }
 
@@ -58,5 +65,8 @@ query GetBountyDrafts($workspaceId: String!) {
       notebookSlug
     }
     sample
+    rewardToken
+    rewardAmount
+    deadline
   }
 }
