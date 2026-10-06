@@ -8,7 +8,7 @@ import type {
 } from "@sandworm/types";
 import { migrateSuccessSQLResult } from "@sandworm/types";
 import clsx from "clsx";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import debounce from "lodash.debounce";
 import { Transition } from "@headlessui/react";
 import { PiFileCsvLight, PiCpu, PiChartPie } from "react-icons/pi";
@@ -20,6 +20,7 @@ import { dashboardModeHasControls } from "../../Dashboard/dashboard-types";
 import LargeSpinner from "../../LargeSpinner";
 import { useCSV } from "../../../hooks/useQueryCSV";
 import Spin from "../../Spin";
+import UpgradePlanModal from "../../UpgradePlanModal";
 import PageButtons from "../../PageButtons";
 
 import Table from "./Table";
@@ -539,6 +540,48 @@ function SQLPythonError(props: {
 }
 
 // =====================================
+// ⬢ SQL Paid Plan Required
+// =====================================
+// The server refuses to run a query on a source the workspace's plan doesn't
+// include (PAID_PLAN_ERROR in paid-plan.service.ts). The query is paused, not
+// failed: upgrade, then run the block again.
+const PAID_PLAN_ERROR = "PaidPlanRequired";
+
+function SQLPaidPlanRequired(props: {
+  result: PythonErrorRunQueryResult;
+  workspaceId: string;
+}) {
+  // Pops up whenever a run comes back paused, and again after each new run.
+  const [modalOpen, setModalOpen] = useState(true);
+  useEffect(() => setModalOpen(true), [props.result]);
+
+  return (
+    <div className="px-3.5 pb-4 pt-3 text-xs">
+      <UpgradePlanModal
+        visible={modalOpen}
+        onHide={() => setModalOpen(false)}
+        message={props.result.evalue}
+        workspaceId={props.workspaceId}
+      />
+      <div className="flex items-center justify-between gap-x-4 border border-amber-300 dark:border-amber-500/30 p-4">
+        <div>
+          <h4 className="font-semibold pb-1">
+            Query paused: upgrade to run it
+          </h4>
+          <p className="ph-no-capture">{props.result.evalue}</p>
+        </div>
+        <a
+          href={`/workspace/${props.workspaceId}/settings/plan`}
+          className="shrink-0 rounded-md bg-amber-500 px-3 py-1.5 font-medium text-black hover:bg-amber-400"
+        >
+          Upgrade plan
+        </a>
+      </div>
+    </div>
+  );
+}
+
+// =====================================
 // ⬢ SQL Result Main Component
 // =====================================
 interface Props {
@@ -615,6 +658,14 @@ function SQLResult(props: Props) {
         />
       );
     case "python-error":
+      if (props.result.ename === PAID_PLAN_ERROR) {
+        return (
+          <SQLPaidPlanRequired
+            result={props.result}
+            workspaceId={props.workspaceId}
+          />
+        );
+      }
       return (
         <SQLPythonError
           result={props.result}

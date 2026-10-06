@@ -9,6 +9,8 @@ import {
   PiCopy,
   PiCheckCircleLight,
 } from "react-icons/pi";
+import useUpgradeGate from "../../../hooks/useUpgradeGate";
+import UpgradePlanModal from "../../UpgradePlanModal";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -322,7 +324,10 @@ function SQLBlock(props: Props) {
     ? selectedCode
     : null;
 
+  const gate = useUpgradeGate(props.document.workspaceId);
+
   const onRun = useCallback(() => {
+    if (!gate.check([dataSourceId])) return;
     props.executionQueue.enqueueBlock(
       blockId,
       props.userId,
@@ -334,6 +339,8 @@ function SQLBlock(props: Props) {
       }
     );
   }, [
+    gate,
+    dataSourceId,
     props.executionQueue,
     blockId,
     props.userId,
@@ -944,6 +951,12 @@ function SQLBlock(props: Props) {
       onClick={onClickWithin}
       data-block-id={blockId}
     >
+      <UpgradePlanModal
+        visible={gate.message !== null}
+        onHide={gate.onHide}
+        message={gate.message ?? ""}
+        workspaceId={props.document.workspaceId}
+      />
       <div
         className={clsx(
           "relative rounded-2xl border-[1.5px]",
