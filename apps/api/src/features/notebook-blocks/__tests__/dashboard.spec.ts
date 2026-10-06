@@ -20,7 +20,6 @@ function setup(inputs: Input[]) {
   // Async like the real one, so a throw inside `work` is a rejection.
   const docs = { use: jest.fn(async (_ref, _access, work) => work({ ydoc })) };
   const service = new NotebookDashboardService(docs as any);
-  // Marks a python cell as run, with the given outputs.
   const markRun = (id: string, result: unknown[] = []) => {
     const block = getBlocks(ydoc).get(id)! as Y.XmlElement<any>;
     block.setAttribute('lastQueryTime', '2026-10-05T00:00:00Z');
@@ -79,7 +78,6 @@ describe('NotebookDashboardService.setDashboard', () => {
 
     const after = Object.values(yDashboardToRecord(getDashboard(ydoc)));
     expect(after.map(i => i.blockId)).toEqual([ids[1]]);
-    // The cell that stayed keeps its item, so editors see it move, not vanish.
     expect(after[0]!.id).toBe(before.find(i => i.blockId === ids[1])!.id);
     expect(getBlocks(ydoc).has(ids[0]!)).toBe(true);
     expect(getLayout(ydoc).length).toBe(CELLS.length);

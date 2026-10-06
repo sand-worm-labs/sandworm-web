@@ -460,6 +460,19 @@ const MarkdownBlock = (props: Props) => {
 
   const diffButtonsVisible = aiSuggestions !== null;
 
+  const isDashboardTile =
+    props.dashboardMode?._tag === "live" ||
+    (props.dashboardMode?._tag === "editing" &&
+      props.dashboardMode.position === "dashboard");
+
+  if (isDashboardTile) {
+    return (
+      <div data-block-id={id} className="h-full overflow-y-auto px-4 py-3">
+        <MarkdownPreview source={source} />
+      </div>
+    );
+  }
+
   // Public viewers never see the source — no border, header, code editor,
   // or block padding, just the rendered markdown flowing as normal text.
   if (props.isPublicMode) {

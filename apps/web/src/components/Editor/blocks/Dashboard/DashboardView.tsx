@@ -98,7 +98,6 @@ const WhiteCard = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-// Section headings sit on the page itself rather than in a card.
 const PlainCard = ({ children }: { children: React.ReactNode }) => (
   <div className="h-full">{children}</div>
 );

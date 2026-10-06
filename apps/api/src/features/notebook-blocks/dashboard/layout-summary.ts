@@ -118,8 +118,6 @@ function notRunWarning(block: YBlock, blocks: Y.Map<YBlock>, title: string): str
   }
 }
 
-// The dashboard as rows, the way set_dashboard takes it, with what each tile
-// measures on the reference screen and what is likely to look wrong.
 export function describeDashboard(ydoc: Y.Doc): DashboardLayout {
   const blocks = getBlocks(ydoc);
   const items = Object.values(yDashboardToRecord(getDashboard(ydoc))).sort((a, b) => a.y - b.y || a.x - b.x);

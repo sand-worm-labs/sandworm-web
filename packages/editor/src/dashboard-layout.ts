@@ -1,8 +1,7 @@
 import { BlockType, getPrettyTitle } from "./blocks/index.js";
 
-// The dashboard is a 24-column react-grid-layout grid. The web view and the
-// API both read the numbers below, so a layout planned on the server matches
-// what the view draws.
+// Grid numbers shared by the web view and the API, so a layout planned on the
+// server matches what the view draws.
 
 export const DASHBOARD_COLUMNS = 24;
 export const DASHBOARD_MARGIN = 6;
@@ -89,8 +88,6 @@ export function getDefaults(t: BlockType): { minW: number; minH: number } {
   }
 }
 
-// Blocks that carry their own heading; every other tile gets its title as a
-// strip above its content.
 export function dashboardTileHasOwnTitle(type: BlockType): boolean {
   switch (type) {
     case BlockType.Input:
@@ -105,7 +102,7 @@ export function dashboardTileHasOwnTitle(type: BlockType): boolean {
   }
 }
 
-// Height of that strip: text-sm in a py-2.5 box.
+// Height of the title strip a tile spends above its content: text-sm in a py-2.5 box.
 export const DASHBOARD_TITLE_STRIP_PX = 40;
 
 // What GridElement can draw. A chart-builder visualization, a power tool and a
@@ -128,7 +125,6 @@ export function canShowOnDashboard(type: BlockType): boolean {
   }
 }
 
-// Rows a tile is given when a layout does not say.
 function defaultTileRows(type: BlockType): number {
   switch (type) {
     case BlockType.Python:
@@ -150,12 +146,8 @@ function defaultTileRows(type: BlockType): number {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// ⬢ ROW LAYOUT
-// A layout is written as rows, top to bottom. Each row holds tiles left to
-// right whose widths fill the 24 columns, and one height shared by the row so
-// tops and bottoms line up. Positions are worked out here, never by the caller.
-// ─────────────────────────────────────────────────────────────
+// A layout is rows, top to bottom. A row's tiles fill the 24 columns and share
+// one height so their tops and bottoms line up; positions are computed here.
 
 export const MAX_TILES_PER_ROW = 12;
 export const MAX_ROW_HEIGHT = 40;
@@ -200,8 +192,7 @@ function cellLabel(blockId: string, info: DashboardCellInfo): string {
   return `"${name}" (${getPrettyTitle(info.type).toLowerCase()})`;
 }
 
-// Works out where every tile goes, or lists everything wrong with the layout
-// at once so it can be fixed in one pass.
+// Lists every problem with the layout at once, so it can be fixed in one pass.
 export function planDashboardRows(
   rows: DashboardRowSpec[],
   lookup: (blockId: string) => DashboardCellInfo | undefined

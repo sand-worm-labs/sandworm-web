@@ -8,9 +8,6 @@ import { request } from './shared.ts';
 import { describeOpenData, OPEN_DATA_SOURCES, OPEN_DATA_USAGE } from './open-data.ts';
 import { checkTools, research } from './plan-tools.ts';
 
-// Ported from apps/ai's block planner (services/block_planner). There the
-// planner is its own LLM call; here the calling agent is the LLM, so this tool
-// carries the planner's rules and checks the plan the agent submits against them.
 const PLAN_BLOCK_TYPES = [
   'sql',
   'python',

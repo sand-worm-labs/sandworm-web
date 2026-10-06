@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +13,7 @@ import { useModalStore } from "@/store/auth";
 
 import { PartnersSection } from "../Partners";
 
+import { ReferralCodeInput } from "./ReferralCodeInput";
 import { SocialLogin } from "./SocialLogin";
 
 // =====================================
@@ -36,6 +38,19 @@ export const SignInModal = () => {
             </DialogDescription>
 
             <SocialLogin />
+
+            <ReferralCodeInput />
+
+            <p className="text-center text-ink-500 dark:text-ink-400 font-body text-sm mb-4">
+              Have an account?
+              <Link
+                href="/signin"
+                onClick={closeSignIn}
+                className="text-accent dark:text-primary hover:underline ml-1"
+              >
+                Sign In
+              </Link>
+            </p>
 
             <PartnersSection />
           </div>

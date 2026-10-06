@@ -71,8 +71,7 @@ function DashboardHeader(props: Props) {
     [props.dashboardMode]
   );
 
-  // A section divider: the title, then a hairline running to the edge. It sits
-  // at the bottom of its row so it reads as belonging to the tiles below it.
+  // Bottom-aligned so the divider reads as belonging to the tiles below it.
   return (
     <div className="h-full flex items-end px-0.5 pb-1.5">
       <div className="flex w-full min-w-0 items-center gap-4">
