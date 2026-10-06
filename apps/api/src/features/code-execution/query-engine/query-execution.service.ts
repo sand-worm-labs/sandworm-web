@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DuckDBQueryService } from './duckdb/duckdb-query.service';
 import { TrinoQueryService } from './trino/trino-query.service';
 import { PostgresQueryService } from './postgres/postgres-query.service';
-import { PAID_PLAN_ERROR, PaidPlanService, paidPlanMessage } from './paid-plan.service';
+import { PAID_PLAN_ERROR, PaidPlanService, paidPlanMessage, proPlanMessage } from './paid-plan.service';
 import {
     RunQueryResult,
     SuccessRunQueryResult,
@@ -30,14 +30,20 @@ export class QueryExecutionService {
         configuration: SQLQueryConfiguration | null,
         knownDataframes: { name: string; queryId: string }[] = [],
     ): Promise<[Promise<RunQueryResult>, () => Promise<void>]> {
-        // Dune (trino) and Sandworm Cloud (postgres) are for paid workspaces.
-        // Not a syntax-error: the AI would then try to fix the query.
-        if (datasource !== 'duckdb' && !(await this.paidPlanService.isPaid(workspaceId))) {
-            const source = datasource === 'trino' ? 'Dune' : 'Sandworm Cloud';
-            return [
-                Promise.resolve({ type: 'python-error', ename: PAID_PLAN_ERROR, evalue: paidPlanMessage(source), traceback: [] }),
-                async () => {},
-            ];
+        // Dune (trino) needs Pro or Enterprise, Sandworm Cloud (postgres) any
+        // paid plan. Not a syntax-error: the AI would then try to fix the query.
+        if (datasource !== 'duckdb') {
+            const isDune = datasource === 'trino';
+            const allowed = isDune
+                ? await this.paidPlanService.canUseDune(workspaceId)
+                : await this.paidPlanService.isPaid(workspaceId);
+            if (!allowed) {
+                const evalue = isDune ? proPlanMessage('Dune') : paidPlanMessage('Sandworm Cloud');
+                return [
+                    Promise.resolve({ type: 'python-error', ename: PAID_PLAN_ERROR, evalue, traceback: [] }),
+                    async () => {},
+                ];
+            }
         }
 
         if (datasource === 'trino') {

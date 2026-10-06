@@ -3,6 +3,7 @@ import {
   Logger,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { In, Repository } from 'typeorm';
 import {
@@ -12,6 +13,7 @@ import {
   DocumentEntity,
   UserWorkspaceRole,
   UserWorkspaceStatus,
+  Plan,
 } from '@sandworm/postgresql-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workspace } from '../model/workspace.model';
@@ -303,6 +305,54 @@ export class WorkspaceService {
     const updatedWorkspace = await this.workspaceRepository.save(workspace);
 
     return Workspace.fromEntity(updatedWorkspace);
+  }
+
+  // Stand-in for a real payment provider: a simulated checkout just flips the
+  // plan. Dev only, so a production workspace can never upgrade itself for free.
+  async simulateWorkspaceUpgrade(
+    workspaceId: string,
+    ownerId: string,
+    plan: Plan,
+  ): Promise<Workspace> {
+    if (process.env.NODE_ENV === 'production') {
+      throw new ForbiddenException('Simulated payments are disabled in production');
+    }
+    validateUUID(workspaceId, 'Workspace ID');
+    validateUUID(ownerId, 'Owner ID');
+
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId, ownerId },
+    });
+    if (!workspace) {
+      throw new NotFoundException(
+        'Workspace not found or you do not have permission to change its plan',
+      );
+    }
+
+    workspace.plan = plan;
+    return Workspace.fromEntity(await this.workspaceRepository.save(workspace));
+  }
+
+  // The trial is the free entry tier during beta: no payment, so it works in
+  // every environment, but only a free workspace can start it.
+  async startWorkspaceTrial(workspaceId: string, ownerId: string): Promise<Workspace> {
+    validateUUID(workspaceId, 'Workspace ID');
+    validateUUID(ownerId, 'Owner ID');
+
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId, ownerId },
+    });
+    if (!workspace) {
+      throw new NotFoundException(
+        'Workspace not found or you do not have permission to change its plan',
+      );
+    }
+    if (workspace.plan !== Plan.FREE) {
+      throw new BadRequestException('This workspace is already on a plan');
+    }
+
+    workspace.plan = Plan.TRIAL;
+    return Workspace.fromEntity(await this.workspaceRepository.save(workspace));
   }
 
   async getWorkspaceOwner(ownerId: string): Promise<User> {

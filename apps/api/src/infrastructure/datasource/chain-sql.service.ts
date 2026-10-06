@@ -12,8 +12,8 @@ export type ChainSqlStatus = {
 // Of the three data sources, Dune and Sandworm Cloud hold chain data; local
 // DuckDB only queries what a notebook has already loaded. When neither of the
 // first two can run SQL, notebooks are built from public APIs instead (the AI
-// sidecar and apps/mcp both ask here). A free workspace cannot use either, so
-// for it both count as unavailable.
+// sidecar and apps/mcp both ask here). A free workspace cannot use either; a
+// trial workspace can use Sandworm Cloud but not Dune.
 @Injectable()
 export class ChainSqlService {
     constructor(
@@ -23,10 +23,17 @@ export class ChainSqlService {
     ) { }
 
     async status(workspaceId: string): Promise<ChainSqlStatus> {
-        if (!(await this.paidPlanService.isPaid(workspaceId))) {
+        const [cloudAllowed, duneAllowed] = await Promise.all([
+            this.paidPlanService.isPaid(workspaceId),
+            this.paidPlanService.canUseDune(workspaceId),
+        ]);
+        if (!cloudAllowed && !duneAllowed) {
             return { available: false, paidPlanRequired: true, sources: { dune: false, sandworm_cloud: false } };
         }
-        const [dune, sandworm_cloud] = await Promise.all([this.dune.canRunSql(), this.sandwormCloud.canRunSql()]);
+        const [dune, sandworm_cloud] = await Promise.all([
+            duneAllowed && this.dune.canRunSql(),
+            cloudAllowed && this.sandwormCloud.canRunSql(),
+        ]);
         return { available: dune || sandworm_cloud, paidPlanRequired: false, sources: { dune, sandworm_cloud } };
     }
 }

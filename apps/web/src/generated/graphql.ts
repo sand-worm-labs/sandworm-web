@@ -467,6 +467,10 @@ export type Mutation = {
   /** Add or remove environment variables */
   setEnvironmentVariables: Array<EnvironmentVariable>;
   setWorkspaceDefaultAiModel: Scalars['Boolean']['output'];
+  /** Dev only: simulate a payment and set the workspace plan */
+  simulateWorkspaceUpgrade: Workspace;
+  /** Move a free workspace onto the trial plan */
+  startWorkspaceTrial: Workspace;
   /** Switch to a different workspace */
   switchWorkspace: Scalars['Boolean']['output'];
   /** Unfollow User */
@@ -781,6 +785,17 @@ export type MutationSetEnvironmentVariablesArgs = {
 
 export type MutationSetWorkspaceDefaultAiModelArgs = {
   model: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationSimulateWorkspaceUpgradeArgs = {
+  plan: WorkspacePlan;
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationStartWorkspaceTrialArgs = {
   workspaceId: Scalars['String']['input'];
 };
 
@@ -1994,6 +2009,21 @@ export type RejectRoleRequestMutationVariables = Exact<{
 
 
 export type RejectRoleRequestMutation = { __typename?: 'Mutation', rejectRoleRequest: boolean };
+
+export type SimulateWorkspaceUpgradeMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  plan: WorkspacePlan;
+}>;
+
+
+export type SimulateWorkspaceUpgradeMutation = { __typename?: 'Mutation', simulateWorkspaceUpgrade: { __typename?: 'Workspace', id: string, plan: WorkspacePlan } };
+
+export type StartWorkspaceTrialMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+
+export type StartWorkspaceTrialMutation = { __typename?: 'Mutation', startWorkspaceTrial: { __typename?: 'Workspace', id: string, plan: WorkspacePlan } };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -4756,6 +4786,75 @@ export function useRejectRoleRequestMutation(baseOptions?: Apollo.MutationHookOp
 export type RejectRoleRequestMutationHookResult = ReturnType<typeof useRejectRoleRequestMutation>;
 export type RejectRoleRequestMutationResult = Apollo.MutationResult<RejectRoleRequestMutation>;
 export type RejectRoleRequestMutationOptions = Apollo.BaseMutationOptions<RejectRoleRequestMutation, RejectRoleRequestMutationVariables>;
+export const SimulateWorkspaceUpgradeDocument = gql`
+    mutation SimulateWorkspaceUpgrade($workspaceId: String!, $plan: WorkspacePlan!) {
+  simulateWorkspaceUpgrade(workspaceId: $workspaceId, plan: $plan) {
+    id
+    plan
+  }
+}
+    `;
+export type SimulateWorkspaceUpgradeMutationFn = Apollo.MutationFunction<SimulateWorkspaceUpgradeMutation, SimulateWorkspaceUpgradeMutationVariables>;
+
+/**
+ * __useSimulateWorkspaceUpgradeMutation__
+ *
+ * To run a mutation, you first call `useSimulateWorkspaceUpgradeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSimulateWorkspaceUpgradeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [simulateWorkspaceUpgradeMutation, { data, loading, error }] = useSimulateWorkspaceUpgradeMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      plan: // value for 'plan'
+ *   },
+ * });
+ */
+export function useSimulateWorkspaceUpgradeMutation(baseOptions?: Apollo.MutationHookOptions<SimulateWorkspaceUpgradeMutation, SimulateWorkspaceUpgradeMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SimulateWorkspaceUpgradeMutation, SimulateWorkspaceUpgradeMutationVariables>(SimulateWorkspaceUpgradeDocument, options);
+      }
+export type SimulateWorkspaceUpgradeMutationHookResult = ReturnType<typeof useSimulateWorkspaceUpgradeMutation>;
+export type SimulateWorkspaceUpgradeMutationResult = Apollo.MutationResult<SimulateWorkspaceUpgradeMutation>;
+export type SimulateWorkspaceUpgradeMutationOptions = Apollo.BaseMutationOptions<SimulateWorkspaceUpgradeMutation, SimulateWorkspaceUpgradeMutationVariables>;
+export const StartWorkspaceTrialDocument = gql`
+    mutation StartWorkspaceTrial($workspaceId: String!) {
+  startWorkspaceTrial(workspaceId: $workspaceId) {
+    id
+    plan
+  }
+}
+    `;
+export type StartWorkspaceTrialMutationFn = Apollo.MutationFunction<StartWorkspaceTrialMutation, StartWorkspaceTrialMutationVariables>;
+
+/**
+ * __useStartWorkspaceTrialMutation__
+ *
+ * To run a mutation, you first call `useStartWorkspaceTrialMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useStartWorkspaceTrialMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [startWorkspaceTrialMutation, { data, loading, error }] = useStartWorkspaceTrialMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *   },
+ * });
+ */
+export function useStartWorkspaceTrialMutation(baseOptions?: Apollo.MutationHookOptions<StartWorkspaceTrialMutation, StartWorkspaceTrialMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<StartWorkspaceTrialMutation, StartWorkspaceTrialMutationVariables>(StartWorkspaceTrialDocument, options);
+      }
+export type StartWorkspaceTrialMutationHookResult = ReturnType<typeof useStartWorkspaceTrialMutation>;
+export type StartWorkspaceTrialMutationResult = Apollo.MutationResult<StartWorkspaceTrialMutation>;
+export type StartWorkspaceTrialMutationOptions = Apollo.BaseMutationOptions<StartWorkspaceTrialMutation, StartWorkspaceTrialMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {

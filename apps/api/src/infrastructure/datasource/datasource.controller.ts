@@ -11,13 +11,17 @@ import { SandwormCloudQueryService } from './sandworm-cloud/sandworm-cloud-query
 import { DuckDBDataSourceService } from './duck-db/duckdb-datasource.service';
 import { DuneDataSourceService } from './dune/dune-datasource.service';
 import { ChainSqlService } from './chain-sql.service';
-import { PAID_PLAN_ERROR, PaidPlanService, paidPlanMessage } from '@/features/code-execution/query-engine/paid-plan.service';
+import { PAID_PLAN_ERROR, PaidPlanService, paidPlanMessage, proPlanMessage } from '@/features/code-execution/query-engine/paid-plan.service';
 
 type Source = { type: string; data: Record<string, unknown> };
 
-const planError = (name: unknown) => ({ name: PAID_PLAN_ERROR, message: paidPlanMessage(String(name)) });
+const planError = (name: unknown) => ({
+    name: PAID_PLAN_ERROR,
+    message: name === DataSourceName.dune ? proPlanMessage(String(name)) : paidPlanMessage(String(name)),
+});
 
-// How Dune and Sandworm Cloud are shown to a free workspace: there, but off.
+// How Dune and Sandworm Cloud are shown to a workspace whose plan does not
+// include them: there, but off.
 const locked = (source: Source): Source => ({
     ...source,
     data: { ...source.data, disabled: true, connStatus: 'offline', connError: planError(source.data.name) },
@@ -36,12 +40,15 @@ export class DataSourcesController {
 
     @Get()
     async listDataSources(@Param('workspaceId') workspaceId: string) {
-        const paid = await this.paidPlanService.isPaid(workspaceId);
-        const chain = (source: Source) => (paid ? source : locked(source));
+        const [cloudAllowed, duneAllowed] = await Promise.all([
+            this.paidPlanService.isPaid(workspaceId),
+            this.paidPlanService.canUseDune(workspaceId),
+        ]);
+        const gate = (source: Source, allowed: boolean) => (allowed ? source : locked(source));
         return [
             this.duckdbDataSourceService.getDataSource(workspaceId),
-            chain(this.dataSourceService.getDataSource(workspaceId)),
-            chain(this.duneDataSourceService.getDataSource(workspaceId)),
+            gate(this.dataSourceService.getDataSource(workspaceId), cloudAllowed),
+            gate(this.duneDataSourceService.getDataSource(workspaceId), duneAllowed),
         ];
     }
 
@@ -60,7 +67,7 @@ export class DataSourcesController {
             return this.duckdbDataSourceService.getDataSource(workspaceId);
         }
         const source = this.chainSource(workspaceId, dataSourceId);
-        return (await this.paidPlanService.isPaid(workspaceId)) ? source : locked(source);
+        return (await this.isAllowed(workspaceId, dataSourceId)) ? source : locked(source);
     }
 
     @Get(':dataSourceId/schema')
@@ -84,7 +91,7 @@ export class DataSourcesController {
             return this.duckdbDataSourceService.ping();
         }
         const source = this.chainSource(workspaceId, dataSourceId);
-        if (!(await this.paidPlanService.isPaid(workspaceId))) {
+        if (!(await this.isAllowed(workspaceId, dataSourceId))) {
             return { connStatus: 'offline' as const, connError: planError(source.data.name) };
         }
         return dataSourceId === DataSourceId.dune ? this.duneDataSourceService.ping() : this.dataSourceService.ping();
@@ -94,6 +101,12 @@ export class DataSourcesController {
         if (dataSourceId === DataSourceId.sandwormCloud) return this.dataSourceService.getDataSource(workspaceId);
         if (dataSourceId === DataSourceId.dune) return this.duneDataSourceService.getDataSource(workspaceId);
         throw new ForbiddenException('Unknown datasource');
+    }
+
+    private isAllowed(workspaceId: string, dataSourceId: string): Promise<boolean> {
+        return dataSourceId === DataSourceId.dune
+            ? this.paidPlanService.canUseDune(workspaceId)
+            : this.paidPlanService.isPaid(workspaceId);
     }
 
     private async requirePaidPlan(workspaceId: string, source: string): Promise<void> {

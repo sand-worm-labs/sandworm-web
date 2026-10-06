@@ -7,7 +7,7 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
-import { UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
+import { Plan, UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
 import { WorkspaceService } from './service/workspace.service';
 import { Workspace, WorkspaceSecrets, WorkspaceInvitationInfo } from './model/workspace.model';
 import { User } from '../user/model/graphql/user.model';
@@ -123,6 +123,29 @@ export class WorkspaceResolver {
     @Args('icon', { type: () => String, nullable: true }) icon?: string,
   ): Promise<Workspace> {
     return this.workspaceService.updateWorkspace(workspaceId, { name, ownerId, icon });
+  }
+
+  @Mutation(() => Workspace, {
+    name: 'startWorkspaceTrial',
+    description: 'Move a free workspace onto the trial plan',
+  })
+  async startWorkspaceTrial(
+    @CurrentUser('id') ownerId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+  ): Promise<Workspace> {
+    return this.workspaceService.startWorkspaceTrial(workspaceId, ownerId);
+  }
+
+  @Mutation(() => Workspace, {
+    name: 'simulateWorkspaceUpgrade',
+    description: 'Dev only: simulate a payment and set the workspace plan',
+  })
+  async simulateWorkspaceUpgrade(
+    @CurrentUser('id') ownerId: string,
+    @Args('workspaceId', { type: () => String }) workspaceId: string,
+    @Args('plan', { type: () => Plan }) plan: Plan,
+  ): Promise<Workspace> {
+    return this.workspaceService.simulateWorkspaceUpgrade(workspaceId, ownerId, plan);
   }
 
   @Mutation(() => Boolean, {

@@ -90,7 +90,14 @@ def _sandworm_make_trino_query():
             )
         return df
 
-    engine = create_engine(${JSON.stringify(databaseUrl)})
+    # The kernel outlives the query, so keep one pooled engine per URL and
+    # reuse its HTTP session instead of reconnecting every run. No pre_ping:
+    # Trino is stateless HTTP and the default ping would be a full SELECT 1.
+    engines = globals().setdefault("_sandworm_trino_engines", {})
+    database_url = ${JSON.stringify(databaseUrl)}
+    engine = engines.get(database_url)
+    if engine is None:
+        engine = engines[database_url] = create_engine(database_url, pool_recycle=300)
     try:
         with engine.connect() as conn:
             df = pd.read_sql_query(text(${JSON.stringify(sql)}), con=conn)
@@ -125,8 +132,6 @@ def _sandworm_make_trino_query():
 
     except Exception as e:
         print(json.dumps({"type": "syntax-error", "message": f"[Trino] {e}"}))
-    finally:
-        engine.dispose()
 
 _sandworm_make_trino_query()
 `;

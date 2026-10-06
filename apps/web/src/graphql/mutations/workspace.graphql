@@ -74,3 +74,19 @@ mutation ApproveRoleRequest($workspaceId: String!, $userId: String!) {
 mutation RejectRoleRequest($workspaceId: String!, $userId: String!) {
   rejectRoleRequest(workspaceId: $workspaceId, userId: $userId)
 }
+
+# Dev only: simulated checkout that sets the workspace plan
+mutation SimulateWorkspaceUpgrade($workspaceId: String!, $plan: WorkspacePlan!) {
+  simulateWorkspaceUpgrade(workspaceId: $workspaceId, plan: $plan) {
+    id
+    plan
+  }
+}
+
+# Moves a free workspace onto the trial plan
+mutation StartWorkspaceTrial($workspaceId: String!) {
+  startWorkspaceTrial(workspaceId: $workspaceId) {
+    id
+    plan
+  }
+}

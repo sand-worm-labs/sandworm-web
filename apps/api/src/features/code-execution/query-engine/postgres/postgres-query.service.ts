@@ -94,7 +94,16 @@ def _sandworm_make_postgres_query():
             )
         return df
 
-    engine = create_engine(${JSON.stringify(databaseUrl)})
+    # The kernel outlives the query, so keep one pooled engine per URL and
+    # reuse its connection instead of paying for a fresh SSL handshake every
+    # run. pre_ping replaces connections the pooler dropped while idle.
+    engines = globals().setdefault("_sandworm_postgres_engines", {})
+    database_url = ${JSON.stringify(databaseUrl)}
+    engine = engines.get(database_url)
+    if engine is None:
+        engine = engines[database_url] = create_engine(
+            database_url, pool_pre_ping=True, pool_recycle=300
+        )
     try:
         with engine.connect() as conn:
             df = pd.read_sql_query(text(${JSON.stringify(sql)}), con=conn)
@@ -129,8 +138,6 @@ def _sandworm_make_postgres_query():
 
     except Exception as e:
         print(json.dumps({"type": "syntax-error", "message": f"[Postgres] {e}"}))
-    finally:
-        engine.dispose()
 
 _sandworm_make_postgres_query()
 `;

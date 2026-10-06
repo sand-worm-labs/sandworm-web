@@ -313,5 +313,5 @@ export const DATA_SOURCE_FALLBACK = [
   'If a sql cell on Dune or Sandworm Cloud fails because the data source itself cannot be used (connection refused or timed out, authentication failed, source unavailable or not configured), not because the query is wrong, delete that cell with delete_cell and replace it with a python cell that gets the same data from the public APIs (open data).',
   'Find the right API with plan_notebook or search_tools, which list the open data sources for a sub-goal. A query error such as a bad column or syntax is not this case: fix the SQL instead.',
   'If no open data source covers what the cell needed, do not make up data. Delete nothing further, and tell the user which data could not be retrieved and why.',
-  'A cell that fails with PaidPlanRequired means the workspace is on the free plan: rebuild it from open data, and if no open data source covers it, tell the user that data needs a paid plan and that they can upgrade in Settings > Plan.',
+  'A cell that fails with PaidPlanRequired means the workspace\'s plan does not include that data source (Dune needs the Pro plan, Sandworm Cloud any paid plan): rebuild it from open data or another allowed source, and if nothing covers it, tell the user that data needs a higher plan and that they can upgrade in Settings > Plan.',
 ].join(' ');

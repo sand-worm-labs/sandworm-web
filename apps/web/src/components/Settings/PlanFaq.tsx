@@ -25,7 +25,7 @@ const faqs = [
   {
     question: "Is Sandworm free to use?",
     answer:
-      "Yes. Every workspace starts on a Trial with full product access while Sandworm is in public beta. Upgrade to Pro once your team needs more notebooks, storage or scheduled runs.",
+      "Yes. Start a free Trial from this page for full product access while Sandworm is in public beta. Upgrade to Pro once your team needs more notebooks, storage or scheduled runs.",
   },
   {
     question: "What are AI credits?",
@@ -50,7 +50,7 @@ const faqs = [
   {
     question: "Can I change or cancel my plan?",
     answer:
-      "Pay-with-wallet upgrades are on the way. Until then, message us on Discord and we'll adjust your workspace's plan directly — no need to wait.",
+      "Workspace owners can start the trial and upgrade to Pro from this page. To downgrade, cancel or change a plan, message us on Discord and we'll adjust your workspace directly.",
   },
 ];
 

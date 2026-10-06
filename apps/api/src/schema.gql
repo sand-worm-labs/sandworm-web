@@ -639,6 +639,12 @@ type Mutation {
   """Update workspace info"""
   updateWorkspace(workspaceId: String!, name: String, icon: String): Workspace!
 
+  """Move a free workspace onto the trial plan"""
+  startWorkspaceTrial(workspaceId: String!): Workspace!
+
+  """Dev only: simulate a payment and set the workspace plan"""
+  simulateWorkspaceUpgrade(workspaceId: String!, plan: WorkspacePlan!): Workspace!
+
   """Switch to a different workspace"""
   switchWorkspace(workspaceId: String!): Boolean!
 
