@@ -1829,6 +1829,7 @@ const Editor = (props: Props) => {
                     yDoc={props.yDoc}
                     userId={props.userId}
                     executionQueue={props.executionQueue}
+                    workspaceId={props.document.workspaceId}
                   />
                 )}
               </div>
