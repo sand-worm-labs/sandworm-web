@@ -594,13 +594,18 @@ pre {
 }
 
 .sw-markdown-preview a {
-  color: #0b6e99;
+  color: hsl(var(--accent));
   text-decoration: underline;
   font-weight: 500;
 }
 
 .sw-markdown-preview a:hover {
-  color: #0b6e99;
+  color: hsl(var(--accent));
+}
+
+.dark .sw-markdown-preview a,
+.dark .sw-markdown-preview a:hover {
+  color: hsl(var(--primary));
 }
 
 .sw-markdown-preview ul,
@@ -638,10 +643,14 @@ pre {
 }
 
 .sw-markdown-preview blockquote {
-  border-left: 3px solid #0b6e99;
+  border-left: 3px solid hsl(var(--accent));
   padding-left: 1rem;
   margin: 0.75rem 0;
   color: #6b7280;
+}
+
+.dark .sw-markdown-preview blockquote {
+  border-left-color: hsl(var(--primary));
 }
 
 /* =====================================

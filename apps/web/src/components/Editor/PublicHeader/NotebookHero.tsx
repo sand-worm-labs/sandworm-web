@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, Tag as TagIcon, ArrowLeft } from "lucide-react";
+import { Star, ArrowLeft } from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -15,8 +15,8 @@ import { toast } from "sonner";
 import type { ApiDocument } from "@/types";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/date";
-import { tintPillDarkClassName } from "@/styles/interactive";
 import { useModalStore } from "@/store/auth";
+import { Tag } from "@/components/Tag";
 
 import { useCurrentWorkspaceInfo } from "../hooks/useWorkspaces";
 import { useFavorites } from "../hooks/useFavorites";
@@ -186,21 +186,9 @@ export function NotebookHeroMeta({
       </div>
 
       {tags.length > 0 && (
-        <div className="flex items-center gap-2 flex-wrap">
-          <TagIcon
-            className="h-4 w-4 text-ink-400 shrink-0"
-            strokeWidth={1.5}
-          />
+        <div className="flex flex-wrap items-center gap-1.5">
           {tags.map(tag => (
-            <span
-              key={tag}
-              className={cn(
-                "text-xs font-medium px-2.5 py-1 rounded-full bg-base-300 text-ink-400 border border-transparent",
-                tintPillDarkClassName
-              )}
-            >
-              {tag}
-            </span>
+            <Tag key={tag}>#{tag}</Tag>
           ))}
         </div>
       )}

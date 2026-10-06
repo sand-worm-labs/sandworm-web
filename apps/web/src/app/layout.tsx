@@ -12,13 +12,29 @@ import CookieBanner from "@/components/CookieBanner";
 
 // ⬢ Constants
 // =====================================
+const SITE_DESCRIPTION =
+  "Deep, clear, editable blockchain data that helps your whole team make better decisions.";
+
 export const metadata: Metadata = {
-  description:
-    "Explore, query, and visualize blockchain data on Base, EVM, and other chains with Sandworm, your open-source, SQL-powered data IDE for Web3",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_PUBLIC_URL || "https://app.sandwormlab.xyz"
+  ),
+  description: SITE_DESCRIPTION,
   keywords: "data, web3, blockchain, analytics, sui, base, etherium, indexer",
   title: "Sand Worm",
   icons: {
     icon: "/logo.svg",
+  },
+  openGraph: {
+    siteName: "Sandworm",
+    title: "Sand Worm",
+    description: SITE_DESCRIPTION,
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sand Worm",
+    description: SITE_DESCRIPTION,
   },
 };
 
