@@ -44,6 +44,7 @@ export * from "./operations/index.js";
 export * from "./blocks/index.js";
 export * from "./blocks/visualization-v2.js";
 export * from "./dashboard.js";
+export * from "./dashboard-layout.js";
 export * from "./metadata.js";
 export * from "./component.js";
 export * from "./execution/index.js";

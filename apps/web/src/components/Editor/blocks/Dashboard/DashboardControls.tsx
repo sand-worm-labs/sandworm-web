@@ -15,6 +15,7 @@ import {
   getDashboard,
   getDashboardItem,
   getDataframes,
+  getDefaults,
   getLayout,
   getPythonBlockResult,
   getSQLAttributes,
@@ -53,7 +54,6 @@ import MultiSelect from "../MultiSelect";
 import { RightSidebarPanel } from "../../RightSidebarPanel";
 
 import ScaleChild from "./ScaleChild";
-import { getDefaults } from "./DashboardView";
 
 import type { DraggingBlock } from ".";
 

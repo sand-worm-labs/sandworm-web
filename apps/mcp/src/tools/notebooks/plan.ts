@@ -195,7 +195,7 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
         ...(upgrade ? { upgrade } : {}),
         steps,
         next: [
-          'Create the cells with add_cell in step order (pass position to keep that order), then check the notebook with get_notebook.',
+          'Create the cells with add_cell in step order (pass position to keep that order), then check the notebook with get_notebook. If the user asked for a dashboard, run the notebook and then lay it out with set_dashboard.',
           ...(upgrade
             ? [`In your closing message, name the skipped sub-goals and tell the user they need a paid plan, with this link to upgrade: ${upgrade.url}`]
             : []),

@@ -87,6 +87,11 @@ function planStep(args: Args): string {
   return `Planning ${blocks.length} block(s): ${blocks.map(b => `${b.type}: ${b.title}`).join(', ')}`;
 }
 
+type RowShape = { tiles?: unknown[] };
+const dashboardRows = (result: Result): RowShape[] => (Array.isArray(result.rows) ? (result.rows as RowShape[]) : []);
+const rowCount = (result: Result) => dashboardRows(result).length;
+const tileCount = (result: Result) => dashboardRows(result).reduce((sum, row) => sum + (row.tiles?.length ?? 0), 0);
+
 // Calls that change no block still get one line, so the chat shows every step.
 const STEPS: Record<string, (args: Args, result: Result) => string> = {
   plan_notebook: planStep,
@@ -100,6 +105,8 @@ const STEPS: Record<string, (args: Args, result: Result) => string> = {
   create_notebook: (args, result) => `Created notebook: ${str(result.title) || str(args.title)}`,
   edit_notebook: args => `Renamed the notebook to: ${str(args.title)}`,
   publish_notebook: (_, result) => `Published the notebook: ${str(result.publicUrl)}`,
+  set_dashboard: (_, result) => `Laid out the dashboard: ${tileCount(result)} tile(s) in ${rowCount(result)} row(s)`,
+  get_dashboard: () => 'Read the dashboard',
   run_notebook: () => 'Started a run',
   get_run_results: () => 'Checked the run',
 };

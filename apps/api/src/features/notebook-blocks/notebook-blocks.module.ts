@@ -5,13 +5,15 @@ import { ToolModule } from '../tool/tool.module';
 import { WorkspaceModule } from '../workspace/workspace.module';
 import { NotebookBlocksController } from './notebook-blocks.controller';
 import { NotebookBlocksService } from './notebook-blocks.service';
+import { NotebookDashboardController } from './notebook-dashboard.controller';
+import { NotebookDashboardService } from './notebook-dashboard.service';
 import { NotebookDocService } from './notebook-doc.service';
 import { NotebookRunController } from './notebook-run.controller';
 import { NotebookRunService } from './notebook-run.service';
 
 @Module({
   imports: [YjsModule, DocumentModule, WorkspaceModule, ToolModule],
-  controllers: [NotebookBlocksController, NotebookRunController],
-  providers: [NotebookDocService, NotebookBlocksService, NotebookRunService],
+  controllers: [NotebookBlocksController, NotebookDashboardController, NotebookRunController],
+  providers: [NotebookDocService, NotebookBlocksService, NotebookDashboardService, NotebookRunService],
 })
 export class NotebookBlocksModule {}

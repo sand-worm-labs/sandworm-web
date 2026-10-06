@@ -14,6 +14,11 @@ import {
   mergeGridLayoutIntoYDashboard,
   BlockType,
   removeDashboardBlock,
+  dashboardCellSize,
+  getDefaults,
+  getMins,
+  DASHBOARD_COLUMNS as COLS_COUNT,
+  DASHBOARD_MARGIN as MARGIN,
 } from "@sandworm/editor";
 import { useResizeDetector } from "react-resize-detector";
 
@@ -31,9 +36,6 @@ import type { DraggingBlock } from ".";
 // =====================================
 // ⬢  Constants
 // =====================================
-export const MARGIN = 6;
-export const COLS_COUNT = 24;
-
 const BREAKPOINTS = {
   lg: 800,
   sm: 0,
@@ -73,55 +75,6 @@ function generateBackground(
   return `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
 }
 
-export function getMins(t: BlockType): { minW: number; minH: number } {
-  switch (t) {
-    case BlockType.SQL:
-      return { minW: 5, minH: 3 };
-    case BlockType.Visualization:
-    case BlockType.VisualizationV2:
-    case BlockType.PivotTable:
-      return { minW: 3, minH: 3 };
-    case BlockType.Python:
-    case BlockType.Input:
-    case BlockType.DropdownInput:
-    case BlockType.DateInput:
-      return { minW: 3, minH: 2 };
-    case BlockType.RichText:
-    case BlockType.Markdown:
-      return { minW: 2, minH: 2 };
-    case BlockType.DashboardHeader:
-      return { minW: 2, minH: 1 };
-    case BlockType.FileUpload:
-      return { minW: 0, minH: 0 };
-    default:
-      return { minW: 0, minH: 0 };
-  }
-}
-
-export function getDefaults(t: BlockType): { minW: number; minH: number } {
-  switch (t) {
-    case BlockType.SQL:
-    case BlockType.Visualization:
-    case BlockType.VisualizationV2:
-    case BlockType.PivotTable:
-    case BlockType.Python:
-      return { minW: 8, minH: 4 };
-    case BlockType.Input:
-    case BlockType.DropdownInput:
-    case BlockType.DateInput:
-      return { minW: 3, minH: 2 };
-    case BlockType.RichText:
-    case BlockType.Markdown:
-      return { minW: 2, minH: 2 };
-    case BlockType.DashboardHeader:
-      return { minW: 4, minH: 1 };
-    case BlockType.FileUpload:
-      return { minW: 0, minH: 0 };
-    default:
-      return { minW: 0, minH: 0 };
-  }
-}
-
 interface InnerProps {
   width: number;
   yDoc: Y.Doc;
@@ -140,7 +93,14 @@ interface InnerProps {
 }
 
 const WhiteCard = ({ children }: { children: React.ReactNode }) => (
-  <div className="bg-base-100 rounded-md h-full shadow-md">{children}</div>
+  <div className="bg-base-100 rounded-lg h-full border border-border dark:border-border-tertiary">
+    {children}
+  </div>
+);
+
+// Section headings sit on the page itself rather than in a card.
+const PlainCard = ({ children }: { children: React.ReactNode }) => (
+  <div className="h-full">{children}</div>
 );
 
 const TransparentCard = ({ children }: { children: React.ReactNode }) => (
@@ -203,7 +163,11 @@ function DashboardViewInner(props: InnerProps) {
             ].includes(type)
           : false;
 
-        const WrapperCard = hasTransparentCard ? TransparentCard : WhiteCard;
+        // While editing, a heading keeps its outline so it can be found and dragged.
+        let WrapperCard = hasTransparentCard ? TransparentCard : WhiteCard;
+        if (type === BlockType.DashboardHeader && !props.isEditing) {
+          WrapperCard = PlainCard;
+        }
 
         return (
           <div key={item.i} data-block-type={type}>
@@ -250,11 +214,7 @@ function DashboardViewInner(props: InnerProps) {
   );
 
   const { cellWidth, cellHeight } = useMemo(() => {
-    const marginWidth = MARGIN * (colsCount + 1);
-    const calculatedCellWidth = (props.width - marginWidth) / colsCount;
-    const calculatedCellHeight = Math.max(50, calculatedCellWidth);
-
-    return { cellWidth: calculatedCellWidth, cellHeight: calculatedCellHeight };
+    return dashboardCellSize(props.width, colsCount);
   }, [props.width, colsCount]);
 
   const onDrop = useCallback(

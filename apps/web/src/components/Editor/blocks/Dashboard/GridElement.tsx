@@ -7,6 +7,7 @@ import type {
 } from "@sandworm/editor";
 import {
   BlockType,
+  dashboardTileHasOwnTitle,
   getBlocks,
   getDataframes,
   getLayout,
@@ -49,15 +50,6 @@ interface Props {
   onExpand: (block: YBlock) => void;
   isPublicMode?: boolean;
 }
-
-const NO_TITLE_BLOCKS = [
-  BlockType.Input,
-  BlockType.DropdownInput,
-  BlockType.FileUpload,
-  BlockType.RichText,
-  BlockType.Markdown,
-  BlockType.DashboardHeader,
-];
 
 interface GridBlockRendererProps {
   block: YBlock;
@@ -310,7 +302,7 @@ function GridElement(props: Props) {
 
   const hasTitle =
     blockType &&
-    !NO_TITLE_BLOCKS.includes(blockType) &&
+    !dashboardTileHasOwnTitle(blockType) &&
     originalTitle.trim() !== "";
 
   return (
@@ -323,7 +315,7 @@ function GridElement(props: Props) {
       {props.block ? (
         <div
           className={clsx(
-            "w-full h-full rounded-md overflow-hidden flex flex-col",
+            "w-full h-full rounded-lg overflow-hidden flex flex-col",
             props.isEditingDashboard &&
               blockType !== BlockType.DashboardHeader &&
               "pointer-events-none"

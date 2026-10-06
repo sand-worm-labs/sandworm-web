@@ -71,45 +71,51 @@ function DashboardHeader(props: Props) {
     [props.dashboardMode]
   );
 
+  // A section divider: the title, then a hairline running to the edge. It sits
+  // at the bottom of its row so it reads as belonging to the tiles below it.
   return (
-    <div
-      className={clsx(
-        "h-[calc(100%-4px)] flex items-center rounded-md",
-        props.isEditing ? "border-ceramic-200/70" : "",
-        props.dashboardMode === "editing" && "border-2"
-      )}
-    >
-      {props.isEditing ? (
-        <input
-          ref={inputRef}
-          onKeyDown={e => {
-            if (e.key === "Enter") {
-              onEdit();
-              props.onFinishedEditing();
-            }
-          }}
-          type="text"
-          value={props.block.getAttribute("content")}
-          placeholder="Heading"
-          className="block w-full rounded-md border-0 text-ink-100 placeholder:text-ink-400 focus:ring-0 text-2xl font-semibold leading-6 bg-transparent pl-3 py-0.5"
-          onChange={e => props.block.setAttribute("content", e.target.value)}
-          onBlur={endEditing}
-          onMouseDown={stopPropagation}
-        />
-      ) : (
-        <button
-          type="button"
-          className={clsx(
-            "text-2xl font-medium text-left truncate min-h-6 pl-3 w-full",
-            hasContent ? "text-ink-100" : "text-ink-400",
-            props.dashboardMode !== "live" && "hover:cursor-text"
-          )}
-          onClick={onClickH1}
-          onMouseDown={stopPropagation}
-        >
-          {content}
-        </button>
-      )}
+    <div className="h-full flex items-end px-0.5 pb-1.5">
+      <div className="flex w-full min-w-0 items-center gap-4">
+        {props.isEditing ? (
+          <input
+            ref={inputRef}
+            onKeyDown={e => {
+              if (e.key === "Enter") {
+                onEdit();
+                props.onFinishedEditing();
+              }
+            }}
+            type="text"
+            value={props.block.getAttribute("content")}
+            placeholder="Heading"
+            className="block w-full rounded-md border-0 text-ink-100 placeholder:text-ink-400 focus:ring-0 text-lg font-semibold leading-7 bg-transparent px-0 py-0"
+            onChange={e => props.block.setAttribute("content", e.target.value)}
+            onBlur={endEditing}
+            onMouseDown={stopPropagation}
+          />
+        ) : (
+          <>
+            <button
+              type="button"
+              className={clsx(
+                "min-w-0 truncate text-left text-lg font-semibold leading-7",
+                hasContent ? "text-ink-100" : "text-ink-400",
+                props.dashboardMode !== "live" && "hover:cursor-text"
+              )}
+              onClick={onClickH1}
+              onMouseDown={stopPropagation}
+            >
+              {content}
+            </button>
+            {content && (
+              <div
+                aria-hidden
+                className="h-px flex-1 bg-border dark:bg-border-tertiary"
+              />
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

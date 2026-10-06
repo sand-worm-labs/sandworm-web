@@ -271,8 +271,21 @@ const RESIZE_REPORTER_SCRIPT = `
   </script>
 `;
 
-function injectTableStyles(html: string, isDark: boolean): string {
-  const styleTag = `<style>${isDark ? SANDWORM_TABLE_CSS_DARK : SANDWORM_TABLE_CSS}</style>`;
+// A stat or summary card draws its own border and rounded corners. A dashboard
+// tile already has both, so inside one the card would be a frame within a frame.
+const DASHBOARD_TILE_CSS = `
+  .sw-card { border: none !important; border-radius: 0 !important; background: transparent !important; }
+`;
+
+function injectTableStyles(
+  html: string,
+  isDark: boolean,
+  isDashboardTile: boolean
+): string {
+  // The card's colors are fixed, not themed, so on a dark tile its own light
+  // background is what keeps its text readable: leave it alone there.
+  const tileCss = isDashboardTile && !isDark ? DASHBOARD_TILE_CSS : "";
+  const styleTag = `<style>${isDark ? SANDWORM_TABLE_CSS_DARK : SANDWORM_TABLE_CSS}${tileCss}</style>`;
 
   // The "N rows × M columns" caption is surfaced in the block's result
   // footer instead, so drop it from the iframe content entirely.
@@ -446,7 +459,13 @@ export function PythonOutput(props: ItemProps) {
       );
     }
     case "html": {
-      return <HTMLOutput output={props.output} isDark={props.isDark} />;
+      return (
+        <HTMLOutput
+          output={props.output}
+          isDark={props.isDark}
+          isDashboardTile={!!props.isDashboardTile}
+        />
+      );
     }
     case "markdown":
       // From IPython's display(Markdown(...)). sandworm-prose carries the
@@ -499,7 +518,11 @@ export function PythonOutputWrapper(props: PythonOutputWrapperProps) {
   );
 }
 
-function HTMLOutput(props: { output: PythonHTMLOutput; isDark: boolean }) {
+function HTMLOutput(props: {
+  output: PythonHTMLOutput;
+  isDark: boolean;
+  isDashboardTile: boolean;
+}) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   // Starts at 0 rather than a fixed guess — the iframe's content height
   // varies a lot (a 3-row dataframe vs. a 500-row one). The sandboxed
@@ -509,8 +532,9 @@ function HTMLOutput(props: { output: PythonHTMLOutput; isDark: boolean }) {
   const [height, setHeight] = React.useState(0);
 
   const styledHtml = useMemo(
-    () => injectTableStyles(props.output.html, props.isDark),
-    [props.output.html, props.isDark]
+    () =>
+      injectTableStyles(props.output.html, props.isDark, props.isDashboardTile),
+    [props.output.html, props.isDark, props.isDashboardTile]
   );
 
   // Layout effect, not useEffect: this must be listening before the iframe can
