@@ -29,6 +29,7 @@ import {
   useWorkspaceWithMembers,
   useRemoveUserFromWorkspace,
   useUpdateWorkspaceMemberRole,
+  useWorkspacePlanLabel,
 } from "../Editor/hooks/useWorkspaces";
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 import { useOpenRouterModels } from "../Editor/hooks/useOpenRouterModel";
@@ -314,6 +315,7 @@ function TeamPlanSection({
   onClose: () => void;
 }) {
   const router = useRouter();
+  const planLabel = useWorkspacePlanLabel(workspaceId);
 
   return (
     <SettingsRow
@@ -339,7 +341,7 @@ function TeamPlanSection({
             Current Plan
           </span>
           <div className="font-medium capitalize bg-primary-tint-75 dark:bg-primary-910 px-3 py-0.5 rounded-md text-primary inline-block text-sm">
-            Free
+            {planLabel ?? "\u00A0"}
           </div>
         </div>
 

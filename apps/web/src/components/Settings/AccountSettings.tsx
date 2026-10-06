@@ -10,6 +10,7 @@ import type { ApiWorkspace } from "@/types";
 import { tintPillDarkClassName } from "@/styles/interactive";
 
 import {
+  formatPlan,
   useCurrentWorkspaceInfo,
   useSwitchWorkspace,
   useUpdateWorkspace,
@@ -175,7 +176,7 @@ function WorkspaceRow({
             </span>
             <span className="text-xs text-ink-400 dark:text-ink-400">·</span>
             <span className="text-xs text-ink-400 dark:text-ink-400 capitalize">
-              {workspace.plan || "Free"}
+              {formatPlan(workspace.plan) ?? "\u00A0"}
             </span>
           </div>
         </div>
@@ -189,7 +190,7 @@ function WorkspaceRow({
 
       {/* ✦ Plan ✦ */}
       <div className="hidden sm:block w-24 text-center text-sm text-ink-400 dark:text-ink-400 capitalize">
-        {workspace.plan || "Free"}
+        {formatPlan(workspace.plan) ?? "\u00A0"}
       </div>
 
       {/* ✦ Settings Action Button ✦ */}

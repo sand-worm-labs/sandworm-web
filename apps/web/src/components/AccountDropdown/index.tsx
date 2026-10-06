@@ -22,6 +22,7 @@ import { socialLinks } from "@/data/socialLinks";
 
 import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 import { useSession, useSignout } from "../Editor/hooks/useAuth";
+import { useWorkspacePlanLabel } from "../Editor/hooks/useWorkspaces";
 import { TooltipV2 } from "../Editor/blocks/ToolTips";
 import { BookIcon } from "../Assets/BookIcon";
 import { GearIcon } from "../Assets/GearIcon";
@@ -261,6 +262,7 @@ export const AccountDropdown = ({
   const openSignIn = useModalStore(state => state.openSignIn);
   const signout = useSignout();
   const workspaceId = useStringQuery("workspace");
+  const planLabel = useWorkspacePlanLabel(workspaceId);
   const user = session?.user;
 
   const { shareProfile, copied } = useShareProfile(user?.firstName ?? "user");
@@ -340,7 +342,7 @@ export const AccountDropdown = ({
                   {user.firstName ?? "Sandworm User"}
                 </span>
                 <span className="text-[0.75rem] font-medium text-ink-300">
-                  Free Plan
+                  {planLabel ? `${planLabel} Plan` : "\u00A0"}
                 </span>
               </div>
             </div>

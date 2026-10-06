@@ -133,6 +133,35 @@ export const useCurrentWorkspaceInfo = (skip = false) => {
 };
 
 // =====================================
+// ⬢ Plan labels
+// Display name of a workspace's plan, as the API reports it (FREE, TRIAL,
+// PRO, ENTERPRISE). Undefined when the plan is not known yet.
+// =====================================
+const PLAN_LABELS: Record<string, string> = {
+  FREE: "Free",
+  TRIAL: "Trial",
+  PRO: "Pro",
+  ENTERPRISE: "Enterprise",
+};
+
+export const formatPlan = (plan?: string | null): string | undefined => {
+  const key = plan?.toUpperCase();
+  return key ? (PLAN_LABELS[key] ?? key) : undefined;
+};
+
+export const useWorkspacePlanLabel = (workspaceId?: string) => {
+  const { data } = useGetUserWorkspacesQuery({
+    fetchPolicy: "cache-and-network",
+  });
+  const { workspaceInfo } = useCurrentWorkspaceInfo();
+  const id = workspaceId || workspaceInfo?.id;
+
+  return formatPlan(
+    data?.getUserWorkspaces?.find(workspace => workspace.id === id)?.plan
+  );
+};
+
+// =====================================
 // ⬢ useUpdateWorkspace
 // =====================================
 type UseUpdateWorkspaceReturn = {
