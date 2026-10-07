@@ -95,8 +95,8 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
   // =====================================
   return (
     <>
-      <tr className="border-b border-border-secondary dark:border-border-tertiary last:border-b-0">
-        <td className="p-4 align-top">
+      <tr className="block md:table-row py-3 md:py-0 border-b border-border-secondary dark:border-border-tertiary last:border-b-0">
+        <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top">
           <div className="flex items-center gap-2.5 min-w-0">
             <Avatar className="h-8 w-8 flex-shrink-0">
               {query.authorId ? (
@@ -130,7 +130,7 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
           </div>
         </td>
 
-        <td className="p-4 align-top max-w-xs">
+        <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top md:max-w-xs">
           <Link
             href={`/notebooks/${query.slug ?? query.id}`}
             className="text-sm font-medium text-ink-100 dark:text-white hover:underline break-words"
@@ -139,7 +139,7 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
           </Link>
         </td>
 
-        <td className="p-4 align-top">
+        <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top">
           {tags.length > 0 && (
             <div className="flex flex-wrap items-center gap-1.5 max-w-xs">
               {visibleTags.map(tag => (
@@ -154,8 +154,8 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
           )}
         </td>
 
-        <td className="p-4 align-top">
-          <div className="flex items-center gap-3 justify-end">
+        <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top">
+          <div className="flex items-center gap-4 md:gap-3 md:justify-end">
             <button
               type="button"
               onClick={handleFavorite}

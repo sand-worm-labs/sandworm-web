@@ -32,8 +32,8 @@ export const QueryList: React.FC<IQueryListProps> = ({
   return (
     <div className="mb-16 h-full justify-between flex flex-col">
       <div className="mb-8 my-6 overflow-x-auto border border-border-secondary dark:border-border-tertiary rounded-xl">
-        <table className="w-full border-collapse">
-          <thead className="border-b border-border-secondary dark:border-border-tertiary">
+        <table className="block md:table w-full border-collapse">
+          <thead className="hidden md:table-header-group border-b border-border-secondary dark:border-border-tertiary">
             <tr>
               {COLUMN_HEADERS.map(header => (
                 <th
@@ -49,7 +49,10 @@ export const QueryList: React.FC<IQueryListProps> = ({
               ))}
             </tr>
           </thead>
-          <tbody aria-busy={loadingMore || undefined}>
+          <tbody
+            className="block md:table-row-group"
+            aria-busy={loadingMore || undefined}
+          >
             {documents.map(query => (
               <ExploreCard key={query.id} query={query} />
             ))}

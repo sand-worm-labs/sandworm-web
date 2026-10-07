@@ -68,15 +68,16 @@ export default function ViewSwitcher({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
+          aria-label={`View: ${current.label}`}
           className={clsx(
-            "flex items-center gap-2 px-3 py-1.5 rounded-[10px] text-sm font-medium",
+            "flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-[10px] text-sm font-medium",
             "border border-transparent bg-base-100 dark:bg-transparent text-ink-100",
             "hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600",
             "transition-colors duration-100"
           )}
         >
           <CurrentIcon size={16} className="text-ink-400" />
-          {current.label}
+          <span className="hidden sm:inline">{current.label}</span>
           <PiCaretDown size={14} className="text-ink-400" />
         </button>
       </DropdownMenuTrigger>

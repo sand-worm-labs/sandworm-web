@@ -58,7 +58,7 @@ export default function AccountMenu({ user, loading }: AccountMenuProps) {
       <button
         type="button"
         onClick={() => openSignIn()}
-        className="px-3.5 py-1.5 rounded-md border border-border-secondary dark:border-border-tertiary text-sm font-medium text-ink-100 dark:text-white hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors"
+        className="px-3 sm:px-3.5 py-1.5 whitespace-nowrap rounded-md border border-border-secondary dark:border-border-tertiary text-sm font-medium text-ink-100 dark:text-white hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors"
       >
         Sign in
       </button>

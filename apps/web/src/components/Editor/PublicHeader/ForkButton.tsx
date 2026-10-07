@@ -34,12 +34,18 @@ export default function ForkButton({
         disabled={!document}
         onClick={triggerFork}
         className={cn(
-          "flex items-center gap-1.5 text-sm font-medium text-white bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:pointer-events-none transition-colors",
-          isHero ? "px-4 py-2 rounded-full" : "px-4 py-1.5 rounded-md"
+          "flex shrink-0 items-center gap-1.5 whitespace-nowrap text-sm font-medium text-white bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:pointer-events-none transition-colors",
+          isHero ? "px-3 sm:px-4 py-2 rounded-full" : "px-4 py-1.5 rounded-md"
         )}
       >
         <GitFork size={14} />
-        {isHero ? "Fork notebook" : "Fork"}
+        {isHero ? (
+          <>
+            Fork<span className="hidden sm:inline"> notebook</span>
+          </>
+        ) : (
+          "Fork"
+        )}
       </button>
 
       {document && (

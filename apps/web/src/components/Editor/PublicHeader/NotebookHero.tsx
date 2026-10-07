@@ -91,7 +91,7 @@ export function NotebookHeroTop({
       <div className="flex items-center justify-between gap-3">
         <Link
           href={exploreHref}
-          className="group inline-flex items-center gap-1.5 text-sm text-ink-400 hover:text-primary transition-colors w-fit"
+          className="group inline-flex shrink-0 items-center gap-1.5 text-sm text-ink-400 hover:text-primary transition-colors w-fit"
         >
           <ArrowLeft
             className="h-4 w-4 transition-transform duration-150 group-hover:-translate-x-0.5"
@@ -100,7 +100,7 @@ export function NotebookHeroTop({
           Explore
         </Link>
 
-        <div className="flex items-center gap-4 shrink-0">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <button
             type="button"
             onClick={handleFavorite}
@@ -130,9 +130,9 @@ export function NotebookHeroTop({
           )}
         </div>
       </div>
-
-{/*       <SandwormDarkLogo style={{ width: 56, height: 56 }} />
- */}    </div>
+      {/*       <SandwormDarkLogo style={{ width: 56, height: 56 }} />
+       */}{" "}
+    </div>
   );
 }
 

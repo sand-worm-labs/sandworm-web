@@ -24,9 +24,9 @@ export const SignInModal = () => {
 
   return (
     <Dialog open={signInOpen} onOpenChange={closeSignIn}>
-      <DialogContent className="sm:max-w-3xl p-0 py-12 pb-5 overflow-hidden border-white/[18.8%] bg-white dark:bg-base-100 dark:text-white rounded-2xl ">
-        <div className="grid grid-cols-6  h-full">
-          <div className="col-span-3 flex flex-col justify-center p-8 pr-[6rem]">
+      <DialogContent className="block sm:max-w-3xl p-0 py-8 sm:py-12 pb-5 max-h-[calc(100dvh-2rem)] overflow-y-auto border-white/[18.8%] bg-white dark:bg-base-100 dark:text-white rounded-2xl ">
+        <div className="flex flex-col sm:grid sm:grid-cols-6">
+          <div className="sm:col-span-3 flex flex-col justify-center p-6 sm:p-8 sm:pr-[6rem]">
             <DialogTitle>
               <span className="text-2xl font-sewmibold block mb-2 font-body ">
                 Join Sandworm
@@ -55,7 +55,7 @@ export const SignInModal = () => {
             <PartnersSection />
           </div>
 
-          <div className="col-span-3 relative hidden sm:block ">
+          <div className="sm:col-span-3 relative hidden sm:block ">
             <Image
               src="/img/unanimated-logoimg.svg"
               alt="Sign in illustration"

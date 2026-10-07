@@ -126,7 +126,7 @@ export function FeaturedExploreCard({
       <div
         onClick={() => router.push(`/notebooks/${slug}`)}
         className={cn(
-          "flex flex-col rounded-3xl py-5 border px-6 cursor-pointer transition-shadow font-body group/card dark:bg-dropdown-bg dark:border-border-tertiary",
+          "flex flex-col rounded-3xl py-5 border px-4 sm:px-6 cursor-pointer transition-shadow font-body group/card dark:bg-dropdown-bg dark:border-border-tertiary",
           isPurple
             ? "bg-primary border-teal/[20%] text-white"
             : "bg-[#F2F3FB] border-teal/[20%]"
@@ -138,8 +138,8 @@ export function FeaturedExploreCard({
           router.push(`/notebooks/${slug}`)
         }
       >
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
             <span
               className={cn(
                 "text-xs font-medium px-2 py-0.5 rounded-md border border-transparent",
@@ -165,7 +165,7 @@ export function FeaturedExploreCard({
             onClick={handleSaveClick}
             aria-label="Save to workspace"
             className={cn(
-              "transition-colors rounded-full w-6 h-6 flex justify-center items-center dark:bg-create-project-tint/[0.16] dark:text-white",
+              "transition-colors rounded-full w-6 h-6 shrink-0 flex justify-center items-center dark:bg-create-project-tint/[0.16] dark:text-white",
               isPurple
                 ? "bg-[#F3F3FA] text-ink-400 hover:bg-[#AFA9EC]"
                 : "text-ink-400 hover:text-menu-ink bg-[#CDCDE2]"
@@ -180,7 +180,7 @@ export function FeaturedExploreCard({
         {/* Title */}
         <h3
           className={cn(
-            "font-medium text-lg mb-3",
+            "font-medium text-lg mb-3 break-words",
             isPurple ? "text-white" : "text-ink-100"
           )}
         >
@@ -188,7 +188,7 @@ export function FeaturedExploreCard({
         </h3>
 
         {/* Creator */}
-        <div className="flex items-center gap-1.5 mb-3">
+        <div className="flex items-center gap-1.5 mb-3 min-w-0">
           <Image
             src={creator.image || "/img/avatar.svg"}
             alt={creator?.username || "Creator avatar"}

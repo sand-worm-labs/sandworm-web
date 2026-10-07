@@ -34,7 +34,7 @@ export function FeaturedExploreCardSkeleton({
     <div
       aria-hidden="true"
       className={cn(
-        "flex flex-col rounded-3xl py-5 border px-6 font-body",
+        "flex flex-col rounded-3xl py-5 border px-4 sm:px-6 font-body",
         isPurple
           ? "bg-primary border-teal/[20%]"
           : "bg-[#F2F3FB] dark:bg-base-100 border-teal/[20%] dark:border-border-tertiary"
@@ -127,9 +127,9 @@ export function ExploreCardSkeleton() {
   return (
     <tr
       aria-hidden="true"
-      className="border-b border-border-secondary dark:border-border-tertiary last:border-b-0"
+      className="block md:table-row py-3 md:py-0 border-b border-border-secondary dark:border-border-tertiary last:border-b-0"
     >
-      <td className="p-4 align-top">
+      <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top">
         <div className="flex items-center gap-2.5">
           <Shimmer className="h-8 w-8 rounded-full shrink-0" />
           <div className="min-w-0 space-y-2">
@@ -138,17 +138,17 @@ export function ExploreCardSkeleton() {
           </div>
         </div>
       </td>
-      <td className="p-4 align-top">
+      <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top">
         <Shimmer className="h-4 w-full max-w-[220px]" />
       </td>
-      <td className="p-4 align-top">
+      <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top">
         <div className="flex items-center gap-1.5">
           <Shimmer className="h-4 w-12 rounded-md" />
           <Shimmer className="h-4 w-12 rounded-md" />
         </div>
       </td>
-      <td className="p-4 align-top">
-        <div className="flex items-center gap-3 justify-end">
+      <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top">
+        <div className="flex items-center gap-4 md:gap-3 md:justify-end">
           <Shimmer className="h-4 w-10" />
           <Shimmer className="h-4 w-10" />
         </div>
@@ -169,8 +169,8 @@ export function ExploreListSkeleton({ count = 8 }: ExploreListSkeletonProps) {
       aria-label="Loading queries"
     >
       <div className="mb-8 my-6 overflow-x-auto border border-border-secondary dark:border-border-tertiary rounded-xl">
-        <table className="w-full border-collapse">
-          <tbody>
+        <table className="block md:table w-full border-collapse">
+          <tbody className="block md:table-row-group">
             {LIST_SKELETON_KEYS.slice(0, count).map(key => (
               <ExploreCardSkeleton key={key} />
             ))}
