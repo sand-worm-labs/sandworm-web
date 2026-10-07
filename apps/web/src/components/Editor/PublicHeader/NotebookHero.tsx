@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, ArrowLeft } from "lucide-react";
+import { Star } from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -17,28 +17,58 @@ import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/date";
 import { useModalStore } from "@/store/auth";
 import { Tag } from "@/components/Tag";
+import { Breadcrumb } from "@/components/Breadcrumb";
+import { headerIconButtonClassName } from "@/styles/interactive";
 
 import { useCurrentWorkspaceInfo } from "../hooks/useWorkspaces";
 import { useFavorites } from "../hooks/useFavorites";
+import { TooltipV2 } from "../blocks/ToolTips";
 
 import ForkButton from "./ForkButton";
 
 interface NotebookHeroTopProps {
   document: ApiDocument | null;
   isAuthenticated: boolean;
-  isOwnDocument: boolean;
 }
 
 export function NotebookHeroTop({
   document,
   isAuthenticated,
-  isOwnDocument,
 }: NotebookHeroTopProps) {
   const { workspaceInfo } = useCurrentWorkspaceInfo(!isAuthenticated);
   const exploreHref = workspaceInfo?.id
     ? `/workspace/${workspaceInfo.id}/explore`
     : "/explore";
+  const updatedAt = document?.updatedAt ?? new Date();
 
+  const crumbs = [
+    { label: "Explore", href: exploreHref },
+    ...(document?.title ? [{ label: document.title }] : []),
+  ];
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between gap-3">
+        <Breadcrumb items={crumbs} />
+        <span className="text-sm text-ink-400 hidden sm:inline shrink-0">
+          Last edited {formatDate(updatedAt)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+interface NotebookActionsProps {
+  document: ApiDocument | null;
+  isAuthenticated: boolean;
+  isOwnDocument: boolean;
+}
+
+export function NotebookActions({
+  document,
+  isAuthenticated,
+  isOwnDocument,
+}: NotebookActionsProps) {
   const openSignIn = useModalStore(state => state.openSignIn);
   const [, { favoriteDocument, unfavoriteDocument }] = useFavorites(null, true);
 
@@ -46,7 +76,6 @@ export function NotebookHeroTop({
   const [favoriteCount, setFavoriteCount] = useState(
     document?.favoriteCount ?? 0
   );
-  const updatedAt = document?.updatedAt ?? new Date();
 
   useEffect(() => {
     setIsFavorited(document?.isFavorite ?? false);
@@ -87,51 +116,38 @@ export function NotebookHeroTop({
   ]);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between gap-3">
-        <Link
-          href={exploreHref}
-          className="group inline-flex shrink-0 items-center gap-1.5 text-sm text-ink-400 hover:text-primary transition-colors w-fit"
-        >
-          <ArrowLeft
-            className="h-4 w-4 transition-transform duration-150 group-hover:-translate-x-0.5"
-            strokeWidth={1.5}
-          />
-          Explore
-        </Link>
-
-        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+    <div className="flex shrink-0 items-center gap-1 -ml-2 sm:ml-0">
+      <TooltipV2<HTMLButtonElement>
+        title={isFavorited ? "Unfavorite" : "Favorite"}
+        active
+        position="bottom"
+      >
+        {ref => (
           <button
+            ref={ref}
             type="button"
             onClick={handleFavorite}
             aria-label={isFavorited ? "Unfavorite" : "Favorite"}
-            className="flex items-center gap-1.5 -mx-2 -my-1 px-2 py-1 rounded-full border border-transparent group hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors"
+            className={cn(headerIconButtonClassName, "h-8 gap-1.5 px-2")}
           >
             <Star
               className={cn(
-                "h-4 w-4 transition-colors",
-                isFavorited
-                  ? "fill-primary text-primary"
-                  : "text-ink-400 group-hover:text-yellow-400"
+                "h-[18px] w-[18px]",
+                isFavorited && "fill-primary text-primary"
               )}
               strokeWidth={1.2}
             />
-            <span className="text-sm text-ink-400">{favoriteCount}</span>
+            <span className="text-sm">{favoriteCount}</span>
           </button>
-          <span className="text-sm text-ink-400 hidden sm:inline">
-            Last edited {formatDate(updatedAt)}
-          </span>
-          {!isOwnDocument && (
-            <ForkButton
-              document={document && { id: document.id, title: document.title }}
-              isAuthenticated={isAuthenticated}
-              variant="hero"
-            />
-          )}
-        </div>
-      </div>
-      {/*       <SandwormDarkLogo style={{ width: 56, height: 56 }} />
-       */}{" "}
+        )}
+      </TooltipV2>
+      {!isOwnDocument && (
+        <ForkButton
+          document={document && { id: document.id, title: document.title }}
+          isAuthenticated={isAuthenticated}
+          variant="icon"
+        />
+      )}
     </div>
   );
 }

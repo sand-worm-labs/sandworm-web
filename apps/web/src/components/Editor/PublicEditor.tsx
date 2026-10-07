@@ -46,7 +46,11 @@ import type { APIDataSources } from "./hooks/useDataSources";
 import { ContentSkeleton } from "./ContentSkeleton";
 import Title from "./Title";
 import { publicWidthClasses } from "./constants";
-import { NotebookHeroTop, NotebookHeroMeta } from "./PublicHeader/NotebookHero";
+import {
+  NotebookHeroTop,
+  NotebookHeroMeta,
+  NotebookActions,
+} from "./PublicHeader/NotebookHero";
 
 import { getTabIcon } from ".";
 
@@ -610,7 +614,7 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
           },
         }}
         className={clsx("h-full w-full", {
-          "overflow-y-auto overflow-x-hidden px-5": !props.isPDF,
+          "overflow-y-auto overflow-x-hidden px-0 sm:px-5": !props.isPDF,
         })}
       >
         <div
@@ -631,17 +635,29 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
                 <NotebookHeroTop
                   document={props.document}
                   isAuthenticated={isAuthenticated}
-                  isOwnDocument={isOwnDocument}
                 />
               )}
 
               <div className={!props.isPDF ? "mt-8 mb-4" : ""}>
-                <Title
-                  content={props.yDoc.getXmlFragment("title")}
-                  isLoading={props.isSyncing}
-                  isEditable={false}
-                  style="font-size: 3.0rem; font-family: var(--font-report-heading), sans-serif; letter-spacing: -0.02em; font-weight: 700;"
-                />
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                  <div className="min-w-0 flex-1">
+                    <Title
+                      content={props.yDoc.getXmlFragment("title")}
+                      isLoading={props.isSyncing}
+                      isEditable={false}
+                      style="font-size: clamp(2.25rem, 1.4rem + 3.6vw, 3rem); font-family: var(--font-report-heading), sans-serif; letter-spacing: -0.02em; font-weight: 700;"
+                    />
+                  </div>
+                  {!props.isPDF && (
+                    <div className="sm:mt-2">
+                      <NotebookActions
+                        document={props.document}
+                        isAuthenticated={isAuthenticated}
+                        isOwnDocument={isOwnDocument}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
 
               {!props.isPDF && (
