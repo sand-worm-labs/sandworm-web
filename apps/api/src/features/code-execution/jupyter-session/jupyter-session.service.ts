@@ -71,8 +71,12 @@ export class JupyterSessionService {
         // }));
 
         const etherscanApiKey = this.config.get('etherscan.apiKey', { infer: true });
+        const avacloudApiKey = this.config.get('avacloud.apiKey', { infer: true });
         await this.setEnvironmentVariables(session.kernel, {
-            add: etherscanApiKey ? [{ name: 'ETHERSCAN_API_KEY', value: etherscanApiKey }] : [],
+            add: [
+                ...(etherscanApiKey ? [{ name: 'ETHERSCAN_API_KEY', value: etherscanApiKey }] : []),
+                ...(avacloudApiKey ? [{ name: 'AVACLOUD_API_KEY', value: avacloudApiKey }] : []),
+            ],
             remove: [],
         });
         await session.kernel.requestExecute({ code: this.buildSessionPreamble(), store_history: false }).done;
