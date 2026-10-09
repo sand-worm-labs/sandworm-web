@@ -31,3 +31,5 @@ export * from "./tool-category.entity";
 export * from "./bounty.entity";
 export * from './audit-log.entity';
 export * from './referral-code.entity';
+export * from './showcase-lead.entity';
+export * from './showcase-taxonomy.entity';

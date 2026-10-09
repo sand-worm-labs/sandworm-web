@@ -93,6 +93,11 @@ export class DocumentEntity extends AbstractEntity {
   @Column({ type: "text", array: true, default: () => "'{}'" })
   tags!: string[];
 
+  // Showcase metadata (NotebookShowcase in @sandworm/types). Null for every
+  // notebook that is not part of the Showcase.
+  @Column({ type: "jsonb", nullable: true })
+  showcase!: Record<string, unknown> | null;
+
 
   @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.documents, {
     onDelete: "CASCADE",
