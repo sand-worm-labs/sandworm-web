@@ -11,6 +11,7 @@ import {
   PiCaretDown,
   PiHouse,
   PiBinoculars,
+  PiSquaresFour,
   PiStar,
   PiStarThin,
   PiTrash,
@@ -79,7 +80,12 @@ export const WorkspaceSidebar = () => {
       icon: PiToolbox,
     },
     {
-      name: "Explore",
+      name: "Showcase",
+      href: `/workspace/${workspaceId}/showcase`,
+      icon: PiSquaresFour,
+    },
+    {
+      name: "Community",
       href: `/workspace/${workspaceId}/explore`,
       icon: PiBinoculars,
     },
