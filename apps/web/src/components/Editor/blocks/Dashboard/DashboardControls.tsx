@@ -8,6 +8,7 @@ import type {
 } from "@sandworm/editor";
 import {
   BlockType,
+  addDashboardCell,
   addDashboardItemToYDashboard,
   addDashboardOnlyBlock,
   getBaseAttributes,
@@ -34,6 +35,7 @@ import {
   PiTextAlignLeft,
   PiMagnifyingGlass,
   PiTextHOne,
+  PiCode,
   PiX,
   PiListBullets,
   PiCalendar,
@@ -478,6 +480,13 @@ function BlocksList(props: BlocksListProps) {
   });
 }
 
+const ADD_BUTTON_CLASS = `flex items-center justify-center gap-2 w-full rounded-xl px-3 py-2
+  text-[12.5px] font-medium text-ink-500 dark:text-ink-200
+  border border-border-secondary dark:border-base-710
+  bg-white dark:bg-base-750
+  hover:bg-primary-tint-50 dark:hover:bg-primary-900
+  transition-colors duration-100`;
+
 // =====================================
 // ⬢ Dashboard controls
 // =====================================
@@ -550,6 +559,55 @@ function DashboardControls(props: Props) {
 
     props.onAddBlock(blockId);
   }, [blocks, dashboard, props.onAddBlock]);
+
+  // Cells made for the dashboard: they live in the notebook, hidden in view
+  // mode, and open straight into the block editor to be filled in.
+  const addCell = useCallback(
+    (
+      cell: Parameters<typeof addDashboardCell>[1],
+      size: { w: number; h: number },
+      chrome?: "plain"
+    ) => {
+      const blockId = addDashboardCell(props.yDoc, cell, size, chrome);
+      const block = getBlocks(props.yDoc).get(blockId);
+      if (block) {
+        props.onExpand(block);
+      }
+    },
+    [props.yDoc, props.onExpand]
+  );
+
+  const addTextBlock = useCallback(
+    () =>
+      addCell(
+        {
+          type: BlockType.Markdown,
+          source:
+            "Write a note for the dashboard. Markdown works, including links and images: `![logo](https://example.com/logo.png)`",
+        },
+        { w: 12, h: 3 }
+      ),
+    [addCell]
+  );
+
+  const addHtmlBlock = useCallback(
+    () =>
+      addCell(
+        {
+          type: BlockType.Python,
+          source: `from sandworm_theme import show, banner
+
+# Draw anything here as HTML. Take colors from sandworm_theme.CSS so it reads in light and dark mode.
+show(banner(
+    "A line about this dashboard",
+    links=[("Website", "https://example.com")],
+))`,
+        },
+        { w: 24, h: 3 },
+        "plain"
+      ),
+    [addCell]
+  );
 
   const blocksList = useMemo(
     () =>
@@ -748,15 +806,10 @@ function DashboardControls(props: Props) {
             />
           </OverlayScrollbarsComponent>
 
-          <div className="flex-shrink-0 p-3 border-t border-base-300 dark:border-base-700">
+          <div className="flex-shrink-0 p-3 border-t border-base-300 dark:border-base-700 flex flex-col gap-2">
             <button
               type="button"
-              className="flex items-center justify-center gap-2 w-full rounded-xl px-3 py-2
-              text-[12.5px] font-medium text-ink-500 dark:text-ink-200
-              border border-border-secondary dark:border-base-710
-              bg-white dark:bg-base-750
-              hover:bg-primary-tint-50 dark:hover:bg-primary-900
-              transition-colors duration-100"
+              className={ADD_BUTTON_CLASS}
               onClick={addHeading}
             >
               <PiTextHOne
@@ -764,6 +817,25 @@ function DashboardControls(props: Props) {
                 className="text-ink-300 dark:text-ink-500"
               />
               <span>Add heading</span>
+            </button>
+            <button
+              type="button"
+              className={ADD_BUTTON_CLASS}
+              onClick={addTextBlock}
+            >
+              <PiTextAlignLeft
+                size={15}
+                className="text-ink-300 dark:text-ink-500"
+              />
+              <span>Add text block</span>
+            </button>
+            <button
+              type="button"
+              className={ADD_BUTTON_CLASS}
+              onClick={addHtmlBlock}
+            >
+              <PiCode size={15} className="text-ink-300 dark:text-ink-500" />
+              <span>Add HTML block</span>
             </button>
           </div>
         </div>

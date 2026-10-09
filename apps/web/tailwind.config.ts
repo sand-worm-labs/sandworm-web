@@ -49,6 +49,7 @@ const config: Config = {
         error: "hsl(var(--error))",
 
         "header-surface": "hsl(var(--header-surface))",
+        "block-surface": "hsl(var(--block-surface))",
         "page-surface": "hsl(var(--page-surface))",
         "sidebar-surface": "hsl(var(--sidebar-surface))",
         "sidebar-hover": "hsl(var(--sidebar-hover))",

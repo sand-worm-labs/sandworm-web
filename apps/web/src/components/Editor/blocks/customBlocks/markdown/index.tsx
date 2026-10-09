@@ -56,7 +56,7 @@ import { BlockTypePill } from "../../BlockTypePill";
 
 function HatchBackground() {
   return (
-    <div className="hatch-bg border border-[#E7E1F0] dark:border-legacy-lightText h-2" />
+    <div className="hatch-bg border border-[#E7E1F0] dark:border-border-tertiary h-2" />
   );
 }
 
@@ -68,7 +68,7 @@ function countMarkdownLines(source: Y.Text): number {
 
 function CollapsedCodeSummary({ lineCount }: { lineCount: number }) {
   return (
-    <div className="flex items-center gap-x-2 px-4 py-1.5 text-xs bg-inputBg dark:bg-header-surface border-t border-hover-border dark:border-border-dark">
+    <div className="flex items-center gap-x-2 px-4 py-1.5 text-xs bg-inputBg dark:bg-block-surface border-t border-hover-border dark:border-border-dark">
       <span className="italic text-ink-400">{lineCount} lines hidden</span>
     </div>
   );
@@ -515,7 +515,7 @@ const MarkdownBlock = (props: Props) => {
       >
         <div
           className={clsx(
-            "rounded-t-2xl dark:bg-header-surface",
+            "rounded-t-2xl dark:bg-block-surface",
             props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
             isSourceCollapsed
               ? "rounded-b-2xl"
@@ -595,7 +595,7 @@ const MarkdownBlock = (props: Props) => {
             />
           ) : (
             <div className="print:hidden px-3 pb-3">
-              <div className="flex justify-end text-xs pt-2 pb-3 px-3 -mx-3 -mb-3 bg-inputBg dark:bg-header-surface border-t border-hover-border dark:border-border-dark">
+              <div className="flex justify-end text-xs pt-2 pb-3 px-3 -mx-3 -mb-3 bg-inputBg dark:bg-block-surface border-t border-hover-border dark:border-border-dark">
                 {props.isEditable && !props.dashboardMode && (
                   <TooltipV2<HTMLButtonElement>
                     content={aiEditTooltipContent}
@@ -610,7 +610,7 @@ const MarkdownBlock = (props: Props) => {
                         className={clsx(
                           !hasOaiKey
                             ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                            : "cursor-pointer dark:bg-header-surface hover:bg-hover-bg hover:text-gray-700 hover:border-primary",
+                            : "cursor-pointer dark:bg-block-surface hover:bg-hover-bg hover:text-gray-700 hover:border-primary",
                           "flex items-center border rounded-md border-hover-border px-2 py-1 gap-x-1 text-ink-300 dark:text-ink-400 group relative font-body"
                         )}
                       >
@@ -661,7 +661,7 @@ const MarkdownBlock = (props: Props) => {
           type="button"
           onClick={props.onDeleteBlock}
           aria-label="Delete block"
-          className="bg-[#FFDBDB] dark:bg-header-surface dark:border dark:border-hover-border rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+          className="bg-[#FFDBDB] dark:bg-block-surface dark:border dark:border-hover-border rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
         >
           <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
         </button>

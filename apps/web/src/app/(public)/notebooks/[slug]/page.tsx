@@ -81,7 +81,7 @@ export default function PublicNotebookPage() {
   }, [error, isSyncing, document, yDoc, view]);
 
   return (
-    <div className="flex flex-col h-screen bg-base-100 font-body">
+    <div className="flex flex-col h-screen bg-base-100 dark:bg-page-surface font-body">
       <PublicNotebookBanner
         document={document}
         view={view}

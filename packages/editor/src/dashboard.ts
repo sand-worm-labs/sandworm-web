@@ -2,6 +2,12 @@ import GridLayout from 'react-grid-layout'
 import * as Y from 'yjs'
 import * as z from 'zod'
 
+// How a tile is drawn. A card has the dashboard's border, surface and title
+// strip. Plain draws the cell's own output on the page, for content that owns
+// its look: a row of KPI cards, a banner, a custom HTML layout.
+export const DashboardChrome = z.enum(['card', 'plain'])
+export type DashboardChrome = z.infer<typeof DashboardChrome>
+
 export const DashboardItem = z.object({
   id: z.string(),
   type: z.literal('DASHBOARD_ITEM'),
@@ -12,6 +18,7 @@ export const DashboardItem = z.object({
   h: z.number(),
   minW: z.number().optional(),
   minH: z.number().optional(),
+  chrome: DashboardChrome.optional(),
 })
 export type DashboardItem = z.infer<typeof DashboardItem>
 export type YDashboardItem = Y.XmlElement<DashboardItem>
@@ -25,6 +32,9 @@ function makeYDashboardItem(item: Omit<DashboardItem, 'type'>): YDashboardItem {
   }
 
   for (const [key, value] of Object.entries(attrs)) {
+    if (value === undefined) {
+      continue
+    }
     yDashboardItem.setAttribute(
       // @ts-ignore
       key,
@@ -226,5 +236,34 @@ export function removeBlocksFromDashboard(
     if (blockId && blockIds.includes(blockId)) {
       dashboard.delete(id)
     }
+  }
+}
+
+// Switches a tile between the dashboard's card and plain. A card is the
+// default, so it is stored as no attribute at all.
+export function setDashboardItemChrome(
+  dashboard: Y.Map<YDashboardItem>,
+  id: string,
+  chrome: DashboardChrome
+) {
+  const item = dashboard.get(id)
+  if (!item) {
+    return
+  }
+
+  const operation = () => {
+    if (chrome === 'plain') {
+      // @ts-ignore
+      item.setAttribute('chrome', chrome)
+    } else {
+      // @ts-ignore
+      item.removeAttribute('chrome')
+    }
+  }
+
+  if (dashboard.doc) {
+    dashboard.doc.transact(operation)
+  } else {
+    operation()
   }
 }

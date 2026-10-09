@@ -38,7 +38,7 @@ export function SortControl({
   return (
     <div className="flex flex-col gap-1 items-end">
       <Select value={sortBy} onValueChange={v => onSortChange(v as SortOption)}>
-        <SelectTrigger className="w-[180px] border-border-tertiary dark:border-border-tertiary bg-white dark:bg-dropdown-bg text-ink-200 dark:text-white h-8 rounded-lg cursor-pointer text-[0.8rem]">
+        <SelectTrigger className="w-[160px] sm:w-[180px] border-border-tertiary dark:border-border-tertiary bg-white dark:bg-dropdown-bg text-ink-200 dark:text-white h-8 rounded-lg cursor-pointer text-[0.8rem]">
           <TrendingUp className="h-3 w-4 mr-2" />
           <SelectValue>{SORT_LABELS[sortBy]}</SelectValue>
         </SelectTrigger>

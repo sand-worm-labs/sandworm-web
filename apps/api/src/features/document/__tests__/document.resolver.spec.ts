@@ -79,7 +79,7 @@ describe('DocumentResolver', () => {
 
     const result = await resolver.getDocumentState(DOCUMENT_ID, WORKSPACE_ID, USER_ID);
 
-    expect(documentService.getDocumentState).toHaveBeenCalledWith(DOCUMENT_ID, WORKSPACE_ID, USER_ID);
+    expect(documentService.getDocumentState).toHaveBeenCalledWith(DOCUMENT_ID, WORKSPACE_ID, USER_ID, false);
     expect(result).toBe('state');
   });
 

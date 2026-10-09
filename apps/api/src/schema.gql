@@ -474,9 +474,9 @@ type Query {
   getDocument(documentId: String!, workspaceId: String!): Document!
 
   """
-  Get the base64-encoded Yjs state of a document by ID (authenticated snapshot, used to render optimistically before the live collaboration socket syncs)
+  Get the base64-encoded Yjs state of a document by ID (authenticated snapshot, used to render optimistically before the live collaboration socket syncs). With isApp, returns the caller's published view-mode copy instead of the editable doc, so view mode can load without the socket.
   """
-  getDocumentState(documentId: String!, workspaceId: String!): String!
+  getDocumentState(documentId: String!, workspaceId: String!, isApp: Boolean = false): String!
 
   """Get User favorite documents"""
   getFavoriteDocuments(workspaceId: String!): [Document!]!

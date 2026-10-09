@@ -1,6 +1,7 @@
 import type * as Y from "yjs";
 import type {
   AITasks,
+  DashboardChrome,
   ExecutionQueue,
   YBlock,
   YBlockGroup,
@@ -15,7 +16,11 @@ import {
 } from "@sandworm/editor";
 import { useCallback, useEffect, useState } from "react";
 import type GridLayout from "react-grid-layout";
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import {
+  PencilIcon,
+  RectangleGroupIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import type { DataFrame } from "@sandworm/types";
 
@@ -35,8 +40,13 @@ import DateInputBlock from "../customBlocks/dateInput";
 import PivotTableBlock from "../customBlocks/pivotTable";
 import MarkdownBlock from "../customBlocks/markdown";
 
+import { TileChromeContext } from "./TileChromeContext";
+
 interface Props {
   item: GridLayout.Layout;
+  // How the tile is drawn: a card with a title strip (default), or plain.
+  chrome?: DashboardChrome;
+  onSetChrome?: (id: string, chrome: DashboardChrome) => void;
   block: YBlock | null;
   onDelete: (id: string) => void;
   yDoc: Y.Doc;
@@ -303,6 +313,7 @@ function GridElement(props: Props) {
   const hasTitle =
     blockType &&
     !dashboardTileHasOwnTitle(blockType) &&
+    props.chrome !== "plain" &&
     originalTitle.trim() !== "";
 
   return (
@@ -315,37 +326,40 @@ function GridElement(props: Props) {
       {props.block ? (
         <div
           className={clsx(
-            "w-full h-full rounded-lg overflow-hidden flex flex-col",
+            // One pixel inside the card's rounded-2xl border, so content is clipped to the same curve.
+            "w-full h-full rounded-[15px] overflow-hidden flex flex-col",
             props.isEditingDashboard &&
               blockType !== BlockType.DashboardHeader &&
               "pointer-events-none"
           )}
         >
           {hasTitle && (
-            <h2 className="text-gray-700 font-medium text-left text-sm truncate min-h-6 px-3.5 py-2.5">
+            <h2 className="text-gray-700 dark:text-ink-100 font-medium text-left text-sm truncate min-h-6 px-3.5 py-2.5">
               {titleContent}
             </h2>
           )}
 
           <div className="h-full overflow-hidden">
             {props.block && (
-              <GridBlockRenderer
-                block={props.block}
-                item={props.item}
-                document={props.document}
-                dataSources={props.dataSources}
-                dataframes={dataframes.value}
-                blocks={blocks.value}
-                yLayout={yLayout.value}
-                isEditingDashboard={props.isEditingDashboard}
-                isEditingHeader={isEditingHeader}
-                onFinishEditingHeader={() => setIsEditingHeader(false)}
-                onStartEditingHeader={() => setIsEditingHeader(true)}
-                userId={props.userId}
-                executionQueue={props.executionQueue}
-                aiTasks={props.aiTasks}
-                isPublicMode={props.isPublicMode ?? false}
-              />
+              <TileChromeContext.Provider value={props.chrome ?? "card"}>
+                <GridBlockRenderer
+                  block={props.block}
+                  item={props.item}
+                  document={props.document}
+                  dataSources={props.dataSources}
+                  dataframes={dataframes.value}
+                  blocks={blocks.value}
+                  yLayout={yLayout.value}
+                  isEditingDashboard={props.isEditingDashboard}
+                  isEditingHeader={isEditingHeader}
+                  onFinishEditingHeader={() => setIsEditingHeader(false)}
+                  onStartEditingHeader={() => setIsEditingHeader(true)}
+                  userId={props.userId}
+                  executionQueue={props.executionQueue}
+                  aiTasks={props.aiTasks}
+                  isPublicMode={props.isPublicMode ?? false}
+                />
+              </TileChromeContext.Provider>
             )}{" "}
           </div>
         </div>
@@ -357,13 +371,43 @@ function GridElement(props: Props) {
         <div
           role="presentation"
           className={clsx(
-            "absolute -top-3 right-3 opacity-0 bg-white group-hover:opacity-100 z-20 border border-border-secondary dark:border-border-tertiary py-1 rounded-md shadow-sm flex gap-x-3.5 items-center px-3.5"
+            "absolute -top-3 right-3 opacity-0 bg-white dark:bg-dropdown-bg group-hover:opacity-100 z-20 border border-border-secondary dark:border-border-tertiary py-1 rounded-md shadow-sm flex gap-x-3.5 items-center px-3.5"
           )}
           onMouseDown={e => e.stopPropagation()}
         >
+          {props.onSetChrome && blockType !== BlockType.DashboardHeader && (
+            <button
+              type="button"
+              title={
+                props.chrome === "plain"
+                  ? "Show in a card"
+                  : "Show without a card"
+              }
+              aria-label={
+                props.chrome === "plain"
+                  ? "Show in a card"
+                  : "Show without a card"
+              }
+              className={clsx(
+                "flex items-center jutify-center cursor-pointer h-4 w-4 text-xs bg-transparent",
+                props.chrome === "plain"
+                  ? "text-primary"
+                  : "text-ink-400 hover:text-primary-600"
+              )}
+              onClick={() =>
+                props.onSetChrome?.(
+                  props.item.i,
+                  props.chrome === "plain" ? "card" : "plain"
+                )
+              }
+            >
+              <RectangleGroupIcon />
+            </button>
+          )}
+
           <button
             type="button"
-            className="flex items-center jutify-center cursor-pointer text-ink-400  hover:text-primary-600 h-4 w-4 text-xs bg-white"
+            className="flex items-center jutify-center cursor-pointer text-ink-400  hover:text-primary-600 h-4 w-4 text-xs bg-transparent"
             onClick={() => {
               if (blockType === BlockType.DashboardHeader) {
                 setIsEditingHeader(!isEditingHeader);
@@ -377,7 +421,7 @@ function GridElement(props: Props) {
 
           <button
             type="button"
-            className="flex items-center jutify-center cursor-pointer text-ink-400  hover:text-red-600 h-4 w-4 text-xs bg-white"
+            className="flex items-center jutify-center cursor-pointer text-ink-400  hover:text-red-600 h-4 w-4 text-xs bg-transparent"
             onClick={onDelete}
           >
             <TrashIcon />

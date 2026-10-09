@@ -1117,6 +1117,7 @@ export type QueryGetDocumentArgs = {
 
 export type QueryGetDocumentStateArgs = {
   documentId: Scalars['String']['input'];
+  isApp?: InputMaybe<Scalars['Boolean']['input']>;
   workspaceId: Scalars['String']['input'];
 };
 
@@ -2153,6 +2154,7 @@ export type GetPublishedDocumentStateQuery = { __typename?: 'Query', getPublishe
 export type GetDocumentStateQueryVariables = Exact<{
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
+  isApp?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
@@ -5771,8 +5773,8 @@ export type GetPublishedDocumentStateLazyQueryHookResult = ReturnType<typeof use
 export type GetPublishedDocumentStateSuspenseQueryHookResult = ReturnType<typeof useGetPublishedDocumentStateSuspenseQuery>;
 export type GetPublishedDocumentStateQueryResult = Apollo.QueryResult<GetPublishedDocumentStateQuery, GetPublishedDocumentStateQueryVariables>;
 export const GetDocumentStateDocument = gql`
-    query GetDocumentState($documentId: String!, $workspaceId: String!) {
-  getDocumentState(documentId: $documentId, workspaceId: $workspaceId)
+    query GetDocumentState($documentId: String!, $workspaceId: String!, $isApp: Boolean) {
+  getDocumentState(documentId: $documentId, workspaceId: $workspaceId, isApp: $isApp)
 }
     `;
 
@@ -5790,6 +5792,7 @@ export const GetDocumentStateDocument = gql`
  *   variables: {
  *      documentId: // value for 'documentId'
  *      workspaceId: // value for 'workspaceId'
+ *      isApp: // value for 'isApp'
  *   },
  * });
  */

@@ -15,6 +15,14 @@ test('sub-goals are matched to the public APIs that cover them', () => {
   assert.equal(ids('prediction market odds for the election')[0], 'polymarket');
 });
 
+test('Avalanche sub-goals reach the Avalanche sources, and its key is optional', () => {
+  assert.equal(ids('avalanche daily active addresses')[0], 'avalanche');
+  assert.equal(ids('avalanche subnet validators')[0], 'avalanche');
+  assert.ok(ids('snowtrace token transfers of an avalanche wallet').includes('routescan'));
+  const avalanche = OPEN_DATA_SOURCES.find(s => s.id === 'avalanche')!;
+  assert.deepEqual([avalanche.key?.env, avalanche.key?.required], ['AVACLOUD_API_KEY', false]);
+});
+
 test('a sub-goal nothing matches still gets the general market sources', () => {
   assert.deepEqual(ids('zzz qqq'), ['defillama', 'coingecko']);
 });

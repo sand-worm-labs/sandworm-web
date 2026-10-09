@@ -3,13 +3,16 @@
 import { ForkToWorkspaceModal } from "@/components/Explore/ForkToWorkspaceModal";
 import { GitFork } from "@/components/Assets/GitFork";
 import { cn } from "@/lib/utils";
+import { headerIconButtonClassName } from "@/styles/interactive";
+
+import { TooltipV2 } from "../blocks/ToolTips";
 
 import { useForkFlow } from "./useForkFlow";
 
 interface ForkButtonProps {
   document: { id: string; title: string } | null;
   isAuthenticated: boolean;
-  variant?: "default" | "hero";
+  variant?: "default" | "icon";
 }
 
 export default function ForkButton({
@@ -25,22 +28,43 @@ export default function ForkButton({
     handleForkSuccess,
   } = useForkFlow(document, isAuthenticated);
 
-  const isHero = variant === "hero";
+  const isIcon = variant === "icon";
 
   return (
     <>
-      <button
-        type="button"
-        disabled={!document}
-        onClick={triggerFork}
-        className={cn(
-          "flex items-center gap-1.5 text-sm font-medium text-white bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:pointer-events-none transition-colors",
-          isHero ? "px-4 py-2 rounded-full" : "px-4 py-1.5 rounded-md"
-        )}
-      >
-        <GitFork size={14} />
-        {isHero ? "Fork notebook" : "Fork"}
-      </button>
+      {isIcon ? (
+        <TooltipV2<HTMLButtonElement>
+          title="Fork notebook"
+          active
+          position="bottom"
+        >
+          {ref => (
+            <button
+              ref={ref}
+              type="button"
+              disabled={!document}
+              onClick={triggerFork}
+              aria-label="Fork notebook"
+              className={cn(
+                headerIconButtonClassName,
+                "h-8 w-8 disabled:opacity-50 disabled:pointer-events-none"
+              )}
+            >
+              <GitFork size={20} />
+            </button>
+          )}
+        </TooltipV2>
+      ) : (
+        <button
+          type="button"
+          disabled={!document}
+          onClick={triggerFork}
+          className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-sm font-medium text-white bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:pointer-events-none transition-colors px-4 py-1.5 rounded-md"
+        >
+          <GitFork size={14} />
+          Fork
+        </button>
+      )}
 
       {document && (
         <ForkToWorkspaceModal

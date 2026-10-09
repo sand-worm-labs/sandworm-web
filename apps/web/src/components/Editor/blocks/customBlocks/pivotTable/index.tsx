@@ -627,7 +627,7 @@ function PivotTableBlock(props: Props) {
                     !isRunButtonDisabled &&
                     (status === "enqueued" ||
                       (status === "running" && envStatus !== "Running")),
-                  "bg-base-200 dark:bg-header-surface":
+                  "bg-base-200 dark:bg-block-surface":
                     !isRunButtonDisabled && status === "idle",
                 },
                 "rounded-[5px] border-hover-border border border-border h-[24px] min-w-[24px] flex items-center justify-center relative group disabled:cursor-not-allowed hover:bg-gray-50"
@@ -662,7 +662,7 @@ function PivotTableBlock(props: Props) {
           type="button"
           onClick={props.onDeleteBlock}
           aria-label="Delete block"
-          className="bg-[#FFDBDB] dark:bg-header-surface dark:border dark:border-hover-border rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+          className="bg-[#FFDBDB] dark:bg-block-surface dark:border dark:border-hover-border rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
         >
           <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
         </button>

@@ -49,14 +49,15 @@ export class DocumentResolver {
 
   @Query(() => String, {
     name: 'getDocumentState',
-    description: 'Get the base64-encoded Yjs state of a document by ID (authenticated snapshot, used to render optimistically before the live collaboration socket syncs)',
+    description: 'Get the base64-encoded Yjs state of a document by ID (authenticated snapshot, used to render optimistically before the live collaboration socket syncs). With isApp, returns the caller\'s published view-mode copy instead of the editable doc, so view mode can load without the socket.',
   })
   async getDocumentState(
     @Args('documentId') documentId: string,
     @Args('workspaceId') workspaceId: string,
     @CurrentUser('id') userId: string,
+    @Args('isApp', { type: () => Boolean, nullable: true, defaultValue: false }) isApp = false,
   ): Promise<string> {
-    return this.documentService.getDocumentState(documentId, workspaceId, userId);
+    return this.documentService.getDocumentState(documentId, workspaceId, userId, isApp);
   }
 
   @Query(() => [Document], {

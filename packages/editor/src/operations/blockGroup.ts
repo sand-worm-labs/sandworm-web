@@ -537,6 +537,33 @@ export const duplicateTab = (
   current.setAttribute('id', newId)
 }
 
+// Shows or hides a cell in the published report (its tab in the notebook's
+// layout carries the flag). The cell stays in the notebook and keeps running;
+// a cell hidden here and placed on the dashboard is dashboard-only. Returns
+// whether the cell was found.
+export const setBlockHiddenInPublished = (
+  layout: Y.Array<YBlockGroup>,
+  blockId: string,
+  hidden: boolean
+): boolean => {
+  for (const group of layout.toArray()) {
+    const tab = group
+      .getAttribute('tabs')
+      ?.toArray()
+      .find((candidate) => candidate.getAttribute('id') === blockId)
+    if (!tab) {
+      continue
+    }
+
+    if ((tab.getAttribute('isHiddenInPublished') ?? false) !== hidden) {
+      tab.setAttribute('isHiddenInPublished', hidden)
+    }
+    return true
+  }
+
+  return false
+}
+
 export const toggleIsBlockHiddenInPublished = (
   blockGroup: YBlockGroup,
   blockId: string

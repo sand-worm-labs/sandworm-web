@@ -64,7 +64,12 @@ export class DocumentService {
     return Document.fromEntity(document);
   }
 
-  async getDocumentState(documentId: string, workspaceId: string, userId: string): Promise<string> {
+  async getDocumentState(
+    documentId: string,
+    workspaceId: string,
+    userId: string,
+    isApp = false,
+  ): Promise<string> {
     await this.workspaceMembershipService.assertActiveMember(workspaceId, userId);
 
     const document = await this.documentRepository.findOne({
@@ -75,7 +80,7 @@ export class DocumentService {
       throw new ValidationException(ErrorCode.E003);
     }
 
-    const state = await this.yjsDocumentService.getYDocState(documentId, false);
+    const state = await this.yjsDocumentService.getYDocState(documentId, isApp, isApp ? userId : undefined);
 
     if (!state) {
       throw new ValidationException(ErrorCode.E003);

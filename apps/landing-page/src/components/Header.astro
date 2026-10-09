@@ -3,10 +3,12 @@ import SandwormLogo from "../assets/sandworm.svg"
 
 const appUrl = import.meta.env.PUBLIC_APP_URL ?? 'http://localhost:8081'
 
+// solid: opaque full-width bar for text-heavy pages, so content never shows through the nav
+const { solid = false } = Astro.props
+
 const navLinks = [
   { name: "Explore", href: `${appUrl}/explore` },
   { name: "Bounties", href: `${appUrl}/bounties` },
-  { name: "Agents", href: "/agents" },
   { name: "MCP", href: "/mcp" },
   { name: "Documentation", href: "https://github.com/sand-worm-labs/sandworm-web", isExternal: true },
   { name: "Blog", href: "https://sandwormlabs.substack.com/", isExternal: true },
@@ -14,7 +16,12 @@ const navLinks = [
 ];
 ---
 
-<header class="fixed w-full lg:top-5 top-2 mx-auto left-0 right-0 z-99">
+<header
+  class:list={[
+    "fixed w-full mx-auto left-0 right-0 z-99",
+    solid ? "top-0 py-2 lg:py-3 bg-black border-b border-white/10" : "lg:top-5 top-2",
+  ]}
+>
   <div id="header-container" class="lg:w-[85%] w-full px-2 mx-auto rounded-xl transition-colors duration-300 ease-in-out ">
     <div class="px-3 flex justify-between items-center py-2.5">
       <!-- Logo -->
@@ -135,9 +142,9 @@ const navLinks = [
     const threshold = 50; // Adjust this value to change when the background appears
     
     if (scrollY > threshold) {
-      headerContainer?.classList.add("", "backdrop-blur-md");
+      headerContainer?.classList.add("bg-black/80", "backdrop-blur-md");
     } else {
-      headerContainer?.classList.remove("bg-[#00000050]", "backdrop-blur-md");
+      headerContainer?.classList.remove("bg-black/80", "backdrop-blur-md");
     }
     
     ticking = false;

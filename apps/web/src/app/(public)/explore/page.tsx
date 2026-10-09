@@ -15,10 +15,10 @@ export default async function PublicExplorePage() {
     await fetchInitialExploreData();
 
   return (
-    <div className="flex flex-col h-screen bg-base-100 font-body">
+    <div className="flex flex-col h-[100dvh] bg-base-100 font-body">
       <PublicExploreHeader />
       <main className="flex-1 min-w-0 overflow-y-auto bg-page-surface dark:text-white">
-        <div className="pt-5 px-8 pb-10">
+        <div className="pt-5 px-4 sm:px-8 pb-10">
           <Suspense fallback={null}>
             <ExploreClient
               initialDocuments={initialDocuments}

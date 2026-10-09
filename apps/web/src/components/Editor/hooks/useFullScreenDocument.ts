@@ -13,7 +13,9 @@ type UseFullScreenDocument = [
 // ⬢  use FullScreen Document
 // =====================================
 function useFullScreenDocument(documentId: string): UseFullScreenDocument {
-  const session = useSession({ redirectToLogin: true });
+  // Only reads the user id for a localStorage key. Visualization blocks call
+  // this on public notebooks too, so it must not bounce signed-out viewers.
+  const session = useSession({ redirectToLogin: false });
   const user = session?.user;
   const [isFullScreen, setIsFullScreen] = useLocalStorage(
     `sandworm-user-${user?.id}-doc-${documentId}-fullscreen`,

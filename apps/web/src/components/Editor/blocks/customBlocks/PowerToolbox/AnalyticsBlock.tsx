@@ -150,7 +150,11 @@ interface RunTooltipContentProps {
   hasResults: boolean;
 }
 
-const RunTooltipContent = ({ ref, isDirty, hasResults }: RunTooltipContentProps) => (
+const RunTooltipContent = ({
+  ref,
+  isDirty,
+  hasResults,
+}: RunTooltipContentProps) => (
   <div
     className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
     ref={ref}
@@ -329,7 +333,11 @@ function AnalyticsBlock(props: Props) {
     () =>
       status === "idle"
         ? (ref: React.Ref<HTMLButtonElement>) => (
-            <RunTooltipContent ref={ref} isDirty={isDirty} hasResults={hasResults} />
+            <RunTooltipContent
+              ref={ref}
+              isDirty={isDirty}
+              hasResults={hasResults}
+            />
           )
         : undefined,
     [status, isDirty, hasResults]
@@ -366,13 +374,13 @@ function AnalyticsBlock(props: Props) {
         <div
           className={clsx(
             "rounded-2xl overflow-hidden",
-            statusIsDisabled ? "bg-gray-100" : "bg-white dark:bg-header-surface",
+            statusIsDisabled ? "bg-gray-100" : "bg-white dark:bg-block-surface",
             props.hasMultipleTabs ? "rounded-tl-none" : ""
           )}
         >
           <div
             className={clsx(
-              "rounded-t-2xl dark:bg-header-surface border-b border-hover-border dark:border-border-dark"
+              "rounded-t-2xl dark:bg-block-surface border-b border-hover-border dark:border-border-dark"
             )}
             ref={d => {
               props.dragPreview?.(d);
@@ -464,14 +472,8 @@ function AnalyticsBlock(props: Props) {
                   <AnalyticsParamForm block={props.block} />
                 </fieldset>
               )}
-
-              {showStatus && (
-                <div
-                  className={clsx(
-                    "flex flex-col text-xs -mx-3 -mb-3 bg-inputBg dark:bg-header-surface border-t border-hover-border dark:border-border-dark",
-                    !inputsHidden && "mt-3"
-                  )}
-                >
+              {!resultsHidden && (hasResults || attrs.executedAt) && (
+                <div className="flex flex-col text-xs -mx-3 -mb-3 mt-3 bg-inputBg dark:bg-block-surface border-t border-hover-border dark:border-border-dark">
                   {Object.entries(attrs.inputs ?? {}).some(
                     ([, v]) => v !== "" && v !== null
                   ) && (
@@ -480,7 +482,11 @@ function AnalyticsBlock(props: Props) {
                         .filter(([, v]) => v !== "" && v !== null)
                         .slice(0, 4)
                         .map(([key, value]) => (
-                          <ParamSummaryPill key={key} label={key} value={value} />
+                          <ParamSummaryPill
+                            key={key}
+                            label={key}
+                            value={value}
+                          />
                         ))}
                     </div>
                   )}
@@ -493,7 +499,9 @@ function AnalyticsBlock(props: Props) {
                       envStatus={envStatus}
                       isDirty={isDirty}
                       isResultHidden={resultsHidden}
-                      onToggleResultHidden={() => setResultsHidden(prev => !prev)}
+                      onToggleResultHidden={() =>
+                        setResultsHidden(prev => !prev)
+                      }
                     />
                     {showDataframeActions && (
                       <div className="ml-auto">
@@ -587,7 +595,7 @@ function AnalyticsBlock(props: Props) {
                     status === "idle" &&
                     isDirty &&
                     hasResults,
-                  "bg-base-200 dark:bg-header-surface":
+                  "bg-base-200 dark:bg-block-surface":
                     !isRunButtonDisabled &&
                     !(status === "idle" && isDirty && hasResults) &&
                     (status === "idle" || status === "completed"),
@@ -629,7 +637,7 @@ function AnalyticsBlock(props: Props) {
             onClick={() => setIsSourceOpen(true)}
             aria-label="View tool source"
             title="View tool source"
-            className="rounded-[5px] border-hover-border border h-[24px] min-w-[24px] flex items-center justify-center bg-base-200 dark:bg-header-surface hover:bg-hover-bg hover:border-primary"
+            className="rounded-[5px] border-hover-border border h-[24px] min-w-[24px] flex items-center justify-center bg-base-200 dark:bg-block-surface hover:bg-hover-bg hover:border-primary"
           >
             <PiCode className="w-[13px] h-[13px] text-ink-navy" />
           </button>
@@ -639,7 +647,7 @@ function AnalyticsBlock(props: Props) {
           type="button"
           onClick={props.onDeleteBlock}
           aria-label="Delete block"
-          className="bg-[#FFDBDB] dark:bg-header-surface dark:border dark:border-hover-border rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+          className="bg-[#FFDBDB] dark:bg-block-surface dark:border dark:border-hover-border rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
         >
           <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
         </button>

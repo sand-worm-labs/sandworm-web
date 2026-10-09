@@ -41,7 +41,7 @@ function makeService(configValues: Record<string, unknown> = {}) {
   } as any;
   const configService = { get: jest.fn((key: string) => configValues[key]) } as any;
   const lockService = { acquireLock: jest.fn((_name: string, cb: () => Promise<unknown>) => cb()) } as any;
-  const eventEmitter = { emit: jest.fn() } as any;
+  const eventEmitter = { emit: jest.fn(), emitAsync: jest.fn().mockResolvedValue([]) } as any;
 
   const extension = makeExtension();
   (SandwormJupyterExtension as jest.Mock).mockImplementation(() => extension);
@@ -173,6 +173,29 @@ describe('JupyterService', () => {
       );
       const statuses = eventEmitter.emit.mock.calls.map((c: any[]) => c[1].status);
       expect(statuses).toEqual([EnvironmentStatus.STOPPING, EnvironmentStatus.STOPPED, EnvironmentStatus.RUNNING]);
+    });
+
+    it('announces the restart before it reports the environment as running, so sessions are dropped first', async () => {
+      const { service, eventEmitter } = makeService();
+      const order: string[] = [];
+      eventEmitter.emitAsync.mockImplementation(async (name: string) => {
+        order.push(name);
+        return [];
+      });
+      eventEmitter.emit.mockImplementation((_name: string, event: { status: EnvironmentStatus }) => {
+        order.push(event.status);
+      });
+      global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => [{ id: 'kernel-1' }] } as any);
+
+      await service.restart(WORKSPACE_ID);
+
+      expect(eventEmitter.emitAsync).toHaveBeenCalledWith(EventNames.KERNEL_RESTARTED, { workspaceId: WORKSPACE_ID });
+      expect(order).toEqual([
+        EnvironmentStatus.STOPPING,
+        EnvironmentStatus.STOPPED,
+        EventNames.KERNEL_RESTARTED,
+        EnvironmentStatus.RUNNING,
+      ]);
     });
 
     it('skips the kernel restart HTTP call when there is no active kernel', async () => {
