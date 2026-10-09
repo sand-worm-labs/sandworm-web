@@ -101,6 +101,9 @@ type Document {
   publishedAt: DateTime
   description: String
   tags: [String!]!
+
+  """Showcase metadata, when the notebook is part of the Showcase"""
+  showcase: JSON
   visibility: DocumentVisibility!
   isDataApp: Boolean!
   isSyncedWithYjs: Boolean!
@@ -271,6 +274,18 @@ type Profile {
   bio: String!
   image: String!
   following: Boolean!
+}
+
+type ShowcaseNotebook {
+  id: String!
+  slug: String!
+  title: String!
+  description: String
+  publishedAt: DateTime!
+
+  """official or community"""
+  author: String!
+  showcase: JSON!
 }
 
 type BountyWinner {
@@ -562,6 +577,16 @@ type Query {
   tags: [String!]!
 
   """
+  The official notebooks on the Showcase, newest first. Filter by category slug and by kind (category, case_study, working).
+  """
+  getShowcaseNotebooks(category: String, kind: String): [ShowcaseNotebook!]!
+
+  """
+  What the Showcase is laid out from: its taxonomy (groups, categories, chain order), chain colors and template sections.
+  """
+  getShowcaseConfig: JSON!
+
+  """
   Get the listed bounties, in display order. Pass featured to get only the ones shown on the home page.
   """
   getBounties(featured: Boolean): [Bounty!]!
@@ -767,6 +792,16 @@ type Mutation {
 
   """Delete a file from the workspace"""
   deleteFile(input: DeleteFileInput!): Boolean!
+
+  """
+  Set a notebook's Showcase metadata, or pass null to take it off the Showcase.
+  """
+  setDocumentShowcase(documentId: String!, workspaceId: String!, showcase: JSON): Boolean!
+
+  """
+  Ask for a protocol to be covered, ask for a report, or claim the case study about your protocol. Saved for the sales team.
+  """
+  submitShowcaseLead(input: JSON!): Boolean!
 
   """
   Create a bounty as a draft. It is listed once its reward is funded in escrow.

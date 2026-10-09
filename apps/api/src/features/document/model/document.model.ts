@@ -74,6 +74,9 @@ export class Document {
   @Field(() => [String])
   tags!: string[];
 
+  @Field(() => GraphQLJSON, { nullable: true, description: 'Showcase metadata, when the notebook is part of the Showcase' })
+  showcase!: Record<string, unknown> | null;
+
   @Field(() => DocumentVisibility)
   visibility: DocumentVisibility = DocumentVisibility.WORKSPACE;
 
@@ -135,6 +138,7 @@ export class Document {
     document.publishedAt = (entity as any).publishedAt ?? null;
     document.description = (entity as any).description ?? null;
     document.tags = (entity as any).tags ?? [];
+    document.showcase = entity.showcase ?? null;
     document.visibility = (entity as any).visibility ?? DocumentVisibility.WORKSPACE;
     document.isDataApp = (entity as any).isDataApp ?? false;
     document.isSyncedWithYjs = true;
