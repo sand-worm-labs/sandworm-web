@@ -24,18 +24,6 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type AuthPayload {
-  id: String!
-  token: String
-  user: User!
-  roles: JSON
-}
-
-"""
-The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
-"""
-scalar JSON
-
 type UserSetting {
   id: ID!
   userId: ID!
@@ -43,6 +31,18 @@ type UserSetting {
   statusText: String
   statusUpdatedAt: DateTime
   wallets: [JSON!]!
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type AuthPayload {
+  id: String!
+  token: String
+  user: User!
+  roles: JSON
 }
 
 type Message {
