@@ -1371,3 +1371,111 @@ export function isDataSourceStructureLoading(
       return false
   }
 }
+
+// ═══════════════════════════════════════════════
+// Showcase
+// Curated, official analysis. A notebook joins the Showcase by carrying this
+// metadata; the taxonomy (apps/web config) says which categories exist.
+// ═══════════════════════════════════════════════
+
+export const ShowcaseKind = z.enum(['category', 'case_study', 'working'])
+export type ShowcaseKind = z.infer<typeof ShowcaseKind>
+
+export const ShowcaseAuthor = z.enum(['official', 'community'])
+export type ShowcaseAuthor = z.infer<typeof ShowcaseAuthor>
+
+export const ShowcaseNotebookStatus = z.enum(['draft', 'published'])
+export type ShowcaseNotebookStatus = z.infer<typeof ShowcaseNotebookStatus>
+
+// A headline number. `cell` names the notebook cell the value is pulled from.
+export const ShowcaseHeroStat = z.object({
+  label: z.string().min(1).max(60),
+  value: z.string().min(1).max(40),
+  cell: z.string().max(120).optional(),
+})
+export type ShowcaseHeroStat = z.infer<typeof ShowcaseHeroStat>
+
+const showcaseSlug = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/).max(80)
+
+// Stored on the notebook. Who wrote it (official or community) and when it
+// was published are not stored here: the server works them out.
+export const NotebookShowcase = z
+  .object({
+    kind: ShowcaseKind,
+    category: showcaseSlug,
+    // Case studies only.
+    protocol: z.string().min(1).max(80).optional(),
+    chains: z.array(z.string().min(1).max(40)).max(20).default([]),
+    country: z.string().max(60).optional(),
+    status: ShowcaseNotebookStatus.default('draft'),
+    dataAsOf: z.string().max(40).optional(),
+    heroStats: z.array(ShowcaseHeroStat).max(4).default([]),
+    // Working notebooks and forks: the slug of the case study they belong to.
+    parentCaseStudy: z.string().max(200).optional(),
+  })
+  .refine(s => s.kind !== 'case_study' || !!s.protocol, {
+    message: 'A case study needs a protocol',
+    path: ['protocol'],
+  })
+export type NotebookShowcase = z.infer<typeof NotebookShowcase>
+
+// A Showcase notebook as the API returns it.
+export type ShowcaseNotebook = {
+  id: string
+  slug: string
+  title: string
+  description: string | null
+  publishedAt: string
+  author: ShowcaseAuthor
+  showcase: NotebookShowcase
+}
+
+// 'chains' holds one category per chain: a chain is a category of its own,
+// as well as a filter on the others.
+export const ShowcaseGroup = z.enum(['chains', 'money', 'trading', 'yield', 'infra', 'culture', 'rwa'])
+export type ShowcaseGroup = z.infer<typeof ShowcaseGroup>
+
+// One category in the taxonomy config. Adding an entry adds a category.
+export type ShowcaseTaxonomyEntry = {
+  group: ShowcaseGroup
+  slug: string
+  name: string
+  // The one question the category answers.
+  question: string
+  // Which metric spec in the semantic layer measures every protocol in it.
+  metricSpec: string
+  // Protocols we plan to cover, shown before any case study exists.
+  protocols?: string[]
+  // Chains the category lives on, shown before any notebook says so.
+  chains?: string[]
+}
+
+// live: has a published case study. building: has its category notebook but
+// no case study. request: in the taxonomy with no notebook at all.
+export type ShowcaseCategoryStatus = 'live' | 'building' | 'request'
+
+// coverage: cover this protocol. report: write a report for us. claim: this
+// case study is about our protocol, and we want to talk.
+export const ShowcaseLeadKind = z.enum(['coverage', 'report', 'claim'])
+export type ShowcaseLeadKind = z.infer<typeof ShowcaseLeadKind>
+
+// A request made from a Showcase page: it goes to the sales pipeline.
+export const ShowcaseLeadInput = z
+  .object({
+    kind: ShowcaseLeadKind,
+    category: showcaseSlug.optional(),
+    // A protocol name or a contract address.
+    protocol: z.string().min(1).max(200),
+    email: z.email().max(200).optional(),
+    company: z.string().max(200).optional(),
+    // Claims only: the case study being claimed, and the claimant's role there.
+    notebookSlug: z.string().max(200).optional(),
+    role: z.string().max(120).optional(),
+    // Where the visitor came from: utm_source, utm_medium, utm_campaign, ...
+    source: z.record(z.string().max(40), z.string().max(200)).optional(),
+  })
+  .refine(l => l.kind !== 'claim' || (!!l.email && !!l.notebookSlug), {
+    message: 'A claim needs a work email and the case study it is for',
+    path: ['email'],
+  })
+export type ShowcaseLeadInput = z.infer<typeof ShowcaseLeadInput>
