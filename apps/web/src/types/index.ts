@@ -7,6 +7,7 @@ import type {
   ShowcaseCategoryStatus,
   ShowcaseGroup,
   ShowcaseLeadKind,
+  ShowcaseNotebook,
   ShowcaseTaxonomyEntry,
 } from "@sandworm/types";
 
@@ -390,6 +391,13 @@ export type ShowcaseCategoryCard = ShowcaseTaxonomyEntry & {
   countries: string[];
   protocols: string[];
   caseStudyCount: number;
+};
+
+// A protocol inside a category, with every notebook written about it there.
+export type ShowcaseProject = {
+  name: string;
+  slug: string;
+  notebooks: ShowcaseNotebook[];
 };
 
 export type ShowcaseGroupFilter = ShowcaseGroup | "all";

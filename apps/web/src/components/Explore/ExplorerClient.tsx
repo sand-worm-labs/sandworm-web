@@ -15,11 +15,7 @@ import { EmptyQueryState } from "@/components/EmptyState/EmptyQueryState";
 import { SortControl, type SortOption } from "@/components/Explore/SortControl";
 import { FeaturedExploreSection } from "@/components/Explore/FeaturedExploreSection";
 import { ExploreListSkeleton } from "@/components/Explore/ExploreSkeletons";
-import {
-  BoardStat,
-  eyebrowClass,
-  SectionHero,
-} from "@/components/Showcase/BoardKit";
+import { eyebrowClass, SectionHero } from "@/components/Showcase/BoardKit";
 import type { ApiDocument } from "@/types";
 
 // =====================================
@@ -130,16 +126,6 @@ export function ExploreClient({
           eyebrow="Community · unverified"
           title="What everyone else is digging into."
           description="Notebooks published by the community. Nobody at Sandworm has checked them: fork one and run it yourself."
-          aside={
-            <dl className="flex gap-x-6">
-              <BoardStat label="Featured" count={initialFeatured.length} />
-              <BoardStat
-                label="On the board"
-                count={documents.length}
-                delay={90}
-              />
-            </dl>
-          }
         />
       </div>
 

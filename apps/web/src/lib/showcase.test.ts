@@ -9,6 +9,7 @@ import {
   filterCards,
   findCaseStudy,
   groupCounts,
+  projectsOf,
 } from "./showcase";
 import { readUtm, withUtm } from "./utm";
 
@@ -122,6 +123,27 @@ describe("case studies", () => {
     expect(caseStudyHref(paj)).toBe("/showcase/off-ramps/paj-cash");
     expect(findCaseStudy([paj], "off-ramps", "paj-cash")).toBe(paj);
     expect(findCaseStudy([paj], "dexes", "paj-cash")).toBeUndefined();
+  });
+});
+
+describe("projectsOf", () => {
+  it("groups a category's notebooks by protocol, case studies first", () => {
+    const working = notebook("paj-working", {
+      kind: "working",
+      protocol: "Paj Cash",
+    });
+    const projects = projectsOf([
+      working,
+      paj,
+      notebook("leaderboard", { kind: "category" }),
+    ]);
+
+    expect(projects).toHaveLength(1);
+    expect(projects[0]).toMatchObject({ name: "Paj Cash", slug: "paj-cash" });
+    expect(projects[0]?.notebooks.map(n => n.slug)).toEqual([
+      "just-paj-it",
+      "paj-working",
+    ]);
   });
 });
 

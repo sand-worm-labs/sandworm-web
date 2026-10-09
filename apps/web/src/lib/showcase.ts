@@ -7,6 +7,7 @@ import type {
   ShowcaseFilters,
   ShowcaseGroupFilter,
   ShowcaseNotebook,
+  ShowcaseProject,
   ShowcaseTaxonomy,
   ShowcaseTaxonomyEntry,
 } from "@/types";
@@ -73,6 +74,36 @@ export const findCaseStudy = (
   ofKind(notebooks, "case_study", category).find(
     n => slugify(n.showcase.protocol ?? n.slug) === protocol
   );
+
+// =====================================
+// ⬢  Projects
+// =====================================
+export const projectHref = (category: string, project: string) =>
+  `/showcase/${category}/${project}`;
+
+// The projects of a category: each protocol with a notebook about it, and
+// those notebooks, case studies first. Order follows the notebooks given.
+export function projectsOf(notebooks: ShowcaseNotebook[]): ShowcaseProject[] {
+  const projects = new Map<string, ShowcaseProject>();
+
+  notebooks.forEach(notebook => {
+    const name = notebook.showcase.protocol;
+    if (!name) return;
+    const slug = slugify(name);
+    const project = projects.get(slug) ?? { name, slug, notebooks: [] };
+    project.notebooks.push(notebook);
+    projects.set(slug, project);
+  });
+
+  const caseStudiesFirst = (a: ShowcaseNotebook, b: ShowcaseNotebook) =>
+    Number(b.showcase.kind === "case_study") -
+    Number(a.showcase.kind === "case_study");
+
+  return Array.from(projects.values()).map(project => ({
+    ...project,
+    notebooks: [...project.notebooks].sort(caseStudiesFirst),
+  }));
+}
 
 // =====================================
 // ⬢  Category cards

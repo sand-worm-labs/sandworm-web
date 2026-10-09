@@ -8,15 +8,14 @@ import {
 import { PublishedNotebook } from "@/components/Showcase/PublishedNotebook";
 import { eyebrowClass, gridBackdrop } from "@/components/Showcase/BoardKit";
 import { ShowcaseHeader } from "@/components/Showcase/ShowcaseHeader";
-import { ShowcaseLeadButton } from "@/components/Showcase/ShowcaseLeadButton";
 import {
-  CaseStudyCard,
+  ProjectCard,
   ShowcaseBreadcrumb,
   ShowcaseSection,
   ShowcaseStats,
 } from "@/components/Showcase/ShowcaseParts";
 import { OpenNotebookLink } from "@/components/Showcase/ShowcaseTracked";
-import { findCategory, groupLabel, ofKind } from "@/lib/showcase";
+import { findCategory, groupLabel, ofKind, projectsOf } from "@/lib/showcase";
 
 // =====================================
 // ⬢  Types
@@ -40,8 +39,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // ⬢  Page
 // =====================================
 // Page 2. A category is a notebook rendered in published mode (its metrics
-// and leaderboard are cells): this page adds the header above it and the
-// case studies and request form below.
+// and leaderboard are cells): this page adds the header above it, and below
+// it the category's projects and the request form.
 export default async function ShowcaseCategoryPage({ params }: Props) {
   const { taxonomy } = await fetchShowcaseConfig();
   const category = findCategory((await params).category, taxonomy);
@@ -49,7 +48,7 @@ export default async function ShowcaseCategoryPage({ params }: Props) {
 
   const notebooks = await fetchShowcaseNotebooks(category.slug);
   const categoryNotebook = ofKind(notebooks, "category")[0];
-  const caseStudies = ofKind(notebooks, "case_study");
+  const projects = projectsOf(notebooks);
 
   const header = (
     <section style={gridBackdrop}>
@@ -98,34 +97,17 @@ export default async function ShowcaseCategoryPage({ params }: Props) {
 
   const closing = (
     <div className="container mx-auto px-4 sm:px-8 pb-16">
-      <ShowcaseSection title="Case studies">
-        {caseStudies.length === 0 ? (
-          <p className="text-sm text-ink-400">
-            No case studies yet. Ask for the protocol you want covered below.
-          </p>
-        ) : (
-          <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {caseStudies.map(notebook => (
-              <li key={notebook.id}>
-                <CaseStudyCard notebook={notebook} />
+      {projects.length > 0 && (
+        <ShowcaseSection title={`Teams in ${category.name}`}>
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {projects.map(project => (
+              <li key={project.slug}>
+                <ProjectCard project={project} category={category.slug} />
               </li>
             ))}
           </ul>
-        )}
-      </ShowcaseSection>
-
-      <ShowcaseSection title="Request coverage">
-        <p className="max-w-2xl text-sm text-ink-400">
-          We rank only protocols we can attribute on-chain with confidence. If
-          yours is missing, tell us its name or contract address.
-        </p>
-        <ShowcaseLeadButton
-          className="mt-4"
-          target={{ kind: "coverage", category: category.slug }}
-        >
-          Request coverage
-        </ShowcaseLeadButton>
-      </ShowcaseSection>
+        </ShowcaseSection>
+      )}
     </div>
   );
 

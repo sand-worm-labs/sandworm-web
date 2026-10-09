@@ -7,7 +7,7 @@ import { ShowcaseIndex } from "@/components/Showcase/ShowcaseIndex";
 export const metadata = {
   title: "Showcase – Sandworm",
   description:
-    "Onchain analysis by category: off-ramps, stablecoins, DEXes, lending and more. Every number opens the notebook behind it.",
+    "Teams that use Sandworm, and teams we care about: what the chain shows about each, with the notebook behind every number.",
 };
 
 // Page 1 of the Showcase: an app page that only links to other pages.

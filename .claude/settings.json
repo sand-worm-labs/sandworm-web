@@ -63,7 +63,17 @@
       "Bash(timeout 120 google-chrome-stable --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1000 --virtual-time-budget=7000 --timeout=60000 --screenshot=/tmp/claude-1000/-home-daniel-development-sandworm-web/15602e42-c42c-4c4f-b607-a0f5955407b0/scratchpad/showcase3.png http://localhost:3000/showcase)",
       "Bash(git -C apps/landing-page rev-parse --show-toplevel)",
       "Bash(git check-ignore *)",
-      "Bash(git -C apps/landing-page status --short)"
+      "Bash(git -C apps/landing-page status --short)",
+      "Bash(npx typeorm-extension *)",
+      "Bash(timeout 240 npx env-cmd typeorm-extension seed:run -d src/data-source.ts --name src/seeds/1784100000000-showcase_seeder.ts)",
+      "Bash(curl -s -m 10 -X POST localhost:8003/api/graphql -H 'content-type: application/json' -d '{\"query\":\"{ getShowcaseNotebooks\\(category:\\\\\"dexes\\\\\"\\) { slug title showcase } }\"}')",
+      "Bash(NODE_OPTIONS=--max-old-space-size=2560 npx tsc --noEmit -p .)",
+      "Bash(timeout 150 npx vitest run src/lib)",
+      "Bash(pnpm build *)",
+      "Bash(curl -s -m 8 -X POST localhost:8003/api/graphql -H 'content-type: application/json' -d '{\"query\":\"{ getShowcaseNotebooks { slug } }\"}')",
+      "Bash(timeout 60 npx env-cmd node -e ' *)",
+      "Bash(timeout 60 npx env-cmd -- node -e ' *)",
+      "Bash(curl -s -m 5 -o /dev/null -w \"api health: %{http_code}\\\\n\" localhost:8003/api/graphql -X POST -H 'content-type: application/json' -d '{\"query\":\"{ getShowcaseConfig }\"}')"
     ],
     "additionalDirectories": [
       "/home/daniel/development/sandworm-web/apps/ai/src/services/notebook_title",

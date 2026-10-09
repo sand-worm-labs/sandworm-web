@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Tag } from "@/components/Tag";
@@ -12,21 +11,23 @@ import { gridBackdrop } from "@/components/Showcase/BoardKit";
 import { ShowcaseHeader } from "@/components/Showcase/ShowcaseHeader";
 import { ShowcaseLeadButton } from "@/components/Showcase/ShowcaseLeadButton";
 import {
-  CaseStudyCard,
+  NotebookCard,
+  ProjectCard,
   ShowcaseBreadcrumb,
   ShowcaseSection,
   ShowcaseStats,
+  StartAnalyzingLink,
 } from "@/components/Showcase/ShowcaseParts";
 import {
   OpenNotebookLink,
   TrackCaseStudyView,
 } from "@/components/Showcase/ShowcaseTracked";
 import {
-  categoryHref,
   findCaseStudy,
   findCategory,
   groupLabel,
-  ofKind,
+  projectsOf,
+  slugify,
 } from "@/lib/showcase";
 import type { ShowcaseLeadTarget } from "@/types";
 
@@ -74,8 +75,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // =====================================
 // ⬢  Page
 // =====================================
-// Page 3. A case study is a notebook rendered in published mode: this page
-// adds the hero above it and the calls to action below.
+// Page 3, a project's page. Its case study is a notebook rendered in
+// published mode: this page adds the hero above it, and below it the way on
+// ("Continue this research"), the project's other notebooks, and the rest of
+// the category.
 export default async function ShowcaseCaseStudyPage({ params }: Props) {
   const loaded = await loadCaseStudy(params);
   if (!loaded) notFound();
@@ -83,15 +86,18 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
   const { category, group, caseStudy, notebooks } = loaded;
   const { showcase } = caseStudy;
   const protocol = showcase.protocol ?? caseStudy.title;
-  const others = ofKind(notebooks, "case_study").filter(
+  const projects = projectsOf(notebooks);
+  const project = projects.find(p => p.slug === slugify(protocol));
+  const moreNotebooks = (project?.notebooks ?? []).filter(
     n => n.id !== caseStudy.id
   );
-  const lead = (kind: ShowcaseLeadTarget["kind"]): ShowcaseLeadTarget => ({
-    kind,
+  const otherProjects = projects.filter(p => p.slug !== project?.slug);
+  const claim: ShowcaseLeadTarget = {
+    kind: "claim",
     category: category.slug,
-    protocol: kind === "claim" ? protocol : undefined,
+    protocol,
     notebookSlug: caseStudy.slug,
-  });
+  };
 
   const hero = (
     <section className="bg-ink-navy text-white" style={gridBackdrop}>
@@ -100,7 +106,7 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
           category={category}
           group={group}
           protocol={protocol}
-          className="[&_ol]:text-white/60"
+          className="[&_ol]:text-white/60 [&_span]:!text-white"
         />
 
         <div className="mt-5 flex flex-wrap items-center gap-1.5">
@@ -126,11 +132,9 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
             category={category.slug}
             className="bg-white text-ink-navy hover:bg-white/90"
           >
-            Open the notebook
+            Continue this research
           </OpenNotebookLink>
-          <ShowcaseLeadButton variant="ghost" target={lead("report")}>
-            Get this for your protocol
-          </ShowcaseLeadButton>
+          <StartAnalyzingLink variant="ghost" />
         </div>
 
         <p className="mt-4 font-body-mono text-[11px] uppercase tracking-[0.12em] text-white/50">
@@ -138,56 +142,73 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
           {showcase.dataAsOf ? ` · Data as of ${showcase.dataAsOf}` : ""}
         </p>
 
-        <div className="mt-8">
-          <ShowcaseStats stats={showcase.heroStats} dark />
-        </div>
+        {showcase.heroStats.length > 0 && (
+          <div className="mt-8">
+            <ShowcaseStats stats={showcase.heroStats} dark />
+          </div>
+        )}
       </div>
     </section>
   );
 
   const closing = (
     <div className="container mx-auto px-4 sm:px-8 pb-16">
-      <section className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-dashed border-border-secondary dark:border-border-tertiary p-5">
+      <section className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-base-100 border border-border-secondary dark:border-border-tertiary p-5">
         <div className="min-w-0">
           <h2 className="text-base font-semibold text-ink-100 dark:text-white">
-            Work at {protocol}?
+            This page is a notebook
           </h2>
           <p className="mt-1 max-w-xl text-sm text-ink-400">
-            Claim this page to correct anything we got wrong, add context, and
-            get the numbers behind it for your team.
+            Open the notebook behind this page: run it again, change the
+            question, and keep asking.
           </p>
         </div>
-        <ShowcaseLeadButton variant="outline" target={lead("claim")}>
-          Claim this page
-        </ShowcaseLeadButton>
+        <OpenNotebookLink
+          slug={caseStudy.slug}
+          category={category.slug}
+          className="bg-primary text-white hover:bg-primary-710"
+        >
+          Continue this research
+        </OpenNotebookLink>
       </section>
 
-      {others.length > 0 && (
-        <ShowcaseSection title={`More in ${category.name}`}>
-          <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {others.map(notebook => (
+      {moreNotebooks.length > 0 && (
+        <ShowcaseSection title={`More on ${protocol}`}>
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {moreNotebooks.map(notebook => (
               <li key={notebook.id}>
-                <CaseStudyCard notebook={notebook} />
+                <NotebookCard notebook={notebook} />
               </li>
             ))}
           </ul>
         </ShowcaseSection>
       )}
 
-      <section className="mt-10 rounded-xl bg-base-100 border border-border-secondary dark:border-border-tertiary p-6">
-        <h2 className="text-lg font-semibold text-ink-100 dark:text-white">
-          Run a protocol? Get this page for yours.
-        </h2>
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          <ShowcaseLeadButton target={lead("report")}>
-            Request a report
+      {otherProjects.length > 0 && (
+        <ShowcaseSection title={`More in ${category.name}`}>
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {otherProjects.map(other => (
+              <li key={other.slug}>
+                <ProjectCard project={other} category={category.slug} />
+              </li>
+            ))}
+          </ul>
+        </ShowcaseSection>
+      )}
+
+      <section className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-dashed border-border-secondary dark:border-border-tertiary p-5">
+        <p className="min-w-0 max-w-xl text-sm text-ink-400">
+          <span className="font-semibold text-ink-100 dark:text-white">
+            Work at {protocol}?
+          </span>{" "}
+          Claim this page to correct anything and get the numbers for your team.
+          On another team? Look at your own protocol the same way.
+        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <ShowcaseLeadButton variant="outline" target={claim}>
+            Claim this page
           </ShowcaseLeadButton>
-          <Link
-            href={categoryHref(category.slug)}
-            className="h-9 inline-flex items-center rounded-lg px-4 text-sm font-medium border-[1.5px] border-primary text-primary dark:text-primary-tint-75 dark:border-hover-border"
-          >
-            Compare {category.name.toLowerCase()}
-          </Link>
+          <StartAnalyzingLink />
         </div>
       </section>
     </div>

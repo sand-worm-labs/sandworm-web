@@ -19,6 +19,7 @@ import { ChainColors, ChainIcon } from "./ChainIcon";
 import { ShowcaseGrid } from "./ShowcaseGrid";
 import { ShowcaseHeader } from "./ShowcaseHeader";
 import { ShowcaseLeadModal } from "./ShowcaseLeadModal";
+import { StartAnalyzingLink } from "./ShowcaseParts";
 
 // =====================================
 // ⬢  Class names
@@ -163,10 +164,16 @@ export function ShowcaseIndex({
   const [leadTarget, setLeadTarget] = useState<ShowcaseLeadTarget | null>(null);
 
   // Derived
+  // Only categories with something to open are shown. One that is in the
+  // taxonomy but has no notebook yet stays off the page.
   const cards = useMemo(
-    () => buildCategoryCards(notebooks, taxonomy),
+    () =>
+      buildCategoryCards(notebooks, taxonomy).filter(
+        card => card.status !== "request"
+      ),
     [notebooks, taxonomy]
   );
+  const isEmpty = cards.length === 0;
   const chains = useMemo(
     () => chainsPresent(cards, taxonomy),
     [cards, taxonomy]
@@ -182,50 +189,55 @@ export function ShowcaseIndex({
     <div className="mx-auto w-full max-w-[1320px] px-4 sm:px-8 pb-24">
       <SectionHero
         compact={embedded}
-        eyebrow="Showcase · every onchain category"
-        title={
-          <>
-            Analysis you can&apos;t find anywhere else, and that you can keep
-            asking.
-          </>
-        }
-        description="Every number here opens the notebook behind it: the query, the data and the chart, ready to run again."
-        aside={<Summary cards={cards} />}
+        eyebrow="Showcase"
+        title="Teams that use Sandworm, and teams we care about."
+        description="What the chain shows about each of them, with the notebook behind every number."
+        aside={isEmpty ? undefined : <Summary cards={cards} />}
       />
 
-      <div className="sticky top-0 z-10 -mx-4 sm:-mx-8 px-4 sm:px-8 py-3 flex items-center justify-between gap-4 bg-page-surface/90 backdrop-blur border-b border-border-secondary dark:border-border-tertiary">
-        <GroupPills
-          taxonomy={taxonomy}
-          active={filters.group}
-          counts={counts}
-          onChange={setGroup}
-        />
-        <div className="flex items-center gap-3 min-w-0">
-          {embedded && (
-            <input
-              type="search"
-              value={filters.search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search categories, protocols, chains"
-              aria-label="Search categories, protocols, chains"
-              className="hidden sm:block h-8 w-56 rounded-full px-3 text-[13px] bg-base-100 border border-border-secondary dark:border-border-tertiary text-ink-100 dark:text-white placeholder:text-ink-300 outline-none focus:border-primary"
-            />
-          )}
-          <ChainToggles
-            chains={chains}
-            active={filters.chain}
-            onChange={setChain}
-          />
-        </div>
-      </div>
+      {isEmpty && <StartAnalyzingLink />}
 
-      <div className="mt-8">
-        <ShowcaseGrid
-          cards={visible}
-          taxonomy={taxonomy}
-          onRequest={onRequest}
-        />
-      </div>
+      {!isEmpty && (
+        <>
+          <div className="sticky top-0 z-10 -mx-4 sm:-mx-8 px-4 sm:px-8 py-3 flex items-center justify-between gap-4 bg-page-surface/90 backdrop-blur border-b border-border-secondary dark:border-border-tertiary">
+            <GroupPills
+              taxonomy={taxonomy}
+              active={filters.group}
+              counts={counts}
+              onChange={setGroup}
+            />
+            <div className="flex items-center gap-3 min-w-0">
+              {embedded && (
+                <input
+                  type="search"
+                  value={filters.search}
+                  onChange={e => setSearch(e.target.value)}
+                  placeholder="Search categories, protocols, chains"
+                  aria-label="Search categories, protocols, chains"
+                  className="hidden sm:block h-8 w-56 rounded-full px-3 text-[13px] bg-base-100 border border-border-secondary dark:border-border-tertiary text-ink-100 dark:text-white placeholder:text-ink-300 outline-none focus:border-primary"
+                />
+              )}
+              <ChainToggles
+                chains={chains}
+                active={filters.chain}
+                onChange={setChain}
+              />
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <ShowcaseGrid
+              cards={visible}
+              taxonomy={taxonomy}
+              onRequest={onRequest}
+            />
+          </div>
+
+          <p className="mt-12 text-[13px] text-ink-400">
+            Don&apos;t see your protocol? <StartAnalyzingLink variant="text" />
+          </p>
+        </>
+      )}
     </div>
   );
 

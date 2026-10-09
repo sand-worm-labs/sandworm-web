@@ -4,11 +4,17 @@ import Link from "next/link";
 
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { Tag } from "@/components/Tag";
-import { caseStudyHref, categoryHref } from "@/lib/showcase";
+import {
+  caseStudyHref,
+  categoryHref,
+  notebookHref,
+  projectHref,
+} from "@/lib/showcase";
 import { cn } from "@/lib/utils";
 import type {
   ShowcaseHeroStat,
   ShowcaseNotebook,
+  ShowcaseProject,
   ShowcaseTaxonomyEntry,
 } from "@/types";
 
@@ -145,5 +151,106 @@ export function ShowcaseSection({
       </h2>
       <div className="mt-4">{children}</div>
     </section>
+  );
+}
+
+// =====================================
+// ⬢  Project card
+// =====================================
+// A protocol in a category. It opens the project's page, where its notebooks
+// are.
+export function ProjectCard({
+  project,
+  category,
+}: {
+  project: ShowcaseProject;
+  category: string;
+}) {
+  const count = project.notebooks.length;
+
+  return (
+    <Link
+      href={projectHref(category, project.slug)}
+      className="group flex items-center justify-between gap-4 h-full rounded-xl px-4 py-3.5 bg-base-100 border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
+    >
+      <span className="min-w-0">
+        <span className="block truncate text-[15px] font-semibold text-ink-100 dark:text-white group-hover:text-primary dark:group-hover:text-primary-tint-75">
+          {project.name}
+        </span>
+        <span className="mt-0.5 block text-xs text-ink-400">
+          {count} {count === 1 ? "notebook" : "notebooks"}
+        </span>
+      </span>
+      <span
+        aria-hidden="true"
+        className="text-ink-300 transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
+      >
+        →
+      </span>
+    </Link>
+  );
+}
+
+// =====================================
+// ⬢  Notebook card
+// =====================================
+const KIND_LABEL: Record<ShowcaseNotebook["showcase"]["kind"], string> = {
+  case_study: "Case study",
+  working: "Notebook",
+  category: "Leaderboard",
+};
+
+// One notebook, opened as a notebook.
+export function NotebookCard({ notebook }: { notebook: ShowcaseNotebook }) {
+  return (
+    <Link
+      href={notebookHref(notebook.slug)}
+      className="group flex flex-col h-full rounded-xl p-4 bg-base-100 border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
+    >
+      <span className="font-body-mono text-[10px] uppercase tracking-[0.16em] text-ink-300">
+        {KIND_LABEL[notebook.showcase.kind]}
+      </span>
+      <span className="mt-2 text-[15px] font-semibold leading-5 text-ink-100 dark:text-white group-hover:text-primary dark:group-hover:text-primary-tint-75">
+        {notebook.title}
+      </span>
+      {notebook.description && (
+        <span className="mt-1.5 text-[13px] leading-5 text-ink-400 line-clamp-2">
+          {notebook.description}
+        </span>
+      )}
+    </Link>
+  );
+}
+
+// =====================================
+// ⬢  Start analyzing
+// =====================================
+const START_VARIANT = {
+  primary: "bg-primary text-white hover:bg-primary-710",
+  // For the dark project hero.
+  ghost: "border border-white/25 text-white hover:bg-white/10",
+  text: "h-auto px-0 text-primary dark:text-primary-tint-75 hover:underline",
+};
+
+// The way into the product from a Showcase page. We do not run analysis for
+// protocols on request: they sign up and analyze their own.
+export function StartAnalyzingLink({
+  variant = "primary",
+  className,
+}: {
+  variant?: keyof typeof START_VARIANT;
+  className?: string;
+}) {
+  return (
+    <Link
+      href="/signup"
+      className={cn(
+        "h-9 inline-flex items-center rounded-lg px-4 text-sm font-medium font-body transition-colors",
+        START_VARIANT[variant],
+        className
+      )}
+    >
+      Start analyzing your protocol
+    </Link>
   );
 }

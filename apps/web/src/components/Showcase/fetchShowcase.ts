@@ -1,12 +1,12 @@
-import { gql } from "@apollo/client";
-
-import { getServerClient } from "@/graphql/server";
 import type { ShowcaseConfig, ShowcaseNotebook } from "@/types";
 
 // =====================================
-// ⬢  Query
+// ⬢  Constants
 // =====================================
-const SHOWCASE_NOTEBOOKS = gql`
+const INTERNAL_API_URL =
+  process.env.INTERNAL_API_URL ?? "http://localhost:8003";
+
+const SHOWCASE_NOTEBOOKS = `
   query GetShowcaseNotebooks($category: String, $kind: String) {
     getShowcaseNotebooks(category: $category, kind: $kind) {
       id
@@ -23,26 +23,33 @@ const SHOWCASE_NOTEBOOKS = gql`
 // =====================================
 // ⬢  Fetch
 // =====================================
-// The official notebooks on the Showcase. A failed fetch gives an empty
-// list, so the index still shows every category (as "Request") instead of
-// an error page.
+// The official notebooks on the Showcase. They are public, so they are asked
+// for without the visitor's cookies, each call on its own: a page and its
+// metadata ask at the same moment, and must not share a client that cancels
+// one request when the next begins. A failed fetch gives an empty list
+// instead of an error page.
 export async function fetchShowcaseNotebooks(
   category?: string
 ): Promise<ShowcaseNotebook[]> {
   try {
-    const client = await getServerClient();
-    const { data } = await client.query<{
-      getShowcaseNotebooks: ShowcaseNotebook[];
-    }>({ query: SHOWCASE_NOTEBOOKS, variables: { category } });
+    const res = await fetch(`${INTERNAL_API_URL}/api/graphql`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: SHOWCASE_NOTEBOOKS,
+        variables: { category },
+      }),
+      cache: "no-store",
+    });
+    const { data } = (await res.json()) as {
+      data?: { getShowcaseNotebooks?: ShowcaseNotebook[] };
+    };
     return data?.getShowcaseNotebooks ?? [];
   } catch (err) {
     console.error("[showcase] fetch failed:", err);
     return [];
   }
 }
-
-const INTERNAL_API_URL =
-  process.env.INTERNAL_API_URL ?? "http://localhost:8003";
 
 const EMPTY_CONFIG: ShowcaseConfig = {
   taxonomy: { groups: [], chainOrder: [], categories: [] },
