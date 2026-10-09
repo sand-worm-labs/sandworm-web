@@ -468,7 +468,8 @@ function PublicTabbedBlock(props: PublicTabbedBlockProps) {
   if (tabRefs.length === 0) return null;
 
   return (
-    <div className="flex-grow max-w-full">
+    // The id lets a contents list scroll to this block (see PublishedNotebook).
+    <div id={`block-group-${props.id}`} className="flex-grow max-w-full">
       {hasMultipleTabs && !props.isPDF && (
         <div className="print:hidden flex overflow-x-auto no-scrollbar scroll-smooth">
           {tabRefs.map((tabRef, i) => (
@@ -539,7 +540,10 @@ interface PublicEditorInnerProps {
   isSyncing: boolean;
   isQueryView: boolean;
   hideHero?: boolean;
+  hideTitle?: boolean;
   titleAction?: ReactNode;
+  header?: ReactNode;
+  footer?: ReactNode;
   scrollViewRef: React.MutableRefObject<HTMLDivElement | null>;
 }
 
@@ -620,6 +624,7 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
           "overflow-y-auto overflow-x-hidden px-0 sm:px-5": !props.isPDF,
         })}
       >
+        {props.header && <div className="sm:-mx-5">{props.header}</div>}
         <div
           className={clsx(
             "flex justify-center w-full",
@@ -633,7 +638,12 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
               props.isFullScreen ? "w-full" : publicWidthClasses
             )}
           >
-            <div className={!props.isPDF ? "pt-12 pb-6" : ""}>
+            <div
+              className={clsx(
+                !props.isPDF && "pt-12 pb-6",
+                props.hideTitle && "hidden"
+              )}
+            >
               {!props.isPDF && !props.hideHero && (
                 <NotebookHeroTop
                   document={props.document}
@@ -652,7 +662,8 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
                     />
                   </div>
                   {!props.isPDF && (
-                    <div className="sm:mt-2">
+                    <div className="sm:mt-2 flex flex-wrap items-center gap-2">
+                      {props.titleAction}
                       <NotebookActions
                         document={props.document}
                         isAuthenticated={isAuthenticated}
@@ -677,9 +688,10 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
               <div className="flex flex-col gap-y-12">{domBlocks}</div>
             )}
 
-            {!props.isPDF && <div className="pb-20" />}
+            {!props.isPDF && !props.footer && <div className="pb-20" />}
           </div>
         </div>
+        {props.footer && <div className="sm:-mx-5">{props.footer}</div>}
       </OverlayScrollbarsComponent>
     </div>
   );
@@ -707,8 +719,14 @@ export interface PublicEditorProps {
   isQueryView?: boolean;
   // Drops the public page's author, favorite and fork header.
   hideHero?: boolean;
+  // Drops the notebook's own title, for pages that show it in their header.
+  hideTitle?: boolean;
   // Sits to the right of the title, where the editor has its Run button.
   titleAction?: ReactNode;
+  // Full-width content above and below the notebook, inside its scroll area,
+  // so a page built around a notebook scrolls as one.
+  header?: ReactNode;
+  footer?: ReactNode;
   children?: ReactNode;
 }
 

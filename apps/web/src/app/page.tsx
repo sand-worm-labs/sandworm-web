@@ -15,7 +15,7 @@ export default function RootPage() {
     if (isAuthenticated) {
       router.replace("/workspace");
     } else {
-      router.replace("/explore");
+      router.replace("/showcase");
     }
   }, [isAuthenticated, loading, router]);
 
