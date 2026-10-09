@@ -34,6 +34,8 @@ export type RowSummary = {
   y: number;
   height: number;
   heading?: string;
+  // The heading's own id, to change its text with edit_header.
+  headingId?: string;
   tiles?: TileSummary[];
 };
 
@@ -137,6 +139,7 @@ export function describeDashboard(ydoc: Y.Doc): DashboardLayout {
 
     if (block.getAttribute('type') === BlockType.DashboardHeader) {
       row.heading = String(attr(block, 'content') ?? '');
+      row.headingId = item.blockId;
       continue;
     }
 

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import type * as Y from 'yjs';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {
   BlockType,
   addDashboardOnlyBlock,
@@ -10,6 +11,7 @@ import {
   yDashboardToRecord,
   type DashboardItem,
 } from '@sandworm/editor';
+import type { EditHeadingDto } from './dto/edit-heading.dto';
 import type { SetDashboardDto } from './dto/set-dashboard.dto';
 import { cellInfo, describeDashboard, notebookCellIds, type DashboardLayout } from './dashboard/layout-summary';
 import { NotebookDocService, type NotebookRef } from './notebook-doc.service';
@@ -20,6 +22,19 @@ export class NotebookDashboardService {
 
   getDashboard(ref: NotebookRef): Promise<DashboardLayout> {
     return this.docs.use(ref, 'member', ({ ydoc }) => describeDashboard(ydoc));
+  }
+
+  // Changes the text of one dashboard heading, leaving the layout as it is.
+  editHeading(ref: NotebookRef, headingId: string, { content }: EditHeadingDto): Promise<DashboardLayout> {
+    return this.docs.use(ref, 'editor', ({ ydoc }) => {
+      const block = getBlocks(ydoc).get(headingId);
+      if (!block || block.getAttribute('type') !== BlockType.DashboardHeader) {
+        throw new NotFoundException(`${headingId} is not a dashboard heading. Read the dashboard with get_dashboard to see each heading's headingId.`);
+      }
+      // A heading's text lives in its `content` attribute, which the shared block type does not list.
+      ydoc.transact(() => (block as Y.XmlElement<Record<string, string>>).setAttribute('content', content));
+      return describeDashboard(ydoc);
+    });
   }
 
   // Replaces the dashboard. A cell left out of the layout leaves the dashboard
