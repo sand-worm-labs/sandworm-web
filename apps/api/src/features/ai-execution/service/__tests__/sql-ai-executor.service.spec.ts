@@ -14,7 +14,8 @@ jest.mock('@/features/collaboration/yjs/yjs-document.service', () => ({
 }));
 
 import * as Y from 'yjs';
-import { AITasks, getBlocks, getSQLAISuggestions, getSQLBlockEditWithAIPrompt, makeSQLBlock } from '@sandworm/editor';
+import { AITasks, getBlocks, getSQLAISuggestions, getSQLAttributes, getSQLBlockEditWithAIPrompt, makeSQLBlock } from '@sandworm/editor';
+import { writeSource } from './mcp-write';
 import { SqlAiExecutorService } from '../sql-ai-executor.service';
 
 function makeService(ydoc: Y.Doc) {
@@ -28,9 +29,15 @@ function makeService(ydoc: Y.Doc) {
     sendMessage: jest.fn().mockResolvedValue(undefined),
     createChat: jest.fn().mockResolvedValue({ id: 'chat-new' }),
   } as any;
+  // The AI service has the MCP server change the cell, so the fake does the same.
+  const changeCell = (text: string) => async (_ctx: unknown, blockId: string) => {
+    const blocks = getBlocks(ydoc);
+    writeSource(getSQLAttributes(blocks.get(blockId) as any, blocks).source, text);
+    return { cell_id: blockId, updated: true };
+  };
   const sqlGeneratorService = {
-    edit: jest.fn().mockResolvedValue({ code: 'select 1' }),
-    fix: jest.fn().mockResolvedValue({ code: 'select 2' }),
+    edit: jest.fn().mockImplementation(changeCell('select 1')),
+    fix: jest.fn().mockImplementation(changeCell('select 2')),
   } as any;
   const workspaceService = {
     getWorkspaceById: jest.fn().mockResolvedValue({ id: 'ws-1', assistantModel: 'gpt' }),
@@ -63,7 +70,7 @@ function makeDocWithSQLBlock(source: string, editWithAIPrompt: string): { ydoc: 
 
 describe('SqlAiExecutorService', () => {
   describe('editAiSql', () => {
-    it('creates a new chat, generates edited SQL, and applies it as an AI suggestion', async () => {
+    it('creates a new chat and has the AI service change the cell directly', async () => {
       const { ydoc, blockId } = makeDocWithSQLBlock('select old', 'add a filter');
       const { service, chatService, sqlGeneratorService, eventEmitter } = makeService(ydoc);
 
@@ -72,12 +79,15 @@ describe('SqlAiExecutorService', () => {
       expect(chatService.createChat).toHaveBeenCalledWith('user-1', expect.objectContaining({ title: 'SQL Edit' }));
       expect(sqlGeneratorService.edit).toHaveBeenCalledWith(
         expect.objectContaining({ chat_id: 'chat-new', document_id: 'doc-1' }),
+        blockId,
         expect.stringContaining('add a filter'),
       );
       expect(result).toEqual({ result: 'select 1', chatId: 'chat-new' });
 
       const block = getBlocks(ydoc).get(blockId) as any;
-      expect(getSQLAISuggestions(block)?.toString()).toBe('select 1');
+      // written by the MCP server, not left as a suggestion to accept
+      expect(getSQLAttributes(block, getBlocks(ydoc)).source.toString()).toBe('select 1');
+      expect(getSQLAISuggestions(block)).toBeNull();
       expect(eventEmitter.emit).toHaveBeenCalledWith('block.action', expect.objectContaining({ action: 'edited' }));
     });
 
@@ -122,19 +132,21 @@ describe('SqlAiExecutorService', () => {
       expect(tasks[0]?.getCompleteStatus()).toBe('error');
     });
 
-    it('does not apply the suggestion when the task is aborted mid-flight', async () => {
+    it('stops reporting success when the task is aborted mid-flight', async () => {
       const { ydoc, blockId } = makeDocWithSQLBlock('select old', 'change it');
       const { service, sqlGeneratorService, eventEmitter } = makeService(ydoc);
 
       sqlGeneratorService.edit.mockImplementation(async () => {
         const task = AITasks.fromYjs(ydoc).getBlockTasks(blockId, 'edit-sql')[0];
         task.setAborting();
-        return { code: 'should-not-apply' };
+        writeSource(getSQLAttributes(getBlocks(ydoc).get(blockId) as any, getBlocks(ydoc)).source, 'applied-already');
+        return { cell_id: blockId, updated: true };
       });
 
       const result = await service.editAiSql('doc-1', 'ws-1', blockId, 'user-1');
 
-      expect(result.result).toBe('should-not-apply');
+      // the edit was already made by the time the stop arrived
+      expect(result.result).toBe('applied-already');
       const block = getBlocks(ydoc).get(blockId) as any;
       expect(getSQLAISuggestions(block)).toBeNull();
       expect(eventEmitter.emit).not.toHaveBeenCalledWith('block.action', expect.anything());
@@ -142,7 +154,7 @@ describe('SqlAiExecutorService', () => {
   });
 
   describe('fixAiSql', () => {
-    it('generates a fix from a syntax-error result and applies it as an AI suggestion, emitting created then edited', async () => {
+    it('has the AI service fix the cell from a syntax-error result, emitting created then edited', async () => {
       const ydoc = new Y.Doc();
       const blocks = getBlocks(ydoc);
       const block = makeSQLBlock('block-1', blocks, { source: 'select *' });
@@ -157,6 +169,7 @@ describe('SqlAiExecutorService', () => {
       expect(chatService.createChat).toHaveBeenCalledWith('user-1', expect.objectContaining({ title: 'SQL Fix' }));
       expect(sqlGeneratorService.fix).toHaveBeenCalledWith(
         expect.objectContaining({ document_id: 'doc-1' }),
+        'block-1',
         expect.stringContaining('unexpected token'),
       );
       expect(result).toEqual({ result: 'select 2', chatId: 'chat-new' });
