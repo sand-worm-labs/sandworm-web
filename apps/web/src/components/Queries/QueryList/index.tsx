@@ -5,6 +5,7 @@ import Image from "next/image";
 import type { QueryPagination, ApiDocument } from "@/types";
 import { ExploreCard } from "@/components/Explore/ExploreCard";
 import { ExploreListLoadMoreSkeleton } from "@/components/Explore/ExploreSkeletons";
+import { boardClass, boardHeadClass } from "@/components/Showcase/BoardKit";
 
 interface IQueryListProps {
   documents: ApiDocument[] | null;
@@ -12,7 +13,7 @@ interface IQueryListProps {
   loadingMore?: boolean;
 }
 
-const COLUMN_HEADERS = ["Username", "Title", "Tags", "Actions"] as const;
+const COLUMN_HEADERS = ["Author", "Notebook", "Tags", "Stars · Forks"] as const;
 
 export const QueryList: React.FC<IQueryListProps> = ({
   documents,
@@ -31,17 +32,17 @@ export const QueryList: React.FC<IQueryListProps> = ({
 
   return (
     <div className="mb-16 h-full justify-between flex flex-col">
-      <div className="mb-8 my-6 overflow-x-auto border border-border-secondary dark:border-border-tertiary rounded-xl">
+      <div className={`mb-8 overflow-x-auto ${boardClass}`}>
         <table className="block md:table w-full border-collapse">
-          <thead className="hidden md:table-header-group border-b border-border-secondary dark:border-border-tertiary">
+          <thead className={`hidden md:table-header-group ${boardHeadClass}`}>
             <tr>
               {COLUMN_HEADERS.map(header => (
                 <th
                   key={header}
                   className={
-                    header === "Actions"
-                      ? "text-right p-4 text-xs font-bold text-ink-400 uppercase"
-                      : "text-left p-4 text-xs font-bold text-ink-400 uppercase"
+                    header === COLUMN_HEADERS[3]
+                      ? "text-right px-4 py-2.5 font-normal"
+                      : "text-left px-4 py-2.5 font-normal"
                   }
                 >
                   {header}

@@ -11,9 +11,9 @@ export const EXPLORE_PAGE_SIZE = 20;
 const FEATURED_LIMIT = 4;
 
 export const exploreMetadata = {
-  title: "Explore Queries – Sandworm",
+  title: "Community – Sandworm",
   description:
-    "Browse public onchain queries from the community. Discover insights across Sui, Base, Ethereum, Optimism and more.",
+    "Notebooks published by the Sandworm community. Unverified: fork one and check it for yourself.",
 };
 
 export async function fetchInitialExploreData() {

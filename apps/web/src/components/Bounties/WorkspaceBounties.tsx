@@ -165,6 +165,7 @@ export const WorkspaceBounties = () => {
   return (
     <>
       <BountiesBoard
+        compact
         renderActions={renderActions}
         detailHref={detailHref}
         headerAction={

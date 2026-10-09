@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 import { ExploreClient } from "@/components/Explore/ExplorerClient";
-import { PublicExploreHeader } from "@/components/Explore/PublicExploreHeader";
+import { ShowcaseHeader } from "@/components/Showcase/ShowcaseHeader";
 import {
   EXPLORE_PAGE_SIZE,
   exploreMetadata,
@@ -16,7 +16,7 @@ export default async function PublicExplorePage() {
 
   return (
     <div className="flex flex-col h-[100dvh] bg-base-100 font-body">
-      <PublicExploreHeader />
+      <ShowcaseHeader active="community" />
       <main className="flex-1 min-w-0 overflow-y-auto bg-page-surface dark:text-white">
         <div className="pt-5 px-4 sm:px-8 pb-10">
           <Suspense fallback={null}>

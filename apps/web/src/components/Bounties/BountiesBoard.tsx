@@ -4,9 +4,10 @@ import { useState } from "react";
 
 import { useGetBountiesQuery } from "@/generated/graphql";
 import {
-  segmentedTabClass,
-  segmentedTabsClass,
-} from "@/components/SegmentedTabs";
+  BoardStat,
+  SectionHero,
+  toggleClass,
+} from "@/components/Showcase/BoardKit";
 import { ConnectWalletButton } from "@/web3/components/ConnectWalletButton";
 
 import type { BountyRef } from "./bounties";
@@ -16,6 +17,8 @@ interface BountiesBoardProps {
   renderActions: (bounty: BountyRef) => React.ReactNode;
   detailHref: (slug: string) => string;
   headerAction?: React.ReactNode;
+  // A smaller headline, for the board shown inside a workspace.
+  compact?: boolean;
   children?: React.ReactNode;
 }
 
@@ -23,6 +26,7 @@ export const BountiesBoard = ({
   renderActions,
   detailHref,
   headerAction,
+  compact = false,
   children,
 }: BountiesBoardProps) => {
   const [type, setType] = useState("All");
@@ -30,29 +34,33 @@ export const BountiesBoard = ({
   const all = data?.getBounties ?? [];
   const types = Array.from(new Set(all.map(b => b.type)));
   const bounties = all.filter(b => type === "All" || b.type === type);
+  const open = all.filter(b => b.status === "open").length;
 
   return (
     <div className="container mx-auto font-body">
-      <div className="flex items-start justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-xl font-bold text-ink-100 dark:text-white mt-4">
-            Bounties
-          </h1>
-          <p className="text-ink-200 dark:text-placeholder-muted text-sm mt-1">
-            Answer a sponsor&apos;s question with a notebook and compete for the
-            reward.
-          </p>
-        </div>
-        <div className="flex shrink-0 items-start gap-3 pt-6">
-          <ConnectWalletButton />
-          {headerAction}
-        </div>
-      </div>
+      <SectionHero
+        compact={compact}
+        eyebrow="Bounties · paid questions"
+        title="Get paid to answer what a protocol wants to know."
+        description="A sponsor posts a question and a reward. Answer it with a notebook, and the best one takes the money."
+        aside={
+          <div className="flex flex-col items-start lg:items-end gap-4">
+            <dl className="flex gap-x-6">
+              <BoardStat label="Open" count={open} />
+              <BoardStat label="Listed" count={all.length} delay={90} />
+            </dl>
+            <div className="flex items-center gap-3">
+              <ConnectWalletButton />
+              {headerAction}
+            </div>
+          </div>
+        }
+      />
 
       {children}
 
       <div
-        className={`${segmentedTabsClass} px-1.5 py-1.5 w-fit max-w-full overflow-x-auto mb-6`}
+        className="flex gap-1.5 max-w-full overflow-x-auto pb-1 mb-6"
         role="group"
         aria-label="Filter by type"
       >
@@ -62,7 +70,7 @@ export const BountiesBoard = ({
             type="button"
             aria-pressed={type === option}
             onClick={() => setType(option)}
-            className={segmentedTabClass(type === option)}
+            className={toggleClass(type === option)}
           >
             {option}
           </button>

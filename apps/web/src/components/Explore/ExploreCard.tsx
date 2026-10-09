@@ -95,7 +95,7 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
   // =====================================
   return (
     <>
-      <tr className="block md:table-row py-3 md:py-0 border-b border-border-secondary dark:border-border-tertiary last:border-b-0">
+      <tr className="block md:table-row py-3 md:py-0 border-b border-border-secondary dark:border-border-tertiary last:border-b-0 hover:bg-inputBg dark:hover:bg-header-surface transition-colors shadow-[inset_2px_0_0_transparent] hover:shadow-[inset_2px_0_0_theme(colors.primary.DEFAULT)]">
         <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top">
           <div className="flex items-center gap-2.5 min-w-0">
             <Avatar className="h-8 w-8 flex-shrink-0">
@@ -125,7 +125,9 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
                   @{query.author?.username}
                 </span>
               )}
-              <p className="text-xs text-ink-400">Created {formattedDate}</p>
+              <p className="font-body-mono text-[10px] uppercase tracking-[0.12em] text-ink-300">
+                {formattedDate}
+              </p>
             </div>
           </div>
         </td>

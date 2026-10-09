@@ -85,17 +85,17 @@ interface BountyCardProps {
 }
 
 export const BountyCard = ({ bounty, href, actions }: BountyCardProps) => (
-  <article className="rounded-3xl bg-base-100 border border-border-secondary dark:border-border-tertiary p-7 flex flex-col h-full font-body">
+  <article className="group relative overflow-hidden rounded-xl bg-base-100 border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors p-5 flex flex-col h-full font-body before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-primary before:opacity-0 hover:before:opacity-100">
     <BountyChips bounty={bounty} />
 
-    <h3 className="mt-4 text-[0.95rem] font-bold text-ink-100 dark:text-white">
+    <h3 className="mt-4 text-base font-semibold leading-snug text-ink-100 dark:text-white">
       <Link href={href} className="hover:underline">
         {bounty.title}
       </Link>
     </h3>
-    <p className="mt-2 flex items-center gap-1.5 text-xs text-ink-400">
+    <p className="mt-2 flex items-center gap-1.5 font-body-mono text-[10px] uppercase tracking-[0.14em] text-ink-300">
       <SponsorLogo sponsor={bounty.sponsor} size={16} />
-      Sponsored by {bounty.sponsor}
+      {bounty.sponsor}
     </p>
 
     <p className="mt-4 text-[0.85rem] leading-relaxed text-ink-400 dark:text-gray-300 line-clamp-2">
@@ -115,7 +115,9 @@ export const BountyCard = ({ bounty, href, actions }: BountyCardProps) => (
       <div className="pt-5 border-t border-border-secondary dark:border-border-tertiary flex items-end justify-between gap-4">
         <div className="min-w-0">
           {bounty.sample && (
-            <p className="text-[11px] text-ink-400 mb-0.5">Original reward</p>
+            <p className="font-body-mono text-[10px] uppercase tracking-[0.14em] text-ink-300 mb-1">
+              Original reward
+            </p>
           )}
           <BountyReward reward={bounty.reward} size={18} />
         </div>

@@ -15,6 +15,11 @@ import { EmptyQueryState } from "@/components/EmptyState/EmptyQueryState";
 import { SortControl, type SortOption } from "@/components/Explore/SortControl";
 import { FeaturedExploreSection } from "@/components/Explore/FeaturedExploreSection";
 import { ExploreListSkeleton } from "@/components/Explore/ExploreSkeletons";
+import {
+  BoardStat,
+  eyebrowClass,
+  SectionHero,
+} from "@/components/Showcase/BoardKit";
 import type { ApiDocument } from "@/types";
 
 // =====================================
@@ -120,10 +125,22 @@ export function ExploreClient({
 
   return (
     <div>
-      <div className="flex justify-between">
-        <p className="text-ink-200 dark:text-placeholder-muted text-sm mb-6 mt-4">
-          Discover the latest trends in the crypto ecosystem.
-        </p>
+      <div className="container mx-auto">
+        <SectionHero
+          eyebrow="Community · unverified"
+          title="What everyone else is digging into."
+          description="Notebooks published by the community. Nobody at Sandworm has checked them: fork one and run it yourself."
+          aside={
+            <dl className="flex gap-x-6">
+              <BoardStat label="Featured" count={initialFeatured.length} />
+              <BoardStat
+                label="On the board"
+                count={documents.length}
+                delay={90}
+              />
+            </dl>
+          }
+        />
       </div>
 
       <div className="w-full container mx-auto">
@@ -131,6 +148,7 @@ export function ExploreClient({
       </div>
 
       <div className="flex justify-between items-center mt-6 mb-4 container mx-auto">
+        <p className={eyebrowClass}>All notebooks</p>
         <SortControl
           sortBy={sortBy}
           onSortChange={handleSortChange}
