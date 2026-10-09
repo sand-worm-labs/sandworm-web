@@ -7,7 +7,8 @@ const appUrl = import.meta.env.PUBLIC_APP_URL ?? 'http://localhost:8081'
 const { solid = false } = Astro.props
 
 const navLinks = [
-  { name: "Explore", href: `${appUrl}/explore` },
+  { name: "Showcase", href: `${appUrl}/showcase` },
+  { name: "Community", href: `${appUrl}/explore` },
   { name: "Bounties", href: `${appUrl}/bounties` },
   { name: "MCP", href: "/mcp" },
   { name: "Documentation", href: "https://github.com/sand-worm-labs/sandworm-web", isExternal: true },
