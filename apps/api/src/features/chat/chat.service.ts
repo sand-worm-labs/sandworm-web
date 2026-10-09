@@ -1,3 +1,4 @@
+import { AuthService } from '@/features/auth/core/auth.service';
 import {
   Injectable,
   Logger,
@@ -83,6 +84,7 @@ export class ChatService implements OnModuleInit {
     private readonly workspaceService: WorkspaceService,
     private readonly redisService: RedisService,
     private readonly chainSqlService: ChainSqlService,
+    private readonly authService: AuthService,
   ) {
     this.aiBaseUrl        = this.configService.getOrThrow('ai.url',             { infer: true });
     this.handshakeToken   = this.configService.getOrThrow('ai.handshakeToken',  { infer: true });
@@ -126,6 +128,9 @@ export class ChatService implements OnModuleInit {
     // expects chronological order to locate the current turn via
     // reversed(messages) + messages[:-1], so reverse it back here.
     const chainSql = await this.chainSqlService.status(chat.workspaceId);
+    // The sidecar reaches the notebook only through the MCP server, as this
+    // user, so every chat request carries their access token.
+    const userToken = (await this.authService.issueTokenPair(chat.userId)).accessToken;
     const payload = {
       messages:           [...messages].reverse().map(m => ({ role: m.role, content: m.content ?? '' })),
       model:              lastUserMessage?.model ?? '',
@@ -140,6 +145,7 @@ export class ChatService implements OnModuleInit {
         // Cloud can run SQL, which includes every workspace on the free plan.
         sql_available:     chainSql.available,
         paid_plan_required: chainSql.paidPlanRequired,
+        user_token:        userToken,
       },
       stream:          this.chatStream,
       temperature:     this.chatTemperature,
