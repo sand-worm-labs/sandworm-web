@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import type { ApiDocument } from "@/types";
 import { formatDate } from "@/lib/date";
 import { useModalStore } from "@/store/auth";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 import { useSession } from "../Editor/hooks/useAuth";
 import { useFavorites } from "../Editor/hooks/useFavorites";
@@ -143,7 +144,15 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
           {tags.length > 0 && (
             <div className="flex flex-wrap items-center gap-1.5 max-w-xs">
               {visibleTags.map(tag => (
-                <Tag key={tag}>#{tag}</Tag>
+                <Tag
+                  key={tag}
+                  className={cn(
+                    "border border-transparent",
+                    tintPillDarkClassName
+                  )}
+                >
+                  #{tag}
+                </Tag>
               ))}
               {hiddenTagCount > 0 && (
                 <span className="text-[11px] text-ink-300 dark:text-ink-500">
@@ -167,8 +176,8 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
                 className={cn(
                   "h-4 w-4 transition-colors",
                   isFavorited
-                    ? "fill-primary text-primary"
-                    : "text-ink-300 dark:text-ink-300 group-hover:text-yellow-400"
+                    ? "fill-primary text-primary dark:fill-primary-tint-75 dark:text-primary-tint-75"
+                    : "text-ink-300 dark:text-ink-300 group-hover:text-primary dark:group-hover:text-primary-tint-75"
                 )}
                 strokeWidth={1.2}
               />

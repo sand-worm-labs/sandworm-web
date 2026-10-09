@@ -233,13 +233,20 @@ export function FeaturedExploreCard({
             className={cn(
               "flex items-center gap-1 -mx-2 -my-1 px-2 py-1 rounded-full border border-transparent transition-colors",
               "hover:bg-black/5 hover:border-black/10 dark:hover:bg-white/10 dark:hover:border-white/20",
-              isPurple ? "hover:text-yellow-300" : "hover:text-yellow-500"
+              isPurple
+                ? "hover:text-primary-tint-75"
+                : "hover:text-primary dark:hover:text-primary-tint-75"
             )}
           >
             <span>{favoriteCount}</span>
             <Star
               size={18}
-              className={cn(isFavorited && "fill-yellow-500 text-yellow-500")}
+              className={cn(
+                isFavorited &&
+                  (isPurple
+                    ? "fill-primary-tint-75 text-primary-tint-75"
+                    : "fill-primary text-primary dark:fill-primary-tint-75 dark:text-primary-tint-75")
+              )}
             />
           </button>
 

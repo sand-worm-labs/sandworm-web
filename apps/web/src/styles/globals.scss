@@ -276,9 +276,10 @@
     --icon-bg: #f5f7fa;
     --icon-stroke: #1c3b5a;
 
-    /* Beta badge — matches the landing page badge, same in both themes */
+    /* Beta badge — light matches the landing page badge; dark is outline-only */
     --beta-badge-bg: #e4eaec;
     --beta-badge-text: #3f1814;
+    --beta-badge-border: transparent;
   }
 
   .dark {
@@ -337,6 +338,11 @@
     --ink-navy: #f8f9fa;
     --ink-700: #343330;
     --ink-800: #e9ecef;
+
+    /* Beta badge — outline only, no bright fill */
+    --beta-badge-bg: transparent;
+    --beta-badge-text: var(--ink-400);
+    --beta-badge-border: hsl(var(--border-tertiary));
 
     /* Extended surfaces (auto-extracted, same value in light/dark for now) */
     --base-350: #e8e8e6;

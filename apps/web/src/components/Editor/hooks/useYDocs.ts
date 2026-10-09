@@ -84,6 +84,13 @@ const cache = new LRUCache<string, { clock: number; yDoc: Y.Doc }>({
   },
 });
 
+// ⬢ NOTE — Docs that have received real content (a snapshot or a completed
+// websocket sync). getYDoc caches a blank Y.Doc the moment it is created, so
+// leaving before content arrives would otherwise leave an empty doc in the LRU
+// that the next visit mistakes for a warm one and renders blank. Keyed by the
+// doc instance, not its id, so an evicted-and-recreated doc starts unhydrated.
+const hydratedDocs = new WeakSet<Y.Doc>();
+
 // =====================================
 // ⬢ Types
 // =====================================
@@ -107,7 +114,7 @@ function getYDoc(
   const id = getDocId(documentId, isDataApp, clock, publishedAt);
 
   let fromCache = cache.get(id);
-  const cached = Boolean(fromCache);
+  const cached = fromCache !== undefined && hydratedDocs.has(fromCache.yDoc);
   let restore = Promise.resolve();
 
   if (!fromCache) {
@@ -188,16 +195,13 @@ export function useYDoc(
   // ⬢ NOTE — Fetches the last-persisted Yjs state over GraphQL and applies it
   // as soon as it lands, instead of leaving the editor blank until the
   // websocket provider finishes its connect + auth + CRDT sync handshake.
-  // Skipped once the doc is already warm in the in-memory LRU cache, and for
-  // app/dashboard-view docs (isDataApp), which read a different per-user
-  // Y.Doc that this query does not serve — those fall back to the original
-  // restore + websocket-sync gating below, unaffected by this fetch.
+  // Applies to every doc: the editable notebook and, via isApp, the per-user
+  // published copy that view mode and dashboards read. The websocket still
+  // connects afterwards and keeps the doc live; it just no longer gates the
+  // first paint. Skipped once the doc is already warm in the in-memory LRU
+  // cache.
   const willFetchSnapshot =
-    !cached &&
-    !isDataApp &&
-    connect &&
-    Boolean(documentId) &&
-    Boolean(workspaceId);
+    !cached && connect && Boolean(documentId) && Boolean(workspaceId);
 
   const appliedSnapshotIdRef = useRef<string | null>(null);
   const [snapshotApplied, setSnapshotApplied] = useResettableState(
@@ -211,17 +215,26 @@ export function useYDoc(
     }
   }, [id, willFetchSnapshot, documentId]);
 
-  const { data: snapshotData } = useGetDocumentStateQuery({
-    variables: { documentId, workspaceId },
-    skip: !willFetchSnapshot,
-    fetchPolicy: "network-only",
-  });
+  const { data: snapshotData, error: snapshotError } = useGetDocumentStateQuery(
+    {
+      variables: { documentId, workspaceId, isApp: isDataApp },
+      skip: !willFetchSnapshot,
+      fetchPolicy: "network-only",
+    }
+  );
+
+  // ⬢ NOTE — If the snapshot fetch fails (e.g. a link-shared viewer who is not
+  // a workspace member and so cannot call the authenticated query), gate the
+  // loader on the websocket sync again instead of waiting forever for a
+  // snapshot that will never arrive.
+  const snapshotGatesLoader = willFetchSnapshot && !snapshotError;
 
   useEffect(() => {
     const state = snapshotData?.getDocumentState;
     if (!state || appliedSnapshotIdRef.current === id) return;
 
     Y.applyUpdate(yDoc, base64ToUint8Array(state), "snapshot");
+    hydratedDocs.add(yDoc);
     appliedSnapshotIdRef.current = id;
     setSnapshotApplied(true);
     console.timeEnd(`${documentId} snapshot`);
@@ -259,6 +272,9 @@ export function useYDoc(
 
   useEffect(() => {
     const onSynced = (synced: boolean) => {
+      if (synced) {
+        hydratedDocs.add(yDoc);
+      }
       setSyncing(!synced);
     };
 
@@ -267,7 +283,7 @@ export function useYDoc(
     return () => {
       provider.offSynced(onSynced);
     };
-  }, [provider, setSyncing]);
+  }, [provider, yDoc, setSyncing]);
 
   useEffect(() => {
     if (initialState) {
@@ -403,13 +419,14 @@ export function useYDoc(
   return {
     yDoc,
     provider,
-    // ⬢ NOTE — When we're fetching a snapshot (private, editable docs), the
-    // loader's only job is to wait for that GraphQL fetch: it must stop as
-    // soon as `snapshotApplied` is true, regardless of websocket sync state.
-    // For docs where no snapshot is fetched (isDataApp / not connected),
-    // fall back to the original restore + websocket-sync gating.
+    // ⬢ NOTE — When we're fetching a snapshot, the loader's only job is to
+    // wait for that GraphQL fetch: it must stop as soon as `snapshotApplied`
+    // is true, regardless of websocket sync state. When no snapshot is
+    // fetched (not connected / snapshot failed), fall back to the original
+    // restore + websocket-sync gating.
     syncing:
-      !cached && (willFetchSnapshot ? !snapshotApplied : syncing || restoring),
+      !cached &&
+      (snapshotGatesLoader ? !snapshotApplied : syncing || restoring),
     isDirty: metadata.state.value.getAttribute("isDirty") ?? false,
     undo,
     redo,

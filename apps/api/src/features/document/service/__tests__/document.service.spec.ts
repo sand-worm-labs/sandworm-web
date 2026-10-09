@@ -144,6 +144,18 @@ describe('DocumentService', () => {
       expect(result).toBe('base64state');
     });
 
+    it('reads the editable doc by default and the per-user app doc when isApp', async () => {
+      const { service, documentRepository, yjsDocumentService } = makeService();
+      documentRepository.findOne.mockResolvedValue(makeDocumentEntity());
+      yjsDocumentService.getYDocState.mockResolvedValue('base64state');
+
+      await service.getDocumentState(DOCUMENT_ID, WORKSPACE_ID, USER_ID);
+      expect(yjsDocumentService.getYDocState).toHaveBeenLastCalledWith(DOCUMENT_ID, false, undefined);
+
+      await service.getDocumentState(DOCUMENT_ID, WORKSPACE_ID, USER_ID, true);
+      expect(yjsDocumentService.getYDocState).toHaveBeenLastCalledWith(DOCUMENT_ID, true, USER_ID);
+    });
+
     it('throws when the document is not found', async () => {
       const { service, documentRepository } = makeService();
       documentRepository.findOne.mockResolvedValue(null);
