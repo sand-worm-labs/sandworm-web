@@ -20,6 +20,8 @@ import { ChartSkeleton, Shimmer, TableSkeleton } from "@/components/Skeletons";
 import useResettableState from "../../../hooks/useResettableState";
 
 import PythonError from "./PythonError";
+import { useTileChrome } from "../../Dashboard/TileChromeContext";
+
 import { toDarkFigure } from "./plotlyDark";
 
 // @ts-expect-error @types/react-plotly.js incompatible with @types/react@19
@@ -60,6 +62,7 @@ function PlotWithPlaceholder(
     onError,
     ...plotProps
   } = props;
+  const plainTile = useTileChrome() === "plain" && !!onDashboardTile;
   const [ready, setReady] = React.useState(false);
 
   useEffect(() => {
@@ -75,8 +78,12 @@ function PlotWithPlaceholder(
       {!ready && (
         <ChartSkeleton
           className={clsx(
-            "absolute inset-0 w-full h-full z-10 bg-base-100",
-            onDashboardTile ? "dark:bg-dropdown-bg" : "dark:bg-header-surface"
+            "absolute inset-0 w-full h-full z-10",
+            plainTile ? "bg-transparent" : "bg-base-100",
+            !plainTile &&
+              (onDashboardTile
+                ? "dark:bg-dropdown-bg"
+                : "dark:bg-block-surface")
           )}
           aria-label="Loading chart"
         />
@@ -301,6 +308,8 @@ const SANDWORM_THEME_CSS_DARK = `
     --sw-rule: #40403e;
     --sw-series-2: #c1428a;
     --sw-series-7: #9a7bdb;
+    --sw-pos: #c97ff5;
+    --sw-neg: #f08a84;
   }
 
   /* HTML a notebook already ran carries the theme's old, fixed light colors in
@@ -341,6 +350,8 @@ function injectTableStyles(
 }
 
 export function PythonOutputs(props: Props) {
+  // A plain dashboard tile has no card behind the output, so it paints none either.
+  const plainTile = useTileChrome() === "plain" && !!props.isDashboardTile;
   const [rendered, setRendered] = useResettableState(
     () => Math.min(props.lazyRender ? 1 : props.outputs.length),
     [props.outputs, props.lazyRender]
@@ -389,12 +400,15 @@ export function PythonOutputs(props: Props) {
           key={i}
           className={clsx(
             ["plotly"].includes(output.type) ? "flex-grow" : "",
-            "bg-base-100 overflow-x-auto",
+            "overflow-x-auto",
             // A dashboard tile is a card in its own right, on the same surface as
             // the Explore cards; a notebook block keeps the editor surface.
-            props.isDashboardTile
-              ? "dark:bg-dropdown-bg"
-              : "dark:bg-header-surface"
+            plainTile && "bg-transparent",
+            !plainTile && "bg-base-100",
+            !plainTile &&
+              (props.isDashboardTile
+                ? "dark:bg-dropdown-bg"
+                : "dark:bg-block-surface")
           )}
         >
           <PythonOutput
@@ -628,7 +642,10 @@ function HTMLOutput(props: {
         ref={iframeRef}
         srcDoc={styledHtml}
         title="HTML block"
-        sandbox="allow-scripts"
+        // Scripts, plus links that open in a new tab so a banner or a social icon
+        // works. The popup is not sandboxed, or the site it opens would be broken
+        // too; without allow-same-origin the notebook's own page stays out of reach.
+        sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
         onLoad={() =>
           // Ask the page for its height once it has loaded (handshake).
           iframeRef.current?.contentWindow?.postMessage(

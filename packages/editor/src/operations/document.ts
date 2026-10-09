@@ -7,6 +7,7 @@ import {
   YBlockGroup,
   TabRef,
   getTabsFromBlockGroup,
+  setBlockHiddenInPublished,
 } from "./blockGroup.js";
 import {
   BlockType,
@@ -23,9 +24,13 @@ import {
 import { makeRichTextBlock } from "../blocks/richText.js";
 import { makeMarkdownBlock } from "../blocks/markdown.js";
 import { makeDateInputBlock } from "../blocks/dateInput.js";
+import { getDefaults } from "../dashboard-layout.js";
 import {
+  DashboardChrome,
   PowerToolboxInputs,
   YDashboardItem,
+  addDashboardItemToYDashboard,
+  yDashboardToRecord,
   getBlocks,
   getDashboard,
   getLayout,
@@ -456,6 +461,58 @@ export const addDashboardOnlyBlock = (
   block: AddBlockGroupBlock
 ) => {
   return createBlock(block, yBlockDefs);
+};
+
+// Adds a cell made on the dashboard: a markdown cell or a python cell appended
+// to the notebook (where its text or code lives and, for python, where it runs),
+// hidden in view mode, and placed at the bottom of the dashboard. Returns the
+// new cell's id.
+export const addDashboardCell = (
+  yDoc: Y.Doc,
+  cell: { type: BlockType.Markdown | BlockType.Python; source: string },
+  size: { w: number; h: number },
+  chrome?: DashboardChrome
+): string => {
+  const layout = getLayout(yDoc);
+  const blocks = getBlocks(yDoc);
+  const dashboard = getDashboard(yDoc);
+  let blockId = "";
+
+  yDoc.transact(() => {
+    blockId = addBlockGroup(
+      layout,
+      blocks,
+      cell.type === BlockType.Python
+        ? { type: BlockType.Python, source: cell.source }
+        : { type: BlockType.Markdown },
+      layout.length
+    );
+    if (cell.type === BlockType.Markdown) {
+      // The text is a Y.Text the editor binds to, so it is filled in place.
+      const source = blocks.get(blockId)?.getAttribute("source" as never) as
+        | Y.Text
+        | undefined;
+      source?.insert(0, cell.source);
+    }
+    setBlockHiddenInPublished(layout, blockId, true);
+
+    const bottom = Object.values(yDashboardToRecord(dashboard)).reduce(
+      (max, item) => Math.max(max, item.y + item.h),
+      0
+    );
+    addDashboardItemToYDashboard(dashboard, {
+      id: uuidv4(),
+      blockId,
+      x: 0,
+      y: bottom,
+      w: size.w,
+      h: size.h,
+      ...getDefaults(cell.type),
+      ...(chrome ? { chrome } : {}),
+    });
+  });
+
+  return blockId;
 };
 
 export const removeDashboardBlock = (

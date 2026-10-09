@@ -26,6 +26,10 @@ export type TileSummary = {
   x: number;
   width: number;
   height: number;
+  // card (the dashboard's border and title) or plain (the cell's own output).
+  chrome: 'card' | 'plain';
+  // Hidden from the published report, so it appears on the dashboard only.
+  dashboardOnly: boolean;
   // Rough size on a 1300px screen, to size a chart's figure against.
   approxPixels: { width: number; height: number };
 };
@@ -122,6 +126,13 @@ export function describeDashboard(ydoc: Y.Doc): DashboardLayout {
   const blocks = getBlocks(ydoc);
   const items = Object.values(yDashboardToRecord(getDashboard(ydoc))).sort((a, b) => a.y - b.y || a.x - b.x);
   const warnings: string[] = [];
+  const hiddenInReport = new Set(
+    getLayout(ydoc)
+      .toArray()
+      .flatMap(group => getTabsFromBlockGroup(group, blocks))
+      .filter(tab => tab.isHiddenInPublished)
+      .map(tab => tab.blockId),
+  );
 
   const byRow = new Map<number, RowSummary>();
   for (const item of items) {
@@ -153,6 +164,8 @@ export function describeDashboard(ydoc: Y.Doc): DashboardLayout {
         x: item.x,
         width: item.w,
         height: item.h,
+        chrome: item.chrome ?? 'card',
+        dashboardOnly: hiddenInReport.has(item.blockId),
         approxPixels: dashboardTilePixels(item.w, item.h),
       },
     ];

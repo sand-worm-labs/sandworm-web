@@ -5,7 +5,9 @@ import {
   addDashboardOnlyBlock,
   getBlocks,
   getDashboard,
+  getLayout,
   planDashboardRows,
+  setBlockHiddenInPublished,
   updateYDashboardFromRecord,
   yDashboardToRecord,
   type DashboardItem,
@@ -30,10 +32,11 @@ export class NotebookDashboardService {
       const blocks = getBlocks(ydoc);
       const cells = notebookCellIds(ydoc);
 
-      const plan = planDashboardRows(rows.map(({ heading, height, tiles }) => ({
+      const plan = planDashboardRows(rows.map(({ heading, height, align, tiles }) => ({
         heading,
         height,
-        tiles: tiles?.map(({ cellId, width }) => ({ blockId: cellId, width })),
+        align,
+        tiles: tiles?.map(({ cellId, width, chrome, dashboardOnly }) => ({ blockId: cellId, width, chrome, dashboardOnly })),
       })), blockId => (cells.has(blockId) ? cellInfo(blocks.get(blockId)) : undefined));
       if (plan.ok === false) {
         throw new BadRequestException(`The dashboard was not changed. Fix these and call set_dashboard again:\n- ${plan.problems.join('\n- ')}`);
@@ -55,7 +58,23 @@ export class NotebookDashboardService {
               : addDashboardOnlyBlock(blocks, { type: BlockType.DashboardHeader, content: item.content });
           const id = (item.kind === 'tile' && itemIdByBlock.get(blockId)) || randomUUID();
           kept.add(blockId);
-          next[id] = { id, type: 'DASHBOARD_ITEM', blockId, x: item.x, y: item.y, w: item.w, h: item.h, minW: item.minW, minH: item.minH };
+          next[id] = {
+            id,
+            type: 'DASHBOARD_ITEM',
+            blockId,
+            x: item.x,
+            y: item.y,
+            w: item.w,
+            h: item.h,
+            minW: item.minW,
+            minH: item.minH,
+            ...(item.kind === 'tile' && item.chrome ? { chrome: item.chrome } : {}),
+          };
+          // Dashboard-only is decided where the cell is placed: it is the
+          // report's flag, set here so one call lays out and hides.
+          if (item.kind === 'tile' && item.dashboardOnly !== undefined) {
+            setBlockHiddenInPublished(getLayout(ydoc), blockId, item.dashboardOnly);
+          }
         }
         updateYDashboardFromRecord(dashboard, next);
 

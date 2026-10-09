@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -6,6 +7,7 @@ import * as services from '@jupyterlab/services';
 import { decrypt } from '@sandworm/nest-common';
 import { EnvironmentVariableEntity } from '@sandworm/postgresql-typeorm';
 import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
+import { EventNames, KernelRestartedEvent } from '@/events/environment.events';
 import { AllConfigType } from '@/core/config/config.type';
 import { buildTrinoConnectionUrl } from '@/features/code-execution/query-engine/trino/trino-connection-url.util';
 
@@ -150,6 +152,15 @@ def _sandworm_query(sql, datasource="trino"):
         } finally {
             this.sessions.delete(key);
         }
+    }
+
+    // A restart replaces the kernel's process but keeps its connection, so a cached
+    // session would still look healthy while the setup its first run did (the
+    // theme, _sandworm_query) is gone. Dropping it makes the next run start a fresh
+    // session, which runs that setup again.
+    @OnEvent(EventNames.KERNEL_RESTARTED)
+    async onKernelRestarted({ workspaceId }: KernelRestartedEvent) {
+        await this.disposeAll(workspaceId);
     }
 
     async disposeAll(workspaceId: string) {

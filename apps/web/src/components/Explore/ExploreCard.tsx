@@ -17,7 +17,6 @@ import { cn } from "@/lib/utils";
 import type { ApiDocument } from "@/types";
 import { formatDate } from "@/lib/date";
 import { useModalStore } from "@/store/auth";
-import { tintPillDarkClassName } from "@/styles/interactive";
 
 import { useSession } from "../Editor/hooks/useAuth";
 import { useFavorites } from "../Editor/hooks/useFavorites";
@@ -144,15 +143,7 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
           {tags.length > 0 && (
             <div className="flex flex-wrap items-center gap-1.5 max-w-xs">
               {visibleTags.map(tag => (
-                <Tag
-                  key={tag}
-                  className={cn(
-                    "border border-transparent",
-                    tintPillDarkClassName
-                  )}
-                >
-                  #{tag}
-                </Tag>
+                <Tag key={tag}>#{tag}</Tag>
               ))}
               {hiddenTagCount > 0 && (
                 <span className="text-[11px] text-ink-300 dark:text-ink-500">

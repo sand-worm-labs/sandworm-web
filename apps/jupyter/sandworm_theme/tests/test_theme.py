@@ -121,3 +121,54 @@ def test_every_css_color_has_a_dark_counterpart():
     for name in ("ink", "ink-2", "muted", "paper", "shade", "rule"):
         assert name in tokens.DARK
         assert "--sw-" + name in tokens.var(name, "#000")
+
+
+def test_kpi_row_escapes_and_tones_values():
+    html = sw.kpi_row([("Inflow <USD>", "$1"), ("Net flow", "-$2", "neg"), ("Up", "+3", "pos"), ("Other", "4", "bogus")])
+    assert "Inflow &lt;USD&gt;" in html and "<USD>" not in html
+    assert html.count('class="sw-kpi"') == 4
+    assert 'sw-kpi-value neg"' in html and 'sw-kpi-value pos"' in html
+    assert html.count("sw-kpi-value ") == 2  # an unknown tone adds no class
+
+
+def test_kpi_cards_carry_the_stat_card_accent_bar():
+    html = sw.kpi_row([("a", "1"), ("b", "2")], accent="#123456")
+    assert html.count('class="sw-kpi-main"') == 2
+    assert "--sw-accent:#123456" in html
+    assert "--sw-accent:" + tokens.SERIES[0] in sw.kpi_row([("a", "1")])
+    assert "border-left: 3px solid var(--sw-accent)" in sw.render(html)
+
+
+def test_kpi_row_never_puts_more_than_four_cards_in_a_line():
+    def cols(n):
+        return sw.kpi_row([("k", str(i)) for i in range(n)]).split("--sw-cols:")[1].split(";")[0]
+
+    assert [cols(n) for n in (1, 2, 3, 4)] == ["1", "2", "3", "4"]
+    assert [cols(n) for n in (5, 6, 7, 8, 9)] == ["3", "3", "4", "4", "4"]
+    assert "--sw-cols:2;" in sw.kpi_row([("a", "1"), ("b", "2"), ("c", "3")], columns=2)
+
+
+def test_kpi_row_colors_follow_the_readers_theme():
+    html = sw.render(sw.kpi_row([("a", "1", "neg")]))
+    assert "var(--sw-neg, " + tokens.NEG + ")" in html
+    assert "var(--sw-paper, " + tokens.PAPER + ")" in html
+    assert "pos" in tokens.DARK and "neg" in tokens.DARK
+
+
+def test_a_good_figure_is_brand_purple_not_green():
+    assert tokens.POS == "#7A06B8" and tokens.DARK["pos"] == "#C97FF5"
+
+
+def test_banner_has_no_title_unless_asked_and_keeps_only_safe_links_and_images():
+    html = sw.banner(
+        "Weekly <numbers>",
+        logo_url="https://acme.test/logo.png",
+        links=[("Site", "https://acme.test"), ("Bad", "javascript:alert(1)"), ("Mail", "mailto:hi@acme.test")],
+    )
+    assert "Weekly &lt;numbers&gt;" in html and 'class="sw-banner-sub"' in html
+    assert "sw-banner-title" not in html
+    assert 'src="https://acme.test/logo.png"' in html
+    assert "javascript:" not in html and ">Bad<" not in html
+    assert html.count('target="_blank" rel="noopener noreferrer"') == 2
+    assert 'src=' not in sw.banner("x", logo_url="javascript:alert(1)")
+    assert 'class="sw-banner-title">Acme</div>' in sw.banner("x", title="Acme")

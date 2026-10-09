@@ -10,7 +10,7 @@ import { SandwormJupyterExtension } from './Jupyter.extension.js';
 import { GetFileResult, IJupyterService, EnvironmentVariables } from './jupyter.interface';
 import { SandwormFile } from '@sandworm/types';
 import { EnvironmentEntity, EnvironmentStatus } from '@sandworm/postgresql-typeorm';
-import { EnvironmentStatusEvent, EventNames } from '@/events/environment.events';
+import { EnvironmentStatusEvent, EventNames, KernelRestartedEvent } from '@/events/environment.events';
 import { LockService } from "@/infrastructure/lock/lock.services";
 
 
@@ -152,6 +152,10 @@ export class JupyterService implements IJupyterService, OnModuleInit, OnModuleDe
         });
       }
       await this.bindWorkspace(workspaceId);
+      // The kernel is a fresh process now. A session that was set up in the old one
+      // (its theme, its helpers) must not be reused, so it is dropped before the
+      // environment is announced as running and the next run starts a new one.
+      await this.eventEmitter.emitAsync(EventNames.KERNEL_RESTARTED, new KernelRestartedEvent(workspaceId));
       this.emitStatusUpdate(workspaceId, EnvironmentStatus.RUNNING, null);
     });
   }

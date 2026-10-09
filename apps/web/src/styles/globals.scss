@@ -183,6 +183,7 @@
     --base-500: #fbfbfb;
     --base-600: 180 43% 95%; /* #EBF7F7 */
     --header-surface: 0 0% 100%; /* #FFFFFF */
+    --block-surface: 0 0% 100%; /* #FFFFFF */
     --page-surface: 0 0% 100%; /* #FFFFFF */
     --dropdown-bg: 0 0% 100%; /* #FFFFFF */
     --dropdown-hover: 210 17% 96%; /* light default; components keep their own light hover for now */
@@ -305,6 +306,8 @@
     --base-500: #232322;
     --base-600: 60 5% 7%; /* #131311 */
     --header-surface: 0 0% 10.2%; /* #1A1A1A */
+    /* Surface of a notebook block, result and tile: the same as the Explore cards (--dropdown-bg), lighter than the page. */
+    --block-surface: 60 1% 15%; /* #272726 */
     --page-surface: 60 2% 13%; /* #212120 */
     --dropdown-bg: 60 1% 15%; /* oklch(27.2% .002 107) ≈ #272726 */
     --dropdown-hover: 0 0% 18%; /* #2F2F2F */
@@ -341,7 +344,7 @@
 
     /* Beta badge — outline only, no bright fill */
     --beta-badge-bg: transparent;
-    --beta-badge-text: var(--ink-400);
+    --beta-badge-text: var(--ink-100);
     --beta-badge-border: hsl(var(--border-tertiary));
 
     /* Extended surfaces (auto-extracted, same value in light/dark for now) */
@@ -361,7 +364,7 @@
     --border-quiet: #e3e5e8;
     --border-faint: #d0d5dd;
     --border-cool: #343a40;
-    --border-dark: #212529;
+    --border-dark: #40403e; /* neutral, as --border-tertiary: the old #212529 was blue-gray */
 
     /* Always-dark editor/code surfaces (not theme-reactive) */
     --editor-100: #181c21;
@@ -411,10 +414,21 @@
   box-shadow: 0px 7.5px 8px 0px #8497c30a;
 }
 
+/* A soft drop shadow is invisible on a dark surface and shows as a blue glow, and
+   the Explore cards have none: blocks are separated by their border alone. */
+.dark .block-shadow-soft {
+  box-shadow: none;
+}
+
 .block-focus-ring {
   box-shadow:
     0px 7.5px 8px 0px #8497c30a,
     0px 0px 1px 4px #8b74ff33;
+}
+
+/* Keep the focus ring, drop the glow under it. */
+.dark .block-focus-ring {
+  box-shadow: 0px 0px 1px 4px #8b74ff33;
 }
 
 .hatch-bg {
@@ -423,8 +437,8 @@
 }
 
 .dark .hatch-bg {
-  background-color: hsl(var(--header-surface)); /* #1A1A1A */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='%231A1A1A'/%3E%3Cline x1='0' y1='8' x2='8' y2='0' stroke='%23455768' stroke-width='1'/%3E%3C/svg%3E");
+  background-color: hsl(var(--block-surface)); /* #272726 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='%23272726'/%3E%3Cline x1='0' y1='8' x2='8' y2='0' stroke='%2340403e' stroke-width='1'/%3E%3C/svg%3E");
 }
 
 /* ╔════════════════════════════════════════════╗

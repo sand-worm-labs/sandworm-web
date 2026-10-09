@@ -426,6 +426,7 @@ function Tab(props: TabProps) {
             {props.tabRef.title || getPrettyTitle(props.tabRef.type)}{" "}
             {props.tabRef.isHiddenInPublished && (
               <span
+                title="Hidden in view mode. It still runs, and can be shown on the dashboard."
                 className={clsx(
                   "pl-0.5 text-[10px]",
                   props.tabRef.isCurrent ? "text-ink-400" : "text-ink-300"

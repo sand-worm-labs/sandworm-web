@@ -7,6 +7,11 @@ PAPER = "#FFFFFF"
 SHADE = "#FAF6FC"
 RULE = "#E9E2ED"
 BRAND = "#A308F0"
+# Text colors for a good and a bad figure (a net inflow, a drop). A good figure
+# takes the brand purple (the app's primary-700) rather than green, which is not
+# in the palette.
+POS = "#7A06B8"
+NEG = "#B42318"
 
 # Dark counterparts of the neutrals above, plus the two series colors that are
 # too dark to read on a dark surface. The web app does not receive these from
@@ -22,6 +27,8 @@ DARK = {
     "rule": "#40403E",
     "series-2": "#C1428A",
     "series-7": "#9A7BDB",
+    "pos": "#C97FF5",
+    "neg": "#F08A84",
 }
 
 
@@ -47,6 +54,8 @@ class _Css:
     paper = var("paper", PAPER)
     shade = var("shade", SHADE)
     rule = var("rule", RULE)
+    pos = var("pos", POS)
+    neg = var("neg", NEG)
 
 
 CSS = _Css()

@@ -10,6 +10,7 @@ import {
   reorderTab,
   removeBlock,
   duplicateTab,
+  setBlockHiddenInPublished,
 } from './blockGroup.js'
 import { BlockType, SQLBlock, YBlock } from '../blocks/index.js'
 import { DataSourceId } from '@sandworm/types'
@@ -917,5 +918,27 @@ describe('duplicateTab', () => {
 
     const current = getCurrentTabId(yLayout, blockGroupId, yBlocks, false)!
     expect(current).toEqual(tabs[2]?.blockId)
+  })
+})
+
+describe('setBlockHiddenInPublished', () => {
+  test('hides and shows a cell in the published report, and reports whether it found it', () => {
+    const first = addBlockGroup(yLayout, yBlocks, { type: BlockType.RichText }, 0)
+    const second = addBlockGroup(yLayout, yBlocks, { type: BlockType.RichText }, 1)
+    const hidden = (id: string) =>
+      yLayout
+        .toArray()
+        .flatMap((group) => group.getAttribute('tabs')?.toArray() ?? [])
+        .find((tab) => tab.getAttribute('id') === id)
+        ?.getAttribute('isHiddenInPublished')
+
+    expect(setBlockHiddenInPublished(yLayout, first, true)).toBe(true)
+    expect(hidden(first)).toBe(true)
+    expect(hidden(second) ?? false).toBe(false)
+
+    expect(setBlockHiddenInPublished(yLayout, first, false)).toBe(true)
+    expect(hidden(first)).toBe(false)
+
+    expect(setBlockHiddenInPublished(yLayout, 'missing', true)).toBe(false)
   })
 })

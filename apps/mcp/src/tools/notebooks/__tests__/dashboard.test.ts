@@ -112,3 +112,32 @@ test('the chat shows a dashboard layout as one line', () => {
     { kind: 'thinking', text: 'Laid out the dashboard: 4 tile(s) in 3 row(s)' },
   ]);
 });
+
+test('set_dashboard forwards a tile\'s chrome and dashboardOnly and a row\'s align', async () => {
+  requests.length = 0;
+  reply = { status: 200, body: { rows: [] } };
+  const rows = [{ align: 'center', height: 3, tiles: [{ cellId: CELL, width: 16, chrome: 'plain', dashboardOnly: true }] }];
+
+  await call('set_dashboard', { notebookId: NOTEBOOK, workspaceId: WORKSPACE, rows });
+
+  assert.deepEqual(requests[0]!.body, { rows });
+});
+
+test('set_dashboard refuses a chrome it does not know', () => {
+  const { config } = tools.get('set_dashboard')!;
+  assert.throws(() =>
+    z.object(config.inputSchema).parse({
+      notebookId: NOTEBOOK,
+      workspaceId: WORKSPACE,
+      rows: [{ tiles: [{ cellId: CELL, chrome: 'glass' }] }],
+    }),
+  );
+});
+
+test('the description teaches the default dashboard: a KPI row, plain tiles, dashboard-only cells', () => {
+  const { description } = tools.get('set_dashboard')!.config;
+  assert.match(description, /kpi_row/);
+  assert.match(description, /chrome "plain"/);
+  assert.match(description, /dashboardOnly: true/);
+  assert.match(description, /Never reuse the notebook's stat_card/);
+});

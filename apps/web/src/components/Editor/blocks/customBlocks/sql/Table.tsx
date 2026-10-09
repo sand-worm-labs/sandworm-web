@@ -96,7 +96,7 @@ function Table(props: Props) {
             })}
           </tr>
         </thead>
-        <tbody className="bg-white dark:bg-header-surface overflow-y-scroll">
+        <tbody className="bg-white dark:bg-block-surface overflow-y-scroll">
           {props.rows.map((row, rowIndex) => (
             <tr
               key={rowIndex}

@@ -1,23 +1,24 @@
 import { BlockType, getPrettyTitle } from "./blocks/index.js";
+import type { DashboardChrome } from "./dashboard.js";
 
 // Grid numbers shared by the web view and the API, so a layout planned on the
 // server matches what the view draws.
 
 export const DASHBOARD_COLUMNS = 24;
 export const DASHBOARD_MARGIN = 6;
-export const DASHBOARD_MIN_ROW_HEIGHT = 50;
+export const DASHBOARD_ROW_HEIGHT = 50;
 
-// A row is as tall as a column is wide, but never under 50px.
+// A row is a fixed 50px, whatever the screen. It used to grow with the column
+// width, which made every tile taller on a wide screen and, on a phone (one
+// column as wide as the screen), made each row as tall as the screen is wide.
+// A fixed row keeps a banner, a KPI card or a chart the height it was laid out at.
 export function dashboardCellSize(
   containerWidth: number,
   columns: number = DASHBOARD_COLUMNS
 ): { cellWidth: number; cellHeight: number } {
   const cellWidth =
     (containerWidth - DASHBOARD_MARGIN * (columns + 1)) / columns;
-  return {
-    cellWidth,
-    cellHeight: Math.max(DASHBOARD_MIN_ROW_HEIGHT, cellWidth),
-  };
+  return { cellWidth, cellHeight: DASHBOARD_ROW_HEIGHT };
 }
 
 // What a layout is sized against. DashboardView pads the page by 64px a side
@@ -153,12 +154,24 @@ export const MAX_TILES_PER_ROW = 12;
 export const MAX_ROW_HEIGHT = 40;
 export const HEADING_ROW_HEIGHT = 1;
 
-export type DashboardTileSpec = { blockId: string; width?: number };
+export type DashboardTileSpec = {
+  blockId: string;
+  width?: number;
+  chrome?: DashboardChrome;
+  // true: hide the cell from the published report, so it appears on the
+  // dashboard only. false: show it in the report again. Left out: unchanged.
+  dashboardOnly?: boolean;
+};
+
+export type DashboardAlign = "left" | "center" | "right";
 
 export type DashboardRowSpec = {
   // A section title, drawn in a row of its own above the tiles.
   heading?: string;
   height?: number;
+  // Where tiles sit when their widths add up to less than the full row.
+  // Without it a row must fill all the columns.
+  align?: DashboardAlign;
   tiles?: DashboardTileSpec[];
 };
 
@@ -174,7 +187,12 @@ type Placement = {
 };
 
 export type PlannedDashboardItem =
-  | ({ kind: "tile"; blockId: string } & Placement)
+  | ({
+      kind: "tile";
+      blockId: string;
+      chrome?: DashboardChrome;
+      dashboardOnly?: boolean;
+    } & Placement)
   | ({ kind: "heading"; content: string } & Placement);
 
 export type DashboardPlan =
@@ -258,12 +276,12 @@ export function planDashboardRows(
       return;
     }
 
-    const widths = resolveWidths(label, tiles, problems);
+    const widths = resolveWidths(label, tiles, problems, row.align);
     if (!widths) {
       return;
     }
 
-    let x = 0;
+    let x = alignedStart(widths, row.align);
     const planned: PlannedDashboardItem[] = [];
     cells.forEach(({ tile, info }, i) => {
       const w = widths[i]!;
@@ -276,6 +294,8 @@ export function planDashboardRows(
       planned.push({
         kind: "tile",
         blockId: tile.blockId,
+        chrome: tile.chrome,
+        dashboardOnly: tile.dashboardOnly,
         x,
         y,
         w,
@@ -311,10 +331,18 @@ export function planDashboardRows(
     : { ok: true, items, totalRows: y };
 }
 
+function alignedStart(widths: number[], align?: DashboardAlign): number {
+  const free = DASHBOARD_COLUMNS - widths.reduce((sum, w) => sum + w, 0);
+  if (align === "center") return Math.floor(free / 2);
+  if (align === "right") return free;
+  return 0;
+}
+
 function resolveWidths(
   label: string,
   tiles: DashboardTileSpec[],
-  problems: string[]
+  problems: string[],
+  align?: DashboardAlign
 ): number[] | null {
   const invalid = tiles.find(
     tile =>
@@ -338,9 +366,12 @@ function resolveWidths(
   }
 
   if (unset === 0) {
-    if (given !== DASHBOARD_COLUMNS) {
+    if (given > DASHBOARD_COLUMNS || (given < DASHBOARD_COLUMNS && !align)) {
       problems.push(
-        `${label}: widths add up to ${given}, but a row is ${DASHBOARD_COLUMNS} columns wide. Make them add up to ${DASHBOARD_COLUMNS}, or leave the widths out to split the row evenly`
+        `${label}: widths add up to ${given}, but a row is ${DASHBOARD_COLUMNS} columns wide. Make them add up to ${DASHBOARD_COLUMNS}, leave the widths out to split the row evenly` +
+          (given < DASHBOARD_COLUMNS
+            ? ', or set align (left, center or right) to leave the rest of the row empty'
+            : "")
       );
       return null;
     }

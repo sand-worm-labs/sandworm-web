@@ -374,7 +374,7 @@ function DropdownInputBlock(props: Props) {
                     onFocus={onFocus}
                     onBlur={editorAPI.blur}
                     className={clsx(
-                      "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 dark:disabled:bg-base-100 disabled:cursor-not-allowed bg-white dark:bg-header-surface px-1",
+                      "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 dark:disabled:bg-base-100 disabled:cursor-not-allowed bg-white dark:bg-block-surface px-1",
                       attrs.value.error
                         ? "ring-red-200 focus:ring-red-200"
                         : "focus:ring-primary-200",
@@ -498,7 +498,7 @@ function DropdownInputBlock(props: Props) {
       >
         <button
           type="button"
-          className="bg-[#FFDBDB] dark:bg-header-surface dark:border dark:border-hover-border rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
+          className="bg-[#FFDBDB] dark:bg-block-surface dark:border dark:border-hover-border rounded-[5px] h-[24px] min-w-[24px] flex items-center justify-center group hover:bg-error"
         >
           <PiTrash className="w-[13px] h-[13px] text-ink-navy group-hover:text-white" />
         </button>

@@ -197,7 +197,7 @@ function SQLSuccess(props: SQLSuccessProps) {
       ref={containerRef}
     >
       {props.loadingPage && (
-        <div className="absolute top-0 left-0 bottom-8 right-0 bg-white dark:bg-header-surface opacity-50 z-10 flex items-center justify-center">
+        <div className="absolute top-0 left-0 bottom-8 right-0 bg-white dark:bg-block-surface opacity-50 z-10 flex items-center justify-center">
           <LargeSpinner color="#deff80" />
         </div>
       )}
@@ -214,7 +214,7 @@ function SQLSuccess(props: SQLSuccessProps) {
       >
         <div
           className={clsx(
-            "max-w-full ph-no-capture bg-white dark:bg-header-surface font-body ",
+            "max-w-full ph-no-capture bg-white dark:bg-block-surface font-body ",
             tableTopBorder === "rounded" && "rounded-md",
             (!props.dashboardMode ||
               dashboardModeHasControls(props.dashboardMode)) &&
@@ -245,7 +245,7 @@ function SQLSuccess(props: SQLSuccessProps) {
 
       <div
         className={clsx(
-          "flex w-full items-center justify-between border-hover-border dark:border-border-dark px-3 h-10  text-xs rounded-b-xl text-ink-400 bg-inputBg dark:bg-header-surface",
+          "flex w-full items-center justify-between border-hover-border dark:border-border-dark px-3 h-10  text-xs rounded-b-xl text-ink-400 bg-inputBg dark:bg-block-surface",
           ((props.dashboardMode &&
             (props.dashboardMode._tag === "live" ||
               props.dashboardMode.position !== "expanded")) ||
@@ -300,7 +300,7 @@ function SQLSuccess(props: SQLSuccessProps) {
                   props.isAddVisualizationDisabled
                     ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
                     : "cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary",
-                  "flex items-center h-full border rounded-full border-hover-border px-2 gap-x-1 text-ink-300 dark:text-ink-400 group relative font-body bg-base-200 dark:bg-header-surface py-0.5"
+                  "flex items-center h-full border rounded-full border-hover-border px-2 gap-x-1 text-ink-300 dark:text-ink-400 group relative font-body bg-base-200 dark:bg-block-surface py-0.5"
                 )}
                 disabled={props.isAddVisualizationDisabled}
                 onClick={props.onAddVisualization}
@@ -327,7 +327,7 @@ function SQLSuccess(props: SQLSuccessProps) {
                 className={clsx(
                   csvRes.loading
                     ? "cursor-not-allowed bg-gray-200 dark:bg-base-100"
-                    : "cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary bg-base-200 dark:bg-header-surface",
+                    : "cursor-pointer hover:bg-hover-bg hover:text-gray-700 hover:border-primary bg-base-200 dark:bg-block-surface",
                   "flex items-center h-full border rounded-full border-hover-border px-2 gap-x-1 text-ink-300 dark:text-ink-400 group relative font-body"
                 )}
                 onClick={onDownloadCSV}

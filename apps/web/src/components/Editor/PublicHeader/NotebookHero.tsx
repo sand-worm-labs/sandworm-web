@@ -172,7 +172,7 @@ export function NotebookHeroMeta({
   return (
     <div className="flex flex-col gap-4 pb-6">
       {document?.description && (
-        <p className="font-report-prose text-[20px] leading-snug font-normal text-ink-400 dark:text-ink-300 max-w-2xl">
+        <p className="font-report-prose text-[20px] leading-snug font-normal text-ink-400 dark:text-placeholder-muted max-w-2xl">
           {document.description}
         </p>
       )}

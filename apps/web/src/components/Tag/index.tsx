@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { tintPillDarkClassName } from "@/styles/interactive";
 
 export const Tag = ({
   children,
@@ -12,8 +13,10 @@ export const Tag = ({
   <span
     title={title}
     className={cn(
-      "inline-flex items-center rounded-md px-2.5 py-1 text-[10.5px] leading-[14px] whitespace-nowrap",
+      "inline-flex items-center rounded-md border border-transparent px-2.5 py-1 text-[10.5px] leading-[14px] whitespace-nowrap",
       "font-body-mono font-normal text-ink-400 bg-base-600",
+      // In dark mode a tag is the same bordered, tinted pill as on the Explore cards.
+      tintPillDarkClassName,
       className
     )}
   >

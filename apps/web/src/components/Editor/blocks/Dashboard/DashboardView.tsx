@@ -4,7 +4,12 @@ import { v4 as uuidv4 } from "uuid";
 import GridLayout from "react-grid-layout";
 import { useCallback, useMemo, useState } from "react";
 import clsx from "clsx";
-import type { ExecutionQueue, AITasks, YBlock } from "@sandworm/editor";
+import type {
+  ExecutionQueue,
+  AITasks,
+  YBlock,
+  DashboardChrome,
+} from "@sandworm/editor";
 import {
   getBlocks,
   getDashboard,
@@ -12,6 +17,7 @@ import {
   getDashboardItem,
   addDashboardItemToYDashboard,
   mergeGridLayoutIntoYDashboard,
+  setDashboardItemChrome,
   BlockType,
   removeDashboardBlock,
   dashboardCellSize,
@@ -129,6 +135,13 @@ function DashboardViewInner(props: InnerProps) {
     [dashboard]
   );
 
+  const onSetChrome = useCallback(
+    (id: string, chrome: DashboardChrome) => {
+      setDashboardItemChrome(dashboard.value, id, chrome);
+    },
+    [dashboard]
+  );
+
   const onDelete = useCallback(
     (id: string) => {
       dashboard.value.delete(id);
@@ -167,11 +180,18 @@ function DashboardViewInner(props: InnerProps) {
         if (type === BlockType.DashboardHeader && !props.isEditing) {
           WrapperCard = PlainCard;
         }
+        // A plain tile has no card: the cell's own output sits on the page.
+        // While editing it keeps a faint outline so it can still be found.
+        if (dashItem?.chrome === "plain") {
+          WrapperCard = props.isEditing ? TransparentCard : PlainCard;
+        }
 
         return (
           <div key={item.i} data-block-type={type}>
             <WrapperCard>
               <GridElement
+                chrome={dashItem?.chrome}
+                onSetChrome={props.isEditing ? onSetChrome : undefined}
                 block={block}
                 onDelete={onDelete}
                 yDoc={props.yDoc}
@@ -194,6 +214,7 @@ function DashboardViewInner(props: InnerProps) {
       dashboard,
       blocks,
       onDelete,
+      onSetChrome,
       props.yDoc,
       props.document,
       props.dataSources,
@@ -323,7 +344,7 @@ export default function DashboardView(props: Props) {
           isLoading={false}
           isEditable={props.isEditing && props.userRole !== "viewer"}
         />
-        <div ref={ref}>
+        <div ref={ref} className="mt-6">
           {width ? <DashboardViewInner {...props} width={width} /> : <div />}
         </div>
       </div>

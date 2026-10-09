@@ -203,6 +203,54 @@ describe("planDashboardRows", () => {
   });
 });
 
+describe("planDashboardRows: tile style, visibility and alignment", () => {
+  test("carries a tile's chrome and dashboardOnly through to the plan", () => {
+    const { items } = plan([
+      {
+        height: 3,
+        tiles: [
+          { blockId: "kpi1", chrome: "plain", dashboardOnly: true },
+          { blockId: "kpi2" },
+        ],
+      },
+    ]);
+
+    expect(tiles(items).map(t => [t.blockId, t.chrome, t.dashboardOnly])).toEqual([
+      ["kpi1", "plain", true],
+      ["kpi2", undefined, undefined],
+    ]);
+  });
+
+  test("a row narrower than the grid needs an align, and centers on request", () => {
+    const narrow = [{ blockId: "bar", width: 12 }];
+
+    expect(planDashboardRows([{ tiles: narrow }], lookup)).toEqual({
+      ok: false,
+      problems: [expect.stringContaining("set align")],
+    });
+
+    const { items } = plan([{ align: "center", tiles: narrow }]);
+    expect(tiles(items)[0]).toMatchObject({ x: 6, w: 12 });
+  });
+
+  test("aligns a row right, and never lets a row run past the grid", () => {
+    const { items } = plan([
+      { align: "right", tiles: [{ blockId: "kpi1", width: 6 }, { blockId: "kpi2", width: 6 }] },
+    ]);
+    expect(tiles(items).map(t => [t.x, t.w])).toEqual([
+      [12, 6],
+      [18, 6],
+    ]);
+
+    expect(
+      planDashboardRows(
+        [{ align: "left", tiles: [{ blockId: "bar", width: 20 }, { blockId: "pie", width: 8 }] }],
+        lookup
+      )
+    ).toEqual({ ok: false, problems: [expect.stringContaining("widths add up to 28")] });
+  });
+});
+
 describe("canShowOnDashboard", () => {
   test("covers what a dashboard tile draws, and nothing it renders blank", () => {
     expect(canShowOnDashboard(BlockType.Python)).toBe(true);
@@ -214,17 +262,16 @@ describe("canShowOnDashboard", () => {
 });
 
 describe("grid size", () => {
-  test("a column is 42px on a 1300px screen, and a row stays at its 50px minimum", () => {
+  test("a column is 42px on a 1300px screen, and a row is 50px", () => {
     const { cellWidth, cellHeight } = dashboardCellSize(1164);
 
     expect(Math.round(cellWidth)).toBe(42);
     expect(cellHeight).toBe(50);
   });
 
-  test("rows grow with the columns on a wide screen", () => {
-    expect(dashboardCellSize(1800).cellHeight).toBeCloseTo(
-      dashboardCellSize(1800).cellWidth
-    );
+  test("a row is 50px on any screen, so a tile keeps the height it was laid out at", () => {
+    expect(dashboardCellSize(1800).cellHeight).toBe(50);
+    expect(dashboardCellSize(360, 1).cellHeight).toBe(50);
   });
 
   test("a tile's pixel size on the reference screen", () => {

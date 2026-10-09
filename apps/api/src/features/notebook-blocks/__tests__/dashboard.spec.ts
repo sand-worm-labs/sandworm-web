@@ -4,7 +4,7 @@ jest.mock('../notebook-doc.service', () => ({ NotebookDocService: jest.fn() }));
 
 import * as Y from 'yjs';
 import { BadRequestException } from '@nestjs/common';
-import { BlockType, getBlocks, getDashboard, getLayout, yDashboardToRecord } from '@sandworm/editor';
+import { BlockType, getBlocks, getDashboard, getLayout, getTabsFromBlockGroup, yDashboardToRecord } from '@sandworm/editor';
 import { addBlocks } from '../../collaboration/yjs/shared-doc/ai-blocks';
 import type { BlockInput, BlockKind } from '../blocks/block-definition';
 import { getDefinition } from '../blocks/registry';
@@ -91,6 +91,55 @@ describe('NotebookDashboardService.setDashboard', () => {
 
     expect(getDashboard(ydoc).size).toBe(0);
     expect(layout).toMatchObject({ rows: [], totalRows: 0 });
+  });
+
+  describe('tile style and visibility', () => {
+    const hiddenInReport = (ydoc: Y.Doc, id: string) =>
+      getLayout(ydoc)
+        .toArray()
+        .flatMap(group => getTabsFromBlockGroup(group, getBlocks(ydoc)))
+        .find(tab => tab.blockId === id)?.isHiddenInPublished;
+
+    it('stores a plain tile and reads it back as plain; a card is the default', async () => {
+      const { service, ydoc, ids } = setup(CELLS);
+
+      const layout = await service.setDashboard(ref, {
+        rows: [{ height: 3, tiles: [{ cellId: ids[0]!, chrome: 'plain' }, { cellId: ids[1]! }] }],
+      });
+
+      const items = Object.values(yDashboardToRecord(getDashboard(ydoc)));
+      expect(items.find(i => i.blockId === ids[0])?.chrome).toBe('plain');
+      expect(items.find(i => i.blockId === ids[1])?.chrome).toBeUndefined();
+      expect(layout.rows[0]!.tiles!.map(t => t.chrome)).toEqual(['plain', 'card']);
+    });
+
+    it('hides a dashboardOnly cell from the report, and leaves the others as they were', async () => {
+      const { service, ydoc, ids } = setup(CELLS);
+
+      const layout = await service.setDashboard(ref, {
+        rows: [{ tiles: [{ cellId: ids[0]!, dashboardOnly: true }, { cellId: ids[1]! }] }],
+      });
+
+      expect(hiddenInReport(ydoc, ids[0]!)).toBe(true);
+      expect(hiddenInReport(ydoc, ids[1]!)).toBe(false);
+      expect(layout.rows[0]!.tiles!.map(t => t.dashboardOnly)).toEqual([true, false]);
+
+      // false puts it back in the report; leaving it out changes nothing.
+      await service.setDashboard(ref, { rows: [{ tiles: [{ cellId: ids[0]!, dashboardOnly: false }] }] });
+      expect(hiddenInReport(ydoc, ids[0]!)).toBe(false);
+      await service.setDashboard(ref, { rows: [{ tiles: [{ cellId: ids[1]!, dashboardOnly: true }] }] });
+      await service.setDashboard(ref, { rows: [{ tiles: [{ cellId: ids[1]! }] }] });
+      expect(hiddenInReport(ydoc, ids[1]!)).toBe(true);
+    });
+
+    it('centers a row that does not fill the grid when asked to', async () => {
+      const { service, ydoc, ids } = setup(CELLS);
+
+      await service.setDashboard(ref, { rows: [{ align: 'center', tiles: [{ cellId: ids[1]!, width: 16 }] }] });
+
+      const [item] = Object.values(yDashboardToRecord(getDashboard(ydoc)));
+      expect([item!.x, item!.w]).toEqual([4, 16]);
+    });
   });
 
   describe('headings', () => {
