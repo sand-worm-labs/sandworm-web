@@ -195,4 +195,56 @@ describe("useChatStream", () => {
     expect(onComplete).toHaveBeenCalledTimes(1);
     expect(onError).not.toHaveBeenCalled();
   });
+
+  it("picks the answer up where it stopped when the connection drops", async () => {
+    vi.useFakeTimers();
+    const delta = (text: string) =>
+      sse("content_block_delta", {
+        type: "content_block_delta",
+        index: 0,
+        delta: { type: "text_delta", text },
+      });
+    // The first connection ends with no [DONE]: it dropped, the job goes on.
+    (global.fetch as any) = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        body: sseStream(sse("turn", "running") + delta("one ") + delta("two ")),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        body: sseStream(`${delta("three")}data: [DONE]\n\n`),
+      });
+    const { result } = renderHook(() => useChatStream());
+    const onToken = vi.fn();
+    const onRunning = vi.fn();
+    const onComplete = vi.fn();
+    const onError = vi.fn();
+
+    const stream = result.current.startStream({
+      chatId: "chat-1",
+      messageId: "msg-1",
+      onToken,
+      onRunning,
+      onComplete,
+      onError,
+    });
+    await vi.advanceTimersByTimeAsync(2000);
+    await stream;
+    vi.useRealTimers();
+
+    const urls = (global.fetch as any).mock.calls.map((c: [string]) => c[0]);
+    expect(urls).toEqual([
+      "http://api.test/chat/chat-1/msg-1/stream?after=0",
+      "http://api.test/chat/chat-1/msg-1/stream?after=2",
+    ]);
+    expect(onToken.mock.calls.map((c: [string]) => c[0])).toEqual([
+      "one ",
+      "two ",
+      "three",
+    ]);
+    expect(onRunning).toHaveBeenCalledTimes(1);
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(onError).not.toHaveBeenCalled();
+  });
 });

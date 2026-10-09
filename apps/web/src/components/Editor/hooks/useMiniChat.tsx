@@ -9,7 +9,11 @@ import type { AttachedReference, BlockKind } from "../../Chats/types";
 import type { UploadedFileRef } from "../../Chats/MiniChatInput";
 
 import { useChat } from "./useChat";
-import { useChatStream, deriveMessageDisplay } from "./useChatStream";
+import {
+  useChatStream,
+  deriveMessageDisplay,
+  countStreamEvents,
+} from "./useChatStream";
 import { useNotebookBlocks } from "./useNotebookBlocks";
 import { useWorkspace } from "./useWorkspaces";
 import { useOpenRouterModels } from "./useOpenRouterModel";
@@ -168,58 +172,136 @@ export function useMiniChat({
 
   // ─── Load thread ───────────────────────────────────────────
 
+  // Carries on showing an answer whose job is still running. Nothing on screen
+  // changes unless the server says a job is running for this question.
+  const resumeAnswer = useCallback(
+    (
+      chatId: string,
+      questionId: string,
+      answerLocalId: string | null,
+      after: number
+    ) => {
+      let loadingId = answerLocalId;
+      let running = false;
+
+      const settle = () => {
+        if (!running) return;
+        if (loadingId) replaceMessage(loadingId, { isLoading: false });
+        setIsLoading(false);
+        currentChatIdRef.current = null;
+        currentLoadingMessageIdRef.current = null;
+      };
+
+      startStream({
+        chatId,
+        messageId: questionId,
+        after,
+        onRunning: () => {
+          if (running) return;
+          running = true;
+          // An answer with nothing saved yet has no message on screen.
+          loadingId ??= addMessage({
+            text: "",
+            isUser: false,
+            isLoading: true,
+            fileRefs: [],
+          });
+          setIsLoading(true);
+          currentChatIdRef.current = chatId;
+          currentLoadingMessageIdRef.current = loadingId;
+        },
+        onToken: chunk => {
+          if (loadingId) appendToMessage(loadingId, chunk);
+        },
+        onPart: part => {
+          if (loadingId) appendPartToMessage(loadingId, part);
+        },
+        onComplete: settle,
+        onError: err => {
+          console.error("[MiniChat] resumed stream error:", err);
+          settle();
+        },
+      }).catch(console.error);
+    },
+    [
+      startStream,
+      addMessage,
+      replaceMessage,
+      appendToMessage,
+      appendPartToMessage,
+    ]
+  );
+
   const loadThread = useCallback(
     async (chatId: string) => {
       const chat = await chatApi.fetchChat(chatId);
       setActiveChatId(chat.id);
       setActiveThreadTitle(chat.title);
-      setMessages(
-        (chat.messages ?? [])
-          // An answer's row is saved as soon as its question is sent and
-          // filled in when the job ends; until then it has nothing to show.
-          .filter(
-            (m: any) =>
-              m.role !== "assistant" ||
-              !!m.content ||
-              (Array.isArray(m.parts) && m.parts.length > 0)
-          )
-          .map((m: any) => {
-            // Assistant messages store their raw envelope events in `parts` —
-            // replay them the same way the live stream did, rather than
-            // showing `content` (which may just be internal clarify-detection
-            // JSON) directly as the message text.
-            const { text, parts: streamParts } =
-              m.role === "assistant" && Array.isArray(m.parts)
-                ? deriveMessageDisplay(m.parts)
-                : { text: m.content ?? "", parts: [] as PartPayload[] };
 
-            return {
-              id: crypto.randomUUID(),
-              messageId: m.id,
-              text,
-              isUser: m.role === "user",
-              role: m.role,
-              model: m.model ?? undefined,
-              finishReason: m.finishReason ?? null,
-              parts: m.parts ?? null,
-              streamParts: streamParts.length > 0 ? streamParts : undefined,
-              attachments: m.attachments ?? null,
-              usage: m.usage ?? null,
-              createdAt: m.createdAt ?? undefined,
-              fileRefs: (m.fileRefs ?? []) satisfies UploadedFileRef[],
-              references: (m.focusedBlocks ?? []).map(
-                (b: { id: string; title: string; type: string }) => ({
-                  id: b.id,
-                  label: b.title,
-                  sourceKind: "block" as const,
-                  blockKind: b.type as BlockKind,
-                })
-              ),
-            };
-          })
+      const loaded: LocalMessage[] = (chat.messages ?? [])
+        // An answer's row is saved as soon as its question is sent and
+        // filled in when the job ends; until then it has nothing to show.
+        .filter(
+          (m: any) =>
+            m.role !== "assistant" ||
+            !!m.content ||
+            (Array.isArray(m.parts) && m.parts.length > 0)
+        )
+        .map((m: any) => {
+          // Assistant messages store their raw envelope events in `parts` —
+          // replay them the same way the live stream did, rather than
+          // showing `content` (which may just be internal clarify-detection
+          // JSON) directly as the message text.
+          const { text, parts: streamParts } =
+            m.role === "assistant" && Array.isArray(m.parts)
+              ? deriveMessageDisplay(m.parts)
+              : { text: m.content ?? "", parts: [] as PartPayload[] };
+
+          return {
+            id: crypto.randomUUID(),
+            messageId: m.id,
+            text,
+            isUser: m.role === "user",
+            role: m.role,
+            model: m.model ?? undefined,
+            finishReason: m.finishReason ?? null,
+            parts: m.parts ?? null,
+            streamParts: streamParts.length > 0 ? streamParts : undefined,
+            attachments: m.attachments ?? null,
+            usage: m.usage ?? null,
+            createdAt: m.createdAt ?? undefined,
+            fileRefs: (m.fileRefs ?? []) satisfies UploadedFileRef[],
+            references: (m.focusedBlocks ?? []).map(
+              (b: { id: string; title: string; type: string }) => ({
+                id: b.id,
+                label: b.title,
+                sourceKind: "block" as const,
+                blockKind: b.type as BlockKind,
+              })
+            ),
+          };
+        });
+      setMessages(loaded);
+
+      // The last question may still be being answered: the page was reloaded,
+      // or the thread was left, while its job ran. Ask for its stream from
+      // where the saved answer stops. If no job is running the stream ends at
+      // once and what was loaded is the whole answer.
+      const saved: any[] = chat.messages ?? [];
+      const questionIndex = saved.map(m => m.role).lastIndexOf("user");
+      const question = saved[questionIndex];
+      if (!question) return;
+
+      const next = saved[questionIndex + 1];
+      const answer = next?.role === "assistant" ? next : undefined;
+      resumeAnswer(
+        chat.id,
+        question.id,
+        loaded.find(m => answer && m.messageId === answer.id)?.id ?? null,
+        Array.isArray(answer?.parts) ? countStreamEvents(answer.parts) : 0
       );
     },
-    [chatApi]
+    [chatApi, resumeAnswer]
   );
 
   const streamMessage = useCallback(
@@ -239,10 +321,19 @@ export function useMiniChat({
           currentLoadingMessageIdRef.current = null;
         },
         onError: err => {
-          replaceMessage(loadingId, {
-            text: `Something went wrong. Please try again.\n\n\`${errorMessage(err)}\``,
-            isLoading: false,
-          });
+          // Added under whatever of the answer already arrived, not over it.
+          const note = `Something went wrong. Please try again.\n\n\`${errorMessage(err)}\``;
+          setMessages(prev =>
+            prev.map(m =>
+              m.id === loadingId
+                ? {
+                    ...m,
+                    text: m.text ? `${m.text}\n\n${note}` : note,
+                    isLoading: false,
+                  }
+                : m
+            )
+          );
           console.error("[MiniChat] stream error:", err);
           setIsLoading(false);
           currentChatIdRef.current = null;

@@ -19,6 +19,11 @@ interface StartStreamParams extends StreamCallbacks {
   chatId: string;
   messageId: string;
   onPart?: (part: PartPayload) => void;
+  // How many of the answer's events are already on screen, when picking up
+  // an answer that was loaded half-written. The stream carries on from there.
+  after?: number;
+  // The server confirmed a job is still answering this message.
+  onRunning?: () => void;
 }
 
 type UseChatStream = {
@@ -62,6 +67,23 @@ type AiStreamEvent =
     }
   | { type: "message_stop" }
   | { type: "error"; error: { type: string; message: string } };
+
+// The saved events that also travel on the stream. The rest are status pings
+// the server keeps to itself, so they don't count towards a stream position.
+export function countStreamEvents(rawEvents: unknown[]): number {
+  return rawEvents.filter(raw => {
+    const type = (raw as { type?: string } | null)?.type;
+    return !!type && type !== "intent_classified" && type !== "intent_parsed";
+  }).length;
+}
+
+// A dropped connection is retried this many times in a row before giving up.
+// Any event that arrives starts the count again.
+const MAX_RECONNECTS = 8;
+
+function reconnectDelay(failures: number): number {
+  return Math.min(1000 * 2 ** (failures - 1), 10_000);
+}
 
 // =====================================
 // ⬢ Utils
@@ -162,11 +184,14 @@ function processLines(
   lines: string[],
   currentEvent: string,
   onToken: (chunk: string) => void,
-  onPart?: (part: PartPayload) => void
-): { event: string; done: boolean; error: Error | null } {
+  onPart?: (part: PartPayload) => void,
+  onRunning?: () => void
+): { event: string; done: boolean; error: Error | null; received: number } {
   let event = currentEvent;
   let done = false;
   let error: Error | null = null;
+  // Events of the answer taken in, which is where a reconnect carries on from.
+  let received = 0;
 
   lines.forEach(line => {
     if (done) return;
@@ -193,6 +218,14 @@ function processLines(
     }
     if (!trimmed) return;
 
+    // Not part of the answer: the server saying a job is running.
+    if (event === "turn") {
+      onRunning?.();
+      return;
+    }
+
+    received += 1;
+
     if (event === "token") {
       onToken(data);
     } else {
@@ -206,7 +239,7 @@ function processLines(
     }
   });
 
-  return { event, done, error };
+  return { event, done, error, received };
 }
 
 // =====================================
@@ -227,8 +260,10 @@ export function useChatStream(): UseChatStream {
     async ({
       chatId,
       messageId,
+      after = 0,
       onToken,
       onPart,
+      onRunning,
       onComplete,
       onError,
     }: StartStreamParams) => {
@@ -238,9 +273,23 @@ export function useChatStream(): UseChatStream {
       abortControllerRef.current = controller;
       isStreamingRef.current = true;
 
-      try {
+      // Where the answer stands: every event taken in so far. A connection
+      // that drops is opened again from here, so the answer carries on with
+      // nothing missing and nothing repeated.
+      let position = after;
+      let failures = 0;
+
+      const finish = (error: Error | null) => {
+        isStreamingRef.current = false;
+        if (error) onError(error);
+        else onComplete();
+      };
+
+      // Reads one connection to its end. Resolves to true once the server
+      // said the answer is over, false when the connection just went away.
+      const read = async (): Promise<boolean> => {
         const response = await fetch(
-          `${NEXT_PUBLIC_API_URL()}/chat/${chatId}/${messageId}/stream`,
+          `${NEXT_PUBLIC_API_URL()}/chat/${chatId}/${messageId}/stream?after=${position}`,
           {
             method: "POST",
             signal: controller.signal,
@@ -252,56 +301,86 @@ export function useChatStream(): UseChatStream {
           }
         );
 
-        if (!response.ok)
-          throw new Error(
-            `Stream failed: ${response.status} ${response.statusText}`
+        // The server is restarting or unreachable behind its proxy: try again.
+        if (response.status >= 500) return false;
+        if (!response.ok) {
+          finish(
+            new Error(
+              `Stream failed: ${response.status} ${response.statusText}`
+            )
           );
-        if (!response.body) throw new Error("No response body");
+          return true;
+        }
+        if (!response.body) return false;
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
         let currentEvent = "message_start";
-        let isDone = false;
         let streamError: Error | null = null;
 
-        const pump = async (): Promise<void> => {
-          if (isDone) return;
+        const pump = async (): Promise<boolean> => {
           const { done, value } = await reader.read();
-          if (done) return;
+          if (done) return false;
 
-          const chunk = decoder.decode(value, { stream: true });
-          buffer += chunk;
+          buffer += decoder.decode(value, { stream: true });
           const raw = buffer.split("\n");
           buffer = raw.pop() ?? "";
 
-          const result = processLines(raw, currentEvent, onToken, onPart);
+          const result = processLines(
+            raw,
+            currentEvent,
+            onToken,
+            onPart,
+            onRunning
+          );
           currentEvent = result.event;
           if (result.error) streamError = result.error;
+          if (result.received > 0) {
+            position += result.received;
+            failures = 0;
+          }
 
           if (result.done) {
-            isDone = true;
             reader.cancel();
-            isStreamingRef.current = false;
-            if (streamError) onError(streamError);
-            else onComplete();
-            return;
+            finish(streamError);
+            return true;
           }
 
           return pump();
         };
 
-        await pump();
-        if (!isDone) {
-          isStreamingRef.current = false;
-          if (streamError) onError(streamError);
-          else onComplete();
+        return pump();
+      };
+
+      const run = async (): Promise<void> => {
+        let over = false;
+        try {
+          over = await read();
+        } catch (err) {
+          if (controller.signal.aborted) return;
+          if (err instanceof Error && err.name === "AbortError") return;
         }
-      } catch (err) {
-        isStreamingRef.current = false;
-        if (err instanceof Error && err.name === "AbortError") return;
-        onError(err instanceof Error ? err : new Error(String(err)));
-      }
+        if (over || controller.signal.aborted) return;
+
+        failures += 1;
+        if (failures > MAX_RECONNECTS) {
+          finish(
+            new Error(
+              "Lost the connection to the server. Reopen this thread to see the rest of the answer."
+            )
+          );
+          return;
+        }
+
+        await new Promise(resolve => {
+          setTimeout(resolve, reconnectDelay(failures));
+        });
+        if (controller.signal.aborted) return;
+        await run();
+      };
+
+      await run();
     },
     [stopStream]
   );
