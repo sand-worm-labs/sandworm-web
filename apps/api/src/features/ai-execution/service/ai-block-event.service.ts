@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ChatEntity } from '@sandworm/postgresql-typeorm';
-import { BlockType, ExecutionQueue, getBlocks, getDataframes, getPythonAttributes, getSQLAttributes, updateYText } from '@sandworm/editor';
+import { BlockType, ExecutionQueue, getBlocks, getDataframes, getPythonAttributes, getSQLAttributes } from '@sandworm/editor';
 import type { PivotTableMetric, PowerToolboxInputs, PythonBlock, SQLBlock } from '@sandworm/editor';
 import { DATA_SOURCE_DIALECT, DataSourceId } from '@sandworm/types';
 import type { DataFrameColumn, Output, RunQueryResult } from '@sandworm/types';
@@ -291,20 +291,15 @@ export class AiBlockEventService implements OnModuleInit {
       const dialect = DATA_SOURCE_DIALECT[dataSourceId as DataSourceId] ?? 'duckdb';
       const errorMessage = `Dialect: ${dialect}\n\nQuery:\n${source.toJSON()}\n\nError: ${result.message}`;
 
-      let fixed: string;
       try {
-        ({ code: fixed } = await this.sqlGeneratorService.fix(ctx, errorMessage));
+        // The AI service has the MCP server write the fix into the cell.
+        await this.sqlGeneratorService.fix(ctx, blockId, errorMessage);
       } catch (err) {
         this.logger.error({ blockId, err }, '[block-action] SQL auto-fix generation failed, giving up');
         await this.publishBlockResult(blockId, 'error', `auto-fix generation failed: ${result.message}`);
         return;
       }
-      if (!fixed?.trim()) {
-        await this.publishBlockResult(blockId, 'error', `auto-fix returned no code: ${result.message}`);
-        return;
-      }
 
-      updateYText(source, fixed);
       ExecutionQueue.fromYjs(ydoc).enqueueBlock(blockId, userId, null, {
         _tag: 'sql',
         isSuggestion: false,
@@ -400,20 +395,15 @@ export class AiBlockEventService implements OnModuleInit {
       const { source } = getPythonAttributes(block);
       const errorMessage = `Code:\n${source.toJSON()}\n\nError: ${errorOutput.ename}: ${errorOutput.evalue}`;
 
-      let fixed: string;
       try {
-        ({ code: fixed } = await this.pythonGeneratorService.fix(ctx, errorMessage));
+        // The AI service has the MCP server write the fix into the cell.
+        await this.pythonGeneratorService.fix(ctx, blockId, errorMessage);
       } catch (err) {
         this.logger.error({ blockId, err }, '[block-action] Python auto-fix generation failed, giving up');
         await this.publishBlockResult(blockId, 'error', `auto-fix generation failed: ${errorOutput.ename}: ${errorOutput.evalue}`);
         return;
       }
-      if (!fixed?.trim()) {
-        await this.publishBlockResult(blockId, 'error', `auto-fix returned no code: ${errorOutput.ename}: ${errorOutput.evalue}`);
-        return;
-      }
 
-      updateYText(source, fixed);
       ExecutionQueue.fromYjs(ydoc).enqueueBlock(blockId, userId, null, {
         _tag: 'python',
         isSuggestion: false,

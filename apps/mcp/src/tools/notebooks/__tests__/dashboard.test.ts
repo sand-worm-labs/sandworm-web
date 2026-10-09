@@ -113,6 +113,38 @@ test('the chat shows a dashboard layout as one line', () => {
   ]);
 });
 
+const HEADING = '0b9d6f3c-8d55-4f0e-9c2e-3a7f4c2d1e10';
+
+test('edit_header patches one heading and returns the layout with a link', async () => {
+  requests.length = 0;
+  reply = { status: 200, body: { columns: 24, totalRows: 5, rows: [{ y: 0, height: 1, heading: 'New title', headingId: HEADING }], warnings: [] } };
+
+  const result = await call('edit_header', { notebookId: NOTEBOOK, workspaceId: WORKSPACE, headingId: HEADING, content: 'New title' });
+
+  assert.deepEqual(requests, [
+    {
+      method: 'PATCH',
+      url: `http://api/api/workspaces/${WORKSPACE}/documents/${NOTEBOOK}/dashboard/headings/${HEADING}`,
+      body: { content: 'New title' },
+    },
+  ]);
+  assert.match(result.content[0]!.text, /New title/);
+  assert.match(result.content[0]!.text, new RegExp(`/documents/${NOTEBOOK}/dashboard`));
+});
+
+test('edit_header rejects an empty or over-long heading before calling the API', () => {
+  const schema = z.object(tools.get('edit_header')!.config.inputSchema);
+  const base = { notebookId: NOTEBOOK, workspaceId: WORKSPACE, headingId: HEADING };
+
+  assert.equal(schema.safeParse({ ...base, content: '' }).success, false);
+  assert.equal(schema.safeParse({ ...base, content: 'x'.repeat(121) }).success, false);
+  assert.equal(schema.safeParse({ ...base, headingId: 'not-a-uuid', content: 'ok' }).success, false);
+});
+
+test('edit_header is described in the call log by its new text', () => {
+  assert.match(JSON.stringify(describeCall('edit_header', { content: 'New title' }, '{}', false)), /New title/);
+});
+
 test('set_dashboard forwards a tile\'s chrome and dashboardOnly and a row\'s align', async () => {
   requests.length = 0;
   reply = { status: 200, body: { rows: [] } };

@@ -8,7 +8,6 @@ import {
   getBlocks,
   AITasks,
   AITaskItem,
-  updatePythonAISuggestions,
   getPythonBlockEditWithAIPrompt,
   getPythonBlockResult,
   getPythonSource,
@@ -140,14 +139,14 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
       const source = getPythonSource(block).toJSON();
       const prompt = `${instructions}\n\n${source}`;
 
-      const { code } = await this.pythonGeneratorService.edit(ctx, prompt);
+      // The AI service has the MCP server change the cell itself; nothing comes back to apply.
+      await this.pythonGeneratorService.edit(ctx, block.getAttribute('id') as string, prompt);
 
-      if (aborted) { taskItem.setCompleted('aborted'); return code; }
-      updatePythonAISuggestions(block, code);
+      if (aborted) { taskItem.setCompleted('aborted'); return getPythonSource(block).toJSON(); }
       closePythonEditWithAIPrompt(block, true);
       taskItem.setCompleted('success');
       this.emitBlockAction('edited', 'Python', block, ctx);
-      return code;
+      return getPythonSource(block).toJSON();
     } catch (err) {
       taskItem.setCompleted('error');
       throw err;
@@ -176,13 +175,12 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
         traceback: error.traceback.slice(0, 2),
       })}`;
 
-      const { code } = await this.pythonGeneratorService.fix(ctx, error_message);
+      await this.pythonGeneratorService.fix(ctx, block.getAttribute('id') as string, error_message);
 
-      if (aborted) { taskItem.setCompleted('aborted'); return code; }
-      updatePythonAISuggestions(block, code);
+      if (aborted) { taskItem.setCompleted('aborted'); return getPythonSource(block).toJSON(); }
       taskItem.setCompleted('success');
       this.emitBlockAction('edited', 'Python', block, ctx);
-      return code;
+      return getPythonSource(block).toJSON();
     } catch (err) {
       taskItem.setCompleted('error');
       throw err;

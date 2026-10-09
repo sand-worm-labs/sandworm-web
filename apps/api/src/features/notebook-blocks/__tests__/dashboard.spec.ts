@@ -270,3 +270,45 @@ describe('warnings', () => {
     expect(warnings).toEqual([]);
   });
 });
+
+
+describe('NotebookDashboardService.editHeading', () => {
+  async function withHeading() {
+    const setup_ = setup(CELLS);
+    setup_.markRun(setup_.ids[0]!);
+    const layout = await setup_.service.setDashboard(ref, {
+      rows: [{ heading: 'Old title' }, { height: 5, tiles: [{ cellId: setup_.ids[0]! }] }],
+    });
+    return { ...setup_, headingId: layout.rows[0]!.headingId! };
+  }
+
+  it('lists each heading\'s id in the layout, so it can be edited', async () => {
+    const { headingId } = await withHeading();
+
+    expect(headingId).toEqual(expect.any(String));
+  });
+
+  it('changes only the text, leaving the layout as it was', async () => {
+    const { service, headingId, ids } = await withHeading();
+
+    const layout = await service.editHeading(ref, headingId, { content: 'New title' });
+
+    expect(layout.rows[0]).toMatchObject({ heading: 'New title', headingId });
+    expect(layout.rows[1]!.tiles!.map(t => t.cellId)).toEqual([ids[0]]);
+  });
+
+  it('refuses an id that is not a dashboard heading, such as a notebook cell', async () => {
+    const { service, ids } = await withHeading();
+
+    await expect(service.editHeading(ref, ids[0]!, { content: 'x' })).rejects.toThrow(/not a dashboard heading/);
+    await expect(service.editHeading(ref, 'missing', { content: 'x' })).rejects.toThrow(/not a dashboard heading/);
+  });
+
+  it('needs edit access to the notebook', async () => {
+    const { service, docs, headingId } = await withHeading();
+
+    await service.editHeading(ref, headingId, { content: 'x' });
+
+    expect(docs.use).toHaveBeenLastCalledWith(ref, 'editor', expect.any(Function));
+  });
+});

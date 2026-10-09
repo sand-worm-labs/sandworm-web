@@ -8,7 +8,6 @@ import {
   getBlocks,
   AITasks,
   AITaskItem,
-  updateSQLAISuggestions,
   getSQLAttributes,
   closeSQLEditWithAIPrompt,
 } from '@sandworm/editor';
@@ -140,14 +139,14 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
       const dialect = DATA_SOURCE_DIALECT[dataSourceId as DataSourceId] ?? 'duckdb';
       const prompt = `Dialect: ${dialect}\n\nQuery:\n${query}\n\nInstructions: ${instructions}`;
 
-      const { code } = await this.sqlGeneratorService.edit(ctx, prompt);
+      // The AI service has the MCP server change the cell itself; nothing comes back to apply.
+      await this.sqlGeneratorService.edit(ctx, block.getAttribute('id') as string, prompt);
 
-      if (aborted) { taskItem.setCompleted('aborted'); return code; }
-      updateSQLAISuggestions(block, code);
+      if (aborted) { taskItem.setCompleted('aborted'); return source?.toJSON() ?? ''; }
       closeSQLEditWithAIPrompt(block, true);
       taskItem.setCompleted('success');
       this.emitBlockAction('edited', 'SQL', block, ctx);
-      return code;
+      return source?.toJSON() ?? '';
     } catch (err) {
       taskItem.setCompleted('error');
       throw err;
@@ -179,13 +178,12 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
       const dialect = DATA_SOURCE_DIALECT[dataSourceId as DataSourceId] ?? 'duckdb';
       const error_message = `Dialect: ${dialect}\n\nQuery:\n${query}\n\nError: ${blockResult.message}`;
 
-      const { code } = await this.sqlGeneratorService.fix(ctx, error_message);
+      await this.sqlGeneratorService.fix(ctx, block.getAttribute('id') as string, error_message);
 
-      if (aborted) { taskItem.setCompleted('aborted'); return code; }
-      updateSQLAISuggestions(block, code);
+      if (aborted) { taskItem.setCompleted('aborted'); return source?.toJSON() ?? ''; }
       taskItem.setCompleted('success');
       this.emitBlockAction('edited', 'SQL', block, ctx);
-      return code;
+      return source?.toJSON() ?? '';
     } catch (err) {
       taskItem.setCompleted('error');
       throw err;

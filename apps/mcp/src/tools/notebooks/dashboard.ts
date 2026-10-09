@@ -107,6 +107,28 @@ export function registerDashboardTools(server: McpServer, ctx: ToolContext): voi
   );
 
   server.registerTool(
+    'edit_header',
+    {
+      description:
+        'Change the text of one dashboard heading (the section title drawn above a row), leaving the layout and every cell as they are. Take the headingId from get_dashboard or set_dashboard, which list it on each row that has a heading. To add or remove a heading, or change the layout, use set_dashboard instead.',
+      inputSchema: {
+        notebookId,
+        workspaceId,
+        headingId: z.uuid().describe('ID of the heading, as returned by get_dashboard as the row\'s headingId'),
+        content: z.string().min(1).max(120).describe('The new heading text, plain text on one line'),
+        request: turnRequest,
+      },
+    },
+    handle(async ({ notebookId, workspaceId, headingId, content }) => {
+      const ws = await resolveWorkspaceId(ctx, workspaceId);
+      const layout = await rest<Record<string, unknown>>(ctx, 'PATCH', `${dashboardApiPath(ws, notebookId)}/headings/${headingId}`, {
+        content,
+      });
+      return { notebookId, ...layout, url: dashboardUrl(ws, notebookId) };
+    }),
+  );
+
+  server.registerTool(
     'get_dashboard',
     {
       description:

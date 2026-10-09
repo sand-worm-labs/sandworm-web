@@ -108,11 +108,18 @@ function validate(blocks: PlannedBlock[]): string[] {
 const freePlanNote = (url: string) =>
   `This workspace is on the free plan, so Dune and Sandworm Cloud are off. If a sub-goal needs chain data that none of these public APIs provide (decoded contract events, every transaction or transfer of a contract, wallet-level histories, holder lists), do not stand in a different metric: mark it feasible: false with reason "${PAID_PLAN_REASON}", and tell the user that part needs a paid plan, with this link to upgrade: ${url}`;
 
+// Free workspaces: say up front that this may need a paid plan, then build it
+// from open data anyway, and own the accuracy gap in the closing message.
+const paidPlanHeadsUp = (url: string) =>
+  `Tell the user now, before you build anything, that this may need a paid plan (Dune and Sandworm Cloud hold the complete on-chain data), then carry on with open data. Upgrade: ${url}`;
+const paidPlanClosing = (url: string) =>
+  `In your closing message, say the result is only as accurate as open data allows because the workspace is on the free plan, and that upgrading would fix that: ${url}`;
+
 const researchNext = (ctx: ToolContext, subGoalTools: { tools: unknown[] }[], url?: string) => {
   if (ctx.openDataOnly) {
     return [
       `This plan uses open data only. Plan python blocks that fetch from each sub-goal's openData sources, described under openDataSources (sql blocks may query their dataframes with duckdb), then call plan_notebook again with the same goal, data "open" and your blocks. ${OPEN_DATA_USAGE}`,
-      ...(url ? [freePlanNote(url)] : []),
+      ...(url ? [freePlanNote(url), paidPlanHeadsUp(url)] : []),
     ].join(' ');
   }
   if (subGoalTools.some(g => g.tools.length)) {
@@ -183,7 +190,14 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
       });
 
       const skippedSubGoals = (subGoals ?? []).filter(s => !s.feasible);
-      const upgrade = url && skippedSubGoals.length ? { reason: 'Some sub-goals need Sandworm chain data, which needs a paid plan.', url } : undefined;
+      const upgrade = url
+        ? {
+            reason: skippedSubGoals.length
+              ? 'Some sub-goals need Sandworm chain data, which needs a paid plan.'
+              : 'Built from open data: accuracy is limited because the workspace is on the free plan.',
+            url,
+          }
+        : undefined;
 
       return {
         goal,
@@ -194,7 +208,9 @@ export function registerPlanTool(server: McpServer, ctx: ToolContext): void {
         next: [
           'Create the cells with add_cell in step order (pass position to keep that order), then check the notebook with get_notebook. If the user asked for a dashboard, run the notebook and then lay it out with set_dashboard.',
           ...(upgrade
-            ? [`In your closing message, name the skipped sub-goals and tell the user they need a paid plan, with this link to upgrade: ${upgrade.url}`]
+            ? [
+                `${skippedSubGoals.length ? 'Name the skipped sub-goals: they need a paid plan. ' : ''}${paidPlanClosing(upgrade.url)}`,
+              ]
             : []),
           ...(blocks.some(b => b.type === 'python') ? [OPEN_DATA_USAGE] : []),
           ...(ctx.logToolCalls

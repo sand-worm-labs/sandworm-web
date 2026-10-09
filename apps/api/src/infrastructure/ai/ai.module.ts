@@ -7,6 +7,8 @@ import { MarkdownGeneratorService } from './services/markdown-generator.service'
 import { PythonGeneratorService } from './services/python-generator.service';
 import { SqlGeneratorService } from './services/sql-generator.service';
 import { ChatComposerService } from './services/chat-composer.service';
+import { CellEditClient } from './services/cell-edit.client';
+import { AuthModule } from '@/features/auth/core/auth.module';
 import { WorkspaceModule } from '@/features/workspace/workspace.module';
 
 const GENERATOR_SERVICES = [
@@ -15,6 +17,7 @@ const GENERATOR_SERVICES = [
   PythonGeneratorService,
   SqlGeneratorService,
   ChatComposerService,
+  CellEditClient,
 ];
 
 @Module({
@@ -22,7 +25,7 @@ const GENERATOR_SERVICES = [
     ConfigModule.forFeature(aiServiceConfig),
     HttpModule,
     WorkspaceModule,
-    
+    AuthModule,
   ],
   providers: [...GENERATOR_SERVICES],
   exports: [...GENERATOR_SERVICES],

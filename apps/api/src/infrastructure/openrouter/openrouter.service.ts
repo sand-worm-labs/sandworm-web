@@ -201,7 +201,7 @@ export class OpenRouterService {
     return data.hash;
   }
 
-  async getModels(): Promise<OpenRouterModel[]> {
+  private async listAllModels(): Promise<OpenRouterModel[]> {
     try {
       const { data } = await this.client.models.list();
       return data.map(model => {
@@ -213,8 +213,15 @@ export class OpenRouterService {
     }
   }
 
+  // Chat is a tool-calling agent, so only models that support tools are offered.
+  async getModels(): Promise<OpenRouterModel[]> {
+    const models = await this.listAllModels();
+    return models.filter(m => (m.details.supportedParameters as string[] | undefined)?.includes('tools'));
+  }
+
+  // Unfiltered, so a model a workspace already picked still resolves.
   async getModel(modelId: string): Promise<OpenRouterModel| null> {
-    const models = await this.getModels();
+    const models = await this.listAllModels();
     return models.find((m) => m.id === modelId) ?? null;
   }
 

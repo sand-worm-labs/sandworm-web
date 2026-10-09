@@ -244,12 +244,29 @@ describe('OpenRouterService', () => {
     it('maps the SDK response into OpenRouterModel entries', async () => {
       const { service } = makeService();
       mockModels.list.mockResolvedValue({
-        data: [{ id: 'm1', name: 'Model One', contextLength: 1000 }],
+        data: [{ id: 'm1', name: 'Model One', contextLength: 1000, supportedParameters: ['tools', 'temperature'] }],
       });
 
       const result = await service.getModels();
 
-      expect(result).toEqual([{ id: 'm1', name: 'Model One', details: { contextLength: 1000 } }]);
+      expect(result).toEqual([
+        { id: 'm1', name: 'Model One', details: { contextLength: 1000, supportedParameters: ['tools', 'temperature'] } },
+      ]);
+    });
+
+    it('leaves out models that cannot call tools', async () => {
+      const { service } = makeService();
+      mockModels.list.mockResolvedValue({
+        data: [
+          { id: 'tools', name: 'A', supportedParameters: ['tools'] },
+          { id: 'no-tools', name: 'B', supportedParameters: ['temperature'] },
+          { id: 'unknown', name: 'C' },
+        ],
+      });
+
+      const result = await service.getModels();
+
+      expect(result.map(m => m.id)).toEqual(['tools']);
     });
 
     it('tags SDK errors', async () => {
@@ -261,6 +278,13 @@ describe('OpenRouterService', () => {
   });
 
   describe('getModel', () => {
+    it('still finds a model without tool support, so an existing selection resolves', async () => {
+      const { service } = makeService();
+      mockModels.list.mockResolvedValue({ data: [{ id: 'old', name: 'Old', supportedParameters: [] }] });
+
+      await expect(service.getModel('old')).resolves.toMatchObject({ id: 'old' });
+    });
+
     it('returns the matching model from getModels', async () => {
       const { service } = makeService();
       mockModels.list.mockResolvedValue({ data: [{ id: 'm1', name: 'Model One' }] });

@@ -16,7 +16,8 @@
       "Bash(mkdir notebooks *)",
       "Bash(rm notebooks.ts)",
       "Bash(sed -i \"s|'./notebooks.ts'|'./notebooks/index.ts'|\" index.ts)",
-      "Bash(grep -i \"href\\\\|router.push\\\\|\\\\`/\")"
+      "Bash(grep -i \"href\\\\|router.push\\\\|\\\\`/\")",
+      "Bash(npm test *)"
     ]
   }
 }

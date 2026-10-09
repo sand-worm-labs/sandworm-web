@@ -1,6 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatEntity, DocumentEntity, MessageEntity, WorkspaceEntity, VoteEntity, UserWorkspaceEntity } from '@sandworm/postgresql-typeorm';
+import { AuthModule } from '@/features/auth/core/auth.module';
 import { AuthGraphqlModule } from '@/features/auth/graphql/auth-graphql.module';
 import { ChatResolver } from './resolver/chat.resolver';
 import { MessageResolver } from "./resolver/message.resolver";
@@ -21,6 +22,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     TypeOrmModule.forFeature([ChatEntity, MessageEntity, WorkspaceEntity, DocumentEntity, VoteEntity, UserWorkspaceEntity]),
     HttpModule,
     AuthGraphqlModule,
+    AuthModule,
     WorkspaceModule,
     DataSourcesModule,
     EventEmitterModule,

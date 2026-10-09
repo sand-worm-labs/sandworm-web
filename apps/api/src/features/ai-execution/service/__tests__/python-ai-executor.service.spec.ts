@@ -14,7 +14,8 @@ jest.mock('@/features/collaboration/yjs/yjs-document.service', () => ({
 }));
 
 import * as Y from 'yjs';
-import { AITasks, getBlocks, getPythonAISuggestions, getPythonBlockEditWithAIPrompt, makePythonBlock } from '@sandworm/editor';
+import { AITasks, getBlocks, getPythonAISuggestions, getPythonBlockEditWithAIPrompt, getPythonSource, makePythonBlock } from '@sandworm/editor';
+import { writeSource } from './mcp-write';
 import { PythonAiExecutorService } from '../python-ai-executor.service';
 
 function makeService(ydoc: Y.Doc) {
@@ -28,9 +29,14 @@ function makeService(ydoc: Y.Doc) {
     sendMessage: jest.fn().mockResolvedValue(undefined),
     createChat: jest.fn().mockResolvedValue({ id: 'chat-new' }),
   } as any;
+  // The AI service has the MCP server change the cell, so the fake does the same.
+  const changeCell = (text: string) => async (_ctx: unknown, blockId: string) => {
+    writeSource(getPythonSource(getBlocks(ydoc).get(blockId) as any), text);
+    return { cell_id: blockId, updated: true };
+  };
   const pythonGeneratorService = {
-    edit: jest.fn().mockResolvedValue({ code: 'print(1)' }),
-    fix: jest.fn().mockResolvedValue({ code: 'print(2)' }),
+    edit: jest.fn().mockImplementation(changeCell('print(1)')),
+    fix: jest.fn().mockImplementation(changeCell('print(2)')),
   } as any;
   const workspaceService = {
     getWorkspaceById: jest.fn().mockResolvedValue({ id: 'ws-1', assistantModel: 'gpt' }),
@@ -63,7 +69,7 @@ function makeDocWithPythonBlock(source: string, editWithAIPrompt: string): { ydo
 
 describe('PythonAiExecutorService', () => {
   describe('editAiPython', () => {
-    it('creates a new chat, generates edited code, and applies it as an AI suggestion', async () => {
+    it('creates a new chat and has the AI service change the cell directly', async () => {
       const { ydoc, blockId } = makeDocWithPythonBlock('print("old")', 'make it print new');
       const { service, chatService, pythonGeneratorService, eventEmitter } = makeService(ydoc);
 
@@ -76,12 +82,15 @@ describe('PythonAiExecutorService', () => {
       }));
       expect(pythonGeneratorService.edit).toHaveBeenCalledWith(
         expect.objectContaining({ chat_id: 'chat-new', document_id: 'doc-1' }),
+        blockId,
         expect.stringContaining('make it print new'),
       );
       expect(result).toEqual({ result: 'print(1)', chatId: 'chat-new' });
 
       const block = getBlocks(ydoc).get(blockId) as any;
-      expect(getPythonAISuggestions(block)?.toString()).toBe('print(1)');
+      // written by the MCP server, not left as a suggestion to accept
+      expect(getPythonSource(block).toString()).toBe('print(1)');
+      expect(getPythonAISuggestions(block)).toBeNull();
       expect(eventEmitter.emit).toHaveBeenCalledWith('block.action', expect.objectContaining({ action: 'edited' }));
     });
 
@@ -126,7 +135,7 @@ describe('PythonAiExecutorService', () => {
       expect(tasks[0]?.getCompleteStatus()).toBe('error');
     });
 
-    it('does not apply the suggestion when the task is aborted mid-flight', async () => {
+    it('stops reporting success when the task is aborted mid-flight', async () => {
       const { ydoc, blockId } = makeDocWithPythonBlock('print("old")', 'change it');
       const { service, pythonGeneratorService, eventEmitter } = makeService(ydoc);
 
@@ -135,12 +144,14 @@ describe('PythonAiExecutorService', () => {
         // observeStatus should pick this up before the suggestion is applied.
         const task = AITasks.fromYjs(ydoc).getBlockTasks(blockId, 'edit-python')[0];
         task.setAborting();
-        return { code: 'should-not-apply' };
+        writeSource(getPythonSource(getBlocks(ydoc).get(blockId) as any), 'applied-already');
+        return { cell_id: blockId, updated: true };
       });
 
       const result = await service.editAiPython('doc-1', 'ws-1', blockId, 'user-1');
 
-      expect(result.result).toBe('should-not-apply');
+      // the edit was already made by the time the stop arrived
+      expect(result.result).toBe('applied-already');
       const block = getBlocks(ydoc).get(blockId) as any;
       expect(getPythonAISuggestions(block)).toBeNull();
       expect(eventEmitter.emit).not.toHaveBeenCalledWith('block.action', expect.anything());
@@ -148,7 +159,7 @@ describe('PythonAiExecutorService', () => {
   });
 
   describe('fixAiPython', () => {
-    it('generates a fix from the block error and applies it as an AI suggestion', async () => {
+    it('has the AI service fix the cell from the block error', async () => {
       const ydoc = new Y.Doc();
       const blocks = getBlocks(ydoc);
       const block = makePythonBlock('block-1', { source: 'print(1/0)' });
@@ -165,6 +176,7 @@ describe('PythonAiExecutorService', () => {
       expect(chatService.createChat).toHaveBeenCalledWith('user-1', expect.objectContaining({ title: 'Python Fix' }));
       expect(pythonGeneratorService.fix).toHaveBeenCalledWith(
         expect.objectContaining({ document_id: 'doc-1' }),
+        'block-1',
         expect.stringContaining('ZeroDivisionError'),
       );
       expect(result).toEqual({ result: 'print(2)', chatId: 'chat-new' });

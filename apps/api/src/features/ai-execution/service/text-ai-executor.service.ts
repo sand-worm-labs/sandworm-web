@@ -9,7 +9,6 @@ import {
   AITaskItem,
   getMarkdownAttributes,
   closeMarkdownEditWithAIPrompt,
-  updateMarkdownAISuggestions,
 } from '@sandworm/editor'
 import type { MarkdownBlock } from '@sandworm/editor'
 import { BaseAiExecutorService } from './base-ai-executor.service'
@@ -107,18 +106,18 @@ export class TextAiExecutorService extends BaseAiExecutorService {
 
       const prompt = `${instructions}\n\n${content}`
 
-      const { content: generated } = await this.markdownGeneratorService.edit(ctx, prompt)
+      // The AI service has the MCP server change the cell itself; nothing comes back to apply.
+      await this.markdownGeneratorService.edit(ctx, block.getAttribute('id') as string, prompt)
 
       if (aborted) {
         taskItem.setCompleted('aborted')
-        return generated
+        return source?.toJSON() ?? ''
       }
 
-      updateMarkdownAISuggestions(block, generated)
       closeMarkdownEditWithAIPrompt(block, true)
       taskItem.setCompleted('success')
       this.emitBlockAction('edited', 'Markdown', block, ctx)
-      return generated
+      return source?.toJSON() ?? ''
     } catch (err) {
       taskItem.setCompleted('error')
       throw err

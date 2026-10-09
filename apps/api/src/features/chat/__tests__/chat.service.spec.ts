@@ -31,6 +31,7 @@ function makeService(): ChatService {
     {} as any, // workspaceService
     {} as any, // redisService
     {} as any, // chainSqlService
+    {} as any, // authService
   );
 }
 

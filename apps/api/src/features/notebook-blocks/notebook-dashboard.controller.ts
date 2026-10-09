@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiAuth, CurrentUser } from '@sandworm/api';
 import { NoAudit } from '@/features/audit/audit.decorators';
+import { EditHeadingDto } from './dto/edit-heading.dto';
 import { SetDashboardDto } from './dto/set-dashboard.dto';
 import { NotebookDashboardService } from './notebook-dashboard.service';
 
@@ -35,5 +36,18 @@ export class NotebookDashboardController {
     @Body() dto: SetDashboardDto,
   ) {
     return this.dashboard.setDashboard({ userId, workspaceId, documentId }, dto);
+  }
+
+  @NoAudit()
+  @Patch('headings/:headingId')
+  @ApiAuth({ summary: "Change the text of one of a notebook's dashboard headings" })
+  editHeading(
+    @CurrentUser('id') userId: string,
+    @Param('workspaceId', ParseUUIDPipe) workspaceId: string,
+    @Param('documentId', ParseUUIDPipe) documentId: string,
+    @Param('headingId', ParseUUIDPipe) headingId: string,
+    @Body() dto: EditHeadingDto,
+  ) {
+    return this.dashboard.editHeading({ userId, workspaceId, documentId }, headingId, dto);
   }
 }

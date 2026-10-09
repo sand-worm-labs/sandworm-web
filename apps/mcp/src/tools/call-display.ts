@@ -106,6 +106,7 @@ const STEPS: Record<string, (args: Args, result: Result) => string> = {
   edit_notebook: args => `Renamed the notebook to: ${str(args.title)}`,
   publish_notebook: (_, result) => `Published the notebook: ${str(result.publicUrl)}`,
   set_dashboard: (_, result) => `Laid out the dashboard: ${tileCount(result)} tile(s) in ${rowCount(result)} row(s)`,
+  edit_header: args => `Changed a dashboard heading to "${String(args.content ?? '')}"`,
   get_dashboard: () => 'Read the dashboard',
   run_notebook: () => 'Started a run',
   get_run_results: () => 'Checked the run',
