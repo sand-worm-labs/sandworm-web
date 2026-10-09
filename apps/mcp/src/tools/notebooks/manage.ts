@@ -75,7 +75,7 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
     'edit_notebook',
     {
       description: 'Rename a notebook. Use add_cell / update_cell / delete_cell to change its cells',
-      inputSchema: { notebookId, title: z.string().min(1), workspaceId },
+      inputSchema: { notebookId, title: z.string().min(1), workspaceId, request: turnRequest },
     },
     handle(async ({ notebookId, title, workspaceId }) => {
       const ws = await resolveWorkspaceId(ctx, workspaceId);

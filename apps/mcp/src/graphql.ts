@@ -1,5 +1,6 @@
 import type { AuthContext } from './auth.ts';
 import type { ClientInfo } from './client.ts';
+import { callApi } from './lane.ts';
 
 export type ToolContext = {
   auth: AuthContext;
@@ -24,20 +25,17 @@ export async function graphql<T>(
   query: string,
   variables: Record<string, unknown> = {},
 ): Promise<T> {
-  const res = await fetch(`${ctx.apiUrl}/api/graphql`, {
+  const res = await callApi({ userId: ctx.auth.userId, token: ctx.auth.token, apiUrl: ctx.apiUrl }, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Cookie: `access_token=${ctx.auth.token}` },
-    body: JSON.stringify({ query, variables }),
-    signal: AbortSignal.timeout(30_000),
+    path: '/api/graphql',
+    body: { query, variables },
+    timeoutMs: 30_000,
   });
 
-  const body = (await res.json().catch(() => null)) as {
-    data?: T;
-    errors?: { message: string }[];
-  } | null;
+  const body = res.json as { data?: T; errors?: { message: string }[] } | null;
 
   if (body?.errors?.length) throw new GraphQLError(body.errors.map(e => e.message).join('; '));
-  if (!res.ok || !body?.data) throw new GraphQLError(`Sandworm API returned ${res.status}`);
+  if (res.status < 200 || res.status >= 300 || !body?.data) throw new GraphQLError(`Sandworm API returned ${res.status}`);
   return body.data;
 }
 

@@ -8,7 +8,7 @@ import {
   MessageRole,
   UserWorkspaceEntity,
 } from '@sandworm/postgresql-typeorm';
-import { Between, EntityManager, Like, MoreThan, Raw, Repository } from 'typeorm';
+import { Between, EntityManager, Like, MoreThan, Repository } from 'typeorm';
 import { McpDisplayDto, McpPromptDto, McpToolCallDto, RecordMcpToolCallsDto } from './dto/mcp-tool-calls.dto';
 
 const MCP_CHAT_TITLE = 'MCP session';
@@ -148,6 +148,11 @@ export class McpChatLogService {
       // a finished turn: what the agent does next belongs to the user's next
       // message, not under this reply.
       if (message?.content?.trim()) message = null;
+      // Anything said after it ends the turn as well: new work is the chat's
+      // last message, never added to one further up.
+      if (message && (await em.existsBy(MessageEntity, { chat: { id: chat.id }, createdAt: MoreThan(message.createdAt) }))) {
+        message = null;
+      }
 
       if (prompt && (await this.savePrompt(em, chat.id, prompt, message))) message = null;
 
@@ -177,7 +182,7 @@ export class McpChatLogService {
   ): Promise<ChatEntity> {
     const title = mcpChatTitle(prompt?.text, client?.name);
     const chat = await em.findOne(ChatEntity, {
-      where: { userId, documentId, lastContext: Raw(alias => `${alias} ->> 'source' = 'mcp'`) },
+      where: { userId, documentId },
       order: { createdAt: 'DESC' },
     });
 

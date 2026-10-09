@@ -256,6 +256,16 @@ export class YjsDocumentService implements OnModuleDestroy {
         return yjsAppDoc;
     }
 
+    // A document's published copy and the clock of its last save, or null when
+    // it was never published.
+    async getAppDocument(documentId: string): Promise<{ id: string; clock: number } | null> {
+        return this.yjsAppDocumentRepo.findOne({
+            where: { documentId },
+            order: { createdAt: "DESC" },
+            select: { id: true, clock: true },
+        });
+    }
+
     async getYDocState(
         documentId: string,
         isApp: boolean,

@@ -454,6 +454,12 @@ function SQLBlock(props: Props) {
     editorAPI.insert(blockId, { scrollIntoView: false });
   }, [props.block, editorAPI.insert, blockId, aiTask]);
 
+  const onStopEditWithAI = useCallback(() => {
+    if (aiTask?.getMetadata()._tag === "edit-sql") {
+      aiTask.setAborting();
+    }
+  }, [aiTask]);
+
   const onChangeDataSource = useCallback(
     (value: string) => {
       if (value === "duckdb") {
@@ -1175,6 +1181,7 @@ function SQLBlock(props: Props) {
                   disabled={isAIEditing || aiSuggestions !== null}
                   onSubmit={onSubmitEditWithAI}
                   onClose={onCloseEditWithAIPrompt}
+                  onStop={onStopEditWithAI}
                   value={editWithAIPrompt}
                   hasOutput={result !== null}
                 />

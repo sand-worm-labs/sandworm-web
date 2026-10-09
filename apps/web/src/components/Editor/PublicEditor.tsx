@@ -390,6 +390,7 @@ function PublicTabRef(props: PublicTabRefProps) {
         onToggleIsBlockHiddenInPublished={() => {}}
         insertBelow={() => {}}
         isPublicMode
+        viewModeCodeHidden={!props.isQueryView}
         userId={null}
         executionQueue={NOOP_EXECUTION_QUEUE}
         isFullScreen={false}
@@ -537,6 +538,8 @@ interface PublicEditorInnerProps {
   yDoc: Y.Doc;
   isSyncing: boolean;
   isQueryView: boolean;
+  hideHero?: boolean;
+  titleAction?: ReactNode;
   scrollViewRef: React.MutableRefObject<HTMLDivElement | null>;
 }
 
@@ -631,7 +634,7 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
             )}
           >
             <div className={!props.isPDF ? "pt-12 pb-6" : ""}>
-              {!props.isPDF && (
+              {!props.isPDF && !props.hideHero && (
                 <NotebookHeroTop
                   document={props.document}
                   isAuthenticated={isAuthenticated}
@@ -660,7 +663,7 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
                 </div>
               </div>
 
-              {!props.isPDF && (
+              {!props.isPDF && !props.hideHero && (
                 <NotebookHeroMeta
                   document={props.document}
                   isAuthenticated={isAuthenticated}
@@ -702,6 +705,10 @@ export interface PublicEditorProps {
   yDoc: Y.Doc;
   isSyncing: boolean;
   isQueryView?: boolean;
+  // Drops the public page's author, favorite and fork header.
+  hideHero?: boolean;
+  // Sits to the right of the title, where the editor has its Run button.
+  titleAction?: ReactNode;
   children?: ReactNode;
 }
 

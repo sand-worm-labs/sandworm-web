@@ -4,6 +4,9 @@
 jest.mock('@/features/workspace/service/workspace.service', () => ({
   WorkspaceService: jest.fn(),
 }));
+jest.mock('@/features/auth/core/auth.service', () => ({
+  AuthService: jest.fn(),
+}));
 
 import { of, throwError } from 'rxjs';
 import { TitleGeneratorService } from '../title-generator.service';
@@ -17,30 +20,31 @@ function makeService() {
     getWorkspaceById: jest.fn(),
     getWorkspaceAiKey: jest.fn(),
   } as any;
+  const authService = { issueTokenPair: jest.fn().mockResolvedValue({ accessToken: 'user-token' }) } as any;
 
-  const service = new TitleGeneratorService(configService, httpService, workspaceService);
-  return { service, configService, httpService, workspaceService };
+  const service = new TitleGeneratorService(configService, httpService, workspaceService, authService);
+  return { service, httpService, workspaceService, authService };
 }
 
 const REQUEST = { user_id: 'u1', workspace_id: 'w1', document_id: 'd1' };
 
 describe('TitleGeneratorService', () => {
   describe('generateTitle', () => {
-    it('posts to /document/generate-title with the change-title message and workspace model', async () => {
-      const { service, httpService, workspaceService } = makeService();
+    it('posts to /notebook/title as the user, with the workspace model', async () => {
+      const { service, httpService, workspaceService, authService } = makeService();
       workspaceService.getWorkspaceById.mockResolvedValue({ id: 'w1', assistantModel: 'gpt-5' });
       workspaceService.getWorkspaceAiKey.mockResolvedValue('sk-abc');
       httpService.post.mockReturnValue(of({ data: { title: 'New Title' } }));
 
-      const result = await service.generateTitle(REQUEST, 'Old Title');
+      const result = await service.generateTitle(REQUEST);
 
+      expect(authService.issueTokenPair).toHaveBeenCalledWith('u1');
       expect(httpService.post).toHaveBeenCalledWith(
-        'http://ai.local/document/generate-title',
+        'http://ai.local/notebook/title',
         {
           openrouter_api_key: 'sk-abc',
-          message: 'Change the title of the document: Old Title',
           model: 'gpt-5',
-          context: REQUEST,
+          context: { ...REQUEST, user_token: 'user-token' },
         },
         { headers: { 'Content-Type': 'application/json', 'x-handshake-token': 'token-123' } },
       );
@@ -53,7 +57,7 @@ describe('TitleGeneratorService', () => {
       workspaceService.getWorkspaceAiKey.mockResolvedValue('sk-abc');
       httpService.post.mockReturnValue(throwError(() => new Error('network down')));
 
-      await expect(service.generateTitle(REQUEST, 'Old Title')).rejects.toThrow('network down');
+      await expect(service.generateTitle(REQUEST)).rejects.toThrow('network down');
     });
   });
 });

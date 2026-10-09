@@ -263,7 +263,7 @@ type ContractAbi {
 
 type AiResult {
   result: String!
-  chatId: String!
+  chatId: String
 }
 
 type Profile {

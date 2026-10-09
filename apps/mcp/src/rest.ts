@@ -1,4 +1,5 @@
 import type { ToolContext } from './graphql.ts';
+import { callApi } from './lane.ts';
 
 export class RestError extends Error {}
 
@@ -27,17 +28,14 @@ export async function rest<T>(
   // For endpoints that hold the request open on purpose, such as waiting on a run.
   { timeoutMs = DEFAULT_TIMEOUT_MS }: { timeoutMs?: number } = {},
 ): Promise<T> {
-  const res = await fetch(`${ctx.apiUrl}/api${path}`, {
+  const res = await callApi({ userId: ctx.auth.userId, token: ctx.auth.token, apiUrl: ctx.apiUrl }, {
     method,
-    headers: {
-      Cookie: `access_token=${ctx.auth.token}`,
-      ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
-    },
-    body: body === undefined ? undefined : JSON.stringify(body),
-    signal: AbortSignal.timeout(timeoutMs),
+    path: `/api${path}`,
+    body,
+    timeoutMs,
   });
 
-  const json = (await res.json().catch(() => null)) as (T & ErrorBody) | null;
-  if (!res.ok || json === null) throw new RestError(describe(json, res.status));
+  const json = res.json as (T & ErrorBody) | null;
+  if (res.status < 200 || res.status >= 300 || json === null) throw new RestError(describe(json, res.status));
   return json;
 }

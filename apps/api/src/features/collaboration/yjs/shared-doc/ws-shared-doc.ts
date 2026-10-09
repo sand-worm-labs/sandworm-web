@@ -342,6 +342,12 @@ export class SharedDoc implements WSSharedDoc {
         await this.reset(loadResult.ydoc, loadResult.clock, loadResult.byteLength);
     };
 
+    // Loads the saved state again when it has moved past the one held here,
+    // as it does for every viewer's copy each time the notebook is saved.
+    public async reloadIfBehind(savedClock: number): Promise<void> {
+        if (this.clock < savedClock) await this.onNewerClock(savedClock);
+    }
+
     public setExecutor(executor: DocExecutor): void {
         this.executor = executor;
     }

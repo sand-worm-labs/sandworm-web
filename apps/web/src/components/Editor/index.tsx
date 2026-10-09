@@ -107,6 +107,7 @@ import PivotTableBlock from "./blocks/customBlocks/pivotTable";
 import RunAllV2 from "./blocks/RunAllV2";
 import useHotkeys from "./hooks/useHotkeys";
 import RemoveBlockDashboardConflictDialog from "./RemoveBlockDashboardConflictDialog";
+import RemoveTabDashboardConflictDialog from "./RemoveTabDashboardConflictDialog";
 import { widthClasses } from "./constants";
 import NewTabButton from "./NewTabButton";
 import ExecIndicator from "./ExecIndicator";
@@ -1447,7 +1448,7 @@ const Editor = (props: Props) => {
     }
   }, [editorState.cursorBlockId, editorAPI.insert]);
 
-  const [_removeBlockDialog, setRemoveBlockDialog] =
+  const [removeBlockDialog, setRemoveBlockDialog] =
     useState<RemoveBlockDashboardConflictResult | null>(null);
   const onRemoveBlock = useCallback(
     (blockGroupId: string, blockId: string) => {
@@ -1884,7 +1885,7 @@ const Editor = (props: Props) => {
         }
         onClose={() => setRemoveBlockGroupDialog(null)}
       />
-      {/* <RemoveTabDashboardConflictDialog
+      <RemoveTabDashboardConflictDialog
         yDoc={props.yDoc}
         state={
           removeBlockDialog?._tag === "dashboard-conflict"
@@ -1892,7 +1893,7 @@ const Editor = (props: Props) => {
             : null
         }
         onClose={() => setRemoveBlockDialog(null)}
-      /> */}
+      />
       {!props.isPublicViewer && !props.isPDF && (
         <EnvBar
           publishedAt={props.isApp ? props.document.publishedAt : null}

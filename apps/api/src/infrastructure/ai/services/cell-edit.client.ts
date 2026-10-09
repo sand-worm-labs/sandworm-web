@@ -29,12 +29,13 @@ export class CellEditClient {
     private readonly authService: AuthService,
   ) {}
 
-  edit(kind: CellEditKind, context: GeneratorContext, blockId: string, prompt: string): Promise<CellEditResult> {
-    return this.send(kind, 'edit', context, blockId, { prompt });
+  // Aborting `signal` closes the request, which is what tells the AI service to stop.
+  edit(kind: CellEditKind, context: GeneratorContext, blockId: string, prompt: string, signal?: AbortSignal): Promise<CellEditResult> {
+    return this.send(kind, 'edit', context, blockId, { prompt }, signal);
   }
 
-  fix(kind: Exclude<CellEditKind, 'markdown'>, context: GeneratorContext, blockId: string, errorMessage: string): Promise<CellEditResult> {
-    return this.send(kind, 'fix', context, blockId, { error_message: errorMessage });
+  fix(kind: Exclude<CellEditKind, 'markdown'>, context: GeneratorContext, blockId: string, errorMessage: string, signal?: AbortSignal): Promise<CellEditResult> {
+    return this.send(kind, 'fix', context, blockId, { error_message: errorMessage }, signal);
   }
 
   private async send(
@@ -43,6 +44,7 @@ export class CellEditClient {
     context: GeneratorContext,
     blockId: string,
     request: { prompt: string } | { error_message: string },
+    signal?: AbortSignal,
   ): Promise<CellEditResult> {
     const { url, handshakeToken } = this.configService.getOrThrow('ai', { infer: true });
 
@@ -61,7 +63,7 @@ export class CellEditClient {
           model: workspace.assistantModel,
           context: { ...context, user_token: accessToken },
         },
-        { headers: { 'Content-Type': 'application/json', 'x-handshake-token': handshakeToken } },
+        { headers: { 'Content-Type': 'application/json', 'x-handshake-token': handshakeToken }, signal },
       ),
     );
     return data;

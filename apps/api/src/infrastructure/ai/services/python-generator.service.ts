@@ -10,11 +10,11 @@ export type PythonGeneratorResponse = CellEditResult;
 export class PythonGeneratorService {
   constructor(private readonly cells: CellEditClient) {}
 
-  edit(context: PythonGeneratorContext, blockId: string, prompt: string) {
-    return this.cells.edit('code', context, blockId, prompt);
+  edit(context: PythonGeneratorContext, blockId: string, prompt: string, signal?: AbortSignal) {
+    return this.cells.edit('code', context, blockId, prompt, signal);
   }
 
-  fix(context: PythonGeneratorContext, blockId: string, error_message: string) {
-    return this.cells.fix('code', context, blockId, error_message);
+  fix(context: PythonGeneratorContext, blockId: string, error_message: string, signal?: AbortSignal) {
+    return this.cells.fix('code', context, blockId, error_message, signal);
   }
 }

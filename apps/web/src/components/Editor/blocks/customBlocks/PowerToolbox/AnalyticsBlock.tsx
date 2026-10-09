@@ -6,6 +6,7 @@ import {
   type ExecutionQueue,
   type PowerToolboxBlock,
   getBaseAttributes,
+  getToolById,
   getPowerToolboxAttributes,
   getPowerToolboxBlockResultStatus,
   getPowerToolboxBlockIsDirty,
@@ -149,7 +150,11 @@ interface RunTooltipContentProps {
   hasResults: boolean;
 }
 
-const RunTooltipContent = ({ ref, isDirty, hasResults }: RunTooltipContentProps) => (
+const RunTooltipContent = ({
+  ref,
+  isDirty,
+  hasResults,
+}: RunTooltipContentProps) => (
   <div
     className="font-body pointer-events-none w-max bg-hunter-950 text-white text-xs p-2 rounded-md flex flex-col gap-y-1"
     ref={ref}
@@ -172,6 +177,8 @@ interface Props {
   isEditable: boolean;
   dragPreview: ConnectDragPreview | null;
   isPublicMode: boolean;
+  // Read-only pages only: false in Query view, which shows the inputs too.
+  viewModeCodeHidden?: boolean;
   isPDF: boolean;
   dashboardMode: DashboardMode | null;
   hasMultipleTabs: boolean;
@@ -185,6 +192,18 @@ interface Props {
   hideTypePill?: boolean;
   onUseResultInPythonBlock?: () => void;
   onOpenToolSourceInPythonBlock?: (source: string) => string;
+}
+
+// Same strip the SQL and Python blocks show for hidden code. It sits right
+// under the block header, which already draws the line between them.
+function CollapsedInputsSummary({ fieldCount }: { fieldCount: number }) {
+  return (
+    <div className="flex items-center gap-x-2 px-4 py-1.5 text-xs bg-inputBg dark:bg-base-200">
+      <span className="italic text-ink-400">
+        {fieldCount} {fieldCount === 1 ? "field" : "fields"} hidden
+      </span>
+    </div>
+  );
 }
 
 function AnalyticsBlock(props: Props) {
@@ -212,7 +231,15 @@ function AnalyticsBlock(props: Props) {
   const showDataframeActions =
     resultStatus === "success" && !props.isPublicMode && !props.isPDF;
 
+  // Read-only pages hide the inputs in Report view and show them in Query view.
+  const inputsHidden = props.isPublicMode && props.viewModeCodeHidden !== false;
+  const fieldCount = attrs.toolId
+    ? (getToolById(attrs.toolId)?.params.length ?? 0)
+    : 0;
+
   const [resultsHidden, setResultsHidden] = useState(false);
+  const showStatus =
+    !resultsHidden && (hasResults || Boolean(attrs.executedAt));
   const [isSourceOpen, setIsSourceOpen] = useState(false);
 
   const [editorState, editorAPI] = useEditorAwareness();
@@ -306,7 +333,11 @@ function AnalyticsBlock(props: Props) {
     () =>
       status === "idle"
         ? (ref: React.Ref<HTMLButtonElement>) => (
-            <RunTooltipContent ref={ref} isDirty={isDirty} hasResults={hasResults} />
+            <RunTooltipContent
+              ref={ref}
+              isDirty={isDirty}
+              hasResults={hasResults}
+            />
           )
         : undefined,
     [status, isDirty, hasResults]
@@ -414,16 +445,33 @@ function AnalyticsBlock(props: Props) {
           </div>
 
           <div className="print:hidden">
-            <div className="px-3 pb-3 pt-3">
+            {inputsHidden && fieldCount > 0 && (
+              <CollapsedInputsSummary fieldCount={fieldCount} />
+            )}
+            <div
+              className={clsx(
+                "px-3",
+                // With the inputs hidden the output's top line sits right
+                // under the strip, with no gap between them.
+                !inputsHidden && "pt-3",
+                (!inputsHidden || showStatus) && "pb-3"
+              )}
+            >
               {/* AnalyticsParamForm has no read-only mode of its own — its
-                  fields commit straight to the Yjs doc onBlur. On a public
-                  page that would look editable without doing anything
-                  useful, so it's hidden in both Report and Query view,
-                  not just Report. */}
+                  fields commit straight to the Yjs doc onBlur. On a
+                  read-only page Report view hides it, and Query view shows
+                  it locked, so the inputs can be read but not changed. */}
               {!props.isPublicMode && (
                 <AnalyticsParamForm block={props.block} />
               )}
-
+              {props.isPublicMode && !inputsHidden && (
+                <fieldset
+                  disabled
+                  className="pointer-events-none select-none min-w-0"
+                >
+                  <AnalyticsParamForm block={props.block} />
+                </fieldset>
+              )}
               {!resultsHidden && (hasResults || attrs.executedAt) && (
                 <div className="flex flex-col text-xs -mx-3 -mb-3 mt-3 bg-inputBg dark:bg-block-surface border-t border-hover-border dark:border-border-dark">
                   {Object.entries(attrs.inputs ?? {}).some(
@@ -434,7 +482,11 @@ function AnalyticsBlock(props: Props) {
                         .filter(([, v]) => v !== "" && v !== null)
                         .slice(0, 4)
                         .map(([key, value]) => (
-                          <ParamSummaryPill key={key} label={key} value={value} />
+                          <ParamSummaryPill
+                            key={key}
+                            label={key}
+                            value={value}
+                          />
                         ))}
                     </div>
                   )}
@@ -447,7 +499,9 @@ function AnalyticsBlock(props: Props) {
                       envStatus={envStatus}
                       isDirty={isDirty}
                       isResultHidden={resultsHidden}
-                      onToggleResultHidden={() => setResultsHidden(prev => !prev)}
+                      onToggleResultHidden={() =>
+                        setResultsHidden(prev => !prev)
+                      }
                     />
                     {showDataframeActions && (
                       <div className="ml-auto">

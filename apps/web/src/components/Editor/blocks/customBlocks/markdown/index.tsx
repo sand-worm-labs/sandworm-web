@@ -29,6 +29,8 @@ import {
   getMarkdownAISuggestions,
   getBaseAttributes,
   setTitle,
+  AITasks,
+  isAITaskStatusLoading,
 } from "@sandworm/editor";
 import { PiMarkdownLogo, PiCpu, PiTrash } from "react-icons/pi";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
@@ -360,10 +362,20 @@ const MarkdownBlock = (props: Props) => {
     toggleMarkdownEditWithAIPromptOpen(props.block);
   }, [props.block, hasOaiKey]);
 
+  const onStopEditWithAI = useCallback(() => {
+    const { doc } = props.block;
+    if (!doc) return;
+    AITasks.fromYjs(doc)
+      .getBlockTasks(id, "edit-text")
+      .filter(task => isAITaskStatusLoading(task.getStatus()._tag))
+      .forEach(task => task.setAborting());
+  }, [props.block, id]);
+
   const onCloseEditWithAIPrompt = useCallback(() => {
+    onStopEditWithAI();
     closeMarkdownEditWithAIPrompt(props.block, false);
     editorAPI.insert(id, { scrollIntoView: false });
-  }, [props.block, editorAPI, id]);
+  }, [props.block, editorAPI, id, onStopEditWithAI]);
 
   const onSubmitEditWithAI = useCallback(async () => {
     const result = await editTextWithAi({
@@ -577,6 +589,7 @@ const MarkdownBlock = (props: Props) => {
               disabled={loading.text}
               onSubmit={onSubmitEditWithAI}
               onClose={onCloseEditWithAIPrompt}
+              onStop={onStopEditWithAI}
               value={editWithAIPrompt}
               hasOutput
             />

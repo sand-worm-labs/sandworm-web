@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { randomUUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { Observable, ReplaySubject } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
@@ -42,10 +43,24 @@ import { AiStreamEvent } from './types/stream.types';
 // Same key the sidecar checks (src/util/cache.py: request_job_cancel /
 // is_job_cancelled) — this is the one thing Node and the sidecar agree on
 // across the language boundary, so the literal format has to stay in sync
-// with that file if it ever changes.
+// with that file if it ever changes. Keyed by job, so stopping one message
+// cannot cancel the next.
 const CANCEL_JOB_TTL_SECONDS = 5 * 60;
-function cancelJobKey(chatId: string): string {
-  return `cancel_job:${chatId}`;
+function cancelJobKey(jobId: string): string {
+  return `cancel_job:${jobId}`;
+}
+
+// A turn that never ends (the sidecar died mid-run) is dropped after this long.
+const TURN_TTL_MS = 30 * 60 * 1000;
+
+// One user message and the AI job answering it. Everything about the answer
+// is keyed by the job: its live stream, its Stop, and the row it is saved in.
+// Nothing is keyed by the chat, so two messages in one chat can never receive
+// each other's output.
+interface Turn {
+  chatId: string;
+  messageId: string;
+  stream: ReplaySubject<SseEvent>;
 }
 
 export interface SseEvent {
@@ -64,7 +79,9 @@ export class ChatService implements OnModuleInit {
   private readonly chatTemperature: number;
   private readonly chatMaxTokens:   number;
 
-  private readonly chatStreams = new Map<string, ReplaySubject<SseEvent>>();
+  private readonly turns = new Map<string, Turn>(); // by job id
+  private readonly jobOfMessage = new Map<string, string>(); // user message id -> job id
+  private readonly jobOfChat = new Map<string, string>(); // chat id -> its latest job id, for Stop
 
   constructor(
     @InjectRepository(ChatEntity)
@@ -100,7 +117,45 @@ export class ChatService implements OnModuleInit {
 
 
 
+  // Registered before anything is awaited, so the turn exists by the time the
+  // mutation that saved the message returns and the client asks for its stream.
+  private openTurn(jobId: string, chatId: string, messageId: string): void {
+    this.turns.set(jobId, { chatId, messageId, stream: new ReplaySubject<SseEvent>(Infinity, 5 * 60 * 1000) });
+    this.jobOfMessage.set(messageId, jobId);
+    this.jobOfChat.set(chatId, jobId);
+    setTimeout(() => this.closeTurn(jobId), TURN_TTL_MS).unref();
+  }
+
+  private closeTurn(jobId: string, error?: Error): void {
+    const turn = this.turns.get(jobId);
+    if (!turn) return;
+
+    this.turns.delete(jobId);
+    this.jobOfMessage.delete(turn.messageId);
+    if (this.jobOfChat.get(turn.chatId) === jobId) this.jobOfChat.delete(turn.chatId);
+
+    if (error) turn.stream.error(error);
+    else turn.stream.complete();
+
+    // A later request for this message's stream ends at once instead of waiting.
+    void Promise.resolve(this.messageRepository.update(turn.messageId, { isAnswered: true })).catch(err =>
+      this.logger.error(`[turn] could not mark message ${turn.messageId} answered`, err),
+    );
+  }
+
   private async handleChatMessageCreated(event: MessageCreatedEvent): Promise<void> {
+    const jobId = randomUUID();
+    this.openTurn(jobId, event.chatId, event.messageId);
+
+    try {
+      await this.startTurn(jobId, event);
+    } catch (err) {
+      this.logger.error(`[message-created] could not start job=${jobId}`, err);
+      this.closeTurn(jobId, err instanceof Error ? err : new Error(String(err)));
+    }
+  }
+
+  private async startTurn(jobId: string, event: MessageCreatedEvent): Promise<void> {
     const [chat, messages] = await Promise.all([
       this.chatRepository.findOne({ where: { id: event.chatId } }),
       this.messageRepository.find({
@@ -109,31 +164,48 @@ export class ChatService implements OnModuleInit {
       }),
     ]);
 
-    if (!chat) return;
+    const userMessage = messages.find(m => m.id === event.messageId);
+    if (!chat || !userMessage) return this.closeTurn(jobId);
 
-    const lastUserMessage  = messages.find(m => m.role === MessageRole.USER);
-    const focusedBlockIds  = lastUserMessage?.focusedBlocks?.map(b => b.id) ?? [];
+    const focusedBlockIds  = userMessage.focusedBlocks?.map(b => b.id) ?? [];
     const openrouterApiKey = await this.workspaceService.getWorkspaceAiKey(chat.workspaceId);
 
     if (!openrouterApiKey) {
       this.logger.warn(`[message-created] no OpenRouter key for workspace=${chat.workspaceId}`);
-      return;
+      return this.closeTurn(jobId);
     }
 
-    const subject = new ReplaySubject<SseEvent>(Infinity, 5 * 60 * 1000);
-    this.chatStreams.set(chat.id, subject);
+    // The answer's row is made now, right after the question it answers. The
+    // job fills it in when it finishes (createOrAppendMessageByJobId), so
+    // however late that is, the answer stays under its own question.
+    await this.messageRepository.save(
+      this.messageRepository.create({
+        chat:      { id: chat.id },
+        role:      MessageRole.ASSISTANT,
+        jobId,
+        content:   '',
+        parts:     [],
+        createdAt: new Date(userMessage.createdAt.getTime() + 1),
+      }),
+    );
 
-    // `messages` is fetched DESC (newest-first) so `lastUserMessage` above is
-    // cheap to find; the AI sidecar's pipeline (apps/ai .../pipeline/service.py)
+    // `messages` is fetched DESC (newest-first); the AI sidecar's pipeline
     // expects chronological order to locate the current turn via
-    // reversed(messages) + messages[:-1], so reverse it back here.
+    // reversed(messages) + messages[:-1], so reverse it back here. This turn
+    // is everything up to its own message: an answer still being written for
+    // an earlier message is an empty row and is left out.
+    const history = [...messages]
+      .reverse()
+      .filter(m => m.createdAt <= userMessage.createdAt && (m.role === MessageRole.USER || !!m.content));
+
     const chainSql = await this.chainSqlService.status(chat.workspaceId);
     // The sidecar reaches the notebook only through the MCP server, as this
     // user, so every chat request carries their access token.
     const userToken = (await this.authService.issueTokenPair(chat.userId)).accessToken;
     const payload = {
-      messages:           [...messages].reverse().map(m => ({ role: m.role, content: m.content ?? '' })),
-      model:              lastUserMessage?.model ?? '',
+      job_id:             jobId,
+      messages:           history.map(m => ({ role: m.role, content: m.content ?? '' })),
+      model:              userMessage.model ?? '',
       openrouter_api_key: openrouterApiKey,
       context: {
         user_id:           chat.userId,
@@ -160,33 +232,30 @@ export class ChatService implements OnModuleInit {
         },
       })
       .subscribe({
-        next:  (r)   => this.logger.log(`[chat-completions] job started status=${r.status}`),
-        error: (err) => this.logger.error('[chat-completions] failed to start job', err),
+        next:  (r)   => this.logger.log(`[chat-completions] job=${jobId} started status=${r.status}`),
+        error: (err) => {
+          this.logger.error(`[chat-completions] failed to start job=${jobId}`, err);
+          this.closeTurn(jobId, new Error('The AI service could not be reached.'));
+        },
       });
-
   }
 
   // The AI sidecar (apps/ai/src/util/stream_events.py) constructs the full
-  // Claude-Messages-API-style envelope — this just relays it onto the SSE
-  // subject and handles the two terminal event types.
+  // Claude-Messages-API-style envelope — this just relays it onto the stream
+  // of the turn the job belongs to, and handles the two terminal event types.
   private handleAiJobEvent(event: AiJobEvent): void {
-    this.logger.log(`[ai-job] chatId=${event.chatId} type=${event.type}`);
+    this.logger.log(`[ai-job] chatId=${event.chatId} jobId=${event.jobId} type=${event.type}`);
 
-    const subject = this.chatStreams.get(event.chatId);
-    if (!subject) return;
+    const turn = this.turns.get(event.jobId);
+    if (!turn) return;
 
     if (event.type === 'intent_classified' || event.type === 'intent_parsed') return;
 
     const payload = { type: event.type, ...event.payload } as AiStreamEvent;
-    subject.next({ event: payload.type, data: JSON.stringify(payload) });
+    turn.stream.next({ event: payload.type, data: JSON.stringify(payload) });
 
-    if (payload.type === 'message_stop') {
-      subject.complete();
-      this.chatStreams.delete(event.chatId);
-    } else if (payload.type === 'error') {
-      subject.error(new Error(payload.error.message));
-      this.chatStreams.delete(event.chatId);
-    }
+    if (payload.type === 'message_stop') this.closeTurn(event.jobId);
+    else if (payload.type === 'error') this.closeTurn(event.jobId, new Error(payload.error.message));
   }
 
   streamResponse(userId: string, chatId: string, messageId: string): Observable<SseEvent> {
@@ -199,11 +268,13 @@ export class ChatService implements OnModuleInit {
         if (!userMessage) { subscriber.error(new NotFoundException('Message not found')); return; }
         if (userMessage.isAnswered) { subscriber.complete(); return; }
 
-        if (!this.chatStreams.has(chatId)) {
-          this.chatStreams.set(chatId, new ReplaySubject<SseEvent>(Infinity, 5 * 60 * 1000));
-        }
+        // Only this message's own job is streamed. With none running there is
+        // nothing more to send: the saved messages are the whole answer.
+        const jobId = this.jobOfMessage.get(messageId);
+        const turn  = jobId ? this.turns.get(jobId) : undefined;
+        if (!turn) { subscriber.complete(); return; }
 
-        this.chatStreams.get(chatId)!.subscribe(subscriber);
+        turn.stream.subscribe(subscriber);
       }).catch((err) => subscriber.error(err));
     });
   }
@@ -270,18 +341,19 @@ export class ChatService implements OnModuleInit {
     const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
     if (!chat) throw new NotFoundException('Chat not found');
 
-    await this.redisService.set(cancelJobKey(chatId), '1', CANCEL_JOB_TTL_SECONDS);
+    // Stop is for the message being answered right now, and only that one.
+    const jobId = this.jobOfChat.get(chatId);
+    const turn  = jobId ? this.turns.get(jobId) : undefined;
+    if (!jobId || !turn) return;
 
-    const subject = this.chatStreams.get(chatId);
-    if (subject) {
-      subject.next({
-        event: 'message_delta',
-        data: JSON.stringify({ type: 'message_delta', delta: { stop_reason: 'cancelled' } }),
-      });
-      subject.next({ event: 'message_stop', data: JSON.stringify({ type: 'message_stop' }) });
-      subject.complete();
-      this.chatStreams.delete(chatId);
-    }
+    await this.redisService.set(cancelJobKey(jobId), '1', CANCEL_JOB_TTL_SECONDS);
+
+    turn.stream.next({
+      event: 'message_delta',
+      data: JSON.stringify({ type: 'message_delta', delta: { stop_reason: 'cancelled' } }),
+    });
+    turn.stream.next({ event: 'message_stop', data: JSON.stringify({ type: 'message_stop' }) });
+    this.closeTurn(jobId);
   }
 
   async chatExists(chatId: string): Promise<boolean> {
@@ -347,7 +419,7 @@ export class ChatService implements OnModuleInit {
       }),
     );
 
-    await this.messageRepository.save(
+    const firstMessage = await this.messageRepository.save(
       this.messageRepository.create({
         chat:          { id: savedChat.id },
         role:          MessageRole.USER,
@@ -357,7 +429,10 @@ export class ChatService implements OnModuleInit {
       }),
     );
 
-    this.eventEmitter.emit(MessageEventNames.MESSAGE_CREATED, { chatId: savedChat.id } satisfies MessageCreatedEvent);
+    this.eventEmitter.emit(MessageEventNames.MESSAGE_CREATED, {
+      chatId:    savedChat.id,
+      messageId: firstMessage.id,
+    } satisfies MessageCreatedEvent);
 
     if (input.updateDocumentTitle) {
       this.titleAiExecutorService.updateTitle(documentId, workspaceId, title);
@@ -390,7 +465,17 @@ export class ChatService implements OnModuleInit {
     return Chat.fromEntity(await this.chatRepository.save(chat));
   }
 
-  async sendMessage(userId: string, input: SendMessageInput): Promise<Message> {
+  // The chat an AI edit is shown in: the given one, else the document's latest.
+  // A chat is never created for it, and no message is saved here: the AI service
+  // streams the edit into the chat itself, so the edit lands once, in order.
+  async latestChatId(
+    userId: string,
+    { workspaceId, documentId, chatId }: { workspaceId: string; documentId: string; chatId?: string },
+  ): Promise<string | undefined> {
+    return chatId ?? (await this.getChats(userId, workspaceId, documentId))[0]?.id;
+  }
+
+  async sendMessage(userId: string, input: SendMessageInput, { respond = true } = {}): Promise<Message> {
     const { chatId, content, model, focusedBlocks } = input;
 
     const chat = await this.chatRepository.findOne({ where: { id: chatId, userId } });
@@ -406,7 +491,7 @@ export class ChatService implements OnModuleInit {
       }),
     );
 
-    this.eventEmitter.emit(MessageEventNames.MESSAGE_CREATED, { chatId } satisfies MessageCreatedEvent);
+    this.eventEmitter.emit(MessageEventNames.MESSAGE_CREATED, { chatId, messageId: message.id } satisfies MessageCreatedEvent);
 
     return Message.fromEntity(message);
   }

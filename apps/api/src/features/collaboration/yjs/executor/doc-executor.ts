@@ -56,6 +56,9 @@ export class DocExecutor {
     private readonly blocks: Y.Map<YBlock>,
     private readonly dataframes: Y.Map<any>,
     private readonly services: DocExecutorServices,
+    // Shared by every notebook's executor, so only so many cells run at once
+    // across the whole API. A cell waiting for a slot stays 'enqueued'.
+    private readonly slots: PQueue = new PQueue(),
   ) {
     this.queue = ExecutionQueue.fromYjs(ydoc);
   }
@@ -148,15 +151,18 @@ export class DocExecutor {
     switch (status._tag) {
       case 'running':
       case 'enqueued': {
-        const timeout = this.startItemTimeout(batch, current);
-        try {
-          await this.executeItem(current);
-        } finally {
-          timeout.stop();
-        }
-        if (timeout.fired() && current.getCompleteStatus() === 'aborted') {
-          this.markTimedOut(current, timeout.ms);
-        }
+        // The time limit starts once the cell holds a slot, not while it waits.
+        await this.slots.add(async () => {
+          const timeout = this.startItemTimeout(batch, current);
+          try {
+            await this.executeItem(current);
+          } finally {
+            timeout.stop();
+          }
+          if (timeout.fired() && current.getCompleteStatus() === 'aborted') {
+            this.markTimedOut(current, timeout.ms);
+          }
+        });
         break;
       }
       case 'completed':
