@@ -21,8 +21,13 @@ export class AiJobListenerService implements OnModuleInit {
   // Tail of each job's event chain: events of one job run strictly in order,
   // different jobs run in parallel (bounded by `limit`).
   private readonly jobTails = new Map<string, Promise<void>>();
+  // How many of each job's events have been read from its list in Redis.
+  private readonly read = new Map<string, number>();
 
-  private readonly BUFFER_TTL_MS = 10 * 60 * 1000;
+  // As long as Redis keeps a job's events, and well past the longest chat run
+  // (AGENT_MAX_SECONDS in the AI service), so a job never loses its early
+  // events while it is still going.
+  private readonly BUFFER_TTL_MS = 60 * 60 * 1000;
   private readonly VALIDATED_TTL_MS = 60 * 60 * 1000;
 
   constructor(
@@ -33,20 +38,33 @@ export class AiJobListenerService implements OnModuleInit {
 
   async onModuleInit(): Promise<void> {
     this.logger.log('Listening for AI job events');
-    await this.redisService.catchUpAndSubscribe((channel, message) => {
-      this.enqueueForJob(channel, message);
-    });
+    // A message only says that a job has something new. The events are read
+    // from the job's list in Redis, which keeps them in order, so nothing is
+    // handled twice or skipped however the news arrives.
+    this.redisService.psubscribe('ai:job:*', channel => this.enqueueForJob(this.extractJobId(channel)));
+    // Messages published while the subscriber was away never arrive, so every
+    // time it connects, look at each job that has events waiting.
+    this.redisService.onSubscriberReady(() => void this.catchUp());
+    await this.catchUp();
   }
 
-  private enqueueForJob(channel: string, message: string): void {
-    const jobId = this.extractJobId(channel);
+  private async catchUp(): Promise<void> {
+    try {
+      const keys = await this.redisService.keys('ai:job:*:events');
+      keys.forEach(key => this.enqueueForJob(this.extractJobId(key)));
+    } catch (err) {
+      this.logger.error('Could not catch up on AI job events', err);
+    }
+  }
+
+  private enqueueForJob(jobId: string): void {
     const prev = this.jobTails.get(jobId) ?? Promise.resolve();
     const tail = prev.then(() =>
       this.limit(async () => {
         try {
-          await this.handleJobEvent(channel, message);
+          await this.readNewEvents(jobId);
         } catch (err) {
-          this.logger.error(`[${channel}] Unhandled error`, err);
+          this.logger.error(`[job:${jobId}] Unhandled error`, err);
         }
       }),
     );
@@ -54,6 +72,14 @@ export class AiJobListenerService implements OnModuleInit {
     void tail.then(() => {
       if (this.jobTails.get(jobId) === tail) this.jobTails.delete(jobId);
     });
+  }
+
+  private async readNewEvents(jobId: string): Promise<void> {
+    const messages = await this.redisService.lrange(`ai:job:${jobId}:events`, this.read.get(jobId) ?? 0, -1);
+    for (const message of messages) {
+      this.read.set(jobId, (this.read.get(jobId) ?? 0) + 1);
+      await this.handleJobEvent(`ai:job:${jobId}`, message);
+    }
   }
 
   private handleJobEvent = async (channel: string, message: string): Promise<void> => {
@@ -70,12 +96,25 @@ export class AiJobListenerService implements OnModuleInit {
     if (!isValid) return;
 
     this.enqueue(jobId, raw);
+    // Saved before it is streamed: whatever the user has seen is already in
+    // the database, so leaving the chat, or the AI service dying halfway
+    // through an answer, loses nothing.
+    await this.save(jobId, raw.chat_id!);
     this.emitJobEvent(jobId, raw);
 
     if (raw.type === 'message_stop' || raw.type === 'error') {
-      await this.flush(jobId, raw.chat_id!, eventsKey);
+      await this.finish(jobId, raw.chat_id!, eventsKey);
     }
   };
+
+  private async save(jobId: string, chatId: string): Promise<void> {
+    try {
+      await this.chatService.saveMessageByJobId(chatId, jobId, this.buffer.get(jobId) ?? []);
+    } catch (err) {
+      // The next event saves everything again, so the stream carries on.
+      this.logger.error(`[job:${jobId}] could not save the answer so far`, err);
+    }
+  }
 
   private emitJobEvent(jobId: string, raw: RawAiJobEvent): void {
     const { chat_id, type, ...rest } = raw;
@@ -95,22 +134,20 @@ export class AiJobListenerService implements OnModuleInit {
         if (this.buffer.has(jobId)) {
           this.logger.warn(`[job:${jobId}] TTL expired, evicting buffer`);
           this.buffer.delete(jobId);
+          this.read.delete(jobId);
         }
-      }, this.BUFFER_TTL_MS);
+      }, this.BUFFER_TTL_MS).unref();
     }
     this.buffer.get(jobId)!.push(event);
   }
 
-  private async flush(jobId: string, chatId: string, eventsKey: string): Promise<void> {
-    const events = this.buffer.get(jobId) ?? [];
+  private async finish(jobId: string, chatId: string, eventsKey: string): Promise<void> {
+    const count = this.buffer.get(jobId)?.length ?? 0;
     this.buffer.delete(jobId);
-
-    if (events.length === 0) return;
-
-    await this.chatService.createOrAppendMessageByJobId(chatId, jobId, events);
+    this.read.delete(jobId);
     await this.redisService.del(eventsKey);
 
-    this.logger.log(`[job:${jobId}] flushed ${events.length} events for chat ${chatId}`);
+    this.logger.log(`[job:${jobId}] saved ${count} events for chat ${chatId}`);
   }
 
   private async validateEvent(

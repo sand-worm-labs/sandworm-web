@@ -176,8 +176,8 @@ export class ChatService implements OnModuleInit {
     }
 
     // The answer's row is made now, right after the question it answers. The
-    // job fills it in when it finishes (createOrAppendMessageByJobId), so
-    // however late that is, the answer stays under its own question.
+    // job fills it in as it goes (saveMessageByJobId), so however late that
+    // is, the answer stays under its own question.
     await this.messageRepository.save(
       this.messageRepository.create({
         chat:      { id: chat.id },
@@ -552,26 +552,25 @@ export class ChatService implements OnModuleInit {
       .join('');
   }
 
-  async createOrAppendMessageByJobId(chatId: string, jobId: string, data: any): Promise<void> {
+  // Saves a job's answer as it stands so far. Called for every event of the
+  // job with all of its events up to then, so it replaces what was saved
+  // instead of adding to it, and saving the same events twice changes nothing.
+  async saveMessageByJobId(chatId: string, jobId: string, parts: any[]): Promise<void> {
+    const content = this.buildAssistantContent(parts);
     const existing = await this.messageRepository.findOne({
       where: { jobId, chat: { id: chatId } },
+      select: { id: true },
     });
-    const incoming = Array.isArray(data) ? data : [data];
 
     if (existing) {
-      const currentParts = Array.isArray(existing.parts) ? existing.parts : [];
-      const allParts = [...currentParts, ...incoming];
-      await this.messageRepository.update(existing.id, {
-        parts:   allParts,
-        content: this.buildAssistantContent(allParts),
-      });
+      await this.messageRepository.update(existing.id, { parts, content });
     } else {
       await this.messageRepository.save({
         chat: { id: chatId },
         role: MessageRole.ASSISTANT,
         jobId,
-        parts: incoming,
-        content: this.buildAssistantContent(incoming),
+        parts,
+        content,
       });
     }
   }

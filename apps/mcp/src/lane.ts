@@ -104,7 +104,9 @@ export class RedisLane {
   }
 }
 
-const redisUrl = process.env.MCP_REDIS_URL;
+// The same Redis the API and the AI service use, under the same name: the
+// API's worker reads these jobs from its own REDIS_URL.
+const redisUrl = process.env.REDIS_URL;
 const lane = redisUrl ? new RedisLane(redisUrl) : null;
 
 async function direct(caller: Caller, call: ApiCall): Promise<ApiReply> {
@@ -120,9 +122,9 @@ async function direct(caller: Caller, call: ApiCall): Promise<ApiReply> {
   return { status: res.status, json: await res.json().catch(() => null) };
 }
 
-// Every call to the API goes through here. With MCP_REDIS_URL set it waits in
+// Every call to the API goes through here. With REDIS_URL set it waits in
 // Redis for the API's worker; without it, it runs here under the in-memory
-// scheduler, so local development needs no Redis.
+// scheduler, so the tests need no Redis.
 export function callApi(caller: Caller, call: ApiCall): Promise<ApiReply> {
   if (lane) return lane.submit(caller, call);
   return scheduler.run(caller.userId, () => direct(caller, call));

@@ -43,7 +43,12 @@
       "Bash(npx swc *)",
       "Bash(npx nest *)",
       "Bash(npx eslint *)",
-      "Bash(NODE_OPTIONS=--max-old-space-size=3072 npx tsc --noEmit -p .)"
+      "Bash(NODE_OPTIONS=--max-old-space-size=3072 npx tsc --noEmit -p .)",
+      "Bash(git reflog *)",
+      "Bash(git fsck *)",
+      "Bash(git -C apps/ai status --short)",
+      "Bash(git -C apps/ai log --oneline -2)",
+      "Bash(timeout 280 npx jest --runInBand --silent --forceExit src/features/chat/__tests__/chat.service.spec.ts)"
     ],
     "additionalDirectories": [
       "/home/daniel/development/sandworm-web/apps/ai/src/services/notebook_title",
