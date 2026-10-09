@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { validate as isUuid } from 'uuid';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ChatService } from '@/features/chat/chat.service';
@@ -12,8 +12,10 @@ interface RawAiJobEvent {
   [key: string]: unknown;
 }
 
+const CATCH_UP_MS = 5 * 1000;
+
 @Injectable()
-export class AiJobListenerService implements OnModuleInit {
+export class AiJobListenerService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(AiJobListenerService.name);
   private readonly buffer = new Map<string, RawAiJobEvent[]>();
   private readonly validatedChats = new Map<string, number>();
@@ -30,6 +32,8 @@ export class AiJobListenerService implements OnModuleInit {
   private readonly BUFFER_TTL_MS = 60 * 60 * 1000;
   private readonly VALIDATED_TTL_MS = 60 * 60 * 1000;
 
+  private catchUpTimer: NodeJS.Timeout | null = null;
+
   constructor(
     private readonly redisService: RedisService,
     private readonly chatService: ChatService,
@@ -45,7 +49,15 @@ export class AiJobListenerService implements OnModuleInit {
     // Messages published while the subscriber was away never arrive, so every
     // time it connects, look at each job that has events waiting.
     this.redisService.onSubscriberReady(() => void this.catchUp());
+    // And every few seconds, in case the one message that went missing was a
+    // job's last: nothing would come after it to say there is more to read.
+    this.catchUpTimer = setInterval(() => void this.catchUp(), CATCH_UP_MS);
+    this.catchUpTimer.unref();
     await this.catchUp();
+  }
+
+  onModuleDestroy(): void {
+    if (this.catchUpTimer) clearInterval(this.catchUpTimer);
   }
 
   private async catchUp(): Promise<void> {
@@ -100,7 +112,7 @@ export class AiJobListenerService implements OnModuleInit {
     // the database, so leaving the chat, or the AI service dying halfway
     // through an answer, loses nothing.
     await this.save(jobId, raw.chat_id!);
-    this.emitJobEvent(jobId, raw);
+    await this.emitJobEvent(jobId, raw);
 
     if (raw.type === 'message_stop' || raw.type === 'error') {
       await this.finish(jobId, raw.chat_id!, eventsKey);
@@ -116,7 +128,7 @@ export class AiJobListenerService implements OnModuleInit {
     }
   }
 
-  private emitJobEvent(jobId: string, raw: RawAiJobEvent): void {
+  private async emitJobEvent(jobId: string, raw: RawAiJobEvent): Promise<void> {
     const { chat_id, type, ...rest } = raw;
     const event: AiJobEvent = {
       chatId: chat_id!,
@@ -124,7 +136,13 @@ export class AiJobListenerService implements OnModuleInit {
       type,
       payload: rest,
     };
-    this.eventEmitter.emit(AiJobEventNames.AI_JOB_EVENT, event);
+    try {
+      // Awaited so a job's events reach the chat in the order they were written.
+      await this.eventEmitter.emitAsync(AiJobEventNames.AI_JOB_EVENT, event);
+    } catch (err) {
+      // Already saved: the chat shows it the next time it loads.
+      this.logger.error(`[job:${jobId}] could not stream a ${type} event`, err);
+    }
   }
 
   private enqueue(jobId: string, event: RawAiJobEvent): void {

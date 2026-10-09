@@ -123,6 +123,127 @@ describe('ChatService', () => {
     });
   });
 
+  describe('streamResponse', () => {
+    const delta = (text: string) => ({ index: 0, delta: { type: 'text_delta', text } });
+
+    function listening(service: ChatService, { isAnswered = false } = {}) {
+      (service as any).chatRepository = { findOne: jest.fn().mockResolvedValue({ id: CHAT_ID }) };
+      (service as any).messageRepository.findOne = jest.fn().mockResolvedValue({ id: MESSAGE_ID, isAnswered });
+    }
+
+    const collect = async (service: ChatService, after?: number) => {
+      const events: SseEvent[] = [];
+      let completed = false;
+      service.streamResponse('user-1', CHAT_ID, MESSAGE_ID, after).subscribe({
+        next: event => events.push(event),
+        complete: () => { completed = true; },
+      });
+      await new Promise(resolve => setImmediate(resolve));
+      const texts = () => events.filter(e => e.event !== 'turn').map(e => JSON.parse(e.data).delta?.text);
+      return { texts, events, completed: () => completed };
+    };
+
+    it('says the job is running before any of its output', async () => {
+      const service = makeService();
+      listening(service);
+      attachStream(service);
+
+      const { events, completed } = await collect(service);
+
+      expect(events).toEqual([{ event: 'turn', data: 'running' }]);
+      expect(completed()).toBe(false);
+    });
+
+    it('gives a client that connects late the whole answer so far', async () => {
+      const service = makeService();
+      listening(service);
+      attachStream(service);
+      invoke(service, 'content_block_delta', delta('one'));
+      invoke(service, 'content_block_delta', delta('two'));
+
+      const { texts } = await collect(service);
+
+      expect(texts()).toEqual(['one', 'two']);
+    });
+
+    it('sends a reconnecting client only what it does not have yet', async () => {
+      const service = makeService();
+      listening(service);
+      attachStream(service);
+      invoke(service, 'content_block_delta', delta('one'));
+      invoke(service, 'content_block_delta', delta('two'));
+
+      const { texts } = await collect(service, 1);
+      invoke(service, 'content_block_delta', delta('three'));
+
+      expect(texts()).toEqual(['two', 'three']);
+    });
+
+    it('ends at once, without saying running, when no job is answering', async () => {
+      const service = makeService();
+      listening(service);
+
+      const { events, completed } = await collect(service);
+
+      expect(events).toEqual([]);
+      expect(completed()).toBe(true);
+    });
+  });
+
+  describe('after a restart', () => {
+    const QUESTION_AT = new Date('2026-01-01T00:00:00.000Z');
+
+    function restarted({ answerAt = new Date(QUESTION_AT.getTime() + 1), isAnswered = false } = {}) {
+      const service = makeService();
+      (service as any).messageRepository.findOne = jest.fn(async ({ where }: any) =>
+        where.jobId
+          ? { id: 'answer-1', createdAt: answerAt }
+          : { id: MESSAGE_ID, createdAt: QUESTION_AT, isAnswered },
+      );
+      return service;
+    }
+
+    const arrive = (service: ChatService, type: string) =>
+      (service as any).handleAiJobEvent({ chatId: CHAT_ID, jobId: JOB_ID, type, payload: {} });
+
+    it('opens the turn of a job that is still running again, and relays to it', async () => {
+      const service = restarted();
+
+      await arrive(service, 'message_start');
+
+      expect((service as any).jobOfMessage.get(MESSAGE_ID)).toBe(JOB_ID);
+      const seen: SseEvent[] = [];
+      (service as any).turns.get(JOB_ID).stream.subscribe((e: SseEvent) => seen.push(e));
+      expect(seen.map(e => e.event)).toEqual(['message_start']);
+    });
+
+    it('leaves a message that was already answered alone', async () => {
+      const service = restarted({ isAnswered: true });
+
+      await arrive(service, 'message_start');
+
+      expect((service as any).turns.has(JOB_ID)).toBe(false);
+    });
+
+    it('does not attach a job that is not the answer to a chat message', async () => {
+      const service = restarted({ answerAt: new Date(QUESTION_AT.getTime() + 60_000) });
+
+      await arrive(service, 'message_start');
+
+      expect((service as any).turns.has(JOB_ID)).toBe(false);
+    });
+
+    it('does not reopen a turn that was stopped', async () => {
+      const service = restarted();
+      attachStream(service);
+      (service as any).closeTurn(JOB_ID);
+
+      await arrive(service, 'content_block_stop');
+
+      expect((service as any).turns.has(JOB_ID)).toBe(false);
+    });
+  });
+
   describe('abort', () => {
     it('stops only the message being answered, by its job', async () => {
       const service = makeService();

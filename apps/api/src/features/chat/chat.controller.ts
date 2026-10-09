@@ -1,4 +1,4 @@
-import { Controller, Logger, Param, Post, Body, Res, Req } from '@nestjs/common';
+import { Controller, Logger, Param, Post, Body, Query, Res, Req } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiAuth, CurrentUser } from '@sandworm/api';
 import type { FastifyReply } from 'fastify/types/reply';
@@ -35,8 +35,11 @@ export class ChatController {
     @CurrentUser('id') userId: string,
     @Req() req: FastifyRequest,
     @Res() reply: FastifyReply,
+    // How many of the answer's events the client already has.
+    @Query('after') after?: string,
   ) {
-    await this.chatService.streamToReply(userId, chatId, messageId, req, reply);
+    const skip = Math.max(0, Number.parseInt(after ?? '', 10) || 0);
+    await this.chatService.streamToReply(userId, chatId, messageId, req, reply, skip);
   }
 
   @Post(':chatId/abort')

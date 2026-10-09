@@ -6,10 +6,10 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
-import { Observable, ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject, skip } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import {
   ChatEntity,
@@ -50,8 +50,13 @@ function cancelJobKey(jobId: string): string {
   return `cancel_job:${jobId}`;
 }
 
-// A turn that never ends (the sidecar died mid-run) is dropped after this long.
-const TURN_TTL_MS = 30 * 60 * 1000;
+// A turn that has gone this long without an event (the sidecar died mid-run)
+// is dropped. Counted from its last event, so a long run is never cut short
+// while it is still producing.
+const TURN_IDLE_MS = 30 * 60 * 1000;
+
+// How long a finished job is remembered, so a late event cannot reopen it.
+const SETTLED_TTL_MS = 60 * 60 * 1000;
 
 // One user message and the AI job answering it. Everything about the answer
 // is keyed by the job: its live stream, its Stop, and the row it is saved in.
@@ -60,11 +65,15 @@ const TURN_TTL_MS = 30 * 60 * 1000;
 interface Turn {
   chatId: string;
   messageId: string;
+  // Holds every event of the turn, so a client that connects late, or again
+  // after its connection dropped, can be given any part of the answer.
   stream: ReplaySubject<SseEvent>;
+  idle: NodeJS.Timeout;
 }
 
 export interface SseEvent {
-  event?: AiStreamEvent['type'];
+  // 'turn' is not part of the answer: it opens the stream of a job that is running.
+  event?: AiStreamEvent['type'] | 'turn';
   data: string;
 }
 
@@ -82,6 +91,8 @@ export class ChatService implements OnModuleInit {
   private readonly turns = new Map<string, Turn>(); // by job id
   private readonly jobOfMessage = new Map<string, string>(); // user message id -> job id
   private readonly jobOfChat = new Map<string, string>(); // chat id -> its latest job id, for Stop
+  // Jobs with no turn to open again: finished, stopped, or not a chat answer.
+  private readonly settledJobs = new Set<string>();
 
   constructor(
     @InjectRepository(ChatEntity)
@@ -119,17 +130,62 @@ export class ChatService implements OnModuleInit {
 
   // Registered before anything is awaited, so the turn exists by the time the
   // mutation that saved the message returns and the client asks for its stream.
-  private openTurn(jobId: string, chatId: string, messageId: string): void {
-    this.turns.set(jobId, { chatId, messageId, stream: new ReplaySubject<SseEvent>(Infinity, 5 * 60 * 1000) });
+  private openTurn(jobId: string, chatId: string, messageId: string): Turn {
+    const turn: Turn = { chatId, messageId, stream: new ReplaySubject<SseEvent>(), idle: this.idleTimer(jobId) };
+    this.turns.set(jobId, turn);
     this.jobOfMessage.set(messageId, jobId);
     this.jobOfChat.set(chatId, jobId);
-    setTimeout(() => this.closeTurn(jobId), TURN_TTL_MS).unref();
+    return turn;
+  }
+
+  private idleTimer(jobId: string): NodeJS.Timeout {
+    return setTimeout(() => this.closeTurn(jobId), TURN_IDLE_MS).unref();
+  }
+
+  private settle(jobId: string): void {
+    this.settledJobs.add(jobId);
+    setTimeout(() => this.settledJobs.delete(jobId), SETTLED_TTL_MS).unref();
+  }
+
+  // After a restart the job is still running but its turn is gone. Its events
+  // are read again from the start, so the turn is opened again here and ends
+  // up holding the whole answer, and the client's stream picks up where it was.
+  private async reopenTurn(jobId: string, chatId: string): Promise<Turn | undefined> {
+    if (this.settledJobs.has(jobId)) return undefined;
+
+    try {
+      const answer = await this.messageRepository.findOne({
+        where: { jobId, chat: { id: chatId } },
+        select: { id: true, createdAt: true },
+      });
+      const question = answer && await this.messageRepository.findOne({
+        where: { chat: { id: chatId }, role: MessageRole.USER, createdAt: LessThan(answer.createdAt) },
+        order: { createdAt: 'DESC' },
+        select: { id: true, createdAt: true, isAnswered: true },
+      });
+
+      // startTurn dates an answer one millisecond after its question. Anything
+      // else is not the answer to a chat message, and has no stream to feed.
+      const isItsAnswer = !!answer && !!question && answer.createdAt.getTime() - question.createdAt.getTime() === 1;
+      if (!isItsAnswer || question.isAnswered) {
+        this.settle(jobId);
+        return undefined;
+      }
+
+      // Another event of the job may have opened it while this was looking.
+      return this.turns.get(jobId) ?? this.openTurn(jobId, chatId, question.id);
+    } catch (err) {
+      this.logger.error(`[turn] could not reopen the turn of job=${jobId}`, err);
+      return undefined;
+    }
   }
 
   private closeTurn(jobId: string, error?: Error): void {
     const turn = this.turns.get(jobId);
     if (!turn) return;
 
+    clearTimeout(turn.idle);
+    this.settle(jobId);
     this.turns.delete(jobId);
     this.jobOfMessage.delete(turn.messageId);
     if (this.jobOfChat.get(turn.chatId) === jobId) this.jobOfChat.delete(turn.chatId);
@@ -243,11 +299,20 @@ export class ChatService implements OnModuleInit {
   // The AI sidecar (apps/ai/src/util/stream_events.py) constructs the full
   // Claude-Messages-API-style envelope — this just relays it onto the stream
   // of the turn the job belongs to, and handles the two terminal event types.
-  private handleAiJobEvent(event: AiJobEvent): void {
+  private handleAiJobEvent(event: AiJobEvent): void | Promise<void> {
     this.logger.log(`[ai-job] chatId=${event.chatId} jobId=${event.jobId} type=${event.type}`);
 
     const turn = this.turns.get(event.jobId);
-    if (!turn) return;
+    if (turn) return this.relay(turn, event);
+
+    return this.reopenTurn(event.jobId, event.chatId).then(reopened => {
+      if (reopened) this.relay(reopened, event);
+    });
+  }
+
+  private relay(turn: Turn, event: AiJobEvent): void {
+    clearTimeout(turn.idle);
+    turn.idle = this.idleTimer(event.jobId);
 
     if (event.type === 'intent_classified' || event.type === 'intent_parsed') return;
 
@@ -258,7 +323,11 @@ export class ChatService implements OnModuleInit {
     else if (payload.type === 'error') this.closeTurn(event.jobId, new Error(payload.error.message));
   }
 
-  streamResponse(userId: string, chatId: string, messageId: string): Observable<SseEvent> {
+  // `after` is how many of the turn's events the client already has: the ones
+  // saved with the message when it loaded the chat, or the ones it received
+  // before its connection dropped. It is sent the rest, so nothing is shown
+  // twice and nothing is skipped.
+  streamResponse(userId: string, chatId: string, messageId: string, after = 0): Observable<SseEvent> {
     return new Observable<SseEvent>((subscriber) => {
       Promise.all([
         this.chatRepository.findOne({ where: { id: chatId, userId } }),
@@ -274,7 +343,10 @@ export class ChatService implements OnModuleInit {
         const turn  = jobId ? this.turns.get(jobId) : undefined;
         if (!turn) { subscriber.complete(); return; }
 
-        turn.stream.subscribe(subscriber);
+        // Says the job is still running before any of its output, however
+        // long that takes to come, so the client can show that it is.
+        subscriber.next({ event: 'turn', data: 'running' });
+        turn.stream.pipe(skip(after)).subscribe(subscriber);
       }).catch((err) => subscriber.error(err));
     });
   }
@@ -285,6 +357,7 @@ export class ChatService implements OnModuleInit {
     messageId: string,
     req: FastifyRequest,
     reply: FastifyReply,
+    after = 0,
   ): Promise<void> {
     reply.raw.writeHead(200, {
       'Content-Type':      'text/event-stream',
@@ -302,7 +375,7 @@ export class ChatService implements OnModuleInit {
     };
 
     await new Promise<void>((resolve) => {
-      this.streamResponse(userId, chatId, messageId).subscribe({
+      const subscription = this.streamResponse(userId, chatId, messageId, after).subscribe({
         next: write,
         error: (err) => {
           this.logger.error('Stream failed', err);
@@ -326,7 +399,10 @@ export class ChatService implements OnModuleInit {
         },
       });
 
-      req.raw.on('close', () => resolve());
+      req.raw.on('close', () => {
+        subscription.unsubscribe();
+        resolve();
+      });
     });
   }
 

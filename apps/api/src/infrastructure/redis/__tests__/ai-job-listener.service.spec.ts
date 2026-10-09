@@ -12,7 +12,7 @@ import { AiJobListenerService } from '../ai-job-listener.service';
 import { AiJobEventNames } from '@/core/events/ai-job.events';
 
 function makeService() {
-  const eventEmitter = { emit: jest.fn() } as any;
+  const eventEmitter = { emitAsync: jest.fn().mockResolvedValue([]) } as any;
   const service = new AiJobListenerService({} as any, {} as any, eventEmitter);
   return { service, eventEmitter };
 }
@@ -24,7 +24,7 @@ const VALID_CHAT_ID = '3f2b6c1e-8a4d-4c7b-9e21-5d6f7a8b9c0d';
 function makeListening() {
   const order: string[] = [];
   const saved: unknown[][] = [];
-  const eventEmitter = { emit: jest.fn(() => order.push('streamed')) } as any;
+  const eventEmitter = { emitAsync: jest.fn(async () => { order.push('streamed'); }) } as any;
   // What the AI service has pushed onto the job's list so far.
   const list: string[] = [];
   const redisService = {
@@ -79,7 +79,7 @@ describe('AiJobListenerService', () => {
 
       await receive({ type: 'message_start' });
 
-      expect(eventEmitter.emit).toHaveBeenCalledTimes(1);
+      expect(eventEmitter.emitAsync).toHaveBeenCalledTimes(1);
     });
 
     it('reads each event once, however many times it is told there is news', async () => {
@@ -93,7 +93,7 @@ describe('AiJobListenerService', () => {
       push({ type: 'content_block_delta', delta: { type: 'text_delta', text: ' there' } });
       await wake();
 
-      expect(eventEmitter.emit).toHaveBeenCalledTimes(3);
+      expect(eventEmitter.emitAsync).toHaveBeenCalledTimes(3);
       expect(saved.at(-1)).toHaveLength(3);
     });
 
@@ -108,12 +108,12 @@ describe('AiJobListenerService', () => {
   });
 
   describe('emitJobEvent', () => {
-    it('always emits the raw event as AI_JOB_EVENT', () => {
+    it('always emits the raw event as AI_JOB_EVENT', async () => {
       const { service, eventEmitter } = makeService();
 
-      (service as any).emitJobEvent(JOB_ID, { chat_id: CHAT_ID, type: 'message_start' });
+      await (service as any).emitJobEvent(JOB_ID, { chat_id: CHAT_ID, type: 'message_start' });
 
-      expect(eventEmitter.emit).toHaveBeenCalledWith(AiJobEventNames.AI_JOB_EVENT, {
+      expect(eventEmitter.emitAsync).toHaveBeenCalledWith(AiJobEventNames.AI_JOB_EVENT, {
         chatId: CHAT_ID,
         jobId: JOB_ID,
         type: 'message_start',
@@ -121,7 +121,7 @@ describe('AiJobListenerService', () => {
       });
     });
 
-    it('relays a cell card to the chat stream and does nothing else with it', () => {
+    it('relays a cell card to the chat stream and does nothing else with it', async () => {
       const { service, eventEmitter } = makeService();
       const card = {
         chat_id: CHAT_ID,
@@ -137,12 +137,12 @@ describe('AiJobListenerService', () => {
         },
       };
 
-      (service as any).emitJobEvent(JOB_ID, card);
+      await (service as any).emitJobEvent(JOB_ID, card);
 
       // The cell already exists: the MCP server created it. Acting on the card
       // would insert a second copy of it into the notebook.
-      expect(eventEmitter.emit).toHaveBeenCalledTimes(1);
-      expect(eventEmitter.emit).toHaveBeenCalledWith(AiJobEventNames.AI_JOB_EVENT, expect.objectContaining({ chatId: CHAT_ID, type: 'content_block_delta' }));
+      expect(eventEmitter.emitAsync).toHaveBeenCalledTimes(1);
+      expect(eventEmitter.emitAsync).toHaveBeenCalledWith(AiJobEventNames.AI_JOB_EVENT, expect.objectContaining({ chatId: CHAT_ID, type: 'content_block_delta' }));
     });
   });
 });
