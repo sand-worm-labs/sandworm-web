@@ -6,17 +6,17 @@ from . import tokens as t
 
 _CSS = f"""
 @import url('{t.FONT_IMPORT_URL}');
-.sw {{ font-family: {t.FONT_STACK}; color: {t.INK}; font-variant-numeric: tabular-nums; display: grid; gap: 28px; }}
-.sw-card {{ border: 1px solid {t.RULE}; border-radius: 14px; overflow: hidden; background: {t.PAPER}; }}
-.sw-card-head {{ background: {t.SHADE}; border-bottom: 1px solid {t.RULE}; padding: 20px 28px; font-weight: 600; }}
+.sw {{ font-family: {t.FONT_STACK}; color: {t.CSS.ink}; font-variant-numeric: tabular-nums; display: grid; gap: 28px; }}
+.sw-card {{ border: 1px solid {t.CSS.rule}; border-radius: 14px; overflow: hidden; background: {t.CSS.paper}; }}
+.sw-card-head {{ background: {t.CSS.shade}; border-bottom: 1px solid {t.CSS.rule}; padding: 20px 28px; font-weight: 600; }}
 .sw-card-body {{ padding: 24px 28px; }}
 .sw-stat {{ display: grid; gap: 28px; padding: 24px 28px; }}
 .sw-stat-main {{ border-left: 3px solid var(--sw-accent); padding-left: 20px; }}
 .sw-stat-value {{ font-size: 42px; font-weight: 600; letter-spacing: -.03em; line-height: 1.1; }}
-.sw-stat-label {{ font-size: 13px; color: {t.MUTED}; margin-top: 6px; }}
-.sw-stat-grid {{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; border-top: 1px solid {t.RULE}; padding-top: 22px; }}
+.sw-stat-label {{ font-size: 13px; color: {t.CSS.muted}; margin-top: 6px; }}
+.sw-stat-grid {{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; border-top: 1px solid {t.CSS.rule}; padding-top: 22px; }}
 .sw-stat-grid .sw-stat-value {{ font-size: 19px; letter-spacing: -.01em; }}
-.sw-note {{ font-size: 13px; color: {t.INK_2}; line-height: 1.6; padding: 0 4px; }}
+.sw-note {{ font-size: 13px; color: {t.CSS.ink_2}; line-height: 1.6; padding: 0 4px; }}
 """
 
 _Secondary = Iterable[Tuple[str, str]]

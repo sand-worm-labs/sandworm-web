@@ -73,7 +73,7 @@ export default function PublicDashboardPage() {
   }, [error, isSyncing, document, yDoc, notEligible]);
 
   return (
-    <div className="flex flex-col h-screen bg-base-100 font-body">
+    <div className="flex flex-col h-screen bg-base-100 dark:bg-page-surface font-body">
       <PublicNotebookBanner
         document={document}
         view="dashboard"

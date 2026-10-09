@@ -20,6 +20,7 @@ import { ChartSkeleton, Shimmer, TableSkeleton } from "@/components/Skeletons";
 import useResettableState from "../../../hooks/useResettableState";
 
 import PythonError from "./PythonError";
+import { toDarkFigure } from "./plotlyDark";
 
 // @ts-expect-error @types/react-plotly.js incompatible with @types/react@19
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
@@ -45,10 +46,14 @@ const requestPlotResize = debounce(
 );
 
 function PlotWithPlaceholder(
-  props: React.ComponentProps<typeof Plot> & { placeholderHeight?: number }
+  props: React.ComponentProps<typeof Plot> & {
+    placeholderHeight?: number;
+    onDashboardTile?: boolean;
+  }
 ) {
   const {
     placeholderHeight,
+    onDashboardTile,
     onInitialized,
     onAfterPlot,
     onUpdate,
@@ -69,7 +74,10 @@ function PlotWithPlaceholder(
     >
       {!ready && (
         <ChartSkeleton
-          className="absolute inset-0 w-full h-full z-10 bg-base-100 dark:bg-header-surface"
+          className={clsx(
+            "absolute inset-0 w-full h-full z-10 bg-base-100",
+            onDashboardTile ? "dark:bg-dropdown-bg" : "dark:bg-header-surface"
+          )}
           aria-label="Loading chart"
         />
       )}
@@ -277,15 +285,48 @@ const DASHBOARD_TILE_CSS = `
   .sw-card { border: none !important; border-radius: 0 !important; background: transparent !important; }
 `;
 
+// Dark values for the --sw-* variables the Python theme reads (see
+// apps/jupyter/sandworm_theme). The theme falls back to its light colors when a
+// variable is unset, so the same HTML renders in both themes. color-scheme: dark
+// is what makes the iframe's canvas transparent: next-themes sets it on the page,
+// and an iframe whose own document does not match gets an opaque white one.
+const SANDWORM_THEME_CSS_DARK = `
+  :root {
+    color-scheme: dark;
+    --sw-ink: #f3f0f5;
+    --sw-ink-2: #cfc8d6;
+    --sw-muted: #a5a5a4;
+    --sw-paper: #272726;
+    --sw-shade: #2f2f2e;
+    --sw-rule: #40403e;
+    --sw-series-2: #c1428a;
+    --sw-series-7: #9a7bdb;
+  }
+
+  /* HTML a notebook already ran carries the theme's old, fixed light colors in
+     its own <style>. Override the theme's classes so those results follow the
+     reader's theme too, without waiting for a re-run. */
+  .sw { color: var(--sw-ink) !important; }
+  .sw-card { background: var(--sw-paper) !important; border-color: var(--sw-rule) !important; }
+  .sw-card-head { background: var(--sw-shade) !important; border-color: var(--sw-rule) !important; }
+  .sw-stat-value { color: var(--sw-ink) !important; }
+  .sw-stat-label { color: var(--sw-muted) !important; }
+  .sw-stat-grid { border-color: var(--sw-rule) !important; }
+  .sw-note { color: var(--sw-ink-2) !important; }
+`;
+
 function injectTableStyles(
   html: string,
   isDark: boolean,
   isDashboardTile: boolean
 ): string {
-  // The card's colors are fixed, not themed, so on a dark tile its own light
-  // background is what keeps its text readable: leave it alone there.
-  const tileCss = isDashboardTile && !isDark ? DASHBOARD_TILE_CSS : "";
-  const styleTag = `<style>${isDark ? SANDWORM_TABLE_CSS_DARK : SANDWORM_TABLE_CSS}${tileCss}</style>`;
+  // A dashboard tile is already a card, so a theme card inside it drops its own
+  // border and background in either theme.
+  const tileCss = isDashboardTile ? DASHBOARD_TILE_CSS : "";
+  const themeCss = isDark
+    ? `${SANDWORM_TABLE_CSS_DARK}${SANDWORM_THEME_CSS_DARK}`
+    : SANDWORM_TABLE_CSS;
+  const styleTag = `<style>${themeCss}${tileCss}</style>`;
 
   // The "N rows × M columns" caption is surfaced in the block's result
   // footer instead, so drop it from the iframe content entirely.
@@ -348,7 +389,12 @@ export function PythonOutputs(props: Props) {
           key={i}
           className={clsx(
             ["plotly"].includes(output.type) ? "flex-grow" : "",
-            "bg-base-100 dark:bg-header-surface overflow-x-auto"
+            "bg-base-100 overflow-x-auto",
+            // A dashboard tile is a card in its own right, on the same surface as
+            // the Explore cards; a notebook block keeps the editor surface.
+            props.isDashboardTile
+              ? "dark:bg-dropdown-bg"
+              : "dark:bg-header-surface"
           )}
         >
           <PythonOutput
@@ -452,6 +498,7 @@ export function PythonOutput(props: ItemProps) {
       return (
         <PythonPlotOutput
           output={props.output}
+          isDark={!!props.isDark}
           isPDF={props.isPDF}
           isDashboardView={props.isDashboardView}
           isDashboardTile={!!props.isDashboardTile}
@@ -605,16 +652,24 @@ const MAX_PIE_LABELS = 1000;
 
 function PythonPlotOutput(props: {
   output: PythonPlotlyOutput;
+  isDark: boolean;
   isPDF: boolean;
   isDashboardView: boolean;
   isDashboardTile: boolean;
 }) {
+  // The stored figure carries the light theme's colors; swap in the dark ones
+  // when the reader is in dark mode (see plotlyDark.ts).
+  const output = useMemo(
+    () => (props.isDark ? toDarkFigure(props.output) : props.output),
+    [props.output, props.isDark]
+  );
+
   const layout = useMemo(() => {
     return {
-      ...props.output.layout,
+      ...output.layout,
       autosize: true,
     };
-  }, [props.output.layout]);
+  }, [output.layout]);
 
   const hideControls = useMemo(() => {
     return props.isPDF || props.isDashboardView;
@@ -634,14 +689,14 @@ function PythonPlotOutput(props: {
   }, [hideControls]);
 
   const data = useMemo(() => {
-    return props.output.data.map((d: any) => ({
+    return output.data.map((d: any) => ({
       ...d,
       labels: d.type === "pie" ? d.labels?.slice(0, MAX_PIE_LABELS) : d.labels,
     }));
-  }, [props.output.data]);
+  }, [output.data]);
 
   if (props.isDashboardTile) {
-    return <DashboardPlotOutput output={props.output} />;
+    return <DashboardPlotOutput output={output} />;
   }
 
   return (
@@ -649,16 +704,16 @@ function PythonPlotOutput(props: {
       data={data}
       layout={layout}
       config={config}
-      frames={props.output.frames}
+      frames={output.frames}
       useResizeHandler
       className="w-full printable-block"
       // autosize reads its container: give it a definite height instead of
       // "auto", so the first draw and every later one measure the same box.
       style={{
         width: "100%",
-        height: props.output.layout?.height ?? DEFAULT_PLOT_HEIGHT,
+        height: output.layout?.height ?? DEFAULT_PLOT_HEIGHT,
       }}
-      placeholderHeight={props.output.layout?.height ?? DEFAULT_PLOT_HEIGHT}
+      placeholderHeight={output.layout?.height ?? DEFAULT_PLOT_HEIGHT}
     />
   );
 }
@@ -770,6 +825,7 @@ function DashboardPlotOutput(props: { output: PythonPlotlyOutput }) {
             // handling re-reads the same box instead of an auto-sized one.
             style={{ width: layout.width, height: layout.height }}
             placeholderHeight={layout.height}
+            onDashboardTile
           />
         </div>
       )}

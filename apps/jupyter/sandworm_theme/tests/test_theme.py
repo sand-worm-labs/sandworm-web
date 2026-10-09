@@ -105,3 +105,19 @@ def test_use_theme_styles_matplotlib():
     sw.use_theme()
     assert mpl.rcParams["axes.prop_cycle"].by_key()["color"][0] == tokens.SERIES[0]
     assert mpl.rcParams["axes.spines.top"] is False
+
+
+def test_html_colors_follow_the_readers_theme():
+    html = sw.render(sw.stat_card("1", "Total", secondary=[("2", "Chains")]))
+    # Every neutral is a --sw-* variable with the light color as its fallback, so
+    # the web app can swap in dark values and plain Jupyter still looks the same.
+    assert "color: var(--sw-ink, " + tokens.INK + ")" in html
+    assert "var(--sw-muted, " + tokens.MUTED + ")" in html
+    for light in (tokens.INK, tokens.INK_2, tokens.MUTED, tokens.PAPER, tokens.SHADE, tokens.RULE):
+        assert "color: " + light not in html and "background: " + light not in html
+
+
+def test_every_css_color_has_a_dark_counterpart():
+    for name in ("ink", "ink-2", "muted", "paper", "shade", "rule"):
+        assert name in tokens.DARK
+        assert "--sw-" + name in tokens.var(name, "#000")

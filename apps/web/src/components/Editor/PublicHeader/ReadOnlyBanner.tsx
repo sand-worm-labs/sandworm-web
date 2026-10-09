@@ -29,7 +29,7 @@ export default function ReadOnlyBanner({
   } = useForkFlow(document, isAuthenticated);
 
   return (
-    <div className="w-full border-b border-border-secondary dark:border-border-tertiary bg-base-200/60 dark:bg-base-600/40">
+    <div className="w-full border-b border-border-secondary dark:border-border-tertiary bg-base-200/60 dark:bg-page-surface">
       <p className="text-center text-[13px] leading-6 text-ink-400 py-1.5 px-4">
         <span className="font-medium text-ink-100 dark:text-white">
           Read-only preview.

@@ -315,14 +315,15 @@ function GridElement(props: Props) {
       {props.block ? (
         <div
           className={clsx(
-            "w-full h-full rounded-lg overflow-hidden flex flex-col",
+            // One pixel inside the card's rounded-2xl border, so content is clipped to the same curve.
+            "w-full h-full rounded-[15px] overflow-hidden flex flex-col",
             props.isEditingDashboard &&
               blockType !== BlockType.DashboardHeader &&
               "pointer-events-none"
           )}
         >
           {hasTitle && (
-            <h2 className="text-gray-700 font-medium text-left text-sm truncate min-h-6 px-3.5 py-2.5">
+            <h2 className="text-gray-700 dark:text-ink-100 font-medium text-left text-sm truncate min-h-6 px-3.5 py-2.5">
               {titleContent}
             </h2>
           )}

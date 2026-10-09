@@ -8,6 +8,49 @@ SHADE = "#FAF6FC"
 RULE = "#E9E2ED"
 BRAND = "#A308F0"
 
+# Dark counterparts of the neutrals above, plus the two series colors that are
+# too dark to read on a dark surface. The web app does not receive these from
+# Python: it injects them as --sw-* CSS variables for HTML results, and swaps the
+# same colors into stored Plotly figures when the reader is in dark mode (see
+# apps/web .../python/PythonOutput.tsx and plotlyDark.ts). Keep the three in step.
+DARK = {
+    "ink": "#F3F0F5",
+    "ink-2": "#CFC8D6",
+    "muted": "#A5A5A4",
+    "paper": "#272726",
+    "shade": "#2F2F2E",
+    "rule": "#40403E",
+    "series-2": "#C1428A",
+    "series-7": "#9A7BDB",
+}
+
+
+def var(name: str, fallback: str) -> str:
+    """A CSS color that follows the reader's theme.
+
+    `--sw-<name>` is set by the web app in dark mode and unset in light mode, so
+    `fallback` (the light color) is what plain Jupyter and light mode get.
+    """
+    return f"var(--sw-{name}, {fallback})"
+
+
+class _Css:
+    """Theme-aware CSS colors for hand-written HTML: f"color:{CSS.ink}".
+
+    Use these instead of hex codes in any HTML a notebook displays, so it reads
+    in light and dark mode alike.
+    """
+
+    ink = var("ink", INK)
+    ink_2 = var("ink-2", INK_2)
+    muted = var("muted", MUTED)
+    paper = var("paper", PAPER)
+    shade = var("shade", SHADE)
+    rule = var("rule", RULE)
+
+
+CSS = _Css()
+
 # Chart series, in the order Plotly assigns them to traces.
 SERIES = (
     "#EE149E",  # primary
