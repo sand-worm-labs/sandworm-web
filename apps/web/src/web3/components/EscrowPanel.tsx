@@ -112,9 +112,6 @@ const DraftFunding = ({
   );
 };
 
-// =====================================
-// ⬢ Live escrow
-// =====================================
 const LiveEscrow = ({
   bounty,
   onChanged,
