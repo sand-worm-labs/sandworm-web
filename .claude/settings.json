@@ -48,7 +48,22 @@
       "Bash(git fsck *)",
       "Bash(git -C apps/ai status --short)",
       "Bash(git -C apps/ai log --oneline -2)",
-      "Bash(timeout 280 npx jest --runInBand --silent --forceExit src/features/chat/__tests__/chat.service.spec.ts)"
+      "Bash(timeout 280 npx jest --runInBand --silent --forceExit src/features/chat/__tests__/chat.service.spec.ts)",
+      "Bash(pkill -f \"sed -n 1,25p\")",
+      "Bash(cd /home/daniel/development/sandworm-web/apps/web/src/components/Editor && sed -n 395,425p PublicEditor.tsx; sed -n 536,600p PublicEditor.tsx; grep -n \"publicWidthClasses\\\\|widthClasses\" PublicEditor.tsx | head -5; cat hooks/usePublicYDoc.ts | head -60; grep -n \"export function getLayout\\\\|export const getLayout\\\\|getTabsFromBlockGroup\\\\b\" ../../../../../packages/editor/src/*.ts ../../../../../packages/editor/src/**/*.ts | head -5)",
+      "Read(//home/packages/editor/**)",
+      "Bash(npx vitest *)",
+      "WebSearch",
+      "Bash(mv src/hooks/useUtcClock.ts src/hooks/useCityClocks.ts)",
+      "Bash(timeout 200 npx vitest run src/lib)",
+      "Bash(which chromium *)",
+      "Read(//home/daniel/.cache/ms-playwright/**)",
+      "Bash(timeout 60 google-chrome-stable --headless=new --no-sandbox --disable-gpu --virtual-time-budget=8000 --enable-logging=stderr --v=0 --dump-dom http://localhost:3000/showcase)",
+      "Bash(timeout 150 google-chrome-stable --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1300 --virtual-time-budget=6000 --timeout=60000 --screenshot=/tmp/claude-1000/-home-daniel-development-sandworm-web/15602e42-c42c-4c4f-b607-a0f5955407b0/scratchpad/explore.png http://localhost:3000/explore)",
+      "Bash(timeout 120 google-chrome-stable --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1000 --virtual-time-budget=7000 --timeout=60000 --screenshot=/tmp/claude-1000/-home-daniel-development-sandworm-web/15602e42-c42c-4c4f-b607-a0f5955407b0/scratchpad/showcase3.png http://localhost:3000/showcase)",
+      "Bash(git -C apps/landing-page rev-parse --show-toplevel)",
+      "Bash(git check-ignore *)",
+      "Bash(git -C apps/landing-page status --short)"
     ],
     "additionalDirectories": [
       "/home/daniel/development/sandworm-web/apps/ai/src/services/notebook_title",
