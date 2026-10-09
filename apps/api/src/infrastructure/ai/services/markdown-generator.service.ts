@@ -10,7 +10,7 @@ export type MarkdownGeneratorResponse = CellEditResult;
 export class MarkdownGeneratorService {
   constructor(private readonly cells: CellEditClient) {}
 
-  edit(context: MarkdownGeneratorContext, blockId: string, prompt: string) {
-    return this.cells.edit('markdown', context, blockId, prompt);
+  edit(context: MarkdownGeneratorContext, blockId: string, prompt: string, signal?: AbortSignal) {
+    return this.cells.edit('markdown', context, blockId, prompt, signal);
   }
 }

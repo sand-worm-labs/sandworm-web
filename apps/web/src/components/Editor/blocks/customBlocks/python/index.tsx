@@ -383,13 +383,17 @@ function PythonBlock(props: Props) {
 
   const [editorState, editorAPI] = useEditorAwareness();
 
-  const onCloseEditWithAIPrompt = useCallback(() => {
-    if (aiTask?.getMetadata()._tag === "edit-sql") {
+  const onStopEditWithAI = useCallback(() => {
+    if (aiTask?.getMetadata()._tag === "edit-python") {
       aiTask.setAborting();
     }
+  }, [aiTask]);
+
+  const onCloseEditWithAIPrompt = useCallback(() => {
+    onStopEditWithAI();
     closePythonEditWithAIPrompt(props.block, false);
     editorAPI.insert(blockId, { scrollIntoView: false });
-  }, [props.block, editorAPI, blockId, aiTask]);
+  }, [props.block, editorAPI, blockId, onStopEditWithAI]);
 
   const onSubmitEditWithAI = useCallback(async () => {
     const result = await editPythonWithAi({
@@ -826,6 +830,7 @@ function PythonBlock(props: Props) {
                 disabled={isAIEditing || aiSuggestions !== null}
                 onSubmit={onSubmitEditWithAI}
                 onClose={onCloseEditWithAIPrompt}
+                onStop={onStopEditWithAI}
                 value={editWithAIPrompt}
                 hasOutput={results.length > 0}
               />

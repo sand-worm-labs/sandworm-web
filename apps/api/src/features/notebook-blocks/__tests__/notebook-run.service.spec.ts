@@ -21,7 +21,10 @@ type Input = BlockInput & { kind: BlockKind };
 function setup(inputs: Input[]) {
   const ydoc = new Y.Doc();
   const ids = addBlocks(ydoc, inputs.map(({ kind, ...input }) => getDefinition(kind).toSpec(input)));
-  const docs = { use: jest.fn((_ref, _access, work) => Promise.resolve(work({ ydoc }))) };
+  const docs = {
+    use: jest.fn((_ref, _access, work) => Promise.resolve(work({ ydoc }))),
+    useView: jest.fn((_ref, work) => Promise.resolve(work({ ydoc }))),
+  };
   const config = { getOrThrow: jest.fn(() => ITEM_TIMEOUT_MS) };
   const service = new NotebookRunService(docs as any, config as any);
   return { ydoc, ids, docs, service, queue: ExecutionQueue.fromYjs(ydoc) };
@@ -257,5 +260,50 @@ describe('NotebookRunService.results', () => {
     const report = await service.results(ref, { blockIds: [ids[1]!] });
 
     expect(report.cells.map(cell => cell.id)).toEqual([ids[1]]);
+  });
+});
+
+describe('NotebookRunService view', () => {
+  const stateOf = (state: string) => {
+    const ydoc = new Y.Doc();
+    Y.applyUpdate(ydoc, Buffer.from(state, 'base64'));
+    return ydoc;
+  };
+
+  it('returns the viewer copy as an encoded state without running anything', async () => {
+    const { ids, service, queue } = setup([{ kind: 'python', source: 'x = 1' }]);
+
+    const report = await service.view(ref, {});
+
+    expect(report.status).toBe('idle');
+    expect(queued(queue)).toEqual([]);
+    expect(getBlocks(stateOf(report.state)).has(ids[0]!)).toBe(true);
+  });
+
+  it('re-runs every cell and answers with the new results', async () => {
+    const { ydoc, ids, service, queue } = setup([
+      { kind: 'markdown', source: '# Intro' },
+      { kind: 'python', source: 'print(1)' },
+    ]);
+
+    const pending = service.rerunView(ref, { waitSeconds: 5 });
+    await flush();
+    expect(queued(queue)).toEqual([[ids[1]]]);
+
+    execute(ydoc, { [ids[1]!]: [{ type: 'stdio', name: 'stdout', text: '1\n' }] });
+    const report = await pending;
+
+    expect(report.status).toBe('idle');
+    expect((getBlocks(stateOf(report.state)).get(ids[1]!)! as Y.XmlElement<any>).getAttribute('result')).toEqual([{ type: 'stdio', name: 'stdout', text: '1\n' }]);
+  });
+
+  it('joins a run already in progress instead of queueing another', async () => {
+    const { service, queue } = setup([{ kind: 'python', source: 'x = 1' }]);
+
+    await service.rerunView(ref, { waitSeconds: 0 });
+    const report = await service.rerunView(ref, { waitSeconds: 0 });
+
+    expect(report).toMatchObject({ status: 'running', progress: { completed: 0, total: 1 } });
+    expect(queued(queue)).toHaveLength(1);
   });
 });

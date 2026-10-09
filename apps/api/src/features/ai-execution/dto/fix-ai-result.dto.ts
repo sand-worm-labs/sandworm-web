@@ -5,6 +5,6 @@ export class AiResult {
   @Field()
   result: string;
 
-  @Field()
-  chatId: string;
+  @Field(() => String, { nullable: true })
+  chatId?: string;
 }

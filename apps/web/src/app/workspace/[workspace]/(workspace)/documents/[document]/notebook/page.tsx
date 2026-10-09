@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
-import PrivateDocumentPage from "@/components/Editor/blocks/PrivateDocumentPage";
+import ViewDocumentPage from "@/components/Editor/blocks/ViewDocumentPage";
 import { useSession } from "@/components/Editor/hooks/useAuth";
 import useDocument from "@/components/Editor/hooks/useDocument";
 import type { SessionUser } from "@/components/Editor/hooks/useAuth";
@@ -49,12 +49,11 @@ function Notebook(props: Props) {
   }
 
   return (
-    <PrivateDocumentPage
+    <ViewDocumentPage
       key={props.documentId}
       workspaceId={props.workspaceId}
       documentId={props.documentId}
       user={props.user}
-      isApp
     />
   );
 }

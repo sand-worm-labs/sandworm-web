@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { DocumentVisibility } from '@sandworm/postgresql-typeorm';
 import { DocumentService } from '../document/service/document.service';
 import { PersistorFactory } from '../collaboration/yjs/persistors/persistor.factory';
 import type { SharedDoc } from '../collaboration/yjs/shared-doc/ws-shared-doc';
@@ -37,6 +38,33 @@ export class NotebookDocService {
       workspaceId,
       work,
       this.persistorFactory.createDocumentPersistor(documentId),
+    );
+  }
+
+  // Hands `work` the caller's own copy of the published notebook: the one the
+  // view page shows. Open to any member, and to anyone when shared by link.
+  async useView<T>({ userId, workspaceId, documentId }: NotebookRef, work: (doc: SharedDoc) => T | Promise<T>): Promise<T> {
+    const document = await this.documentService.getDocument(documentId, workspaceId);
+    if (document.visibility !== DocumentVisibility.LINK) {
+      await this.membershipService.assertActiveMember(workspaceId, userId);
+    }
+
+    const appDocument = await this.yjsDocumentService.getAppDocument(documentId);
+    if (!appDocument) throw new NotFoundException('This notebook has not been saved yet');
+    const appDocumentId = appDocument.id;
+
+    const app = { id: appDocumentId, userId };
+    return this.yjsDocumentService.getYDocForUpdate(
+      this.yjsDocumentService.getDocId(documentId, app),
+      documentId,
+      null,
+      workspaceId,
+      async doc => {
+        // A copy still in memory from before the last save would show the old notebook.
+        await doc.reloadIfBehind(appDocument.clock);
+        return work(doc);
+      },
+      this.persistorFactory.createAppPersistor(documentId, appDocumentId, userId),
     );
   }
 }

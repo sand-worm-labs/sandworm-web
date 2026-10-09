@@ -11,18 +11,16 @@ import { BaseAiExecutorService } from '../base-ai-executor.service';
 function makeService() {
   const yjsDocumentService = {} as any;
   const persistorFactory = {} as any;
-  const eventEmitter = {} as any;
-  const service = new InputAiExecutorService(yjsDocumentService, persistorFactory, eventEmitter);
-  return { service, yjsDocumentService, persistorFactory, eventEmitter };
+  const service = new InputAiExecutorService(yjsDocumentService, persistorFactory);
+  return { service, yjsDocumentService, persistorFactory };
 }
 
 describe('InputAiExecutorService', () => {
   it('constructs, extends BaseAiExecutorService, and threads deps through to the base', () => {
-    const { service, yjsDocumentService, persistorFactory, eventEmitter } = makeService();
+    const { service, yjsDocumentService, persistorFactory } = makeService();
 
     expect(service).toBeInstanceOf(BaseAiExecutorService);
     expect((service as any).yjsDocumentService).toBe(yjsDocumentService);
     expect((service as any).persistorFactory).toBe(persistorFactory);
-    expect((service as any).eventEmitter).toBe(eventEmitter);
   });
 });

@@ -386,6 +386,7 @@ function PublicTabRef(props: PublicTabRefProps) {
         onToggleIsBlockHiddenInPublished={() => {}}
         insertBelow={() => {}}
         isPublicMode
+        viewModeCodeHidden={!props.isQueryView}
         userId={null}
         executionQueue={NOOP_EXECUTION_QUEUE}
         isFullScreen={false}
@@ -533,6 +534,8 @@ interface PublicEditorInnerProps {
   yDoc: Y.Doc;
   isSyncing: boolean;
   isQueryView: boolean;
+  hideHero?: boolean;
+  titleAction?: ReactNode;
   scrollViewRef: React.MutableRefObject<HTMLDivElement | null>;
 }
 
@@ -627,7 +630,7 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
             )}
           >
             <div className={!props.isPDF ? "pt-12 pb-6" : ""}>
-              {!props.isPDF && (
+              {!props.isPDF && !props.hideHero && (
                 <NotebookHeroTop
                   document={props.document}
                   isAuthenticated={isAuthenticated}
@@ -635,16 +638,24 @@ function PublicEditorInner(props: PublicEditorInnerProps) {
                 />
               )}
 
-              <div className={!props.isPDF ? "mt-8 mb-4" : ""}>
-                <Title
-                  content={props.yDoc.getXmlFragment("title")}
-                  isLoading={props.isSyncing}
-                  isEditable={false}
-                  style="font-size: 3.0rem; font-family: var(--font-report-heading), sans-serif; letter-spacing: -0.02em; font-weight: 700;"
-                />
+              <div
+                className={clsx(
+                  "flex items-center justify-between gap-4",
+                  !props.isPDF && "mt-8 mb-4"
+                )}
+              >
+                <div className="flex-1 min-w-0">
+                  <Title
+                    content={props.yDoc.getXmlFragment("title")}
+                    isLoading={props.isSyncing}
+                    isEditable={false}
+                    style="font-size: 3.0rem; font-family: var(--font-report-heading), sans-serif; letter-spacing: -0.02em; font-weight: 700;"
+                  />
+                </div>
+                {!props.isPDF && props.titleAction}
               </div>
 
-              {!props.isPDF && (
+              {!props.isPDF && !props.hideHero && (
                 <NotebookHeroMeta
                   document={props.document}
                   isAuthenticated={isAuthenticated}
@@ -686,6 +697,10 @@ export interface PublicEditorProps {
   yDoc: Y.Doc;
   isSyncing: boolean;
   isQueryView?: boolean;
+  // Drops the public page's author, favorite and fork header.
+  hideHero?: boolean;
+  // Sits to the right of the title, where the editor has its Run button.
+  titleAction?: ReactNode;
   children?: ReactNode;
 }
 

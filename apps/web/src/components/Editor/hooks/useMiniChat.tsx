@@ -174,40 +174,49 @@ export function useMiniChat({
       setActiveChatId(chat.id);
       setActiveThreadTitle(chat.title);
       setMessages(
-        (chat.messages ?? []).map((m: any) => {
-          // Assistant messages store their raw envelope events in `parts` —
-          // replay them the same way the live stream did, rather than
-          // showing `content` (which may just be internal clarify-detection
-          // JSON) directly as the message text.
-          const { text, parts: streamParts } =
-            m.role === "assistant" && Array.isArray(m.parts)
-              ? deriveMessageDisplay(m.parts)
-              : { text: m.content ?? "", parts: [] as PartPayload[] };
+        (chat.messages ?? [])
+          // An answer's row is saved as soon as its question is sent and
+          // filled in when the job ends; until then it has nothing to show.
+          .filter(
+            (m: any) =>
+              m.role !== "assistant" ||
+              !!m.content ||
+              (Array.isArray(m.parts) && m.parts.length > 0)
+          )
+          .map((m: any) => {
+            // Assistant messages store their raw envelope events in `parts` —
+            // replay them the same way the live stream did, rather than
+            // showing `content` (which may just be internal clarify-detection
+            // JSON) directly as the message text.
+            const { text, parts: streamParts } =
+              m.role === "assistant" && Array.isArray(m.parts)
+                ? deriveMessageDisplay(m.parts)
+                : { text: m.content ?? "", parts: [] as PartPayload[] };
 
-          return {
-            id: crypto.randomUUID(),
-            messageId: m.id,
-            text,
-            isUser: m.role === "user",
-            role: m.role,
-            model: m.model ?? undefined,
-            finishReason: m.finishReason ?? null,
-            parts: m.parts ?? null,
-            streamParts: streamParts.length > 0 ? streamParts : undefined,
-            attachments: m.attachments ?? null,
-            usage: m.usage ?? null,
-            createdAt: m.createdAt ?? undefined,
-            fileRefs: (m.fileRefs ?? []) satisfies UploadedFileRef[],
-            references: (m.focusedBlocks ?? []).map(
-              (b: { id: string; title: string; type: string }) => ({
-                id: b.id,
-                label: b.title,
-                sourceKind: "block" as const,
-                blockKind: b.type as BlockKind,
-              })
-            ),
-          };
-        })
+            return {
+              id: crypto.randomUUID(),
+              messageId: m.id,
+              text,
+              isUser: m.role === "user",
+              role: m.role,
+              model: m.model ?? undefined,
+              finishReason: m.finishReason ?? null,
+              parts: m.parts ?? null,
+              streamParts: streamParts.length > 0 ? streamParts : undefined,
+              attachments: m.attachments ?? null,
+              usage: m.usage ?? null,
+              createdAt: m.createdAt ?? undefined,
+              fileRefs: (m.fileRefs ?? []) satisfies UploadedFileRef[],
+              references: (m.focusedBlocks ?? []).map(
+                (b: { id: string; title: string; type: string }) => ({
+                  id: b.id,
+                  label: b.title,
+                  sourceKind: "block" as const,
+                  blockKind: b.type as BlockKind,
+                })
+              ),
+            };
+          })
       );
     },
     [chatApi]

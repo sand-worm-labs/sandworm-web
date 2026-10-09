@@ -1,6 +1,5 @@
 import * as Y from 'yjs';
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { YjsDocumentService } from '../../collaboration/yjs/yjs-document.service';
 import { ChatService } from '../../chat/chat.service';
 import { PersistorFactory } from '../../collaboration/yjs/persistors/persistor.factory';
@@ -27,13 +26,12 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
   constructor(
     yjsDocumentService: YjsDocumentService,
     persistorFactory: PersistorFactory,
-    eventEmitter: EventEmitter2,
     @Inject(forwardRef(() => ChatService))
     private readonly chatService: ChatService,
     private readonly pythonGeneratorService: PythonGeneratorService,
     private readonly workspaceService: WorkspaceService,
   ) {
-    super(yjsDocumentService, persistorFactory, eventEmitter);
+    super(yjsDocumentService, persistorFactory);
   }
 
   async editAiPython(
@@ -42,7 +40,7 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
     blockId: string,
     userId: string,
     chatId?: string,
-  ): Promise<{ result: string; chatId: string }> {
+  ): Promise<{ result: string; chatId?: string }> {
     try {
       const sharedDoc = await this.getSharedDoc(documentId, workspaceId);
       const block = getBlocks(sharedDoc.ydoc).get(blockId) as Y.XmlElement<PythonBlock> | undefined;
@@ -53,29 +51,8 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
       const taskItem = aiTasks.next();
       if (!taskItem) throw new Error('Failed to dequeue edit-python task');
 
-      const workspace = await this.workspaceService.getWorkspaceById(workspaceId);
-      const focusedBlocks = [{ id: blockId, title: block.getAttribute('title') ?? '', type: 'Python' }];
 
-      let resolvedChatId = chatId;
-      if (resolvedChatId) {
-        await this.chatService.sendMessage(userId, {
-          chatId: resolvedChatId,
-          content: `Edited Python block with AI`,
-          model: workspace.assistantModel,
-          focusedBlocks,
-        });
-      } else {
-        const chat = await this.chatService.createChat(userId, {
-          workspaceId,
-          documentId,
-          message: `Edited Python block with AI`,
-          model: workspace.assistantModel,
-          title: 'Python Edit',
-          updateDocumentTitle: false,
-          focusedBlocks,
-        });
-        resolvedChatId = chat.id;
-      }
+      const resolvedChatId = await this.chatService.latestChatId(userId, { workspaceId, documentId, chatId });
 
       const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId, chat_id: resolvedChatId };
       const result = await this.runEdit(taskItem, block, ctx);
@@ -91,7 +68,7 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
     workspaceId: string,
     blockId: string,
     userId: string,
-  ): Promise<{ result: string; chatId: string }> {
+  ): Promise<{ result: string; chatId?: string }> {
     try {
       const sharedDoc = await this.getSharedDoc(documentId, workspaceId);
       const block = getBlocks(sharedDoc.ydoc).get(blockId) as Y.XmlElement<PythonBlock> | undefined;
@@ -102,21 +79,13 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
       const taskItem = aiTasks.next();
       if (!taskItem) throw new Error('Failed to dequeue fix-python task');
 
-      const workspace = await this.workspaceService.getWorkspaceById(workspaceId);
 
-      const chat = await this.chatService.createChat(userId, {
-        workspaceId,
-        documentId,
-        message: `Fixed Python block — here's what changed:\n\`\`\`python\n\n\`\`\``,
-        model: workspace.assistantModel,
-        title: 'Python Fix',
-        updateDocumentTitle: false,
-      });
+      const chatId = await this.chatService.latestChatId(userId, { workspaceId, documentId });
 
-      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId, chat_id: chat.id };
+      const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId, chat_id: chatId };
       const result = await this.runFix(taskItem, block, ctx);
 
-      return { result, chatId: chat.id };
+      return { result, chatId };
     } catch (err) {
       this.logger.error('fixPython failed', err);
       throw err;
@@ -128,11 +97,7 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
     block: Y.XmlElement<PythonBlock>,
     ctx: GeneratorContext,
   ): Promise<string> {
-    let cleanup: () => void = () => {};
-    let aborted = false;
     try {
-      cleanup = taskItem.observeStatus(s => { if (s._tag === 'aborting') aborted = true; });
-
       const instructions = getPythonBlockEditWithAIPrompt(block).toJSON();
       if (!instructions) { taskItem.setCompleted('error'); return ''; }
 
@@ -140,18 +105,17 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
       const prompt = `${instructions}\n\n${source}`;
 
       // The AI service has the MCP server change the cell itself; nothing comes back to apply.
-      await this.pythonGeneratorService.edit(ctx, block.getAttribute('id') as string, prompt);
+      const finished = await this.runUnlessStopped(taskItem, signal =>
+        this.pythonGeneratorService.edit(ctx, block.getAttribute('id') as string, prompt, signal),
+      );
 
-      if (aborted) { taskItem.setCompleted('aborted'); return getPythonSource(block).toJSON(); }
+      if (!finished) { taskItem.setCompleted('aborted'); return getPythonSource(block).toJSON(); }
       closePythonEditWithAIPrompt(block, true);
       taskItem.setCompleted('success');
-      this.emitBlockAction('edited', 'Python', block, ctx);
       return getPythonSource(block).toJSON();
     } catch (err) {
       taskItem.setCompleted('error');
       throw err;
-    } finally {
-      cleanup();
     }
   }
 
@@ -160,10 +124,7 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
     block: Y.XmlElement<PythonBlock>,
     ctx: GeneratorContext,
   ): Promise<string> {
-    let cleanup: () => void = () => {};
-    let aborted = false;
     try {
-      cleanup = taskItem.observeStatus(s => { if (s._tag === 'aborting') aborted = true; });
       const error = getPythonBlockResult(block).find(
         (r): r is PythonErrorOutput => r.type === 'error'
       );
@@ -175,17 +136,16 @@ export class PythonAiExecutorService extends BaseAiExecutorService {
         traceback: error.traceback.slice(0, 2),
       })}`;
 
-      await this.pythonGeneratorService.fix(ctx, block.getAttribute('id') as string, error_message);
+      const finished = await this.runUnlessStopped(taskItem, signal =>
+        this.pythonGeneratorService.fix(ctx, block.getAttribute('id') as string, error_message, signal),
+      );
 
-      if (aborted) { taskItem.setCompleted('aborted'); return getPythonSource(block).toJSON(); }
+      if (!finished) { taskItem.setCompleted('aborted'); return getPythonSource(block).toJSON(); }
       taskItem.setCompleted('success');
-      this.emitBlockAction('edited', 'Python', block, ctx);
       return getPythonSource(block).toJSON();
     } catch (err) {
       taskItem.setCompleted('error');
       throw err;
-    } finally {
-      cleanup();
     }
   }
 }

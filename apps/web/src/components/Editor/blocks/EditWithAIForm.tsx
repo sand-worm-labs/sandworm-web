@@ -1,7 +1,7 @@
 import type * as Y from "yjs";
 import clsx from "clsx";
 import { useCallback, useEffect, useRef } from "react";
-import { PiX, PiArrowRight } from "react-icons/pi";
+import { PiX, PiArrowRight, PiStopFill } from "react-icons/pi";
 import { updateYText } from "@sandworm/editor";
 
 import { SparkleAI } from "@/components/Assets/SparkleAI";
@@ -17,6 +17,8 @@ interface Props {
   value: Y.Text;
   onSubmit: () => void;
   onClose: () => void;
+  // Stops an edit that is running. Without it the form only shows a spinner.
+  onStop?: () => void;
   hasOutput: boolean;
 }
 
@@ -185,34 +187,54 @@ function EditWithAIForm(props: Props) {
             />
 
             <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-              {/* Submit / spinner button */}
-              <button
-                type="submit"
-                disabled={props.disabled}
-                className={clsx(
-                  "flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-lg",
-                  "transition-all duration-150",
-                  props.loading || props.disabled
-                    ? [
-                        "relative overflow-hidden cursor-not-allowed",
-                        "bg-transparent border border-transparent",
-                        "before:absolute before:inset-[1px] before:rounded-[7px]",
-                        "before:bg-surface dark:before:bg-header-surface",
-                      ]
-                    : "bg-base-200 hover:bg-primary-710 text-white border border-hover-border"
-                )}
-              >
-                {props.loading ? (
-                  <span className="relative z-10 text-primary dark:text-primary-300">
+              {/* Submit / stop / spinner button */}
+              {props.loading && props.onStop ? (
+                <button
+                  type="button"
+                  onClick={props.onStop}
+                  title="Stop"
+                  aria-label="Stop"
+                  className={clsx(
+                    "group flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-lg",
+                    "transition-all duration-150",
+                    "bg-base-200 dark:bg-ink-950 border border-hover-border",
+                    "text-primary dark:text-primary-300 hover:text-error"
+                  )}
+                >
+                  <span className="group-hover:hidden">
                     <Spin />
                   </span>
-                ) : (
-                  <PiArrowRight
-                    size={12}
-                    className="text-primary dark:text-primary-300"
-                  />
-                )}
-              </button>
+                  <PiStopFill size={11} className="hidden group-hover:block" />
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={props.disabled}
+                  className={clsx(
+                    "flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-lg",
+                    "transition-all duration-150",
+                    props.loading || props.disabled
+                      ? [
+                          "relative overflow-hidden cursor-not-allowed",
+                          "bg-transparent border border-transparent",
+                          "before:absolute before:inset-[1px] before:rounded-[7px]",
+                          "before:bg-surface dark:before:bg-header-surface",
+                        ]
+                      : "bg-base-200 hover:bg-primary-710 text-white border border-hover-border"
+                  )}
+                >
+                  {props.loading ? (
+                    <span className="relative z-10 text-primary dark:text-primary-300">
+                      <Spin />
+                    </span>
+                  ) : (
+                    <PiArrowRight
+                      size={12}
+                      className="text-primary dark:text-primary-300"
+                    />
+                  )}
+                </button>
+              )}
               {/* Close button */}
               <button
                 type="button"

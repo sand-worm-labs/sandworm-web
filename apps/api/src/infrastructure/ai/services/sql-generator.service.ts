@@ -10,11 +10,11 @@ export type SqlGeneratorResponse = CellEditResult;
 export class SqlGeneratorService {
   constructor(private readonly cells: CellEditClient) {}
 
-  edit(context: SqlGeneratorContext, blockId: string, prompt: string) {
-    return this.cells.edit('sql', context, blockId, prompt);
+  edit(context: SqlGeneratorContext, blockId: string, prompt: string, signal?: AbortSignal) {
+    return this.cells.edit('sql', context, blockId, prompt, signal);
   }
 
-  fix(context: SqlGeneratorContext, blockId: string, error_message: string) {
-    return this.cells.fix('sql', context, blockId, error_message);
+  fix(context: SqlGeneratorContext, blockId: string, error_message: string, signal?: AbortSignal) {
+    return this.cells.fix('sql', context, blockId, error_message, signal);
   }
 }

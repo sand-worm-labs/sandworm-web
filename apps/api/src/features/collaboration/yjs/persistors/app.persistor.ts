@@ -153,6 +153,10 @@ export class AppPersistor implements Persistor {
           },
         });
 
+        // The notebook was saved after this copy was loaded: writing it back
+        // would undo the save for this viewer.
+        if (existing && existing.clock > ydoc.clock) return;
+
         if (existing) {
           await repo.update(
             {

@@ -1,6 +1,5 @@
 import * as Y from 'yjs';
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { YjsDocumentService } from '../../collaboration/yjs/yjs-document.service';
 import { PersistorFactory } from '../../collaboration/yjs/persistors/persistor.factory';
 import { ChatService } from '../../chat/chat.service';
@@ -25,13 +24,12 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
   constructor(
     yjsDocumentService: YjsDocumentService,
     persistorFactory: PersistorFactory,
-    eventEmitter: EventEmitter2,
     @Inject(forwardRef(() => ChatService))
     private readonly chatService: ChatService,
     private readonly sqlGeneratorService: SqlGeneratorService,
     private readonly workspaceService: WorkspaceService,
   ) {
-    super(yjsDocumentService, persistorFactory, eventEmitter);
+    super(yjsDocumentService, persistorFactory);
   }
 
   async editAiSql(
@@ -40,7 +38,7 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     blockId: string,
     userId: string,
     chatId?: string,
-  ): Promise<{ result: string; chatId: string }> {
+  ): Promise<{ result: string; chatId?: string }> {
     try {
       const sharedDoc = await this.getSharedDoc(documentId, workspaceId);
       const block = getBlocks(sharedDoc.ydoc).get(blockId) as Y.XmlElement<SQLBlock> | undefined;
@@ -51,29 +49,8 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
       const taskItem = aiTasks.next();
       if (!taskItem) throw new Error('Failed to dequeue edit-sql task');
 
-      const workspace = await this.workspaceService.getWorkspaceById(workspaceId);
-      const focusedBlocks = [{ id: blockId, title: block.getAttribute('title') ?? '', type: 'SQL' }];
 
-      let resolvedChatId = chatId;
-      if (resolvedChatId) {
-        await this.chatService.sendMessage(userId, {
-          chatId: resolvedChatId,
-          content: `Edited SQL block with AI`,
-          model: workspace.assistantModel,
-          focusedBlocks,
-        });
-      } else {
-        const chat = await this.chatService.createChat(userId, {
-          workspaceId,
-          documentId,
-          message: `Edited SQL block with AI`,
-          model: workspace.assistantModel,
-          title: 'SQL Edit',
-          updateDocumentTitle: false,
-          focusedBlocks,
-        });
-        resolvedChatId = chat.id;
-      }
+      const resolvedChatId = await this.chatService.latestChatId(userId, { workspaceId, documentId, chatId });
 
       const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId, chat_id: resolvedChatId };
       const result = await this.runAiEdit(taskItem, block, sharedDoc.ydoc, ctx);
@@ -89,7 +66,7 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     workspaceId: string,
     blockId: string,
     userId: string,
-  ): Promise<{ result: string; chatId: string }> {
+  ): Promise<{ result: string; chatId?: string }> {
     try {
       const sharedDoc = await this.getSharedDoc(documentId, workspaceId);
       const block = getBlocks(sharedDoc.ydoc).get(blockId) as Y.XmlElement<SQLBlock> | undefined;
@@ -101,20 +78,12 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
       if (!taskItem) throw new Error('Failed to dequeue fix-sql task');
 
       const ctx: GeneratorContext = { user_id: userId, workspace_id: workspaceId, document_id: documentId };
-      const workspace = await this.workspaceService.getWorkspaceById(workspaceId);
 
-      const chat = await this.chatService.createChat(userId, {
-        workspaceId,
-        documentId,
-        message: `Fixed SQL block — here's what changed:\n\`\`\`sql\n\n\`\`\``,
-        model: workspace.assistantModel,
-        title: 'SQL Fix',
-        updateDocumentTitle: false,
-      });
+      const chatId = await this.chatService.latestChatId(userId, { workspaceId, documentId });
 
-      const result = await this.runAiFix(taskItem, block, sharedDoc.ydoc, { ...ctx, chat_id: chat.id });
+      const result = await this.runAiFix(taskItem, block, sharedDoc.ydoc, { ...ctx, chat_id: chatId });
 
-      return { result, chatId: chat.id };
+      return { result, chatId };
     } catch (err) {
       this.logger.error('fixSql failed', err);
       throw err;
@@ -127,10 +96,7 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     ydoc: Y.Doc,
     ctx: GeneratorContext,
   ): Promise<string> {
-    let cleanup: () => void = () => {};
-    let aborted = false;
     try {
-      cleanup = taskItem.observeStatus(s => { if (s._tag === 'aborting') aborted = true; });
       const { source, dataSourceId, editWithAIPrompt } = getSQLAttributes(block, getBlocks(ydoc));
       const instructions = editWithAIPrompt?.toJSON() ?? '';
       if (!instructions) { taskItem.setCompleted('error'); return ''; }
@@ -140,18 +106,17 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
       const prompt = `Dialect: ${dialect}\n\nQuery:\n${query}\n\nInstructions: ${instructions}`;
 
       // The AI service has the MCP server change the cell itself; nothing comes back to apply.
-      await this.sqlGeneratorService.edit(ctx, block.getAttribute('id') as string, prompt);
+      const finished = await this.runUnlessStopped(taskItem, signal =>
+        this.sqlGeneratorService.edit(ctx, block.getAttribute('id') as string, prompt, signal),
+      );
 
-      if (aborted) { taskItem.setCompleted('aborted'); return source?.toJSON() ?? ''; }
+      if (!finished) { taskItem.setCompleted('aborted'); return source?.toJSON() ?? ''; }
       closeSQLEditWithAIPrompt(block, true);
       taskItem.setCompleted('success');
-      this.emitBlockAction('edited', 'SQL', block, ctx);
       return source?.toJSON() ?? '';
     } catch (err) {
       taskItem.setCompleted('error');
       throw err;
-    } finally {
-      cleanup();
     }
   }
 
@@ -161,13 +126,7 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
     ydoc: Y.Doc,
     ctx: GeneratorContext,
   ): Promise<string> {
-    let cleanup: () => void = () => {};
-    let aborted = false;
     try {
-      cleanup = taskItem.observeStatus(s => { if (s._tag === 'aborting') aborted = true; });
-
-      this.emitBlockAction('created', 'SQL', block, ctx);
-
       const { source, dataSourceId, result: blockResult } = getSQLAttributes(block, getBlocks(ydoc));
       if (!blockResult || blockResult.type !== 'syntax-error') {
         taskItem.setCompleted('error');
@@ -178,17 +137,16 @@ export class SqlAiExecutorService extends BaseAiExecutorService {
       const dialect = DATA_SOURCE_DIALECT[dataSourceId as DataSourceId] ?? 'duckdb';
       const error_message = `Dialect: ${dialect}\n\nQuery:\n${query}\n\nError: ${blockResult.message}`;
 
-      await this.sqlGeneratorService.fix(ctx, block.getAttribute('id') as string, error_message);
+      const finished = await this.runUnlessStopped(taskItem, signal =>
+        this.sqlGeneratorService.fix(ctx, block.getAttribute('id') as string, error_message, signal),
+      );
 
-      if (aborted) { taskItem.setCompleted('aborted'); return source?.toJSON() ?? ''; }
+      if (!finished) { taskItem.setCompleted('aborted'); return source?.toJSON() ?? ''; }
       taskItem.setCompleted('success');
-      this.emitBlockAction('edited', 'SQL', block, ctx);
       return source?.toJSON() ?? '';
     } catch (err) {
       taskItem.setCompleted('error');
       throw err;
-    } finally {
-      cleanup();
     }
   }
 }

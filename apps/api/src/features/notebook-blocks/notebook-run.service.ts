@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type * as Y from 'yjs';
+import * as Y from 'yjs';
 import {
   ExecutionQueue,
   getBlocks,
@@ -12,6 +12,7 @@ import {
 import type { AllConfigType } from '@/config/config.type';
 import type { RunNotebookDto } from './dto/run-notebook.dto';
 import type { RunResultsQueryDto } from './dto/run-results-query.dto';
+import type { ViewNotebookDto } from './dto/view-notebook.dto';
 import { NotebookDocService, type NotebookRef } from './notebook-doc.service';
 import { describeCell, liveStates, type CellResult, type CellState, type RunOutcome } from './run/cell-result';
 
@@ -25,6 +26,14 @@ export type RunReport = {
   cellTimeoutSeconds?: number;
   counts: Partial<Record<CellState, number>>;
   cells: CellResult[];
+};
+
+// What the view page renders: the caller's copy of the published notebook as
+// an encoded Yjs state, and whether it is still running.
+export type ViewReport = {
+  status: 'running' | 'idle';
+  progress?: { completed: number; total: number };
+  state: string;
 };
 
 type Progress = { completed: number; total: number };
@@ -117,6 +126,38 @@ export class NotebookRunService {
       await this.waitUntil(queue, waitSeconds * 1000, () => !isRunning(progressOf(queue.toJSON())));
       return this.report(ydoc, queue, only, new Map());
     });
+  }
+
+  // The caller's copy of the published notebook, optionally after waiting for
+  // whatever is running in it to finish.
+  async view(ref: NotebookRef, { waitSeconds = 0 }: ViewNotebookDto): Promise<ViewReport> {
+    return this.docs.useView(ref, async ({ ydoc }) => {
+      const queue = ExecutionQueue.fromYjs(ydoc);
+      await this.waitUntil(queue, waitSeconds * 1000, () => !isRunning(progressOf(queue.toJSON())));
+      return this.viewReport(ydoc, queue);
+    });
+  }
+
+  // Runs every cell of the caller's copy again and waits up to `waitSeconds`
+  // for it. Joins the run already in progress instead of queueing a second one.
+  async rerunView(ref: NotebookRef, { waitSeconds = DEFAULT_RUN_WAIT_SECONDS }: ViewNotebookDto): Promise<ViewReport> {
+    const itemTimeoutMs = this.config.getOrThrow('blockExecutor.maxExecutionTime', { infer: true });
+
+    return this.docs.useView(ref, async ({ ydoc }) => {
+      const queue = ExecutionQueue.fromYjs(ydoc);
+      if (!isRunning(progressOf(queue.toJSON())) && runnableCellIds(ydoc).length > 0) {
+        queue.enqueueRunAll(getLayout(ydoc), getBlocks(ydoc), { _tag: 'user', userId: ref.userId }, { itemTimeoutMs });
+      }
+
+      await this.waitUntil(queue, waitSeconds * 1000, () => !isRunning(progressOf(queue.toJSON())));
+      return this.viewReport(ydoc, queue);
+    });
+  }
+
+  private viewReport(ydoc: Y.Doc, queue: ExecutionQueue): ViewReport {
+    const state = Buffer.from(Y.encodeStateAsUpdate(ydoc)).toString('base64');
+    const progress = progressOf(queue.toJSON());
+    return isRunning(progress) ? { status: 'running', progress, state } : { status: 'idle', state };
   }
 
   // The runnable cells among `blockIds`, in notebook order.

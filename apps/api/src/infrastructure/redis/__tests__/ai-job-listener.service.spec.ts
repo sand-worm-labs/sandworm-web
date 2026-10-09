@@ -10,7 +10,6 @@ jest.mock('@/features/workspace/service/workspace.service', () => ({
 
 import { AiJobListenerService } from '../ai-job-listener.service';
 import { AiJobEventNames } from '@/core/events/ai-job.events';
-import { BlockActionEventNames } from '@/core/events/block-action.events';
 
 function makeService() {
   const eventEmitter = { emit: jest.fn() } as any;
@@ -36,65 +35,28 @@ describe('AiJobListenerService', () => {
       });
     });
 
-    it('emits BLOCK_ACTION when a content_block_delta carries a ran block_action_delta', () => {
+    it('relays a cell card to the chat stream and does nothing else with it', () => {
       const { service, eventEmitter } = makeService();
-
-      (service as any).emitJobEvent(JOB_ID, {
+      const card = {
         chat_id: CHAT_ID,
         type: 'content_block_delta',
         index: 2,
         delta: {
           type: 'block_action_delta',
-          action: 'ran',
+          action: 'created',
           block_id: 'block-1',
           block_type: 'sql',
           block_title: 'Top holders',
           content: 'SELECT 1',
         },
-      });
+      };
 
-      expect(eventEmitter.emit).toHaveBeenCalledWith(BlockActionEventNames.BLOCK_ACTION, {
-        action: 'ran',
-        blockId: 'block-1',
-        blockType: 'sql',
-        blockTitle: 'Top holders',
-        content: 'SELECT 1',
-        chatId: CHAT_ID,
-        dataSourceId: null,
-        dataframeName: null,
-      });
-    });
+      (service as any).emitJobEvent(JOB_ID, card);
 
-    it('does not emit BLOCK_ACTION for a text_delta content_block_delta', () => {
-      const { service, eventEmitter } = makeService();
-
-      (service as any).emitJobEvent(JOB_ID, {
-        chat_id: CHAT_ID,
-        type: 'content_block_delta',
-        index: 0,
-        delta: { type: 'text_delta', text: 'hi' },
-      });
-
-      expect(eventEmitter.emit).not.toHaveBeenCalledWith(BlockActionEventNames.BLOCK_ACTION, expect.anything());
-    });
-
-    it('does not emit BLOCK_ACTION for a "generating" block_action content_block_start', () => {
-      const { service, eventEmitter } = makeService();
-
-      (service as any).emitJobEvent(JOB_ID, {
-        chat_id: CHAT_ID,
-        type: 'content_block_start',
-        index: 1,
-        content_block: {
-          type: 'block_action',
-          action: 'generating',
-          block_id: 'block-1',
-          block_type: 'sql',
-          block_title: 'Top holders',
-        },
-      });
-
-      expect(eventEmitter.emit).not.toHaveBeenCalledWith(BlockActionEventNames.BLOCK_ACTION, expect.anything());
+      // The cell already exists: the MCP server created it. Acting on the card
+      // would insert a second copy of it into the notebook.
+      expect(eventEmitter.emit).toHaveBeenCalledTimes(1);
+      expect(eventEmitter.emit).toHaveBeenCalledWith(AiJobEventNames.AI_JOB_EVENT, expect.objectContaining({ chatId: CHAT_ID, type: 'content_block_delta' }));
     });
   });
 });

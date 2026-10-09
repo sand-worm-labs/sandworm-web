@@ -24,10 +24,9 @@ function makeService(ydoc: Y.Doc) {
     getYDocForUpdateAsync: jest.fn().mockResolvedValue({ ydoc }),
   } as any;
   const persistorFactory = { createDocumentPersistor: jest.fn() } as any;
-  const eventEmitter = { emit: jest.fn() } as any;
   const chatService = {
-    sendMessage: jest.fn().mockResolvedValue(undefined),
-    createChat: jest.fn().mockResolvedValue({ id: 'chat-new' }),
+    // Resolves to the given chat, else the document's latest; a chat is never created.
+    latestChatId: jest.fn(async (_userId: string, ref: { chatId?: string }) => ref.chatId ?? 'chat-new'),
   } as any;
   // The AI service has the MCP server change the cell, so the fake does the same.
   const changeCell = (text: string) => async (_ctx: unknown, blockId: string) => {
@@ -46,13 +45,12 @@ function makeService(ydoc: Y.Doc) {
   const service = new SqlAiExecutorService(
     yjsDocumentService,
     persistorFactory,
-    eventEmitter,
     chatService,
     sqlGeneratorService,
     workspaceService,
   );
 
-  return { service, yjsDocumentService, eventEmitter, chatService, sqlGeneratorService, workspaceService };
+  return { service, yjsDocumentService, chatService, sqlGeneratorService, workspaceService };
 }
 
 function makeDocWithSQLBlock(source: string, editWithAIPrompt: string): { ydoc: Y.Doc; blockId: string } {
@@ -70,17 +68,18 @@ function makeDocWithSQLBlock(source: string, editWithAIPrompt: string): { ydoc: 
 
 describe('SqlAiExecutorService', () => {
   describe('editAiSql', () => {
-    it('creates a new chat and has the AI service change the cell directly', async () => {
+    it('adds to the latest chat and has the AI service change the cell directly', async () => {
       const { ydoc, blockId } = makeDocWithSQLBlock('select old', 'add a filter');
-      const { service, chatService, sqlGeneratorService, eventEmitter } = makeService(ydoc);
+      const { service, chatService, sqlGeneratorService } = makeService(ydoc);
 
       const result = await service.editAiSql('doc-1', 'ws-1', blockId, 'user-1');
 
-      expect(chatService.createChat).toHaveBeenCalledWith('user-1', expect.objectContaining({ title: 'SQL Edit' }));
+      expect(chatService.latestChatId).toHaveBeenCalledWith('user-1', expect.objectContaining({ documentId: 'doc-1' }));
       expect(sqlGeneratorService.edit).toHaveBeenCalledWith(
         expect.objectContaining({ chat_id: 'chat-new', document_id: 'doc-1' }),
         blockId,
         expect.stringContaining('add a filter'),
+        expect.any(AbortSignal),
       );
       expect(result).toEqual({ result: 'select 1', chatId: 'chat-new' });
 
@@ -88,17 +87,15 @@ describe('SqlAiExecutorService', () => {
       // written by the MCP server, not left as a suggestion to accept
       expect(getSQLAttributes(block, getBlocks(ydoc)).source.toString()).toBe('select 1');
       expect(getSQLAISuggestions(block)).toBeNull();
-      expect(eventEmitter.emit).toHaveBeenCalledWith('block.action', expect.objectContaining({ action: 'edited' }));
     });
 
-    it('reuses an existing chat via sendMessage when chatId is provided', async () => {
+    it('adds to the given chat when chatId is provided', async () => {
       const { ydoc, blockId } = makeDocWithSQLBlock('select old', 'tweak it');
       const { service, chatService } = makeService(ydoc);
 
       const result = await service.editAiSql('doc-1', 'ws-1', blockId, 'user-1', 'chat-existing');
 
-      expect(chatService.sendMessage).toHaveBeenCalledWith('user-1', expect.objectContaining({ chatId: 'chat-existing' }));
-      expect(chatService.createChat).not.toHaveBeenCalled();
+      expect(chatService.latestChatId).toHaveBeenCalledWith('user-1', expect.objectContaining({ chatId: 'chat-existing' }));
       expect(result.chatId).toBe('chat-existing');
     });
 
@@ -132,9 +129,29 @@ describe('SqlAiExecutorService', () => {
       expect(tasks[0]?.getCompleteStatus()).toBe('error');
     });
 
+    it('drops the AI call as soon as the user stops the task', async () => {
+      const { ydoc, blockId } = makeDocWithSQLBlock('select old', 'change it');
+      const { service, sqlGeneratorService } = makeService(ydoc);
+
+      // the AI service never answers: only the stop can end this call
+      sqlGeneratorService.edit.mockImplementation(
+        (_ctx: unknown, _id: string, _prompt: string, signal: AbortSignal) =>
+          new Promise((_resolve, reject) => {
+            signal.addEventListener('abort', () => reject(new Error('canceled')));
+            AITasks.fromYjs(ydoc).getBlockTasks(blockId, 'edit-sql')[0].setAborting();
+          }),
+      );
+
+      const result = await service.editAiSql('doc-1', 'ws-1', blockId, 'user-1');
+
+      expect(result.result).toBe('select old');
+      const tasks = AITasks.fromYjs(ydoc).getBlockTasks(blockId, 'edit-sql');
+      expect(tasks[0]?.getCompleteStatus()).toBe('aborted');
+    });
+
     it('stops reporting success when the task is aborted mid-flight', async () => {
       const { ydoc, blockId } = makeDocWithSQLBlock('select old', 'change it');
-      const { service, sqlGeneratorService, eventEmitter } = makeService(ydoc);
+      const { service, sqlGeneratorService } = makeService(ydoc);
 
       sqlGeneratorService.edit.mockImplementation(async () => {
         const task = AITasks.fromYjs(ydoc).getBlockTasks(blockId, 'edit-sql')[0];
@@ -149,7 +166,6 @@ describe('SqlAiExecutorService', () => {
       expect(result.result).toBe('applied-already');
       const block = getBlocks(ydoc).get(blockId) as any;
       expect(getSQLAISuggestions(block)).toBeNull();
-      expect(eventEmitter.emit).not.toHaveBeenCalledWith('block.action', expect.anything());
     });
   });
 
@@ -162,22 +178,19 @@ describe('SqlAiExecutorService', () => {
         blocks.set('block-1', block);
         block.setAttribute('result', { type: 'syntax-error', message: 'unexpected token' } as any);
       });
-      const { service, chatService, sqlGeneratorService, eventEmitter } = makeService(ydoc);
+      const { service, chatService, sqlGeneratorService } = makeService(ydoc);
 
       const result = await service.fixAiSql('doc-1', 'ws-1', 'block-1', 'user-1');
 
-      expect(chatService.createChat).toHaveBeenCalledWith('user-1', expect.objectContaining({ title: 'SQL Fix' }));
+      expect(chatService.latestChatId).toHaveBeenCalledWith('user-1', expect.objectContaining({ documentId: 'doc-1' }));
       expect(sqlGeneratorService.fix).toHaveBeenCalledWith(
         expect.objectContaining({ document_id: 'doc-1' }),
         'block-1',
         expect.stringContaining('unexpected token'),
+        expect.any(AbortSignal),
       );
       expect(result).toEqual({ result: 'select 2', chatId: 'chat-new' });
 
-      const actions = eventEmitter.emit.mock.calls
-        .filter(([name]: [string]) => name === 'block.action')
-        .map(([, event]: [string, any]) => event.action);
-      expect(actions).toEqual(['created', 'edited']);
     });
 
     it('marks the task as an error and returns empty when the block has no syntax-error result', async () => {

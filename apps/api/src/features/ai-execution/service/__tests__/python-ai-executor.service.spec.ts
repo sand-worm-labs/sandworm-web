@@ -24,10 +24,9 @@ function makeService(ydoc: Y.Doc) {
     getYDocForUpdateAsync: jest.fn().mockResolvedValue({ ydoc }),
   } as any;
   const persistorFactory = { createDocumentPersistor: jest.fn() } as any;
-  const eventEmitter = { emit: jest.fn() } as any;
   const chatService = {
-    sendMessage: jest.fn().mockResolvedValue(undefined),
-    createChat: jest.fn().mockResolvedValue({ id: 'chat-new' }),
+    // Resolves to the given chat, else the document's latest; a chat is never created.
+    latestChatId: jest.fn(async (_userId: string, ref: { chatId?: string }) => ref.chatId ?? 'chat-new'),
   } as any;
   // The AI service has the MCP server change the cell, so the fake does the same.
   const changeCell = (text: string) => async (_ctx: unknown, blockId: string) => {
@@ -45,13 +44,12 @@ function makeService(ydoc: Y.Doc) {
   const service = new PythonAiExecutorService(
     yjsDocumentService,
     persistorFactory,
-    eventEmitter,
     chatService,
     pythonGeneratorService,
     workspaceService,
   );
 
-  return { service, yjsDocumentService, eventEmitter, chatService, pythonGeneratorService, workspaceService };
+  return { service, yjsDocumentService, chatService, pythonGeneratorService, workspaceService };
 }
 
 function makeDocWithPythonBlock(source: string, editWithAIPrompt: string): { ydoc: Y.Doc; blockId: string } {
@@ -69,21 +67,18 @@ function makeDocWithPythonBlock(source: string, editWithAIPrompt: string): { ydo
 
 describe('PythonAiExecutorService', () => {
   describe('editAiPython', () => {
-    it('creates a new chat and has the AI service change the cell directly', async () => {
+    it('adds to the latest chat and has the AI service change the cell directly', async () => {
       const { ydoc, blockId } = makeDocWithPythonBlock('print("old")', 'make it print new');
-      const { service, chatService, pythonGeneratorService, eventEmitter } = makeService(ydoc);
+      const { service, chatService, pythonGeneratorService } = makeService(ydoc);
 
       const result = await service.editAiPython('doc-1', 'ws-1', blockId, 'user-1');
 
-      expect(chatService.createChat).toHaveBeenCalledWith('user-1', expect.objectContaining({
-        workspaceId: 'ws-1',
-        documentId: 'doc-1',
-        title: 'Python Edit',
-      }));
+      expect(chatService.latestChatId).toHaveBeenCalledWith('user-1', expect.objectContaining({ workspaceId: 'ws-1', documentId: 'doc-1' }));
       expect(pythonGeneratorService.edit).toHaveBeenCalledWith(
         expect.objectContaining({ chat_id: 'chat-new', document_id: 'doc-1' }),
         blockId,
         expect.stringContaining('make it print new'),
+        expect.any(AbortSignal),
       );
       expect(result).toEqual({ result: 'print(1)', chatId: 'chat-new' });
 
@@ -91,17 +86,15 @@ describe('PythonAiExecutorService', () => {
       // written by the MCP server, not left as a suggestion to accept
       expect(getPythonSource(block).toString()).toBe('print(1)');
       expect(getPythonAISuggestions(block)).toBeNull();
-      expect(eventEmitter.emit).toHaveBeenCalledWith('block.action', expect.objectContaining({ action: 'edited' }));
     });
 
-    it('reuses an existing chat via sendMessage when chatId is provided', async () => {
+    it('adds to the given chat when chatId is provided', async () => {
       const { ydoc, blockId } = makeDocWithPythonBlock('print("old")', 'tweak it');
       const { service, chatService } = makeService(ydoc);
 
       const result = await service.editAiPython('doc-1', 'ws-1', blockId, 'user-1', 'chat-existing');
 
-      expect(chatService.sendMessage).toHaveBeenCalledWith('user-1', expect.objectContaining({ chatId: 'chat-existing' }));
-      expect(chatService.createChat).not.toHaveBeenCalled();
+      expect(chatService.latestChatId).toHaveBeenCalledWith('user-1', expect.objectContaining({ chatId: 'chat-existing' }));
       expect(result.chatId).toBe('chat-existing');
     });
 
@@ -137,7 +130,7 @@ describe('PythonAiExecutorService', () => {
 
     it('stops reporting success when the task is aborted mid-flight', async () => {
       const { ydoc, blockId } = makeDocWithPythonBlock('print("old")', 'change it');
-      const { service, pythonGeneratorService, eventEmitter } = makeService(ydoc);
+      const { service, pythonGeneratorService } = makeService(ydoc);
 
       pythonGeneratorService.edit.mockImplementation(async () => {
         // Simulate a user hitting "stop" while the AI call is in flight —
@@ -154,7 +147,6 @@ describe('PythonAiExecutorService', () => {
       expect(result.result).toBe('applied-already');
       const block = getBlocks(ydoc).get(blockId) as any;
       expect(getPythonAISuggestions(block)).toBeNull();
-      expect(eventEmitter.emit).not.toHaveBeenCalledWith('block.action', expect.anything());
     });
   });
 
@@ -173,11 +165,12 @@ describe('PythonAiExecutorService', () => {
 
       const result = await service.fixAiPython('doc-1', 'ws-1', 'block-1', 'user-1');
 
-      expect(chatService.createChat).toHaveBeenCalledWith('user-1', expect.objectContaining({ title: 'Python Fix' }));
+      expect(chatService.latestChatId).toHaveBeenCalledWith('user-1', expect.objectContaining({ documentId: 'doc-1' }));
       expect(pythonGeneratorService.fix).toHaveBeenCalledWith(
         expect.objectContaining({ document_id: 'doc-1' }),
         'block-1',
         expect.stringContaining('ZeroDivisionError'),
+        expect.any(AbortSignal),
       );
       expect(result).toEqual({ result: 'print(2)', chatId: 'chat-new' });
     });

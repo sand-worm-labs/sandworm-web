@@ -17,7 +17,37 @@
       "Bash(rm notebooks.ts)",
       "Bash(sed -i \"s|'./notebooks.ts'|'./notebooks/index.ts'|\" index.ts)",
       "Bash(grep -i \"href\\\\|router.push\\\\|\\\\`/\")",
-      "Bash(npm test *)"
+      "Bash(npm test *)",
+      "Bash(.venv/bin/python -m pytest src/services/agent/test_agent.py -q)",
+      "Bash(.venv/bin/ruff check *)",
+      "Bash(git checkout *)",
+      "Bash(.venv/bin/python -m pytest src -q)",
+      "Bash(.venv/bin/pip list *)",
+      "Bash(cp pyproject.toml /tmp/claude-1000/pyproject.bak)",
+      "Bash(timeout 300 poetry add \"pydantic-ai-slim[openai]\")",
+      "Bash(.venv/bin/python -)",
+      "Bash(diff /tmp/claude-1000/pyproject.bak pyproject.toml; git diff HEAD --stat -- pyproject.toml; git log --oneline -1 -- pyproject.toml)",
+      "Read(//tmp/claude-1000/**)",
+      "Bash(.venv/bin/python -m pytest src/services/agent/test_cell_edit.py src/services/cell -q)",
+      "Bash(mv src/services/notebook_title/test_service.py src/services/notebook_title/test_notebook_title.py && .venv/bin/ruff check --fix --select I src/__main__.py | tail -1; .venv/bin/python -m pytest src -q 2>&1 | tail -3; .venv/bin/ruff check src/services/notebook_title src/web src/__main__.py src/services/agent/cell_edit.py 2>&1 | tail -3)",
+      "Bash(git stash *)",
+      "Bash(npx jest *)",
+      "Bash(sed -i 's/^import uuid$/import logging\\\\nimport uuid/' src/services/cell/service.py)",
+      "Bash(sed -i 's/^CellKind = /log = logging.getLogger\\(__name__\\)\\\\n\\\\nCellKind = /' src/services/cell/service.py)",
+      "Bash(poetry run *)",
+      "Bash(cd /home/daniel/development/sandworm-web/apps/mcp/src && grep -rn \"request\" --include='*.ts' . | grep -v \"__tests__\\\\|requestId\\\\|Request\\(\" | grep -iE \"args|arguments|prompt\" | head -12; grep -n \"async def _apply\" -A30 ../../ai/src/services/agent/cell_edit.py)",
+      "Read(//home/daniel/ai/src/services/agent/**)",
+      "Bash(grep -v \"^--$\")",
+      "Bash(grep -v \"^\\\\s*$\")",
+      "Bash(grep -v \"isPublicMode?: \\\\|isPublicMode$\\\\|isPublicMode={\")",
+      "Bash(npx swc *)",
+      "Bash(npx nest *)",
+      "Bash(npx eslint *)",
+      "Bash(NODE_OPTIONS=--max-old-space-size=3072 npx tsc --noEmit -p .)"
+    ],
+    "additionalDirectories": [
+      "/home/daniel/development/sandworm-web/apps/ai/src/services/notebook_title",
+      "/home/daniel/development/sandworm-web/apps/api/src/features/chat"
     ]
   }
 }

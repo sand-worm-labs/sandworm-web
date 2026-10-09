@@ -1,4 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import PQueue from 'p-queue';
+import type { AllConfigType } from '@/config/config.type';
 import * as Y from 'yjs';
 import { LockService } from '@/infrastructure/lock/lock.services';
 import { PythonBlockExecutorService } from '@/features/block-executor/services/executors/python-block-executor.service';
@@ -23,7 +26,15 @@ export class DocumentExecutorService {
     private readonly pivotTable: PivotTableBlockExecutorService,
     private readonly powerToolbox: PowerToolboxBlockExecutorService,
     private readonly lock: LockService,
-  ) {}
+    config: ConfigService<AllConfigType>,
+  ) {
+    this.slots = new PQueue({
+      concurrency: config.getOrThrow('blockExecutor.executionConcurrency', { infer: true }),
+    });
+  }
+
+  // One gate for every notebook on this API instance.
+  private readonly slots: PQueue;
 
   createExecutor(
     docId: string,
@@ -51,6 +62,7 @@ export class DocumentExecutorService {
         powerToolbox: this.powerToolbox,
         lock: this.lock,
       },
+      this.slots,
     );
   }
 }

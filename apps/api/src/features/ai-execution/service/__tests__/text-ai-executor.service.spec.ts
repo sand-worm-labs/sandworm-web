@@ -24,7 +24,6 @@ function makeService(ydoc: Y.Doc) {
     getYDocForUpdateAsync: jest.fn().mockResolvedValue({ ydoc }),
   } as any;
   const persistorFactory = { createDocumentPersistor: jest.fn() } as any;
-  const eventEmitter = { emit: jest.fn() } as any;
   // The AI service has the MCP server change the cell, so the fake does the same.
   const markdownGeneratorService = {
     edit: jest.fn().mockImplementation(async (_ctx: unknown, blockId: string) => {
@@ -36,20 +35,19 @@ function makeService(ydoc: Y.Doc) {
     getWorkspaceById: jest.fn().mockResolvedValue({ id: 'ws-1', assistantModel: 'gpt' }),
   } as any;
   const chatService = {
-    sendMessage: jest.fn().mockResolvedValue(undefined),
-    createChat: jest.fn().mockResolvedValue({ id: 'chat-new' }),
+    // Resolves to the given chat, else the document's latest; a chat is never created.
+    latestChatId: jest.fn(async (_userId: string, ref: { chatId?: string }) => ref.chatId ?? 'chat-new'),
   } as any;
 
   const service = new TextAiExecutorService(
     yjsDocumentService,
     persistorFactory,
-    eventEmitter,
     markdownGeneratorService,
     workspaceService,
     chatService,
   );
 
-  return { service, yjsDocumentService, eventEmitter, chatService, markdownGeneratorService, workspaceService };
+  return { service, yjsDocumentService, chatService, markdownGeneratorService, workspaceService };
 }
 
 function makeDocWithMarkdownBlock(source: string, editWithAIPrompt: string): { ydoc: Y.Doc; blockId: string } {
@@ -70,17 +68,18 @@ function makeDocWithMarkdownBlock(source: string, editWithAIPrompt: string): { y
 
 describe('TextAiExecutorService', () => {
   describe('editAiText', () => {
-    it('creates a new chat and has the AI service change the cell directly', async () => {
+    it('adds to the latest chat and has the AI service change the cell directly', async () => {
       const { ydoc, blockId } = makeDocWithMarkdownBlock('# old', 'make it a list');
-      const { service, chatService, markdownGeneratorService, eventEmitter } = makeService(ydoc);
+      const { service, chatService, markdownGeneratorService } = makeService(ydoc);
 
       const result = await service.editAiText('doc-1', 'ws-1', blockId, 'user-1');
 
-      expect(chatService.createChat).toHaveBeenCalledWith('user-1', expect.objectContaining({ title: 'Markdown Edit' }));
+      expect(chatService.latestChatId).toHaveBeenCalledWith('user-1', expect.objectContaining({ documentId: 'doc-1' }));
       expect(markdownGeneratorService.edit).toHaveBeenCalledWith(
         expect.objectContaining({ chat_id: 'chat-new', document_id: 'doc-1' }),
         blockId,
         expect.stringContaining('make it a list'),
+        expect.any(AbortSignal),
       );
       expect(result).toEqual({ result: 'new markdown', chatId: 'chat-new' });
 
@@ -88,17 +87,15 @@ describe('TextAiExecutorService', () => {
       // written by the MCP server, not left as a suggestion to accept
       expect(getMarkdownAttributes(block).source.toString()).toBe('new markdown');
       expect(getMarkdownAISuggestions(block)).toBeNull();
-      expect(eventEmitter.emit).toHaveBeenCalledWith('block.action', expect.objectContaining({ action: 'edited' }));
     });
 
-    it('reuses an existing chat via sendMessage when chatId is provided', async () => {
+    it('adds to the given chat when chatId is provided', async () => {
       const { ydoc, blockId } = makeDocWithMarkdownBlock('# old', 'tweak it');
       const { service, chatService } = makeService(ydoc);
 
       const result = await service.editAiText('doc-1', 'ws-1', blockId, 'user-1', 'chat-existing');
 
-      expect(chatService.sendMessage).toHaveBeenCalledWith('user-1', expect.objectContaining({ chatId: 'chat-existing' }));
-      expect(chatService.createChat).not.toHaveBeenCalled();
+      expect(chatService.latestChatId).toHaveBeenCalledWith('user-1', expect.objectContaining({ chatId: 'chat-existing' }));
       expect(result.chatId).toBe('chat-existing');
     });
 
@@ -134,7 +131,7 @@ describe('TextAiExecutorService', () => {
 
     it('stops reporting success when the task is aborted mid-flight', async () => {
       const { ydoc, blockId } = makeDocWithMarkdownBlock('# old', 'change it');
-      const { service, markdownGeneratorService, eventEmitter } = makeService(ydoc);
+      const { service, markdownGeneratorService } = makeService(ydoc);
 
       markdownGeneratorService.edit.mockImplementation(async () => {
         const task = AITasks.fromYjs(ydoc).getBlockTasks(blockId, 'edit-text')[0];
@@ -149,7 +146,6 @@ describe('TextAiExecutorService', () => {
       expect(result.result).toBe('applied-already');
       const block = getBlocks(ydoc).get(blockId) as any;
       expect(getMarkdownAISuggestions(block)).toBeNull();
-      expect(eventEmitter.emit).not.toHaveBeenCalledWith('block.action', expect.anything());
     });
   });
 });

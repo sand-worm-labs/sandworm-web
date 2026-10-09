@@ -15,10 +15,9 @@ function makeService(ydoc: Y.Doc) {
     getYDocForUpdateAsync: jest.fn().mockResolvedValue({ ydoc }),
   } as any;
   const persistorFactory = { createDocumentPersistor: jest.fn() } as any;
-  const eventEmitter = { emit: jest.fn() } as any;
 
-  const service = new TitleAiExecutorService(yjsDocumentService, persistorFactory, eventEmitter);
-  return { service, yjsDocumentService, persistorFactory, eventEmitter };
+  const service = new TitleAiExecutorService(yjsDocumentService, persistorFactory);
+  return { service, yjsDocumentService, persistorFactory };
 }
 
 describe('TitleAiExecutorService', () => {

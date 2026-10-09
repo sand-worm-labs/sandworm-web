@@ -4,9 +4,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ChatService } from '@/features/chat/chat.service';
 import { RedisService } from './redis.service';
 import { AiJobEvent, AiJobEventNames } from '@/core/events/ai-job.events';
-import { BlockActionEvent, BlockActionEventNames, BlockActionType } from '@/core/events/block-action.events';
 import pLimit from 'p-limit';
-import { DATA_SOURCE_ID_BY_NAME } from '@sandworm/types';
 
 interface RawAiJobEvent {
   chat_id?: string;
@@ -20,6 +18,9 @@ export class AiJobListenerService implements OnModuleInit {
   private readonly buffer = new Map<string, RawAiJobEvent[]>();
   private readonly validatedChats = new Map<string, number>();
   private readonly limit = pLimit(50);
+  // Tail of each job's event chain: events of one job run strictly in order,
+  // different jobs run in parallel (bounded by `limit`).
+  private readonly jobTails = new Map<string, Promise<void>>();
 
   private readonly BUFFER_TTL_MS = 10 * 60 * 1000;
   private readonly VALIDATED_TTL_MS = 60 * 60 * 1000;
@@ -33,13 +34,25 @@ export class AiJobListenerService implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     this.logger.log('Listening for AI job events');
     await this.redisService.catchUpAndSubscribe((channel, message) => {
-      void this.limit(async () => {
+      this.enqueueForJob(channel, message);
+    });
+  }
+
+  private enqueueForJob(channel: string, message: string): void {
+    const jobId = this.extractJobId(channel);
+    const prev = this.jobTails.get(jobId) ?? Promise.resolve();
+    const tail = prev.then(() =>
+      this.limit(async () => {
         try {
           await this.handleJobEvent(channel, message);
         } catch (err) {
           this.logger.error(`[${channel}] Unhandled error`, err);
         }
-      });
+      }),
+    );
+    this.jobTails.set(jobId, tail);
+    void tail.then(() => {
+      if (this.jobTails.get(jobId) === tail) this.jobTails.delete(jobId);
     });
   }
 
@@ -73,27 +86,6 @@ export class AiJobListenerService implements OnModuleInit {
       payload: rest,
     };
     this.eventEmitter.emit(AiJobEventNames.AI_JOB_EVENT, event);
-
-    // A block finished generating (envelope: content_block_delta / block_action_delta).
-    // action is "ran" for sql/python, "edited" for dashboard_header (single
-    // header, upserted in place), "created" for everything else — see
-    // BlockActionService.generate_blocks on the Python side.
-    const delta = type === 'content_block_delta' ? (rest as any).delta : undefined;
-    if (delta?.type === 'block_action_delta') {
-      const dataSourceId = DATA_SOURCE_ID_BY_NAME[delta.data_source] ?? null;
-
-      const blockEvent: BlockActionEvent = {
-        action: (delta.action as BlockActionType) ?? 'created',
-        blockId: delta.block_id ?? '',
-        blockType: delta.block_type ?? '',
-        blockTitle: delta.block_title ?? '',
-        content: delta.content ?? '',
-        dataSourceId,
-        dataframeName: delta.dataframe_name ?? null,
-        chatId: chat_id!,
-      };
-      this.eventEmitter.emit(BlockActionEventNames.BLOCK_ACTION, blockEvent);
-    }
   }
 
   private enqueue(jobId: string, event: RawAiJobEvent): void {
