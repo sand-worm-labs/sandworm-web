@@ -2,7 +2,13 @@ import type { NextPage } from "next";
 import type { AppProps } from "next/app";
 import type { ReactNode } from "react";
 import type { UIMessage } from "ai";
-import type { DataSourceStructureStateV3 } from "@sandworm/types";
+import type {
+  DataSourceStructureStateV3,
+  ShowcaseCategoryStatus,
+  ShowcaseGroup,
+  ShowcaseLeadKind,
+  ShowcaseTaxonomyEntry,
+} from "@sandworm/types";
 
 import { type UserSetting } from "@/generated/graphql";
 
@@ -344,4 +350,96 @@ export type DataSourceType = DataSource["type"];
 
 export type APIDataSource = DataSource & {
   structure: DataSourceStructureStateV3;
+};
+
+// =====================================
+// ⬢  Showcase
+// =====================================
+// The notebook metadata, taxonomy entry and lead shapes are shared with the
+// API (@sandworm/types). What follows them is what the pages build on top.
+export type {
+  NotebookShowcase,
+  ShowcaseCategoryStatus,
+  ShowcaseGroup,
+  ShowcaseHeroStat,
+  ShowcaseKind,
+  ShowcaseLeadInput,
+  ShowcaseLeadKind,
+  ShowcaseNotebook,
+  ShowcaseTaxonomyEntry,
+} from "@sandworm/types";
+
+export type ShowcaseGroupConfig = {
+  id: ShowcaseGroup;
+  label: string;
+};
+
+// The Showcase's groups and categories, as the API returns them.
+export type ShowcaseTaxonomy = {
+  groups: ShowcaseGroupConfig[];
+  // The order chain filters appear in; chains not listed come after.
+  chainOrder: string[];
+  categories: ShowcaseTaxonomyEntry[];
+};
+
+// A taxonomy entry joined with the notebooks published under it.
+export type ShowcaseCategoryCard = ShowcaseTaxonomyEntry & {
+  status: ShowcaseCategoryStatus;
+  chains: string[];
+  // Where the covered activity happens, from the notebooks' country.
+  countries: string[];
+  protocols: string[];
+  caseStudyCount: number;
+};
+
+export type ShowcaseGroupFilter = ShowcaseGroup | "all";
+
+export type ShowcaseFilters = {
+  group: ShowcaseGroupFilter;
+  chain: string | null;
+  search: string;
+};
+
+// One fixed section of a published template.
+export type ShowcaseTemplateSection = {
+  id: string;
+  title: string | null;
+  required: boolean;
+  // Who provides it: the page around the notebook, or the notebook's author.
+  by: "page" | "notebook";
+  min?: number;
+  max?: number;
+};
+
+export type ShowcaseTemplates = Record<
+  "case_study" | "category",
+  { sections: ShowcaseTemplateSection[] }
+>;
+
+// Everything the Showcase pages are laid out from. It lives in the database
+// and comes from the API's getShowcaseConfig.
+export type ShowcaseConfig = {
+  taxonomy: ShowcaseTaxonomy;
+  chains: Record<string, { color: string }>;
+  templates: ShowcaseTemplates;
+};
+
+export type UtmParams = Record<string, string>;
+
+export type ShowcaseEventName =
+  | "case_study_view"
+  | "notebook_open"
+  | "followup_asked"
+  | "signup"
+  | "report_requested"
+  | "coverage_requested"
+  | "claim_requested"
+  | "fork_created";
+
+// What a lead form is asking for, and about what.
+export type ShowcaseLeadTarget = {
+  kind: ShowcaseLeadKind;
+  category?: string;
+  protocol?: string;
+  notebookSlug?: string;
 };
