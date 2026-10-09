@@ -6,7 +6,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import type { AuthContext, Authenticator } from './auth.ts';
 import { clientOf, type ClientInfo } from './client.ts';
 import { registerTools } from './tools/index.ts';
-import { SAVE_REPLY_INSTRUCTIONS } from './tools/notebooks/reply.ts';
+import { NEXT_STEPS_INSTRUCTIONS, POSITIONING_INSTRUCTIONS, SAVE_REPLY_INSTRUCTIONS } from './tools/notebooks/reply.ts';
 
 const MAX_BODY_BYTES = 1_000_000;
 
@@ -22,7 +22,7 @@ export type ServerDeps = {
 export function createMcpServer(deps: ServerDeps, auth: AuthContext, client?: ClientInfo): McpServer {
   const server = new McpServer(
     { name: 'sandworm', version: '0.1.0' },
-    deps.logToolCalls ? { instructions: SAVE_REPLY_INSTRUCTIONS } : undefined,
+    { instructions: [POSITIONING_INSTRUCTIONS, NEXT_STEPS_INSTRUCTIONS, ...(deps.logToolCalls ? [SAVE_REPLY_INSTRUCTIONS] : [])].join(' ') },
   );
   registerTools(server, {
     auth,
@@ -95,7 +95,9 @@ export function createHttpServer(deps: ServerDeps): Server {
 
     try {
       const body = await readJsonBody(req);
-      const mcp = createMcpServer(deps, auth,clientOf(req, res, body));
+      // The AI service streams its own events for the chat, so its calls must not also be saved by the call log.
+      const skipLog = req.headers['x-sandworm-skip-tool-log'] !== undefined;
+      const mcp = createMcpServer({ ...deps, logToolCalls: deps.logToolCalls && !skipLog }, auth, clientOf(req, res, body));
       const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
       res.on('close', () => {
         void transport.close();
