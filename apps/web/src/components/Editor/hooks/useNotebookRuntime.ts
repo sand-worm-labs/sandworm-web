@@ -1,12 +1,17 @@
 import type * as Y from "yjs";
 import { useEffect, useRef } from "react";
-import { type ExecutionQueue, getBlocks, getLayout } from "@sandworm/editor";
+import {
+  BlockType,
+  type ExecutionQueue,
+  getBlocks,
+  getLayout,
+} from "@sandworm/editor";
 
 import { DocumentRuntime } from "@/generated/graphql";
 import type { Document } from "@/types";
 import { DocExecutor } from "@/lib/browser-executor/doc-executor";
 
-// Two kinds of notebook run in the browser, never on the cloud: light
+// Two kinds of notebook run in the browser, never on the cloud: local
 // analysis, and live dashboards that re-run for each viewer. Cloud notebooks
 // are for heavy research and SQL warehouses.
 export function isBrowserNotebook(
@@ -16,6 +21,19 @@ export function isBrowserNotebook(
     document?.runtime === DocumentRuntime.BrowserAnalysis ||
     document?.runtime === DocumentRuntime.BrowserDashboard
   );
+}
+
+// Blocks a browser notebook can't have: they're built by cloud-side code.
+// Charts can still be made in a Python cell.
+const CLOUD_ONLY_BLOCKS = new Set<BlockType>([
+  BlockType.PowerToolbox,
+  BlockType.Visualization,
+  BlockType.VisualizationV2,
+  BlockType.PivotTable,
+]);
+
+export function canAddBlock(type: BlockType, isBrowserRuntime: boolean) {
+  return !isBrowserRuntime || !CLOUD_ONLY_BLOCKS.has(type);
 }
 
 // For a browser notebook: runs this user's queued cells in this tab. A live

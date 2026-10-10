@@ -21,6 +21,8 @@ import { Table2Icon } from "lucide-react";
 import type { FeatureFlags } from "@sandworm/types";
 
 import useDropdownPosition from "./hooks/dropdownposition";
+import { useIsBrowserRuntime } from "./hooks/useEnvironmentStatus";
+import { canAddBlock } from "./hooks/useNotebookRuntime";
 import type { APIDataSources } from "./hooks/useDataSources";
 
 type Item = {
@@ -164,7 +166,11 @@ function NewTabButton(props: Props) {
     [props.yDoc, props.blockGroupId, props.lastBlockId, ff]
   );
 
-  const menuItems = useMemo(() => items(ff), [ff]);
+  const isBrowserRuntime = useIsBrowserRuntime();
+  const menuItems = useMemo(
+    () => items(ff).filter(item => canAddBlock(item.type, isBrowserRuntime)),
+    [ff, isBrowserRuntime]
+  );
 
   return (
     <Menu as="div" className="relative">
