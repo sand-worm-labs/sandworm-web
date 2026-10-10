@@ -49,6 +49,9 @@ export class UpdateDocumentInput {
 
   @BooleanFieldOptional()
   isDashboardPublic?: boolean;
+
+  @EnumFieldOptional(() => DocumentRuntime, {})
+  runtime?: DocumentRuntime;
 }
 
 @InputType()

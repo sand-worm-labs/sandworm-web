@@ -175,6 +175,9 @@ export class DocumentService {
     if (input.isDashboardPublic !== undefined) {
       updatedDocument.isDashboardPublic = input.isDashboardPublic;
     }
+    if (input.runtime !== undefined) {
+      updatedDocument.runtime = input.runtime;
+    }
     await this.documentRepository.save(updatedDocument);
     const result = Document.fromEntity(updatedDocument);
 

@@ -974,6 +974,7 @@ input UpdateDocumentInput {
   runSQLSelection: Boolean
   shareLinksWithoutSidebar: Boolean
   isDashboardPublic: Boolean
+  runtime: DocumentRuntime
 }
 
 input DeleteDocumentInput {

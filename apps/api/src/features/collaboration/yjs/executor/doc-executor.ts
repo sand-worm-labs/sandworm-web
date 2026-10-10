@@ -67,19 +67,18 @@ export class DocExecutor {
 
   start(): void {
     this.isRunning = true;
-    const runsInBrowser = this.services.runsInBrowser?.() ?? Promise.resolve(false);
-    runsInBrowser
-      .catch(err => {
-        this.logger.error({ docId: this.docId, err }, 'Could not read notebook runtime');
-        return false;
-      })
-      .then(inBrowser => {
-        if (inBrowser) {
-          this.isRunning = false;
-        } else if (this.isRunning) {
-          this.runLoop();
-        }
-      });
+    this.runLoop();
+  }
+
+  // Browser notebooks are run by their users' browsers. Checked per batch,
+  // since a notebook's runtime can be changed while it's open.
+  private async runsInBrowser(): Promise<boolean> {
+    try {
+      return (await this.services.runsInBrowser?.()) ?? false;
+    } catch (err) {
+      this.logger.error({ docId: this.docId, err }, 'Could not read notebook runtime');
+      return false;
+    }
   }
 
   async stop(): Promise<void> {
@@ -127,6 +126,11 @@ export class DocExecutor {
               const batch = this.queue.getCurrentBatch();
               if (!batch) {
                 setTimeout(() => tick(), 500);
+                return;
+              }
+
+              if (await this.runsInBrowser()) {
+                setTimeout(() => tick(), 1000);
                 return;
               }
 
