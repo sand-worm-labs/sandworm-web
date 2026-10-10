@@ -1,7 +1,7 @@
 "use client";
 
 import { v4 as uuidv4 } from "uuid";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { uniq } from "ramda";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
@@ -20,6 +20,7 @@ import { useEnvironmentStatus } from "@/components/Editor/hooks/useEnvironmentSt
 import EnvBar from "@/components/Editor/blocks/EnvBar";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import Spin from "@/components/Editor/blocks/Spin";
+import { ApiKeyNudges } from "@/components/Environment/ApiKeyNudge";
 
 // =====================================
 // ⬢ Constants
@@ -190,9 +191,27 @@ export default function EnvironmentVariablesPage() {
 
   const isDirty = added.length > 0 || removed.length > 0;
 
+  // The row a nudge adds is already named, so the next thing to do is paste the key.
+  const [focusValueOf, setFocusValueOf] = useState<string | null>(null);
+  useEffect(() => {
+    if (!focusValueOf) return;
+    const input = document.getElementById(`val-${focusValueOf}`);
+    if (input) {
+      input.scrollIntoView({ block: "center", behavior: "smooth" });
+      input.focus();
+      setFocusValueOf(null);
+    }
+  }, [focusValueOf, added]);
+
   // ── Handlers ──
   const onAdd = useCallback(() => {
     setAdded(prev => [...prev, { id: uuidv4(), name: "", value: "" }]);
+  }, []);
+
+  const onAddKnownKey = useCallback((name: string) => {
+    const id = uuidv4();
+    setAdded(prev => [...prev, { id, name, value: "" }]);
+    setFocusValueOf(id);
   }, []);
 
   const onSave: React.FormEventHandler<HTMLFormElement> = useCallback(
@@ -284,6 +303,15 @@ export default function EnvironmentVariablesPage() {
               </code>
             </p>
           </div>
+
+          <ApiKeyNudges
+            workspaceId={workspaceId}
+            variables={variables}
+            added={added}
+            loading={loading}
+            isViewer={isViewer}
+            onAddKey={onAddKnownKey}
+          />
 
           <form onSubmit={onSave}>
             {/* ── Variable rows ── */}

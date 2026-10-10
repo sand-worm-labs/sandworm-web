@@ -137,6 +137,14 @@ services:
       - ./jupyterfiles:/home/sandwormuser/files
     networks:
       - sandworm-net
+    # Notebooks reach Supabase, Nansen and other public APIs by name. Docker's
+    # built-in resolver forwards to the host's, and when that stalls (a network
+    # change, sleep, a VPN) lookups fail with "Temporary failure in name
+    # resolution". Public resolvers keep notebook fetches independent of that;
+    # container names on sandworm-net still resolve through Docker.
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     extra_hosts:
       - "host.docker.internal:host-gateway"
     command: >

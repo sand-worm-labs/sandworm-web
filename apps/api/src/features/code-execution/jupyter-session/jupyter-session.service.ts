@@ -8,11 +8,18 @@ import { decrypt } from '@sandworm/nest-common';
 import { EnvironmentVariableEntity } from '@sandworm/postgresql-typeorm';
 import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
 import { EnvironmentVariablesChangedEvent, EventNames, KernelRestartedEvent } from '@/events/environment.events';
+import { AI_ENV_HASH_KEYS, AI_ENV_KEYS } from '@/core/constants/app.constant';
 import { AllConfigType } from '@/core/config/config.type';
 import { buildTrinoConnectionUrl } from '@/features/code-execution/query-engine/trino/trino-connection-url.util';
 
 // What an environment variable may be called, matching the environment page.
 const ENV_VAR_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
+
+// Variables Sandworm creates for a workspace to run its own AI (a spend-limited
+// OpenRouter key and its hash). They are listed on the environment page, but notebook
+// code, including AI-written cells, must not be able to read them.
+const KERNEL_HIDDEN_VARIABLES = new Set<string>([...Object.values(AI_ENV_KEYS), ...Object.values(AI_ENV_HASH_KEYS)]);
+const visibleToKernel = (name: string) => !KERNEL_HIDDEN_VARIABLES.has(name);
 
 export type Jupyter = {
     session: services.Session.ISessionConnection;
@@ -78,7 +85,7 @@ export class JupyterSessionService {
         await this.setEnvironmentVariables(session.kernel, {
             add: [
                 ...(etherscanApiKey ? [{ name: 'ETHERSCAN_API_KEY', value: etherscanApiKey }] : []),
-                ...workspaceVariables.map(({ name, value }) => ({ name, value })),
+                ...workspaceVariables.filter(({ name }) => visibleToKernel(name)).map(({ name, value }) => ({ name, value })),
             ],
             remove: [],
         });
@@ -195,7 +202,10 @@ def _sandworm_query(sql, datasource="trino"):
     // running kernels right away.
     @OnEvent(EventNames.ENVIRONMENT_VARIABLES_CHANGED)
     async onEnvironmentVariablesChanged({ workspaceId, add, remove }: EnvironmentVariablesChangedEvent) {
-        await this.updateEnvironmentVariables(workspaceId, { add, remove });
+        await this.updateEnvironmentVariables(workspaceId, {
+            add: add.filter(({ name }) => visibleToKernel(name)),
+            remove: remove.filter(visibleToKernel),
+        });
     }
 
     async updateEnvironmentVariables(

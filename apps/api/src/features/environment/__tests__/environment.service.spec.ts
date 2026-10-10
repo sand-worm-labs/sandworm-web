@@ -1,6 +1,7 @@
 import { In } from 'typeorm';
 import { EnvironmentStatus } from '@sandworm/postgresql-typeorm';
 import { EnvironmentService } from '../environment.service';
+import { EventNames } from '@/events/environment.events';
 
 function makeService() {
   const environmentRepository = {
@@ -20,7 +21,7 @@ function makeService() {
     restart: jest.fn(),
     setEnvironmentVariables: jest.fn(),
   } as any;
-  const eventEmitter = { emit: jest.fn() } as any;
+  const eventEmitter = { emit: jest.fn(), emitAsync: jest.fn().mockResolvedValue([]) } as any;
   const eventEmitterReadinessWatcher = { waitUntilReady: jest.fn().mockResolvedValue(undefined) } as any;
 
   const service = new EnvironmentService(
@@ -195,6 +196,26 @@ describe('EnvironmentService', () => {
         remove: ['OLD_VAR'],
       });
       expect(result).toEqual([]);
+    });
+
+    it('tells the running kernels what changed, by name, after it is saved', async () => {
+      const { service, envVarRepository, eventEmitter } = makeService();
+      envVarRepository.find
+        .mockResolvedValueOnce([{ name: 'OLD_VAR' }]) // removeNames lookup
+        .mockResolvedValueOnce([]); // getEnvironmentVariables at the end
+
+      await service.setEnvironmentVariables(WORKSPACE_ID, {
+        add: [{ name: 'NANSEN_API_KEY', value: 'secret' }],
+        remove: ['id-1'],
+      } as any);
+
+      expect(eventEmitter.emitAsync).toHaveBeenCalledWith(EventNames.ENVIRONMENT_VARIABLES_CHANGED, {
+        workspaceId: WORKSPACE_ID,
+        add: [{ name: 'NANSEN_API_KEY', value: 'secret' }],
+        remove: ['OLD_VAR'],
+      });
+      // Saved first: a kernel must not get a value that was never stored.
+      expect(envVarRepository.save.mock.invocationCallOrder[0]).toBeLessThan(eventEmitter.emitAsync.mock.invocationCallOrder[0]);
     });
 
     it('skips remove lookup/delete when remove list is empty', async () => {
