@@ -17,6 +17,11 @@ export interface KeyProvider {
   title: string;
   body: string;
   getKeyUrl: string;
+  // For the connections list, which holds many providers: one line on what the key
+  // gives a notebook, and a group to search by. Optional so a provider can be added
+  // with just the fields above.
+  blurb?: string;
+  category?: string;
 }
 
 export const KEY_PROVIDERS: KeyProvider[] = [
@@ -27,6 +32,9 @@ export const KEY_PROVIDERS: KeyProvider[] = [
     title: "Nansen is waiting for its key",
     body: "It has been standing there since you opened this page. Add the key and your notebooks can pull smart-money flows, wallet labels, token screeners and PnL leaderboards.",
     getKeyUrl: "https://app.nansen.ai",
+    blurb:
+      "Smart-money flows, wallet labels and PnL, token screeners and Hyperliquid perps.",
+    category: "Onchain data",
   },
   {
     id: "avacloud",
@@ -35,6 +43,8 @@ export const KEY_PROVIDERS: KeyProvider[] = [
     title: "AvaCloud is waiting for its key",
     body: "Avalanche data works without it, but then it shares a rate-limited pool. A free key gives your notebooks their own limits.",
     getKeyUrl: "https://app.avacloud.io",
+    blurb: "Your own rate limits for Avalanche data, instead of a shared pool.",
+    category: "Onchain data",
   },
 ];
 

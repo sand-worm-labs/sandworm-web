@@ -14,6 +14,9 @@ import {
   useEnvironmentVariables,
   type EnvVar,
 } from "@/components/Editor/hooks/useEnvironmentVariables";
+import { useEnvironmentStatus } from "@/components/Editor/hooks/useEnvironmentStatus";
+import { useSession } from "@/components/Editor/hooks/useAuth";
+import KeyConnectCards from "@/components/Environment/KeyConnectCards";
 
 // =====================================
 // ⬢ Constants
@@ -41,7 +44,7 @@ const inputCls =
   "border border-border dark:border-border-tertiary " +
   "text-ink-500 dark:text-white " +
   "placeholder-ink-300 dark:placeholder-ink-600 " +
-  "focus:outline-none focus:ring-1 focus:ring-primary " +
+  "focus:outline-none focus:ring-0 focus:border-primary " +
   "transition-colors duration-100 " +
   "disabled:opacity-50 disabled:cursor-not-allowed";
 
@@ -94,7 +97,7 @@ function EnvVarInput(props: EnvVarInputProps) {
             type="text"
             value={props.variable.name}
             placeholder="MY_VARIABLE_NAME"
-            className={clsx(inputCls, props.error && "ring-1 ring-red-500")}
+            className={clsx(inputCls, props.error && "border-red-500 focus:border-red-500")}
             onChange={onChangeName}
             disabled={!props.onChange || props.disabled}
           />
@@ -167,6 +170,11 @@ export default function EnvVariablesPanel(props: Props) {
     saving,
     save,
   } = useEnvironmentVariables(props.workspaceId);
+  const environment = useEnvironmentStatus(props.workspaceId);
+  const session = useSession({ redirectToLogin: false });
+  const isViewer =
+    session?.user?.role?.find(r => r[props.workspaceId])?.[props.workspaceId] ===
+    "viewer";
 
   const [errors, setErrors] = useState<Record<string, ErrorType>>({});
   const [added, setAdded] = useState<EnvVar[]>([]);
@@ -251,7 +259,7 @@ export default function EnvVariablesPanel(props: Props) {
       leaveFrom="w-[354px]"
       leaveTo="w-0"
     >
-      <div className="w-full flex flex-col border-l dark:border-border-tertiary border-border-secondary h-full bg-page-surface font-body">
+      <div className="w-full flex flex-col h-full bg-page-surface font-body">
         <div className="flex-shrink-0 px-4 xl:px-6 pt-5 pb-3 dark:border-border-tertiary border-border-secondary border-b">
           <div className="flex items-start justify-between">
             <div>
@@ -277,6 +285,17 @@ export default function EnvVariablesPanel(props: Props) {
 
         <form onSubmit={onSave} className="flex flex-col flex-1 min-h-0">
           <ScrollBar className="flex-1 min-h-0 px-4 xl:px-6">
+            <div className="pt-4">
+              <KeyConnectCards
+                narrow
+                variables={variables}
+                saving={saving}
+                loading={loading}
+                isViewer={isViewer}
+                onSave={save}
+                onRestart={environment.restart}
+              />
+            </div>
             <div className="flex flex-col">
               {variables.map(v => (
                 <EnvVarInput

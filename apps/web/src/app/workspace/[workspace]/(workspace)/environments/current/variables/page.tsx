@@ -1,7 +1,7 @@
 "use client";
 
 import { v4 as uuidv4 } from "uuid";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { uniq } from "ramda";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
@@ -20,7 +20,7 @@ import { useEnvironmentStatus } from "@/components/Editor/hooks/useEnvironmentSt
 import EnvBar from "@/components/Editor/blocks/EnvBar";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import Spin from "@/components/Editor/blocks/Spin";
-import { ApiKeyNudges } from "@/components/Environment/ApiKeyNudge";
+import KeyConnectCards from "@/components/Environment/KeyConnectCards";
 
 // =====================================
 // ⬢ Constants
@@ -52,7 +52,7 @@ const inputCls =
   "border border-border dark:border-border-tertiary " +
   "text-ink-500 dark:text-white " +
   "placeholder-ink-300 dark:placeholder-ink-600 " +
-  "focus:outline-none focus:ring-1 focus:ring-primary " +
+  "focus:outline-none focus:ring-0 focus:border-primary " +
   "transition-colors duration-100 " +
   "disabled:opacity-50 disabled:cursor-not-allowed";
 
@@ -105,7 +105,7 @@ function EnvVarInput(props: EnvVarInputProps) {
           type="text"
           value={props.variable.name}
           placeholder="MY_VARIABLE_NAME"
-          className={clsx(inputCls, props.error && "ring-1 ring-red-500")}
+          className={clsx(inputCls, props.error && "border-red-500 focus:border-red-500")}
           onChange={onChangeName}
           disabled={!props.onChange || props.disabled}
         />
@@ -191,27 +191,9 @@ export default function EnvironmentVariablesPage() {
 
   const isDirty = added.length > 0 || removed.length > 0;
 
-  // The row a nudge adds is already named, so the next thing to do is paste the key.
-  const [focusValueOf, setFocusValueOf] = useState<string | null>(null);
-  useEffect(() => {
-    if (!focusValueOf) return;
-    const input = document.getElementById(`val-${focusValueOf}`);
-    if (input) {
-      input.scrollIntoView({ block: "center", behavior: "smooth" });
-      input.focus();
-      setFocusValueOf(null);
-    }
-  }, [focusValueOf, added]);
-
   // ── Handlers ──
   const onAdd = useCallback(() => {
     setAdded(prev => [...prev, { id: uuidv4(), name: "", value: "" }]);
-  }, []);
-
-  const onAddKnownKey = useCallback((name: string) => {
-    const id = uuidv4();
-    setAdded(prev => [...prev, { id, name, value: "" }]);
-    setFocusValueOf(id);
   }, []);
 
   const onSave: React.FormEventHandler<HTMLFormElement> = useCallback(
@@ -304,13 +286,13 @@ export default function EnvironmentVariablesPage() {
             </p>
           </div>
 
-          <ApiKeyNudges
-            workspaceId={workspaceId}
+          <KeyConnectCards
             variables={variables}
-            added={added}
+            saving={saving}
             loading={loading}
             isViewer={isViewer}
-            onAddKey={onAddKnownKey}
+            onSave={save}
+            onRestart={environment.restart}
           />
 
           <form onSubmit={onSave}>

@@ -98,7 +98,7 @@ export function DataExplorerContent({
     return (
       <>
         {visible && (
-          <Card className="h-full overflow-hidden rounded-none w-full bg-white dark:bg-base-100 gap-y-0 pt-0">
+          <Card className="h-full overflow-hidden rounded-none w-full bg-white dark:bg-base-100 gap-y-0 pt-0 border-0 shadow-none">
             {loading && (
               <div className="flex items-center justify-center h-full" />
             )}

@@ -79,6 +79,8 @@ export function RightSidebarPanel({ visible, children }: Props) {
         </>
       )}
 
+      {/* The handle above draws the panel's one divider. A panel inside must not draw its
+          own left border or shadow, or the two show as a double line. */}
       <div className="flex-1 min-w-0 h-full pl-[12px]">{children}</div>
     </div>
   );
