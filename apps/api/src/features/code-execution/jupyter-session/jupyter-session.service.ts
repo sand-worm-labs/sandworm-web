@@ -7,9 +7,12 @@ import * as services from '@jupyterlab/services';
 import { decrypt } from '@sandworm/nest-common';
 import { EnvironmentVariableEntity } from '@sandworm/postgresql-typeorm';
 import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
-import { EventNames, KernelRestartedEvent } from '@/events/environment.events';
+import { EnvironmentVariablesChangedEvent, EventNames, KernelRestartedEvent } from '@/events/environment.events';
 import { AllConfigType } from '@/core/config/config.type';
 import { buildTrinoConnectionUrl } from '@/features/code-execution/query-engine/trino/trino-connection-url.util';
+
+// What an environment variable may be called, matching the environment page.
+const ENV_VAR_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
 
 export type Jupyter = {
     session: services.Session.ISessionConnection;
@@ -64,20 +67,18 @@ export class JupyterSessionService {
             throw new Error('session.kernel is null');
         }
 
-        const encryptedVariables = await this.environmentVariableRepository.find({ where: { workspaceId } });
-        const encryptionKey = this.config.get('database.environmentVariablesEncryptionKey', { infer: true });
-        this.logger.debug({...encryptedVariables, encryptionKey});
-        // const variables = encryptedVariables.map(v => ({
-        //     name: decrypt(v.name, encryptionKey),
-        //     value: decrypt(v.value, encryptionKey),
-        // }));
+        // The variables the workspace saved on its environment page (a Nansen or AvaCloud
+        // key, say). The entity decrypts the values as it reads them. Never log these.
+        const workspaceVariables = await this.environmentVariableRepository.find({ where: { workspaceId } });
 
+        // Etherscan is the one key Sandworm supplies, because the calldata decoder tool
+        // uses it. Every other key comes from the workspace, and a workspace's own
+        // variable wins over ours, so it comes last.
         const etherscanApiKey = this.config.get('etherscan.apiKey', { infer: true });
-        const avacloudApiKey = this.config.get('avacloud.apiKey', { infer: true });
         await this.setEnvironmentVariables(session.kernel, {
             add: [
                 ...(etherscanApiKey ? [{ name: 'ETHERSCAN_API_KEY', value: etherscanApiKey }] : []),
-                ...(avacloudApiKey ? [{ name: 'AVACLOUD_API_KEY', value: avacloudApiKey }] : []),
+                ...workspaceVariables.map(({ name, value }) => ({ name, value })),
             ],
             remove: [],
         });
@@ -99,7 +100,6 @@ export class JupyterSessionService {
     // "duckdb" to query a dataframe this session already loaded (e.g. a
     // variable another block put in scope) without round-tripping to Dune.
     // Defaults to "trino" since most tool templates are a first-touch pull.
-    //
     // The theme is applied here too, once, so every chart drawn in the session
     // gets Sandworm's colors and font with no import in the cell: power tools,
     // Python cells and AI-written cells alike. A chart that sets its own style
@@ -176,13 +176,26 @@ def _sandworm_query(sql, datasource="trino"):
         kernel: services.Kernel.IKernelConnection,
         variables: { add: { name: string; value: string }[]; remove: string[] }
     ) {
+        // Names and values are user input, so they go in as string literals, never
+        // pasted into the code: a value with a quote or a line break must not end the
+        // string and run as Python. A JSON string is a valid Python string literal.
+        const literal = (text: string) => JSON.stringify(text);
         const code = [
             'import os',
-            ...variables.remove.map(v => `os.environ.pop('${v}', None)`),
-            ...variables.add.map(v => `os.environ['${v.name}'] = '${v.value}'`),
+            ...variables.remove.filter(name => ENV_VAR_NAME.test(name)).map(name => `os.environ.pop(${literal(name)}, None)`),
+            ...variables.add
+                .filter(v => ENV_VAR_NAME.test(v.name))
+                .map(v => `os.environ[${literal(v.name)}] = ${literal(v.value)}`),
         ].join('\n');
 
         await kernel.requestExecute({ code, store_history: false }).done;
+    }
+
+    // A variable saved or removed on the environment page reaches the workspace's
+    // running kernels right away.
+    @OnEvent(EventNames.ENVIRONMENT_VARIABLES_CHANGED)
+    async onEnvironmentVariablesChanged({ workspaceId, add, remove }: EnvironmentVariablesChangedEvent) {
+        await this.updateEnvironmentVariables(workspaceId, { add, remove });
     }
 
     async updateEnvironmentVariables(
@@ -191,8 +204,13 @@ def _sandworm_query(sql, datasource="trino"):
     ) {
         await Promise.all(
             Array.from(this.sessions.entries()).map(async ([key, { kernel }]) => {
-                if (key.startsWith(workspaceId)) {
+                if (!key.startsWith(workspaceId)) return;
+                try {
                     await this.setEnvironmentVariables(kernel, variables);
+                } catch (err) {
+                    // The variables are saved either way and the next session loads them.
+                    // Only the key is logged: never the values.
+                    this.logger.warn({ key, err }, 'Could not update the environment of a running kernel');
                 }
             })
         );

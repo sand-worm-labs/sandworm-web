@@ -13,7 +13,7 @@ import { ValidationException } from '@sandworm/graphql';
 import { ErrorCode } from '@/constants/error-code.constant';
 import { JupyterService } from '@/infrastructure/jupyter/jupyter.service';
 import { EventEmitter2, EventEmitterReadinessWatcher } from '@nestjs/event-emitter';
-import { EnvironmentStatusEvent, EventNames } from '@/events/environment.events';
+import { EnvironmentStatusEvent, EnvironmentVariablesChangedEvent, EventNames } from '@/events/environment.events';
 import { AI_ENV_KEYS, AIProvider } from '@/core/constants/app.constant';
 
 @Injectable()
@@ -175,6 +175,18 @@ export class EnvironmentService {
       add: input.add,
       remove: removeNames.map((v) => v.name),
     });
+
+    // Kernels that are already running keep the environment they started with, so
+    // they are told. Without this a key saved on the environment page would only
+    // reach notebooks opened after the next restart.
+    await this.eventEmitter.emitAsync(
+      EventNames.ENVIRONMENT_VARIABLES_CHANGED,
+      new EnvironmentVariablesChangedEvent(
+        workspaceId,
+        input.add.map(({ name, value }) => ({ name, value })),
+        removeNames.map((v) => v.name),
+      ),
+    );
 
     const updatedVariables = await this.getEnvironmentVariables(workspaceId);
 
