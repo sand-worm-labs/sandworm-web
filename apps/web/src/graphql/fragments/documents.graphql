@@ -9,6 +9,7 @@ fragment DocumentFields on Document {
   runSQLSelection
   shareLinksWithoutSidebar
   isDashboardPublic
+  runtime
   orderIndex
   deletedAt
   createdAt

@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { DocumentEntity, runsInBrowser } from '@sandworm/postgresql-typeorm';
 import PQueue from 'p-queue';
 import type { AllConfigType } from '@/config/config.type';
 import * as Y from 'yjs';
@@ -26,6 +29,8 @@ export class DocumentExecutorService {
     private readonly pivotTable: PivotTableBlockExecutorService,
     private readonly powerToolbox: PowerToolboxBlockExecutorService,
     private readonly lock: LockService,
+    @InjectRepository(DocumentEntity)
+    private readonly documents: Repository<DocumentEntity>,
     config: ConfigService<AllConfigType>,
   ) {
     this.slots = new PQueue({
@@ -61,8 +66,18 @@ export class DocumentExecutorService {
         pivotTable: this.pivotTable,
         powerToolbox: this.powerToolbox,
         lock: this.lock,
+        runsInBrowser: () => this.isBrowserNotebook(documentId),
       },
       this.slots,
     );
+  }
+
+  // Live notebooks run in their users' browsers; their queue is never ours.
+  private async isBrowserNotebook(documentId: string): Promise<boolean> {
+    const document = await this.documents.findOne({
+      where: { id: documentId },
+      select: { id: true, runtime: true },
+    });
+    return runsInBrowser(document?.runtime);
   }
 }

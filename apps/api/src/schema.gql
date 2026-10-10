@@ -92,6 +92,7 @@ type Document {
   runSQLSelection: Boolean!
   shareLinksWithoutSidebar: Boolean!
   isDashboardPublic: Boolean!
+  runtime: DocumentRuntime!
   icon: String
   orderIndex: Float!
   deletedAt: DateTime
@@ -118,6 +119,12 @@ type Document {
   forkCount: Int!
   favoriteCount: Int!
   isFavorite: Boolean!
+}
+
+enum DocumentRuntime {
+  CLOUD
+  BROWSER_ANALYSIS
+  BROWSER_DASHBOARD
 }
 
 enum DocumentVisibility {
@@ -956,6 +963,7 @@ input CreateDocumentInput {
   parentId: String
   version: Float!
   orderIndex: Float! = 0
+  runtime: DocumentRuntime
 }
 
 input UpdateDocumentInput {
@@ -966,6 +974,7 @@ input UpdateDocumentInput {
   runSQLSelection: Boolean
   shareLinksWithoutSidebar: Boolean
   isDashboardPublic: Boolean
+  runtime: DocumentRuntime
 }
 
 input DeleteDocumentInput {

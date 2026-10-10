@@ -205,6 +205,8 @@ describe('DocumentService', () => {
         null,
         -1,
         1,
+        undefined,
+        undefined,
       );
       expect(documentTreeService.emitDocumentUpdate).toHaveBeenCalled();
       expect(result.id).toBe(DOCUMENT_ID);
@@ -223,6 +225,8 @@ describe('DocumentService', () => {
         null,
         -1,
         1,
+        undefined,
+        undefined,
       );
     });
   });

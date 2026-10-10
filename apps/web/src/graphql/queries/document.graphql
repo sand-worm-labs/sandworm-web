@@ -35,6 +35,7 @@ query GetDocument($workspaceId: String!, $documentId: String!) {
     runUnexecutedBlocks
     shareLinksWithoutSidebar
     isDashboardPublic
+    runtime
      author{
       username
       firstName

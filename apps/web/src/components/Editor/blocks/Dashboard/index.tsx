@@ -35,12 +35,15 @@ import type { APIDataSources } from "../../hooks/useDataSources";
 import ShareModal from "../ShareModal";
 import { useDataSources } from "../../hooks/useDataSources";
 import { useDocuments } from "../../hooks/useDocuments";
+import { useLiveNotebook } from "../../hooks/useNotebookRuntime";
+import { BrowserRuntimeProvider } from "../../hooks/useEnvironmentStatus";
 import { useLastUpdatedAt, useYDoc, useYDocState } from "../../hooks/useYDocs";
 import DashboardNotebookGroupButton from "../DashboarNotebookGroupButton";
 import EllipsisDropdown from "../EllipsisDropdown";
 import Comments from "../Comments";
 import Schedules from "../Schedules";
 import LiveButton from "../LiveButton";
+import NotebookTypeMenu from "../NotebookTypeMenu";
 import EnvBar from "../EnvBar";
 import Files from "../Files";
 import EnvironmentPanel from "../EnvironmentPanel";
@@ -467,6 +470,14 @@ export default function Dashboard(props: Props) {
     [yDoc]
   );
   const aiTasks = useMemo(() => AITasks.fromYjs(yDoc), [yDoc]);
+  const isLive = useLiveNotebook({
+    document: props.document,
+    yDoc,
+    executionQueue,
+    userId: props.user.id,
+    syncing,
+    runOnOpen: props.isEditing,
+  });
 
   const router = useRouter();
 
@@ -557,7 +568,8 @@ export default function Dashboard(props: Props) {
 
   const isDeleted = !isNil(props.document.deletedAt);
 
-  const [, { publish, unpublish, setLinkVisibility }] = useDocuments(
+  const [, { publish, unpublish, setLinkVisibility, updateDocumentSettings }] =
+    useDocuments(
     props.document.workspaceId
   );
   const handleVisibilityChange = useCallback(
@@ -688,6 +700,13 @@ export default function Dashboard(props: Props) {
               "Editing"
             )}
           </span>{" "}
+          <NotebookTypeMenu
+            runtime={props.document.runtime}
+            canChange={props.isEditing && !isViewer}
+            onChange={runtime =>
+              updateDocumentSettings(props.document.id, { runtime })
+            }
+          />
           <span className="text-ink-400 truncate min-w-0">
             / {documentTitle}
           </span>
@@ -702,7 +721,7 @@ export default function Dashboard(props: Props) {
         isPublished={props.document.publishedAt !== null}
       />
       <div className="w-full justify-end flex items-center gap-x-0.5 h-[30px]">
-        {props.isEditing && (
+        {props.isEditing && !isLive && (
           <LiveButton
             onClick={onGoToApp}
             disabled={!props.document.publishedAt}
@@ -781,6 +800,7 @@ export default function Dashboard(props: Props) {
   }
 
   return (
+    <BrowserRuntimeProvider enabled={isLive}>
     <Layout
       topBarClassname={!props.isEditing ? "dark:bg-base-100 " : undefined}
       topBarContent={topBarContent}
@@ -862,5 +882,6 @@ export default function Dashboard(props: Props) {
         </RightSidebarPanel>
       </div>
     </Layout>
+    </BrowserRuntimeProvider>
   );
 }

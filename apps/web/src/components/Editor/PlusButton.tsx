@@ -20,6 +20,8 @@ import { KeyboardIcon } from "../Assets/Blocks/KeyboardIcon";
 import { LightningIcon } from "../Assets/Blocks/LightningIcon";
 
 import { PowerToolboxModal } from "./blocks/customBlocks/PowerToolbox";
+import { useIsBrowserRuntime } from "./hooks/useEnvironmentStatus";
+import { canAddBlock } from "./hooks/useNotebookRuntime";
 
 // =====================================
 // ⬢ Types
@@ -308,7 +310,15 @@ function BlockList(props: BlockListProps) {
     [props.onAddBlock]
   );
 
-  const pills: PillDef[] = [
+  const isBrowserRuntime = useIsBrowserRuntime();
+  // Which block type each pill adds, for hiding cloud-only blocks.
+  const pillBlockType: Record<string, BlockType> = {
+    "add-block-power": BlockType.PowerToolbox,
+    "add-block-visualization": BlockType.VisualizationV2,
+    "add-block-pivot": BlockType.PivotTable,
+  };
+
+  const allPills: PillDef[] = [
     {
       kind: "single",
       id: "add-block-power",
@@ -386,6 +396,11 @@ function BlockList(props: BlockListProps) {
       ],
     },
   ];
+
+  const pills = allPills.filter(pill => {
+    const type = pillBlockType[pill.id];
+    return type === undefined || canAddBlock(type, isBrowserRuntime);
+  });
 
   const visiblePills = pills.slice(0, visibleCount);
   const overflowPills = pills.slice(visibleCount);

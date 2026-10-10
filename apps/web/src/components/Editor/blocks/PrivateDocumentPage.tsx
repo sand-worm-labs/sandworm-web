@@ -13,6 +13,7 @@ import {
 } from "react-icons/pi";
 
 import type { ApiDocument } from "@/types";
+import type { DocumentRuntime } from "@/generated/graphql";
 import { DataExplorerContent } from "@/components/ExplorerPanels/DataExplorerContent";
 import { MiniChat } from "@/components/Chats/MiniChat";
 import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
@@ -27,6 +28,8 @@ import type { SessionUser } from "../hooks/useAuth";
 import Layout from "../../Visualization/Layout";
 import { useYDoc } from "../hooks/useYDocs";
 import useDocument from "../hooks/useDocument";
+import { useLiveNotebook } from "../hooks/useNotebookRuntime";
+import { BrowserRuntimeProvider } from "../hooks/useEnvironmentStatus";
 import { RightSidebarPanel } from "../RightSidebarPanel";
 import { ContentSkeleton, TitleSkeleton } from "../ContentSkeleton";
 
@@ -34,6 +37,7 @@ import Comments from "./Comments";
 import Schedules from "./Schedules";
 import DashboardNotebookGroupButton from "./DashboarNotebookGroupButton";
 import EllipsisDropdown from "./EllipsisDropdown";
+import NotebookTypeMenu from "./NotebookTypeMenu";
 import LiveButton from "./LiveButton";
 import Files from "./Files";
 import { PublishBlinkingSignal } from "./BlinkingSignal";
@@ -77,6 +81,7 @@ function PrivateDocumentPageInner(
     document: ApiDocument;
     publish: () => Promise<void>;
     publishing: boolean;
+    setRuntime: (runtime: DocumentRuntime) => void;
   }
 ) {
   const documentTitle = useMemo(
@@ -272,6 +277,15 @@ function PrivateDocumentPageInner(
     [yDoc, props.document.runUnexecutedBlocks]
   );
   const aiTasks = useMemo(() => AITasks.fromYjs(yDoc), [yDoc]);
+  const isLive = useLiveNotebook({
+    document: props.document,
+    yDoc,
+    executionQueue,
+    userId: props.user.id,
+    syncing,
+    // Browser notebooks have no separate view mode; they run in the editor.
+    runOnOpen: !props.isApp,
+  });
 
   // ⬢ Public document
   // =====================================
@@ -459,6 +473,11 @@ function PrivateDocumentPageInner(
               "Editing"
             )}
           </span>{" "}
+          <NotebookTypeMenu
+            runtime={props.document.runtime}
+            canChange={!props.isApp && !isViewer}
+            onChange={props.setRuntime}
+          />
           <span className="text-ink-400 truncate min-w-0">
             / {documentTitle}
           </span>
@@ -474,7 +493,7 @@ function PrivateDocumentPageInner(
       />
 
       <div className="w-full justify-end flex items-center gap-x-0.5 h-[30px]">
-        {!props.isApp && (
+        {!props.isApp && !isLive && (
           <LiveButton
             onClick={onGoToApp}
             disabled={props.document.publishedAt === null}
@@ -550,6 +569,7 @@ function PrivateDocumentPageInner(
   );
 
   return (
+    <BrowserRuntimeProvider enabled={isLive}>
     <Layout
       topBarClassname={props.isApp ? "bg-base-100 " : undefined}
       topBarContent={topBarContent}
@@ -657,11 +677,12 @@ function PrivateDocumentPageInner(
         </RightSidebarPanel>
       </div>
     </Layout>
+    </BrowserRuntimeProvider>
   );
 }
 
 export default function PrivateDocumentPage(props: Props) {
-  const [{ document, publishing }, { publish }] = useDocument(
+  const [{ document, publishing }, { publish, setRuntime }] = useDocument(
     props.workspaceId,
     props.documentId
   );
@@ -688,6 +709,7 @@ export default function PrivateDocumentPage(props: Props) {
       document={document}
       publish={publish}
       publishing={publishing}
+      setRuntime={setRuntime}
     />
   );
 }

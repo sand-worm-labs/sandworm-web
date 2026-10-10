@@ -58,6 +58,24 @@ export enum TutorialType {
     ONBOARDING = 'onboarding',
 }
 
+// Where a notebook runs, chosen when it is created. CLOUD uses the
+// workspace's cloud kernel (heavy research, SQL warehouses). The two browser
+// kinds run in Pyodide in the user's own browser and never touch the cloud:
+// BROWSER_ANALYSIS is local analysis; BROWSER_DASHBOARD is a live dashboard
+// that re-runs in each viewer's browser when they open it.
+export enum DocumentRuntime {
+  CLOUD = "CLOUD",
+  BROWSER_ANALYSIS = "BROWSER_ANALYSIS",
+  BROWSER_DASHBOARD = "BROWSER_DASHBOARD",
+}
+
+export function runsInBrowser(runtime: DocumentRuntime | null | undefined): boolean {
+  return (
+    runtime === DocumentRuntime.BROWSER_ANALYSIS ||
+    runtime === DocumentRuntime.BROWSER_DASHBOARD
+  );
+}
+
 export enum DocumentVisibility {
   WORKSPACE = "WORKSPACE", 
   LINK = "LINK",          

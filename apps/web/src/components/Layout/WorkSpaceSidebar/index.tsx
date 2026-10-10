@@ -35,6 +35,8 @@ import { useIsMobile } from "@/hooks/useMobile";
 import { TooltipV2 } from "@/components/Editor/blocks/ToolTips";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
+import { useNewNotebookDialog } from "@/components/Projects/NewNotebookDialog";
+import type { DocumentRuntime } from "@/generated/graphql";
 
 // =====================================
 // ⬢ Types
@@ -155,11 +157,11 @@ export const WorkspaceSidebar = () => {
     else sideBarApi.toggle();
   }, [isMobile, sideBarApi]);
 
-  const onCreateDocument = useCallback(
-    async (parentId: string | null) => {
+  const createNotebook = useCallback(
+    async (parentId: string | null, runtime: DocumentRuntime) => {
       if (documentsState.loading) return;
       try {
-        const doc = await createDocument({ parentId, version: 2 });
+        const doc = await createDocument({ parentId, version: 2, runtime });
         sideBarApi.close();
         router.push(`/workspace/${workspaceId}/documents/${doc.id}`);
       } catch (err) {
@@ -168,6 +170,8 @@ export const WorkspaceSidebar = () => {
     },
     [documentsState, createDocument, router, workspaceId, sideBarApi]
   );
+  const [onCreateDocument, newNotebookDialog] =
+    useNewNotebookDialog(createNotebook);
 
   const onCreateDocumentHandler: MouseEventHandler<HTMLButtonElement> =
     useCallback(
@@ -228,6 +232,7 @@ export const WorkspaceSidebar = () => {
 
   return (
     <>
+      {newNotebookDialog}
       <aside
         className={`
           bg-base-200 dark:bg-sidebar-surface

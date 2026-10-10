@@ -19,7 +19,7 @@ import { ExecutionScheduleEntity } from "./execution-schedule.entity";
 import { ReusableComponentEntity } from "./reusable_component.entity";
 import { ReusableComponentInstanceEntity } from "./reusable_component_instance.entity";
 import { UserEntity } from "./user.entity";
-import { DocumentVisibility } from "./enums";
+import { DocumentRuntime, DocumentVisibility } from "./enums";
 import { DocumentForkEntity } from "./document_fork.entity";
 import { ChatEntity } from "./chat.entity";
 
@@ -39,6 +39,13 @@ export class DocumentEntity extends AbstractEntity {
     default: DocumentVisibility.WORKSPACE,
   })
   visibility!: DocumentVisibility;
+
+  @Column({
+    type: "enum",
+    enum: DocumentRuntime,
+    default: DocumentRuntime.CLOUD,
+  })
+  runtime!: DocumentRuntime;
   
   @Column()
   title!: string;

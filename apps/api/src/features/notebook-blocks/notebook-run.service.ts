@@ -75,6 +75,7 @@ export class NotebookRunService {
   // server side when the wait ends first; `results` picks it up from there.
   async start(ref: NotebookRef, { blockIds, waitSeconds = DEFAULT_RUN_WAIT_SECONDS }: RunNotebookDto): Promise<RunReport> {
     const itemTimeoutMs = this.config.getOrThrow('blockExecutor.maxExecutionTime', { infer: true });
+    await this.docs.assertRunsInCloud(ref);
 
     return this.docs.use(ref, 'editor', async ({ ydoc }) => {
       const queue = ExecutionQueue.fromYjs(ydoc);
@@ -142,6 +143,7 @@ export class NotebookRunService {
   // for it. Joins the run already in progress instead of queueing a second one.
   async rerunView(ref: NotebookRef, { waitSeconds = DEFAULT_RUN_WAIT_SECONDS }: ViewNotebookDto): Promise<ViewReport> {
     const itemTimeoutMs = this.config.getOrThrow('blockExecutor.maxExecutionTime', { infer: true });
+    await this.docs.assertRunsInCloud(ref);
 
     return this.docs.useView(ref, async ({ ydoc }) => {
       const queue = ExecutionQueue.fromYjs(ydoc);

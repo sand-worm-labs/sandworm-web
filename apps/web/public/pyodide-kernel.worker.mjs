@@ -1,0 +1,151 @@
+// Pyodide kernel for notebooks that run in the browser. Served as a static
+// module worker, outside the bundler: Pyodide refuses to start in a classic
+// worker, which is what bundlers turn `new Worker(new URL(...))` into.
+//
+// The page drives it with the messages in src/lib/pyodide/protocol.ts, and
+// sends the Python harness (src/lib/pyodide/harness.ts) with `init`.
+
+const HOME = "/home/pyodide";
+const THEME_FILES = [
+  "__init__.py",
+  "html.py",
+  "matplotlib_theme.py",
+  "plotly_theme.py",
+  "theme.py",
+  "tokens.py",
+  "watermark.py",
+];
+const SQL_PACKAGES = ["duckdb", "pandas", "jinja2"];
+
+let kernel = null;
+// Each notebook gets its own globals, so variables don't leak between them.
+const namespaces = new Map();
+// Calls run one at a time, in the order they arrive.
+let chain = Promise.resolve();
+
+function errorMessage(err) {
+  return err instanceof Error ? err.message : String(err);
+}
+
+async function loadTheme(pyodide, origin) {
+  const dir = `${HOME}/sandworm_theme`;
+  pyodide.FS.mkdirTree(dir);
+  await Promise.all(
+    THEME_FILES.map(async file => {
+      const response = await fetch(`${origin}/sandworm_theme/${file}`);
+      if (!response.ok) {
+        throw new Error(
+          `Failed to load sandworm_theme/${file}: ${response.status}`
+        );
+      }
+      pyodide.FS.writeFile(`${dir}/${file}`, await response.text(), {
+        encoding: "utf8",
+      });
+    })
+  );
+}
+
+async function boot({ indexURL, origin, interruptBuffer, harness }) {
+  const { loadPyodide } = await import(`${indexURL}pyodide.mjs`);
+  const pyodide = await loadPyodide({ indexURL });
+  if (interruptBuffer) {
+    pyodide.setInterruptBuffer(interruptBuffer);
+  }
+
+  pyodide.FS.mkdirTree(HOME);
+  harness.modules.forEach(({ name, source }) => {
+    pyodide.FS.writeFile(`${HOME}/${name}.py`, source, { encoding: "utf8" });
+  });
+  await loadTheme(pyodide, origin);
+  await pyodide.runPythonAsync(`
+import sys
+
+if "${HOME}" not in sys.path:
+    sys.path.insert(0, "${HOME}")
+
+import ${harness.runtimeModule}
+`);
+
+  return { pyodide, runtime: pyodide.pyimport(harness.runtimeModule) };
+}
+
+function namespaceFor({ runtime }, notebookId) {
+  let namespace = namespaces.get(notebookId);
+  if (!namespace) {
+    namespace = runtime.new_namespace();
+    namespaces.set(notebookId, namespace);
+  }
+  return namespace;
+}
+
+async function handle(k, call) {
+  const { pyodide, runtime } = k;
+  if (call.kind === "reset") {
+    namespaces.get(call.notebookId)?.destroy();
+    namespaces.delete(call.notebookId);
+    return null;
+  }
+
+  const ns = namespaceFor(k, call.notebookId);
+
+  switch (call.kind) {
+    case "run_python":
+      await pyodide.loadPackagesFromImports(call.code);
+      await runtime.ensure_imports(call.code);
+      return JSON.parse(await runtime.run(call.code, ns));
+    case "run_sql":
+      await pyodide.loadPackage(SQL_PACKAGES);
+      return JSON.parse(runtime.run_sql(call.sql, call.dataframeName, ns));
+    case "read_page":
+      await pyodide.loadPackage("pandas");
+      return JSON.parse(
+        runtime.read_page(
+          call.dataframeName,
+          call.page,
+          call.sort ? JSON.stringify(call.sort) : "",
+          ns
+        )
+      );
+    case "list_dataframes":
+      await pyodide.loadPackage("pandas");
+      return JSON.parse(runtime.list_dataframes(ns));
+    case "rename_variable":
+      runtime.rename_variable(call.from, call.to, ns);
+      return null;
+    case "set_variable":
+      runtime.set_variable(call.name, call.value, ns);
+      return null;
+    case "set_date_variable":
+      await pyodide.loadPackage("pytz");
+      runtime.set_date_variable(call.name, JSON.stringify(call.config), ns);
+      return null;
+    default:
+      return null;
+  }
+}
+
+globalThis.onmessage = event => {
+  const message = event.data;
+
+  if (message.kind === "init") {
+    kernel = boot(message);
+    kernel.then(
+      () => globalThis.postMessage({ kind: "ready" }),
+      err =>
+        globalThis.postMessage({ kind: "failed", error: errorMessage(err) })
+    );
+    return;
+  }
+
+  const { id, call } = message;
+  const run = chain.then(async () => {
+    if (!kernel) throw new Error("Python is not loaded");
+    return handle(await kernel, call);
+  });
+  chain = run.catch(() => undefined);
+  run.then(
+    value => globalThis.postMessage({ kind: "result", id, value }),
+    err =>
+      globalThis.postMessage({ kind: "error", id, error: errorMessage(err) })
+  );
+};

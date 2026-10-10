@@ -24,6 +24,7 @@ function setup(inputs: Input[]) {
   const docs = {
     use: jest.fn((_ref, _access, work) => Promise.resolve(work({ ydoc }))),
     useView: jest.fn((_ref, work) => Promise.resolve(work({ ydoc }))),
+    assertRunsInCloud: jest.fn(() => Promise.resolve()),
   };
   const config = { getOrThrow: jest.fn(() => ITEM_TIMEOUT_MS) };
   const service = new NotebookRunService(docs as any, config as any);
