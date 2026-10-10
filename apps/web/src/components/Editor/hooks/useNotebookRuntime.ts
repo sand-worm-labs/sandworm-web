@@ -36,20 +36,20 @@ export function canAddBlock(type: BlockType, isBrowserRuntime: boolean) {
   return !isBrowserRuntime || !CLOUD_ONLY_BLOCKS.has(type);
 }
 
-// For a browser notebook: runs this user's queued cells in this tab. A live
-// dashboard also runs in full whenever it's opened, editor or published view:
-// browser Python starts empty on every load, and the dashboard should always
-// show fresh results. Returns whether the notebook runs in the browser.
+// For a browser notebook: runs this user's queued cells in this tab, and runs
+// the whole notebook when it's opened for editing, since browser Python
+// starts empty on every load. Both browser types behave the same here.
+// Returns whether the notebook runs in the browser.
 export function useLiveNotebook(opts: {
   document: Pick<Document, "id" | "runtime">;
   yDoc: Y.Doc;
   executionQueue: ExecutionQueue;
   userId: string | null;
   syncing: boolean;
+  runOnOpen: boolean;
 }): boolean {
-  const { document, yDoc, executionQueue, userId, syncing } = opts;
+  const { document, yDoc, executionQueue, userId, syncing, runOnOpen } = opts;
   const isLive = isBrowserNotebook(document);
-  const isDashboard = document.runtime === DocumentRuntime.BrowserDashboard;
 
   useEffect(() => {
     if (!isLive) return undefined;
@@ -62,7 +62,7 @@ export function useLiveNotebook(opts: {
 
   const ranOnOpen = useRef(false);
   useEffect(() => {
-    if (!isDashboard || syncing || !userId || ranOnOpen.current) {
+    if (!isLive || !runOnOpen || syncing || !userId || ranOnOpen.current) {
       return;
     }
     ranOnOpen.current = true;
@@ -70,7 +70,7 @@ export function useLiveNotebook(opts: {
       _tag: "user",
       userId,
     });
-  }, [isDashboard, syncing, userId, yDoc, executionQueue]);
+  }, [isLive, runOnOpen, syncing, userId, yDoc, executionQueue]);
 
   return isLive;
 }
