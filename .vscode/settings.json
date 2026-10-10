@@ -25,6 +25,7 @@
     "OPENROUTER",
     "Persistor",
     "persistors",
+    "Pyodide",
     "QLJSON",
     "resuable",
     "sandworm",
