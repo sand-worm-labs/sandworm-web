@@ -92,6 +92,7 @@ type Document {
   runSQLSelection: Boolean!
   shareLinksWithoutSidebar: Boolean!
   isDashboardPublic: Boolean!
+  runtime: DocumentRuntime!
   icon: String
   orderIndex: Float!
   deletedAt: DateTime
@@ -124,6 +125,12 @@ enum DocumentVisibility {
   WORKSPACE
   LINK
   PUBLIC
+}
+
+enum DocumentRuntime {
+  CLOUD
+  BROWSER_ANALYSIS
+  BROWSER_DASHBOARD
 }
 
 type Tool {
@@ -956,6 +963,7 @@ input CreateDocumentInput {
   parentId: String
   version: Float!
   orderIndex: Float! = 0
+  runtime: DocumentRuntime
 }
 
 input UpdateDocumentInput {

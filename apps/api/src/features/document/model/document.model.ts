@@ -8,11 +8,17 @@ import {
   DateField,
   DateFieldOptional,
   UUIDFieldOptional,
+  EnumField,
 } from '@sandworm/graphql';
-import { DocumentEntity, DocumentVisibility } from '@sandworm/postgresql-typeorm';
+import {
+  DocumentEntity,
+  DocumentRuntime,
+  DocumentVisibility,
+} from '@sandworm/postgresql-typeorm';
 import { GraphQLJSON } from 'graphql-type-json';
 
 registerEnumType(DocumentVisibility, { name: 'DocumentVisibility' });
+registerEnumType(DocumentRuntime, { name: 'DocumentRuntime' });
 
 @ObjectType()
 export class Document {
@@ -45,6 +51,9 @@ export class Document {
 
   @BooleanField({ defaultValue: true })
   isDashboardPublic: boolean = true;
+
+  @EnumField(() => DocumentRuntime, { defaultValue: DocumentRuntime.CLOUD })
+  runtime: DocumentRuntime = DocumentRuntime.CLOUD;
 
   @StringFieldOptional()
   icon!: string | null;
@@ -127,6 +136,7 @@ export class Document {
     document.runSQLSelection = entity.runSQLSelection;
     document.shareLinksWithoutSidebar = entity.shareLinksWithoutSidebar;
     document.isDashboardPublic = entity.isDashboardPublic;
+    document.runtime = entity.runtime ?? DocumentRuntime.CLOUD;
     document.orderIndex = entity.orderIndex;
     document.deletedAt = entity.deletedAt;
     document.createdAt = entity.createdAt;

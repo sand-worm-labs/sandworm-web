@@ -110,6 +110,8 @@ export class DocumentService {
       input.parentId ?? null,
       input.orderIndex ?? -1,
       1,
+      undefined,
+      input.runtime,
     );
 
     const document = Document.fromEntity(documentEntity);

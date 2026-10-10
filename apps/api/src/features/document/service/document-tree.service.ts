@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, IsNull, Not, Repository } from 'typeorm';
-import { DocumentEntity, YjsDocumentEntity } from '@sandworm/postgresql-typeorm';
+import { DocumentEntity, DocumentRuntime, YjsDocumentEntity } from '@sandworm/postgresql-typeorm';
 import PQueue from 'p-queue';
 import { Doc, encodeStateAsUpdate } from 'yjs';
 import { EventEmitter2, EventEmitterReadinessWatcher } from '@nestjs/event-emitter';
@@ -129,6 +129,7 @@ export class DocumentTreeService {
         orderIndex: number = 0,
         version: number = 1,
         manager?: EntityManager,
+        runtime: DocumentRuntime = DocumentRuntime.CLOUD,
     ): Promise<DocumentEntity> {
         return this.wrapInQueue(workspaceId, async () => {
             const run = async (m: EntityManager) => {
@@ -145,6 +146,7 @@ export class DocumentTreeService {
                     orderIndex: finalOrderIndex,
                     version,
                     authorId,
+                    runtime,
                 }));
 
                 try {

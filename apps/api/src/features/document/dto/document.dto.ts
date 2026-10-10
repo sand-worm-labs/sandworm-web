@@ -1,6 +1,8 @@
 import { InputType } from '@nestjs/graphql';
+import { DocumentRuntime } from '@sandworm/postgresql-typeorm';
 import {
   BooleanFieldOptional,
+  EnumFieldOptional,
   NumberField,
   StringFieldOptional,
   UUIDField,
@@ -20,6 +22,9 @@ export class CreateDocumentInput {
 
   @NumberField({ defaultValue: 0 })
   orderIndex: number;
+
+  @EnumFieldOptional(() => DocumentRuntime, {})
+  runtime?: DocumentRuntime;
 }
 
 @InputType()
