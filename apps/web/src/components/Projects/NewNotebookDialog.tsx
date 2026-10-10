@@ -24,6 +24,14 @@ const OPTIONS: {
   Icon: IconType;
 }[] = [
   {
+    runtime: DocumentRuntime.Cloud,
+    title: "Cloud",
+    description:
+      "Runs on your workspace's cloud environment, with SQL, large datasets and heavy compute.",
+    bestFor: "Heavy research and SQL",
+    Icon: PiCloud,
+  },
+  {
     runtime: DocumentRuntime.BrowserDashboard,
     title: "Live dashboard",
     description:
@@ -33,19 +41,11 @@ const OPTIONS: {
   },
   {
     runtime: DocumentRuntime.BrowserAnalysis,
-    title: "Light analysis",
+    title: "Local analysis",
     description:
       "Python and SQL run in your browser: instant start, no environment to wait for. Keep it light; heavy work belongs on the cloud.",
     bestFor: "Quick exploration",
     Icon: PiBrowser,
-  },
-  {
-    runtime: DocumentRuntime.Cloud,
-    title: "Cloud",
-    description:
-      "Runs on your workspace's cloud environment, with SQL, large datasets and heavy compute.",
-    bestFor: "Heavy research and SQL",
-    Icon: PiCloud,
   },
 ];
 
