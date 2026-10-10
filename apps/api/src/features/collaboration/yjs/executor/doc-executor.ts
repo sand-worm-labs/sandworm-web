@@ -39,6 +39,8 @@ export interface DocExecutorServices {
   pivotTable: PivotTableBlockExecutorService;
   powerToolbox: PowerToolboxBlockExecutorService;
   lock: LockService;
+  // Live notebooks execute in the browser, so no server executor runs them.
+  runsInBrowser?: () => Promise<boolean>;
 }
 
 export class DocExecutor {
@@ -65,7 +67,19 @@ export class DocExecutor {
 
   start(): void {
     this.isRunning = true;
-    this.runLoop();
+    const runsInBrowser = this.services.runsInBrowser?.() ?? Promise.resolve(false);
+    runsInBrowser
+      .catch(err => {
+        this.logger.error({ docId: this.docId, err }, 'Could not read notebook runtime');
+        return false;
+      })
+      .then(inBrowser => {
+        if (inBrowser) {
+          this.isRunning = false;
+        } else if (this.isRunning) {
+          this.runLoop();
+        }
+      });
   }
 
   async stop(): Promise<void> {

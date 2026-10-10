@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { DocumentVisibility } from '@sandworm/postgresql-typeorm';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { runsInBrowser, DocumentVisibility } from '@sandworm/postgresql-typeorm';
 import { DocumentService } from '../document/service/document.service';
 import { PersistorFactory } from '../collaboration/yjs/persistors/persistor.factory';
 import type { SharedDoc } from '../collaboration/yjs/shared-doc/ws-shared-doc';
@@ -39,6 +39,16 @@ export class NotebookDocService {
       work,
       this.persistorFactory.createDocumentPersistor(documentId),
     );
+  }
+
+  // Live notebooks only run in a browser, so the server can't run them for a caller.
+  async assertRunsInCloud({ workspaceId, documentId }: NotebookRef): Promise<void> {
+    const document = await this.documentService.getDocument(documentId, workspaceId);
+    if (runsInBrowser(document.runtime)) {
+      throw new BadRequestException(
+        'This is a Live notebook: it runs in the browser, so it can only be run from the Sandworm editor',
+      );
+    }
   }
 
   // Hands `work` the caller's own copy of the published notebook: the one the

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CronJob } from 'cron';
 import {
     DocumentEntity,
+    runsInBrowser,
     ExecutionScheduleEntity,
     ExecutionScheduleType,
     YjsAppDocumentEntity,
@@ -309,6 +310,11 @@ export class ScheduleExecutorService implements OnModuleInit, OnModuleDestroy {
         document: DocumentEntity,
         yjsApp: YjsAppDocumentEntity,
     ): Promise<void> {
+        // Nothing server side executes a Live notebook's queue.
+        if (runsInBrowser(document.runtime)) {
+            throw new Error(`Document ${document.id} is a Live notebook and runs only in the browser`);
+        }
+
         const docId = this.persistorFactory.getDocId(document.id, {
             id: yjsApp.id,
             userId: null,
