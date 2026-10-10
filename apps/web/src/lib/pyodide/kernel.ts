@@ -1,5 +1,11 @@
 import pyodidePackage from "pyodide/package.json";
 
+import {
+  MPL_BACKEND_MODULE,
+  MPL_BACKEND_SOURCE,
+  RUNTIME_MODULE,
+  RUNTIME_SOURCE,
+} from "./harness";
 import type {
   FromWorker,
   KernelCall,
@@ -70,9 +76,9 @@ function start(): Worker {
       ? new Int32Array(new SharedArrayBuffer(4))
       : null;
 
-  const w = new Worker(new URL("./kernel.worker.ts", import.meta.url), {
-    type: "module",
-  });
+  // A static file rather than a bundled worker: bundlers emit classic
+  // workers, and Pyodide only runs in module workers.
+  const w = new Worker("/pyodide-kernel.worker.mjs", { type: "module" });
   w.onmessage = (event: MessageEvent<FromWorker>) => {
     const message = event.data;
     switch (message.kind) {
@@ -105,6 +111,13 @@ function start(): Worker {
     indexURL: INDEX_URL,
     origin: globalThis.location.origin,
     interruptBuffer,
+    harness: {
+      runtimeModule: RUNTIME_MODULE,
+      modules: [
+        { name: RUNTIME_MODULE, source: RUNTIME_SOURCE },
+        { name: MPL_BACKEND_MODULE, source: MPL_BACKEND_SOURCE },
+      ],
+    },
   };
   w.postMessage(init);
   worker = w;

@@ -1,6 +1,7 @@
 import type { DataFrame, Output, RunQueryResult } from "@sandworm/types";
 
-// Messages between the page and the Pyodide worker (kernel.worker.ts).
+// Messages between the page and the Pyodide worker
+// (public/pyodide-kernel.worker.mjs).
 
 export type KernelCall =
   | { kind: "run_python"; notebookId: string; code: string }
@@ -42,6 +43,11 @@ export type ToWorker =
       // Present when the page is cross-origin isolated: lets a running cell be
       // interrupted without losing the notebook's variables.
       interruptBuffer: Int32Array | null;
+      // Python modules the worker installs before anything runs.
+      harness: {
+        runtimeModule: string;
+        modules: { name: string; source: string }[];
+      };
     }
   | { kind: "call"; id: number; call: KernelCall };
 

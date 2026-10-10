@@ -1,20 +1,9 @@
-/// <reference lib="webworker" />
-// Runs Pyodide off the main thread, so a long cell never freezes the page and
-// can be stopped by terminating this worker.
-
-import type * as PyodideModule from "pyodide";
-import type { PyodideInterface } from "pyodide";
-import type { PyProxy } from "pyodide/ffi";
-
-import {
-  MPL_BACKEND_MODULE,
-  MPL_BACKEND_SOURCE,
-  RUNTIME_MODULE,
-  RUNTIME_SOURCE,
-} from "./harness";
-import type { FromWorker, KernelCall, ToWorker } from "./protocol";
-
-declare const self: DedicatedWorkerGlobalScope;
+// Pyodide kernel for notebooks that run in the browser. Served as a static
+// module worker, outside the bundler: Pyodide refuses to start in a classic
+// worker, which is what bundlers turn `new Worker(new URL(...))` into.
+//
+// The page drives it with the messages in src/lib/pyodide/protocol.ts, and
+// sends the Python harness (src/lib/pyodide/harness.ts) with `init`.
 
 const HOME = "/home/pyodide";
 const THEME_FILES = [
@@ -26,20 +15,19 @@ const THEME_FILES = [
   "tokens.py",
   "watermark.py",
 ];
+const SQL_PACKAGES = ["duckdb", "pandas", "jinja2"];
 
-type Kernel = { pyodide: PyodideInterface; runtime: PyProxy };
-
-let kernel: Promise<Kernel> | null = null;
+let kernel = null;
 // Each notebook gets its own globals, so variables don't leak between them.
-const namespaces = new Map<string, PyProxy>();
+const namespaces = new Map();
 // Calls run one at a time, in the order they arrive.
-let chain: Promise<unknown> = Promise.resolve();
+let chain = Promise.resolve();
 
-function post(message: FromWorker) {
-  self.postMessage(message);
+function errorMessage(err) {
+  return err instanceof Error ? err.message : String(err);
 }
 
-async function loadTheme(pyodide: PyodideInterface, origin: string) {
+async function loadTheme(pyodide, origin) {
   const dir = `${HOME}/sandworm_theme`;
   pyodide.FS.mkdirTree(dir);
   await Promise.all(
@@ -57,26 +45,16 @@ async function loadTheme(pyodide: PyodideInterface, origin: string) {
   );
 }
 
-async function boot(
-  indexURL: string,
-  origin: string,
-  interruptBuffer: Int32Array | null
-): Promise<Kernel> {
-  // Loaded from the CDN at runtime rather than bundled.
-  const { loadPyodide } = (await import(
-    /* webpackIgnore: true */ /* turbopackIgnore: true */ `${indexURL}pyodide.mjs`
-  )) as typeof PyodideModule;
+async function boot({ indexURL, origin, interruptBuffer, harness }) {
+  const { loadPyodide } = await import(`${indexURL}pyodide.mjs`);
   const pyodide = await loadPyodide({ indexURL });
   if (interruptBuffer) {
     pyodide.setInterruptBuffer(interruptBuffer);
   }
 
   pyodide.FS.mkdirTree(HOME);
-  pyodide.FS.writeFile(`${HOME}/${RUNTIME_MODULE}.py`, RUNTIME_SOURCE, {
-    encoding: "utf8",
-  });
-  pyodide.FS.writeFile(`${HOME}/${MPL_BACKEND_MODULE}.py`, MPL_BACKEND_SOURCE, {
-    encoding: "utf8",
+  harness.modules.forEach(({ name, source }) => {
+    pyodide.FS.writeFile(`${HOME}/${name}.py`, source, { encoding: "utf8" });
   });
   await loadTheme(pyodide, origin);
   await pyodide.runPythonAsync(`
@@ -85,24 +63,22 @@ import sys
 if "${HOME}" not in sys.path:
     sys.path.insert(0, "${HOME}")
 
-import ${RUNTIME_MODULE}
+import ${harness.runtimeModule}
 `);
 
-  return { pyodide, runtime: pyodide.pyimport(RUNTIME_MODULE) };
+  return { pyodide, runtime: pyodide.pyimport(harness.runtimeModule) };
 }
 
-function namespaceFor({ runtime }: Kernel, notebookId: string): PyProxy {
+function namespaceFor({ runtime }, notebookId) {
   let namespace = namespaces.get(notebookId);
   if (!namespace) {
-    namespace = runtime.new_namespace() as PyProxy;
+    namespace = runtime.new_namespace();
     namespaces.set(notebookId, namespace);
   }
   return namespace;
 }
 
-const SQL_PACKAGES = ["duckdb", "pandas", "jinja2"];
-
-async function handle(k: Kernel, call: KernelCall): Promise<unknown> {
+async function handle(k, call) {
   const { pyodide, runtime } = k;
   if (call.kind === "reset") {
     namespaces.get(call.notebookId)?.destroy();
@@ -148,18 +124,15 @@ async function handle(k: Kernel, call: KernelCall): Promise<unknown> {
   }
 }
 
-self.onmessage = (event: MessageEvent<ToWorker>) => {
+globalThis.onmessage = event => {
   const message = event.data;
 
   if (message.kind === "init") {
-    kernel = boot(message.indexURL, message.origin, message.interruptBuffer);
+    kernel = boot(message);
     kernel.then(
-      () => post({ kind: "ready" }),
-      (err: unknown) =>
-        post({
-          kind: "failed",
-          error: err instanceof Error ? err.message : String(err),
-        })
+      () => globalThis.postMessage({ kind: "ready" }),
+      err =>
+        globalThis.postMessage({ kind: "failed", error: errorMessage(err) })
     );
     return;
   }
@@ -171,12 +144,8 @@ self.onmessage = (event: MessageEvent<ToWorker>) => {
   });
   chain = run.catch(() => undefined);
   run.then(
-    value => post({ kind: "result", id, value }),
-    (err: unknown) =>
-      post({
-        kind: "error",
-        id,
-        error: err instanceof Error ? err.message : String(err),
-      })
+    value => globalThis.postMessage({ kind: "result", id, value }),
+    err =>
+      globalThis.postMessage({ kind: "error", id, error: errorMessage(err) })
   );
 };
