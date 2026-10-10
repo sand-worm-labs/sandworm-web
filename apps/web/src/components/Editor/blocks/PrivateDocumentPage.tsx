@@ -27,6 +27,8 @@ import type { SessionUser } from "../hooks/useAuth";
 import Layout from "../../Visualization/Layout";
 import { useYDoc } from "../hooks/useYDocs";
 import useDocument from "../hooks/useDocument";
+import { useLiveNotebook } from "../hooks/useNotebookRuntime";
+import { BrowserRuntimeProvider } from "../hooks/useEnvironmentStatus";
 import { RightSidebarPanel } from "../RightSidebarPanel";
 import { ContentSkeleton, TitleSkeleton } from "../ContentSkeleton";
 
@@ -272,6 +274,14 @@ function PrivateDocumentPageInner(
     [yDoc, props.document.runUnexecutedBlocks]
   );
   const aiTasks = useMemo(() => AITasks.fromYjs(yDoc), [yDoc]);
+  const isLive = useLiveNotebook({
+    document: props.document,
+    yDoc,
+    executionQueue,
+    userId: props.user.id,
+    syncing,
+    runOnOpen: props.isApp,
+  });
 
   // ⬢ Public document
   // =====================================
@@ -550,6 +560,7 @@ function PrivateDocumentPageInner(
   );
 
   return (
+    <BrowserRuntimeProvider enabled={isLive}>
     <Layout
       topBarClassname={props.isApp ? "bg-base-100 " : undefined}
       topBarContent={topBarContent}
@@ -657,6 +668,7 @@ function PrivateDocumentPageInner(
         </RightSidebarPanel>
       </div>
     </Layout>
+    </BrowserRuntimeProvider>
   );
 }
 

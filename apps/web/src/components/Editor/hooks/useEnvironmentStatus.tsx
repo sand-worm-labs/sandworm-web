@@ -6,7 +6,16 @@ import React, {
   useEffect,
   useMemo,
   useCallback,
+  useSyncExternalStore,
 } from "react";
+
+import {
+  type KernelSnapshot,
+  getKernelStatus,
+  restartKernel,
+  subscribeKernelStatus,
+  warmUpKernel,
+} from "@/lib/pyodide/kernel";
 
 import { useWebsocket } from "./useWebSocket";
 
@@ -158,22 +167,78 @@ export function EnvironmentStatusProvider(props: Props) {
 }
 
 // =====================================
+// ⬢  Browser Runtime
+// =====================================
+// Live notebooks run in the browser: inside this provider, the "environment"
+// is the tab's Pyodide kernel instead of the workspace's cloud environment.
+const BrowserRuntimeContext = createContext(false);
+
+export function BrowserRuntimeProvider(props: {
+  enabled: boolean;
+  children: React.ReactNode;
+}) {
+  useEffect(() => {
+    if (props.enabled) warmUpKernel();
+  }, [props.enabled]);
+
+  return (
+    <BrowserRuntimeContext.Provider value={props.enabled}>
+      {props.children}
+    </BrowserRuntimeContext.Provider>
+  );
+}
+
+export function useIsBrowserRuntime(): boolean {
+  return useContext(BrowserRuntimeContext);
+}
+
+const KERNEL_ENVIRONMENT_STATUS: Record<
+  KernelSnapshot["status"],
+  EnvironmentStatus
+> = {
+  off: "Stopped",
+  loading: "Starting",
+  ready: "Running",
+  failed: "Failing",
+};
+
+function useKernelSnapshot(): KernelSnapshot {
+  return useSyncExternalStore(
+    subscribeKernelStatus,
+    getKernelStatus,
+    getKernelStatus
+  );
+}
+
+// =====================================
 // ⬢  Use Environment Status Hook
 // =====================================
 export function useEnvironmentStatus(
   workspaceId: string
 ): UseEnvironmentStatus {
   const [state, api] = useContext(Context);
+  const isBrowserRuntime = useContext(BrowserRuntimeContext);
+  const kernel = useKernelSnapshot();
+
   useEffect(() => {
-    api.getEnvironmentStatus(workspaceId);
-  }, [api.getEnvironmentStatus, workspaceId]);
+    if (!isBrowserRuntime) api.getEnvironmentStatus(workspaceId);
+  }, [api.getEnvironmentStatus, workspaceId, isBrowserRuntime]);
 
   const restart = useCallback(() => {
-    api.restart(workspaceId);
-  }, [api.restart, workspaceId]);
+    if (isBrowserRuntime) restartKernel();
+    else api.restart(workspaceId);
+  }, [api.restart, workspaceId, isBrowserRuntime]);
 
-  return useMemo(
-    () => ({ ...(state.get(workspaceId) ?? getDefaultStateItem()), restart }),
-    [state, workspaceId]
-  );
+  return useMemo(() => {
+    if (isBrowserRuntime) {
+      return {
+        status: KERNEL_ENVIRONMENT_STATUS[kernel.status],
+        loading: false,
+        error: kernel.error,
+        startedAt: kernel.startedAt,
+        restart,
+      };
+    }
+    return { ...(state.get(workspaceId) ?? getDefaultStateItem()), restart };
+  }, [state, workspaceId, isBrowserRuntime, kernel, restart]);
 }

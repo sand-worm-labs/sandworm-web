@@ -35,6 +35,8 @@ import type { APIDataSources } from "../../hooks/useDataSources";
 import ShareModal from "../ShareModal";
 import { useDataSources } from "../../hooks/useDataSources";
 import { useDocuments } from "../../hooks/useDocuments";
+import { useLiveNotebook } from "../../hooks/useNotebookRuntime";
+import { BrowserRuntimeProvider } from "../../hooks/useEnvironmentStatus";
 import { useLastUpdatedAt, useYDoc, useYDocState } from "../../hooks/useYDocs";
 import DashboardNotebookGroupButton from "../DashboarNotebookGroupButton";
 import EllipsisDropdown from "../EllipsisDropdown";
@@ -467,6 +469,14 @@ export default function Dashboard(props: Props) {
     [yDoc]
   );
   const aiTasks = useMemo(() => AITasks.fromYjs(yDoc), [yDoc]);
+  const isLive = useLiveNotebook({
+    document: props.document,
+    yDoc,
+    executionQueue,
+    userId: props.user.id,
+    syncing,
+    runOnOpen: !props.isEditing,
+  });
 
   const router = useRouter();
 
@@ -781,6 +791,7 @@ export default function Dashboard(props: Props) {
   }
 
   return (
+    <BrowserRuntimeProvider enabled={isLive}>
     <Layout
       topBarClassname={!props.isEditing ? "dark:bg-base-100 " : undefined}
       topBarContent={topBarContent}
@@ -862,5 +873,6 @@ export default function Dashboard(props: Props) {
         </RightSidebarPanel>
       </div>
     </Layout>
+    </BrowserRuntimeProvider>
   );
 }
