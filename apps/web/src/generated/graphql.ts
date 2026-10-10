@@ -1396,6 +1396,7 @@ export type UpdateDocumentInput = {
   parentId?: InputMaybe<Scalars['String']['input']>;
   runSQLSelection?: InputMaybe<Scalars['Boolean']['input']>;
   runUnexecutedBlocks?: InputMaybe<Scalars['Boolean']['input']>;
+  runtime?: InputMaybe<DocumentRuntime>;
   shareLinksWithoutSidebar?: InputMaybe<Scalars['Boolean']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
 };

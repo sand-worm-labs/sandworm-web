@@ -7,47 +7,11 @@ import {
 } from "@headlessui/react";
 import { useCallback, useState } from "react";
 import type { ReactNode } from "react";
-import type { IconType } from "react-icons";
-import { PiBrowser, PiChartLine, PiCloud } from "react-icons/pi";
 import clsx from "clsx";
 
 import { DocumentRuntime } from "@/generated/graphql";
 
-// =====================================
-// ⬢ Options
-// =====================================
-const OPTIONS: {
-  runtime: DocumentRuntime;
-  title: string;
-  description: string;
-  bestFor: string;
-  Icon: IconType;
-}[] = [
-  {
-    runtime: DocumentRuntime.Cloud,
-    title: "Cloud",
-    description:
-      "Runs on your workspace's cloud environment, with SQL, large datasets and heavy compute.",
-    bestFor: "Heavy research and SQL",
-    Icon: PiCloud,
-  },
-  {
-    runtime: DocumentRuntime.BrowserDashboard,
-    title: "Live dashboard",
-    description:
-      "Runs in the browser and re-runs for every viewer when they open it, so it always shows fresh numbers.",
-    bestFor: "Light, always-fresh charts",
-    Icon: PiChartLine,
-  },
-  {
-    runtime: DocumentRuntime.BrowserAnalysis,
-    title: "Local analysis",
-    description:
-      "Python and SQL run in your browser: instant start, no environment to wait for. Keep it light; heavy work belongs on the cloud.",
-    bestFor: "Quick exploration",
-    Icon: PiBrowser,
-  },
-];
+import { NOTEBOOK_TYPES } from "./notebookTypes";
 
 // =====================================
 // ⬢ NewNotebookDialog
@@ -101,7 +65,7 @@ export default function NewNotebookDialog(props: Props) {
                 New notebook
               </DialogTitle>
               <p className="mt-1 text-sm text-ink-500 dark:text-ink-300">
-                Choose where it runs. You can&apos;t change this later.
+                Choose where it runs. You can change it later from the notebook's top bar.
               </p>
 
               <div
@@ -109,7 +73,7 @@ export default function NewNotebookDialog(props: Props) {
                 aria-label="Where this notebook runs"
                 className="mt-5 grid gap-3 sm:grid-cols-3"
               >
-                {OPTIONS.map(({ runtime: value, title, description, bestFor, Icon }) => {
+                {NOTEBOOK_TYPES.map(({ runtime: value, title, description, bestFor, Icon }) => {
                   const selected = runtime === value;
                   return (
                     <button

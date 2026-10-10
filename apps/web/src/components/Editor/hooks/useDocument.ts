@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import type { ApiDocument } from "@/types";
-import { useGetDocumentQuery } from "@/generated/graphql";
+import { type DocumentRuntime, useGetDocumentQuery } from "@/generated/graphql";
 
 import { useDocuments } from "./useDocuments";
 
@@ -12,6 +12,7 @@ type API = {
   toggleRunSQLSelection: () => Promise<void>;
   toggleShareLinksWithoutSidebar: () => Promise<void>;
   toggleDashboardVisibility: () => Promise<void>;
+  setRuntime: (runtime: DocumentRuntime) => Promise<void>;
 };
 
 type UseDocument = [
@@ -142,6 +143,17 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
     api.updateDocumentSettings,
   ]);
 
+  const setRuntime = useCallback(
+    async (runtime: DocumentRuntime) => {
+      try {
+        await api.updateDocumentSettings(documentId, { runtime });
+      } catch (err) {
+        toast.error("Failed to change the notebook type");
+      }
+    },
+    [documentId, api.updateDocumentSettings]
+  );
+
   return useMemo(
     () => [
       { document, loading, publishing },
@@ -151,6 +163,7 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
         toggleRunSQLSelection,
         toggleShareLinksWithoutSidebar,
         toggleDashboardVisibility,
+        setRuntime,
       },
     ],
     [
@@ -162,6 +175,7 @@ function useDocument(workspaceId: string, documentId: string): UseDocument {
       toggleRunSQLSelection,
       toggleShareLinksWithoutSidebar,
       toggleDashboardVisibility,
+      setRuntime,
     ]
   );
 }

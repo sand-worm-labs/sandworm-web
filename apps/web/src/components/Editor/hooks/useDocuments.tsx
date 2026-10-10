@@ -152,6 +152,7 @@ type API = {
       runSQLSelection?: boolean;
       shareLinksWithoutSidebar?: boolean;
       isDashboardPublic?: boolean;
+      runtime?: DocumentRuntime;
     }
   ) => Promise<void>;
   publish: (
@@ -815,6 +816,8 @@ export function useDocuments(workspaceId: string): UseDocuments {
         runUnexecutedBlocks?: boolean;
         runSQLSelection?: boolean;
         shareLinksWithoutSidebar?: boolean;
+        isDashboardPublic?: boolean;
+        runtime?: DocumentRuntime;
       }
     ) => {
       const document = documents.find(doc => doc.id === id);
