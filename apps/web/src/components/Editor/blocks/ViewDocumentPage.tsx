@@ -15,7 +15,6 @@ import { tintPillDarkClassName } from "@/styles/interactive";
 import type { SessionUser } from "../hooks/useAuth";
 import Layout from "../../Visualization/Layout";
 import useDocument from "../hooks/useDocument";
-import useFullScreenDocument from "../hooks/useFullScreenDocument";
 import useUpgradeGate from "../hooks/useUpgradeGate";
 import { useViewYDoc } from "../hooks/useViewYDoc";
 import ViewSwitcher from "../ViewSwitcher";
@@ -66,7 +65,6 @@ export default function ViewDocumentPage(props: Props) {
     props.documentId
   );
   const [view, setView] = useState<NotebookView>("report");
-  const [isFullScreen] = useFullScreenDocument(props.documentId);
   const gate = useUpgradeGate(props.workspaceId);
 
   const role =
@@ -213,7 +211,10 @@ export default function ViewDocumentPage(props: Props) {
         dataSources={EMPTY_DATA_SOURCES}
         isApp
         isPDF={false}
-        isFullScreen={isFullScreen}
+        // The read-only view always uses the centred reading width of the public
+        // page. The editor's full-screen preference defaults to on and has no
+        // toggle here, so honouring it left the content edge to edge.
+        isFullScreen={false}
         yDoc={yDoc}
         isSyncing={false}
         isQueryView={view === "query"}

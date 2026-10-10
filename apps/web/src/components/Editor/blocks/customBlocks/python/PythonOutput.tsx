@@ -23,6 +23,7 @@ import PythonError from "./PythonError";
 import { useTileChrome } from "../../Dashboard/TileChromeContext";
 
 import { toDarkFigure } from "./plotlyDark";
+import { withSandwormDefaults } from "./plotlyDefaults";
 
 // @ts-expect-error @types/react-plotly.js incompatible with @types/react@19
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
@@ -676,10 +677,11 @@ function PythonPlotOutput(props: {
 }) {
   // The stored figure carries the light theme's colors; swap in the dark ones
   // when the reader is in dark mode (see plotlyDark.ts).
-  const output = useMemo(
-    () => (props.isDark ? toDarkFigure(props.output) : props.output),
-    [props.output, props.isDark]
-  );
+  const output = useMemo(() => {
+    // Defaults first (they may add white tile lines), then the dark swap.
+    const figure = withSandwormDefaults(props.output);
+    return props.isDark ? toDarkFigure(figure) : figure;
+  }, [props.output, props.isDark]);
 
   const layout = useMemo(() => {
     return {
@@ -697,11 +699,13 @@ function PythonPlotOutput(props: {
       return {
         displaylogo: false,
         displayModeBar: false,
+        responsive: true,
       };
     }
 
     return {
       displaylogo: false,
+      responsive: true,
     };
   }, [hideControls]);
 

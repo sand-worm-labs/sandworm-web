@@ -23,6 +23,19 @@ test('Avalanche sub-goals reach the Avalanche sources, and its key is optional',
   assert.deepEqual([avalanche.key?.env, avalanche.key?.required], ['AVACLOUD_API_KEY', false]);
 });
 
+test('smart-money and wallet-intelligence sub-goals reach Nansen, whose key is required', () => {
+  assert.equal(ids('smart money netflow by token')[0], 'nansen');
+  assert.equal(ids('copytrade the most profitable wallets with the best win rate')[0], 'nansen');
+  assert.equal(ids('related wallets and counterparties of an address')[0], 'nansen');
+  assert.ok(ids('who are the most profitable wallets trading PEPE').includes('nansen'));
+  assert.ok(ids('who holds the most of this token and are whales accumulating').includes('nansen'));
+  assert.equal(ids('stablecoin supply over time')[0], 'defillama');
+  const nansen = OPEN_DATA_SOURCES.find(s => s.id === 'nansen')!;
+  assert.deepEqual([nansen.key?.env, nansen.key?.required], ['NANSEN_API_KEY', true]);
+  assert.ok(nansen.endpoints.every(e => e.path.startsWith('POST /')), 'Nansen is POST-only');
+  assert.match(nansen.endpoints.find(e => e.path.endsWith('/labels'))!.gives, /100 CREDITS/, 'labels is not free');
+});
+
 test('a sub-goal nothing matches still gets the general market sources', () => {
   assert.deepEqual(ids('zzz qqq'), ['defillama', 'coingecko']);
 });
@@ -75,4 +88,30 @@ test('offline, power tools and sql with nothing to query are rejected; sql over 
   } finally {
     globalThis.fetch = realFetch;
   }
+});
+
+test('the mobile chart rules reach the server instructions and the cell tool guidance', async () => {
+  const { CHART_RESPONSIVE_RULES } = await import('../chart-rules.ts');
+  assert.match(CHART_RESPONSIVE_RULES, /phone.*before anything else/);
+  assert.match(CHART_RESPONSIVE_RULES, /Never set a chart's width, margins or legend position/);
+  const { readFileSync } = await import('node:fs');
+  for (const file of ['../../../server.ts', '../cells.ts']) {
+    const source = readFileSync(new URL(file, import.meta.url), 'utf8');
+    assert.match(source, /CHART_RESPONSIVE_RULES/, file);
+  }
+});
+
+test('Nansen and AvaCloud keys are the workspace\'s own: the guidance sends the agent to the environment page and promises no helper or built-in key', () => {
+  const nansen = OPEN_DATA_SOURCES.find(s => s.id === 'nansen')!;
+  const avalanche = OPEN_DATA_SOURCES.find(s => s.key?.env === 'AVACLOUD_API_KEY')!;
+
+  for (const source of [nansen, avalanche]) {
+    const text = `${source.key?.signup} ${source.notes}`;
+    assert.match(text, /environment page/, source.id);
+    assert.doesNotMatch(text, /never ask the user/, source.id);
+    assert.doesNotMatch(text, /already in the notebook environment/, source.id);
+  }
+  assert.doesNotMatch(nansen.notes ?? '', /_sandworm_nansen/, 'the session no longer defines that helper');
+  assert.match(nansen.notes ?? '', /X-Nansen-Credits-Used/);
+  assert.match(nansen.notes ?? '', /do not fake data/);
 });

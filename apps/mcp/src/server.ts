@@ -6,6 +6,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import type { AuthContext, Authenticator } from './auth.ts';
 import { clientOf, type ClientInfo } from './client.ts';
 import { registerTools } from './tools/index.ts';
+import { CHART_RESPONSIVE_RULES } from './tools/notebooks/chart-rules.ts';
 import { NEXT_STEPS_INSTRUCTIONS, POSITIONING_INSTRUCTIONS, SAVE_REPLY_INSTRUCTIONS } from './tools/notebooks/reply.ts';
 
 const MAX_BODY_BYTES = 1_000_000;
@@ -22,7 +23,7 @@ export type ServerDeps = {
 export function createMcpServer(deps: ServerDeps, auth: AuthContext, client?: ClientInfo): McpServer {
   const server = new McpServer(
     { name: 'sandworm', version: '0.1.0' },
-    { instructions: [POSITIONING_INSTRUCTIONS, NEXT_STEPS_INSTRUCTIONS, ...(deps.logToolCalls ? [SAVE_REPLY_INSTRUCTIONS] : [])].join(' ') },
+    { instructions: [POSITIONING_INSTRUCTIONS, CHART_RESPONSIVE_RULES, NEXT_STEPS_INSTRUCTIONS, ...(deps.logToolCalls ? [SAVE_REPLY_INSTRUCTIONS] : [])].join(' ') },
   );
   registerTools(server, {
     auth,

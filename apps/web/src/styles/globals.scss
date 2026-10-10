@@ -1707,3 +1707,11 @@ label {
     transform-origin: top;
   }
 }
+
+// Rounded Plotly tooltips. Plotly has no setting for this: the box is a path, so
+// a round-joined stroke in its own fill colour rounds the corners. The renderer
+// (python/plotlyDefaults.ts) sets the tooltip border to its fill so this holds.
+.hoverlayer .hovertext path {
+  stroke-linejoin: round;
+  stroke-width: 8px;
+}

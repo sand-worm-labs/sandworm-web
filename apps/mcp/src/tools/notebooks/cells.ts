@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { rest } from '../../rest.ts';
 import { confirm, handle, workspaceId } from '../shared.ts';
+import { CHART_RESPONSIVE_RULES } from './chart-rules.ts';
 import { DATA_SOURCE_FALLBACK, OPEN_DATA_USAGE } from './open-data.ts';
 import { printedTableProblem } from './printed-table.ts';
 import { notebookApiPath, notebookId, notebookUrl, objectOrJson, turnRequest } from './shared.ts';
@@ -28,10 +29,12 @@ type Cell = { id: string; kind: string; title: string } & Record<string, unknown
 // descriptions; phrased so the agent can depart from them.
 const PYTHON_GUIDANCE = [
   'Python cells.',
+  CHART_RESPONSIVE_RULES,
   'Charts: prefer Plotly (interactive, any chart type that suits the data); matplotlib also works.',
   'Plotly and matplotlib charts already get Sandworm\'s colors and font: the theme is applied when the session starts, so do not import or call it. Do not hard-code your own palette or fonts unless the data needs something else.',
   'With Plotly Express bars, `color=` on a column other than the category axis gives every colour its own slot and makes each bar thin: add `fig.update_layout(barmode="overlay")` when each category has a single bar.',
   'Tables: return the DataFrame, never print it. No `print(df)`, and never `print(df.to_string())` or `print(df.to_markdown())`: a cell that does is rejected. End the cell with just the variable on its own line (e.g. `yr`), with no print() or display() around it, so the notebook renders a real table instead of plain text. One table per cell, in a cell of its own: for several tables add several cells, not one cell that shows them all. A Series becomes a table with `.reset_index()` or `.to_frame()`; give columns clear names with units (e.g. "Volume (USD bn)"), round numbers, and show a date as a column, not as the index. Put a table\'s title and source in a markdown cell or a `note()`, not in a print().',
+  'Chart style: the theme and the notebook renderer already place the legend above the plot with no title, round bars, style tooltips and keep treemap tiles thin, so do not set legend position or title, hovertemplate, barcornerradius, treemap padding or marker line widths. Do not hard-code hex colours: keep the default colour sequence, and for good and bad figures (net inflow vs outflow, gain vs loss) use `from sandworm_theme.tokens import POS, NEG`. For a stacked area or bar chart, give every series a value at every x (pivot to the full grid and fill 0), or the stack tears. Keep emoji and symbols out of axis labels and legends (clean token names first). When one category is most of a total, show it as a single split bar and draw the treemap of the rest. Give every chart a short title that states the finding, and name the data source in a note under it.',
   'For HTML summaries, `from sandworm_theme import show, stat_card, card, note` give styled stat cards and cards: `show(stat_card(value, label, secondary=[(value, label), ...]))`. Optional.',
   'For a dashboard, `from sandworm_theme import show, kpi_row, banner`: `show(kpi_row([(label, value), (label, value, "neg")]))` draws a row of compact figure cards with the accent bar (up to 4 per line; the default way to open a dashboard), and `show(banner(subtitle, logo_url, links=[(text, url)]))` draws one line of text with a logo and link buttons, with no title because the dashboard already shows the notebook title. Make them in cells of their own, then place them with set_dashboard (chrome "plain", dashboardOnly true).',
   'Dark mode: results are themed when they are shown, so one notebook reads in light and dark. Plotly charts need nothing from you. In any HTML you write by hand, take colors from `from sandworm_theme import CSS` (f"color:{CSS.ink}", also CSS.ink_2, CSS.muted, CSS.paper, CSS.shade, CSS.rule) instead of hex codes, and do not set a white background; `show`, `card`, `stat_card` and `note` already do this.',

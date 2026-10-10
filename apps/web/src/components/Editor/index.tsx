@@ -45,7 +45,6 @@ import {
   getClosestDataframe,
   getBlockFlatPosition,
   getBlocks,
-  getAiBlocks,
 } from "@sandworm/editor";
 import type { DataFrame } from "@sandworm/types";
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
@@ -116,7 +115,6 @@ import PlusButton from "./PlusButton";
 import DragHandle from "./DragHandle";
 import Title from "./Title";
 import MarkdownBlock from "./blocks/customBlocks/markdown";
-import AiDiffToolbar from "./blocks/AiDiffToolbar";
 
 // The react-dnd package does not export this...
 type Identifier = string | symbol;
@@ -1298,14 +1296,6 @@ const Editor = (props: Props) => {
     dataframesGetter
   );
 
-  const aiBlockCount = useMemo(() => {
-    let count = 0;
-    blocks.value.forEach(block => {
-      if (block.getAttribute("isAiInput")) count++;
-    });
-    return count;
-  }, [blocks]);
-
   const editorWrapperRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!props.isSyncing) {
@@ -1863,18 +1853,6 @@ const Editor = (props: Props) => {
           </div>
         </div>
       </OverlayScrollbarsComponent>
-
-      {aiBlockCount > 0 && (
-        <AiDiffToolbar
-          visible
-          totalAi={aiBlockCount}
-          pendingCount={aiBlockCount}
-          accepted={0}
-          rejected={0}
-          onAcceptAll={() => {}}
-          onRejectAll={() => {}}
-        />
-      )}
 
       <RemoveBlockDashboardConflictDialog
         yDoc={props.yDoc}
