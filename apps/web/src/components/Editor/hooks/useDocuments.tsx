@@ -21,6 +21,7 @@ import {
   usePublishDocumentMutation,
   useUnpublishDocumentMutation,
   useSetDocumentLinkVisibilityMutation,
+  type DocumentRuntime,
   type UpdateDocumentInput,
 } from "@/generated/graphql";
 
@@ -131,6 +132,7 @@ type API = {
       parentId?: string | null;
       version: number;
       title?: string;
+      runtime?: DocumentRuntime;
     },
     skipAddingToDocument?: boolean
   ) => Promise<Document>;
@@ -302,6 +304,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
       parentId?: string | null;
       version: number;
       title?: string;
+      runtime?: DocumentRuntime;
     }) => {
       if (loading) {
         throw new Error("Cannot create document while loading");
@@ -315,6 +318,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
               title: data.title ?? "Untitled",
               parentId: data.parentId ?? null,
               version: data.version,
+              runtime: data.runtime,
             },
           },
         });

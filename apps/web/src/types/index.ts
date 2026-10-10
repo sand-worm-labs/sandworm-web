@@ -11,7 +11,7 @@ import type {
   ShowcaseTaxonomyEntry,
 } from "@sandworm/types";
 
-import { type UserSetting } from "@/generated/graphql";
+import { type DocumentRuntime, type UserSetting } from "@/generated/graphql";
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: () => ReactNode;
@@ -191,6 +191,8 @@ export type Document = {
   // visibility (GetDocument, GetPublishedDocumentBySlug, UpdateDocument).
   // Other document-list queries don't select it.
   isDashboardPublic?: boolean;
+  // Where python runs; chosen when the notebook is created.
+  runtime?: DocumentRuntime;
   createdBy?: string;
 };
 

@@ -38,6 +38,7 @@ import { useSession } from "@/components/Editor/hooks/useAuth";
 import { StyledCheckbox } from "@/components/StyledCheckbox";
 import { formatDate } from "@/lib/date";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
+import type { DocumentRuntime } from "@/generated/graphql";
 
 import { UploadIcon } from "../Assets/UploadIcon";
 import { useDocuments } from "../Editor/hooks/useDocuments";
@@ -45,6 +46,7 @@ import { useStringQuery } from "../Editor/hooks/useQueryArgs";
 
 import ProjectControl from "./ProjectControls";
 import { ProjectsPageSkeleton } from "./ProjectsSkeleton";
+import { useNewNotebookDialog } from "./NewNotebookDialog";
 import { ProjectsTable } from "./ProjectTable";
 import {
   useProjectFilter,
@@ -207,11 +209,11 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
 
   // ⬢ Create Document
   // =====================================
-  const onCreateDocument = useCallback(
-    async (parentId: string | null) => {
+  const createNotebook = useCallback(
+    async (parentId: string | null, runtime: DocumentRuntime) => {
       if (documentsState.loading) return;
       try {
-        const doc = await createDocument({ parentId, version: 2 });
+        const doc = await createDocument({ parentId, version: 2, runtime });
         router.push(`/workspace/${workspaceId}/documents/${doc.id}`);
       } catch (err) {
         console.error(err);
@@ -219,6 +221,8 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
     },
     [documentsState, createDocument, router, workspaceId]
   );
+  const [onCreateDocument, newNotebookDialog] =
+    useNewNotebookDialog(createNotebook);
 
   const onCreateDocumentHandler: React.MouseEventHandler<HTMLButtonElement> =
     useCallback(
@@ -354,6 +358,7 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
 
   return (
     <div className="min-h-screen bg-page-surface p-8">
+      {newNotebookDialog}
       <div className="flex justify-between w-full container mx-auto">
         <div className="flex items-center gap-3 mb-0">
           <span className="rounded-full flex items-center justify-center">
