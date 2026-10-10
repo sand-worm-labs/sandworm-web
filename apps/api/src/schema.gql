@@ -587,6 +587,11 @@ type Query {
   getShowcaseConfig: JSON!
 
   """
+  For the studio: every notebook in the official workspaces with its Showcase metadata (drafts too), and the leads that came in. Needs the studio password, or a staff account.
+  """
+  getShowcaseAdmin(password: String): JSON!
+
+  """
   Get the listed bounties, in display order. Pass featured to get only the ones shown on the home page.
   """
   getBounties(featured: Boolean): [Bounty!]!
@@ -802,6 +807,31 @@ type Mutation {
   Ask for a protocol to be covered, ask for a report, or claim the case study about your protocol. Saved for the sales team.
   """
   submitShowcaseLead(input: JSON!): Boolean!
+
+  """
+  Set an official notebook's Showcase metadata, or pass null to take it off the Showcase. Needs the studio password, or a staff account.
+  """
+  saveShowcaseNotebook(documentId: String!, showcase: JSON, password: String): Boolean!
+
+  """
+  Create a Showcase category, or change the one with the same slug. Needs the studio password, or a staff account.
+  """
+  saveShowcaseCategory(input: JSON!, password: String): Boolean!
+
+  """
+  Delete a Showcase category that has no notebooks filed under it. Needs the studio password, or a staff account.
+  """
+  deleteShowcaseCategory(slug: String!, password: String): Boolean!
+
+  """
+  Set a chain's color and its place among the Showcase chain filters. Needs the studio password, or a staff account.
+  """
+  saveShowcaseChain(input: JSON!, password: String): Boolean!
+
+  """
+  Approve a claim lead: marks the case study it names as claimed by the protocol's team. Needs the studio password, or a staff account.
+  """
+  approveShowcaseClaim(leadId: String!, password: String): Boolean!
 
   """
   Create a bounty as a draft. It is listed once its reward is funded in escrow.

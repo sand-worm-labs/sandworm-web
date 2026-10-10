@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
+import { profileHref } from "@/lib/profile";
 import { ForkToWorkspaceModal } from "@/components/Explore/ForkToWorkspaceModal";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/date";
@@ -196,9 +197,9 @@ export function FeaturedExploreCard({
             height={30}
             className="rounded-full"
           />
-          {workspaceId ? (
+          {creator.userId ? (
             <Link
-              href={`/workspace/${workspaceId}/profile/${creator.userId}`}
+              href={profileHref(workspaceId, creator.userId)}
               onClick={e => e.stopPropagation()}
               className={cn(
                 "text-sm font-medium hover:underline",

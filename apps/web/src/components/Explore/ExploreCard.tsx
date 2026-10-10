@@ -11,6 +11,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useState } from "react";
 
+import { profileHref } from "@/lib/profile";
 import { Tag } from "@/components/Tag";
 import { ForkToWorkspaceModal } from "@/components/Explore/ForkToWorkspaceModal";
 import { cn } from "@/lib/utils";
@@ -113,9 +114,9 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
               )}
             </Avatar>
             <div className="min-w-0">
-              {workspaceId ? (
+              {query.authorId ? (
                 <Link
-                  href={`/workspace/${workspaceId}/profile/${query.authorId}`}
+                  href={profileHref(workspaceId, query.authorId)}
                   className="text-sm font-medium text-ink-100 dark:text-white hover:underline block truncate"
                 >
                   @{query.author?.username}

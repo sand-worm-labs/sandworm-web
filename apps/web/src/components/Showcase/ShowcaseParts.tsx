@@ -113,7 +113,7 @@ export function CaseStudyCard({ notebook }: { notebook: ShowcaseNotebook }) {
       className="group flex flex-col h-full rounded-xl p-4 bg-base-100 border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
     >
       <div className="flex flex-wrap items-center gap-1.5">
-        <Tag>Case study</Tag>
+        <Tag>On-chain analysis</Tag>
         {chains.map(chain => (
           <Tag key={chain}>{chain}</Tag>
         ))}
@@ -195,7 +195,7 @@ export function ProjectCard({
 // ⬢  Notebook card
 // =====================================
 const KIND_LABEL: Record<ShowcaseNotebook["showcase"]["kind"], string> = {
-  case_study: "Case study",
+  case_study: "On-chain analysis",
   working: "Notebook",
   category: "Leaderboard",
 };

@@ -1412,6 +1412,10 @@ export const NotebookShowcase = z
     heroStats: z.array(ShowcaseHeroStat).max(4).default([]),
     // Working notebooks and forks: the slug of the case study they belong to.
     parentCaseStudy: z.string().max(200).optional(),
+    // Case studies only: true once the protocol's team has claimed the page.
+    // Set by us when we approve a claim; an unclaimed page leads with the
+    // "Claim this page" prompt.
+    claimed: z.boolean().default(false),
   })
   .refine(s => s.kind !== 'case_study' || !!s.protocol, {
     message: 'A case study needs a protocol',

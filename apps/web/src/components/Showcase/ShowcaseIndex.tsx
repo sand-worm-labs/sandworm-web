@@ -38,12 +38,12 @@ const pillClass = (active: boolean) =>
 // What is on the Showcase, in a line. Only what a visitor can open is
 // counted apart: a count of what is not there yet is not worth a number.
 function Summary({ cards }: { cards: ShowcaseCategoryCard[] }) {
-  const live = cards.filter(card => card.status === "live").length;
   const studies = cards.reduce((sum, card) => sum + card.caseStudyCount, 0);
   const parts = [
     `${cards.length} categories`,
-    live > 0 ? `${live} live` : null,
-    studies > 0 ? `${studies} case studies` : null,
+    studies > 0
+      ? `${studies} on-chain ${studies === 1 ? "analysis" : "analyses"}`
+      : null,
   ].filter(Boolean);
 
   return <p className="text-[13px] text-ink-400">{parts.join(" · ")}</p>;

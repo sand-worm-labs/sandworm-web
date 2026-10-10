@@ -1,19 +1,10 @@
 // The Showcase index as an airport departures board: one row per category,
-// grouped the way a board groups by terminal, with the status where a flight
-// would show "On time".
+// grouped the way a board groups by terminal.
 import Link from "next/link";
 
-import {
-  categoryHref,
-  groupLabel,
-  SHOWCASE_STATUS_LABEL,
-} from "@/lib/showcase";
+import { categoryHref, groupLabel } from "@/lib/showcase";
 import { cn } from "@/lib/utils";
-import type {
-  ShowcaseCategoryCard,
-  ShowcaseCategoryStatus,
-  ShowcaseTaxonomy,
-} from "@/types";
+import type { ShowcaseCategoryCard, ShowcaseTaxonomy } from "@/types";
 
 import { ChainStack } from "./ChainIcon";
 import {
@@ -30,38 +21,9 @@ import {
 // =====================================
 const MAX_PROTOCOLS = 4;
 
-// Category, question, covering, chains and place, studies, status.
+// Category, question, covering, chains and place, studies, the way in.
 const ROW_GRID =
   "md:grid md:grid-cols-[minmax(9rem,1fr)_minmax(0,2.3fr)_minmax(0,1.4fr)_8.5rem_3.5rem_6.5rem] md:items-center md:gap-x-6";
-
-const LAMP_CLASS: Record<ShowcaseCategoryStatus, string> = {
-  live: "bg-emerald-500 shadow-[0_0_8px] shadow-emerald-500/70",
-  building: "bg-amber-500 shadow-[0_0_8px] shadow-amber-500/70",
-  request: "bg-ink-300",
-};
-
-const STATUS_TEXT_CLASS: Record<ShowcaseCategoryStatus, string> = {
-  live: "text-emerald-600 dark:text-emerald-400",
-  building: "text-amber-600 dark:text-amber-400",
-  request: "text-ink-400",
-};
-
-// =====================================
-// ⬢  Status
-// =====================================
-export function BoardStatus({ status }: { status: ShowcaseCategoryStatus }) {
-  return (
-    <span
-      className={cn(
-        "font-body-mono inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.14em]",
-        STATUS_TEXT_CLASS[status]
-      )}
-    >
-      <span className={cn("h-1.5 w-1.5 rounded-full", LAMP_CLASS[status])} />
-      {SHOWCASE_STATUS_LABEL[status]}
-    </span>
-  );
-}
 
 // =====================================
 // ⬢  Row
@@ -81,9 +43,6 @@ function RowCells({
       <span className="flex items-center justify-between gap-3 md:block">
         <span className="font-body text-[15px] font-bold text-ink-100 dark:text-white group-hover:text-primary dark:group-hover:text-primary-tint-75 transition-colors">
           {card.name}
-        </span>
-        <span className="md:hidden shrink-0">
-          <BoardStatus status={card.status} />
         </span>
       </span>
 
@@ -114,8 +73,7 @@ function RowCells({
         )}
       </span>
 
-      <span className="hidden md:flex items-center justify-between gap-2">
-        <BoardStatus status={card.status} />
+      <span className="hidden md:flex items-center justify-end gap-2">
         <span
           aria-hidden="true"
           className="text-primary dark:text-primary-tint-75 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
@@ -187,7 +145,7 @@ export function ShowcaseBoard({
         <span>Covering</span>
         <span>Chains</span>
         <span>Studies</span>
-        <span>Status</span>
+        <span aria-hidden="true" />
       </div>
 
       {cards.length === 0 ? (

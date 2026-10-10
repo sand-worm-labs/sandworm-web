@@ -9,6 +9,7 @@ import {
   ShowcaseTemplateEntity,
 } from '@sandworm/postgresql-typeorm';
 import { WorkspaceModule } from '../workspace/workspace.module';
+import { ShowcaseAdminService } from './showcase-admin.service';
 import { ShowcaseResolver } from './showcase.resolver';
 import { ShowcaseService } from './showcase.service';
 
@@ -21,6 +22,6 @@ import { ShowcaseService } from './showcase.service';
       ShowcaseChainEntity,
       ShowcaseTemplateEntity,
     ]), forwardRef(() => WorkspaceModule)],
-  providers: [ShowcaseResolver, ShowcaseService],
+  providers: [ShowcaseResolver, ShowcaseService, ShowcaseAdminService],
 })
 export class ShowcaseModule {}

@@ -13,21 +13,6 @@ import type {
 } from "@/types";
 
 // =====================================
-// ⬢  Labels
-// =====================================
-export const SHOWCASE_STATUS_LABEL: Record<ShowcaseCategoryStatus, string> = {
-  live: "Live",
-  building: "Building",
-  request: "Request",
-};
-
-export const SHOWCASE_STATUS_HINT: Record<ShowcaseCategoryStatus, string> = {
-  live: "Has at least one published case study",
-  building: "Category page is up; case studies are coming",
-  request: "Not covered yet. Ask for it",
-};
-
-// =====================================
 // ⬢  Links
 // =====================================
 export const slugify = (value: string) =>

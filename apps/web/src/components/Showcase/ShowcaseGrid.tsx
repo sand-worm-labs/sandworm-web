@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import type { ShowcaseCategoryCard, ShowcaseTaxonomy } from "@/types";
 
 import { ChainStack } from "./ChainIcon";
-import { BoardStatus } from "./ShowcaseBoard";
 
 // =====================================
 // ⬢  Constants
@@ -33,13 +32,6 @@ function CardBody({ card }: { card: ShowcaseCategoryCard }) {
         <span className="text-[15px] font-semibold leading-5 text-ink-100 dark:text-white">
           {card.name}
         </span>
-        {/* Only a category with something to open says so: most are not
-            covered yet, and a wall of the same label says nothing. */}
-        {covered && (
-          <span className="shrink-0 pt-0.5">
-            <BoardStatus status={card.status} />
-          </span>
-        )}
       </span>
 
       <span className="mt-2 block text-[13px] leading-5 text-ink-400 line-clamp-3">
@@ -70,7 +62,7 @@ function CardBody({ card }: { card: ShowcaseCategoryCard }) {
           {card.caseStudyCount > 0 && (
             <span className="truncate text-xs text-ink-400">
               {card.caseStudyCount}{" "}
-              {card.caseStudyCount === 1 ? "case study" : "case studies"}
+              {card.caseStudyCount === 1 ? "analysis" : "analyses"}
             </span>
           )}
         </span>

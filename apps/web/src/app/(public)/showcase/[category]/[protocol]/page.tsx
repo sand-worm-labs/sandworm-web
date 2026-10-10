@@ -98,6 +98,7 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
     protocol,
     notebookSlug: caseStudy.slug,
   };
+  const claimed = showcase.claimed === true;
 
   const hero = (
     <section className="bg-ink-navy text-white" style={gridBackdrop}>
@@ -110,7 +111,7 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
         />
 
         <div className="mt-5 flex flex-wrap items-center gap-1.5">
-          <Tag>Case study</Tag>
+          <Tag>On-chain analysis</Tag>
           {showcase.chains.map(chain => (
             <Tag key={chain}>{chain}</Tag>
           ))}
@@ -147,6 +148,24 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
             <ShowcaseStats stats={showcase.heroStats} dark />
           </div>
         )}
+      </div>
+    </section>
+  );
+
+  // An unclaimed page opens with the prompt, right under the hero, so the
+  // people it is about see it before the notebook.
+  const claimPrompt = (
+    <section className="border-b border-border-secondary dark:border-border-tertiary bg-base-100">
+      <div className="container mx-auto px-4 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="min-w-0 max-w-2xl text-sm text-ink-400">
+          <span className="font-semibold text-ink-100 dark:text-white">
+            Work at {protocol}?
+          </span>{" "}
+          Claim this page to correct anything and get the numbers for your team.
+        </p>
+        <ShowcaseLeadButton variant="outline" target={claim}>
+          Claim this page
+        </ShowcaseLeadButton>
       </div>
     </section>
   );
@@ -196,21 +215,14 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
         </ShowcaseSection>
       )}
 
-      <section className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-dashed border-border-secondary dark:border-border-tertiary p-5">
-        <p className="min-w-0 max-w-xl text-sm text-ink-400">
-          <span className="font-semibold text-ink-100 dark:text-white">
-            Work at {protocol}?
-          </span>{" "}
-          Claim this page to correct anything and get the numbers for your team.
-          On another team? Look at your own protocol the same way.
-        </p>
-        <div className="flex flex-wrap items-center gap-3">
-          <ShowcaseLeadButton variant="outline" target={claim}>
-            Claim this page
-          </ShowcaseLeadButton>
+      {claimed && (
+        <section className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-dashed border-border-secondary dark:border-border-tertiary p-5">
+          <p className="min-w-0 max-w-xl text-sm text-ink-400">
+            On another team? Look at your own protocol the same way.
+          </p>
           <StartAnalyzingLink />
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 
@@ -218,7 +230,16 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
     <div className="flex flex-col h-[100dvh] bg-page-surface font-body">
       <ShowcaseHeader active="showcase" />
       <TrackCaseStudyView category={category.slug} protocol={protocol} />
-      <PublishedNotebook slug={caseStudy.slug} header={hero} footer={closing} />
+      <PublishedNotebook
+        slug={caseStudy.slug}
+        header={
+          <>
+            {hero}
+            {!claimed && claimPrompt}
+          </>
+        }
+        footer={closing}
+      />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 
+import { profileHref } from "@/lib/profile";
 import { CloseIconButton } from "@/components/CloseIconButton";
 import type { FollowUser } from "@/components/Editor/hooks/useUser";
 import {
@@ -28,8 +29,10 @@ export interface UserConnectionsListProps {
   workspaceId: string;
 }
 
-export interface UserConnectionsModalProps
-  extends Omit<UserConnectionsListProps, "maxHeight"> {
+export interface UserConnectionsModalProps extends Omit<
+  UserConnectionsListProps,
+  "maxHeight"
+> {
   open: boolean;
   onClose: () => void;
   title?: string;
@@ -209,9 +212,7 @@ const UserRow = ({ user, workspaceId, onClick }: UserRowProps) => {
     );
   }
 
-  return (
-    <Link href={`/workspace/${workspaceId}/profile/${user.id}`}>{content}</Link>
-  );
+  return <Link href={profileHref(workspaceId, user.id)}>{content}</Link>;
 };
 
 // =====================================
