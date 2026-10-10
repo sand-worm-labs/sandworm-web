@@ -280,7 +280,6 @@ function PrivateDocumentPageInner(
     executionQueue,
     userId: props.user.id,
     syncing,
-    runOnOpen: props.isApp,
   });
 
   // ⬢ Public document

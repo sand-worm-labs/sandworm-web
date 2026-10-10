@@ -475,7 +475,6 @@ export default function Dashboard(props: Props) {
     executionQueue,
     userId: props.user.id,
     syncing,
-    runOnOpen: !props.isEditing,
   });
 
   const router = useRouter();
