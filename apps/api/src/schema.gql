@@ -121,16 +121,16 @@ type Document {
   isFavorite: Boolean!
 }
 
-enum DocumentVisibility {
-  WORKSPACE
-  LINK
-  PUBLIC
-}
-
 enum DocumentRuntime {
   CLOUD
   BROWSER_ANALYSIS
   BROWSER_DASHBOARD
+}
+
+enum DocumentVisibility {
+  WORKSPACE
+  LINK
+  PUBLIC
 }
 
 type Tool {
