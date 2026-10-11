@@ -1,5 +1,5 @@
 // react-plotly.js draws with this bundle; the app asks it for the chart as an image.
-// @types/plotly.js types the package root, not this file, so declare the one call used.
+// @types/plotly.js types the package root, not this file, so declare the calls used.
 declare module "plotly.js/dist/plotly" {
   interface ToImageOptions {
     format: "png" | "jpeg" | "webp" | "svg";
@@ -10,6 +10,7 @@ declare module "plotly.js/dist/plotly" {
 
   const Plotly: {
     toImage(root: HTMLElement, options: ToImageOptions): Promise<string>;
+    Plots: { resize(root: HTMLElement): Promise<unknown> };
   };
 
   export default Plotly;

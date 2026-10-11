@@ -10,7 +10,7 @@
 //
 // Keep this table in step with DARK in sandworm_theme/tokens.py.
 
-const TILE_SURFACE = "#272726";
+const TILE_SURFACE = "#1a1a1a";
 const LIGHT_INK = "#f3f0f5";
 
 const DARK_COLORS: Record<string, string> = {
@@ -23,7 +23,7 @@ const DARK_COLORS: Record<string, string> = {
   "#e9e2ed": "#40403e", // RULE: gridlines and axis lines
   "#faf6fc": "#2f2f2e", // SHADE: lightest step of a sequential scale
   "#fde7f4": "#3b2433", // lightest pink of a heatmap
-  "rgba(255,255,255,0.85)": "rgba(39,39,38,0.85)", // label backgrounds
+  "rgba(255,255,255,0.85)": "rgba(26,26,26,0.85)", // label backgrounds
   // Series colors too dark to read on a dark surface
   "#84185c": "#c1428a",
   "#4b2e83": "#9a7bdb",

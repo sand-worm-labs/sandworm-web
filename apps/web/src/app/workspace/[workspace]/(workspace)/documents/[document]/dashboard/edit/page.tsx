@@ -36,7 +36,7 @@ export default function DashboardEditPage() {
         <title>{document.title || "Untitled"} - Dashboard</title>
       </Head>
 
-      <main className="min-h-screen dark:bg-base-100 dark:text-white">
+      <main className="min-h-screen dark:bg-page-surface dark:text-white">
         <Dashboard
           document={document}
           role={role}

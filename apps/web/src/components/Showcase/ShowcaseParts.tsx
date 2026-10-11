@@ -71,7 +71,7 @@ export function ShowcaseStats({
             "rounded-xl p-4 border",
             dark
               ? "border-white/15 bg-white/5"
-              : "border-border-secondary dark:border-border-tertiary bg-base-100"
+              : "border-border-secondary dark:border-border-tertiary bg-base-100 dark:bg-dropdown-bg"
           )}
         >
           <dd
@@ -110,7 +110,7 @@ export function CaseStudyCard({ notebook }: { notebook: ShowcaseNotebook }) {
   return (
     <Link
       href={caseStudyHref(notebook)}
-      className="group flex flex-col h-full rounded-xl p-4 bg-base-100 border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
+      className="group flex flex-col h-full rounded-xl p-4 bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
     >
       <div className="flex flex-wrap items-center gap-1.5">
         <Tag>On-chain analysis</Tag>
@@ -171,7 +171,7 @@ export function ProjectCard({
   return (
     <Link
       href={projectHref(category, project.slug)}
-      className="group flex items-center justify-between gap-4 h-full rounded-xl px-4 py-3.5 bg-base-100 border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
+      className="group flex items-center justify-between gap-4 h-full rounded-xl px-4 py-3.5 bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
     >
       <span className="min-w-0">
         <span className="block truncate text-[15px] font-semibold text-ink-100 dark:text-white group-hover:text-primary dark:group-hover:text-primary-tint-75">
@@ -205,7 +205,7 @@ export function NotebookCard({ notebook }: { notebook: ShowcaseNotebook }) {
   return (
     <Link
       href={notebookHref(notebook.slug)}
-      className="group flex flex-col h-full rounded-xl p-4 bg-base-100 border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
+      className="group flex flex-col h-full rounded-xl p-4 bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
     >
       <span className="font-body-mono text-[10px] uppercase tracking-[0.16em] text-ink-300">
         {KIND_LABEL[notebook.showcase.kind]}

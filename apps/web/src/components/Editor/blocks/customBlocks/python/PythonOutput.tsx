@@ -332,7 +332,7 @@ const SANDWORM_THEME_CSS_DARK = `
     --sw-ink: #f3f0f5;
     --sw-ink-2: #cfc8d6;
     --sw-muted: #a5a5a4;
-    --sw-paper: #272726;
+    --sw-paper: #1a1a1a;
     --sw-shade: #2f2f2e;
     --sw-rule: #40403e;
     --sw-series-2: #c1428a;
@@ -436,9 +436,12 @@ export function PythonOutputs(props: Props) {
       return next;
     });
   }, []);
-  const htmlCount = props.outputs
-    .slice(0, rendered)
-    .filter(output => output.type === "html").length;
+  // Every HTML output counts, mounted yet or not. With lazyRender the source note
+  // under a chart mounts after the chart, so counting only the mounted ones let the
+  // chart settle early, draw against a box the note later shrank, and stay wrong.
+  const htmlCount = props.outputs.filter(
+    output => output.type === "html"
+  ).length;
   const settleValue = useMemo(
     () => ({ settled: loadedHtml.size >= htmlCount, setLoaded }),
     [loadedHtml, htmlCount, setLoaded]
@@ -878,6 +881,9 @@ function DashboardPlotOutput(props: {
     []
   );
 
+  // The plot's div, kept so a change of size can be pushed to Plotly (see below).
+  const graphDivRef = useRef<HTMLElement | null>(null);
+
   const layout = useMemo(() => {
     const defaultWidth = 700;
     const givenWidth = props.output.layout.width ?? defaultWidth;
@@ -916,6 +922,31 @@ function DashboardPlotOutput(props: {
     };
   }, [props.output.layout, size]);
 
+  // Plotly sizes itself once, when it draws, and fits things like bar labels and
+  // margins to that box. If the tile is resized afterwards (a neighbouring output
+  // reported its height late), the new layout size alone did not always make it
+  // lay out again, and the chart kept the squashed first layout. Ask it to measure
+  // its div again whenever the size we hand it changes after the first draw.
+  useEffect(() => {
+    const graphDiv = graphDivRef.current;
+    if (!graphDiv) return () => {};
+    let cancelled = false;
+    const frame = requestAnimationFrame(() => {
+      import("plotly.js/dist/plotly")
+        .then(({ default: Plotly }) => {
+          if (!cancelled && graphDivRef.current === graphDiv) {
+            return Plotly.Plots.resize(graphDiv);
+          }
+          return undefined;
+        })
+        .catch(() => {});
+    });
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+    };
+  }, [layout.width, layout.height]);
+
   return (
     <div ref={setBox} className="relative w-full h-full">
       {props.waiting && (
@@ -937,6 +968,12 @@ function DashboardPlotOutput(props: {
             style={{ width: layout.width, height: layout.height }}
             placeholderHeight={layout.height}
             onDashboardTile
+            onInitialized={(_figure: unknown, graphDiv: HTMLElement) => {
+              graphDivRef.current = graphDiv;
+            }}
+            onUpdate={(_figure: unknown, graphDiv: HTMLElement) => {
+              graphDivRef.current = graphDiv;
+            }}
           />
         </div>
       )}

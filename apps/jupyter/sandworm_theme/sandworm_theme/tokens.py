@@ -22,7 +22,7 @@ DARK = {
     "ink": "#F3F0F5",
     "ink-2": "#CFC8D6",
     "muted": "#A5A5A4",
-    "paper": "#272726",
+    "paper": "#1A1A1A",
     "shade": "#2F2F2E",
     "rule": "#40403E",
     "series-2": "#C1428A",

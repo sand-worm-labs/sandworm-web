@@ -224,7 +224,7 @@ export const SearchBar = ({
               leaveTo="opacity-0 scale-95"
             >
               {/* A fixed height, so the palette does not jump as the list changes. */}
-              <DialogPanel className="flex h-[min(620px,82vh)] w-full max-w-[720px] flex-col overflow-hidden rounded-2xl border border-border-secondary dark:border-border-tertiary bg-base-100 dark:bg-dropdown-bg font-body shadow-xl">
+              <DialogPanel className="flex h-[min(620px,82vh)] w-full max-w-[720px] flex-col overflow-hidden rounded-2xl border border-border-secondary dark:border-border-tertiary bg-base-100 dark:bg-search-modal-bg font-body shadow-xl">
                 {/* Field: back arrow and category pill, then the text. */}
                 <div className="flex h-16 shrink-0 items-center gap-3 border-b border-border-secondary dark:border-border-tertiary px-5">
                   {category ? (

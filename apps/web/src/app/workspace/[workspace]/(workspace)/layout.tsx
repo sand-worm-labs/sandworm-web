@@ -90,7 +90,7 @@ function WorkspaceLayoutInner({ children }: WorkspaceLayoutProps) {
   }
 
   return (
-    <div className="flex h-screen w-full bg-base-100">
+    <div className="flex h-screen w-full bg-base-100 dark:bg-page-surface">
       <AutoCollapseOnNotebook />
       <MobileWarning />
       {!shouldHideSidebar &&
@@ -103,7 +103,9 @@ function WorkspaceLayoutInner({ children }: WorkspaceLayoutProps) {
         ))}
       <div className="flex flex-col flex-1 overflow-hidden">
         {!shouldHideHeader && <AppHeader />}
-        <main className="flex-1 overflow-y-auto bg-base-100">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-base-100 dark:bg-page-surface">
+          {children}
+        </main>
       </div>
       {isViewer && (
         <ViewerAccessBar

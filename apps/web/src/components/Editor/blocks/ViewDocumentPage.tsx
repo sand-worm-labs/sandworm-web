@@ -226,7 +226,7 @@ export default function ViewDocumentPage(props: Props) {
 
   return (
     <Layout
-      topBarClassname="bg-base-100 "
+      topBarClassname="bg-base-100 dark:bg-header-surface"
       topBarContent={topBarContent}
       isViewer
     >

@@ -28,8 +28,8 @@ const pillClass = (active: boolean) =>
   cn(
     "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-[13px] transition-colors",
     active
-      ? "border-ink-100 bg-ink-100 text-white dark:border-white dark:bg-white dark:text-ink-100"
-      : "border-border-secondary dark:border-border-tertiary bg-base-100 text-ink-400 hover:border-ink-300 hover:text-ink-100 dark:hover:text-white"
+      ? "border-ink-100 bg-ink-100 text-white dark:border-pill-border dark:bg-pill-active-bg dark:text-white"
+      : "border-border-secondary dark:border-pill-border bg-base-100 dark:bg-pill-bg text-ink-400 hover:border-ink-300 hover:text-ink-100 dark:hover:text-white"
   );
 
 // =====================================

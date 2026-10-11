@@ -124,7 +124,6 @@ export function ExploreClient({
       <div className="container mx-auto">
         <SectionHero
           eyebrow="Community · unverified"
-          title="What everyone else is digging into."
           description="Notebooks published by the community. Nobody at Sandworm has checked them: fork one and run it yourself."
         />
       </div>

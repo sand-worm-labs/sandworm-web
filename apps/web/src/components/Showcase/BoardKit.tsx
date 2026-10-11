@@ -13,7 +13,7 @@ export const eyebrowClass =
   "font-body-mono text-[11px] uppercase tracking-[0.22em] text-primary dark:text-primary-tint-75";
 
 export const boardClass =
-  "rounded-xl overflow-hidden bg-base-100 border border-border-secondary dark:border-border-tertiary";
+  "rounded-xl overflow-hidden bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary";
 
 export const boardHeadClass =
   "font-body-mono text-[10px] uppercase tracking-[0.18em] text-primary dark:text-primary-tint-75 bg-inputBg dark:bg-header-surface border-b border-border-secondary dark:border-border-tertiary";
@@ -138,7 +138,7 @@ export function SectionHero({
 }: {
   // The small mono label above the headline. Left out, the headline leads.
   eyebrow?: string;
-  title: ReactNode;
+  title?: ReactNode;
   description: ReactNode;
   // Stats, clocks or actions, shown to the right on wide screens.
   aside?: ReactNode;
@@ -154,7 +154,6 @@ export function SectionHero({
     >
       <BoardStyles />
       <div className="min-w-0">
-        {eyebrow && <p className={eyebrowClass}>{eyebrow}</p>}
         <h1
           className={cn(
             eyebrow && "mt-3",

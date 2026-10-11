@@ -119,7 +119,7 @@ export const WorkspaceSidebar = () => {
       ? "w-[30px] h-[30px] mx-auto justify-center"
       : "justify-start px-2 py-1";
     const activeClass = isActive
-      ? "bg-hover-bg dark:bg-white/[0.08] dark:text-white border-hover-border dark:border-transparent"
+      ? "bg-hover-bg dark:bg-sidebar-active dark:text-white border-hover-border dark:border-transparent"
       : "text-menu-ink dark:text-white border-transparent hover:bg-hover-bg dark:hover:bg-sidebar-hover hover:border-hover-border hover:dark:text-white";
     return [
       "flex items-center gap-3 rounded-[10px] font-medium text-[13px] transition-colors border",

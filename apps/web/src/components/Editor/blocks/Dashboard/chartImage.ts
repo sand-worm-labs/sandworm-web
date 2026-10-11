@@ -17,7 +17,7 @@ export type ChartText = {
 // Light and dark values of the theme's neutrals (sandworm_theme/tokens.py). The image
 // is drawn in the reader's theme, as the chart on screen already is.
 const LIGHT = { paper: "#FFFFFF", ink: "#17101C", muted: "#6F6478" };
-const DARK = { paper: "#272726", ink: "#F3F0F5", muted: "#A5A5A4" };
+const DARK = { paper: "#1A1A1A", ink: "#F3F0F5", muted: "#A5A5A4" };
 const FONT = '"Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif';
 
 type OutputLike = { type?: string; html?: string; layout?: any };

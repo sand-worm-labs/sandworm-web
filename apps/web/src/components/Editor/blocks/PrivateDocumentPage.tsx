@@ -569,7 +569,7 @@ function PrivateDocumentPageInner(
   return (
     <BrowserRuntimeProvider enabled={isLive}>
     <Layout
-      topBarClassname={props.isApp ? "bg-base-100 " : undefined}
+      topBarClassname={props.isApp ? "bg-base-100 dark:bg-header-surface" : undefined}
       topBarContent={topBarContent}
       sidebarContent={sidebarContent}
       onToggleChat={onToggleChat}

@@ -36,13 +36,13 @@ describe("toDarkFigure", () => {
 
   it("keeps white text on a colored fill white, but darkens separator lines", () => {
     expect(dark.data[2].textfont.color).toBe("#FFFFFF");
-    expect(dark.data[2].marker.line.color).toBe("#272726");
+    expect(dark.data[2].marker.line.color).toBe("#1a1a1a");
   });
 
   it("shows tooltips as a light box with dark text", () => {
     expect(dark.layout.hoverlabel).toMatchObject({
       bgcolor: "#f3f0f5",
-      font: { color: "#272726", size: 13 },
+      font: { color: "#1a1a1a", size: 13 },
     });
     expect(dark.layout.template.layout.hoverlabel.bgcolor).toBe("#f3f0f5");
   });

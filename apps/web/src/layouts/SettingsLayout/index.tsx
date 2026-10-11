@@ -89,7 +89,7 @@ export default function SettingsLayout({
                   href={tab.href}
                   className={`mb-1.5 flex items-center space-x-2 rounded-[10px] border px-4 py-1.5 text-sm font-medium transition-colors ${
                     pathname === tab.href
-                      ? "bg-hover-bg dark:bg-white/[0.08] dark:text-white border-hover-border dark:border-transparent"
+                      ? "bg-hover-bg dark:bg-sidebar-active dark:text-white border-hover-border dark:border-transparent"
                       : "text-menu-ink dark:text-white border-transparent hover:bg-hover-bg dark:hover:bg-sidebar-hover hover:border-hover-border hover:dark:text-white"
                   }`}
                 >
