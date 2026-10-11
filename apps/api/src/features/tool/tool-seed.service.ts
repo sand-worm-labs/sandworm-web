@@ -6,7 +6,7 @@ import { ToolCategoryEntity, ToolEntity } from '@sandworm/postgresql-typeorm';
 import axios from 'axios';
 import { load } from 'js-yaml';
 import { extract } from 'tar-stream';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 // Fetched live over HTTP on every boot rather than vendored on disk (no git
 // submodule, no local copy) — sand-worm-labs/tools is the single source of
@@ -32,6 +32,8 @@ interface ToolYaml {
   returns?: Array<{ name: string; type: string }>;
   // Workspace env vars the tool reads, e.g. [{ name: NANSEN_API_KEY }].
   requires_env?: Array<{ name: string; description?: string }>;
+  // false marks a tool that's catalogued but not built yet: the app leaves it out.
+  implemented?: boolean;
   inputs?: Array<{
     key: string;
     label: string;
@@ -161,10 +163,19 @@ export class ToolSeedService implements OnModuleInit {
   // Upserted every boot (like seedCategories) rather than skip-once — tools
   // now carry a `template` that gets iterated on in the source repo, so a
   // one-time seed would silently go stale on every subsequent edit there.
-  private async seedTools(tools: ToolWithTemplate[]): Promise<void> {
-    if (tools.length === 0) {
+  private async seedTools(catalog: ToolWithTemplate[]): Promise<void> {
+    if (catalog.length === 0) {
       this.logger.warn('no tools fetched from catalog tarball');
       return;
+    }
+
+    // Tools marked `implemented: false` aren't offered anywhere in the app.
+    // Seeding only upserts, so one seeded before it was marked is removed here.
+    const tools = catalog.filter((tool) => tool.implemented !== false);
+    const unimplemented = catalog.filter((tool) => tool.implemented === false).map((tool) => tool.tool_id);
+    if (unimplemented.length > 0) {
+      const { affected } = await this.toolRepository.delete({ toolId: In(unimplemented) });
+      this.logger.log(`skipping ${unimplemented.length} unimplemented tools (removed ${affected ?? 0} seeded before)`);
     }
 
     const entities = tools.map((tool) =>
