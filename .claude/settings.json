@@ -1,13 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cd /home/daniel/development/sandworm-web/apps/api/src/features/tool && ls -R | head -20; grep -rn \"class Tool\\\\b\" -A40 --include='*.ts' . | head -60; grep -rn \"ToolEntity\\\\|tool.entity\" ../../../../../packages/postgresql-typeorm/src/entities/index.ts | head)",
-      "Read(//packages/postgresql-typeorm/src/entities/**)",
-      "Bash(cd /home/daniel/development/sandworm-web/apps/web/src && grep -n \"^export const GetEnvironmentVariablesDocument\\\\|^export type GetEnvironmentVariablesQuery \" generated/graphql.ts | cut -c1-200; grep -n \"getToolById\" ../../../packages/editor/src/blocks/powertool/index.ts ../../../packages/editor/src/index.ts | head -3)",
-      "Read(//home/packages/editor/src/blocks/powertool/**)",
-      "Bash(cd /home/daniel/development/sandworm-web/apps/web/src && rm -f components/Environment/MissingKeysModal.tsx; cat components/Editor/hooks/useUpgradeGate.ts* | head -80; grep -rn \"PaidPlanRequired\" --include='*.tsx' components | head -5)",
-      "Bash(python3 -)",
-      "Bash(npx vitest *)"
+      "Bash(cd /home/daniel/development/sandworm-web/apps/api/src/features/tool && ls -R | head -20; grep -rn \"class Tool\\\\b\" -A40 --include='*.ts' . | head -60; grep -rn \"ToolEntity\\\\|tool.entity\" ../../../../../packages/postgresql-typeorm/src/entities/index.ts | head)", 
     ]
   }
 }
