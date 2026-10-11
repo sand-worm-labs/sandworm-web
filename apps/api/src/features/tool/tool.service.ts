@@ -62,6 +62,15 @@ export class ToolService {
     return result.source;
   }
 
+  // The workspace environment variables a tool reads, by name.
+  async getRequiredEnv(toolId: string): Promise<{ name: string; description?: string }[]> {
+    const entity = await this.toolRepository.findOne({
+      where: { toolId },
+      select: { toolId: true, requiredEnv: true },
+    });
+    return entity?.requiredEnv ?? [];
+  }
+
   async getToolCategories(): Promise<ToolCategory[]> {
     const entities = await this.toolCategoryRepository.find();
     return ToolCategory.fromEntities(entities);
