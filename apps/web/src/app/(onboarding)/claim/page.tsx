@@ -6,7 +6,6 @@ import { Stepper } from "@/components/AuthUI/Stepper";
 export default function ClaimPage() {
   return (
     <div className="h-full min-h-0 flex flex-col overflow-hidden">
-      {/* stepper is manual for now not dynamic till we handle auth logic */}
       <Stepper
         currentStep={1}
         steps={[

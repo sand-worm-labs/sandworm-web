@@ -94,10 +94,19 @@ test('the mobile chart rules reach the server instructions and the cell tool gui
   const { CHART_RESPONSIVE_RULES } = await import('../chart-rules.ts');
   assert.match(CHART_RESPONSIVE_RULES, /phone.*before anything else/);
   assert.match(CHART_RESPONSIVE_RULES, /Never set a chart's width, margins or legend position/);
+  assert.match(CHART_RESPONSIVE_RULES, /chart\(fig, title=/);
+  assert.match(CHART_RESPONSIVE_RULES, /never pass `colorscale`/);
   const { readFileSync } = await import('node:fs');
+  const { DATA_AND_DASHBOARD_RULES } = await import('../chart-rules.ts');
+  assert.match(DATA_AND_DASHBOARD_RULES, /Never test a cell with mocked API responses/);
+  const cells = (await import('node:fs')).readFileSync(new URL('../cells.ts', import.meta.url), 'utf8');
+  assert.match(cells, /never use red or green/);
+  assert.match(cells, /leave `marker_color` unset/);
+  assert.doesNotMatch(cells, /for good and bad figures \(net inflow vs outflow, gain vs loss\) use/);
   for (const file of ['../../../server.ts', '../cells.ts']) {
     const source = readFileSync(new URL(file, import.meta.url), 'utf8');
     assert.match(source, /CHART_RESPONSIVE_RULES/, file);
+    assert.match(source, /DATA_AND_DASHBOARD_RULES/, file);
   }
 });
 

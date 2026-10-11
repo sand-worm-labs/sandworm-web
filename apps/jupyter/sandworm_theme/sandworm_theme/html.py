@@ -17,6 +17,15 @@ _CSS = f"""
 .sw-stat-grid {{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; border-top: 1px solid {t.CSS.rule}; padding-top: 22px; }}
 .sw-stat-grid .sw-stat-value {{ font-size: 19px; letter-spacing: -.01em; }}
 .sw-note {{ font-size: 13px; color: {t.CSS.ink_2}; line-height: 1.6; padding: 0 4px; }}
+.sw-chart-head {{ padding: 16px 20px 0; }}
+.sw-chart-title {{ margin: 0; font-size: 18px; font-weight: 600; line-height: 1.3; color: {t.CSS.ink}; }}
+.sw-legend {{ display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 10px; font-size: 14px; color: {t.CSS.muted}; }}
+.sw-legend span {{ display: inline-flex; align-items: center; gap: 8px; }}
+.sw-legend i {{ flex: none; width: 12px; height: 12px; border-radius: 4px; display: inline-block; }}
+.sw-legend i.ln {{ width: 20px; height: 4px; border-radius: 2px; }}
+@media (max-width: 520px) {{ .sw-chart-title {{ font-size: 16px; }} .sw-legend {{ font-size: 13px; gap: 5px 14px; }} }}
+.sw-empty {{ font-size: 14px; line-height: 1.6; color: {t.CSS.muted}; padding: 20px; }}
+.sw-empty b {{ display: block; color: {t.CSS.ink}; font-size: 15px; margin-bottom: 4px; }}
 .sw-kpis {{ display: grid; grid-template-columns: repeat(var(--sw-cols, 4), minmax(0, 1fr)); gap: 12px; }}
 .sw-kpi {{ border: 1px solid {t.CSS.rule}; border-radius: 14px; background: {t.CSS.paper}; padding: 18px 20px; min-width: 0; }}
 .sw-kpi-main {{ border-left: 3px solid var(--sw-accent); padding-left: 14px; }}
@@ -63,6 +72,30 @@ def stat_card(
 def note(text: str) -> str:
     """Footnote for definitions and coverage gaps."""
     return f'<div class="sw-note">{escape(text)}</div>'
+
+
+def chart_head(title: str = "", items: Iterable[tuple] = ()) -> str:
+    """A chart's title and legend as page text, so they wrap on any screen.
+
+    `items` is (name, color) or (name, color, "line") per series. A Plotly title and legend
+    are drawn at one fixed size and collide on a narrow screen; this wraps instead.
+    """
+    head = f'<h4 class="sw-chart-title">{escape(title)}</h4>' if title else ""
+    keys = "".join(
+        f'<span><i class="{"ln" if len(i) > 2 and i[2] == "line" else ""}" style="background:{escape(str(i[1]), quote=True)}"></i>{escape(str(i[0]))}</span>'
+        for i in items
+    )
+    legend = f'<div class="sw-legend">{keys}</div>' if keys else ""
+    return f'<div class="sw-chart-head">{head}{legend}</div>' if head or legend else ""
+
+
+def placeholder(title: str, text: str) -> str:
+    """A calm stand-in for a tile whose data could not be had (no API key, nothing found).
+
+    Use it instead of an empty chart or an error, so the tile says what is missing and
+    what to do. Both strings are plain text; the padding is built in.
+    """
+    return f'<div class="sw-empty"><b>{escape(title)}</b>{escape(text)}</div>'
 
 
 def kpi_row(

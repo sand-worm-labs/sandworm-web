@@ -172,3 +172,45 @@ def test_banner_has_no_title_unless_asked_and_keeps_only_safe_links_and_images()
     assert html.count('target="_blank" rel="noopener noreferrer"') == 2
     assert 'src=' not in sw.banner("x", logo_url="javascript:alert(1)")
     assert 'class="sw-banner-title">Acme</div>' in sw.banner("x", title="Acme")
+
+
+def test_placeholder_escapes_and_carries_its_own_padding():
+    from sandworm_theme import placeholder, render
+
+    out = placeholder("<b>Key</b>", "Add NANSEN_API_KEY & re-run")
+    assert "&lt;b&gt;Key&lt;/b&gt;" in out and "&amp;" in out
+    assert ".sw-empty" in render(out) and "padding: 20px" in render(out)
+
+
+def test_every_heatmap_like_trace_gets_the_theme_scale_not_plotlys_default():
+    from sandworm_theme import HEATMAP_SCALE
+    from sandworm_theme.plotly_theme import build_template
+
+    data = build_template(watermark=False).data
+    for kind in ("heatmap", "histogram2d", "histogram2dcontour", "contour", "surface"):
+        scale = getattr(data, kind)[0].colorscale
+        assert [c for _, c in scale] == [c for _, c in HEATMAP_SCALE], kind
+    assert HEATMAP_SCALE[0][1] == "#FDE7F4" and HEATMAP_SCALE[-1][1] == "#4B2E83"
+
+
+def test_chart_prepare_moves_title_and_legend_into_page_text():
+    import plotly.graph_objects as go
+
+    from sandworm_theme.charts import prepare
+
+    fig = go.Figure([go.Bar(name="In", x=[1], y=["a"], orientation="h"), go.Bar(name="Out <b>", x=[2], y=["a"], orientation="h")])
+    head, fig = prepare(fig, title="Top: <script>")
+    assert fig.layout.title.text == "" and fig.layout.showlegend is False
+    assert fig.layout.margin.t == 16
+    assert "&lt;script&gt;" in head and "Out &lt;b&gt;" in head and head.count("<i ") == 2
+
+
+def test_chart_prepare_leaves_a_single_series_without_a_legend_and_heatmaps_alone():
+    import plotly.graph_objects as go
+
+    from sandworm_theme.charts import prepare
+
+    head, _ = prepare(go.Figure(go.Bar(name="Only", x=[1], y=["a"])), title="One series")
+    assert "sw-legend" not in head and "One series" in head
+    head, _ = prepare(go.Figure(go.Heatmap(z=[[1, 2]], name="z")), title="Heat")
+    assert "sw-legend" not in head

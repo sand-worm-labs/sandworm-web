@@ -81,6 +81,7 @@ interface Props {
 function InputBlock(props: Props) {
   const attrs = getInputAttributes(props.block, props.blocks);
   const blockId = attrs.id;
+  const liveTile = props.isApp && props.dashboardMode?._tag === "live";
 
   const onChangeLabel = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -218,16 +219,18 @@ function InputBlock(props: Props) {
   return (
     <div
       className={clsx(
-        "relative group/block mt-6",
+        "relative group/block",
+        !liveTile && "mt-6",
         !props.dashboardMode ? "w-1/2" : "w-full"
       )}
       data-block-id={blockId}
     >
       <div
         className={clsx(
-          "rounded-2xl border-[1.5px] px-4 py-3",
+          // A live dashboard tile is the field and its label, with no frame of its own.
+          liveTile ? "px-1 py-1" : "rounded-2xl border-[1.5px] px-4 py-3",
           props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
-          {
+          !liveTile && {
             "border-primary block-focus-ring":
               props.isCursorWithin && props.isCursorInserting,
             "border-hover-border dark:border-border-dark shadow-none":
@@ -319,10 +322,10 @@ function InputBlock(props: Props) {
             onBlur={onBlur}
             onKeyDown={unfocusOnEscape}
             className={clsx(
-              "block rounded-md border-0 py-1.5 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset w-full disabled:bg-gray-100 dark:disabled:bg-base-100 disabled:cursor-not-allowed bg-white dark:bg-block-surface",
+              "block rounded-lg border-0 px-3 py-2 text-ink-100 shadow-sm ring-1 ring-inset placeholder:text-ink-400 focus:ring-2 focus:ring-inset focus:outline-none w-full disabled:bg-gray-100 dark:disabled:bg-base-100 disabled:cursor-not-allowed bg-white dark:bg-block-surface",
               attrs.value.error
                 ? "ring-red-200 focus:ring-red-200"
-                : "focus:ring-primary-200",
+                : "focus:ring-primary",
               props.isCursorWithin &&
                 !props.isCursorInserting &&
                 !props.belongsToMultiTabGroup
@@ -369,7 +372,7 @@ function InputBlock(props: Props) {
         </div>
       </div>
 
-      {!props.hideTypePill && (
+      {!props.hideTypePill && !liveTile && (
         <div className="absolute left-0 top-0 -translate-y-full pb-2">
           <BlockTypePill
             label="Input"

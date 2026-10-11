@@ -175,9 +175,10 @@ function DashboardViewInner(props: InnerProps) {
             ].includes(type)
           : false;
 
-        // While editing, a heading keeps its outline so it can be found and dragged.
+        // While editing, a heading or an input keeps its outline so it can be found and
+        // dragged. In view mode they sit on the page with no frame.
         let WrapperCard = hasTransparentCard ? TransparentCard : WhiteCard;
-        if (type === BlockType.DashboardHeader && !props.isEditing) {
+        if (hasTransparentCard && !props.isEditing) {
           WrapperCard = PlainCard;
         }
         // A plain tile has no card: the cell's own output sits on the page.

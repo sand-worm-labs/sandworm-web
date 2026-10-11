@@ -28,12 +28,44 @@ const LEGEND_TOP = {
 const TOP_MARGIN_WITH_LEGEND = 104;
 const TOP_MARGIN_WITH_LEGEND_NO_TITLE = 56;
 
+// The theme's pink-to-plum scale (sandworm_theme/tokens.py HEATMAP_SCALE). A figure stored
+// with Plotly's own default (navy to yellow) carries no colorscale of its own, so it gets this.
+const HEATMAP_SCALE = [
+  [0, "#FDE7F4"],
+  [0.5, "#EE149E"],
+  [1, "#4B2E83"],
+];
+const SCALED_TYPES = new Set(["heatmap", "histogram2d", "histogram2dcontour", "contour", "surface"]);
+
+const TILE_TOP_MARGIN = { plain: 24, title: 48 };
+
 const isNumber = (v: unknown): v is number =>
   typeof v === "number" && Number.isFinite(v);
 
 function hasTitle(layout: any): boolean {
   const title = layout?.title;
   return !!(typeof title === "string" ? title : title?.text);
+}
+
+// Plotly draws a legend on its own for two or more named traces (and for a pie),
+// without the notebook ever setting `layout.legend`.
+function legendShown(layout: any, data: any[]): boolean {
+  if (layout?.showlegend === false) return false;
+  if (layout?.showlegend === true || layout?.legend) return true;
+  const listed = data.filter(t => t.showlegend !== false);
+  if (listed.some(t => t.type === "pie")) return true;
+  return listed.filter(t => typeof t.name === "string" && t.name).length > 1;
+}
+
+// Top margin for a figure drawn in a small dashboard tile. The theme's own roomy
+// margin is replaced there by a compact one, which left the legend sitting on the
+// title; reserve the room whenever a legend will be drawn above the plot.
+export function tileTopMargin(layout: any, data: any[]): number {
+  const title = hasTitle(layout);
+  if (legendShown(layout, data)) {
+    return title ? TOP_MARGIN_WITH_LEGEND : TOP_MARGIN_WITH_LEGEND_NO_TITLE;
+  }
+  return title ? TILE_TOP_MARGIN.title : TILE_TOP_MARGIN.plain;
 }
 
 function normalizeLegend(layout: any): any {
@@ -119,6 +151,10 @@ function normalizeTrace(trace: any): any {
       };
       break;
     }
+  }
+
+  if (SCALED_TYPES.has(trace.type) && !trace.colorscale && !trace.coloraxis) {
+    next.colorscale = HEATMAP_SCALE;
   }
 
   const hover = plainHover(trace);

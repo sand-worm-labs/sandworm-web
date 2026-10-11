@@ -23,7 +23,7 @@ import PythonError from "./PythonError";
 import { useTileChrome } from "../../Dashboard/TileChromeContext";
 
 import { toDarkFigure } from "./plotlyDark";
-import { withSandwormDefaults } from "./plotlyDefaults";
+import { tileTopMargin, withSandwormDefaults } from "./plotlyDefaults";
 
 // @ts-expect-error @types/react-plotly.js incompatible with @types/react@19
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
@@ -223,9 +223,11 @@ const SANDWORM_TABLE_CSS = `
     vertical-align: middle;
   }
 
-  /* Pandas renders the DataFrame index as a leading <th> column — hide it. */
-  thead th:first-child,
-  tbody th:first-child {
+  /* Pandas renders the DataFrame index as a leading <th> column — hide it. Only
+     pandas tables (class "dataframe"): a table a notebook draws by hand keeps its
+     first header. */
+  table.dataframe thead th:first-child,
+  table.dataframe tbody th:first-child {
     display: none;
   }
 `;
@@ -293,6 +295,13 @@ const DASHBOARD_TILE_CSS = `
   .sw-card { border: none !important; border-radius: 0 !important; background: transparent !important; }
 `;
 
+// A card tile has no padding of its own around an HTML result, so a source note
+// under a chart would start on the card's edge. A plain tile sits on the page and
+// keeps the note flush with the grid.
+const DASHBOARD_CARD_TILE_CSS = `
+  .sw-note { padding: 10px 20px 16px !important; }
+`;
+
 // Dark values for the --sw-* variables the Python theme reads (see
 // apps/jupyter/sandworm_theme). The theme falls back to its light colors when a
 // variable is unset, so the same HTML renders in both themes. color-scheme: dark
@@ -328,11 +337,14 @@ const SANDWORM_THEME_CSS_DARK = `
 function injectTableStyles(
   html: string,
   isDark: boolean,
-  isDashboardTile: boolean
+  isDashboardTile: boolean,
+  plainTile = false
 ): string {
   // A dashboard tile is already a card, so a theme card inside it drops its own
   // border and background in either theme.
-  const tileCss = isDashboardTile ? DASHBOARD_TILE_CSS : "";
+  const tileCss = isDashboardTile
+    ? DASHBOARD_TILE_CSS + (plainTile ? "" : DASHBOARD_CARD_TILE_CSS)
+    : "";
   const themeCss = isDark
     ? `${SANDWORM_TABLE_CSS_DARK}${SANDWORM_THEME_CSS_DARK}`
     : SANDWORM_TABLE_CSS;
@@ -593,10 +605,16 @@ function HTMLOutput(props: {
   // directly through contentDocument.
   const [height, setHeight] = React.useState(0);
 
+  const plainTile = useTileChrome() === "plain";
   const styledHtml = useMemo(
     () =>
-      injectTableStyles(props.output.html, props.isDark, props.isDashboardTile),
-    [props.output.html, props.isDark, props.isDashboardTile]
+      injectTableStyles(
+        props.output.html,
+        props.isDark,
+        props.isDashboardTile,
+        plainTile
+      ),
+    [props.output.html, props.isDark, props.isDashboardTile, plainTile]
   );
 
   // Layout effect, not useEffect: this must be listening before the iframe can
@@ -823,7 +841,7 @@ function DashboardPlotOutput(props: { output: PythonPlotlyOutput }) {
       margin: props.output.layout.margin ?? {
         l: 56,
         r: 24,
-        t: props.output.layout.title ? 48 : 24,
+        t: tileTopMargin(props.output.layout, props.output.data ?? []),
         b: 44,
       },
       font: props.output.layout.font ?? {

@@ -118,4 +118,15 @@ def build_template(watermark: bool = True):
         base["layout"].update(wm.layout())
     template = go.layout.Template(base)
     template.data.bar = [_bar_defaults()]
+    # The base template carries Plotly's own navy-to-yellow scale for every heatmap-like
+    # trace, and it wins over layout.colorscale. Replace it, and keep the bar slim.
+    colorbar = {"outlinewidth": 0, "thickness": 12}
+    for kind, cls in (
+        ("heatmap", go.Heatmap),
+        ("histogram2d", go.Histogram2d),
+        ("histogram2dcontour", go.Histogram2dContour),
+        ("contour", go.Contour),
+        ("surface", go.Surface),
+    ):
+        setattr(template.data, kind, [cls(colorscale=t.HEATMAP_SCALE, colorbar=colorbar)])
     return template

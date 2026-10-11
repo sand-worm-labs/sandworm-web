@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { withSandwormDefaults as apply } from "./plotlyDefaults";
+import { tileTopMargin, withSandwormDefaults as apply } from "./plotlyDefaults";
 
 // Fixtures are partial figures, so the checks read them untyped.
 const withSandwormDefaults = (figure: unknown): any => apply(figure as any);
@@ -83,5 +83,40 @@ describe("withSandwormDefaults", () => {
     expect(once.layout.barcornerradius).toBe(0);
     expect(once.layout.hoverlabel.bordercolor).toBe("#123456");
     expect(withSandwormDefaults(once)).toEqual(once);
+  });
+});
+
+describe("tileTopMargin", () => {
+  const bars = (names: (string | undefined)[]) =>
+    names.map(name => ({ type: "bar", name, x: [1], y: [1] }));
+
+  it("keeps a compact margin for one untitled series", () => {
+    expect(tileTopMargin({}, bars([undefined]))).toBe(24);
+    expect(tileTopMargin({ title: { text: "Won 62%" } }, bars(["A"]))).toBe(48);
+  });
+
+  it("leaves room for the legend Plotly draws for two named series", () => {
+    const layout = { title: { text: "Biggest counterparty" } };
+    expect(tileTopMargin(layout, bars(["In", "Out"]))).toBeGreaterThanOrEqual(104);
+    expect(tileTopMargin({}, bars(["In", "Out"]))).toBeGreaterThanOrEqual(56);
+  });
+
+  it("does not reserve room when the legend is off", () => {
+    const layout = { showlegend: false, title: "Holdings" };
+    expect(tileTopMargin(layout, bars(["In", "Out"]))).toBe(48);
+  });
+});
+
+describe("heatmap colour scale", () => {
+  it("gives a heatmap with no scale of its own the theme's pink-to-plum scale", () => {
+    const { data } = withSandwormDefaults({ data: [{ type: "heatmap", z: [[1, 2]] }], layout: {} });
+    expect(data[0].colorscale[0]).toEqual([0, "#FDE7F4"]);
+    expect(data[0].colorscale[2]).toEqual([1, "#4B2E83"]);
+  });
+
+  it("keeps a scale the notebook chose, and leaves coloraxis figures alone", () => {
+    const own = [[0, "#000000"], [1, "#ffffff"]];
+    expect(withSandwormDefaults({ data: [{ type: "heatmap", colorscale: own }], layout: {} }).data[0].colorscale).toBe(own);
+    expect(withSandwormDefaults({ data: [{ type: "heatmap", coloraxis: "coloraxis" }], layout: {} }).data[0].colorscale).toBeUndefined();
   });
 });

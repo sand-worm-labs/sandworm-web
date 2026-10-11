@@ -104,6 +104,7 @@ function DropdownInputBlock(props: Props) {
           option.toLowerCase().includes(query.toLowerCase())
         );
   const blockId = attrs.id;
+  const liveTile = props.isApp && props.dashboardMode?._tag === "live";
 
   const onChangeLabel = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -259,16 +260,18 @@ function DropdownInputBlock(props: Props) {
   return (
     <div
       className={clsx(
-        "relative group/block mt-6",
+        "relative group/block",
+        !liveTile && "mt-6",
         !props.dashboardMode ? "w-1/2" : "w-full"
       )}
       data-block-id={blockId}
     >
       <div
         className={clsx(
-          "rounded-2xl border-[1.5px] px-4 py-3",
+          // A live dashboard tile is the field and its label, with no frame of its own.
+          liveTile ? "px-1 py-1" : "rounded-2xl border-[1.5px] px-4 py-3",
           props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
-          {
+          !liveTile && {
             "border-primary block-focus-ring":
               props.isCursorWithin && props.isCursorInserting,
             "border-hover-border dark:border-border-dark shadow-none":
@@ -481,7 +484,7 @@ function DropdownInputBlock(props: Props) {
         </div>
       </div>
 
-      {!props.hideTypePill && (
+      {!props.hideTypePill && !liveTile && (
         <div className="absolute left-0 top-0 -translate-y-full pb-2">
           <BlockTypePill
             label="Dropdown"

@@ -84,8 +84,12 @@ CHAIN_COLORS = {
     "solana": "#4B2E83",
 }
 
-# Heatmaps and other continuous scales: light tint up to deep plum.
-SEQUENTIAL = (SHADE, "#FE83D1", "#EE149E", "#84185C")
+# Heatmaps and other continuous scales: pale pink, brand magenta, deep indigo. Plotly's own
+# default (navy to yellow) must never reach a chart; the template sets this one on every
+# heatmap-like trace (plotly_theme.build_template) and the web renderer repeats it for
+# figures a notebook stored with the old default (apps/web plotlyDefaults.ts).
+SEQUENTIAL = ("#FDE7F4", "#EE149E", "#4B2E83")
+HEATMAP_SCALE = [[i / (len(SEQUENTIAL) - 1), c] for i, c in enumerate(SEQUENTIAL)]
 
 FONT_STACK = "Bricolage Grotesque, Helvetica Neue, Arial, sans-serif"
 FONT_IMPORT_URL = (

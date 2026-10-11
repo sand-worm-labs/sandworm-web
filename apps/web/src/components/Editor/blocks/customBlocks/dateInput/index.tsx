@@ -77,6 +77,7 @@ interface Props {
 function DateInput(props: Props) {
   const blockId = props.block.getAttribute("id");
   const attrs = getDateInputAttributes(props.block, props.blocks);
+  const liveTile = props.isApp && props.dashboardMode?._tag === "live";
   const onChangeLabel: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     e => {
       updateYText(attrs.label, e.target.value);
@@ -152,16 +153,18 @@ function DateInput(props: Props) {
   return (
     <div
       className={clsx(
-        "relative group/block mt-6",
+        "relative group/block",
+        !liveTile && "mt-6",
         !props.dashboardMode ? "w-1/2" : "w-full"
       )}
       data-block-id={blockId}
     >
       <div
         className={clsx(
-          "rounded-2xl border-[1.5px] px-4 py-3",
+          // A live dashboard tile is the field and its label, with no frame of its own.
+          liveTile ? "px-1 py-1" : "rounded-2xl border-[1.5px] px-4 py-3",
           props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
-          {
+          !liveTile && {
             "border-primary block-focus-ring":
               props.isCursorWithin && props.isCursorInserting,
             "border-hover-border dark:border-border-dark shadow-none":
@@ -277,7 +280,7 @@ function DateInput(props: Props) {
         </div>
       </div>
 
-      {!props.hideTypePill && (
+      {!props.hideTypePill && !liveTile && (
         <div className="absolute left-0 top-0 -translate-y-full pb-2">
           <BlockTypePill
             label="Date"
