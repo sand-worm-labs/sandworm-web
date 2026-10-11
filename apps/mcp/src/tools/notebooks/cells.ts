@@ -38,7 +38,7 @@ const CLOUD_ONLY_CELL_TYPES = new Set<string>(['visualization', 'pivot_table', '
 const BROWSER_DATA_SOURCE = 'duckdb';
 
 const BROWSER_ONLY_HINT =
-  'Make charts in a python cell, query the notebook\'s own DataFrames with duckdb SQL, or change the notebook to type "cloud" with edit_notebook.';
+  'Make charts in a python cell, query the notebook\'s own DataFrames with Browser DuckDB (dataSource duckdb), or change the notebook to type "cloud" with edit_notebook.';
 
 // Defaults for writing Python cells, appended to the add and update tool
 // descriptions; phrased so the agent can depart from them.
@@ -74,7 +74,7 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
     'add_cell',
     {
       description: [
-        'Add a cell to a notebook. It appears live in the editor next to cells added by hand. Returns the new cell\'s id. For a new analysis or any multi-cell build, call plan_notebook first and add cells in the order it returns. Cell types: sql, python, markdown, rich_text, visualization, pivot_table, input, dropdown_input, date_input, power_toolbox. For power_toolbox, find the toolId with search_tools first. Adding a cell does not run it: call run_notebook for that. In a browser notebook (live_dashboard, local_analysis) everything cloud-side is unavailable: only sql, python, markdown, rich_text and input cells, and sql runs only on duckdb (the notebook\'s own DataFrames), never dune or sandworm_cloud. Make charts in a python cell.',
+        'Add a cell to a notebook. It appears live in the editor next to cells added by hand. Returns the new cell\'s id. For a new analysis or any multi-cell build, call plan_notebook first and add cells in the order it returns. Cell types: sql, python, markdown, rich_text, visualization, pivot_table, input, dropdown_input, date_input, power_toolbox. For power_toolbox, find the toolId with search_tools first. Adding a cell does not run it: call run_notebook for that. In a browser notebook (live_dashboard, local_analysis) everything cloud-side is unavailable: only sql, python, markdown, rich_text and input cells, and sql runs only on Browser DuckDB (dataSource duckdb, over the notebook\'s own DataFrames), never dune or sandworm_cloud. Make charts in a python cell.',
         PYTHON_GUIDANCE,
         DATA_SOURCE_FALLBACK,
       ].join('\n\n'),
@@ -93,7 +93,9 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
         dataSource: z
           .enum(DATA_SOURCES)
           .optional()
-          .describe('SQL cells only: where the query runs. Browser notebooks (live_dashboard, local_analysis): duckdb only, used when omitted'),
+          .describe(
+            'SQL cells only: where the query runs. duckdb is Cloud DuckDB in a cloud notebook and Browser DuckDB in a browser notebook (live_dashboard, local_analysis), where it is the only source and is used when omitted',
+          ),
         dataframeName: z
           .string()
           .max(100)

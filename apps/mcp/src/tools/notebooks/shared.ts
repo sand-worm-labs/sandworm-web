@@ -61,7 +61,8 @@ export const NOTEBOOK_TYPE_GUIDE = [
   'cloud (default): runs on the workspace\'s cloud environment. Use it for SQL against data sources, Dune, power tools, charts and pivot tables, API keys, large data and heavy compute. Only cloud notebooks can be run with run_notebook or scheduled.',
   'live_dashboard: runs in the viewer\'s browser and runs every cell when opened, so it always shows fresh numbers. For light dashboards.',
   'local_analysis: runs in the browser like live_dashboard, for quick light exploration.',
-  'Browser notebooks (live_dashboard, local_analysis) support python, sql (DuckDB over the notebook\'s DataFrames), markdown, rich_text and input cells; no power_toolbox, visualization or pivot_table cells (make charts in a python cell), no workspace API keys, and they can\'t be run or scheduled from here: they run when someone opens them.',
+  'DuckDB runs in two places: in a cloud notebook, dataSource "duckdb" is Cloud DuckDB, on the workspace\'s cloud environment; in a browser notebook it is Browser DuckDB, in the viewer\'s browser. Call them that, never just "DuckDB".',
+  'Browser notebooks (live_dashboard, local_analysis) support python, sql (Browser DuckDB over the notebook\'s DataFrames), markdown, rich_text and input cells; no power_toolbox, visualization or pivot_table cells (make charts in a python cell), no workspace API keys, and they can\'t be run or scheduled from here: they run when someone opens them.',
 ].join(' ');
 
 export const notebookType = z

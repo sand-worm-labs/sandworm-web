@@ -661,7 +661,13 @@ function SQLBlock(props: Props) {
         .filter(d => !isBrowserRuntime || d.data.id === "duckdb")
         .map(d => ({
           value: d.data.id,
-          label: d.data.name,
+          // DuckDB runs in two places; the label always says which.
+          label:
+            d.data.id === "duckdb"
+              ? isBrowserRuntime
+                ? "Browser DuckDB"
+                : "Cloud DuckDB"
+              : d.data.name,
           type: d.type,
           icon: <DataSourceIcon type={d.type} />,
           disabled: d.data.disabled,
