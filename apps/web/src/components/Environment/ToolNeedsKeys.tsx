@@ -30,7 +30,9 @@ export default function ToolNeedsKeys(props: {
           <h4 className="flex items-center gap-1.5 font-semibold pb-1">
             <PiKey size={14} />
             This tool needs{" "}
-            {props.names.length === 1 ? "a key" : `${props.names.length} keys`}{" "}
+            {props.names.length === 1
+              ? "a key"
+              : `${props.names.length} keys`}{" "}
             to run
           </h4>
           <p className="pb-2">
