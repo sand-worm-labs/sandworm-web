@@ -64,6 +64,7 @@ function makeService({
     chainRepository,
     membership,
     config,
+    { emit: jest.fn() } as any,
   );
   return {
     service,

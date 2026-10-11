@@ -10,7 +10,9 @@ import {
   DocumentForkEntity,
   UserEntity,
 } from '@sandworm/postgresql-typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { SEARCH_INDEX_STALE_EVENT } from '@/features/search/search.events';
 import { DataSource, FindOptionsWhere, In, Repository } from 'typeorm';
 import { YjsDocumentService } from "@/features/collaboration/yjs/yjs-document.service"
 import {
@@ -46,8 +48,15 @@ export class DocumentService {
     private readonly documentTreeService: DocumentTreeService,
     private readonly yjsDocumentService: YjsDocumentService,
     @Inject(forwardRef(() => WorkspaceMembershipService))
-    private readonly workspaceMembershipService: WorkspaceMembershipService
+    private readonly workspaceMembershipService: WorkspaceMembershipService,
+    private readonly eventEmitter: EventEmitter2,
   ) { }
+
+  // What the app's search shows changed (a notebook went public or private, was deleted,
+  // or its dashboard was shown or hidden). The index rebuilds shortly after.
+  private searchIndexIsStale(): void {
+    this.eventEmitter.emit(SEARCH_INDEX_STALE_EVENT);
+  }
 
   async getDocument(
     documentId: string,
@@ -174,6 +183,7 @@ export class DocumentService {
     }
     if (input.isDashboardPublic !== undefined) {
       updatedDocument.isDashboardPublic = input.isDashboardPublic;
+      this.searchIndexIsStale();
     }
     if (input.runtime !== undefined) {
       updatedDocument.runtime = input.runtime;
@@ -207,6 +217,7 @@ export class DocumentService {
 
     // Emit events
     await this.documentTreeService.emitWorkspaceDocuments(workspaceId);
+    this.searchIndexIsStale();
     return true;
   }
 
@@ -449,6 +460,7 @@ export class DocumentService {
 
     const result = Document.fromEntity(document);
     await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
+    this.searchIndexIsStale();
     return result;
   }
 
@@ -479,6 +491,7 @@ export class DocumentService {
 
     const result = Document.fromEntity(document);
     await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
+    this.searchIndexIsStale();
     return result;
   }
 
@@ -502,6 +515,7 @@ export class DocumentService {
 
     const result = Document.fromEntity(document);
     await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
+    this.searchIndexIsStale();
     return result;
   }
 

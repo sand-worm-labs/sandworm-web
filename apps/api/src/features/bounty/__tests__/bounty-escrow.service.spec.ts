@@ -29,7 +29,7 @@ const setup = (logs: unknown[], status = 'success', draft: Record<string, unknow
     findOneBy: jest.fn().mockResolvedValue(entity),
     save: jest.fn(async (value: unknown) => value),
   };
-  const service = new BountyEscrowService(repository as never);
+  const service = new BountyEscrowService(repository as never, { emit: jest.fn() } as never);
   jest.spyOn(service as never, 'clientFor').mockReturnValue({
     getTransactionReceipt: async () => ({ status, logs }),
   } as never);

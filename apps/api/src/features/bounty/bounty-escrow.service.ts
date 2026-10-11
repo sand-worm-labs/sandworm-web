@@ -1,5 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SEARCH_INDEX_STALE_EVENT } from '@/features/search/search.events';
 import { BountyEntity } from '@sandworm/postgresql-typeorm';
 import { bountyEscrowAbi, bountyRef, escrowAddressFor, escrowTokens } from '@sandworm/types/escrow';
 import { Repository } from 'typeorm';
@@ -21,6 +23,7 @@ export class BountyEscrowService {
   constructor(
     @InjectRepository(BountyEntity)
     private readonly bountyRepository: Repository<BountyEntity>,
+    private readonly eventEmitter: EventEmitter2,
   ) { }
 
   private clientFor(chainId: number) {
@@ -74,6 +77,9 @@ export class BountyEscrowService {
       reward: `${formatAmount(amount)} ${token.symbol}`,
       deadline: new Date(Number(created.deadline) * 1000),
     });
-    return Bounty.fromEntity(await this.bountyRepository.save(entity));
+    const saved = await this.bountyRepository.save(entity);
+    // A funded bounty is open, which is when it appears on the bounties page and in search.
+    this.eventEmitter.emit(SEARCH_INDEX_STALE_EVENT);
+    return Bounty.fromEntity(saved);
   }
 }

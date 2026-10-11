@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PiArrowRight } from "react-icons/pi";
 
 import { categoryHref, groupLabel } from "@/lib/showcase";
+import { Tag } from "@/components/Tag";
 import { cn } from "@/lib/utils";
 import type { ShowcaseCategoryCard, ShowcaseTaxonomy } from "@/types";
 
@@ -15,8 +16,10 @@ import { ChainStack } from "./ChainIcon";
 // =====================================
 const MAX_PROTOCOLS = 3;
 
+// Hover and keyboard focus take the same active state as a notebook block (primary
+// border and focus ring, see .block-active-hover), not a lift and a drop shadow.
 const CARD_CLASS =
-  "group flex h-full w-full flex-col rounded-2xl border border-border-secondary dark:border-border-tertiary bg-base-100 p-5 text-left transition-all duration-150 hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-[0_10px_30px_-18px_rgba(30,41,90,0.35)] outline-none focus-visible:border-primary";
+  "block-active-hover group flex h-full w-full flex-col rounded-2xl border-[1.5px] border-border-secondary dark:border-border-tertiary bg-base-100 p-5 text-left transition-[border-color,box-shadow] duration-150 outline-none";
 
 // =====================================
 // ⬢  Card
@@ -41,15 +44,10 @@ function CardBody({ card }: { card: ShowcaseCategoryCard }) {
       {shown.length > 0 && (
         <span className="mt-4 flex flex-wrap gap-1.5">
           {shown.map(protocol => (
-            <span
-              key={protocol}
-              className="rounded-full bg-inputBg dark:bg-header-surface px-2 py-0.5 text-[11px] leading-4 text-ink-400"
-            >
-              {protocol}
-            </span>
+            <Tag key={protocol}>{protocol}</Tag>
           ))}
           {extra > 0 && (
-            <span className="px-1 py-0.5 text-[11px] leading-4 text-ink-300">
+            <span className="text-[11px] text-ink-300 dark:text-ink-500">
               +{extra}
             </span>
           )}

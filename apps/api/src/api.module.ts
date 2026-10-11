@@ -17,6 +17,7 @@ import { MailModule } from '@/infrastructure/mail/mail.module';
 import { MailerModule } from '@/infrastructure/mailer/mailer.module';
 import { AuthGithubModule } from '@/features/auth/github/auth-github.module';
 import { ScheduleModule } from '@/features/schedule/schedule.module';
+import { SearchModule } from '@/features/search/search.module';
 import { JupyterModule } from './infrastructure/jupyter/jupyter.module';
 import { WebsocketModule } from './infrastructure/websocket/websocket.module';
 import { YjsModule } from './features/collaboration/yjs/yjs.module';
@@ -64,6 +65,7 @@ import { McpOauthModule } from './features/mcp-oauth/mcp-oauth.module';
         ToolModule,
         BountyModule,
         ScheduleModule,
+        SearchModule,
 
         // Websocket
         WebsocketModule,

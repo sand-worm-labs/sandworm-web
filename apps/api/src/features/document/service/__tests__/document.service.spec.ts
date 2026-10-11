@@ -56,6 +56,8 @@ function makeService() {
     assertActiveMember: jest.fn(),
   } as any;
 
+  const eventEmitter = { emit: jest.fn() } as any;
+
   const service = new DocumentService(
     dataSource,
     documentRepository,
@@ -66,10 +68,12 @@ function makeService() {
     documentTreeService,
     yjsDocumentService,
     workspaceMembershipService,
+    eventEmitter,
   );
 
   return {
     service,
+    eventEmitter,
     dataSource,
     documentRepository,
     favoriteRepository,

@@ -136,7 +136,8 @@ export function SectionHero({
   aside,
   compact = false,
 }: {
-  eyebrow: string;
+  // The small mono label above the headline. Left out, the headline leads.
+  eyebrow?: string;
   title: ReactNode;
   description: ReactNode;
   // Stats, clocks or actions, shown to the right on wide screens.
@@ -153,10 +154,11 @@ export function SectionHero({
     >
       <BoardStyles />
       <div className="min-w-0">
-        <p className={eyebrowClass}>{eyebrow}</p>
+        {eyebrow && <p className={eyebrowClass}>{eyebrow}</p>}
         <h1
           className={cn(
-            "mt-3 max-w-3xl font-semibold tracking-[-0.02em] text-ink-100 dark:text-white",
+            eyebrow && "mt-3",
+            "max-w-3xl font-semibold tracking-[-0.02em] text-ink-100 dark:text-white",
             compact
               ? "text-2xl sm:text-3xl leading-tight"
               : "text-[2rem] sm:text-5xl leading-[1.05]"

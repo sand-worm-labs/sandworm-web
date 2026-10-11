@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { PiMagnifyingGlass } from "react-icons/pi";
 
 import { cn } from "@/lib/utils";
 
 import { useSession } from "../Editor/hooks/useAuth";
+import { SearchBar } from "../SearchBar";
 import AccountMenu from "../Editor/PublicHeader/AccountMenu";
 import HelpDropdown from "../Editor/PublicHeader/HelpDropdown";
 import PublicHeaderLogo from "../Editor/PublicHeader/Logo";
@@ -24,14 +24,12 @@ const TABS = [
 // =====================================
 interface ShowcaseHeaderProps {
   active: (typeof TABS)[number]["id"];
-  // The index page searches its own cards. Pages without it show no search.
-  search?: { value: string; onChange: (value: string) => void };
 }
 
 // =====================================
 // ⬢  ShowcaseHeader
 // =====================================
-export function ShowcaseHeader({ active, search }: ShowcaseHeaderProps) {
+export function ShowcaseHeader({ active }: ShowcaseHeaderProps) {
   const { user, loading, isAuthenticated } = useSession({
     redirectToLogin: false,
   });
@@ -59,24 +57,9 @@ export function ShowcaseHeader({ active, search }: ShowcaseHeaderProps) {
       </nav>
 
       <div className="flex items-center gap-2 ml-auto min-w-0">
-        {search && (
-          <label className="relative hidden sm:block w-64 min-w-0">
-            <span className="sr-only">
-              Search categories, protocols, chains
-            </span>
-            <PiMagnifyingGlass
-              size={14}
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-300"
-            />
-            <input
-              type="search"
-              value={search.value}
-              onChange={e => search.onChange(e.target.value)}
-              placeholder="Search categories, protocols, chains"
-              className="w-full h-[30px] rounded-lg pl-8 pr-2.5 text-[13px] bg-inputBg dark:bg-header-surface border border-hover-border dark:border-border-dark text-ink-100 dark:text-white placeholder:text-ink-300 outline-none focus:border-primary"
-            />
-          </label>
-        )}
+        <div className="hidden md:block">
+          <SearchBar />
+        </div>
         <HelpDropdown />
         <AccountMenu user={user} loading={loading} />
       </div>

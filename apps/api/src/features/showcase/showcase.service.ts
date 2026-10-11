@@ -1,6 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { SEARCH_INDEX_STALE_EVENT } from '@/features/search/search.events';
 import {
   DocumentEntity,
   DocumentVisibility,
@@ -59,6 +61,7 @@ export class ShowcaseService {
     private readonly templateRepository: Repository<ShowcaseTemplateEntity>,
     private readonly workspaceMembershipService: WorkspaceMembershipService,
     config: ConfigService,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     this.officialWorkspaceIds = (config.get<string>('SHOWCASE_OFFICIAL_WORKSPACE_IDS') ?? '')
       .split(',')
@@ -129,6 +132,7 @@ export class ShowcaseService {
 
     document.showcase = showcase === null ? null : this.parse(NotebookShowcase, showcase);
     await this.documentRepository.save(document);
+    this.eventEmitter.emit(SEARCH_INDEX_STALE_EVENT);
     return true;
   }
 

@@ -6,6 +6,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { SEARCH_INDEX_STALE_EVENT } from '@/features/search/search.events';
 import {
   DocumentEntity,
   ShowcaseCategoryEntity,
@@ -75,6 +77,7 @@ export class ShowcaseAdminService {
     private readonly chainRepository: Repository<ShowcaseChainEntity>,
     private readonly workspaceMembershipService: WorkspaceMembershipService,
     config: ConfigService,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     this.officialWorkspaceIds = (
       config.get<string>('SHOWCASE_OFFICIAL_WORKSPACE_IDS') ?? ''
@@ -188,6 +191,7 @@ export class ShowcaseAdminService {
     document.showcase =
       showcase === null ? null : this.parse(NotebookShowcase, showcase);
     await this.documentRepository.save(document);
+    this.eventEmitter.emit(SEARCH_INDEX_STALE_EVENT);
     return true;
   }
 
@@ -225,6 +229,7 @@ export class ShowcaseAdminService {
         position,
       }),
     );
+    this.eventEmitter.emit(SEARCH_INDEX_STALE_EVENT);
     return true;
   }
 
@@ -244,6 +249,7 @@ export class ShowcaseAdminService {
     }
 
     const result = await this.categoryRepository.delete({ slug: categorySlug });
+    this.eventEmitter.emit(SEARCH_INDEX_STALE_EVENT);
     return (result.affected ?? 0) > 0;
   }
 
@@ -258,6 +264,7 @@ export class ShowcaseAdminService {
         position: chain.position ?? null,
       }),
     );
+    this.eventEmitter.emit(SEARCH_INDEX_STALE_EVENT);
     return true;
   }
 

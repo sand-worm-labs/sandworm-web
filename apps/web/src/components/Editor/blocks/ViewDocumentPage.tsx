@@ -155,7 +155,7 @@ export default function ViewDocumentPage(props: Props) {
               <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-primary" />
             </span>
             <span className="text-ink-100">Viewing</span>
-          </span>{" "}
+          </span>
           <span className="text-ink-400 truncate min-w-0">
             / {document?.title || "Untitled"}
           </span>

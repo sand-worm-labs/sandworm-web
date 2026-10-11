@@ -155,7 +155,7 @@ export function ShowcaseIndex({
   config: ShowcaseConfig;
   notebooks: ShowcaseNotebook[];
   // Inside a workspace: the app already has its own header and scrolling, so
-  // the page brings neither, and the search moves next to the filters.
+  // the page brings neither.
   embedded?: boolean;
 }) {
   const { taxonomy } = config;
@@ -178,7 +178,7 @@ export function ShowcaseIndex({
     () => chainsPresent(cards, taxonomy),
     [cards, taxonomy]
   );
-  const { filters, visible, counts, setGroup, setChain, setSearch } =
+  const { filters, visible, counts, setGroup, setChain } =
     useShowcaseFilters(cards);
 
   // Handlers
@@ -189,7 +189,6 @@ export function ShowcaseIndex({
     <div className="mx-auto w-full max-w-[1320px] px-4 sm:px-8 pb-24">
       <SectionHero
         compact={embedded}
-        eyebrow="Showcase"
         title="Teams that use Sandworm, and teams we care about."
         description="What the chain shows about each of them, with the notebook behind every number."
         aside={isEmpty ? undefined : <Summary cards={cards} />}
@@ -207,16 +206,6 @@ export function ShowcaseIndex({
               onChange={setGroup}
             />
             <div className="flex items-center gap-3 min-w-0">
-              {embedded && (
-                <input
-                  type="search"
-                  value={filters.search}
-                  onChange={e => setSearch(e.target.value)}
-                  placeholder="Search categories, protocols, chains"
-                  aria-label="Search categories, protocols, chains"
-                  className="hidden sm:block h-8 w-56 rounded-full px-3 text-[13px] bg-base-100 border border-border-secondary dark:border-border-tertiary text-ink-100 dark:text-white placeholder:text-ink-300 outline-none focus:border-primary"
-                />
-              )}
               <ChainToggles
                 chains={chains}
                 active={filters.chain}
@@ -262,10 +251,7 @@ export function ShowcaseIndex({
   return (
     <ChainColors.Provider value={config.chains}>
       <div className="flex flex-col h-[100dvh] bg-base-100 font-body">
-        <ShowcaseHeader
-          active="showcase"
-          search={{ value: filters.search, onChange: setSearch }}
-        />
+        <ShowcaseHeader active="showcase" />
         <main className="flex-1 min-w-0 overflow-y-auto bg-page-surface">
           {page}
         </main>

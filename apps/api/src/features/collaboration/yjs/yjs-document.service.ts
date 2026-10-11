@@ -215,6 +215,8 @@ export class YjsDocumentService implements OnModuleDestroy {
         const editYDoc = await this.loadEditYDoc(documentId);
         // const cleanDoc = this.getYDocWithoutHistory(editYDoc.yDoc);
         const state = Buffer.from(Y.encodeStateAsUpdate(editYDoc.yDoc));
+        // Whether the published copy has a dashboard to show. Search lists dashboards from it.
+        const hasDashboard = getDashboard(editYDoc.yDoc).size > 0;
 
         let yjsAppDoc = await this.yjsAppDocumentRepo.findOne({
             where: { documentId },
@@ -223,6 +225,7 @@ export class YjsDocumentService implements OnModuleDestroy {
 
         if (yjsAppDoc) {
             yjsAppDoc.state = state;
+            yjsAppDoc.hasDashboard = hasDashboard;
             yjsAppDoc.clock += 1;
             yjsAppDoc.clockUpdatedAt = new Date();
             await this.yjsAppDocumentRepo.save(yjsAppDoc);
@@ -241,6 +244,7 @@ export class YjsDocumentService implements OnModuleDestroy {
             yjsAppDoc = await this.yjsAppDocumentRepo.save({
                 documentId,
                 state,
+                hasDashboard,
                 stateHash: hashState(state),
                 clock: 0,
                 clockUpdatedAt: new Date(),

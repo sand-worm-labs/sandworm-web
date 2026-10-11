@@ -431,6 +431,15 @@
   box-shadow: 0px 0px 1px 4px #8b74ff33;
 }
 
+/* A card that takes a block's active state (primary border and focus ring) on hover or
+   keyboard focus, for example the Showcase cards. It extends the block's own ring, so the
+   two cannot drift apart. The card keeps a 1.5px border at rest so nothing shifts. */
+.block-active-hover:hover,
+.block-active-hover:focus-visible {
+  border-color: hsl(var(--primary));
+  @extend .block-focus-ring;
+}
+
 .hatch-bg {
   background-color: white;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Cline x1='0' y1='8' x2='8' y2='0' stroke='%23E7E1F0' stroke-width='1'/%3E%3C/svg%3E");

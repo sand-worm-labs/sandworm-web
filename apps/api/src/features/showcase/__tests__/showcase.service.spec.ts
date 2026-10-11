@@ -34,6 +34,7 @@ function makeService(officialIds = OFFICIAL) {
     config_.templates,
     membership,
     config,
+    { emit: jest.fn() } as any,
   );
   return { service, query, documentRepository, leadRepository, membership, tables: config_ };
 }
