@@ -890,6 +890,9 @@ importers:
       papaparse:
         specifier: ^5.5.2
         version: 5.5.3
+      plotly.js:
+        specifier: 3.2.0
+        version: 3.2.0(mapbox-gl@1.13.3)
       pyodide:
         specifier: ^314.0.7
         version: 314.0.7(bufferutil@4.1.0)(utf-8-validate@5.0.10)

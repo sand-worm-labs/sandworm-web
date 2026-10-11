@@ -22,6 +22,7 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { PiCamera } from "react-icons/pi";
 import type { DataFrame } from "@sandworm/types";
 
 import type { ApiDocument } from "@/types";
@@ -58,6 +59,8 @@ interface Props {
   executionQueue: ExecutionQueue;
   aiTasks: AITasks;
   onExpand: (block: YBlock) => void;
+  // View mode: opens the tile's result in a modal (the camera button).
+  onViewResult?: (block: YBlock) => void;
   isPublicMode?: boolean;
 }
 
@@ -79,7 +82,7 @@ interface GridBlockRendererProps {
   isPublicMode: boolean;
 }
 
-function GridBlockRenderer(props: GridBlockRendererProps) {
+export function GridBlockRenderer(props: GridBlockRendererProps) {
   return switchBlockType(props.block, {
     onRichText: block => (
       <RichTextBlock
@@ -288,6 +291,16 @@ function GridBlockRenderer(props: GridBlockRendererProps) {
   });
 }
 
+// Blocks whose result is worth opening on its own: the ones that draw a chart,
+// table or card. Inputs, headings and plain text have nothing to show larger.
+const VIEWABLE_RESULTS = new Set<BlockType>([
+  BlockType.Python,
+  BlockType.SQL,
+  BlockType.PivotTable,
+  BlockType.Visualization,
+  BlockType.VisualizationV2,
+]);
+
 function GridElement(props: Props) {
   const { state: blocks } = useYDocState(props.yDoc, getBlocks);
   const { state: dataframes } = useYDocState(props.yDoc, getDataframes);
@@ -366,6 +379,28 @@ function GridElement(props: Props) {
       ) : (
         <div className="bg-gray-200 overflow-hidden">{props.item.i}</div>
       )}
+
+      {!props.isEditingDashboard &&
+        props.onViewResult &&
+        props.block &&
+        blockType &&
+        VIEWABLE_RESULTS.has(blockType) && (
+          <button
+            type="button"
+            title="View result"
+            aria-label="View result"
+            className={clsx(
+              "absolute top-2 right-2 z-20 flex h-7 w-7 items-center justify-center rounded-md border border-border-secondary dark:border-border-tertiary bg-base-100/90 dark:bg-dropdown-bg/90 text-ink-400 shadow-sm backdrop-blur-sm hover:text-primary-600",
+              // Shown on hover or focus, and always on a screen that cannot hover.
+              "opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100"
+            )}
+            onClick={() => {
+              if (props.block) props.onViewResult?.(props.block);
+            }}
+          >
+            <PiCamera className="h-4 w-4" />
+          </button>
+        )}
 
       {props.isEditingDashboard && (
         <div

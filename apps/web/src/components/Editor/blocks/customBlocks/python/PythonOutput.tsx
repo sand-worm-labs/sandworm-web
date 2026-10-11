@@ -8,7 +8,13 @@ import type {
   PythonPlotlyOutput,
 } from "@sandworm/types";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import React, { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from "react";
 import debounce from "lodash.debounce";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -30,6 +36,19 @@ const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 const DEFAULT_PLOT_HEIGHT = 450;
 const HTML_PLACEHOLDER_HEIGHT = 160;
+// In a dashboard tile the skeleton of an HTML output (a chart's title or source
+// note) shares a fixed-height column with the chart, so a tall one squeezes it.
+const HTML_TILE_PLACEHOLDER_HEIGHT = 48;
+
+// A chart in a dashboard tile shares its column with the HTML outputs around it, and
+// takes whatever height they leave. Until they have reported their real heights that
+// is a few pixels, so a chart drawn straight away is drawn tiny, then redrawn when
+// they settle: the squash-then-grow flash on load. The tile's outputs tell the chart
+// when its neighbours are sized, and the chart waits behind its skeleton until then.
+const OutputSettleContext = React.createContext<{
+  settled: boolean;
+  setLoaded: (id: string, loaded: boolean) => void;
+} | null>(null);
 
 // Plotly is a large lazy chunk and draws asynchronously after mounting, so
 // the output area would otherwise sit blank. Keep a skeleton in place (and
@@ -405,50 +424,73 @@ export function PythonOutputs(props: Props) {
     };
   }, [props.outputs, rendered, props.lazyRender]);
 
+  const [loadedHtml, setLoadedHtml] = React.useState<ReadonlySet<string>>(
+    () => new Set()
+  );
+  const setLoaded = useCallback((id: string, loaded: boolean) => {
+    setLoadedHtml(prev => {
+      if (prev.has(id) === loaded) return prev;
+      const next = new Set(prev);
+      if (loaded) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  }, []);
+  const htmlCount = props.outputs
+    .slice(0, rendered)
+    .filter(output => output.type === "html").length;
+  const settleValue = useMemo(
+    () => ({ settled: loadedHtml.size >= htmlCount, setLoaded }),
+    [loadedHtml, htmlCount, setLoaded]
+  );
+
   return (
-    <div className={props.className}>
-      {props.outputs.slice(0, rendered).map((output, i) => (
-        <div
-          // eslint-disable-next-line react/no-array-index-key
-          key={i}
-          className={clsx(
-            ["plotly"].includes(output.type) ? "flex-grow" : "",
-            "overflow-x-auto",
-            // A dashboard tile is a card in its own right, on the same surface as
-            // the Explore cards; a notebook block keeps the editor surface.
-            plainTile && "bg-transparent",
-            !plainTile && "bg-base-100",
-            !plainTile &&
-              (props.isDashboardTile
-                ? "dark:bg-dropdown-bg"
-                : "dark:bg-block-surface")
-          )}
-        >
-          <PythonOutput
-            output={output}
-            isFixWithAILoading={props.isFixWithAILoading}
-            onFixWithAI={props.onFixWithAI}
-            isPDF={props.isPDF}
-            canFixWithAI={props.canFixWithAI}
-            isDashboardView={props.isDashboardView}
-            isDashboardTile={props.isDashboardTile}
-            isPublicMode={props.isPublicMode}
-            blockId={props.blockId}
-            isDark={props.isDark ?? false}
+    <OutputSettleContext.Provider value={settleValue}>
+      <div className={props.className}>
+        {props.outputs.slice(0, rendered).map((output, i) => (
+          <div
+            // eslint-disable-next-line react/no-array-index-key
+            key={i}
+            className={clsx(
+              ["plotly"].includes(output.type) ? "flex-grow" : "",
+              "overflow-x-auto",
+
+              plainTile && "bg-transparent",
+              !plainTile && "bg-base-100",
+              !plainTile &&
+                (props.isDashboardTile
+                  ? "dark:bg-dropdown-bg"
+                  : "dark:bg-block-surface")
+            )}
+          >
+            <PythonOutput
+              output={output}
+              isFixWithAILoading={props.isFixWithAILoading}
+              onFixWithAI={props.onFixWithAI}
+              isPDF={props.isPDF}
+              canFixWithAI={props.canFixWithAI}
+              isDashboardView={props.isDashboardView}
+              isDashboardTile={props.isDashboardTile}
+              isPublicMode={props.isPublicMode}
+              blockId={props.blockId}
+              isDark={props.isDark ?? false}
+            />
+          </div>
+        ))}
+        {props.outputs.slice(rendered).map((output, i) => (
+          <Shimmer
+            // eslint-disable-next-line react/no-array-index-key
+            key={rendered + i}
+            className="w-full"
+            style={{
+              height: EXPENSIVE_TYPES.has(output.type)
+                ? DEFAULT_PLOT_HEIGHT
+                : 48,
+            }}
           />
-        </div>
-      ))}
-      {props.outputs.slice(rendered).map((output, i) => (
-        <Shimmer
-          // eslint-disable-next-line react/no-array-index-key
-          key={rendered + i}
-          className="w-full"
-          style={{
-            height: EXPENSIVE_TYPES.has(output.type) ? DEFAULT_PLOT_HEIGHT : 48,
-          }}
-        />
-      ))}
-    </div>
+        ))}
+      </div>
+    </OutputSettleContext.Provider>
   );
 }
 
@@ -648,12 +690,25 @@ function HTMLOutput(props: {
 
   const loaded = height > 0;
 
+  // Tell the tile's chart (if any) when this output has its real height.
+  const settle = React.useContext(OutputSettleContext);
+  const settleId = React.useId();
+  const setSettled = settle?.setLoaded;
+  useEffect(() => {
+    setSettled?.(settleId, loaded);
+    return () => setSettled?.(settleId, false);
+  }, [loaded, settleId, setSettled]);
+
   return (
     <div className="relative w-full">
       {!loaded && (
         <TableSkeleton
           className="w-full"
-          style={{ minHeight: HTML_PLACEHOLDER_HEIGHT }}
+          style={{
+            minHeight: props.isDashboardTile
+              ? HTML_TILE_PLACEHOLDER_HEIGHT
+              : HTML_PLACEHOLDER_HEIGHT,
+          }}
           aria-label="Loading output"
         />
       )}
@@ -693,6 +748,7 @@ function PythonPlotOutput(props: {
   isDashboardView: boolean;
   isDashboardTile: boolean;
 }) {
+  const settle = React.useContext(OutputSettleContext);
   // The stored figure carries the light theme's colors; swap in the dark ones
   // when the reader is in dark mode (see plotlyDark.ts).
   const output = useMemo(() => {
@@ -735,7 +791,12 @@ function PythonPlotOutput(props: {
   }, [output.data]);
 
   if (props.isDashboardTile) {
-    return <DashboardPlotOutput output={output} />;
+    return (
+      <DashboardPlotOutput
+        output={output}
+        waiting={!!settle && !settle.settled}
+      />
+    );
   }
 
   return (
@@ -762,7 +823,11 @@ function PythonPlotOutput(props: {
 // zero/negative height and an invisible chart.
 const MIN_MEASURED_PX = 24;
 
-function DashboardPlotOutput(props: { output: PythonPlotlyOutput }) {
+function DashboardPlotOutput(props: {
+  output: PythonPlotlyOutput;
+  // The outputs around the chart have not reported their heights yet.
+  waiting: boolean;
+}) {
   const [size, setSize] = React.useState<{
     width: number;
     height: number;
@@ -801,7 +866,8 @@ function DashboardPlotOutput(props: { output: PythonPlotlyOutput }) {
       onResize.cancel();
       observer.disconnect();
     };
-  }, [box]);
+    // Measure again the moment the chart stops waiting: its box has its final size.
+  }, [box, props.waiting]);
 
   const config = useMemo(
     () => ({
@@ -852,7 +918,13 @@ function DashboardPlotOutput(props: { output: PythonPlotlyOutput }) {
 
   return (
     <div ref={setBox} className="relative w-full h-full">
-      {size && (
+      {props.waiting && (
+        <ChartSkeleton
+          className="absolute inset-0 w-full h-full"
+          aria-label="Loading chart"
+        />
+      )}
+      {!props.waiting && size && (
         <div className="absolute inset-0 overflow-hidden">
           <PlotWithPlaceholder
             data={props.output.data}

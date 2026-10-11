@@ -36,6 +36,8 @@ import Title from "../../Title";
 
 // eslint-disable-next-line import/no-cycle
 import GridElement from "./GridElement";
+// eslint-disable-next-line import/no-cycle
+import DashboardResultModal from "./DashboardResultModal";
 
 import type { DraggingBlock } from ".";
 
@@ -115,6 +117,9 @@ const TransparentCard = ({ children }: { children: React.ReactNode }) => (
 );
 
 function DashboardViewInner(props: InnerProps) {
+  // The block whose result the camera button opened in a modal (view mode only).
+  const [viewing, setViewing] = useState<YBlock | null>(null);
+  const closeViewing = useCallback(() => setViewing(null), []);
   const { state: blocks } = useYDocState(props.yDoc, getBlocks);
   const { state: dashboard } = useYDocState(props.yDoc, getDashboard);
 
@@ -205,6 +210,7 @@ function DashboardViewInner(props: InnerProps) {
                 executionQueue={props.executionQueue}
                 aiTasks={props.aiTasks}
                 onExpand={props.onExpand}
+                onViewResult={props.isEditing ? undefined : setViewing}
                 isPublicMode={props.isPublicMode}
               />
             </WrapperCard>
@@ -223,6 +229,7 @@ function DashboardViewInner(props: InnerProps) {
       layout,
       props.userId,
       props.executionQueue,
+      props.isPublicMode,
     ]
   );
 
@@ -288,25 +295,38 @@ function DashboardViewInner(props: InnerProps) {
   const ResponsiveGridLayout = GridLayout.Responsive as any;
 
   return (
-    <ResponsiveGridLayout
-      rowHeight={cellHeight}
-      width={props.width}
-      layouts={{ lg: layout }}
-      margin={[MARGIN, MARGIN]}
-      onLayoutChange={onLayoutChange}
-      breakpoints={BREAKPOINTS}
-      cols={props.isEditing ? BREAKPOINT_EDIT_COLS : BREAKPOINT_COLS}
-      onBreakpointChange={onBreakpointChange}
-      isDraggable={props.isEditing}
-      isDroppable={props.isEditing}
-      isResizable={props.isEditing}
-      resizeHandles={["sw", "se"]}
-      onDrop={onDrop}
-      onDropDragOver={onDropDragOver}
-      style={props.isEditing ? style : {}}
-    >
-      {children}
-    </ResponsiveGridLayout>
+    <>
+      <ResponsiveGridLayout
+        rowHeight={cellHeight}
+        width={props.width}
+        layouts={{ lg: layout }}
+        margin={[MARGIN, MARGIN]}
+        onLayoutChange={onLayoutChange}
+        breakpoints={BREAKPOINTS}
+        cols={props.isEditing ? BREAKPOINT_EDIT_COLS : BREAKPOINT_COLS}
+        onBreakpointChange={onBreakpointChange}
+        isDraggable={props.isEditing}
+        isDroppable={props.isEditing}
+        isResizable={props.isEditing}
+        resizeHandles={["sw", "se"]}
+        onDrop={onDrop}
+        onDropDragOver={onDropDragOver}
+        style={props.isEditing ? style : {}}
+      >
+        {children}
+      </ResponsiveGridLayout>
+      <DashboardResultModal
+        block={viewing}
+        onClose={closeViewing}
+        yDoc={props.yDoc}
+        document={props.document}
+        dataSources={props.dataSources}
+        userId={props.userId}
+        executionQueue={props.executionQueue}
+        aiTasks={props.aiTasks}
+        isPublicMode={props.isPublicMode ?? false}
+      />
+    </>
   );
 }
 
