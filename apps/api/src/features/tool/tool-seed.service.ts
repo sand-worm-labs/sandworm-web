@@ -30,6 +30,8 @@ interface ToolYaml {
   description: string;
   scope?: string;
   returns?: Array<{ name: string; type: string }>;
+  // Workspace env vars the tool reads, e.g. [{ name: NANSEN_API_KEY }].
+  requires_env?: Array<{ name: string; description?: string }>;
   inputs?: Array<{
     key: string;
     label: string;
@@ -180,6 +182,7 @@ export class ToolSeedService implements OnModuleInit {
         g5: tool.g5,
         scope: tool.scope || 'generic',
         returns: tool.returns ?? [],
+        requiredEnv: tool.requires_env ?? [],
         template: tool.template ?? '',
       }),
     );

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /home/daniel/development/sandworm-web/apps/api/src/features/tool && ls -R | head -20; grep -rn \"class Tool\\\\b\" -A40 --include='*.ts' . | head -60; grep -rn \"ToolEntity\\\\|tool.entity\" ../../../../../packages/postgresql-typeorm/src/entities/index.ts | head)",
+      "Read(//packages/postgresql-typeorm/src/entities/**)"
+    ]
+  }
+}

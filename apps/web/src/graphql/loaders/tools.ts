@@ -1,5 +1,10 @@
 import type { ApolloClient } from "@apollo/client";
-import type { ParamDefinition, ToolDefinition, UiHint } from "@sandworm/editor";
+import type {
+  ParamDefinition,
+  RequiredEnvVar,
+  ToolDefinition,
+  UiHint,
+} from "@sandworm/editor";
 
 import { GetToolsDocument, type GetToolsQuery } from "@/generated/graphql";
 
@@ -24,6 +29,7 @@ export async function fetchToolsForRegistry(
     tags: tool.tags,
     uiHint: "form" as UiHint,
     params: tool.params as ParamDefinition[],
+    requiredEnv: (tool.requiredEnv ?? []) as RequiredEnvVar[],
     // Deliberately not fetched here — getTools is a @Public() query used to
     // bulk-load the whole catalog client-side, and template is the tool's
     // actual implementation source. Rendering happens server-side via a

@@ -147,6 +147,11 @@ type Tool {
   g5: String
   scope: String
   returns: JSON!
+
+  """
+  Workspace environment variables the tool needs, by name: [{ name, description }]
+  """
+  requiredEnv: JSON!
 }
 
 type ToolCategory {

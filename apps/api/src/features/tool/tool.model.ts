@@ -44,6 +44,12 @@ export class Tool {
   @Field(() => GraphQLJSON)
   returns!: unknown[];
 
+  @Field(() => GraphQLJSON, {
+    description:
+      'Workspace environment variables the tool needs, by name: [{ name, description }]',
+  })
+  requiredEnv!: { name: string; description?: string }[];
+
   // Deliberately NOT a @Field — this is the tool's actual implementation
   // source. getTools is @Public(), and any GraphQL field on this type is
   // queryable by anyone regardless of what the web app's own .graphql files
@@ -67,6 +73,7 @@ export class Tool {
     tool.g5 = entity.g5;
     tool.scope = entity.scope;
     tool.returns = entity.returns;
+    tool.requiredEnv = entity.requiredEnv ?? [];
     return tool;
   }
 

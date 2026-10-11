@@ -56,6 +56,12 @@ export class ToolEntity extends AbstractEntity {
   @Column({ type: 'jsonb', default: '[]' })
   returns!: unknown[];
 
+  // Workspace environment variables the tool reads, by name, e.g.
+  // [{ name: 'NANSEN_API_KEY', description: 'Nansen API key' }]. Names only:
+  // values live in the workspace's env vars.
+  @Column({ name: 'required_env', type: 'jsonb', default: '[]' })
+  requiredEnv!: { name: string; description?: string }[];
+
   // Raw Python template, {{key}}-interpolated against a block's resolved
   // inputs at render time — see @sandworm/editor's renderTool/renderToolById.
   @Column({ type: 'text', default: '' })

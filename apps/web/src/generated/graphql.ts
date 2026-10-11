@@ -1372,6 +1372,8 @@ export type Tool = {
   g5?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   params: Scalars['JSON']['output'];
+  /** Workspace environment variables the tool needs, by name: [{ name, description }] */
+  requiredEnv: Scalars['JSON']['output'];
   returns: Scalars['JSON']['output'];
   scope?: Maybe<Scalars['String']['output']>;
   tags: Array<Scalars['String']['output']>;
@@ -2294,7 +2296,7 @@ export type GetContractAbiQuery = { __typename?: 'Query', getContractAbi: { __ty
 export type GetToolsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetToolsQuery = { __typename?: 'Query', getTools: Array<{ __typename?: 'Tool', toolId: string, categoryId: string, name: string, description: string, tags: Array<string>, params: any }> };
+export type GetToolsQuery = { __typename?: 'Query', getTools: Array<{ __typename?: 'Tool', toolId: string, categoryId: string, name: string, description: string, tags: Array<string>, params: any, requiredEnv: any }> };
 
 export type RenderToolSourceQueryVariables = Exact<{
   toolId: Scalars['String']['input'];
@@ -6648,6 +6650,7 @@ export const GetToolsDocument = gql`
     description
     tags
     params
+    requiredEnv
   }
 }
     `;

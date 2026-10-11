@@ -88,6 +88,14 @@ export interface ToolDefinition {
   tags: string[];
   uiHint: UiHint;
   params: ParamDefinition[];
+  /** Environment variables the tool reads; empty when it needs none. */
+  requiredEnv?: RequiredEnvVar[];
+}
+
+/** An environment variable a tool needs set in the workspace, e.g. an API key. */
+export interface RequiredEnvVar {
+  name: string;
+  description?: string;
 }
 
 export interface ToolCategory {
