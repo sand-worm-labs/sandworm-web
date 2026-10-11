@@ -94,7 +94,10 @@ import { useLastUpdatedAt, useYDocState } from "./hooks/useYDocs";
 import useSideBar from "./hooks/useSideBar";
 import AnalyticsBlock from "./blocks/customBlocks/PowerToolbox/AnalyticsBlock";
 import useScrollDetection from "./hooks/useScrollDetection";
-import { useEnvironmentStatus } from "./hooks/useEnvironmentStatus";
+import {
+  useEnvironmentStatus,
+  useIsBrowserRuntime,
+} from "./hooks/useEnvironmentStatus";
 import type { APIDataSources } from "./hooks/useDataSources";
 import { SQLExtensionProvider } from "./blocks/customBlocks/CodeEditor/sql";
 import SQLBlock from "./blocks/customBlocks/sql";
@@ -1282,6 +1285,7 @@ interface Props {
 
 const Editor = (props: Props) => {
   const { scrollViewRef } = props;
+  const isBrowserRuntime = useIsBrowserRuntime();
 
   const { state: layout } = useYDocState<Y.Array<YBlockGroup>>(
     props.yDoc,
@@ -1815,7 +1819,12 @@ const Editor = (props: Props) => {
                   />
                 </div>
 
-                {props.role !== "viewer" && props.userId && !props.isPDF && (
+                {props.role !== "viewer" &&
+                  props.userId &&
+                  !props.isPDF &&
+                  // A browser notebook in view mode runs itself on every
+                  // load; running by hand is for the editor.
+                  !(props.isApp && isBrowserRuntime) && (
                   <RunAllV2
                     disabled={false}
                     yDoc={props.yDoc}

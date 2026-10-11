@@ -50,11 +50,18 @@ export default function HeaderSelect(props: Props) {
   return (
     <Listbox value={value} onChange={onChange} disabled={disabled}>
       {({ open }) => (
-        <div className="h-auto  w-[7.8rem] max-w-56 relative overflow-visible font-normal mr-[1rem]">
+        <div className="h-auto w-[7.8rem] max-w-56 relative overflow-visible font-normal mr-[1rem]">
           <Listbox.Button
             as="div"
+            // The button stays narrow so the header doesn't move; the full
+            // name shows on hover and in the open list.
+            title={
+              typeof selectedOption?.label === "string"
+                ? selectedOption.label
+                : undefined
+            }
             className={clsx(
-              " py-1.5 h-full relative w-full rounded-lg pl-3 pr-10 text-left sm:text-xs flex items-center cursor-pointer",
+              " py-1.5 h-full relative w-full rounded-lg pl-3 pr-7 text-left sm:text-xs flex items-center cursor-pointer",
               hasValue
                 ? "text-ink-400 dark:text-white bg-hover-bg dark:bg-header-surface hover:bg-gray-100/50"
                 : "text-error bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20"
@@ -85,7 +92,7 @@ export default function HeaderSelect(props: Props) {
           >
             <Listbox.Options
               as="div"
-              className="px-1 py-1 pb-0 mt-[7px] absolute z-[90] max-h-60 overflow-auto rounded-lg border border-border-tertiary bg-white dark:border-border-tertiary dark:bg-dropdown-bg text-base focus:outline-none sm:text-xs font-body w-[calc(100%-1px)]"
+              className="px-1 py-1 pb-0 mt-[7px] absolute z-[90] max-h-60 overflow-auto rounded-lg border border-border-tertiary bg-white dark:border-border-tertiary dark:bg-dropdown-bg text-base focus:outline-none sm:text-xs font-body min-w-[calc(100%-1px)] w-max max-w-[18rem]"
             >
               {options.map(option => (
                 <Listbox.Option

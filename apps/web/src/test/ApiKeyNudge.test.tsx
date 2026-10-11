@@ -28,10 +28,11 @@ const base = {
 };
 
 describe("KEY_PROVIDERS", () => {
-  it("asks for the workspace's own Nansen and AvaCloud keys, and never for Etherscan, which Sandworm supplies", () => {
+  it("asks for the workspace's own Nansen, AvaCloud and Blockscout keys, and never for Etherscan, which Sandworm supplies", () => {
     expect(KEY_PROVIDERS.map(p => p.varName)).toEqual([
       "NANSEN_API_KEY",
       "AVACLOUD_API_KEY",
+      "BLOCKSCOUT_API_KEY",
     ]);
   });
 });

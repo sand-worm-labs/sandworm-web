@@ -476,7 +476,6 @@ export default function Dashboard(props: Props) {
     executionQueue,
     userId: props.user.id,
     syncing,
-    runOnOpen: props.isEditing,
   });
 
   const router = useRouter();
@@ -721,7 +720,7 @@ export default function Dashboard(props: Props) {
         isPublished={props.document.publishedAt !== null}
       />
       <div className="w-full justify-end flex items-center gap-x-0.5 h-[30px]">
-        {props.isEditing && !isLive && (
+        {props.isEditing && (
           <LiveButton
             onClick={onGoToApp}
             disabled={!props.document.publishedAt}

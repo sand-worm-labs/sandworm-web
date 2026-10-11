@@ -21,7 +21,7 @@ interface Props {
 }
 
 const badgeClassName =
-  "h-[26px] flex items-center gap-1.5 rounded-full px-2.5 text-xs font-medium font-body border border-border-secondary dark:border-border-tertiary text-ink-100 bg-base-600 whitespace-nowrap";
+  "h-[26px] flex items-center gap-1.5 rounded-full px-2.5 text-xs font-medium font-body border whitespace-nowrap";
 
 export default function NotebookTypeMenu(props: Props) {
   const current = getNotebookType(props.runtime);
@@ -29,7 +29,10 @@ export default function NotebookTypeMenu(props: Props) {
 
   if (!props.canChange) {
     return (
-      <span className={badgeClassName} title={current.description}>
+      <span
+        className={clsx(badgeClassName, current.toneClassName)}
+        title={current.description}
+      >
         <Icon size={14} />
         {current.title}
       </span>
@@ -39,7 +42,11 @@ export default function NotebookTypeMenu(props: Props) {
   return (
     <Menu as="div" className="relative">
       <Menu.Button
-        className={clsx(badgeClassName, "hover:bg-hover-bg")}
+        className={clsx(
+          badgeClassName,
+          current.toneClassName,
+          "hover:opacity-80"
+        )}
         title="Notebook type"
       >
         <Icon size={14} />

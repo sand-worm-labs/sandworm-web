@@ -20,6 +20,9 @@ import { head } from "ramda";
 import { Transition } from "@headlessui/react";
 
 import type { ApiDocument } from "@/types";
+import ToolNeedsKeys, {
+  missingEnvFromOutputs,
+} from "@/components/Environment/ToolNeedsKeys";
 
 import { useBlockExecutions } from "../../../hooks/useBlockExecution";
 import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
@@ -227,6 +230,7 @@ function AnalyticsBlock(props: Props) {
   const results = props.block.getAttribute("result") ?? [];
   const hasResults = results.length > 0;
   const hasError = results.some(r => r.type === "error");
+  const missingEnv = missingEnvFromOutputs(results);
 
   const showDataframeActions =
     resultStatus === "success" && !props.isPublicMode && !props.isPDF;
@@ -541,16 +545,23 @@ function AnalyticsBlock(props: Props) {
                 "px-0.5 pt-3.5 pb-2": !props.isPDF,
               })}
             >
-              <PythonOutputs
-                outputs={results}
-                isFixWithAILoading={false}
-                onFixWithAI={() => {}}
-                canFixWithAI={false}
-                isPDF={props.isPDF}
-                isDashboardView={false}
-                lazyRender={!props.isPDF}
-                blockId={blockId}
-              />
+              {missingEnv ? (
+                <ToolNeedsKeys
+                  names={missingEnv}
+                  workspaceId={props.document.workspaceId}
+                />
+              ) : (
+                <PythonOutputs
+                  outputs={results}
+                  isFixWithAILoading={false}
+                  onFixWithAI={() => {}}
+                  canFixWithAI={false}
+                  isPDF={props.isPDF}
+                  isDashboardView={false}
+                  lazyRender={!props.isPDF}
+                  blockId={blockId}
+                />
+              )}
             </ScrollBar>
           </div>
         </Transition>

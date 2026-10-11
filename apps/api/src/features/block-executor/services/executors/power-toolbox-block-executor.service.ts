@@ -1,5 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EnvironmentVariableEntity } from '@sandworm/postgresql-typeorm';
+import { In, Repository } from 'typeorm';
 import * as Y from 'yjs';
 import {
   ExecutionQueueItem,
@@ -13,6 +16,11 @@ import { PythonExecutorService } from '@/features/code-execution/python-executor
 import { ToolService } from '@/features/tool/tool.service';
 import { BlockExecutorDataframeService } from '../block-executor-dataframe.service';
 
+// A tool whose required environment variables aren't set on the workspace is
+// not run: the block shows which ones to add (the web app matches this name,
+// like PaidPlanRequired for SQL). `traceback` carries the missing names.
+export const MISSING_ENV_ERROR = 'MissingEnvironmentVariables';
+
 @Injectable()
 export class PowerToolboxBlockExecutorService {
   private readonly logger = new Logger(PowerToolboxBlockExecutorService.name);
@@ -23,7 +31,22 @@ export class PowerToolboxBlockExecutorService {
     private readonly pythonExecutorService: PythonExecutorService,
     private readonly toolService: ToolService,
     private readonly blockExecutorDataframeService: BlockExecutorDataframeService,
+    @InjectRepository(EnvironmentVariableEntity)
+    private readonly envVarRepository: Repository<EnvironmentVariableEntity>,
   ) { }
+
+  // Names only: values are never read here.
+  private async missingEnv(workspaceId: string, toolId: string): Promise<string[]> {
+    const required = await this.toolService.getRequiredEnv(toolId);
+    if (required.length === 0) return [];
+
+    const set = await this.envVarRepository.find({
+      where: { workspaceId, name: In(required.map((v) => v.name)) },
+      select: { id: true, name: true },
+    });
+    const have = new Set(set.map((v) => v.name));
+    return required.map((v) => v.name).filter((name) => !have.has(name));
+  }
 
   async run(
     context: { workspaceId: string; sessionId: string },
@@ -40,6 +63,20 @@ export class PowerToolboxBlockExecutorService {
           ename: 'NoTool',
           evalue: 'No tool selected for this block yet.',
           traceback: [],
+        },
+      ]);
+      executionItem.setCompleted('error');
+      return;
+    }
+
+    const missing = await this.missingEnv(context.workspaceId, toolId);
+    if (missing.length > 0) {
+      block.setAttribute('result', [
+        {
+          type: 'error',
+          ename: MISSING_ENV_ERROR,
+          evalue: `This tool needs ${missing.join(', ')} in your workspace's environment variables.`,
+          traceback: missing,
         },
       ]);
       executionItem.setCompleted('error');

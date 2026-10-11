@@ -1,5 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { EnvironmentVariableEntity } from '@sandworm/postgresql-typeorm';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { CodeExecutionModule } from '@/features/code-execution/code-execution.module';
 import { ToolModule } from '@/features/tool/tool.module';
@@ -31,6 +33,7 @@ const executorServices = [
     ConfigModule.forFeature(blockExecutorConfig),
     forwardRef(() => CodeExecutionModule),
     ToolModule,
+    TypeOrmModule.forFeature([EnvironmentVariableEntity]),
   ],
   providers: [
     BlockExecutorDataframeService,

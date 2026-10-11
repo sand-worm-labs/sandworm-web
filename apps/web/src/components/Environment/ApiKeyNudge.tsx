@@ -46,6 +46,17 @@ export const KEY_PROVIDERS: KeyProvider[] = [
     blurb: "Your own rate limits for Avalanche data, instead of a shared pool.",
     category: "Onchain data",
   },
+  {
+    id: "blockscout",
+    name: "Blockscout",
+    varName: "BLOCKSCOUT_API_KEY",
+    title: "Blockscout is waiting for its key",
+    body: "Add the key and your notebooks can read Blockscout's explorer data across chains with your own rate limits: transactions, token transfers, contracts and address details.",
+    getKeyUrl: "https://dev.blockscout.com",
+    blurb:
+      "Explorer data across chains: transactions, token transfers, contracts and addresses.",
+    category: "Onchain data",
+  },
 ];
 
 // =====================================

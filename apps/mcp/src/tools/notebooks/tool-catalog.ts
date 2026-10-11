@@ -22,6 +22,8 @@ export type CatalogTool = {
   g5?: string | null;
   params: Param[];
   returns: { name: string; type: string }[];
+  // Workspace environment variables (API keys) the tool needs, by name.
+  requiredEnv?: { name: string; description?: string }[];
 };
 
 export type Match = { tool: CatalogTool; score: number; allWords: boolean };
@@ -34,7 +36,7 @@ export async function loadCatalog(ctx: ToolContext): Promise<CatalogTool[]> {
   if (cached && Date.now() - cached.at < CATALOG_TTL_MS) return cached.tools;
   const { getTools } = await graphql<{ getTools: CatalogTool[] }>(
     ctx,
-    `query { getTools { toolId name description tags g1 g2 g3 g4 g5 params returns } }`,
+    `query { getTools { toolId name description tags g1 g2 g3 g4 g5 params returns requiredEnv } }`,
   );
   cached = { at: Date.now(), tools: getTools };
   return getTools;
@@ -97,7 +99,7 @@ export async function searchCatalog(ctx: ToolContext, query: string, limit: numb
     const { searchTools } = await graphql<{ searchTools: CatalogTool[] }>(
       ctx,
       `query ($query: String!, $limit: Int!) {
-        searchTools(query: $query, limit: $limit) { toolId name description tags g1 g2 g3 g4 g5 params returns }
+        searchTools(query: $query, limit: $limit) { toolId name description tags g1 g2 g3 g4 g5 params returns requiredEnv }
       }`,
       { query, limit },
     );
@@ -124,4 +126,5 @@ export const describeTool = (tool: CatalogTool) => ({
   category: [tool.g1, tool.g2, tool.g3].filter(Boolean).join(' > '),
   inputs: tool.params.map(compactParam),
   returns: tool.returns,
+  ...(tool.requiredEnv?.length ? { requiredKeys: tool.requiredEnv.map(v => v.name) } : {}),
 });

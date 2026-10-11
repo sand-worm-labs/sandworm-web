@@ -73,6 +73,7 @@ export function registerRunTools(server: McpServer, ctx: ToolContext): void {
     {
       description: [
         `Run a notebook on the workspace's Python environment and return each cell's result. Runs every cell top to bottom, or only \`cellIds\` (ids come from add_cell and get_notebook). A failing cell does not stop the cells after it. Results are saved in the notebook, as if the user had pressed Run.`,
+        'Cloud notebooks only: live_dashboard and local_analysis notebooks run in the browser, so they run when someone opens them, not from here.',
         `Waits up to ${WAIT_SECONDS} seconds. If the run takes longer, status is "running" and it carries on in the background: call get_run_results to follow it. A cell that runs past the time limit (cellTimeoutSeconds) is stopped and fails with a TimeoutError. Fails if this notebook already has a run in progress.`,
         CELL_STATES,
         DATA_SOURCE_FALLBACK,

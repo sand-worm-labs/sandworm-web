@@ -283,8 +283,6 @@ function PrivateDocumentPageInner(
     executionQueue,
     userId: props.user.id,
     syncing,
-    // Browser notebooks have no separate view mode; they run in the editor.
-    runOnOpen: !props.isApp,
   });
 
   // ⬢ Public document
@@ -493,7 +491,7 @@ function PrivateDocumentPageInner(
       />
 
       <div className="w-full justify-end flex items-center gap-x-0.5 h-[30px]">
-        {!props.isApp && !isLive && (
+        {!props.isApp && (
           <LiveButton
             onClick={onGoToApp}
             disabled={props.document.publishedAt === null}
