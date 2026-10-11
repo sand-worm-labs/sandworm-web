@@ -14,6 +14,7 @@ export function registerToolSearchTool(server: McpServer, ctx: ToolContext): voi
       description: [
         'Search the catalog of ready-made analytics tools (power tools). Use it before writing SQL or Python by hand: if a tool covers the task, add it with add_cell type "power_toolbox" and its toolId.',
         'Returns each match with its toolId and its inputs. Required inputs must be passed to add_cell as `inputs`, keyed by the input key. Only use a tool that came back from this search.',
+        'A match with `requiredKeys` reads those workspace environment variables (API keys). If the workspace hasn\'t set them the cell won\'t run: ask the user for the key and save it with set_env_vars, or pick another tool. Power tools only work in cloud notebooks.',
       ].join('\n\n'),
       inputSchema: {
         query: z.string().min(1).describe('What you want to do, in plain words, e.g. "decode calldata" or "token holders by chain"'),

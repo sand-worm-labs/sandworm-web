@@ -3,7 +3,15 @@ import { z } from 'zod';
 
 import { graphql, resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { confirm, handle, workspaceId } from '../shared.ts';
-import { notebookId, notebookUrl, setNotebookTitle, turnRequest } from './shared.ts';
+import {
+  NOTEBOOK_TYPES,
+  notebookId,
+  notebookType,
+  notebookUrl,
+  setNotebookTitle,
+  turnRequest,
+  typeFromRuntime,
+} from './shared.ts';
 
 type Doc = {
   id: string;
@@ -17,9 +25,10 @@ type Doc = {
   parentId: string | null;
   description: string | null;
   tags: string[];
+  runtime: string;
 };
 
-const DOC_FIELDS = 'id title slug workspaceId visibility publishedAt updatedAt orderIndex parentId description tags';
+const DOC_FIELDS = 'id title slug workspaceId visibility publishedAt updatedAt orderIndex parentId description tags runtime';
 
 export function registerNotebookManageTools(server: McpServer, ctx: ToolContext): void {
   const links = (d: Pick<Doc, 'id' | 'workspaceId' | 'slug' | 'publishedAt'>) => ({
@@ -31,6 +40,7 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
     notebookId: d.id,
     workspaceId: d.workspaceId,
     title: d.title,
+    type: typeFromRuntime(d.runtime),
     visibility: d.visibility,
     published: d.publishedAt !== null,
     updatedAt: d.updatedAt,
@@ -74,12 +84,19 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
   server.registerTool(
     'edit_notebook',
     {
-      description: 'Rename a notebook. Use add_cell / update_cell / delete_cell to change its cells',
-      inputSchema: { notebookId, title: z.string().min(1), workspaceId, request: turnRequest },
+      description: 'Rename a notebook and/or change its type. Use add_cell / update_cell / delete_cell to change its cells',
+      inputSchema: {
+        notebookId,
+        title: z.string().min(1).optional(),
+        type: notebookType.optional(),
+        workspaceId,
+        request: turnRequest,
+      },
     },
-    handle(async ({ notebookId, title, workspaceId }) => {
+    handle(async ({ notebookId, title, type, workspaceId }) => {
+      if (title === undefined && type === undefined) throw new Error('Give a new title, a new type, or both.');
       const ws = await resolveWorkspaceId(ctx, workspaceId);
-      await setNotebookTitle(ctx, ws, notebookId, title);
+      if (title !== undefined) await setNotebookTitle(ctx, ws, notebookId, title);
       // UpdateDocumentInput requires orderIndex, so carry over the current one.
       const current = await getDoc(notebookId, ws);
       const data = await graphql<{ updateDocument: Doc }>(
@@ -87,7 +104,15 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
         `mutation ($documentId: String!, $workspaceId: String!, $input: UpdateDocumentInput!) {
           updateDocument(documentId: $documentId, workspaceId: $workspaceId, input: $input) { ${DOC_FIELDS} }
         }`,
-        { documentId: notebookId, workspaceId: ws, input: { title, orderIndex: current.orderIndex } },
+        {
+          documentId: notebookId,
+          workspaceId: ws,
+          input: {
+            orderIndex: current.orderIndex,
+            ...(title !== undefined ? { title } : {}),
+            ...(type !== undefined ? { runtime: NOTEBOOK_TYPES[type] } : {}),
+          },
+        },
       );
       return summary(data.updateDocument);
     }),
@@ -186,7 +211,7 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
   server.registerTool(
     'schedule_notebook',
     {
-      description: 'Schedule a notebook to re-run on a cron schedule. Replaces any existing schedule',
+      description: 'Schedule a notebook to re-run on a cron schedule. Replaces any existing schedule. Cloud notebooks only: live_dashboard and local_analysis notebooks run in the browser when opened',
       inputSchema: {
         notebookId,
         workspaceId,

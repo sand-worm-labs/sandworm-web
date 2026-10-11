@@ -9,8 +9,6 @@ import {
   PiCopy,
   PiCheckCircleLight,
 } from "react-icons/pi";
-import useUpgradeGate from "../../../hooks/useUpgradeGate";
-import UpgradePlanModal from "../../UpgradePlanModal";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -48,11 +46,16 @@ import type { ApiDocument, ApiWorkspace } from "@/types";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
 import { Shimmer } from "@/components/Skeletons";
 
+import UpgradePlanModal from "../../UpgradePlanModal";
+import useUpgradeGate from "../../../hooks/useUpgradeGate";
 import { TooltipV2 } from "../../ToolTips";
 import type { DashboardMode } from "../../Dashboard";
 import { dashboardModeHasControls } from "../../Dashboard/dashboard-types";
 import HeaderSelect from "../../HeaderSelect";
-import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
+import {
+  useEnvironmentStatus,
+  useIsBrowserRuntime,
+} from "../../../hooks/useEnvironmentStatus";
 import {
   LoadingEnvText,
   RunningQueryText,
@@ -325,9 +328,12 @@ function SQLBlock(props: Props) {
     : null;
 
   const gate = useUpgradeGate(props.document.workspaceId);
+  // A browser notebook never reaches cloud data sources: its SQL runs on the
+  // notebook's own DuckDB, so that's the only source it offers or gates on.
+  const isBrowserRuntime = useIsBrowserRuntime();
 
   const onRun = useCallback(() => {
-    if (!gate.check([dataSourceId])) return;
+    if (!isBrowserRuntime && !gate.check([dataSourceId])) return;
     props.executionQueue.enqueueBlock(
       blockId,
       props.userId,
@@ -340,6 +346,7 @@ function SQLBlock(props: Props) {
     );
   }, [
     gate,
+    isBrowserRuntime,
     dataSourceId,
     props.executionQueue,
     blockId,
@@ -651,6 +658,7 @@ function SQLBlock(props: Props) {
   const dataSourcesOptions = useMemo(
     () =>
       props.dataSources
+        .filter(d => !isBrowserRuntime || d.data.id === "duckdb")
         .map(d => ({
           value: d.data.id,
           label: d.data.name,
@@ -659,7 +667,7 @@ function SQLBlock(props: Props) {
           disabled: d.data.disabled,
         }))
         .toArray(),
-    [props.dataSources]
+    [props.dataSources, isBrowserRuntime]
   );
 
   const isComponentInstance =
@@ -799,7 +807,8 @@ function SQLBlock(props: Props) {
     );
   }, [props.layout, props.blocks, props.block, flags]);
 
-  const headerSelectValue = isFileDataSource ? "duckdb" : dataSourceId;
+  const headerSelectValue =
+    isFileDataSource || isBrowserRuntime ? "duckdb" : dataSourceId;
 
   const isEditorFocused = editorState.cursorBlockId === blockId;
   const isRunButtonDisabled =

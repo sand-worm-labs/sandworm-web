@@ -4,7 +4,10 @@ import * as dfns from "date-fns";
 import type { EnvironmentStatus } from "@/types";
 
 import { useStringQuery } from "../hooks/useQueryArgs";
-import { useEnvironmentStatus } from "../hooks/useEnvironmentStatus";
+import {
+  useEnvironmentStatus,
+  useIsBrowserRuntime,
+} from "../hooks/useEnvironmentStatus";
 
 // =====================================
 // ⬢ Status Badge
@@ -89,33 +92,36 @@ function DotBadge({ color, children, onRestart, canRestart }: DotBadgeProps) {
 function StatusBadge({
   loading,
   status,
+  where,
   onRestart,
   canRestart,
 }: {
   loading: boolean;
   status: EnvironmentStatus | null;
+  // Where the notebook runs, so the status always says which it is.
+  where: "Cloud" | "Browser";
   onRestart: () => void;
   canRestart: boolean;
 }) {
-  if (loading) return <DotBadge color="blue">Loading</DotBadge>;
+  if (loading) return <DotBadge color="blue">{where} · Loading</DotBadge>;
 
   switch (status) {
     case "Starting":
-      return <DotBadge color="yellow">Starting</DotBadge>;
+      return <DotBadge color="yellow">{where} · Starting</DotBadge>;
     case "Running":
       return (
         <DotBadge color="green" onRestart={onRestart} canRestart={canRestart}>
-          Running
+          {where} · Running
         </DotBadge>
       );
     case "Stopped":
-      return <DotBadge color="gray">Stopped</DotBadge>;
+      return <DotBadge color="gray">{where} · Stopped</DotBadge>;
     case "Stopping":
-      return <DotBadge color="yellow">Stopping</DotBadge>;
+      return <DotBadge color="yellow">{where} · Stopping</DotBadge>;
     case "Failing":
-      return <DotBadge color="red">Failing</DotBadge>;
+      return <DotBadge color="red">{where} · Failing</DotBadge>;
     default:
-      return <DotBadge color="gray">Stopped</DotBadge>;
+      return <DotBadge color="gray">{where} · Stopped</DotBadge>;
   }
 }
 
@@ -131,6 +137,7 @@ interface Props {
 function EnvBar(props: Props) {
   const workspaceId = useStringQuery("workspace");
   const { status, loading, restart } = useEnvironmentStatus(workspaceId);
+  const where = useIsBrowserRuntime() ? "Browser" : "Cloud";
 
   const publishedAtDisplay = dfns.formatDistanceToNow(
     props.publishedAt ?? new Date()
@@ -157,6 +164,7 @@ function EnvBar(props: Props) {
       <StatusBadge
         loading={loading}
         status={status}
+        where={where}
         onRestart={restart}
         canRestart={!props.isViewer}
       />

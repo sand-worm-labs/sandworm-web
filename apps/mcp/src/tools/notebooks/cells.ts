@@ -1,13 +1,20 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-import { resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
+import { graphql, resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { rest } from '../../rest.ts';
 import { confirm, handle, workspaceId } from '../shared.ts';
 import { CHART_RESPONSIVE_RULES } from './chart-rules.ts';
 import { DATA_SOURCE_FALLBACK, OPEN_DATA_USAGE } from './open-data.ts';
 import { printedTableProblem } from './printed-table.ts';
-import { notebookApiPath, notebookId, notebookUrl, objectOrJson, turnRequest } from './shared.ts';
+import {
+  notebookApiPath,
+  notebookId,
+  notebookUrl,
+  objectOrJson,
+  runsInBrowser,
+  turnRequest,
+} from './shared.ts';
 
 const CELL_TYPES = [
   'sql',
@@ -24,6 +31,14 @@ const CELL_TYPES = [
 const DATA_SOURCES = ['dune', 'duckdb', 'sandworm_cloud'] as const;
 
 type Cell = { id: string; kind: string; title: string } & Record<string, unknown>;
+
+// A browser notebook (live_dashboard, local_analysis) never reaches the cloud:
+// no cells built by cloud-side code, and SQL only on its own DuckDB.
+const CLOUD_ONLY_CELL_TYPES = new Set<string>(['visualization', 'pivot_table', 'power_toolbox']);
+const BROWSER_DATA_SOURCE = 'duckdb';
+
+const BROWSER_ONLY_HINT =
+  'Make charts in a python cell, query the notebook\'s own DataFrames with duckdb SQL, or change the notebook to type "cloud" with edit_notebook.';
 
 // Defaults for writing Python cells, appended to the add and update tool
 // descriptions; phrased so the agent can depart from them.
@@ -44,11 +59,22 @@ const PYTHON_GUIDANCE = [
 const cellId = z.uuid().describe('ID (UUID) of the cell, as returned by add_cell, get_notebook or run_notebook');
 
 export function registerCellTools(server: McpServer, ctx: ToolContext): void {
+  const inBrowser = async (workspaceId: string, documentId: string) => {
+    const { getDocument } = await graphql<{ getDocument: { runtime: string } }>(
+      ctx,
+      `query ($documentId: String!, $workspaceId: String!) {
+        getDocument(documentId: $documentId, workspaceId: $workspaceId) { runtime }
+      }`,
+      { documentId, workspaceId },
+    );
+    return runsInBrowser(getDocument.runtime);
+  };
+
   server.registerTool(
     'add_cell',
     {
       description: [
-        'Add a cell to a notebook. It appears live in the editor next to cells added by hand. Returns the new cell\'s id. For a new analysis or any multi-cell build, call plan_notebook first and add cells in the order it returns. Cell types: sql, python, markdown, rich_text, visualization, pivot_table, input, dropdown_input, date_input, power_toolbox. For power_toolbox, find the toolId with search_tools first. Adding a cell does not run it: call run_notebook for that.',
+        'Add a cell to a notebook. It appears live in the editor next to cells added by hand. Returns the new cell\'s id. For a new analysis or any multi-cell build, call plan_notebook first and add cells in the order it returns. Cell types: sql, python, markdown, rich_text, visualization, pivot_table, input, dropdown_input, date_input, power_toolbox. For power_toolbox, find the toolId with search_tools first. Adding a cell does not run it: call run_notebook for that. In a browser notebook (live_dashboard, local_analysis) everything cloud-side is unavailable: only sql, python, markdown, rich_text and input cells, and sql runs only on duckdb (the notebook\'s own DataFrames), never dune or sandworm_cloud. Make charts in a python cell.',
         PYTHON_GUIDANCE,
         DATA_SOURCE_FALLBACK,
       ].join('\n\n'),
@@ -64,7 +90,10 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
           .describe(
             'The cell text: SQL, Python, Markdown or rich text. For input cells, the default value (dropdown_input: one option per line; date_input: YYYY/MM/DD), with `title` as the visible label',
           ),
-        dataSource: z.enum(DATA_SOURCES).optional().describe('SQL cells only: where the query runs'),
+        dataSource: z
+          .enum(DATA_SOURCES)
+          .optional()
+          .describe('SQL cells only: where the query runs. Browser notebooks (live_dashboard, local_analysis): duckdb only, used when omitted'),
         dataframeName: z
           .string()
           .max(100)
@@ -82,8 +111,18 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
       const problem = type === 'python' ? printedTableProblem(content) : undefined;
       if (problem) throw new Error(problem);
       const ws = await resolveWorkspaceId(ctx, workspaceId);
+      let source = dataSource;
+      if ((type === 'sql' || CLOUD_ONLY_CELL_TYPES.has(type)) && (await inBrowser(ws, notebookId))) {
+        if (CLOUD_ONLY_CELL_TYPES.has(type)) {
+          throw new Error(`This notebook runs in the browser, which has no ${type} cells. ${BROWSER_ONLY_HINT}`);
+        }
+        if (dataSource && dataSource !== BROWSER_DATA_SOURCE) {
+          throw new Error(`This notebook runs in the browser, so SQL can't reach ${dataSource}. ${BROWSER_ONLY_HINT}`);
+        }
+        source = BROWSER_DATA_SOURCE;
+      }
       const { blocks } = await rest<{ blocks: Cell[] }>(ctx, 'POST', `${notebookApiPath(ws, notebookId)}/blocks`, {
-        blocks: [{ kind: type, title, source: content, dataSource, dataframeName, toolId, inputs }],
+        blocks: [{ kind: type, title, source: content, dataSource: source, dataframeName, toolId, inputs }],
         position,
       });
       return { notebookId, cell: blocks[0], url: notebookUrl(ctx, ws, notebookId) };
@@ -122,6 +161,9 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
       const problem = printedTableProblem(content);
       if (problem) throw new Error(problem);
       const ws = await resolveWorkspaceId(ctx, workspaceId);
+      if (dataSource && dataSource !== BROWSER_DATA_SOURCE && (await inBrowser(ws, notebookId))) {
+        throw new Error(`This notebook runs in the browser, so SQL can't reach ${dataSource}. ${BROWSER_ONLY_HINT}`);
+      }
       const { block } = await rest<{ block: Cell }>(ctx, 'PATCH', `${notebookApiPath(ws, notebookId)}/blocks/${cellId}`, {
         title,
         source: content,

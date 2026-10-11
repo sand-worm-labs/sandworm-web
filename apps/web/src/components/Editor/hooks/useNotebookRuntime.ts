@@ -37,8 +37,9 @@ export function canAddBlock(type: BlockType, isBrowserRuntime: boolean) {
 }
 
 // For a browser notebook: runs this user's queued cells in this tab, and runs
-// the whole notebook when it's opened for editing, since browser Python
-// starts empty on every load. Both browser types behave the same here.
+// the whole notebook every time it's opened or refreshed, in the editor and
+// in view mode alike, since browser Python starts empty on every load. In view
+// mode that's the only way it runs: there are no run buttons there.
 // Returns whether the notebook runs in the browser.
 export function useLiveNotebook(opts: {
   document: Pick<Document, "id" | "runtime">;
@@ -46,9 +47,8 @@ export function useLiveNotebook(opts: {
   executionQueue: ExecutionQueue;
   userId: string | null;
   syncing: boolean;
-  runOnOpen: boolean;
 }): boolean {
-  const { document, yDoc, executionQueue, userId, syncing, runOnOpen } = opts;
+  const { document, yDoc, executionQueue, userId, syncing } = opts;
   const isLive = isBrowserNotebook(document);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export function useLiveNotebook(opts: {
 
   const ranOnOpen = useRef(false);
   useEffect(() => {
-    if (!isLive || !runOnOpen || syncing || !userId || ranOnOpen.current) {
+    if (!isLive || syncing || !userId || ranOnOpen.current) {
       return;
     }
     ranOnOpen.current = true;
@@ -70,7 +70,7 @@ export function useLiveNotebook(opts: {
       _tag: "user",
       userId,
     });
-  }, [isLive, runOnOpen, syncing, userId, yDoc, executionQueue]);
+  }, [isLive, syncing, userId, yDoc, executionQueue]);
 
   return isLive;
 }
