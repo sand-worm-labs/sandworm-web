@@ -4,7 +4,7 @@ import type { DataFrame, Output, RunQueryResult } from "@sandworm/types";
 // (public/pyodide-kernel.worker.mjs).
 
 export type KernelCall =
-  | { kind: "run_python"; notebookId: string; code: string }
+  | { kind: "run_python"; notebookId: string; blockId: string; code: string }
   | { kind: "run_sql"; notebookId: string; sql: string; dataframeName: string }
   | {
       kind: "read_page";
@@ -49,10 +49,19 @@ export type ToWorker =
         modules: { name: string; source: string }[];
       };
     }
-  | { kind: "call"; id: number; call: KernelCall };
+  | { kind: "call"; id: number; call: KernelCall }
+  // Live cells skip their polls while the tab is hidden.
+  | { kind: "visibility"; hidden: boolean };
 
 export type FromWorker =
   | { kind: "ready" }
   | { kind: "failed"; error: string }
+  // A live cell (sandworm.every / sandworm.websocket) has new output.
+  | {
+      kind: "live_output";
+      notebookId: string;
+      blockId: string;
+      outputs: Output[];
+    }
   | { kind: "result"; id: number; value: unknown }
   | { kind: "error"; id: number; error: string };

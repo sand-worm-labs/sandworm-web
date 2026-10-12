@@ -7,6 +7,8 @@ import {
 } from "@sandworm/editor";
 import type { Output } from "@sandworm/types";
 
+import { clearLiveOutputs } from "@/lib/pyodide/liveOutputs";
+
 import type { DocumentContext } from "../interfaces";
 import { updateDataframes } from "../block-executor-dataframe";
 import { pythonExecutor } from "../services";
@@ -39,6 +41,7 @@ export async function runPythonBlock(
 
     const { promise, abort } = pythonExecutor.executeCode(
       ctx.notebookId,
+      blockId,
       actualSource
     );
 
@@ -62,6 +65,8 @@ export async function runPythonBlock(
     cleanup();
 
     block.setAttribute("result", outputs);
+    // This run's result replaces whatever the cell's previous run kept updating.
+    clearLiveOutputs(blockId);
     if (aborted) {
       executionItem.setCompleted("aborted");
       return;

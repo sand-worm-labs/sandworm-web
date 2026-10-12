@@ -57,6 +57,7 @@ import {
   ExecutionFailedText,
 } from "../../ExecutionStatusText";
 import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
+import { useLiveOutputs } from "../../../hooks/useLiveOutputs";
 import CodeEditor from "../CodeEditor";
 import { useEditorThemeId } from "../CodeEditor/useEditorThemeId";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
@@ -313,7 +314,8 @@ function PythonBlock(props: Props) {
   const lastQuery = props.block.getAttribute("lastQuery");
   const startQueryTime = props.block.getAttribute("startQueryTime");
   const lastQueryTime = props.block.getAttribute("lastQueryTime");
-  const results = props.block.getAttribute("result") ?? [];
+  const liveResults = useLiveOutputs(blockId);
+  const results = liveResults ?? props.block.getAttribute("result") ?? [];
   const dataframeDimensions = useMemo(() => {
     const dimensions = results
       .filter(result => result.type === "html")

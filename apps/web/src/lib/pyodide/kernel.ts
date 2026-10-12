@@ -5,7 +5,10 @@ import {
   MPL_BACKEND_SOURCE,
   RUNTIME_MODULE,
   RUNTIME_SOURCE,
+  SANDWORM_MODULE,
+  SANDWORM_SOURCE,
 } from "./harness";
+import { clearAllLiveOutputs, setLiveOutputs } from "./liveOutputs";
 import type {
   FromWorker,
   KernelCall,
@@ -66,6 +69,16 @@ function failPending(reason: string) {
   pending.clear();
 }
 
+// Live cells stop polling while nobody can see them.
+function sendVisibility() {
+  const message: ToWorker = { kind: "visibility", hidden: document.hidden };
+  worker?.postMessage(message);
+}
+
+if (typeof document !== "undefined") {
+  document.addEventListener("visibilitychange", sendVisibility);
+}
+
 function start(): Worker {
   if (worker) return worker;
 
@@ -97,6 +110,9 @@ function start(): Worker {
         pending.get(message.id)?.reject(new Error(message.error));
         pending.delete(message.id);
         break;
+      case "live_output":
+        setLiveOutputs(message.blockId, message.outputs);
+        break;
       default:
         break;
     }
@@ -116,11 +132,15 @@ function start(): Worker {
       modules: [
         { name: RUNTIME_MODULE, source: RUNTIME_SOURCE },
         { name: MPL_BACKEND_MODULE, source: MPL_BACKEND_SOURCE },
+        { name: SANDWORM_MODULE, source: SANDWORM_SOURCE },
       ],
     },
   };
   w.postMessage(init);
   worker = w;
+  if (globalThis.document?.hidden) {
+    sendVisibility();
+  }
   setStatus("loading");
   return w;
 }
@@ -151,6 +171,7 @@ export function restartKernel() {
   worker?.terminate();
   worker = null;
   failPending("Python was restarted");
+  clearAllLiveOutputs();
   start();
 }
 
