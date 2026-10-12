@@ -40,6 +40,14 @@ export const gridBackdrop = {
   backgroundSize: "44px 44px",
 };
 
+// The dashed gradient lines that hang from the top of a hero.
+export const lineBackdrop = {
+  backgroundImage: "url(/img/line-bg.svg)",
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "center top",
+  backgroundSize: "921px auto",
+};
+
 // Keyframes Tailwind has no utilities for. Rows drop in one after another;
 // flaps turn over once. Both stay still for visitors who ask for less motion.
 const BOARD_CSS = `

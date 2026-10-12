@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ShowcaseHeader } from "@/components/Showcase/ShowcaseHeader";
 import { ShowcaseLeadButton } from "@/components/Showcase/ShowcaseLeadButton";
 import { eyebrowClass, gridBackdrop } from "@/components/Showcase/BoardKit";
+import { ProtocolLogo } from "@/components/Showcase/ProtocolLogo";
 import { PageSection } from "@/components/Showcase/ShowcaseChain";
 import { SeriesChart } from "@/components/Showcase/SeriesChart";
 import {
@@ -130,18 +131,10 @@ export function ProtocolProfile({
             />
 
             <div className="mt-6 flex items-center gap-4">
-              <span className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-2xl font-semibold text-primary dark:bg-pill-bg dark:text-white">
-                {name.charAt(0).toUpperCase()}
-                {profile?.logo && (
-                  // The logo covers the initial; if it does not load, the initial shows.
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={profile.logo}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover text-transparent"
-                  />
-                )}
-              </span>
+              <ProtocolLogo
+                name={name}
+                className="h-16 w-16 rounded-2xl bg-primary/10 text-2xl text-primary dark:bg-pill-bg dark:text-white"
+              />
               <div className="min-w-0">
                 <p className={eyebrowClass}>Protocol on {chain}</p>
                 <h1 className="mt-1 text-3xl sm:text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-ink-100 dark:text-white">

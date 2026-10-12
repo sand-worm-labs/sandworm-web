@@ -8,9 +8,9 @@ import {
 } from "@/components/Showcase/fetchShowcase";
 import { ProtocolProfile } from "@/components/Showcase/ProtocolProfile";
 import { PublishedNotebook } from "@/components/Showcase/PublishedNotebook";
-import { gridBackdrop } from "@/components/Showcase/BoardKit";
+import { lineBackdrop } from "@/components/Showcase/BoardKit";
+import { ProtocolLogo } from "@/components/Showcase/ProtocolLogo";
 import { ShowcaseHeader } from "@/components/Showcase/ShowcaseHeader";
-import { ShowcaseLeadButton } from "@/components/Showcase/ShowcaseLeadButton";
 import {
   NotebookCard,
   ProjectCard,
@@ -31,7 +31,6 @@ import {
   slugify,
 } from "@/lib/showcase";
 import { fetchProtocolProfile } from "@/lib/protocolStats";
-import type { ShowcaseLeadTarget } from "@/types";
 
 // =====================================
 // ⬢  Types
@@ -127,16 +126,13 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
     n => n.id !== caseStudy.id
   );
   const otherProjects = projects.filter(p => p.slug !== project?.slug);
-  const claim: ShowcaseLeadTarget = {
-    kind: "claim",
-    category: category.slug,
-    protocol,
-    notebookSlug: caseStudy.slug,
-  };
   const claimed = showcase.claimed === true;
 
   const hero = (
-    <section className="bg-ink-navy text-white" style={gridBackdrop}>
+    <section
+      className="bg-ink-navy dark:bg-block-surface text-white"
+      style={lineBackdrop}
+    >
       <div className="container mx-auto px-4 sm:px-8 py-10">
         <ShowcaseBreadcrumb
           category={category}
@@ -153,9 +149,15 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
           {showcase.country && <Tag>{showcase.country}</Tag>}
         </div>
 
-        <h1 className="mt-4 max-w-3xl text-3xl sm:text-5xl font-semibold leading-[1.05] tracking-[-0.02em]">
-          {caseStudy.title}
-        </h1>
+        <div className="mt-4 flex items-center gap-4">
+          <ProtocolLogo
+            name={protocol}
+            className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-white/10 text-2xl text-white"
+          />
+          <h1 className="max-w-3xl text-3xl sm:text-5xl font-semibold leading-[1.05] tracking-[-0.02em]">
+            {caseStudy.title}
+          </h1>
+        </div>
         {caseStudy.description && (
           <p className="mt-3 max-w-2xl text-sm text-white/70">
             {caseStudy.description}
@@ -166,16 +168,20 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
           <OpenNotebookLink
             slug={caseStudy.slug}
             category={category.slug}
-            className="bg-white text-ink-navy hover:bg-white/90"
+            className="bg-white text-ink-navy dark:text-page-surface hover:bg-white/90"
           >
             Continue this research
           </OpenNotebookLink>
           <StartAnalyzingLink variant="ghost" />
         </div>
 
-        <p className="mt-4 font-body-mono text-[11px] uppercase tracking-[0.12em] text-white/50">
-          By Sandworm
-          {showcase.dataAsOf ? ` · Data as of ${showcase.dataAsOf}` : ""}
+        <p className="mt-4 flex items-center gap-2 text-sm text-white/60">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="" className="h-5 w-5 rounded-full" />
+          <span>
+            By Sandworm
+            {showcase.dataAsOf ? ` · Data as of ${showcase.dataAsOf}` : ""}
+          </span>
         </p>
 
         {showcase.heroStats.length > 0 && (
@@ -183,24 +189,6 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
             <ShowcaseStats stats={showcase.heroStats} dark />
           </div>
         )}
-      </div>
-    </section>
-  );
-
-  // An unclaimed page opens with the prompt, right under the hero, so the
-  // people it is about see it before the notebook.
-  const claimPrompt = (
-    <section className="border-b border-border-secondary dark:border-border-tertiary bg-base-100">
-      <div className="container mx-auto px-4 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-3">
-        <p className="min-w-0 max-w-2xl text-sm text-ink-400">
-          <span className="font-semibold text-ink-100 dark:text-white">
-            Work at {protocol}?
-          </span>{" "}
-          Claim this page to correct anything and get the numbers for your team.
-        </p>
-        <ShowcaseLeadButton variant="outline" target={claim}>
-          Claim this page
-        </ShowcaseLeadButton>
       </div>
     </section>
   );
@@ -265,16 +253,7 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
     <div className="flex flex-col h-[100dvh] bg-page-surface font-body">
       <ShowcaseHeader active="showcase" />
       <TrackCaseStudyView category={category.slug} protocol={protocol} />
-      <PublishedNotebook
-        slug={caseStudy.slug}
-        header={
-          <>
-            {hero}
-            {!claimed && claimPrompt}
-          </>
-        }
-        footer={closing}
-      />
+      <PublishedNotebook slug={caseStudy.slug} header={hero} footer={closing} />
     </div>
   );
 }

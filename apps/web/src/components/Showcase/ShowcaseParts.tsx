@@ -10,6 +10,7 @@ import {
   notebookHref,
   projectHref,
 } from "@/lib/showcase";
+import { ProtocolLogo } from "@/components/Showcase/ProtocolLogo";
 import { cn } from "@/lib/utils";
 import type {
   ShowcaseHeroStat,
@@ -173,12 +174,18 @@ export function ProjectCard({
       href={projectHref(category, project.slug)}
       className="group flex items-center justify-between gap-4 h-full rounded-xl px-4 py-3.5 bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
     >
-      <span className="min-w-0">
-        <span className="block truncate text-[15px] font-semibold text-ink-100 dark:text-white group-hover:text-primary dark:group-hover:text-primary-tint-75">
-          {project.name}
-        </span>
-        <span className="mt-0.5 block text-xs text-ink-400">
-          {count} {count === 1 ? "notebook" : "notebooks"}
+      <span className="flex min-w-0 items-center gap-3">
+        <ProtocolLogo
+          name={project.name}
+          className="h-9 w-9 rounded-lg bg-primary/10 text-sm text-primary dark:bg-pill-bg dark:text-white"
+        />
+        <span className="min-w-0">
+          <span className="block truncate text-[15px] font-semibold text-ink-100 dark:text-white group-hover:text-primary dark:group-hover:text-primary-tint-75">
+            {project.name}
+          </span>
+          <span className="mt-0.5 block text-xs text-ink-400">
+            {count} {count === 1 ? "notebook" : "notebooks"}
+          </span>
         </span>
       </span>
       <span

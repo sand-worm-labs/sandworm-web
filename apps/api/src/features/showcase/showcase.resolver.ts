@@ -179,4 +179,47 @@ export class ShowcaseResolver {
   ): Promise<boolean> {
     return this.adminService.approveClaim({ userId, password }, leadId);
   }
+
+  @Public()
+  @Query(() => GraphQLJSON, {
+    name: 'getShowcaseLogos',
+    description:
+      'For the studio: the protocol logos that have been uploaded (slug, name and version, not the image). Needs the studio password, or a staff account.',
+  })
+  getShowcaseLogos(
+    @Args('password', { nullable: true }) password?: string,
+    @CurrentUser('id') userId?: string,
+  ) {
+    return this.adminService.listLogos({ userId, password });
+  }
+
+  @Public()
+  @Mutation(() => Boolean, {
+    name: 'saveShowcaseLogo',
+    description:
+      "Set a protocol's logo: a base64 PNG, JPEG or WebP of up to 256 KB, served at /api/showcase/logos/:slug. Needs the studio password, or a staff account.",
+  })
+  saveShowcaseLogo(
+    @Args('slug') slug: string,
+    @Args('name') name: string,
+    @Args('imageBase64') imageBase64: string,
+    @Args('password', { nullable: true }) password?: string,
+    @CurrentUser('id') userId?: string,
+  ): Promise<boolean> {
+    return this.adminService.saveLogo({ userId, password }, slug, name, imageBase64);
+  }
+
+  @Public()
+  @Mutation(() => Boolean, {
+    name: 'deleteShowcaseLogo',
+    description:
+      "Remove an uploaded protocol logo, so the protocol shows DefiLlama's icon again. Needs the studio password, or a staff account.",
+  })
+  deleteShowcaseLogo(
+    @Args('slug') slug: string,
+    @Args('password', { nullable: true }) password?: string,
+    @CurrentUser('id') userId?: string,
+  ): Promise<boolean> {
+    return this.adminService.deleteLogo({ userId, password }, slug);
+  }
 }

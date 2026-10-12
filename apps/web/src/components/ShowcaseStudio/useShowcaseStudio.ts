@@ -13,6 +13,7 @@ const PASSWORD_KEY = "showcase-studio-password";
 const OVERVIEW = gql`
   query ShowcaseStudioOverview($password: String) {
     getShowcaseAdmin(password: $password)
+    getShowcaseLogos(password: $password)
     getShowcaseConfig
   }
 `;
@@ -49,6 +50,28 @@ const SAVE_CHAIN = gql`
   }
 `;
 
+const SAVE_LOGO = gql`
+  mutation SaveShowcaseLogo(
+    $slug: String!
+    $name: String!
+    $imageBase64: String!
+    $password: String
+  ) {
+    saveShowcaseLogo(
+      slug: $slug
+      name: $name
+      imageBase64: $imageBase64
+      password: $password
+    )
+  }
+`;
+
+const DELETE_LOGO = gql`
+  mutation DeleteShowcaseLogo($slug: String!, $password: String) {
+    deleteShowcaseLogo(slug: $slug, password: $password)
+  }
+`;
+
 const APPROVE_CLAIM = gql`
   mutation ApproveShowcaseClaim($leadId: String!, $password: String) {
     approveShowcaseClaim(leadId: $leadId, password: $password)
@@ -81,6 +104,14 @@ export type StudioLead = {
   role: string | null;
   source: Record<string, string> | null;
   createdAt: string;
+};
+
+// An uploaded protocol logo, without the image. `etag` changes when it is replaced.
+export type StudioLogo = {
+  slug: string;
+  name: string;
+  etag: string;
+  updatedAt: string;
 };
 
 export type StudioOverview = {
@@ -141,6 +172,8 @@ export function useShowcaseStudio() {
   const [deleteCategoryMutation] = useMutation(DELETE_CATEGORY);
   const [saveChainMutation] = useMutation(SAVE_CHAIN);
   const [approveClaimMutation] = useMutation(APPROVE_CLAIM);
+  const [saveLogoMutation] = useMutation(SAVE_LOGO);
+  const [deleteLogoMutation] = useMutation(DELETE_LOGO);
 
   // Handlers
   const unlock = useCallback((next: string) => {
@@ -186,9 +219,18 @@ export function useShowcaseStudio() {
   const approveClaim = (leadId: string) =>
     write(() => approveClaimMutation({ variables: { leadId, ...variables } }));
 
+  const saveLogo = (slug: string, name: string, imageBase64: string) =>
+    write(() =>
+      saveLogoMutation({ variables: { slug, name, imageBase64, ...variables } })
+    );
+
+  const deleteLogo = (slug: string) =>
+    write(() => deleteLogoMutation({ variables: { slug, ...variables } }));
+
   return {
     overview: (data?.getShowcaseAdmin ?? null) as StudioOverview | null,
     config: (data?.getShowcaseConfig ?? null) as ShowcaseConfig | null,
+    logos: (data?.getShowcaseLogos ?? []) as StudioLogo[],
     loading: !ready || loading,
     locked: ready && !loading && !data?.getShowcaseAdmin && !!error,
     // The gate says why it is closed only after a password was tried.
@@ -200,5 +242,7 @@ export function useShowcaseStudio() {
     deleteCategory,
     saveChain,
     approveClaim,
+    saveLogo,
+    deleteLogo,
   };
 }

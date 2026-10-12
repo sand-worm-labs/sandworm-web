@@ -72,3 +72,27 @@ export class ShowcaseTemplateEntity extends AbstractEntity {
   @Column({ type: 'jsonb' })
   sections!: Record<string, unknown>[];
 }
+
+// A protocol's logo, kept apart from the taxonomy so reading the config never loads image
+// bytes. Served at /api/showcase/logos/:slug. A protocol with no row falls back to
+// DefiLlama's icon for the same slug, then to its initial.
+@Entity('showcase_protocol_logo')
+export class ShowcaseProtocolLogoEntity extends AbstractEntity {
+  // The protocol's slug, as the Showcase links to it (/showcase/lending/aave -> aave).
+  @PrimaryColumn({ type: 'text', primaryKeyConstraintName: 'PK_showcase_protocol_logo_slug' })
+  slug!: string;
+
+  @Column({ type: 'text' })
+  name!: string;
+
+  // image/png, image/jpeg or image/webp.
+  @Column({ name: 'content_type', type: 'text' })
+  contentType!: string;
+
+  @Column({ type: 'bytea' })
+  data!: Buffer;
+
+  // A hash of the bytes: the response's ETag, so a replaced logo is picked up.
+  @Column({ type: 'text' })
+  etag!: string;
+}

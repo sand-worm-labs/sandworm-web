@@ -627,6 +627,11 @@ type Query {
   getShowcaseAdmin(password: String): JSON!
 
   """
+  For the studio: the protocol logos that have been uploaded (slug, name and version, not the image). Needs the studio password, or a staff account.
+  """
+  getShowcaseLogos(password: String): JSON!
+
+  """
   Get the listed bounties, in display order. Pass featured to get only the ones shown on the home page.
   """
   getBounties(featured: Boolean): [Bounty!]!
@@ -867,6 +872,16 @@ type Mutation {
   Approve a claim lead: marks the case study it names as claimed by the protocol's team. Needs the studio password, or a staff account.
   """
   approveShowcaseClaim(leadId: String!, password: String): Boolean!
+
+  """
+  Set a protocol's logo: a base64 PNG, JPEG or WebP of up to 256 KB, served at /api/showcase/logos/:slug. Needs the studio password, or a staff account.
+  """
+  saveShowcaseLogo(slug: String!, name: String!, imageBase64: String!, password: String): Boolean!
+
+  """
+  Remove an uploaded protocol logo, so the protocol shows DefiLlama's icon again. Needs the studio password, or a staff account.
+  """
+  deleteShowcaseLogo(slug: String!, password: String): Boolean!
 
   """
   Create a bounty as a draft. It is listed once its reward is funded in escrow.

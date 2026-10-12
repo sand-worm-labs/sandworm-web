@@ -20,6 +20,7 @@ import { timingSafeEqual } from 'crypto';
 import { In, IsNull, Not, Repository } from 'typeorm';
 import { z } from 'zod';
 import { WorkspaceMembershipService } from '../workspace/service/workspace-membership.service';
+import { ShowcaseLogoService } from './showcase-logo.service';
 
 const MAX_NOTEBOOKS = 500;
 const MAX_LEADS = 500;
@@ -76,6 +77,7 @@ export class ShowcaseAdminService {
     @InjectRepository(ShowcaseChainEntity)
     private readonly chainRepository: Repository<ShowcaseChainEntity>,
     private readonly workspaceMembershipService: WorkspaceMembershipService,
+    private readonly logoService: ShowcaseLogoService,
     config: ConfigService,
     private readonly eventEmitter: EventEmitter2,
   ) {
@@ -266,6 +268,30 @@ export class ShowcaseAdminService {
     );
     this.eventEmitter.emit(SEARCH_INDEX_STALE_EVENT);
     return true;
+  }
+
+  // Logos the studio has uploaded, without their bytes. A protocol not in this list
+  // shows DefiLlama's icon, if it has one.
+  async listLogos(who: StudioCaller) {
+    await this.assertStaff(who);
+    return this.logoService.list();
+  }
+
+  // The image comes as base64: the studio resizes it to a 256px PNG before it sends it.
+  async saveLogo(
+    who: StudioCaller,
+    slug: string,
+    name: string,
+    imageBase64: string,
+  ): Promise<boolean> {
+    await this.assertStaff(who);
+    await this.logoService.save(slug, name, imageBase64);
+    return true;
+  }
+
+  async deleteLogo(who: StudioCaller, slug: string): Promise<boolean> {
+    await this.assertStaff(who);
+    return this.logoService.remove(slug);
   }
 
   // Approving a claim is how a case study becomes the protocol team's: the page stops

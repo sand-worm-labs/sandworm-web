@@ -50,6 +50,11 @@ function makeService({
       if (!canEdit) throw new ForbiddenException('view-only');
     }),
   } as any;
+  const logoService = {
+    list: jest.fn().mockResolvedValue([]),
+    save: jest.fn().mockResolvedValue(undefined),
+    remove: jest.fn().mockResolvedValue(true),
+  } as any;
   const config = {
     get: jest.fn((key: string) =>
       key === 'SHOWCASE_STUDIO_PASSWORD' ? password : officialIds,
@@ -63,6 +68,7 @@ function makeService({
     categoryRepository,
     chainRepository,
     membership,
+    logoService,
     config,
     { emit: jest.fn() } as any,
   );
@@ -74,6 +80,7 @@ function makeService({
     categoryRepository,
     chainRepository,
     membership,
+    logoService,
     countQuery,
   };
 }

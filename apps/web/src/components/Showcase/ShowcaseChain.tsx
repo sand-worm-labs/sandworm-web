@@ -3,6 +3,7 @@
 // needs a click handler lives in its own file.
 import Link from "next/link";
 
+import { ProtocolLogo } from "@/components/Showcase/ProtocolLogo";
 import { Tag } from "@/components/Tag";
 import { formatUsd, type ProtocolStats } from "@/lib/protocolStats";
 import { notebookHref, projectHref, slugify } from "@/lib/showcase";
@@ -53,8 +54,7 @@ export function PageSection({
 // =====================================
 // ⬢  Section nav
 // =====================================
-// Anchors to the sections that are on the page. It sticks under the site header while the
-// page scrolls beneath it.
+
 export function SectionNav({
   sections,
 }: {
@@ -180,12 +180,10 @@ export function ProtocolCard({
   const body = (
     <>
       <div className="flex items-start gap-3">
-        <span
-          aria-hidden="true"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-base font-semibold text-primary dark:bg-pill-bg dark:text-white"
-        >
-          {name.charAt(0).toUpperCase()}
-        </span>
+        <ProtocolLogo
+          name={name}
+          className="h-10 w-10 rounded-lg bg-primary/10 text-base text-primary dark:bg-pill-bg dark:text-white"
+        />
         <div className="min-w-0">
           <h3 className="truncate text-[15px] font-semibold text-ink-100 dark:text-white group-hover:text-primary dark:group-hover:text-primary-tint-75">
             {name}
