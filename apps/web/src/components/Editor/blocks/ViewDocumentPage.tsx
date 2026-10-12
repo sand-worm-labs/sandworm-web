@@ -23,6 +23,7 @@ import { ContentSkeleton, TitleSkeleton } from "../ContentSkeleton";
 
 import DashboardNotebookGroupButton from "./DashboarNotebookGroupButton";
 import { TopBarLead } from "./TopBarLead";
+import NotebookTypeMenu from "./NotebookTypeMenu";
 import UpgradePlanModal from "./UpgradePlanModal";
 
 function Placeholder() {
@@ -150,6 +151,13 @@ export default function ViewDocumentPage(props: Props) {
       <TopBarLead
         viewing={true}
         title={document?.title || "Untitled"}
+        typeMenu={
+          <NotebookTypeMenu
+            runtime={document?.runtime}
+            canChange={false}
+            onChange={() => {}}
+          />
+        }
       />
       <DashboardNotebookGroupButton
         workspaceId={props.workspaceId}
