@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { List } from "immutable";
 import clsx from "clsx";
-import { getBlocks } from "@sandworm/editor";
+import { ExecutionQueue, getBlocks, getLayout } from "@sandworm/editor";
 import { PiCircleNotch, PiPencilSimple, PiPlayFill } from "react-icons/pi";
 import { toast } from "sonner";
 
@@ -15,6 +15,8 @@ import { tintPillDarkClassName } from "@/styles/interactive";
 import type { SessionUser } from "../hooks/useAuth";
 import Layout from "../../Visualization/Layout";
 import useDocument from "../hooks/useDocument";
+import { BrowserRuntimeProvider } from "../hooks/useEnvironmentStatus";
+import { useLiveNotebook } from "../hooks/useNotebookRuntime";
 import useUpgradeGate from "../hooks/useUpgradeGate";
 import { useViewYDoc } from "../hooks/useViewYDoc";
 import ViewSwitcher from "../ViewSwitcher";
@@ -59,7 +61,9 @@ interface Props {
 // =====================================
 // The saved notebook, read-only: results and a Run button to refresh them.
 // Rendered from a snapshot fetched over HTTP, like the public page — no
-// collaboration socket, no execution queue on the client.
+// collaboration socket. A cloud notebook has no execution queue on the client
+// either: Run asks the server. A browser notebook runs here, on this viewer's
+// own copy, so its live cells keep updating and nothing is written back.
 export default function ViewDocumentPage(props: Props) {
   const [{ document }] = useDocument(props.workspaceId, props.documentId);
   const { yDoc, isSyncing, running, progress, error, run } = useViewYDoc(
@@ -68,6 +72,24 @@ export default function ViewDocumentPage(props: Props) {
   );
   const [view, setView] = useState<NotebookView>("report");
   const gate = useUpgradeGate(props.workspaceId);
+
+  const executionQueue = useMemo(() => ExecutionQueue.fromYjs(yDoc), [yDoc]);
+  const isLive = useLiveNotebook({
+    document: { id: props.documentId, runtime: document?.runtime },
+    yDoc,
+    executionQueue,
+    userId: props.user.id,
+    syncing: isSyncing || !document,
+  });
+  const [liveRunning, setLiveRunning] = useState(false);
+  useEffect(() => {
+    if (!isLive) return undefined;
+    const update = () =>
+      setLiveRunning(executionQueue.getCurrentBatch() !== null);
+    update();
+    return executionQueue.observe(update);
+  }, [isLive, executionQueue]);
+  const isRunning = isLive ? liveRunning : running;
 
   const role =
     props.user.role?.find(r => r[props.workspaceId])?.[props.workspaceId] ??
@@ -82,6 +104,14 @@ export default function ViewDocumentPage(props: Props) {
   }, [error, loaded]);
 
   const onRun = useCallback(() => {
+    if (isLive) {
+      executionQueue.enqueueRunAll(getLayout(yDoc), getBlocks(yDoc), {
+        _tag: "user",
+        userId: props.user.id,
+      });
+      return;
+    }
+
     // Only SQL blocks have a dataSourceId.
     const dataSourceIds: (string | null | undefined)[] = [];
     getBlocks(yDoc).forEach(block => {
@@ -93,7 +123,7 @@ export default function ViewDocumentPage(props: Props) {
     if (gate.check(dataSourceIds)) {
       run();
     }
-  }, [yDoc, gate, run]);
+  }, [yDoc, gate, run, isLive, executionQueue, props.user.id]);
 
   const hasContent = useMemo(
     () => loaded && getBlocks(yDoc).size > 0,
@@ -105,7 +135,7 @@ export default function ViewDocumentPage(props: Props) {
     <button
       type="button"
       onClick={onRun}
-      disabled={!hasContent || running}
+      disabled={!hasContent || isRunning}
       className={clsx(
         "relative flex-shrink-0",
         "flex items-center gap-1.5 px-4 py-1.5",
@@ -113,18 +143,18 @@ export default function ViewDocumentPage(props: Props) {
         "transition-all duration-150 shadow-[0px_7.5px_8px_0px_rgba(132,151,195,0.04)]",
         "run-all-gradient-border",
         {
-          "is-running": running,
+          "is-running": isRunning,
           "bg-base-300 dark:bg-base-700 text-ink-300 dark:text-ink-600 cursor-not-allowed":
-            !hasContent || running,
+            !hasContent || isRunning,
           [`bg-base-200 text-ink-100 border border-border hover:bg-base-400 hover:text-white hover:border-transparent dark:hover:bg-base-400 dark:hover:text-white ${tintPillDarkClassName}`]:
-            hasContent && !running,
+            hasContent && !isRunning,
         }
       )}
     >
-      {running ? (
+      {isRunning ? (
         <>
           <PiCircleNotch size={14} className="animate-spin" />
-          {progress
+          {progress && !isLive
             ? `Running (${progress.completed}/${progress.total})`
             : "Running"}
         </>
@@ -234,7 +264,9 @@ export default function ViewDocumentPage(props: Props) {
         message={gate.message ?? ""}
         workspaceId={props.workspaceId}
       />
-      <div className="flex-1 min-w-0 flex overflow-hidden">{content}</div>
+      <BrowserRuntimeProvider enabled={isLive}>
+        <div className="flex-1 min-w-0 flex overflow-hidden">{content}</div>
+      </BrowserRuntimeProvider>
     </Layout>
   );
 }
