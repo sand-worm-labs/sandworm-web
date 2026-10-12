@@ -20,9 +20,13 @@ async function abort(): Promise<void> {
 }
 
 export const pythonExecutor = {
-  executeCode(notebookId: string, code: string): Running<Output[]> {
+  executeCode(
+    notebookId: string,
+    blockId: string,
+    code: string
+  ): Running<Output[]> {
     return {
-      promise: callKernel({ kind: "run_python", notebookId, code }),
+      promise: callKernel({ kind: "run_python", notebookId, blockId, code }),
       abort,
     };
   },

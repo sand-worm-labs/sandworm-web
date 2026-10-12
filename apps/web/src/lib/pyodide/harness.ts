@@ -5,10 +5,14 @@
 
 export const RUNTIME_MODULE = "_sandworm_runtime";
 export const MPL_BACKEND_MODULE = "_sandworm_mpl_backend";
+export const SANDWORM_MODULE = "sandworm";
 
 export const RUNTIME_SOURCE = String.raw`
+import asyncio
 import base64
+import contextvars
 import importlib.util
+import inspect
 import io
 import json
 import os
@@ -30,16 +34,21 @@ PYPI_NAMES = {
     "IPython": "ipython",
 }
 
-_outputs = []
+# Where output goes right now: the running cell's list, or a live tick's.
+# A context variable, because live ticks run as asyncio tasks alongside cells.
+_current = contextvars.ContextVar("sandworm_outputs", default=None)
 
 
 def _emit(output):
-    _outputs.append(output)
+    outputs = _current.get()
+    if outputs is not None:
+        outputs.append(output)
 
 
 class _Stream(io.TextIOBase):
-    def __init__(self, name):
+    def __init__(self, name, fallback):
         self._name = name
+        self._fallback = fallback
 
     def writable(self):
         return True
@@ -47,12 +56,20 @@ class _Stream(io.TextIOBase):
     def write(self, text):
         if not text:
             return 0
-        last = _outputs[-1] if _outputs else None
+        outputs = _current.get()
+        if outputs is None:
+            # Outside any cell, e.g. a WebSocket callback: the browser console.
+            return self._fallback.write(text)
+        last = outputs[-1] if outputs else None
         if last and last["type"] == "stdio" and last["name"] == self._name:
             last["text"] += text
         else:
             _emit({"type": "stdio", "name": self._name, "text": text})
         return len(text)
+
+
+sys.stdout = _Stream("stdout", sys.stdout)
+sys.stderr = _Stream("stderr", sys.stderr)
 
 
 def _figure_png(fig):
@@ -200,29 +217,239 @@ def _cell_traceback(exc):
     return traceback.format_exception(type(exc), exc, tb)
 
 
-async def run(code, namespace):
+def _error_output(exc):
+    return {
+        "type": "error",
+        "ename": type(exc).__name__,
+        "evalue": str(exc),
+        "traceback": [line.rstrip("\n") for line in _cell_traceback(exc)],
+    }
+
+
+# ── Live cells ───────────────────────────────────────────────────────────────
+# A cell can keep updating after it finishes, through the sandworm module:
+# sandworm.every() re-runs a function on a timer, sandworm.websocket() keeps a
+# socket open. Each update replaces the cell's output on this page only; it is
+# never written to the notebook.
+
+# Posts (notebook_id, block_id, outputs_json) to the page. Set by the worker.
+_sink = None
+# True while the tab is hidden: pollers skip their ticks.
+_paused = False
+# The cell being run, so sandworm.every() and websocket() know whose they are.
+_cell = contextvars.ContextVar("sandworm_cell", default=None)
+# (notebook_id, block_id) -> _Live, for every cell that's still updating.
+_lives = {}
+
+
+def set_sink(sink):
+    global _sink
+    _sink = sink
+
+
+def set_paused(paused):
+    global _paused
+    _paused = bool(paused)
+
+
+class _Live:
+    """A cell's pollers and sockets, and what they last showed."""
+
+    def __init__(self, notebook_id, block_id):
+        self.notebook_id = notebook_id
+        self.block_id = block_id
+        self.base = []
+        self.pollers = []
+        self.sockets = []
+        # Until the cell has finished, ticks land in its result instead.
+        self.ready = False
+
+    def outputs(self):
+        outputs = list(self.base)
+        for poller in self.pollers:
+            outputs.extend(poller.last)
+        return outputs
+
+    def publish(self):
+        if self.ready and _sink is not None:
+            _sink(self.notebook_id, self.block_id, json.dumps(self.outputs(), default=str))
+
+    def stop(self):
+        for poller in self.pollers:
+            poller.task.cancel()
+        for socket in self.sockets:
+            socket.close()
+
+
+def _live_cell():
+    live = _cell.get()
+    if live is None:
+        raise RuntimeError("sandworm live cells only work inside a notebook cell")
+    return live
+
+
+class _Poller:
+    def __init__(self, live, fn, seconds):
+        self.last = []
+        self.first = asyncio.get_event_loop().create_future()
+        self.task = asyncio.ensure_future(self._loop(live, fn, seconds))
+
+    async def _loop(self, live, fn, seconds):
+        while True:
+            if not _paused or not self.first.done():
+                await self._tick(live, fn)
+            await asyncio.sleep(seconds)
+
+    async def _tick(self, live, fn):
+        outputs = []
+        _current.set(outputs)
+        try:
+            result = fn()
+            if inspect.isawaitable(result):
+                result = await result
+            display(result)
+            flush_figures()
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            _emit(_error_output(exc))
+        self.last = outputs
+        if not self.first.done():
+            self.first.set_result(None)
+        live.publish()
+
+
+def start_poller(fn, seconds):
+    live = _live_cell()
+    live.pollers.append(_Poller(live, fn, seconds))
+
+
+class _Socket:
+    """A browser WebSocket that reconnects until the cell stops."""
+
+    def __init__(self, url, on_message, subscribe, parse_json):
+        self.url = url
+        self.on_message = on_message
+        self.subscribe = subscribe
+        self.parse_json = parse_json
+        self.ws = None
+        self.closed = False
+        self.delay = 1
+        self.proxies = []
+        self.connect()
+
+    def connect(self):
+        from js import WebSocket
+        from pyodide.ffi import create_proxy
+
+        if self.closed:
+            return
+        self.release()
+        ws = WebSocket.new(self.url)
+        ws.binaryType = "arraybuffer"
+
+        def on_open(_event):
+            self.delay = 1
+            for message in self.subscribe:
+                self.send(message)
+
+        def on_message(event):
+            data = event.data
+            if not isinstance(data, str):
+                data = bytes(data.to_py())
+            elif self.parse_json:
+                try:
+                    data = json.loads(data)
+                except ValueError:
+                    pass
+            try:
+                self.on_message(data)
+            except Exception:
+                traceback.print_exc()
+
+        def on_close(_event):
+            if self.closed:
+                return
+            asyncio.get_event_loop().call_later(self.delay, self.connect)
+            self.delay = min(self.delay * 2, 30)
+
+        self.proxies = [create_proxy(on_open), create_proxy(on_message), create_proxy(on_close)]
+        ws.onopen, ws.onmessage, ws.onclose = self.proxies
+        self.ws = ws
+
+    def send(self, message):
+        if not isinstance(message, (str, bytes)):
+            message = json.dumps(message)
+        if self.ws is not None and self.ws.readyState == 1:
+            self.ws.send(message)
+
+    def release(self):
+        if self.ws is not None:
+            self.ws.onopen = self.ws.onmessage = self.ws.onclose = None
+            self.ws.close()
+        for proxy in self.proxies:
+            proxy.destroy()
+        self.proxies = []
+
+    def close(self):
+        self.closed = True
+        self.release()
+
+
+def open_websocket(url, on_message, subscribe, parse_json):
+    live = _live_cell()
+    if subscribe is None:
+        subscribe = []
+    elif not isinstance(subscribe, list):
+        subscribe = [subscribe]
+    socket = _Socket(url, on_message, subscribe, parse_json)
+    live.sockets.append(socket)
+    return socket
+
+
+def stop_notebook(notebook_id):
+    for key in [key for key in _lives if key[0] == notebook_id]:
+        _lives.pop(key).stop()
+
+
+async def run(code, namespace, notebook_id="", block_id=""):
     from pyodide.code import eval_code_async
 
-    _outputs.clear()
+    # Re-running a cell replaces whatever it left updating.
+    previous = _lives.pop((notebook_id, block_id), None)
+    if previous is not None:
+        previous.stop()
+
+    live = _Live(notebook_id, block_id)
+    outputs = []
+    outputs_token = _current.set(outputs)
+    cell_token = _cell.set(live)
     _patch_ipython()
     _patch_plotly()
-    stdout, stderr = sys.stdout, sys.stderr
-    sys.stdout, sys.stderr = _Stream("stdout"), _Stream("stderr")
     try:
         result = await eval_code_async(code, namespace, filename=CELL_FILENAME)
         display(result)
         flush_figures()
     except BaseException as exc:
         flush_figures()
-        _emit({
-            "type": "error",
-            "ename": type(exc).__name__,
-            "evalue": str(exc),
-            "traceback": [line.rstrip("\n") for line in _cell_traceback(exc)],
-        })
+        _emit(_error_output(exc))
     finally:
-        sys.stdout, sys.stderr = stdout, stderr
-    return json.dumps(_outputs, default=str)
+        _current.reset(outputs_token)
+        _cell.reset(cell_token)
+
+    if not (live.pollers or live.sockets):
+        return json.dumps(outputs, default=str)
+    if any(o["type"] == "error" for o in outputs):
+        live.stop()
+        return json.dumps(outputs, default=str)
+
+    # The first tick of each poller is part of the cell's result, so the
+    # notebook saves a real snapshot rather than an empty cell.
+    live.base = outputs
+    await asyncio.gather(*(poller.first for poller in live.pollers))
+    live.ready = True
+    _lives[(notebook_id, block_id)] = live
+    return json.dumps(live.outputs(), default=str)
 
 
 # ── SQL ──────────────────────────────────────────────────────────────────────
@@ -357,6 +584,58 @@ def set_date_variable(name, config_json, namespace):
     namespace[name] = pytz.timezone(v["timezone"]).localize(
         datetime(v["year"], v["month"], v["day"], v["hours"], v["minutes"], v["seconds"])
     )
+`;
+
+// What notebook cells import, as `import sandworm as sw`.
+export const SANDWORM_SOURCE = String.raw`
+"""Live cells for browser notebooks.
+
+Polling, re-running a function every few seconds:
+
+    @sw.every(10)
+    async def prices():
+        r = await pyfetch("https://...")
+        return make_chart(await r.json())
+
+WebSockets, keeping data current as messages arrive:
+
+    trades = []
+    sw.websocket("wss://...", trades.append)
+
+    @sw.every(1)
+    def chart():
+        return make_chart(trades[-500:])
+
+Whatever the function returns (a figure, a DataFrame, text) replaces the
+cell's output each time. Re-running the cell stops what it started.
+"""
+
+import ${RUNTIME_MODULE} as _runtime
+
+__all__ = ["every", "websocket"]
+
+
+def every(seconds):
+    """Run the decorated function now, then again every seconds seconds."""
+    if seconds < 0.5:
+        raise ValueError("sandworm.every needs at least 0.5 seconds between runs")
+
+    def decorate(fn):
+        _runtime.start_poller(fn, float(seconds))
+        return fn
+
+    return decorate
+
+
+def websocket(url, on_message, *, subscribe=None, parse_json=True):
+    """Open a WebSocket and call on_message with each message.
+
+    subscribe is a message (or list of messages) sent every time the socket
+    connects; dicts are sent as JSON. Text messages are parsed as JSON when they
+    can be. The socket reconnects if it drops. Returns it, with .send() and
+    .close().
+    """
+    return _runtime.open_websocket(url, on_message, subscribe, parse_json)
 `;
 
 export const MPL_BACKEND_SOURCE = String.raw`

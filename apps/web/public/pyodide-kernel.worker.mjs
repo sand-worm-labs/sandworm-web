@@ -66,7 +66,16 @@ if "${HOME}" not in sys.path:
 import ${harness.runtimeModule}
 `);
 
-  return { pyodide, runtime: pyodide.pyimport(harness.runtimeModule) };
+  const runtime = pyodide.pyimport(harness.runtimeModule);
+  runtime.set_sink((notebookId, blockId, outputs) =>
+    globalThis.postMessage({
+      kind: "live_output",
+      notebookId,
+      blockId,
+      outputs: JSON.parse(outputs),
+    })
+  );
+  return { pyodide, runtime };
 }
 
 function namespaceFor({ runtime }, notebookId) {
@@ -81,6 +90,7 @@ function namespaceFor({ runtime }, notebookId) {
 async function handle(k, call) {
   const { pyodide, runtime } = k;
   if (call.kind === "reset") {
+    runtime.stop_notebook(call.notebookId);
     namespaces.get(call.notebookId)?.destroy();
     namespaces.delete(call.notebookId);
     return null;
@@ -92,7 +102,9 @@ async function handle(k, call) {
     case "run_python":
       await pyodide.loadPackagesFromImports(call.code);
       await runtime.ensure_imports(call.code);
-      return JSON.parse(await runtime.run(call.code, ns));
+      return JSON.parse(
+        await runtime.run(call.code, ns, call.notebookId, call.blockId)
+      );
     case "run_sql":
       await pyodide.loadPackage(SQL_PACKAGES);
       return JSON.parse(runtime.run_sql(call.sql, call.dataframeName, ns));
@@ -134,6 +146,14 @@ globalThis.onmessage = event => {
       err =>
         globalThis.postMessage({ kind: "failed", error: errorMessage(err) })
     );
+    return;
+  }
+
+  // Outside the call chain: it has to reach Python while a cell is running.
+  if (message.kind === "visibility") {
+    kernel
+      ?.then(k => k.runtime.set_paused(message.hidden))
+      .catch(() => undefined);
     return;
   }
 
