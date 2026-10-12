@@ -16,6 +16,14 @@ export type KernelCall =
   | { kind: "list_dataframes"; notebookId: string }
   | { kind: "rename_variable"; notebookId: string; from: string; to: string }
   | { kind: "set_variable"; notebookId: string; name: string; value: string }
+  // What JavaScript cells read and write the notebook's variables with.
+  | { kind: "get_variables"; notebookId: string; names: string[] }
+  | {
+      kind: "set_json_variable";
+      notebookId: string;
+      name: string;
+      json: string;
+    }
   | {
       kind: "set_date_variable";
       notebookId: string;
@@ -31,6 +39,8 @@ export type KernelResults = {
   list_dataframes: DataFrame[];
   rename_variable: null;
   set_variable: null;
+  get_variables: Record<string, unknown>;
+  set_json_variable: null;
   set_date_variable: null;
   reset: null;
 };
@@ -49,9 +59,7 @@ export type ToWorker =
         modules: { name: string; source: string }[];
       };
     }
-  | { kind: "call"; id: number; call: KernelCall }
-  // Live cells skip their polls while the tab is hidden.
-  | { kind: "visibility"; hidden: boolean };
+  | { kind: "call"; id: number; call: KernelCall };
 
 export type FromWorker =
   | { kind: "ready" }
@@ -63,5 +71,7 @@ export type FromWorker =
       blockId: string;
       outputs: Output[];
     }
+  // How much memory Python holds, reported every few seconds.
+  | { kind: "memory"; bytes: number }
   | { kind: "result"; id: number; value: unknown }
   | { kind: "error"; id: number; error: string };

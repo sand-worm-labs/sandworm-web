@@ -45,6 +45,34 @@ def _emit(output):
         outputs.append(output)
 
 
+# Everything a cell shows is copied to the page and drawn there, so an output
+# the browser can't hold takes the tab (and sometimes the machine) down with
+# it. A live cell sends its output again on every tick, so its limit is lower.
+MAX_RESULT_BYTES = 25 * 1024 * 1024
+MAX_LIVE_BYTES = 2 * 1024 * 1024
+
+
+def _serialize(outputs, limit, what):
+    """JSON for the page, or an error output in its place when it's too big."""
+    text = json.dumps(outputs, default=str)
+    if len(text) <= limit:
+        return text
+    return json.dumps([{
+        "type": "error",
+        "ename": "OutputTooLarge",
+        "evalue": (
+            f"{what} is {len(text) / 1024 / 1024:.1f} MB, over the {limit / 1024 / 1024:.0f} MB "
+            "a browser notebook can show. Plot fewer points (aggregate or sample the data), "
+            "or use a Cloud notebook for heavy output."
+        ),
+        "traceback": [],
+    }])
+
+
+def _is_too_large(text):
+    return text.startswith('[{"type": "error", "ename": "OutputTooLarge"')
+
+
 class _Stream(io.TextIOBase):
     def __init__(self, name, fallback):
         self._name = name
@@ -102,10 +130,59 @@ def _repr(obj, method):
     return value
 
 
+class Plot:
+    """A chart given as plain plotly data and layout: what sandworm.plot() makes.
+
+    Skips the plotly library, whose figures take long enough to build and
+    validate that a dashboard of live charts spends its time there.
+    """
+
+    def __init__(self, data, layout=None):
+        self.data = data if isinstance(data, (list, tuple)) else [data]
+        self.layout = layout or {}
+
+
+def _plain(value):
+    """Turn arrays, Series and dates into what JSON can carry."""
+    import datetime
+    import math
+
+    if isinstance(value, dict):
+        return {str(k): _plain(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_plain(v) for v in value]
+    if isinstance(value, float):
+        return value if math.isfinite(value) else None
+    if isinstance(value, (str, int, bool)) or value is None:
+        return value
+    if isinstance(value, (datetime.datetime, datetime.date)):
+        return value.isoformat()
+    if "numpy" in sys.modules:
+        import numpy as np
+
+        if hasattr(value, "to_numpy"):  # pandas Series and Index
+            value = value.to_numpy()
+        if isinstance(value, np.ndarray):
+            if value.dtype.kind == "M":
+                return np.datetime_as_string(value, unit="ms").tolist()
+            if value.dtype.kind == "f" and not np.isfinite(value).all():
+                return _plain(value.tolist())
+            if value.dtype.kind in "biuf":
+                return value.tolist()
+            return _plain(value.tolist())
+        if isinstance(value, np.generic):
+            return _plain(value.item())
+    return str(value)
+
+
 def _display_one(obj):
     if obj is None:
         return
     module = type(obj).__module__ or ""
+
+    if isinstance(obj, Plot):
+        _emit({"type": "plotly", "data": _plain(obj.data), "layout": _plain(obj.layout)})
+        return
 
     if module.startswith("plotly") and hasattr(obj, "to_json"):
         fig = json.loads(obj.to_json())
@@ -160,6 +237,34 @@ def _patch_ipython():
     import IPython.display
 
     IPython.display.display = display
+
+
+# Libraries the Sandworm theme has been applied to in this interpreter.
+_themed = set()
+
+
+def _apply_theme():
+    """Give charts Sandworm's colors and font with no import in the cell.
+
+    The cloud kernel does this once when its session starts (see
+    buildSessionPreamble in apps/api's jupyter-session.service.ts). Here plotly
+    and matplotlib arrive later, when a cell first imports them, so each is
+    themed just before the first run that has it. A chart that sets its own
+    style still wins.
+    """
+    try:
+        from sandworm_theme import matplotlib_theme, plotly_theme
+    except ImportError:
+        return
+
+    for name, apply in (("plotly", plotly_theme.apply), ("matplotlib", matplotlib_theme.apply)):
+        if name in _themed or not _is_installed(name):
+            continue
+        try:
+            apply()
+            _themed.add(name)
+        except ImportError:
+            pass
 
 
 def _patch_plotly():
@@ -234,8 +339,6 @@ def _error_output(exc):
 
 # Posts (notebook_id, block_id, outputs_json) to the page. Set by the worker.
 _sink = None
-# True while the tab is hidden: pollers skip their ticks.
-_paused = False
 # The cell being run, so sandworm.every() and websocket() know whose they are.
 _cell = contextvars.ContextVar("sandworm_cell", default=None)
 # (notebook_id, block_id) -> _Live, for every cell that's still updating.
@@ -245,11 +348,6 @@ _lives = {}
 def set_sink(sink):
     global _sink
     _sink = sink
-
-
-def set_paused(paused):
-    global _paused
-    _paused = bool(paused)
 
 
 class _Live:
@@ -268,11 +366,26 @@ class _Live:
         outputs = list(self.base)
         for poller in self.pollers:
             outputs.extend(poller.last)
+        # Charts are marked as live, so a page that opens the notebook later
+        # can show them as loading until Python is producing them again,
+        # instead of presenting an old snapshot as the current picture.
+        for output in outputs:
+            if output["type"] == "plotly":
+                layout = output.get("layout")
+                if not isinstance(layout, dict):
+                    layout = output["layout"] = {}
+                meta = layout.get("meta")
+                layout["meta"] = {**meta, "live": True} if isinstance(meta, dict) else {"live": True}
         return outputs
 
     def publish(self):
         if self.ready and _sink is not None:
-            _sink(self.notebook_id, self.block_id, json.dumps(self.outputs(), default=str))
+            text = _serialize(self.outputs(), MAX_LIVE_BYTES, "This live cell's update")
+            _sink(self.notebook_id, self.block_id, text)
+            if _is_too_large(text):
+                # Stop it: the next tick would only be too big again.
+                self.stop()
+                _lives.pop((self.notebook_id, self.block_id), None)
 
     def stop(self):
         for poller in self.pollers:
@@ -296,8 +409,7 @@ class _Poller:
 
     async def _loop(self, live, fn, seconds):
         while True:
-            if not _paused or not self.first.done():
-                await self._tick(live, fn)
+            await self._tick(live, fn)
             await asyncio.sleep(seconds)
 
     async def _tick(self, live, fn):
@@ -412,6 +524,17 @@ def stop_notebook(notebook_id):
         _lives.pop(key).stop()
 
 
+def stop_all(message):
+    """End every live cell, showing message in its place. Used when Python is
+    close to running out of memory, so the cells stop adding to it."""
+    stopped = json.dumps([{"type": "error", "ename": "MemoryLimit", "evalue": message, "traceback": []}])
+    for (notebook_id, block_id), live in list(_lives.items()):
+        live.stop()
+        if _sink is not None:
+            _sink(notebook_id, block_id, stopped)
+    _lives.clear()
+
+
 async def run(code, namespace, notebook_id="", block_id=""):
     from pyodide.code import eval_code_async
 
@@ -426,6 +549,7 @@ async def run(code, namespace, notebook_id="", block_id=""):
     cell_token = _cell.set(live)
     _patch_ipython()
     _patch_plotly()
+    _apply_theme()
     try:
         result = await eval_code_async(code, namespace, filename=CELL_FILENAME)
         display(result)
@@ -438,18 +562,22 @@ async def run(code, namespace, notebook_id="", block_id=""):
         _cell.reset(cell_token)
 
     if not (live.pollers or live.sockets):
-        return json.dumps(outputs, default=str)
+        return _serialize(outputs, MAX_RESULT_BYTES, "This cell's output")
     if any(o["type"] == "error" for o in outputs):
         live.stop()
-        return json.dumps(outputs, default=str)
+        return _serialize(outputs, MAX_RESULT_BYTES, "This cell's output")
 
     # The first tick of each poller is part of the cell's result, so the
     # notebook saves a real snapshot rather than an empty cell.
     live.base = outputs
     await asyncio.gather(*(poller.first for poller in live.pollers))
     live.ready = True
-    _lives[(notebook_id, block_id)] = live
-    return json.dumps(live.outputs(), default=str)
+    text = _serialize(live.outputs(), MAX_LIVE_BYTES, "This live cell's output")
+    if _is_too_large(text):
+        live.stop()
+    else:
+        _lives[(notebook_id, block_id)] = live
+    return text
 
 
 # ── SQL ──────────────────────────────────────────────────────────────────────
@@ -571,6 +699,30 @@ def set_variable(name, value, namespace):
     namespace[name] = value
 
 
+# ── JavaScript cells ─────────────────────────────────────────────────────────
+# A JavaScript cell reads the notebook's Python variables and can write its
+# own back. Values cross as JSON: a DataFrame arrives as a list of row objects,
+# arrays and Series as lists, dates as ISO strings.
+
+
+def get_variables(names_json, namespace):
+    values = {}
+    for name in json.loads(names_json):
+        if name not in namespace:
+            continue
+        value = namespace[name]
+        if hasattr(value, "to_dict") and hasattr(value, "columns"):  # a DataFrame
+            value = value.to_dict("records")
+        values[name] = _plain(value)
+    return json.dumps(values)
+
+
+def set_json_variable(name, value_json, namespace):
+    if not name.isidentifier():
+        raise ValueError(f"{name!r} is not a valid variable name")
+    namespace[name] = json.loads(value_json)
+
+
 def set_date_variable(name, config_json, namespace):
     from datetime import date, datetime
 
@@ -608,11 +760,70 @@ WebSockets, keeping data current as messages arrive:
 
 Whatever the function returns (a figure, a DataFrame, text) replaces the
 cell's output each time. Re-running the cell stops what it started.
+
+Fast charts, for dashboards that redraw many of them every second:
+
+    sw.plot({"type": "scatter", "x": times, "y": prices}, {"title": {"text": "ETH"}})
+
+Smooth time series, scrolling at the screen's refresh rate between updates:
+
+    sw.stream(times_ms, prices, title="ETH")
 """
 
 import ${RUNTIME_MODULE} as _runtime
 
-__all__ = ["every", "websocket"]
+__all__ = ["every", "plot", "stream", "websocket"]
+
+
+def stream(x, y, *, title=None, kind="line", window=None, height=None):
+    """A time series that scrolls smoothly, however rarely its data updates.
+
+    x is the times, as milliseconds since the epoch or as datetimes. y is one
+    series, or a dict of name -> series to draw several. kind is "line", "area"
+    or "bars" (several series of bars are stacked). window is how many seconds
+    to show; by default, what the data covers.
+
+    Return it from a sandworm.every() function with the latest data each time.
+    The page redraws it on every screen frame and scrolls between updates, so
+    it moves at the display's refresh rate. Where that isn't possible (a PDF,
+    an image export) it's drawn as an ordinary chart.
+    """
+    if kind not in ("line", "area", "bars"):
+        raise ValueError('sandworm.stream kind must be "line", "area" or "bars"')
+
+    traces = []
+    for name, values in (y.items() if isinstance(y, dict) else [(None, y)]):
+        trace = {"type": "bar" if kind == "bars" else "scatter", "x": x, "y": values}
+        if kind != "bars":
+            trace["mode"] = "lines"
+        if kind == "area":
+            trace["fill"] = "tozeroy"
+        if name is not None:
+            trace["name"] = str(name)
+        traces.append(trace)
+
+    layout = {
+        "xaxis": {"type": "date"},
+        "showlegend": len(traces) > 1,
+        "meta": {"sandworm": "stream", "kind": kind, "window": window},
+    }
+    if kind == "bars" and len(traces) > 1:
+        layout["barmode"] = "stack"
+    if title is not None:
+        layout["title"] = {"text": str(title)}
+    if height is not None:
+        layout["height"] = height
+    return _runtime.Plot(traces, layout)
+
+
+def plot(data, layout=None):
+    """A chart from plain plotly traces and layout, with no plotly import.
+
+    data is one trace or a list of them, as dicts; values can be lists, numpy
+    arrays or pandas Series. Much cheaper to build than a plotly figure, which
+    is what matters when it's rebuilt on every tick.
+    """
+    return _runtime.Plot(data, layout)
 
 
 def every(seconds):

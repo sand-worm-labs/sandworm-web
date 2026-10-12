@@ -6,16 +6,8 @@
 // sends the Python harness (src/lib/pyodide/harness.ts) with `init`.
 
 const HOME = "/home/pyodide";
-const THEME_FILES = [
-  "__init__.py",
-  "html.py",
-  "matplotlib_theme.py",
-  "plotly_theme.py",
-  "theme.py",
-  "tokens.py",
-  "watermark.py",
-];
 const SQL_PACKAGES = ["duckdb", "pandas", "jinja2"];
+const MEMORY_REPORT_MS = 3000;
 
 let kernel = null;
 // Each notebook gets its own globals, so variables don't leak between them.
@@ -30,8 +22,17 @@ function errorMessage(err) {
 async function loadTheme(pyodide, origin) {
   const dir = `${HOME}/sandworm_theme`;
   pyodide.FS.mkdirTree(dir);
+  // files.json is written with the copy of the package (see
+  // scripts/sync-sandworm-theme.mjs), so it always lists every file.
+  const listing = await fetch(`${origin}/sandworm_theme/files.json`);
+  if (!listing.ok) {
+    throw new Error(
+      `Failed to load sandworm_theme/files.json: ${listing.status}`
+    );
+  }
+  const files = await listing.json();
   await Promise.all(
-    THEME_FILES.map(async file => {
+    files.map(async file => {
       const response = await fetch(`${origin}/sandworm_theme/${file}`);
       if (!response.ok) {
         throw new Error(
@@ -75,6 +76,17 @@ import ${harness.runtimeModule}
       outputs: JSON.parse(outputs),
     })
   );
+  // Python's memory only ever grows, and a tab that runs out of it is killed
+  // by the browser with everything in it. The page watches this number and
+  // restarts Python before that happens (see kernel.ts).
+  setInterval(() => {
+    // eslint-disable-next-line no-underscore-dangle
+    const bytes = pyodide._module?.HEAPU8?.length;
+    if (typeof bytes === "number") {
+      globalThis.postMessage({ kind: "memory", bytes });
+    }
+  }, MEMORY_REPORT_MS);
+
   return { pyodide, runtime };
 }
 
@@ -85,6 +97,37 @@ function namespaceFor({ runtime }, notebookId) {
     namespaces.set(notebookId, namespace);
   }
   return namespace;
+}
+
+// Browser Python can address 4 GB at the very most, and its memory only ever
+// grows: a tab is in trouble long before that, and can take the machine with
+// it. Past this ceiling live cells are stopped and nothing new runs until
+// Python is restarted, which is the only thing that frees the memory.
+const MEMORY_CEILING_BYTES = 1.5 * 1024 ** 3;
+const MEMORY_CHECK_MS = 2000;
+
+function memoryBytes(pyodide) {
+  try {
+    // eslint-disable-next-line no-underscore-dangle
+    return pyodide._module.HEAPU8.length;
+  } catch {
+    return 0;
+  }
+}
+
+function memoryLimitMessage(bytes) {
+  return `Python is using ${(bytes / 1024 ** 3).toFixed(1)} GB, the most a browser notebook is allowed. Restart Python from the status pill to free it, and work with less data (or use a Cloud notebook).`;
+}
+
+// Live cells keep running between calls, so the ceiling is also checked on a
+// timer: one that keeps growing is stopped before the tab runs out.
+function watchMemory({ pyodide, runtime }) {
+  setInterval(() => {
+    const bytes = memoryBytes(pyodide);
+    if (bytes >= MEMORY_CEILING_BYTES) {
+      runtime.stop_all(memoryLimitMessage(bytes));
+    }
+  }, MEMORY_CHECK_MS);
 }
 
 async function handle(k, call) {
@@ -100,12 +143,18 @@ async function handle(k, call) {
 
   switch (call.kind) {
     case "run_python":
+      if (memoryBytes(pyodide) >= MEMORY_CEILING_BYTES) {
+        throw new Error(memoryLimitMessage(memoryBytes(pyodide)));
+      }
       await pyodide.loadPackagesFromImports(call.code);
       await runtime.ensure_imports(call.code);
       return JSON.parse(
         await runtime.run(call.code, ns, call.notebookId, call.blockId)
       );
     case "run_sql":
+      if (memoryBytes(pyodide) >= MEMORY_CEILING_BYTES) {
+        throw new Error(memoryLimitMessage(memoryBytes(pyodide)));
+      }
       await pyodide.loadPackage(SQL_PACKAGES);
       return JSON.parse(runtime.run_sql(call.sql, call.dataframeName, ns));
     case "read_page":
@@ -127,6 +176,11 @@ async function handle(k, call) {
     case "set_variable":
       runtime.set_variable(call.name, call.value, ns);
       return null;
+    case "get_variables":
+      return JSON.parse(runtime.get_variables(JSON.stringify(call.names), ns));
+    case "set_json_variable":
+      runtime.set_json_variable(call.name, call.json, ns);
+      return null;
     case "set_date_variable":
       await pyodide.loadPackage("pytz");
       runtime.set_date_variable(call.name, JSON.stringify(call.config), ns);
@@ -141,19 +195,12 @@ globalThis.onmessage = event => {
 
   if (message.kind === "init") {
     kernel = boot(message);
+    kernel.then(watchMemory).catch(() => undefined);
     kernel.then(
       () => globalThis.postMessage({ kind: "ready" }),
       err =>
         globalThis.postMessage({ kind: "failed", error: errorMessage(err) })
     );
-    return;
-  }
-
-  // Outside the call chain: it has to reach Python while a cell is running.
-  if (message.kind === "visibility") {
-    kernel
-      ?.then(k => k.runtime.set_paused(message.hidden))
-      .catch(() => undefined);
     return;
   }
 

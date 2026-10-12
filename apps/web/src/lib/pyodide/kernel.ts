@@ -1,4 +1,5 @@
 import pyodidePackage from "pyodide/package.json";
+import { toast } from "sonner";
 
 import {
   MPL_BACKEND_MODULE,
@@ -36,12 +37,21 @@ let statusError: string | null = null;
 // When the current interpreter came up. Cells that last ran before this have
 // nothing in memory, so running a later cell re-runs them first.
 let startedAt: string | null = null;
+// How many times someone has restarted Python in this tab. A restart empties
+// every notebook's variables, so open browser notebooks run again.
+let restarts = 0;
 export type KernelSnapshot = {
   status: KernelStatus;
   error: string | null;
   startedAt: string | null;
+  restarts: number;
 };
-let snapshot: KernelSnapshot = { status, error: statusError, startedAt };
+let snapshot: KernelSnapshot = {
+  status,
+  error: statusError,
+  startedAt,
+  restarts,
+};
 let nextId = 0;
 const pending = new Map<number, Pending>();
 const listeners = new Set<() => void>();
@@ -50,7 +60,7 @@ function setStatus(next: KernelStatus, error: string | null = null) {
   status = next;
   statusError = error;
   if (next === "ready") startedAt = new Date().toISOString();
-  snapshot = { status, error: statusError, startedAt };
+  snapshot = { status, error: statusError, startedAt, restarts };
   listeners.forEach(l => l());
 }
 
@@ -67,16 +77,6 @@ export function subscribeKernelStatus(listener: () => void): () => void {
 function failPending(reason: string) {
   pending.forEach(p => p.reject(new Error(reason)));
   pending.clear();
-}
-
-// Live cells stop polling while nobody can see them.
-function sendVisibility() {
-  const message: ToWorker = { kind: "visibility", hidden: document.hidden };
-  worker?.postMessage(message);
-}
-
-if (typeof document !== "undefined") {
-  document.addEventListener("visibilitychange", sendVisibility);
 }
 
 function start(): Worker {
@@ -112,6 +112,10 @@ function start(): Worker {
         break;
       case "live_output":
         setLiveOutputs(message.blockId, message.outputs);
+        notifyNotebookChanged(message.notebookId);
+        break;
+      case "memory":
+        checkMemory(message.bytes);
         break;
       default:
         break;
@@ -138,9 +142,6 @@ function start(): Worker {
   };
   w.postMessage(init);
   worker = w;
-  if (globalThis.document?.hidden) {
-    sendVisibility();
-  }
   setStatus("loading");
   return w;
 }
@@ -148,6 +149,41 @@ function start(): Worker {
 // Starts Python in the background, so it's warm by the first run.
 export function warmUpKernel() {
   start();
+}
+
+// ── Variable changes ─────────────────────────────────────────────────────────
+// JavaScript cells follow the notebook's Python variables. Nothing says which
+// variable a cell or a live tick changed, so listeners are told the notebook
+// changed and read again what they care about.
+const CHANGES_VARIABLES = new Set<KernelCall["kind"]>([
+  "run_python",
+  "run_sql",
+  "rename_variable",
+  "set_variable",
+  "set_json_variable",
+  "set_date_variable",
+  "reset",
+]);
+const changeListeners = new Map<string, Set<() => void>>();
+
+function notifyNotebookChanged(notebookId: string) {
+  changeListeners.get(notebookId)?.forEach(l => l());
+}
+
+export function subscribeNotebookChanges(
+  notebookId: string,
+  listener: () => void
+): () => void {
+  let set = changeListeners.get(notebookId);
+  if (!set) {
+    set = new Set();
+    changeListeners.set(notebookId, set);
+  }
+  set.add(listener);
+  return () => {
+    set.delete(listener);
+    if (set.size === 0) changeListeners.delete(notebookId);
+  };
 }
 
 export function callKernel<K extends KernelCall["kind"]>(
@@ -163,16 +199,64 @@ export function callKernel<K extends KernelCall["kind"]>(
     });
     const message: ToWorker = { kind: "call", id, call };
     w.postMessage(message);
+  }).then(value => {
+    if (CHANGES_VARIABLES.has(call.kind))
+      notifyNotebookChanged(call.notebookId);
+    return value as KernelResults[K];
   });
 }
 
+// ── Memory guard ─────────────────────────────────────────────────────────────
+// Python's memory never shrinks while it runs, and a tab that uses too much is
+// killed by the browser, taking the page with it. Past the limit, everything
+// is stopped and Python starts again, which runs the open notebooks afresh.
+// A notebook that goes over again straight away would restart forever, so the
+// second time in a row Python is left stopped-and-empty instead.
+const GIGABYTE = 1024 ** 3;
+const MEMORY_LOOP_WINDOW_MS = 2 * 60 * 1000;
+let lastMemoryRestart = 0;
+
+// A quarter of the device's memory, between 512 MB and 2 GB. Browsers only
+// report device memory roughly, and some not at all.
+function memoryLimit(): number {
+  const deviceGb =
+    (globalThis.navigator as { deviceMemory?: number } | undefined)
+      ?.deviceMemory ?? 4;
+  return Math.min(2, Math.max(0.5, deviceGb / 4)) * GIGABYTE;
+}
+
+function checkMemory(bytes: number) {
+  if (bytes < memoryLimit()) return;
+
+  const megabytes = Math.round(bytes / 1024 ** 2);
+  const again = Date.now() - lastMemoryRestart < MEMORY_LOOP_WINDOW_MS;
+  lastMemoryRestart = Date.now();
+  if (again) {
+    replaceWorker();
+    toast.error(
+      `Python used too much memory again (${megabytes} MB) and was stopped. Keep less data in memory, then run the notebook.`
+    );
+    return;
+  }
+  toast.warning(
+    `Python used too much memory (${megabytes} MB), so the notebook was restarted.`
+  );
+  restartKernel();
+}
+
 // Throws away the interpreter and every notebook's variables.
-export function restartKernel() {
+function replaceWorker() {
   worker?.terminate();
   worker = null;
   failPending("Python was restarted");
   clearAllLiveOutputs();
   start();
+}
+
+// A restart someone asked for: open browser notebooks run again afterwards.
+export function restartKernel() {
+  restarts += 1;
+  replaceWorker();
 }
 
 // Stops the running cell. Keeps variables when the page allows interrupts;
@@ -183,6 +267,8 @@ export function interruptKernel(): "interrupted" | "restarted" {
     Atomics.store(interruptBuffer, 0, 2);
     return "interrupted";
   }
-  restartKernel();
+  // Not counted as a restart: re-running the notebook would start the very
+  // cell that was just stopped.
+  replaceWorker();
   return "restarted";
 }
