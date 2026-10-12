@@ -1378,7 +1378,8 @@ export function isDataSourceStructureLoading(
 // metadata; the taxonomy (apps/web config) says which categories exist.
 // ═══════════════════════════════════════════════
 
-export const ShowcaseKind = z.enum(['category', 'case_study', 'working'])
+// report: a written analysis of a category (a chain, a sector), listed on the category's page.
+export const ShowcaseKind = z.enum(['category', 'case_study', 'working', 'report'])
 export type ShowcaseKind = z.infer<typeof ShowcaseKind>
 
 export const ShowcaseAuthor = z.enum(['official', 'community'])
@@ -1432,6 +1433,23 @@ export type ShowcaseNotebook = {
   publishedAt: string
   author: ShowcaseAuthor
   showcase: NotebookShowcase
+  // It has a dashboard its author left public, at /notebooks/:slug/dashboard.
+  hasDashboard?: boolean
+}
+
+// A notebook or dashboard the community published about a category (a chain, a sector).
+// It is not on the Showcase itself: it is found by its tags, title or description.
+export type ShowcaseCommunityItem = {
+  id: string
+  slug: string
+  title: string
+  description: string | null
+  publishedAt: string
+  tags: string[]
+  hasDashboard: boolean
+  forks: number
+  authorName: string | null
+  authorUsername: string | null
 }
 
 // 'chains' holds one category per chain: a chain is a category of its own,

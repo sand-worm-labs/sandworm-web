@@ -1,4 +1,8 @@
-import type { ShowcaseConfig, ShowcaseNotebook } from "@/types";
+import type {
+  ShowcaseCommunityItem,
+  ShowcaseConfig,
+  ShowcaseNotebook,
+} from "@/types";
 
 // =====================================
 // ⬢  Constants
@@ -16,6 +20,24 @@ const SHOWCASE_NOTEBOOKS = `
       publishedAt
       author
       showcase
+      hasDashboard
+    }
+  }
+`;
+
+const SHOWCASE_COMMUNITY = `
+  query GetShowcaseCommunity($category: String!, $limit: Int) {
+    getShowcaseCommunity(category: $category, limit: $limit) {
+      id
+      slug
+      title
+      description
+      publishedAt
+      tags
+      hasDashboard
+      forks
+      authorName
+      authorUsername
     }
   }
 `;
@@ -47,6 +69,32 @@ export async function fetchShowcaseNotebooks(
     return data?.getShowcaseNotebooks ?? [];
   } catch (err) {
     console.error("[showcase] fetch failed:", err);
+    return [];
+  }
+}
+
+// What the community has published about a category, most forked first. Public like the
+// rest, and a failed fetch gives an empty list: the page shows an invitation instead.
+export async function fetchShowcaseCommunity(
+  category: string,
+  limit = 12
+): Promise<ShowcaseCommunityItem[]> {
+  try {
+    const res = await fetch(`${INTERNAL_API_URL}/api/graphql`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: SHOWCASE_COMMUNITY,
+        variables: { category, limit },
+      }),
+      next: { revalidate: 60 },
+    });
+    const { data } = (await res.json()) as {
+      data?: { getShowcaseCommunity?: ShowcaseCommunityItem[] };
+    };
+    return data?.getShowcaseCommunity ?? [];
+  } catch (err) {
+    console.error("[showcase] community fetch failed:", err);
     return [];
   }
 }

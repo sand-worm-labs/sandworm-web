@@ -85,7 +85,7 @@ interface BountyCardProps {
 }
 
 export const BountyCard = ({ bounty, href, actions }: BountyCardProps) => (
-  <article className="group relative overflow-hidden rounded-xl bg-base-100 border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors p-5 flex flex-col h-full font-body before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-primary before:opacity-0 hover:before:opacity-100">
+  <article className="block-active-hover group relative rounded-xl bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary transition-[border-color,box-shadow] duration-150 p-5 flex flex-col h-full font-body">
     <BountyChips bounty={bounty} />
 
     <h3 className="mt-4 text-base font-semibold leading-snug text-ink-100 dark:text-white">

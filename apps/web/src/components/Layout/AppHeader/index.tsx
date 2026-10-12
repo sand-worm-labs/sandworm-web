@@ -4,6 +4,7 @@ import { useState, type FC } from "react";
 import { X, Search } from "lucide-react";
 import { usePathname } from "next/navigation";
 
+import { SearchBar } from "@/components/SearchBar";
 import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
 
 // =====================================
@@ -63,6 +64,10 @@ export const AppHeader: FC = () => {
             <Search className="w-5 h-5" />
           )}
         </button>
+
+        <div className="hidden md:block mr-3">
+          <SearchBar />
+        </div>
 
         <ThemeTogggle />
       </div>

@@ -344,6 +344,9 @@ interface Props {
   aiTasks: AITasks;
   onExpand: (block: YBlock) => void;
   isPublicMode?: boolean;
+  // Drawn inside another page: it takes the height of its content instead of scrolling
+  // on its own, and leaves the title to the page around it.
+  embedded?: boolean;
 }
 export default function DashboardView(props: Props) {
   const { width, ref } = useResizeDetector();
@@ -353,19 +356,22 @@ export default function DashboardView(props: Props) {
       id="dashboard-wrapper"
       data-dashboard-ready="true"
       className={clsx(
-        "h-full min-h-0 overflow-y-auto overflow-x-hidden px-8 py-6 font-body lg:px-16",
+        "min-h-0 overflow-x-hidden font-body",
+        props.embedded ? "h-auto" : "h-full overflow-y-auto px-8 py-6 lg:px-16",
         props.className
       )}
     >
-      <div className="pb-8 px-1">
-        <Title
-          // eslint-disable-next-line react/style-prop-object
-          style="font-weight: medium; font-size: 2.5rem;"
-          content={props.yDoc.getXmlFragment("title")}
-          isLoading={false}
-          isEditable={props.isEditing && props.userRole !== "viewer"}
-        />
-        <div ref={ref} className="mt-6">
+      <div className={props.embedded ? undefined : "pb-8 px-1"}>
+        {!props.embedded && (
+          <Title
+            // eslint-disable-next-line react/style-prop-object
+            style="font-weight: medium; font-size: 2.5rem;"
+            content={props.yDoc.getXmlFragment("title")}
+            isLoading={false}
+            isEditable={props.isEditing && props.userRole !== "viewer"}
+          />
+        )}
+        <div ref={ref} className={props.embedded ? undefined : "mt-6"}>
           {width ? <DashboardViewInner {...props} width={width} /> : <div />}
         </div>
       </div>

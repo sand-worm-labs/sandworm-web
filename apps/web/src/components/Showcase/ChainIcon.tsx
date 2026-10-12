@@ -13,6 +13,12 @@ import { cn } from "@/lib/utils";
 export const ChainColors = createContext<Record<string, { color: string }>>({});
 const FALLBACK_COLOR = "#6B7280";
 
+// Logos we have the real artwork for, in public/img/chains. They already carry their own
+// background and rounded shape, so they replace the colored disc.
+export const CHAIN_LOGOS: Record<string, string> = {
+  Monad: "/img/chains/monad.png",
+};
+
 // Simple white marks on a 24 by 24 grid, drawn here so they stay crisp at
 // badge size. A chain without one shows its initial.
 const MARKS: Record<string, React.ReactNode> = {
@@ -70,6 +76,21 @@ export function ChainIcon({
 }) {
   const color = useContext(ChainColors)[chain]?.color ?? FALLBACK_COLOR;
   const mark = MARKS[chain];
+  const logo = CHAIN_LOGOS[chain];
+
+  if (logo) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={logo}
+        alt={chain}
+        title={chain}
+        width={size}
+        height={size}
+        className={cn("shrink-0 rounded-full object-cover", className)}
+      />
+    );
+  }
 
   return (
     <svg
@@ -96,6 +117,29 @@ export function ChainIcon({
         </text>
       )}
     </svg>
+  );
+}
+
+// =====================================
+// ⬢  ChainBadge
+// =====================================
+// One chain's badge with the Showcase config's colors, for a server-rendered page that
+// has no ChainColors provider of its own.
+export function ChainBadge({
+  chain,
+  colors,
+  size,
+  className,
+}: {
+  chain: string;
+  colors: Record<string, { color: string }>;
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <ChainColors.Provider value={colors}>
+      <ChainIcon chain={chain} size={size} className={className} />
+    </ChainColors.Provider>
   );
 }
 

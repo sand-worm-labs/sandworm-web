@@ -1,10 +1,13 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
 import { Public } from '@sandworm/nest-common';
 import type { ShowcaseKind } from '@sandworm/types';
 import { GraphQLJSON } from 'graphql-type-json';
 import { ShowcaseAdminService } from './showcase-admin.service';
-import { ShowcaseNotebookModel } from './showcase.model';
+import {
+  ShowcaseCommunityModel,
+  ShowcaseNotebookModel,
+} from './showcase.model';
 import { ShowcaseService, type ShowcaseConfig } from './showcase.service';
 
 @Resolver()
@@ -28,6 +31,19 @@ export class ShowcaseResolver {
       category,
       kind: kind as ShowcaseKind | undefined,
     });
+  }
+
+  @Public()
+  @Query(() => [ShowcaseCommunityModel], {
+    name: 'getShowcaseCommunity',
+    description:
+      'Notebooks the community published about a category (a chain or a sector), most forked first. Not on the Showcase itself: found by tag, title or description.',
+  })
+  getShowcaseCommunity(
+    @Args('category') category: string,
+    @Args('limit', { type: () => Int, nullable: true }) limit?: number,
+  ): Promise<ShowcaseCommunityModel[]> {
+    return this.showcaseService.listCommunity(category, limit ?? undefined);
   }
 
   @Public()

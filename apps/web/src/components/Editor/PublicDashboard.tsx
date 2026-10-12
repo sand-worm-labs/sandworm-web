@@ -40,6 +40,8 @@ const EMPTY_DATA_SOURCES: APIDataSources = List<APIDataSource>();
 export interface PublicDashboardProps {
   document: ApiDocument;
   yDoc: Y.Doc;
+  // Drawn inside another page: see DashboardView.
+  embedded?: boolean;
 }
 
 export default function PublicDashboard(props: PublicDashboardProps) {
@@ -49,7 +51,7 @@ export default function PublicDashboard(props: PublicDashboardProps) {
     <EditorAwarenessProvider scrollViewRef={scrollViewRef} yDoc={props.yDoc}>
       <PublicSQLExtensionProvider>
         <DashboardView
-          className="flex-1 min-h-0 h-full"
+          className={props.embedded ? undefined : "flex-1 min-h-0 h-full"}
           document={props.document}
           dataSources={EMPTY_DATA_SOURCES}
           yDoc={props.yDoc}
@@ -62,6 +64,7 @@ export default function PublicDashboard(props: PublicDashboardProps) {
           aiTasks={NOOP_AI_TASKS}
           onExpand={() => {}}
           isPublicMode
+          embedded={props.embedded}
         />
       </PublicSQLExtensionProvider>
     </EditorAwarenessProvider>

@@ -17,6 +17,7 @@ import {
   Search,
 } from "lucide-react";
 import clsx from "clsx";
+import { PiMagnifyingGlassMinus } from "react-icons/pi";
 
 import type { SearchEntryType, SearchHit } from "@/lib/search/types";
 import { searchClient, useSearch } from "@/lib/search/useSearch";
@@ -48,7 +49,7 @@ function ResultIcon({ category }: { category: SearchEntryType }) {
 }
 
 const Kbd = ({ children }: { children: React.ReactNode }) => (
-  <kbd className="inline-flex min-w-[1.25rem] items-center justify-center rounded border border-border-secondary dark:border-border-tertiary bg-inputBg dark:bg-header-surface px-1 py-0.5 text-[11px] leading-none text-ink-400 font-body-mono">
+  <kbd className="inline-flex min-w-[1.25rem] items-center justify-center rounded border border-border-secondary dark:border-border-tertiary bg-inputBg dark:bg-search-kbd px-1 py-0.5 text-[11px] leading-none text-ink-400 dark:text-search-ink font-body-mono">
     {children}
   </kbd>
 );
@@ -71,20 +72,32 @@ export const SearchBar = ({
   const [category, setCategory] = useState<SearchEntryType | null>(null);
   const [query, setQuery] = useState("");
   const [highlight, setHighlight] = useState(0);
-  const [shortcut, setShortcut] = useState("Ctrl K");
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (/Mac|iPhone|iPad/.test(navigator.platform)) setShortcut("⌘K");
-  }, []);
-
-  // Ctrl or Cmd + K opens it from anywhere.
+  // "/" opens it, unless the person is typing somewhere. Ctrl or Cmd + K opens it from
+  // anywhere too.
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setOpen(current => !current);
+        return;
+      }
+      const target = event.target as HTMLElement | null;
+      const typing =
+        !!target &&
+        (target.isContentEditable ||
+          ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
+      if (
+        event.key === "/" &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !typing
+      ) {
+        event.preventDefault();
+        setOpen(true);
       }
     };
     window.addEventListener("keydown", onKeyDown);
@@ -192,12 +205,12 @@ export const SearchBar = ({
           onMouseEnter={() => searchClient.prefetch({ q: "" })}
           onFocus={() => searchClient.prefetch({ q: "" })}
           aria-haspopup="dialog"
-          className="flex h-8 w-full items-center rounded-lg border border-transparent dark:border-border-tertiary bg-base-600 dark:bg-base-400 py-1 pl-10 pr-16 text-left text-xs md:text-sm text-ink-300 transition focus:outline-none focus:ring focus:ring-primary"
+          className="flex h-8 w-full items-center rounded-lg border border-transparent dark:border-border-tertiary bg-base-600 dark:bg-search-bg py-1 pl-10 pr-16 text-left text-xs md:text-sm text-ink-300 dark:text-search-ink dark:[box-shadow:var(--search-shadow)] transition focus:outline-none focus:ring focus:ring-primary"
         >
           Search Sandworm
         </button>
         <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 select-none text-xs font-medium text-text-gray">
-          <Kbd>{shortcut}</Kbd>
+          <Kbd>/</Kbd>
         </div>
       </div>
 
@@ -257,7 +270,7 @@ export const SearchBar = ({
                     onKeyDown={onKeyDown}
                     placeholder={placeholder}
                     aria-label="Search"
-                    className="min-w-0 flex-1 bg-transparent text-sm text-ink-100 dark:text-white placeholder:text-ink-300 outline-none"
+                    className="min-w-0 flex-1 bg-transparent text-sm text-ink-100 dark:text-search-input placeholder:text-ink-300 dark:placeholder:text-search-input outline-none"
                   />
                 </div>
 
@@ -272,7 +285,7 @@ export const SearchBar = ({
                         type="button"
                         key={c.id}
                         onClick={() => chooseCategory(c.id)}
-                        className="shrink-0 rounded-md border border-border-secondary dark:border-border-tertiary px-3 py-0.5 text-[0.75rem] font-medium text-ink-100 dark:text-gray-300 transition-colors hover:bg-inputBg dark:hover:bg-header-surface"
+                        className="shrink-0 rounded-md border border-border-secondary dark:border-border-tertiary px-3 py-0.5 text-[0.75rem] font-medium text-ink-100 dark:text-search-muted transition-colors hover:bg-inputBg dark:hover:bg-search-hover"
                       >
                         {c.label}
                       </button>
@@ -295,24 +308,43 @@ export const SearchBar = ({
                 <div
                   ref={listRef}
                   aria-busy={loading}
-                  className="min-h-0 flex-1 overflow-y-auto py-2"
+                  className={clsx(
+                    "min-h-0 flex-1 overflow-y-auto py-2",
+                    // With nothing to list, the message sits in the middle of the space.
+                    rows.length === 0 && "flex flex-col"
+                  )}
                 >
                   {rows.length === 0 && failed && (
-                    <p className="px-5 py-10 text-center text-sm text-ink-400">
+                    <p className="m-auto px-5 py-10 text-center text-sm text-ink-400">
                       Search is not available right now. Try again in a moment.
                     </p>
                   )}
                   {rows.length === 0 && !failed && loading && (
-                    <p className="px-5 py-10 text-center text-sm text-ink-400">
+                    <p className="m-auto px-5 py-10 text-center text-sm text-ink-400">
                       Searching…
                     </p>
                   )}
                   {rows.length === 0 && !failed && !loading && (
-                    <p className="px-5 py-10 text-center text-sm text-ink-400">
-                      {query.trim()
-                        ? `Nothing matches “${query.trim()}”.`
-                        : "Nothing to show yet."}
-                    </p>
+                    <div className="m-auto flex flex-col items-center gap-3 px-5 py-10 text-center">
+                      <PiMagnifyingGlassMinus
+                        size={40}
+                        aria-hidden="true"
+                        className="text-ink-400 dark:text-search-muted"
+                      />
+                      <p className="text-sm text-ink-400">
+                        {query.trim() ? (
+                          <>
+                            Nothing matches “
+                            <span className="dark:text-white">
+                              {query.trim()}
+                            </span>
+                            ”.
+                          </>
+                        ) : (
+                          "Nothing to show yet."
+                        )}
+                      </p>
+                    </div>
                   )}
                   {groups.map(group => {
                     const meta = CATEGORY[group.type];
@@ -327,7 +359,7 @@ export const SearchBar = ({
                               <button
                                 type="button"
                                 onClick={() => chooseCategory(group.type)}
-                                className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                                className="inline-flex items-center gap-1 text-xs font-medium text-primary dark:text-search-muted hover:underline"
                               >
                                 View all
                                 <ArrowRight size={12} />
@@ -350,7 +382,7 @@ export const SearchBar = ({
                               }
                               className={clsx(
                                 "flex w-full items-center gap-3 px-5 py-2.5 text-left transition-colors",
-                                active && "bg-inputBg dark:bg-header-surface"
+                                active && "bg-inputBg dark:bg-search-hover"
                               )}
                             >
                               <ResultIcon category={group.type} />

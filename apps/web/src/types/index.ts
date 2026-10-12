@@ -364,6 +364,7 @@ export type {
   NotebookShowcase,
   ShowcaseCategoryStatus,
   ShowcaseGroup,
+  ShowcaseCommunityItem,
   ShowcaseHeroStat,
   ShowcaseKind,
   ShowcaseLeadInput,

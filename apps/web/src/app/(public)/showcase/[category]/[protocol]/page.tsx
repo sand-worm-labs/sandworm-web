@@ -6,6 +6,7 @@ import {
   fetchShowcaseConfig,
   fetchShowcaseNotebooks,
 } from "@/components/Showcase/fetchShowcase";
+import { ProtocolProfile } from "@/components/Showcase/ProtocolProfile";
 import { PublishedNotebook } from "@/components/Showcase/PublishedNotebook";
 import { gridBackdrop } from "@/components/Showcase/BoardKit";
 import { ShowcaseHeader } from "@/components/Showcase/ShowcaseHeader";
@@ -29,6 +30,7 @@ import {
   projectsOf,
   slugify,
 } from "@/lib/showcase";
+import { fetchProtocolProfile } from "@/lib/protocolStats";
 import type { ShowcaseLeadTarget } from "@/types";
 
 // =====================================
@@ -57,12 +59,41 @@ async function loadCaseStudy(params: Props["params"]) {
   };
 }
 
+// A protocol the category lists but has no case study on yet: its page shows what DefiLlama
+// publishes on it. A protocol the category does not list has no page.
+async function loadListedProtocol(params: Props["params"]) {
+  const { category: categorySlug, protocol } = await params;
+  const { taxonomy } = await fetchShowcaseConfig();
+  const category = findCategory(categorySlug, taxonomy);
+  const name = category?.protocols?.find(n => slugify(n) === protocol);
+  if (!category || !name) return null;
+
+  const chain = category.chains?.[0] ?? category.name;
+  return {
+    category,
+    group: groupLabel(category.group, taxonomy),
+    name,
+    chain,
+    profile: await fetchProtocolProfile(protocol, chain),
+  };
+}
+
 // =====================================
 // ⬢  Metadata
 // =====================================
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const loaded = await loadCaseStudy(params);
-  if (!loaded) return {};
+  if (!loaded) {
+    const listed = await loadListedProtocol(params);
+    return listed
+      ? {
+          title: `${listed.name} on ${listed.chain} – Sandworm Showcase`,
+          description:
+            listed.profile?.description ??
+            `${listed.name} on ${listed.chain}: value locked and fees.`,
+        }
+      : {};
+  }
   const { caseStudy } = loaded;
   const top = caseStudy.showcase.heroStats[0];
   return {
@@ -81,7 +112,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // the category.
 export default async function ShowcaseCaseStudyPage({ params }: Props) {
   const loaded = await loadCaseStudy(params);
-  if (!loaded) notFound();
+  if (!loaded) {
+    const listed = await loadListedProtocol(params);
+    if (!listed) notFound();
+    return <ProtocolProfile {...listed} />;
+  }
 
   const { category, group, caseStudy, notebooks } = loaded;
   const { showcase } = caseStudy;

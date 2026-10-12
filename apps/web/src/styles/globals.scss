@@ -283,6 +283,9 @@
     --pill-border: #e9ecef;
     --pill-active-bg: #1a1a1a;
 
+    /* Search trigger in the header (light keeps base-600) */
+    --search-bg: #ebf7f7;
+
     /* Search palette dialog (light keeps base-100) */
     --search-modal-bg: #ffffff;
 
@@ -419,12 +422,24 @@
     --icon-stroke: #e6eaf0;
 
     /* Showcase tab pills */
-    --pill-bg: #383838;
+    --pill-bg: #2d2d2d;
     --pill-border: #ffffff1a;
     --pill-active-bg: #494949;
 
-    /* Search palette dialog */
+    /* Search trigger in the header */
+    --search-bg: #383838;
+
+    /* Search: the header trigger and the palette dialog (dark only) */
     --search-modal-bg: #242424;
+    --search-ink: #ffffffb8; /* trigger text and its key hint */
+    --search-kbd: #a0acc526; /* key hint background */
+    --search-input: #f4f4f4; /* what you type in the palette */
+    --search-muted: #ffffff80; /* "View all" and the category tabs */
+    --search-hover: #282828; /* a hovered or highlighted row */
+    --search-shadow:
+      0px 11px 15px -7px rgba(0, 0, 0, 0.2),
+      0px 24px 38px 3px rgba(0, 0, 0, 0.14),
+      0px 9px 46px 8px rgba(0, 0, 0, 0.12);
   }
 }
 
@@ -456,6 +471,14 @@
 .block-active-hover:focus-visible {
   border-color: hsl(var(--primary));
   @extend .block-focus-ring;
+}
+
+/* A card's dark border utility (dark:border-border-tertiary) is emitted after the rule
+   above with the same specificity, so in dark mode it wins and the border never turns
+   primary. One more class makes the active border win in both themes. */
+.dark .block-active-hover:hover,
+.dark .block-active-hover:focus-visible {
+  border-color: hsl(var(--primary));
 }
 
 .hatch-bg {

@@ -18,7 +18,11 @@ import { ValidationException } from '@sandworm/graphql';
 import { In, IsNull, Not, Repository } from 'typeorm';
 import type { ZodType } from 'zod';
 import { WorkspaceMembershipService } from '../workspace/service/workspace-membership.service';
-import { ShowcaseNotebookModel } from './showcase.model';
+import { ShowcaseCommunityModel, ShowcaseNotebookModel } from './showcase.model';
+
+const COMMUNITY_LIMIT = 24;
+
+const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export type ShowcaseConfig = {
   taxonomy: {
@@ -85,7 +89,68 @@ export class ShowcaseService {
     if (filter.kind) query.andWhere(`doc.showcase->>'kind' = :kind`, { kind: filter.kind });
 
     const documents = await query.orderBy('doc.publishedAt', 'DESC').getMany();
-    return documents.map(doc => ShowcaseNotebookModel.fromEntity(doc, 'official'));
+    const withDashboard = await this.withDashboard(documents.map(doc => doc.id));
+    return documents.map(doc => ShowcaseNotebookModel.fromEntity(doc, 'official', withDashboard.has(doc.id)));
+  }
+
+  // Which of these notebooks have a dashboard their author left public. The published copy
+  // records whether it has one (has_dashboard, set when the notebook is published).
+  private async withDashboard(ids: string[]): Promise<Set<string>> {
+    if (ids.length === 0) return new Set();
+    const rows: { id: string }[] = await this.documentRepository.query(
+      `SELECT d.id::text AS id
+         FROM document d
+         JOIN yjs_app_document a ON a.document_id = d.id AND a.has_dashboard
+        WHERE d.id::text = ANY($1::text[]) AND d."isDashboardPublic"`,
+      [ids],
+    );
+    return new Set(rows.map(row => row.id));
+  }
+
+  // What the community has published about a category: public notebooks outside the
+  // official workspaces whose tags, title or description name the category or one of its
+  // chains. Ranked as search ranks them: forks, with featured notebooks on top.
+  async listCommunity(category: string, limit = COMMUNITY_LIMIT): Promise<ShowcaseCommunityModel[]> {
+    const entry = await this.categoryRepository.findOne({ where: { slug: category } });
+    if (!entry) return [];
+
+    const terms = Array.from(
+      new Set([entry.slug, entry.name, ...entry.chains].map(term => term.trim().toLowerCase()).filter(Boolean)),
+    );
+    // A whole word, so "monad" finds Monad but not "monadic".
+    const pattern = `\\m(${terms.map(escapeRegex).join('|')})\\M`;
+
+    const rows: (Omit<ShowcaseCommunityModel, 'forks'> & { forks: number | string })[] =
+      await this.documentRepository.query(
+        `SELECT d.id, d.slug, d.title, d.description, d."publishedAt" AS "publishedAt", d.tags,
+                (d."isDashboardPublic" AND EXISTS (
+                   SELECT 1 FROM yjs_app_document a WHERE a.document_id = d.id AND a.has_dashboard
+                )) AS "hasDashboard",
+                coalesce(f.forks, 0)::int AS forks,
+                coalesce(nullif(u.full_name, ''), u.username) AS "authorName",
+                u.username AS "authorUsername"
+           FROM document d
+           LEFT JOIN users u ON u.id = d.author_id
+           LEFT JOIN (
+             SELECT source_document_id, count(*) AS forks FROM document_fork GROUP BY source_document_id
+           ) f ON f.source_document_id = d.id
+          WHERE d.visibility = 'PUBLIC'
+            AND d.deleted_at IS NULL
+            AND d."publishedAt" IS NOT NULL
+            AND d.slug IS NOT NULL
+            AND NOT (d.workspace_id::text = ANY($1::text[]))
+            AND (
+              EXISTS (SELECT 1 FROM unnest(d.tags) AS tag WHERE lower(tag) = ANY($2::text[]))
+              OR d.title ~* $3
+              OR d.description ~* $3
+            )
+          ORDER BY (coalesce(f.forks, 0) + CASE WHEN d."featuredDocument" THEN 5 ELSE 0 END) DESC,
+                   d."publishedAt" DESC
+          LIMIT $4`,
+        [this.officialWorkspaceIds, terms, pattern, Math.min(Math.max(limit, 1), COMMUNITY_LIMIT)],
+      );
+
+    return rows.map(row => ({ ...row, forks: Number(row.forks) }));
   }
 
   // Everything the Showcase pages are laid out from: the groups and their

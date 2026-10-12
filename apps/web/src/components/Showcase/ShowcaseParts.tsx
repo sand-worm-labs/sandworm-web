@@ -198,6 +198,7 @@ const KIND_LABEL: Record<ShowcaseNotebook["showcase"]["kind"], string> = {
   case_study: "On-chain analysis",
   working: "Notebook",
   category: "Leaderboard",
+  report: "Report",
 };
 
 // One notebook, opened as a notebook.

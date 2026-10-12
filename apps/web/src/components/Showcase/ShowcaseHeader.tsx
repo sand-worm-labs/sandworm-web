@@ -35,7 +35,7 @@ export function ShowcaseHeader({ active }: ShowcaseHeaderProps) {
   });
 
   return (
-    <header className="h-14 w-full shrink-0 flex items-center gap-3 sm:gap-5 px-3 sm:px-5 bg-base-100 font-body border-b border-border-secondary dark:border-border-tertiary">
+    <header className="h-14 w-full shrink-0 flex items-center gap-3 sm:gap-5 px-3 sm:px-5 bg-base-100 dark:bg-header-surface font-body border-b border-border-secondary dark:border-border-tertiary">
       <PublicHeaderLogo isAuthenticated={isAuthenticated} />
 
       <nav className="flex items-center gap-1 h-full" aria-label="Sections">

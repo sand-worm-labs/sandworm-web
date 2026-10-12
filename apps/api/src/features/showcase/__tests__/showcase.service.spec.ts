@@ -13,6 +13,7 @@ function makeService(officialIds = OFFICIAL) {
   query.getMany = jest.fn().mockResolvedValue([]);
   const documentRepository = {
     createQueryBuilder: jest.fn(() => query),
+    query: jest.fn().mockResolvedValue([]),
     findOne: jest.fn(),
     save: jest.fn(async (doc: unknown) => doc),
   } as any;
@@ -21,7 +22,7 @@ function makeService(officialIds = OFFICIAL) {
   const config = { get: jest.fn(() => officialIds) } as any;
   const config_ = {
     groups: { find: jest.fn().mockResolvedValue([]) } as any,
-    categories: { find: jest.fn().mockResolvedValue([]) } as any,
+    categories: { find: jest.fn().mockResolvedValue([]), findOne: jest.fn().mockResolvedValue(null) } as any,
     chains: { find: jest.fn().mockResolvedValue([]) } as any,
     templates: { find: jest.fn().mockResolvedValue([]) } as any,
   };
@@ -58,6 +59,63 @@ describe('ShowcaseService', () => {
       expect(conditions).toEqual(expect.arrayContaining([expect.stringContaining(`'status' = 'published'`)]));
       expect(query.andWhere).toHaveBeenCalledWith(expect.stringContaining(`'category'`), { category: 'off-ramps' });
       expect(query.andWhere).toHaveBeenCalledWith(expect.stringContaining(`'kind'`), { kind: 'case_study' });
+    });
+  });
+
+  describe('listNotebooks dashboards', () => {
+    it('marks the notebooks that have a public dashboard', async () => {
+      const { service, query, documentRepository } = makeService();
+      query.getMany.mockResolvedValue([
+        { id: 'a', slug: 'a', title: 'A', description: null, publishedAt: new Date(), showcase: { kind: 'category' } },
+        { id: 'b', slug: 'b', title: 'B', description: null, publishedAt: new Date(), showcase: { kind: 'report' } },
+      ]);
+      documentRepository.query.mockResolvedValue([{ id: 'a' }]);
+
+      const notebooks = await service.listNotebooks({ category: 'monad' });
+
+      expect(notebooks.map(n => [n.slug, n.hasDashboard])).toEqual([
+        ['a', true],
+        ['b', false],
+      ]);
+      expect(documentRepository.query).toHaveBeenCalledWith(expect.stringContaining('has_dashboard'), [['a', 'b']]);
+    });
+  });
+
+  describe('listCommunity', () => {
+    it('finds nothing for a category that does not exist, without querying notebooks', async () => {
+      const { service, documentRepository } = makeService();
+
+      expect(await service.listCommunity('nope')).toEqual([]);
+      expect(documentRepository.query).not.toHaveBeenCalled();
+    });
+
+    it('looks outside the official workspaces, for the whole words of the category and its chains', async () => {
+      const { service, documentRepository, tables } = makeService();
+      tables.categories.findOne.mockResolvedValue({ slug: 'monad', name: 'Monad', chains: ['Monad', 'Ethereum'] });
+      documentRepository.query.mockResolvedValue([
+        { id: '1', slug: 's', title: 'T', description: null, publishedAt: new Date(), tags: [], hasDashboard: true, forks: '3' },
+      ]);
+
+      const items = await service.listCommunity('monad', 6);
+
+      const [sql, params] = documentRepository.query.mock.calls[0];
+      expect(sql).toContain('NOT (d.workspace_id::text = ANY($1::text[]))');
+      expect(params[0]).toEqual([OFFICIAL]);
+      expect(params[1]).toEqual(['monad', 'ethereum']);
+      expect(params[2]).toBe('\\m(monad|ethereum)\\M');
+      expect(params[3]).toBe(6);
+      expect(items[0]?.forks).toBe(3);
+    });
+
+    it('escapes what it puts in the pattern, and caps the page size', async () => {
+      const { service, documentRepository, tables } = makeService();
+      tables.categories.findOne.mockResolvedValue({ slug: 'l2', name: 'L2 (a+b)', chains: [] });
+
+      await service.listCommunity('l2', 5000);
+
+      const params = documentRepository.query.mock.calls[0][1];
+      expect(params[2]).toBe('\\m(l2|l2 \\(a\\+b\\))\\M');
+      expect(params[3]).toBe(24);
     });
   });
 

@@ -11,7 +11,7 @@ export function PublicExploreHeader() {
   });
 
   return (
-    <div className="w-full bg-base-100 font-body relative">
+    <div className="w-full bg-base-100 dark:bg-header-surface font-body relative">
       <div className="h-14 w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-5 border-b border-border-secondary dark:border-border-tertiary">
         <PublicHeaderLogo isAuthenticated={isAuthenticated} />
 

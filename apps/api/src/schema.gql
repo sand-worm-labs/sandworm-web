@@ -298,6 +298,24 @@ type ShowcaseNotebook {
   """official or community"""
   author: String!
   showcase: JSON!
+
+  """The notebook has a dashboard its author left public"""
+  hasDashboard: Boolean!
+}
+
+type ShowcaseCommunityItem {
+  id: String!
+  slug: String!
+  title: String!
+  description: String
+  publishedAt: DateTime!
+  tags: [String!]!
+
+  """It also has a public dashboard, at /notebooks/:slug/dashboard"""
+  hasDashboard: Boolean!
+  forks: Int!
+  authorName: String
+  authorUsername: String
 }
 
 type BountyWinner {
@@ -592,6 +610,11 @@ type Query {
   The official notebooks on the Showcase, newest first. Filter by category slug and by kind (category, case_study, working).
   """
   getShowcaseNotebooks(category: String, kind: String): [ShowcaseNotebook!]!
+
+  """
+  Notebooks the community published about a category (a chain or a sector), most forked first. Not on the Showcase itself: found by tag, title or description.
+  """
+  getShowcaseCommunity(category: String!, limit: Int): [ShowcaseCommunityItem!]!
 
   """
   What the Showcase is laid out from: its taxonomy (groups, categories, chain order), chain colors and template sections.
