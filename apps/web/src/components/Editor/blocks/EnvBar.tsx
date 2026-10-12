@@ -18,6 +18,10 @@ interface DotBadgeProps {
   children: React.ReactNode;
   onRestart?: () => void;
   canRestart?: boolean;
+  // What restarting does, for the button's tooltip.
+  restartLabel?: string;
+  // Shown on hover over the whole badge, e.g. why it's failing.
+  title?: string;
 }
 
 const STATUS_COLORS: Record<
@@ -51,10 +55,18 @@ const STATUS_COLORS: Record<
   },
 };
 
-function DotBadge({ color, children, onRestart, canRestart }: DotBadgeProps) {
+function DotBadge({
+  color,
+  children,
+  onRestart,
+  canRestart,
+  restartLabel = "Restart environment",
+  title,
+}: DotBadgeProps) {
   const c = STATUS_COLORS[color];
   return (
     <span
+      title={title}
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1
         text-xs font-medium ${c.bg} ${c.text}`}
     >
@@ -70,7 +82,7 @@ function DotBadge({ color, children, onRestart, canRestart }: DotBadgeProps) {
                 e.stopPropagation();
                 onRestart();
               }}
-              aria-label="Restart environment"
+              aria-label={restartLabel}
               className="flex items-center opacity-70 hover:opacity-100 transition-opacity"
             >
               <PiArrowsClockwise size={12} />
@@ -80,7 +92,7 @@ function DotBadge({ color, children, onRestart, canRestart }: DotBadgeProps) {
               w-max bg-hunter-950 text-white text-[10px] px-2 py-1 rounded-md
               opacity-0 group-hover:opacity-100 transition-opacity"
             >
-              Restart environment
+              {restartLabel}
             </div>
           </div>
         </>
@@ -93,6 +105,7 @@ function StatusBadge({
   loading,
   status,
   where,
+  error,
   onRestart,
   canRestart,
 }: {
@@ -100,28 +113,47 @@ function StatusBadge({
   status: EnvironmentStatus | null;
   // Where the notebook runs, so the status always says which it is.
   where: "Cloud" | "Browser";
+  error: string | null;
   onRestart: () => void;
   canRestart: boolean;
 }) {
   if (loading) return <DotBadge color="blue">{where} · Loading</DotBadge>;
+
+  // Restarting is offered wherever it can help: while running, and above all
+  // once it has failed or stopped, when it's the only way back.
+  const restartable = {
+    onRestart,
+    canRestart,
+    restartLabel:
+      where === "Browser"
+        ? "Restart Python. Clears variables, then re-runs the notebook"
+        : "Restart environment",
+  };
 
   switch (status) {
     case "Starting":
       return <DotBadge color="yellow">{where} · Starting</DotBadge>;
     case "Running":
       return (
-        <DotBadge color="green" onRestart={onRestart} canRestart={canRestart}>
+        <DotBadge color="green" {...restartable}>
           {where} · Running
         </DotBadge>
       );
-    case "Stopped":
-      return <DotBadge color="gray">{where} · Stopped</DotBadge>;
     case "Stopping":
       return <DotBadge color="yellow">{where} · Stopping</DotBadge>;
     case "Failing":
-      return <DotBadge color="red">{where} · Failing</DotBadge>;
+      return (
+        <DotBadge color="red" title={error ?? undefined} {...restartable}>
+          {where} · Failing
+        </DotBadge>
+      );
+    case "Stopped":
     default:
-      return <DotBadge color="gray">{where} · Stopped</DotBadge>;
+      return (
+        <DotBadge color="gray" {...restartable}>
+          {where} · Stopped
+        </DotBadge>
+      );
   }
 }
 
@@ -136,7 +168,7 @@ interface Props {
 
 function EnvBar(props: Props) {
   const workspaceId = useStringQuery("workspace");
-  const { status, loading, restart } = useEnvironmentStatus(workspaceId);
+  const { status, loading, error, restart } = useEnvironmentStatus(workspaceId);
   const where = useIsBrowserRuntime() ? "Browser" : "Cloud";
 
   const publishedAtDisplay = dfns.formatDistanceToNow(
@@ -165,8 +197,11 @@ function EnvBar(props: Props) {
         loading={loading}
         status={status}
         where={where}
+        error={error}
         onRestart={restart}
-        canRestart={!props.isViewer}
+        // The browser kernel belongs to this tab, so anyone can restart their
+        // own; the cloud environment is shared, so viewers can't.
+        canRestart={where === "Browser" || !props.isViewer}
       />
     </div>
   );
