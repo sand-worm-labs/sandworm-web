@@ -15,7 +15,7 @@ const VARIANT_CLASS = {
   outline:
     "border-[1.5px] border-primary text-primary dark:text-primary-tint-75 dark:border-hover-border",
   // For the dark case-study hero.
-  light: "bg-white text-ink-navy hover:bg-white/90",
+  light: "bg-white text-ink-navy dark:text-page-surface hover:bg-white/90",
   ghost: "border border-white/25 text-white hover:bg-white/10",
 };
 

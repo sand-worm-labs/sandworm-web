@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { boardClass, listHeadClass } from "@/components/Showcase/BoardKit";
 import { Tag } from "@/components/Tag";
 import {
   caseStudyHref,
@@ -11,6 +12,7 @@ import {
   projectHref,
 } from "@/lib/showcase";
 import { ProtocolLogo } from "@/components/Showcase/ProtocolLogo";
+import { formatDate } from "@/lib/date";
 import { cn } from "@/lib/utils";
 import type {
   ShowcaseHeroStat,
@@ -208,25 +210,49 @@ const KIND_LABEL: Record<ShowcaseNotebook["showcase"]["kind"], string> = {
   report: "Report",
 };
 
-// One notebook, opened as a notebook.
-export function NotebookCard({ notebook }: { notebook: ShowcaseNotebook }) {
+// Notebooks as a list, laid out like the Explore page's: one row each, the title opening the
+// notebook, the kind and the date beside it.
+export function NotebookList({ notebooks }: { notebooks: ShowcaseNotebook[] }) {
   return (
-    <Link
-      href={notebookHref(notebook.slug)}
-      className="group flex flex-col h-full rounded-xl p-4 bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
-    >
-      <span className="font-body-mono text-[10px] uppercase tracking-[0.16em] text-ink-300">
-        {KIND_LABEL[notebook.showcase.kind]}
-      </span>
-      <span className="mt-2 text-[15px] font-semibold leading-5 text-ink-100 dark:text-white group-hover:text-primary dark:group-hover:text-primary-tint-75">
-        {notebook.title}
-      </span>
-      {notebook.description && (
-        <span className="mt-1.5 text-[13px] leading-5 text-ink-400 line-clamp-2">
-          {notebook.description}
-        </span>
-      )}
-    </Link>
+    <div className={`overflow-x-auto ${boardClass}`}>
+      <table className="block md:table w-full border-collapse">
+        <thead className={`hidden md:table-header-group ${listHeadClass}`}>
+          <tr>
+            <th className="text-left px-4 py-2.5 font-normal">Notebook</th>
+            <th className="text-left px-4 py-2.5 font-normal">Type</th>
+            <th className="text-right px-4 py-2.5 font-normal">Published</th>
+          </tr>
+        </thead>
+        <tbody className="block md:table-row-group">
+          {notebooks.map(notebook => (
+            <tr
+              key={notebook.id}
+              className="block md:table-row py-3 md:py-0 border-b border-border-secondary dark:border-border-tertiary last:border-b-0 hover:bg-inputBg dark:hover:bg-header-surface transition-colors shadow-[inset_2px_0_0_transparent] hover:shadow-[inset_2px_0_0_theme(colors.primary.DEFAULT)]"
+            >
+              <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top">
+                <Link
+                  href={notebookHref(notebook.slug)}
+                  className="text-sm font-medium text-ink-100 dark:text-white hover:underline break-words"
+                >
+                  {notebook.title}
+                </Link>
+                {notebook.description && (
+                  <p className="mt-1 max-w-xl text-xs text-ink-300 line-clamp-2">
+                    {notebook.description}
+                  </p>
+                )}
+              </td>
+              <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top">
+                <Tag>{KIND_LABEL[notebook.showcase.kind]}</Tag>
+              </td>
+              <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top md:text-right text-xs text-ink-300 whitespace-nowrap">
+                {formatDate(notebook.publishedAt)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

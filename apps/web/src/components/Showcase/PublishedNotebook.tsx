@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { getLayout } from "@sandworm/editor";
 import { List } from "immutable";
 import type { ReactNode } from "react";
 
@@ -60,17 +61,26 @@ function Contents({ sections }: { sections: NotebookSection[] }) {
 // =====================================
 // ⬢  PublishedNotebook
 // =====================================
-// A notebook in published mode: code hidden, the wider reading width, and a
-// contents list from its H2s. The page around it passes its own header (the
-// hero) and footer (the calls to action), and the whole thing scrolls as one.
+// A notebook in published mode: code hidden, the wider reading width, and
+// optionally a contents list from its H2s. The page around it passes its own
+// header (the hero) and footer (the calls to action), and the whole thing
+// scrolls as one.
 export function PublishedNotebook({
   slug,
   header,
   footer,
+  empty,
+  showContents = false,
 }: {
   slug: string;
   header: ReactNode;
   footer: ReactNode;
+  // Shown in place of the notebook while it has no cells, so a page whose analysis is not
+  // written yet still looks finished. Left out, an empty notebook is just empty.
+  empty?: ReactNode;
+  // The row of section links under the hero. Off: the sample notebooks are one
+  // short block and do not need it. A written case study may want it back.
+  showContents?: boolean;
 }) {
   const { yDoc, document: notebook, error, isSyncing } = usePublicYDoc(slug);
   const sections = useNotebookSections(isSyncing ? null : yDoc);
@@ -92,6 +102,16 @@ export function PublishedNotebook({
     );
   }
 
+  if (empty && getLayout(yDoc).length === 0) {
+    return (
+      <div className="flex-1 min-w-0 overflow-y-auto">
+        {header}
+        {empty}
+        {footer}
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 min-w-0 flex overflow-hidden">
       <PublicEditor
@@ -108,7 +128,7 @@ export function PublishedNotebook({
         header={
           <>
             {header}
-            <Contents sections={sections} />
+            {showContents && <Contents sections={sections} />}
           </>
         }
         footer={footer}

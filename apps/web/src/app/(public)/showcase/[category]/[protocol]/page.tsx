@@ -8,11 +8,16 @@ import {
 } from "@/components/Showcase/fetchShowcase";
 import { ProtocolProfile } from "@/components/Showcase/ProtocolProfile";
 import { PublishedNotebook } from "@/components/Showcase/PublishedNotebook";
-import { lineBackdrop } from "@/components/Showcase/BoardKit";
+import {
+  heroBreadcrumbClass,
+  heroClass,
+  lineBackdrop,
+} from "@/components/Showcase/BoardKit";
+import { NotebookPlaceholder } from "@/components/Showcase/NotebookPlaceholder";
 import { ProtocolLogo } from "@/components/Showcase/ProtocolLogo";
 import { ShowcaseHeader } from "@/components/Showcase/ShowcaseHeader";
 import {
-  NotebookCard,
+  NotebookList,
   ProjectCard,
   ShowcaseBreadcrumb,
   ShowcaseSection,
@@ -129,16 +134,13 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
   const claimed = showcase.claimed === true;
 
   const hero = (
-    <section
-      className="bg-ink-navy dark:bg-block-surface text-white"
-      style={lineBackdrop}
-    >
+    <section className={heroClass} style={lineBackdrop}>
       <div className="container mx-auto px-4 sm:px-8 py-10">
         <ShowcaseBreadcrumb
           category={category}
           group={group}
           protocol={protocol}
-          className="[&_ol]:text-white/60 [&_span]:!text-white"
+          className={heroBreadcrumbClass}
         />
 
         <div className="mt-5 flex flex-wrap items-center gap-1.5">
@@ -195,7 +197,7 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
 
   const closing = (
     <div className="container mx-auto px-4 sm:px-8 pb-16">
-      <section className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-base-100 border border-border-secondary dark:border-border-tertiary p-5">
+      <section className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary p-5">
         <div className="min-w-0">
           <h2 className="text-base font-semibold text-ink-100 dark:text-white">
             This page is a notebook
@@ -216,13 +218,7 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
 
       {moreNotebooks.length > 0 && (
         <ShowcaseSection title={`More on ${protocol}`}>
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {moreNotebooks.map(notebook => (
-              <li key={notebook.id}>
-                <NotebookCard notebook={notebook} />
-              </li>
-            ))}
-          </ul>
+          <NotebookList notebooks={moreNotebooks} />
         </ShowcaseSection>
       )}
 
@@ -253,7 +249,29 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
     <div className="flex flex-col h-[100dvh] bg-page-surface font-body">
       <ShowcaseHeader active="showcase" />
       <TrackCaseStudyView category={category.slug} protocol={protocol} />
-      <PublishedNotebook slug={caseStudy.slug} header={hero} footer={closing} />
+      <PublishedNotebook
+        slug={caseStudy.slug}
+        header={hero}
+        footer={closing}
+        empty={
+          <NotebookPlaceholder
+            status="In progress"
+            title={`${protocol} on-chain analysis`}
+            description={`This case study is still being written. Once it is published it answers one question about ${protocol} from the chain, with the numbers and the queries behind them.`}
+            cards={[
+              {
+                label: "Activity",
+                detail: `Who uses ${protocol}, and how often.`,
+              },
+              {
+                label: "Value",
+                detail: "What is locked or moved through it, over time.",
+              },
+              { label: "Revenue", detail: "What it earns, and who keeps it." },
+            ]}
+          />
+        }
+      />
     </div>
   );
 }

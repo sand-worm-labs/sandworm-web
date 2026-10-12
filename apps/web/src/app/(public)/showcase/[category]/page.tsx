@@ -9,8 +9,13 @@ import {
   fetchShowcaseNotebooks,
 } from "@/components/Showcase/fetchShowcase";
 import { PublishedDashboard } from "@/components/Showcase/PublishedDashboard";
+import { NotebookPlaceholder } from "@/components/Showcase/NotebookPlaceholder";
 import { PublishedNotebook } from "@/components/Showcase/PublishedNotebook";
-import { eyebrowClass, gridBackdrop } from "@/components/Showcase/BoardKit";
+import {
+  heroBreadcrumbClass,
+  heroClass,
+  lineBackdrop,
+} from "@/components/Showcase/BoardKit";
 import { ShowcaseHeader } from "@/components/Showcase/ShowcaseHeader";
 import { ShowcaseLeadButton } from "@/components/Showcase/ShowcaseLeadButton";
 import {
@@ -115,11 +120,12 @@ export default async function ShowcaseCategoryPage({ params }: Props) {
   ];
 
   const header = (
-    <section style={gridBackdrop}>
-      <div className="container mx-auto px-4 sm:px-8 pt-8 pb-8">
+    <section className={heroClass} style={lineBackdrop}>
+      <div className="container mx-auto px-4 sm:px-8 py-10">
         <ShowcaseBreadcrumb
           category={category}
           group={groupLabel(category.group, taxonomy)}
+          className={heroBreadcrumbClass}
         />
 
         <div className="mt-6 flex items-center gap-4">
@@ -132,20 +138,19 @@ export default async function ShowcaseCategoryPage({ params }: Props) {
             />
           )}
           <div className="min-w-0">
-            <p className={eyebrowClass}>{isChain ? "Chain" : "Category"}</p>
-            <h1 className="mt-1 text-3xl sm:text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-ink-100 dark:text-white">
+            <h1 className="text-3xl sm:text-5xl font-semibold leading-[1.05] tracking-[-0.02em]">
               {category.name}
             </h1>
           </div>
         </div>
-        <p className="mt-4 max-w-2xl text-sm leading-6 text-ink-400">
+        <p className="mt-4 max-w-2xl text-sm leading-6 text-white/70">
           {category.question}
         </p>
 
         {categoryNotebook ? (
           <>
             <div className="mt-6">
-              <ShowcaseStats stats={categoryNotebook.showcase.heroStats} />
+              <ShowcaseStats stats={categoryNotebook.showcase.heroStats} dark />
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-3">
               {showDashboard && (
@@ -161,21 +166,21 @@ export default async function ShowcaseCategoryPage({ params }: Props) {
                 category={category.slug}
                 className={
                   showDashboard
-                    ? "border border-border-secondary dark:border-border-tertiary text-ink-100 dark:text-white hover:bg-base-600 dark:hover:bg-sidebar-active"
+                    ? "border border-white/25 text-white hover:bg-white/10"
                     : "bg-primary text-white hover:bg-primary-710"
                 }
               >
                 Open in notebook
               </OpenNotebookLink>
               {categoryNotebook.showcase.dataAsOf && (
-                <span className="font-body-mono text-[11px] uppercase tracking-[0.12em] text-ink-300">
+                <span className="font-body-mono text-[11px] uppercase tracking-[0.12em] text-white/50">
                   Data as of {categoryNotebook.showcase.dataAsOf}
                 </span>
               )}
             </div>
           </>
         ) : (
-          <p className="mt-6 text-sm text-ink-400">
+          <p className="mt-6 text-sm text-white/70">
             The dashboard for this category is not published yet.
           </p>
         )}
@@ -325,6 +330,27 @@ export default async function ShowcaseCategoryPage({ params }: Props) {
             </>
           }
           footer={closing}
+          empty={
+            <NotebookPlaceholder
+              status="Coming soon"
+              title={category.name}
+              description={category.question}
+              cards={[
+                {
+                  label: "The ranking",
+                  detail: `${category.name} protocols, ranked on one measure.`,
+                },
+                {
+                  label: "Over time",
+                  detail: "How the ranking moved over the last year.",
+                },
+                {
+                  label: "What changed",
+                  detail: "The protocols that moved most, and why.",
+                },
+              ]}
+            />
+          }
         />
       ) : (
         <main className="flex-1 min-w-0 overflow-y-auto scroll-smooth">

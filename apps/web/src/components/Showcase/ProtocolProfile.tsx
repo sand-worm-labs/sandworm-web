@@ -5,7 +5,11 @@ import Link from "next/link";
 
 import { ShowcaseHeader } from "@/components/Showcase/ShowcaseHeader";
 import { ShowcaseLeadButton } from "@/components/Showcase/ShowcaseLeadButton";
-import { eyebrowClass, gridBackdrop } from "@/components/Showcase/BoardKit";
+import {
+  heroBreadcrumbClass,
+  heroClass,
+  lineBackdrop,
+} from "@/components/Showcase/BoardKit";
 import { ProtocolLogo } from "@/components/Showcase/ProtocolLogo";
 import { PageSection } from "@/components/Showcase/ShowcaseChain";
 import { SeriesChart } from "@/components/Showcase/SeriesChart";
@@ -122,22 +126,22 @@ export function ProtocolProfile({
     <div className="flex flex-col h-[100dvh] bg-page-surface font-body">
       <ShowcaseHeader active="showcase" />
       <main className="flex-1 min-w-0 overflow-y-auto scroll-smooth">
-        <section style={gridBackdrop}>
-          <div className="container mx-auto px-4 sm:px-8 pt-8 pb-8">
+        <section className={heroClass} style={lineBackdrop}>
+          <div className="container mx-auto px-4 sm:px-8 py-10">
             <ShowcaseBreadcrumb
               category={category}
               group={group}
               protocol={name}
+              className={heroBreadcrumbClass}
             />
 
             <div className="mt-6 flex items-center gap-4">
               <ProtocolLogo
                 name={name}
-                className="h-16 w-16 rounded-2xl bg-primary/10 text-2xl text-primary dark:bg-pill-bg dark:text-white"
+                className="h-16 w-16 rounded-2xl bg-white/10 text-2xl text-white"
               />
               <div className="min-w-0">
-                <p className={eyebrowClass}>Protocol on {chain}</p>
-                <h1 className="mt-1 text-3xl sm:text-5xl font-semibold leading-[1.05] tracking-[-0.02em] text-ink-100 dark:text-white">
+                <h1 className="text-3xl sm:text-5xl font-semibold leading-[1.05] tracking-[-0.02em]">
                   {name}
                 </h1>
               </div>
@@ -150,7 +154,7 @@ export function ProtocolProfile({
             </div>
 
             {profile?.description && (
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-ink-400">
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-white/70">
                 {profile.description}
               </p>
             )}
@@ -167,7 +171,7 @@ export function ProtocolProfile({
                 </a>
               )}
               <ShowcaseLeadButton
-                variant="outline"
+                variant="ghost"
                 target={{
                   kind: "coverage",
                   category: category.slug,
@@ -178,7 +182,7 @@ export function ProtocolProfile({
               </ShowcaseLeadButton>
               <Link
                 href={categoryHref(category.slug)}
-                className="text-[13px] font-medium text-primary dark:text-primary-tint-75 hover:underline"
+                className="text-[13px] font-medium text-white/70 hover:text-white hover:underline"
               >
                 ← All of {category.name}
               </Link>

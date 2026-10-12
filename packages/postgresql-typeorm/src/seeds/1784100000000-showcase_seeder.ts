@@ -26,12 +26,13 @@ import { slugify } from '../utils';
 // each category in the taxonomy it publishes one category notebook and one
 // case study per protocol the category lists, so every link on the Showcase
 // (/showcase/solana, /showcase/solana/jupiter, ...) opens a real published
-// notebook. They hold a few lines of text and no data.
+// notebook. They are empty: each page shows a placeholder until its notebook has cells.
 // Reruns replace what the last run made (matched by the slug prefix).
 
 const SLUG_PREFIX = 'showcase-sample';
-const SAMPLE_NOTE = 'Sample notebook. It is here to show how the page works; the analysis is still to be written.';
-
+// A sample notebook has a title and no cells. The Showcase pages show a placeholder for a
+// notebook like that (see NotebookPlaceholder in the web app), so there is no text here to keep
+// in step with it.
 // A notebook that is a title and markdown cells, one per section.
 function plainNotebook(title: string, sections: string[]): Buffer {
     const doc = new Y.Doc();
@@ -61,11 +62,17 @@ export class ShowcaseSeeder1784100000000 implements Seeder {
             return;
         }
 
-        // Sample notebooks live in the admin's workspace, which is the one to
-        // name in SHOWCASE_OFFICIAL_WORKSPACE_IDS.
+        // Sample notebooks live in the official workspace: the first one named in
+        // SHOWCASE_OFFICIAL_WORKSPACE_IDS, or else the admin's workspace.
+        const configuredId = (process.env.SHOWCASE_OFFICIAL_WORKSPACE_IDS ?? '').split(',')[0]?.trim();
+        const workspaceRepository = dataSource.getRepository(WorkspaceEntity);
         const users = await dataSource.getRepository(UserEntity).find();
-        const author = users.find(user => user.username === 'admin') ?? users[0];
-        const workspace = author && (await dataSource.getRepository(WorkspaceEntity).findOne({ where: { ownerId: author.id } }));
+        const adminUser = users.find(user => user.username === 'admin') ?? users[0];
+
+        const workspace = configuredId
+            ? await workspaceRepository.findOne({ where: { id: configuredId } })
+            : adminUser && (await workspaceRepository.findOne({ where: { ownerId: adminUser.id } }));
+        const author = workspace ? users.find(user => user.id === workspace.ownerId) ?? adminUser : adminUser;
         if (!author || !workspace) {
             console.log('No user with a workspace — skipping showcase seed');
             return;
@@ -108,7 +115,7 @@ export class ShowcaseSeeder1784100000000 implements Seeder {
                 category.question,
                 `${SLUG_PREFIX}-${category.slug}`,
                 { ...shared, kind: 'category' },
-                [SAMPLE_NOTE, `## Leaderboard\n\nThe ranking of ${category.name} protocols goes here.`],
+                [],
             );
 
             category.protocols.forEach(protocol => {
@@ -117,15 +124,16 @@ export class ShowcaseSeeder1784100000000 implements Seeder {
                     `A sample case study of ${protocol} in ${category.name}.`,
                     `${SLUG_PREFIX}-${category.slug}-${slugify(protocol) || 'protocol'}`,
                     { ...shared, kind: 'case_study', protocol },
-                    [SAMPLE_NOTE, `## The short version\n\nWhat the chain shows about ${protocol} goes here.`],
+                    [],
                 );
-                // A second notebook, so a project's page has more to list.
+                // A second notebook, so a project's page has more to list. Every protocol has
+                // an overview, so it is not about any one analysis.
                 add(
-                    `${protocol}: working notebook (sample)`,
-                    `A sample working notebook on ${protocol}.`,
+                    `${protocol} overview`,
+                    `The basics of ${protocol}: who uses it, how much moves through it, and what it earns.`,
                     `${SLUG_PREFIX}-${category.slug}-${slugify(protocol) || 'protocol'}-working`,
                     { ...shared, kind: 'working', protocol, parentCaseStudy: `${SLUG_PREFIX}-${category.slug}-${slugify(protocol) || 'protocol'}` },
-                    [SAMPLE_NOTE, `## Questions to ask next\n\nFollow-up analysis on ${protocol} goes here.`],
+                    [],
                 );
             });
         });

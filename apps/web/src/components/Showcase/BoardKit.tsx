@@ -9,14 +9,23 @@ import { cn } from "@/lib/utils";
 // =====================================
 // ⬢  Class names
 // =====================================
-export const eyebrowClass =
-  "font-body-mono text-[11px] uppercase tracking-[0.22em] text-primary dark:text-primary-tint-75";
+// The dark hero at the top of a Showcase page: navy in light mode, the card surface in dark mode,
+// with white text either way. Pair it with `lineBackdrop` and `heroBreadcrumbClass`.
+// (`bg-ink-navy` alone turns near-white in dark mode, as ink-navy is a text color.)
+export const heroClass = "bg-ink-navy dark:bg-block-surface text-white";
+
+export const heroBreadcrumbClass = "[&_ol]:text-white/60 [&_span]:!text-white";
 
 export const boardClass =
   "rounded-xl overflow-hidden bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary";
 
 export const boardHeadClass =
   "font-body-mono text-[10px] uppercase tracking-[0.18em] text-primary dark:text-primary-tint-75 bg-inputBg dark:bg-header-surface border-b border-border-secondary dark:border-border-tertiary";
+
+// The column headings of a list of notebooks: small capitals in the body font, in the quiet
+// text color. The Explore page and the Showcase notebook lists share it.
+export const listHeadClass =
+  "font-body text-[10px] uppercase tracking-[0.18em] text-ink-400 bg-inputBg dark:bg-header-surface border-b border-border-secondary dark:border-border-tertiary";
 
 // A row lights up with a bar of the accent color on its left edge.
 export const boardRowClass =
@@ -32,13 +41,6 @@ export const toggleClass = (active: boolean) =>
       ? "bg-primary border-primary text-white"
       : "bg-base-100 border-border-secondary dark:border-border-tertiary text-ink-400 hover:text-ink-100 dark:hover:text-white hover:border-primary"
   );
-
-// A faint grid behind a section, like the panel a board is mounted on.
-export const gridBackdrop = {
-  backgroundImage:
-    "linear-gradient(rgba(127,127,127,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(127,127,127,0.07) 1px, transparent 1px)",
-  backgroundSize: "44px 44px",
-};
 
 // The dashed gradient lines that hang from the top of a hero.
 export const lineBackdrop = {

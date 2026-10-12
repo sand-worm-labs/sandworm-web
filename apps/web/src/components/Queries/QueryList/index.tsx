@@ -5,17 +5,13 @@ import Image from "next/image";
 import type { QueryPagination, ApiDocument } from "@/types";
 import { ExploreCard } from "@/components/Explore/ExploreCard";
 import { ExploreListLoadMoreSkeleton } from "@/components/Explore/ExploreSkeletons";
-import { boardClass } from "@/components/Showcase/BoardKit";
+import { boardClass, listHeadClass } from "@/components/Showcase/BoardKit";
 
 interface IQueryListProps {
   documents: ApiDocument[] | null;
   pagination?: QueryPagination;
   loadingMore?: boolean;
 }
-
-// The column headings: small capitals in the body font, in the quiet text color.
-const exploreHeadClass =
-  "font-body text-[10px] uppercase tracking-[0.18em] text-ink-400 bg-inputBg dark:bg-header-surface border-b border-border-secondary dark:border-border-tertiary";
 
 const COLUMN_HEADERS = ["Author", "Notebook", "Tags", "Stars · Forks"] as const;
 
@@ -38,7 +34,7 @@ export const QueryList: React.FC<IQueryListProps> = ({
     <div className="mb-16 h-full justify-between flex flex-col">
       <div className={`mb-8 overflow-x-auto ${boardClass}`}>
         <table className="block md:table w-full border-collapse">
-          <thead className={`hidden md:table-header-group ${exploreHeadClass}`}>
+          <thead className={`hidden md:table-header-group ${listHeadClass}`}>
             <tr>
               {COLUMN_HEADERS.map(header => (
                 <th
