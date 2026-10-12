@@ -9,15 +9,54 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 // x402 packages we do not install. We do not use that connector, so it gets a stub.
 const baseAccountStub = "./src/web3/stubs/base-account.ts";
 
+// A second line of defence behind the sandboxes that notebook code runs in
+// (src/lib/pyodide/sandbox.ts and the JavaScript cell's frame): what the app's
+// own pages may load and where a form may post.
+//
+// Report-only for now. The browser logs what this policy would have blocked to
+// its console and blocks nothing. Enforcing it needs two things first: a pass
+// over those reports, and the notebook frames served as documents of their own
+// rather than srcdoc, because a srcdoc frame inherits this policy and notebook
+// code has to be free to import and fetch from anywhere.
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: https://cdn.jsdelivr.net https://esm.sh",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  "img-src * data: blob:",
+  "media-src * data: blob:",
+  "connect-src *",
+  "worker-src 'self' blob: data:",
+  "frame-src 'self' blob: data:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self'",
+].join("; ");
+
+const securityHeaders = [
+  // A file is what its Content-Type says, never what its bytes look like.
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  // Other sites learn which site a link came from, not which notebook.
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "Content-Security-Policy-Report-Only", value: contentSecurityPolicy },
+];
+
 const nextConfig = {
   reactStrictMode: true,
+  async headers() {
+    return [{ source: "/:path*", headers: securityHeaders }];
+  },
   turbopack: {
     resolveAlias: { "@base-org/account": baseAccountStub },
   },
   webpack: (config: { resolve: { alias: Record<string, string> } }) => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { resolve } = require("path");
-    config.resolve.alias["@base-org/account"] = resolve(__dirname, baseAccountStub);
+    config.resolve.alias["@base-org/account"] = resolve(
+      __dirname,
+      baseAccountStub
+    );
     return config;
   },
   transpilePackages: ["@sandworm/editor", "@sandworm/types"],

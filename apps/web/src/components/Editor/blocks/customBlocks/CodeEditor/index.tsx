@@ -25,6 +25,7 @@ import {
 import { vscodeKeymap } from "@replit/codemirror-vscode-keymap";
 import { basicSetup } from "codemirror";
 import { indentUnit } from "@codemirror/language";
+import { javascript } from "@codemirror/lang-javascript";
 import type { ViewUpdate } from "@codemirror/view";
 import {
   EditorView,
@@ -383,7 +384,7 @@ interface Props {
   documentId: string;
   blockId: string;
   source: Y.Text;
-  language: "python" | "sql";
+  language: "python" | "sql" | "javascript";
   readOnly: boolean;
   onEditWithAI: () => void;
   onRun: () => void;
@@ -457,7 +458,7 @@ const CodeEditor = forwardRef<CodeEditorRef, Props>(
             ? [pythonCompartment.of(python)]
             : props.language === "sql"
               ? [sqlCompartment.of(sql)]
-              : []),
+              : [javascript()]),
           keymap.of(vscodeKeymap),
           readonlyCompartment.of(
             EditorState.readOnly.of(props.disabled || props.readOnly)

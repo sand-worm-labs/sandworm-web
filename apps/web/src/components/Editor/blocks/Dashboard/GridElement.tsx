@@ -40,6 +40,7 @@ import DashboardHeader from "../customBlocks/dashboardHeader";
 import DateInputBlock from "../customBlocks/dateInput";
 import PivotTableBlock from "../customBlocks/pivotTable";
 import MarkdownBlock from "../customBlocks/markdown";
+import JavaScriptBlock from "../customBlocks/javascript";
 
 import { TileChromeContext } from "./TileChromeContext";
 
@@ -97,6 +98,19 @@ export function GridBlockRenderer(props: GridBlockRendererProps) {
         }
         isCursorWithin={false}
         isCursorInserting={false}
+      />
+    ),
+    onJavaScript: block => (
+      <JavaScriptBlock
+        block={block}
+        document={props.document}
+        isEditable={false}
+        dashboardMode={
+          props.isEditingDashboard
+            ? { _tag: "editing", position: "dashboard" }
+            : { _tag: "live" }
+        }
+        dragPreview={null}
       />
     ),
     onMarkdown: block => (

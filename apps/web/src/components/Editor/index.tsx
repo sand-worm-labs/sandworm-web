@@ -118,6 +118,7 @@ import PlusButton from "./PlusButton";
 import DragHandle from "./DragHandle";
 import Title from "./Title";
 import MarkdownBlock from "./blocks/customBlocks/markdown";
+import JavaScriptBlock from "./blocks/customBlocks/javascript";
 
 // The react-dnd package does not export this...
 type Identifier = string | symbol;
@@ -1825,14 +1826,14 @@ const Editor = (props: Props) => {
                   // A browser notebook in view mode runs itself on every
                   // load; running by hand is for the editor.
                   !(props.isApp && isBrowserRuntime) && (
-                  <RunAllV2
-                    disabled={false}
-                    yDoc={props.yDoc}
-                    userId={props.userId}
-                    executionQueue={props.executionQueue}
-                    workspaceId={props.document.workspaceId}
-                  />
-                )}
+                    <RunAllV2
+                      disabled={false}
+                      yDoc={props.yDoc}
+                      userId={props.userId}
+                      executionQueue={props.executionQueue}
+                      workspaceId={props.document.workspaceId}
+                    />
+                  )}
               </div>
             </div>
 
@@ -1956,6 +1957,16 @@ function TabRef(props: TabRefProps) {
         dashboardMode={null}
         isCursorWithin={isCursorWithin}
         isCursorInserting={isCursorInserting}
+        onDeleteBlock={() => props.onDeleteBlock(props.tab.blockId)}
+      />
+    ),
+    onJavaScript: block => (
+      <JavaScriptBlock
+        block={block}
+        document={props.document}
+        isEditable={props.isEditable}
+        dashboardMode={null}
+        dragPreview={props.hasMultipleTabs ? null : props.dragPreview}
         onDeleteBlock={() => props.onDeleteBlock(props.tab.blockId)}
       />
     ),

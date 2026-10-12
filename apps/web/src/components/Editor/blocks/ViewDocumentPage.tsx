@@ -75,7 +75,11 @@ export default function ViewDocumentPage(props: Props) {
 
   const executionQueue = useMemo(() => ExecutionQueue.fromYjs(yDoc), [yDoc]);
   const isLive = useLiveNotebook({
-    document: { id: props.documentId, runtime: document?.runtime },
+    document: {
+      id: props.documentId,
+      runtime: document?.runtime,
+      authorId: document?.authorId,
+    },
     yDoc,
     executionQueue,
     userId: props.user.id,
@@ -179,7 +183,7 @@ export default function ViewDocumentPage(props: Props) {
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
       <TopBarLead
-        viewing={true}
+        viewing
         title={document?.title || "Untitled"}
         typeMenu={
           <NotebookTypeMenu
@@ -239,9 +243,6 @@ export default function ViewDocumentPage(props: Props) {
         dataSources={EMPTY_DATA_SOURCES}
         isApp
         isPDF={false}
-        // The read-only view always uses the centred reading width of the public
-        // page. The editor's full-screen preference defaults to on and has no
-        // toggle here, so honouring it left the content edge to edge.
         isFullScreen={false}
         yDoc={yDoc}
         isSyncing={false}
@@ -264,7 +265,7 @@ export default function ViewDocumentPage(props: Props) {
         message={gate.message ?? ""}
         workspaceId={props.workspaceId}
       />
-      <BrowserRuntimeProvider enabled={isLive}>
+      <BrowserRuntimeProvider enabled={isLive} notebookId={props.documentId}>
         <div className="flex-1 min-w-0 flex overflow-hidden">{content}</div>
       </BrowserRuntimeProvider>
     </Layout>

@@ -15,6 +15,7 @@ import {
 import type { DataFrame } from "@sandworm/types";
 
 import type { DocumentContext } from "./interfaces";
+import { trustNotebook } from "./trust";
 import { runPythonBlock } from "./executors/python-block-executor";
 import {
   loadSQLPage,
@@ -132,6 +133,9 @@ export class DocExecutor {
   }
 
   private async executeItem(item: ExecutionQueueItem): Promise<void> {
+    // Only this user's own queued cells get here. Queuing one is their
+    // decision to run this notebook's code, whoever wrote it.
+    trustNotebook(this.notebookId);
     item.setRunning();
 
     const block = this.blocks.get(item.getBlockId());

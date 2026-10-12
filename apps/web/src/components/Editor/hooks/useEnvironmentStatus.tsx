@@ -17,6 +17,8 @@ import {
   warmUpKernel,
 } from "@/lib/pyodide/kernel";
 
+import { useIsOwnNotebook } from "@/lib/browser-executor/trust";
+
 import { useWebsocket } from "./useWebSocket";
 
 // =====================================
@@ -172,20 +174,37 @@ export function EnvironmentStatusProvider(props: Props) {
 // Live notebooks run in the browser: inside this provider, the "environment"
 // is the tab's Pyodide kernel instead of the workspace's cloud environment.
 const BrowserRuntimeContext = createContext(false);
+// Whether what the notebook's code draws should be labelled as the notebook's:
+// true for a browser notebook someone other than the reader wrote.
+const ForeignNotebookContext = createContext(false);
 
 export function BrowserRuntimeProvider(props: {
   enabled: boolean;
+  // The notebook inside, to tell whether the reader wrote it.
+  notebookId?: string;
   children: React.ReactNode;
 }) {
   useEffect(() => {
     if (props.enabled) warmUpKernel();
   }, [props.enabled]);
+  const isOwn = useIsOwnNotebook(props.notebookId ?? "");
 
   return (
     <BrowserRuntimeContext.Provider value={props.enabled}>
-      {props.children}
+      <ForeignNotebookContext.Provider
+        value={props.enabled && !!props.notebookId && !isOwn}
+      >
+        {props.children}
+      </ForeignNotebookContext.Provider>
     </BrowserRuntimeContext.Provider>
   );
+}
+
+// Output drawn by code, in a notebook the reader didn't write, could imitate
+// the app around it (a "log in again" form, say). Where this is true, such
+// output is shown with a label saying where it comes from.
+export function useIsForeignNotebook(): boolean {
+  return useContext(ForeignNotebookContext);
 }
 
 export function useIsBrowserRuntime(): boolean {

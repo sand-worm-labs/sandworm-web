@@ -19,45 +19,24 @@ function errorMessage(err) {
   return err instanceof Error ? err.message : String(err);
 }
 
-async function loadTheme(pyodide, origin) {
+// The page reads the theme package and sends it with init: this worker's
+// sandbox has an origin of its own and can't fetch the site's files.
+function loadTheme(pyodide, files) {
   const dir = `${HOME}/sandworm_theme`;
   pyodide.FS.mkdirTree(dir);
-  // files.json is written with the copy of the package (see
-  // scripts/sync-sandworm-theme.mjs), so it always lists every file.
-  const listing = await fetch(`${origin}/sandworm_theme/files.json`);
-  if (!listing.ok) {
-    throw new Error(
-      `Failed to load sandworm_theme/files.json: ${listing.status}`
-    );
-  }
-  const files = await listing.json();
-  await Promise.all(
-    files.map(async file => {
-      const response = await fetch(`${origin}/sandworm_theme/${file}`);
-      if (!response.ok) {
-        throw new Error(
-          `Failed to load sandworm_theme/${file}: ${response.status}`
-        );
-      }
-      pyodide.FS.writeFile(`${dir}/${file}`, await response.text(), {
-        encoding: "utf8",
-      });
-    })
-  );
+  files.forEach(({ name, source }) => {
+    pyodide.FS.writeFile(`${dir}/${name}`, source, { encoding: "utf8" });
+  });
 }
 
-async function boot({ indexURL, origin, interruptBuffer, harness }) {
+async function boot({ indexURL, theme, harness }) {
   const { loadPyodide } = await import(`${indexURL}pyodide.mjs`);
   const pyodide = await loadPyodide({ indexURL });
-  if (interruptBuffer) {
-    pyodide.setInterruptBuffer(interruptBuffer);
-  }
-
   pyodide.FS.mkdirTree(HOME);
   harness.modules.forEach(({ name, source }) => {
     pyodide.FS.writeFile(`${HOME}/${name}.py`, source, { encoding: "utf8" });
   });
-  await loadTheme(pyodide, origin);
+  loadTheme(pyodide, theme);
   await pyodide.runPythonAsync(`
 import sys
 

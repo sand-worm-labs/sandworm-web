@@ -12,6 +12,11 @@ import { toast } from "sonner";
 import { DocumentRuntime } from "@/generated/graphql";
 import type { Document } from "@/types";
 import { DocExecutor } from "@/lib/browser-executor/doc-executor";
+import {
+  setNotebookOwner,
+  trustNotebook,
+  useNotebookTrusted,
+} from "@/lib/browser-executor/trust";
 import { getKernelStatus, subscribeKernelStatus } from "@/lib/pyodide/kernel";
 
 // Two kinds of notebook run in the browser, never on the cloud: local
@@ -35,8 +40,14 @@ const CLOUD_ONLY_BLOCKS = new Set<BlockType>([
   BlockType.PivotTable,
 ]);
 
+// And the reverse: blocks that only run in the browser, which the server
+// that runs a cloud notebook has no way to run. The API refuses them too.
+const BROWSER_ONLY_BLOCKS = new Set<BlockType>([BlockType.JavaScript]);
+
 export function canAddBlock(type: BlockType, isBrowserRuntime: boolean) {
-  return !isBrowserRuntime || !CLOUD_ONLY_BLOCKS.has(type);
+  return isBrowserRuntime
+    ? !CLOUD_ONLY_BLOCKS.has(type)
+    : !BROWSER_ONLY_BLOCKS.has(type);
 }
 
 // A browser notebook runs on this machine, so a cell that eats memory can kill
@@ -71,9 +82,13 @@ function setOpenMark(notebookId: string, open: boolean) {
 // restarted, in the editor and in view mode alike, since browser Python starts
 // empty each time. In view mode that's the only way it runs: there are no run
 // buttons there.
+//
+// A notebook someone else wrote is not run until the reader agrees (see
+// lib/browser-executor/trust.ts): its code would run on their machine.
 // Returns whether the notebook runs in the browser.
 export function useLiveNotebook(opts: {
-  document: Pick<Document, "id" | "runtime">;
+  // authorId is undefined until the document has loaded.
+  document: Pick<Document, "id" | "runtime"> & { authorId?: string | null };
   yDoc: Y.Doc;
   executionQueue: ExecutionQueue;
   userId: string | null;
@@ -90,6 +105,35 @@ export function useLiveNotebook(opts: {
       executor.stop();
     };
   }, [isLive, yDoc, document.id, userId]);
+
+  // The reader's own notebooks run without asking.
+  const { authorId } = document;
+  useEffect(() => {
+    if (!isLive || !userId || authorId === undefined) return;
+    setNotebookOwner(document.id, authorId === userId);
+  }, [isLive, userId, authorId, document.id]);
+  const trusted = useNotebookTrusted(document.id);
+
+  // Anyone else's waits for a yes. Running a cell by hand is a yes too (the
+  // executor records it), which is what takes this prompt away.
+  const asking =
+    isLive && !syncing && !!userId && authorId !== undefined && !trusted;
+  useEffect(() => {
+    if (!asking) return undefined;
+    const id = toast(
+      "This notebook runs code in your browser. Someone else wrote it, so it hasn't run yet.",
+      {
+        duration: Infinity,
+        action: {
+          label: "Run notebook",
+          onClick: () => trustNotebook(document.id),
+        },
+      }
+    );
+    return () => {
+      toast.dismiss(id);
+    };
+  }, [asking, document.id]);
 
   // Whether the last session with this notebook ended without closing
   // properly (see openMark). Read once, before this session leaves its mark.
@@ -115,7 +159,13 @@ export function useLiveNotebook(opts: {
   );
   const ranFor = useRef<number | null>(null);
   useEffect(() => {
-    if (!isLive || syncing || !userId || ranFor.current === restarts) {
+    if (
+      !isLive ||
+      syncing ||
+      !userId ||
+      !trusted ||
+      ranFor.current === restarts
+    ) {
       return;
     }
     ranFor.current = restarts;
@@ -130,7 +180,7 @@ export function useLiveNotebook(opts: {
       _tag: "user",
       userId,
     });
-  }, [isLive, syncing, userId, yDoc, executionQueue, restarts]);
+  }, [isLive, syncing, userId, yDoc, executionQueue, restarts, trusted]);
 
   return isLive;
 }

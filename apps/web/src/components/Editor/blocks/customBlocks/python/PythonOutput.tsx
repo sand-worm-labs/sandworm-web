@@ -27,6 +27,9 @@ import useResettableState from "../../../hooks/useResettableState";
 import { useTileChrome } from "../../Dashboard/TileChromeContext";
 
 import PythonError from "./PythonError";
+import { NotebookContentLabel } from "../../NotebookContentLabel";
+import { useIsForeignNotebook } from "../../../hooks/useEnvironmentStatus";
+
 import { toDarkFigure } from "./plotlyDark";
 import StreamChart from "./StreamChart";
 import { isStreamFigure } from "./streamChart";
@@ -681,11 +684,20 @@ export function PythonOutputWrapper(props: PythonOutputWrapperProps) {
   );
 }
 
+// HTML that could take input or lead somewhere: scripts, form controls, links,
+// embedded pages, inline handlers. A table or a styled card has none of these.
+const INTERACTIVE_HTML =
+  /<\s*(script|form|input|textarea|button|select|a|iframe|object|embed)\b|contenteditable|\son\w+\s*=|javascript:/i;
+
 function HTMLOutput(props: {
   output: PythonHTMLOutput;
   isDark: boolean;
   isDashboardTile: boolean;
 }) {
+  // In a notebook the reader didn't write, output they could type into or
+  // click through is marked as the notebook's (see NotebookContentLabel).
+  const labelled =
+    useIsForeignNotebook() && INTERACTIVE_HTML.test(props.output.html);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   // Starts at 0 rather than a fixed guess — the iframe's content height
   // varies a lot (a 3-row dataframe vs. a 500-row one). The sandboxed
@@ -748,6 +760,7 @@ function HTMLOutput(props: {
 
   return (
     <div className="relative w-full">
+      {labelled && <NotebookContentLabel />}
       {!loaded && (
         <TableSkeleton
           className="w-full"

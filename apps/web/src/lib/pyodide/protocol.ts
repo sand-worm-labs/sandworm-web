@@ -49,10 +49,9 @@ export type ToWorker =
   | {
       kind: "init";
       indexURL: string;
-      origin: string;
-      // Present when the page is cross-origin isolated: lets a running cell be
-      // interrupted without losing the notebook's variables.
-      interruptBuffer: Int32Array | null;
+      // The sandworm_theme package's files. Sent rather than fetched by the
+      // worker, whose sandbox can't read this site's own files.
+      theme: { name: string; source: string }[];
       // Python modules the worker installs before anything runs.
       harness: {
         runtimeModule: string;
