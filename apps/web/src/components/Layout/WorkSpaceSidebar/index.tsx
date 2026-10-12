@@ -287,8 +287,8 @@ export const WorkspaceSidebar = () => {
 
           <WorkspaceSwitcher collapsed={collapsed} />
 
-          <nav className="flex-1 px-3 overflow-y-auto">
-            <ul className="space-y-1.5 mt-4">
+          <nav className="flex flex-1 min-h-0 flex-col px-3">
+            <ul className="space-y-1.5 mt-4 shrink-0">
               {mainNav.map(item => (
                 <li key={item.name}>
                   <TooltipV2<HTMLAnchorElement>
@@ -312,7 +312,7 @@ export const WorkspaceSidebar = () => {
               ))}
             </ul>
 
-            <div>
+            <div className="shrink-0">
               <button
                 type="button"
                 onClick={() => setIsToolsOpen(v => !v)}
@@ -405,7 +405,9 @@ export const WorkspaceSidebar = () => {
             )}
 
             {!collapsed && (
-              <div className="mt-3">
+              <div
+                className={`mt-3 flex min-h-0 flex-col ${isSectionOpen ? "flex-1" : "shrink-0"}`}
+              >
                 <button
                   type="button"
                   onClick={() => setIsSectionOpen(v => !v)}
@@ -422,10 +424,10 @@ export const WorkspaceSidebar = () => {
                 </button>
 
                 <div
-                  className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+                  className="grid min-h-0 flex-1 transition-[grid-template-rows] duration-300 ease-in-out"
                   style={{ gridTemplateRows: isSectionOpen ? "1fr" : "0fr" }}
                 >
-                  <div className="overflow-hidden">
+                  <div className="min-h-0 overflow-hidden">
                     {documentsState.loading ? (
                       <div
                         className="flex flex-col gap-1 mt-1 px-1"

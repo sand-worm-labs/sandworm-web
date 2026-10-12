@@ -673,8 +673,8 @@ function DocumentTree(props: Props) {
   );
 
   return (
-    <ScrollBar>
-      <ul className="space-y-1 max-h-[25rem] overflow-y-auto py-2">
+    <ScrollBar className="h-full">
+      <ul className="space-y-1 py-2">
         {trees.map((node, i) => {
           const isLast = i === trees.size - 1;
           return (
