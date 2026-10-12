@@ -4,6 +4,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "sync-theme": "node scripts/sync-sandworm-theme.mjs",
+    "predev": "pnpm run sync-theme",
+    "prebuild": "pnpm run sync-theme",
     "dev": "next dev --turbopack",
     "build": " next build",
     "start": "next start",
