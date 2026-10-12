@@ -56,3 +56,6 @@ cypress/screenshots/
 cypress/downloads/
 
 
+
+# generated from apps/jupyter by scripts/sync-sandworm-theme.mjs
+/public/sandworm_theme/

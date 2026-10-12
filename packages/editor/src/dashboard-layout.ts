@@ -49,6 +49,7 @@ export function getMins(t: BlockType): { minW: number; minH: number } {
     case BlockType.PivotTable:
       return { minW: 3, minH: 3 };
     case BlockType.Python:
+    case BlockType.JavaScript:
     case BlockType.Input:
     case BlockType.DropdownInput:
     case BlockType.DateInput:
@@ -72,6 +73,7 @@ export function getDefaults(t: BlockType): { minW: number; minH: number } {
     case BlockType.VisualizationV2:
     case BlockType.PivotTable:
     case BlockType.Python:
+    case BlockType.JavaScript:
       return { minW: 8, minH: 4 };
     case BlockType.Input:
     case BlockType.DropdownInput:
@@ -111,6 +113,7 @@ export const DASHBOARD_TITLE_STRIP_PX = 40;
 export function canShowOnDashboard(type: BlockType): boolean {
   switch (type) {
     case BlockType.Python:
+    case BlockType.JavaScript:
     case BlockType.SQL:
     case BlockType.PivotTable:
     case BlockType.Visualization:
@@ -129,6 +132,7 @@ export function canShowOnDashboard(type: BlockType): boolean {
 function defaultTileRows(type: BlockType): number {
   switch (type) {
     case BlockType.Python:
+    case BlockType.JavaScript:
     case BlockType.SQL:
     case BlockType.PivotTable:
     case BlockType.Visualization:

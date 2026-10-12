@@ -6,6 +6,7 @@ import {
   PiPlus,
   PiCaretDown,
   PiDotsThree,
+  PiFileJs,
   PiMarkdownLogoLight,
   PiCalendarDots,
   PiListPlusLight,
@@ -276,6 +277,10 @@ function BlockList(props: BlockListProps) {
     () => props.onAddBlock(BlockType.Python),
     [props.onAddBlock]
   );
+  const onAddJavaScript = useCallback(
+    () => props.onAddBlock(BlockType.JavaScript),
+    [props.onAddBlock]
+  );
   const onAddRichText = useCallback(
     () => props.onAddBlock(BlockType.RichText),
     [props.onAddBlock]
@@ -311,8 +316,11 @@ function BlockList(props: BlockListProps) {
   );
 
   const isBrowserRuntime = useIsBrowserRuntime();
-  // Which block type each pill adds, for hiding cloud-only blocks.
+  // Which block type each pill adds, for hiding the blocks this kind of
+  // notebook can't have: cloud-only ones in a browser notebook, and
+  // JavaScript in a cloud notebook.
   const pillBlockType: Record<string, BlockType> = {
+    "add-block-javascript": BlockType.JavaScript,
     "add-block-power": BlockType.PowerToolbox,
     "add-block-visualization": BlockType.VisualizationV2,
     "add-block-pivot": BlockType.PivotTable,
@@ -339,6 +347,13 @@ function BlockList(props: BlockListProps) {
       icon: <CodeIcon className="w-[20px] h-[20px]" />,
       text: "Python",
       onAdd: onAddPython,
+    },
+    {
+      kind: "single",
+      id: "add-block-javascript",
+      icon: <PiFileJs className="w-[20px] h-[20px]" />,
+      text: "JavaScript",
+      onAdd: onAddJavaScript,
     },
     {
       kind: "multi",

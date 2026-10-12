@@ -1,5 +1,5 @@
 import type * as Y from "yjs";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import {
   BlockType,
   type ExecutionQueue,
@@ -7,9 +7,17 @@ import {
   getLayout,
 } from "@sandworm/editor";
 
+import { toast } from "sonner";
+
 import { DocumentRuntime } from "@/generated/graphql";
 import type { Document } from "@/types";
 import { DocExecutor } from "@/lib/browser-executor/doc-executor";
+import {
+  setNotebookOwner,
+  trustNotebook,
+  useNotebookTrusted,
+} from "@/lib/browser-executor/trust";
+import { getKernelStatus, subscribeKernelStatus } from "@/lib/pyodide/kernel";
 
 // Two kinds of notebook run in the browser, never on the cloud: local
 // analysis, and live dashboards that re-run for each viewer. Cloud notebooks
@@ -32,17 +40,55 @@ const CLOUD_ONLY_BLOCKS = new Set<BlockType>([
   BlockType.PivotTable,
 ]);
 
+// And the reverse: blocks that only run in the browser, which the server
+// that runs a cloud notebook has no way to run. The API refuses them too.
+const BROWSER_ONLY_BLOCKS = new Set<BlockType>([BlockType.JavaScript]);
+
 export function canAddBlock(type: BlockType, isBrowserRuntime: boolean) {
-  return !isBrowserRuntime || !CLOUD_ONLY_BLOCKS.has(type);
+  return isBrowserRuntime
+    ? !CLOUD_ONLY_BLOCKS.has(type)
+    : !BROWSER_ONLY_BLOCKS.has(type);
+}
+
+// A browser notebook runs on this machine, so a cell that eats memory can kill
+// the tab or the whole computer, and then run again the moment the notebook is
+// reopened. This marks a notebook as open and clears the mark when the page
+// closes normally. A mark still there on the next open means the last session
+// died, so that open doesn't run anything by itself.
+const openMark = (notebookId: string) => `sandworm:browser-open:${notebookId}`;
+
+function wasLeftOpen(notebookId: string): boolean {
+  try {
+    return window.localStorage.getItem(openMark(notebookId)) !== null;
+  } catch {
+    return false;
+  }
+}
+
+function setOpenMark(notebookId: string, open: boolean) {
+  try {
+    if (open) {
+      window.localStorage.setItem(openMark(notebookId), String(Date.now()));
+    } else {
+      window.localStorage.removeItem(openMark(notebookId));
+    }
+  } catch {
+    // No storage: the notebook just runs as usual.
+  }
 }
 
 // For a browser notebook: runs this user's queued cells in this tab, and runs
-// the whole notebook every time it's opened or refreshed, in the editor and
-// in view mode alike, since browser Python starts empty on every load. In view
-// mode that's the only way it runs: there are no run buttons there.
+// the whole notebook every time it's opened or refreshed, and after Python is
+// restarted, in the editor and in view mode alike, since browser Python starts
+// empty each time. In view mode that's the only way it runs: there are no run
+// buttons there.
+//
+// A notebook someone else wrote is not run until the reader agrees (see
+// lib/browser-executor/trust.ts): its code would run on their machine.
 // Returns whether the notebook runs in the browser.
 export function useLiveNotebook(opts: {
-  document: Pick<Document, "id" | "runtime">;
+  // authorId is undefined until the document has loaded.
+  document: Pick<Document, "id" | "runtime"> & { authorId?: string | null };
   yDoc: Y.Doc;
   executionQueue: ExecutionQueue;
   userId: string | null;
@@ -60,17 +106,81 @@ export function useLiveNotebook(opts: {
     };
   }, [isLive, yDoc, document.id, userId]);
 
-  const ranOnOpen = useRef(false);
+  // The reader's own notebooks run without asking.
+  const { authorId } = document;
   useEffect(() => {
-    if (!isLive || syncing || !userId || ranOnOpen.current) {
+    if (!isLive || !userId || authorId === undefined) return;
+    setNotebookOwner(document.id, authorId === userId);
+  }, [isLive, userId, authorId, document.id]);
+  const trusted = useNotebookTrusted(document.id);
+
+  // Anyone else's waits for a yes. Running a cell by hand is a yes too (the
+  // executor records it), which is what takes this prompt away.
+  const asking =
+    isLive && !syncing && !!userId && authorId !== undefined && !trusted;
+  useEffect(() => {
+    if (!asking) return undefined;
+    const id = toast(
+      "This notebook runs code in your browser. Someone else wrote it, so it hasn't run yet.",
+      {
+        duration: Infinity,
+        action: {
+          label: "Run notebook",
+          onClick: () => trustNotebook(document.id),
+        },
+      }
+    );
+    return () => {
+      toast.dismiss(id);
+    };
+  }, [asking, document.id]);
+
+  // Whether the last session with this notebook ended without closing
+  // properly (see openMark). Read once, before this session leaves its mark.
+  const crashedLastTime = useRef<boolean | null>(null);
+  useEffect(() => {
+    if (!isLive) return undefined;
+    crashedLastTime.current = wasLeftOpen(document.id);
+    setOpenMark(document.id, true);
+    const onClose = () => setOpenMark(document.id, false);
+    window.addEventListener("pagehide", onClose);
+    return () => {
+      window.removeEventListener("pagehide", onClose);
+      onClose();
+    };
+  }, [isLive, document.id]);
+
+  // Runs on open, and again each time someone restarts Python, which leaves
+  // it empty. Not after stopping a cell: that would start the cell again.
+  const restarts = useSyncExternalStore(
+    subscribeKernelStatus,
+    () => getKernelStatus().restarts,
+    () => 0
+  );
+  const ranFor = useRef<number | null>(null);
+  useEffect(() => {
+    if (
+      !isLive ||
+      syncing ||
+      !userId ||
+      !trusted ||
+      ranFor.current === restarts
+    ) {
       return;
     }
-    ranOnOpen.current = true;
+    ranFor.current = restarts;
+    if (restarts === 0 && crashedLastTime.current) {
+      toast.warning(
+        "This notebook didn't run automatically: last time it was open, the page closed unexpectedly. Check its cells, then restart Python from the status pill to run it.",
+        { duration: 15000 }
+      );
+      return;
+    }
     executionQueue.enqueueRunAll(getLayout(yDoc), getBlocks(yDoc), {
       _tag: "user",
       userId,
     });
-  }, [isLive, syncing, userId, yDoc, executionQueue]);
+  }, [isLive, syncing, userId, yDoc, executionQueue, restarts, trusted]);
 
   return isLive;
 }

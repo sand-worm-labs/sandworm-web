@@ -14,7 +14,7 @@ import { useRef } from "react";
 import { createPortal } from "react-dom";
 import type { ConnectDragSource } from "react-dnd";
 
-import { computeMenuPosition } from "../../utils/dom";
+import { computeMenuPosition } from "@/lib/dom";
 
 const DragHandle = ({
   isDragging,

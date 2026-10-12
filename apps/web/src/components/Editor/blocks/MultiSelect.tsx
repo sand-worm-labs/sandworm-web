@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { createPortal } from "react-dom";
 import { PiCaretDown, PiCheck, PiX } from "react-icons/pi";
 
-import { computeMenuPosition } from "@/utils/dom";
+import { computeMenuPosition } from "@/lib/dom";
 
 interface Props<T> {
   options: T[];

@@ -9,7 +9,10 @@ import {
   DocumentVisibility,
   DocumentForkEntity,
   UserEntity,
+  runsInBrowser,
 } from '@sandworm/postgresql-typeorm';
+import { getBlocks, isJavaScriptBlock } from '@sandworm/editor';
+import * as Y from 'yjs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { SEARCH_INDEX_STALE_EVENT } from '@/features/search/search.events';
@@ -128,6 +131,26 @@ export class DocumentService {
     return document;
   }
 
+  // JavaScript cells run in the reader's browser and nowhere else. The server
+  // runs a cloud notebook and would skip them without a word, so a notebook
+  // that has any can't become a cloud notebook until they are removed.
+  private async assertNoJavaScriptCells(documentId: string): Promise<void> {
+    const state = await this.yjsDocumentService.getYDocState(documentId, false);
+    if (!state) return;
+
+    const ydoc = new Y.Doc();
+    Y.applyUpdate(ydoc, Buffer.from(state, 'base64'));
+    const count = Array.from(getBlocks(ydoc).values()).filter(isJavaScriptBlock).length;
+    ydoc.destroy();
+
+    if (count > 0) {
+      throw new ValidationException(
+        ErrorCode.V000,
+        `This notebook has ${count} JavaScript ${count === 1 ? 'cell' : 'cells'}, which only run in the browser. Delete ${count === 1 ? 'it' : 'them'} before changing the notebook to Cloud`,
+      );
+    }
+  }
+
   async updateDocument(
     documentId: string,
     workspaceId: string,
@@ -139,6 +162,11 @@ export class DocumentService {
 
     if (!document) {
       throw new ValidationException(ErrorCode.E003);
+    }
+
+    // Before anything is changed: a refused type change changes nothing else.
+    if (input.runtime !== undefined && !runsInBrowser(input.runtime) && runsInBrowser(document.runtime)) {
+      await this.assertNoJavaScriptCells(documentId);
     }
 
     if (input.parentId !== undefined || input.orderIndex !== undefined) {

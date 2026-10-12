@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { List } from "immutable";
 import clsx from "clsx";
-import { getBlocks } from "@sandworm/editor";
+import { ExecutionQueue, getBlocks, getLayout } from "@sandworm/editor";
 import { PiCircleNotch, PiPencilSimple, PiPlayFill } from "react-icons/pi";
 import { toast } from "sonner";
 
@@ -15,6 +15,8 @@ import { tintPillDarkClassName } from "@/styles/interactive";
 import type { SessionUser } from "../hooks/useAuth";
 import Layout from "../../Visualization/Layout";
 import useDocument from "../hooks/useDocument";
+import { BrowserRuntimeProvider } from "../hooks/useEnvironmentStatus";
+import { useLiveNotebook } from "../hooks/useNotebookRuntime";
 import useUpgradeGate from "../hooks/useUpgradeGate";
 import { useViewYDoc } from "../hooks/useViewYDoc";
 import ViewSwitcher from "../ViewSwitcher";
@@ -22,6 +24,8 @@ import type { NotebookView } from "../ViewSwitcher";
 import { ContentSkeleton, TitleSkeleton } from "../ContentSkeleton";
 
 import DashboardNotebookGroupButton from "./DashboarNotebookGroupButton";
+import { TopBarLead } from "./TopBarLead";
+import NotebookTypeMenu from "./NotebookTypeMenu";
 import UpgradePlanModal from "./UpgradePlanModal";
 
 function Placeholder() {
@@ -57,7 +61,9 @@ interface Props {
 // =====================================
 // The saved notebook, read-only: results and a Run button to refresh them.
 // Rendered from a snapshot fetched over HTTP, like the public page — no
-// collaboration socket, no execution queue on the client.
+// collaboration socket. A cloud notebook has no execution queue on the client
+// either: Run asks the server. A browser notebook runs here, on this viewer's
+// own copy, so its live cells keep updating and nothing is written back.
 export default function ViewDocumentPage(props: Props) {
   const [{ document }] = useDocument(props.workspaceId, props.documentId);
   const { yDoc, isSyncing, running, progress, error, run } = useViewYDoc(
@@ -66,6 +72,28 @@ export default function ViewDocumentPage(props: Props) {
   );
   const [view, setView] = useState<NotebookView>("report");
   const gate = useUpgradeGate(props.workspaceId);
+
+  const executionQueue = useMemo(() => ExecutionQueue.fromYjs(yDoc), [yDoc]);
+  const isLive = useLiveNotebook({
+    document: {
+      id: props.documentId,
+      runtime: document?.runtime,
+      authorId: document?.authorId,
+    },
+    yDoc,
+    executionQueue,
+    userId: props.user.id,
+    syncing: isSyncing || !document,
+  });
+  const [liveRunning, setLiveRunning] = useState(false);
+  useEffect(() => {
+    if (!isLive) return undefined;
+    const update = () =>
+      setLiveRunning(executionQueue.getCurrentBatch() !== null);
+    update();
+    return executionQueue.observe(update);
+  }, [isLive, executionQueue]);
+  const isRunning = isLive ? liveRunning : running;
 
   const role =
     props.user.role?.find(r => r[props.workspaceId])?.[props.workspaceId] ??
@@ -80,6 +108,14 @@ export default function ViewDocumentPage(props: Props) {
   }, [error, loaded]);
 
   const onRun = useCallback(() => {
+    if (isLive) {
+      executionQueue.enqueueRunAll(getLayout(yDoc), getBlocks(yDoc), {
+        _tag: "user",
+        userId: props.user.id,
+      });
+      return;
+    }
+
     // Only SQL blocks have a dataSourceId.
     const dataSourceIds: (string | null | undefined)[] = [];
     getBlocks(yDoc).forEach(block => {
@@ -91,7 +127,7 @@ export default function ViewDocumentPage(props: Props) {
     if (gate.check(dataSourceIds)) {
       run();
     }
-  }, [yDoc, gate, run]);
+  }, [yDoc, gate, run, isLive, executionQueue, props.user.id]);
 
   const hasContent = useMemo(
     () => loaded && getBlocks(yDoc).size > 0,
@@ -103,7 +139,7 @@ export default function ViewDocumentPage(props: Props) {
     <button
       type="button"
       onClick={onRun}
-      disabled={!hasContent || running}
+      disabled={!hasContent || isRunning}
       className={clsx(
         "relative flex-shrink-0",
         "flex items-center gap-1.5 px-4 py-1.5",
@@ -111,18 +147,18 @@ export default function ViewDocumentPage(props: Props) {
         "transition-all duration-150 shadow-[0px_7.5px_8px_0px_rgba(132,151,195,0.04)]",
         "run-all-gradient-border",
         {
-          "is-running": running,
+          "is-running": isRunning,
           "bg-base-300 dark:bg-base-700 text-ink-300 dark:text-ink-600 cursor-not-allowed":
-            !hasContent || running,
+            !hasContent || isRunning,
           [`bg-base-200 text-ink-100 border border-border hover:bg-base-400 hover:text-white hover:border-transparent dark:hover:bg-base-400 dark:hover:text-white ${tintPillDarkClassName}`]:
-            hasContent && !running,
+            hasContent && !isRunning,
         }
       )}
     >
-      {running ? (
+      {isRunning ? (
         <>
           <PiCircleNotch size={14} className="animate-spin" />
-          {progress
+          {progress && !isLive
             ? `Running (${progress.completed}/${progress.total})`
             : "Running"}
         </>
@@ -146,21 +182,17 @@ export default function ViewDocumentPage(props: Props) {
   // The same top bar as the dashboard and the notebook editor.
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
-      <div className="w-full min-w-0 overflow-hidden flex items-center gap-x-1.5 text-[13px] text-ink-400 dark:text-ink-400  font-body ">
-        <span className="w-full min-w-0 flex gap-x-2 items-center ">
-          <span className="font-normal bg-base-600 rounded-full px-3 py-0.5 text-ink-100 border border-border-secondary flex gap-x-2 w-[90px] shrink-0 items-center  ">
-            <span className="relative flex items-center justify-center w-[10px] h-[10px]">
-              <span className="absolute inline-flex w-full h-full rounded-full bg-primary/15" />
-              <span className="absolute inline-flex w-full h-full animate-[ping_1.8s_cubic-bezier(0,0,0.2,1)_infinite] rounded-full bg-primary/30" />
-              <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-primary" />
-            </span>
-            <span className="text-ink-100">Viewing</span>
-          </span>
-          <span className="text-ink-400 truncate min-w-0">
-            / {document?.title || "Untitled"}
-          </span>
-        </span>
-      </div>
+      <TopBarLead
+        viewing
+        title={document?.title || "Untitled"}
+        typeMenu={
+          <NotebookTypeMenu
+            runtime={document?.runtime}
+            canChange={false}
+            onChange={() => {}}
+          />
+        }
+      />
       <DashboardNotebookGroupButton
         workspaceId={props.workspaceId}
         documentId={props.documentId}
@@ -211,9 +243,6 @@ export default function ViewDocumentPage(props: Props) {
         dataSources={EMPTY_DATA_SOURCES}
         isApp
         isPDF={false}
-        // The read-only view always uses the centred reading width of the public
-        // page. The editor's full-screen preference defaults to on and has no
-        // toggle here, so honouring it left the content edge to edge.
         isFullScreen={false}
         yDoc={yDoc}
         isSyncing={false}
@@ -236,7 +265,9 @@ export default function ViewDocumentPage(props: Props) {
         message={gate.message ?? ""}
         workspaceId={props.workspaceId}
       />
-      <div className="flex-1 min-w-0 flex overflow-hidden">{content}</div>
+      <BrowserRuntimeProvider enabled={isLive} notebookId={props.documentId}>
+        <div className="flex-1 min-w-0 flex overflow-hidden">{content}</div>
+      </BrowserRuntimeProvider>
     </Layout>
   );
 }

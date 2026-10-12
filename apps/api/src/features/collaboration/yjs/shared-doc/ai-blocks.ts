@@ -174,6 +174,7 @@ export type BlockSpec = WithTitle & (
   | { type: BlockType.SQL;             source?: string; dataSourceId?: DataSourceId | null; isFileDataSource?: boolean; dataframeName?: string }
   | { type: BlockType.RichText;        source?: string }
   | { type: BlockType.Markdown;        source?: string }
+  | { type: BlockType.JavaScript;      source?: string }
   | { type: BlockType.VisualizationV2; dataframeName?: string | null }
   | { type: BlockType.Input;          source?: string }
   | { type: BlockType.DropdownInput;  source?: string }
@@ -204,6 +205,12 @@ export function addBlocks(doc: Y.Doc, specs: BlockSpec[], position?: number): st
       switch (spec.type) {
         case BlockType.Python: {
           id = addBlockGroup(layout, blocks, { type: BlockType.Python, source: spec.source ?? '' }, idx, true, spec.id)
+          applyTitle(blocks, id, spec.title)
+          break
+        }
+
+        case BlockType.JavaScript: {
+          id = addBlockGroup(layout, blocks, { type: BlockType.JavaScript, source: spec.source ?? '' }, idx, true, spec.id)
           applyTitle(blocks, id, spec.title)
           break
         }

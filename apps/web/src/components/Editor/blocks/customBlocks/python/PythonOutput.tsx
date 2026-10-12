@@ -24,11 +24,15 @@ import { downloadFile } from "@/utils/file";
 import { ChartSkeleton, Shimmer, TableSkeleton } from "@/components/Skeletons";
 
 import useResettableState from "../../../hooks/useResettableState";
-
-import PythonError from "./PythonError";
 import { useTileChrome } from "../../Dashboard/TileChromeContext";
 
+import PythonError from "./PythonError";
+import { NotebookContentLabel } from "../../NotebookContentLabel";
+import { useIsForeignNotebook } from "../../../hooks/useEnvironmentStatus";
+
 import { toDarkFigure } from "./plotlyDark";
+import StreamChart from "./StreamChart";
+import { isStreamFigure } from "./streamChart";
 import { tileTopMargin, withSandwormDefaults } from "./plotlyDefaults";
 
 // @ts-expect-error @types/react-plotly.js incompatible with @types/react@19
@@ -139,6 +143,12 @@ function PlotWithPlaceholder(
 
 interface Props {
   className?: string;
+  // Put on the outputs' container, for callers that watch whether it's on screen.
+  containerRef?: React.Ref<HTMLDivElement>;
+  // Python hasn't produced this cell's outputs in this tab yet, so they are a
+  // saved snapshot. Charts from a live cell show as loading until it has: an
+  // old picture of something live reads as the current one.
+  awaitingLive?: boolean;
   outputs: Output[];
   isFixWithAILoading: boolean;
   canFixWithAI: boolean;
@@ -155,6 +165,14 @@ interface Props {
   lazyRender: boolean;
   blockId: string;
   isDark?: boolean;
+}
+
+// What sandworm.plot() and sandworm.stream() charts are drawn at by default.
+const LIVE_CHART_HEIGHT = 280;
+
+// A chart a live cell (sandworm.every) produced: marked by the runtime.
+function isLiveFigure(output: Output): output is PythonPlotlyOutput {
+  return output.type === "plotly" && output.layout?.meta?.live === true;
 }
 
 const EXPENSIVE_TYPES = new Set<PythonBlock["result"][0]["type"]>([
@@ -384,9 +402,15 @@ function injectTableStyles(
 export function PythonOutputs(props: Props) {
   // A plain dashboard tile has no card behind the output, so it paints none either.
   const plainTile = useTileChrome() === "plain" && !!props.isDashboardTile;
+  // Lazy rendering starts over when the outputs change shape (a new run: its
+  // result is cleared first), not when they're refreshed in place. A live cell
+  // replaces its outputs on every tick with the same kinds of output; starting
+  // over then would swap each chart for a placeholder and redraw it, which
+  // shows as a flicker. Kept mounted, the chart just updates.
+  const outputsShape = props.outputs.map(output => output.type).join(",");
   const [rendered, setRendered] = useResettableState(
     () => Math.min(props.lazyRender ? 1 : props.outputs.length),
-    [props.outputs, props.lazyRender]
+    [outputsShape, props.lazyRender]
   );
 
   useEffect(() => {
@@ -449,7 +473,7 @@ export function PythonOutputs(props: Props) {
 
   return (
     <OutputSettleContext.Provider value={settleValue}>
-      <div className={props.className}>
+      <div className={props.className} ref={props.containerRef}>
         {props.outputs.slice(0, rendered).map((output, i) => (
           <div
             // eslint-disable-next-line react/no-array-index-key
@@ -466,18 +490,30 @@ export function PythonOutputs(props: Props) {
                   : "dark:bg-block-surface")
             )}
           >
-            <PythonOutput
-              output={output}
-              isFixWithAILoading={props.isFixWithAILoading}
-              onFixWithAI={props.onFixWithAI}
-              isPDF={props.isPDF}
-              canFixWithAI={props.canFixWithAI}
-              isDashboardView={props.isDashboardView}
-              isDashboardTile={props.isDashboardTile}
-              isPublicMode={props.isPublicMode}
-              blockId={props.blockId}
-              isDark={props.isDark ?? false}
-            />
+            {props.awaitingLive && isLiveFigure(output) ? (
+              <ChartSkeleton
+                className={clsx("w-full", props.isDashboardTile && "h-full")}
+                style={
+                  props.isDashboardTile
+                    ? undefined
+                    : { height: output.layout?.height ?? LIVE_CHART_HEIGHT }
+                }
+                aria-label="Waiting for Python to start"
+              />
+            ) : (
+              <PythonOutput
+                output={output}
+                isFixWithAILoading={props.isFixWithAILoading}
+                onFixWithAI={props.onFixWithAI}
+                isPDF={props.isPDF}
+                canFixWithAI={props.canFixWithAI}
+                isDashboardView={props.isDashboardView}
+                isDashboardTile={props.isDashboardTile}
+                isPublicMode={props.isPublicMode}
+                blockId={props.blockId}
+                isDark={props.isDark ?? false}
+              />
+            )}
           </div>
         ))}
         {props.outputs.slice(rendered).map((output, i) => (
@@ -567,6 +603,17 @@ export function PythonOutput(props: ItemProps) {
         </pre>
       );
     case "plotly": {
+      // sandworm.stream() figures scroll on a canvas. A PDF has no motion, so
+      // it gets the same figure as a still Plotly chart.
+      if (!props.isPDF && isStreamFigure(props.output)) {
+        return (
+          <StreamChart
+            output={props.output}
+            isDark={!!props.isDark}
+            fillHeight={!!props.isDashboardTile}
+          />
+        );
+      }
       return (
         <PythonPlotOutput
           output={props.output}
@@ -637,11 +684,20 @@ export function PythonOutputWrapper(props: PythonOutputWrapperProps) {
   );
 }
 
+// HTML that could take input or lead somewhere: scripts, form controls, links,
+// embedded pages, inline handlers. A table or a styled card has none of these.
+const INTERACTIVE_HTML =
+  /<\s*(script|form|input|textarea|button|select|a|iframe|object|embed)\b|contenteditable|\son\w+\s*=|javascript:/i;
+
 function HTMLOutput(props: {
   output: PythonHTMLOutput;
   isDark: boolean;
   isDashboardTile: boolean;
 }) {
+  // In a notebook the reader didn't write, output they could type into or
+  // click through is marked as the notebook's (see NotebookContentLabel).
+  const labelled =
+    useIsForeignNotebook() && INTERACTIVE_HTML.test(props.output.html);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   // Starts at 0 rather than a fixed guess — the iframe's content height
   // varies a lot (a 3-row dataframe vs. a 500-row one). The sandboxed
@@ -704,6 +760,7 @@ function HTMLOutput(props: {
 
   return (
     <div className="relative w-full">
+      {labelled && <NotebookContentLabel />}
       {!loaded && (
         <TableSkeleton
           className="w-full"
@@ -756,8 +813,25 @@ function PythonPlotOutput(props: {
   // when the reader is in dark mode (see plotlyDark.ts).
   const output = useMemo(() => {
     // Defaults first (they may add white tile lines), then the dark swap.
-    const figure = withSandwormDefaults(props.output);
-    return props.isDark ? toDarkFigure(figure) : figure;
+    const themed = withSandwormDefaults(props.output);
+    const figure = props.isDark ? toDarkFigure(themed) : themed;
+    // A live cell redraws this chart with new data. Unless the figure says
+    // otherwise, keep the reader's zoom, pan and legend choices across those
+    // updates.
+    //
+    // Updates are not eased by default. Plotly animates the traces and the
+    // axes one after the other, each for the full duration, so on a chart
+    // whose time axis moves with every update the animation is still running
+    // when the next update lands: it stutters, and charts it can't animate
+    // (bars, heatmaps, pies) blink instead. A figure that wants easing can set
+    // its own layout.transition.
+    return {
+      ...figure,
+      layout: {
+        ...figure.layout,
+        uirevision: figure.layout?.uirevision ?? "keep",
+      },
+    };
   }, [props.output, props.isDark]);
 
   const layout = useMemo(() => {

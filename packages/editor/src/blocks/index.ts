@@ -71,6 +71,7 @@ import {
   getPowerToolboxBlockErrorMessage,
 } from "./powertool/index.js";
 import { MarkdownBlock, duplicateMarkdownBlock } from "./markdown.js";
+import { JavaScriptBlock, duplicateJavaScriptBlock } from "./javascript.js";
 
 export enum BlockType {
   RichText = "RICH_TEXT",
@@ -86,6 +87,7 @@ export enum BlockType {
   PivotTable = "PIVOT_TABLE",
   PowerToolbox = "POWER_TOOLBOX",
   Markdown = "MARKDOWN",
+  JavaScript = "JAVASCRIPT",
 }
 
 export type ResultStatus = "idle" | "error" | "success";
@@ -112,7 +114,8 @@ export type Block =
   | PivotTableBlock
   | VisualizationV2Block
   | PowerToolboxBlock
-  | MarkdownBlock;
+  | MarkdownBlock
+  | JavaScriptBlock;
 
 export type YBlock = Y.XmlElement<Block>;
 
@@ -180,6 +183,8 @@ export const getPrettyTitle = (type: BlockType): string => {
       return "Power Toolbox";
     case BlockType.Markdown:
       return "Markdown";
+    case BlockType.JavaScript:
+      return "JavaScript";
   }
 };
 
@@ -319,6 +324,7 @@ export function duplicateBlock(
     onDateInput: block => duplicateDateInputBlock(newBlockId, block, blocks),
     onRichText: block => duplicateRichTextBlock(newBlockId, block),
     onMarkdown: block => duplicateMarkdownBlock(newBlockId, block),
+    onJavaScript: block => duplicateJavaScriptBlock(newBlockId, block),
     onFileUpload: block => duplicateFileUploadBlock(newBlockId, block),
     onDashboardHeader: block =>
       duplicateDashboardHeaderBlock(newBlockId, block),
@@ -475,3 +481,4 @@ export * from "./fileUpload.js";
 export * from "./pivotTable.js";
 export * from "./powertool/index.js";
 export * from "./markdown.js";
+export * from "./javascript.js";

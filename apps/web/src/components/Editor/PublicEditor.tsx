@@ -31,6 +31,7 @@ import DropdownInputBlock from "./blocks/customBlocks/dropdownInput";
 import FileUploadBlock from "./blocks/customBlocks/fileUpload";
 import InputBlock from "./blocks/customBlocks/input";
 import MarkdownBlock from "./blocks/customBlocks/markdown";
+import JavaScriptBlock from "./blocks/customBlocks/javascript";
 import PythonBlock from "./blocks/customBlocks/python";
 import RichTextBlock from "./blocks/customBlocks/richText";
 import AnalyticsBlock from "./blocks/customBlocks/PowerToolbox/AnalyticsBlock";
@@ -176,6 +177,16 @@ function PublicTabRef(props: PublicTabRefProps) {
         isCursorWithin={isCursorWithin}
         isCursorInserting={isCursorInserting}
         onDeleteBlock={() => {}}
+        hideTypePill={hideTypePill}
+      />
+    ),
+    onJavaScript: block => (
+      <JavaScriptBlock
+        block={block}
+        document={props.document}
+        isEditable={false}
+        dashboardMode={null}
+        dragPreview={null}
         hideTypePill={hideTypePill}
       />
     ),

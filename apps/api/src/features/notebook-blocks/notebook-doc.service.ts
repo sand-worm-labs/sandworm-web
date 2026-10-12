@@ -51,6 +51,18 @@ export class NotebookDocService {
     }
   }
 
+  // JavaScript cells run in the reader's browser and nowhere else. A cloud
+  // notebook is run by the server, which would skip them without a word, so it
+  // never gets one.
+  async assertRunsInBrowser({ workspaceId, documentId }: NotebookRef): Promise<void> {
+    const document = await this.documentService.getDocument(documentId, workspaceId);
+    if (!runsInBrowser(document.runtime)) {
+      throw new BadRequestException(
+        'JavaScript cells only run in the browser, and this is a Cloud notebook. Add one to a Live dashboard or Local analysis notebook, or change this notebook to one of those types first',
+      );
+    }
+  }
+
   // Hands `work` the caller's own copy of the published notebook: the one the
   // view page shows. Open to any member, and to anyone when shared by link.
   async useView<T>({ userId, workspaceId, documentId }: NotebookRef, work: (doc: SharedDoc) => T | Promise<T>): Promise<T> {

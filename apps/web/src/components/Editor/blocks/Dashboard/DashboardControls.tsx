@@ -369,6 +369,7 @@ function BlockListItem(props: BlockListItemProps) {
       case BlockType.FileUpload:
       case BlockType.DashboardHeader:
       case BlockType.Markdown:
+      case BlockType.JavaScript:
       case BlockType.PowerToolbox:
         return;
       default:
@@ -701,6 +702,7 @@ show(banner(
                   }
                   break;
                 case BlockType.RichText:
+                case BlockType.JavaScript:
                 case BlockType.FileUpload:
                 case BlockType.DashboardHeader:
                 case BlockType.PowerToolbox:

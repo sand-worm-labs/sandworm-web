@@ -36,6 +36,7 @@ import { ContentSkeleton, TitleSkeleton } from "../ContentSkeleton";
 import Comments from "./Comments";
 import Schedules from "./Schedules";
 import DashboardNotebookGroupButton from "./DashboarNotebookGroupButton";
+import { TopBarLead } from "./TopBarLead";
 import EllipsisDropdown from "./EllipsisDropdown";
 import NotebookTypeMenu from "./NotebookTypeMenu";
 import LiveButton from "./LiveButton";
@@ -457,30 +458,17 @@ function PrivateDocumentPageInner(
 
   const topBarContent = (
     <div className="flex items-center w-full justify-between gap-x-6">
-      <div className="w-full min-w-0 overflow-hidden flex items-center gap-x-1.5 text-[13px] text-ink-400 dark:text-ink-400  font-body ">
-        <span className="w-full min-w-0 flex gap-x-2 items-center ">
-          <span className="font-normal bg-base-600 rounded-full px-3 py-0.5 text-ink-100 border border-border-secondary flex gap-x-2 w-[90px] shrink-0 items-center  ">
-            <span className="relative flex items-center justify-center w-[10px] h-[10px]">
-              <span className="absolute inline-flex w-full h-full rounded-full bg-primary/15" />
-              <span className="absolute inline-flex w-full h-full animate-[ping_1.8s_cubic-bezier(0,0,0.2,1)_infinite] rounded-full bg-primary/30" />
-              <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-primary" />
-            </span>
-            {props.isApp || isViewer ? (
-              <span className="text-ink-100">Viewing</span>
-            ) : (
-              "Editing"
-            )}
-          </span>{" "}
+      <TopBarLead
+        viewing={props.isApp || isViewer}
+        title={documentTitle}
+        typeMenu={
           <NotebookTypeMenu
             runtime={props.document.runtime}
             canChange={!props.isApp && !isViewer}
             onChange={props.setRuntime}
           />
-          <span className="text-ink-400 truncate min-w-0">
-            / {documentTitle}
-          </span>
-        </span>
-      </div>
+        }
+      />
       <DashboardNotebookGroupButton
         workspaceId={props.workspaceId}
         documentId={props.documentId}
@@ -567,114 +555,116 @@ function PrivateDocumentPageInner(
   );
 
   return (
-    <BrowserRuntimeProvider enabled={isLive}>
-    <Layout
-      topBarClassname={props.isApp ? "bg-base-100 dark:bg-header-surface" : undefined}
-      topBarContent={topBarContent}
-      sidebarContent={sidebarContent}
-      onToggleChat={onToggleChat}
-      isViewer={props.isApp || isViewer}
-    >
-      <div className="flex-1 min-w-0 flex overflow-hidden">
-        <div className="flex-1 min-w-0 h-full overflow-hidden">
-          <V2Editor
-            document={props.document}
-            dataSources={dataSources}
-            isPublicViewer={false}
-            isDeleted={isDeleted}
-            onRestoreDocument={onRestoreDocument}
-            isEditable={!props.isApp && !isViewer}
-            isPDF={isPrinting}
-            isApp={props.isApp}
-            userId={props.user.id}
-            role={role}
-            isFullScreen={isFullScreen}
-            yDoc={yDoc}
-            executionQueue={executionQueue}
-            aiTasks={aiTasks}
-            provider={provider}
-            isSyncing={syncing}
-            onOpenFiles={onToggleFiles}
-            onOpenEnvironment={onToggleEnvironment}
-            onOpenEnvVariables={onToggleEnvVariables}
-            onSchemaExplorer={onToggleSchemaExplorerSQLBlock}
-            workspaceId={props.workspaceId}
-          />
+    <BrowserRuntimeProvider enabled={isLive} notebookId={props.document.id}>
+      <Layout
+        topBarClassname={
+          props.isApp ? "bg-base-100 dark:bg-header-surface" : undefined
+        }
+        topBarContent={topBarContent}
+        sidebarContent={sidebarContent}
+        onToggleChat={onToggleChat}
+        isViewer={props.isApp || isViewer}
+      >
+        <div className="flex-1 min-w-0 flex overflow-hidden">
+          <div className="flex-1 min-w-0 h-full overflow-hidden">
+            <V2Editor
+              document={props.document}
+              dataSources={dataSources}
+              isPublicViewer={false}
+              isDeleted={isDeleted}
+              onRestoreDocument={onRestoreDocument}
+              isEditable={!props.isApp && !isViewer}
+              isPDF={isPrinting}
+              isApp={props.isApp}
+              userId={props.user.id}
+              role={role}
+              isFullScreen={isFullScreen}
+              yDoc={yDoc}
+              executionQueue={executionQueue}
+              aiTasks={aiTasks}
+              provider={provider}
+              isSyncing={syncing}
+              onOpenFiles={onToggleFiles}
+              onOpenEnvironment={onToggleEnvironment}
+              onOpenEnvVariables={onToggleEnvVariables}
+              onSchemaExplorer={onToggleSchemaExplorerSQLBlock}
+              workspaceId={props.workspaceId}
+            />
+          </div>
+
+          <RightSidebarPanel visible={selectedSidebar !== null}>
+            <Comments
+              workspaceId={props.workspaceId}
+              documentId={props.documentId}
+              visible={selectedSidebar?._tag === "comments"}
+              onHide={onHideSidebar}
+            />
+
+            <ShortcutsModal
+              visible={selectedSidebar?._tag === "shortcuts"}
+              onHide={onHideSidebar}
+            />
+
+            <EnvironmentPanel
+              visible={selectedSidebar?._tag === "environment"}
+              onHide={onHideSidebar}
+            />
+
+            {!isViewer && !isDeleted && (
+              <>
+                <EnvVariablesPanel
+                  workspaceId={props.workspaceId}
+                  visible={selectedSidebar?._tag === "envVariables"}
+                  onHide={onHideSidebar}
+                />
+                <Schedules
+                  workspaceId={props.workspaceId}
+                  documentId={props.documentId}
+                  isPublished={props.document.publishedAt !== null}
+                  visible={selectedSidebar?._tag === "schedules"}
+                  onHide={onHideSidebar}
+                  onPublish={onPublish}
+                  publishing={props.publishing}
+                />
+                <Files
+                  workspaceId={props.workspaceId}
+                  visible={selectedSidebar?._tag === "files"}
+                  onHide={onHideSidebar}
+                  userId={props.user.id}
+                  yDoc={yDoc}
+                  executionQueue={executionQueue}
+                />
+                <ReusableComponents
+                  workspaceId={props.workspaceId}
+                  documentId={props.documentId}
+                  visible={selectedSidebar?._tag === "reusableComponents"}
+                  onHide={onHideSidebar}
+                  yDoc={yDoc}
+                />
+                <PageSettingsPanel
+                  workspaceId={props.workspaceId}
+                  documentId={props.documentId}
+                  visible={selectedSidebar?._tag === "pageSettings"}
+                  onHide={onHideSidebar}
+                  yDoc={yDoc}
+                />
+                <DataExplorerContent
+                  visible={selectedSidebar?._tag === "schemaExplorer"}
+                  mode="sidebar"
+                  showDragHandle={false}
+                />
+                <MiniChat
+                  workspaceId={props.workspaceId}
+                  documentId={props.documentId}
+                  visible={selectedSidebar?._tag === "chat"}
+                  onClose={onHideSidebar}
+                  yDoc={yDoc}
+                />
+              </>
+            )}
+          </RightSidebarPanel>
         </div>
-
-        <RightSidebarPanel visible={selectedSidebar !== null}>
-          <Comments
-            workspaceId={props.workspaceId}
-            documentId={props.documentId}
-            visible={selectedSidebar?._tag === "comments"}
-            onHide={onHideSidebar}
-          />
-
-          <ShortcutsModal
-            visible={selectedSidebar?._tag === "shortcuts"}
-            onHide={onHideSidebar}
-          />
-
-          <EnvironmentPanel
-            visible={selectedSidebar?._tag === "environment"}
-            onHide={onHideSidebar}
-          />
-
-          {!isViewer && !isDeleted && (
-            <>
-              <EnvVariablesPanel
-                workspaceId={props.workspaceId}
-                visible={selectedSidebar?._tag === "envVariables"}
-                onHide={onHideSidebar}
-              />
-              <Schedules
-                workspaceId={props.workspaceId}
-                documentId={props.documentId}
-                isPublished={props.document.publishedAt !== null}
-                visible={selectedSidebar?._tag === "schedules"}
-                onHide={onHideSidebar}
-                onPublish={onPublish}
-                publishing={props.publishing}
-              />
-              <Files
-                workspaceId={props.workspaceId}
-                visible={selectedSidebar?._tag === "files"}
-                onHide={onHideSidebar}
-                userId={props.user.id}
-                yDoc={yDoc}
-                executionQueue={executionQueue}
-              />
-              <ReusableComponents
-                workspaceId={props.workspaceId}
-                documentId={props.documentId}
-                visible={selectedSidebar?._tag === "reusableComponents"}
-                onHide={onHideSidebar}
-                yDoc={yDoc}
-              />
-              <PageSettingsPanel
-                workspaceId={props.workspaceId}
-                documentId={props.documentId}
-                visible={selectedSidebar?._tag === "pageSettings"}
-                onHide={onHideSidebar}
-                yDoc={yDoc}
-              />
-              <DataExplorerContent
-                visible={selectedSidebar?._tag === "schemaExplorer"}
-                mode="sidebar"
-                showDragHandle={false}
-              />
-              <MiniChat
-                workspaceId={props.workspaceId}
-                documentId={props.documentId}
-                visible={selectedSidebar?._tag === "chat"}
-                onClose={onHideSidebar}
-                yDoc={yDoc}
-              />
-            </>
-          )}
-        </RightSidebarPanel>
-      </div>
-    </Layout>
+      </Layout>
     </BrowserRuntimeProvider>
   );
 }

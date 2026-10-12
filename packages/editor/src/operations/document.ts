@@ -23,6 +23,7 @@ import {
 } from "../blocks/index.js";
 import { makeRichTextBlock } from "../blocks/richText.js";
 import { makeMarkdownBlock } from "../blocks/markdown.js";
+import { makeJavaScriptBlock } from "../blocks/javascript.js";
 import { makeDateInputBlock } from "../blocks/dateInput.js";
 import { getDefaults } from "../dashboard-layout.js";
 import {
@@ -62,6 +63,10 @@ export type AddBlockGroupBlock =
       source?: string
     }
   | {
+      type: BlockType.JavaScript
+      source?: string
+    }
+  | {
       type: BlockType.SQL
       dataSourceId: DataSourceId | null
       isFileDataSource: boolean
@@ -90,6 +95,9 @@ const createBlock = (block: AddBlockGroupBlock, yBlockDefs: Y.Map<YBlock>, isAiI
       break;
     case BlockType.Markdown:
       yBlock = makeMarkdownBlock(blockId, isAiInput);
+      break;
+    case BlockType.JavaScript:
+      yBlock = makeJavaScriptBlock(blockId, { source: block.source }, isAiInput);
       break;
     case BlockType.Python:
       yBlock = makePythonBlock(blockId, {

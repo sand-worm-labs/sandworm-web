@@ -16,6 +16,14 @@ export type KernelCall =
   | { kind: "list_dataframes"; notebookId: string }
   | { kind: "rename_variable"; notebookId: string; from: string; to: string }
   | { kind: "set_variable"; notebookId: string; name: string; value: string }
+  // What JavaScript cells read and write the notebook's variables with.
+  | { kind: "get_variables"; notebookId: string; names: string[] }
+  | {
+      kind: "set_json_variable";
+      notebookId: string;
+      name: string;
+      json: string;
+    }
   | {
       kind: "set_date_variable";
       notebookId: string;
@@ -31,6 +39,8 @@ export type KernelResults = {
   list_dataframes: DataFrame[];
   rename_variable: null;
   set_variable: null;
+  get_variables: Record<string, unknown>;
+  set_json_variable: null;
   set_date_variable: null;
   reset: null;
 };
@@ -39,19 +49,16 @@ export type ToWorker =
   | {
       kind: "init";
       indexURL: string;
-      origin: string;
-      // Present when the page is cross-origin isolated: lets a running cell be
-      // interrupted without losing the notebook's variables.
-      interruptBuffer: Int32Array | null;
+      // The sandworm_theme package's files. Sent rather than fetched by the
+      // worker, whose sandbox can't read this site's own files.
+      theme: { name: string; source: string }[];
       // Python modules the worker installs before anything runs.
       harness: {
         runtimeModule: string;
         modules: { name: string; source: string }[];
       };
     }
-  | { kind: "call"; id: number; call: KernelCall }
-  // Live cells skip their polls while the tab is hidden.
-  | { kind: "visibility"; hidden: boolean };
+  | { kind: "call"; id: number; call: KernelCall };
 
 export type FromWorker =
   | { kind: "ready" }
@@ -63,5 +70,7 @@ export type FromWorker =
       blockId: string;
       outputs: Output[];
     }
+  // How much memory Python holds, reported every few seconds.
+  | { kind: "memory"; bytes: number }
   | { kind: "result"; id: number; value: unknown }
   | { kind: "error"; id: number; error: string };

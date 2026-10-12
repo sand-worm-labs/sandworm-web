@@ -56,8 +56,11 @@ import {
   SucceededText,
   ExecutionFailedText,
 } from "../../ExecutionStatusText";
-import { useEnvironmentStatus } from "../../../hooks/useEnvironmentStatus";
-import { useLiveOutputs } from "../../../hooks/useLiveOutputs";
+import {
+  useEnvironmentStatus,
+  useIsBrowserRuntime,
+} from "../../../hooks/useEnvironmentStatus";
+import { useLiveOutputs, useOnScreen } from "../../../hooks/useLiveOutputs";
 import CodeEditor from "../CodeEditor";
 import { useEditorThemeId } from "../CodeEditor/useEditorThemeId";
 import HiddenInPublishedButton from "../../HiddenInPublishedButton";
@@ -249,6 +252,7 @@ function PythonBlock(props: Props) {
     loading: envLoading,
     startedAt: environmentStartedAt,
   } = useEnvironmentStatus(props.document.workspaceId);
+  const isBrowserRuntime = useIsBrowserRuntime();
 
   const [localResultHidden, setLocalResultHidden] = useState<boolean | null>(
     null
@@ -314,8 +318,18 @@ function PythonBlock(props: Props) {
   const lastQuery = props.block.getAttribute("lastQuery");
   const startQueryTime = props.block.getAttribute("startQueryTime");
   const lastQueryTime = props.block.getAttribute("lastQueryTime");
-  const liveResults = useLiveOutputs(blockId);
+  const [outputsRef, outputsOnScreen] = useOnScreen<HTMLDivElement>();
+  const liveResults = useLiveOutputs(blockId, outputsOnScreen);
   const results = liveResults ?? props.block.getAttribute("result") ?? [];
+  // In a notebook that runs in the browser, a result from before this tab's
+  // Python started is a saved snapshot, not something Python is producing.
+  const awaitingLive =
+    isBrowserRuntime &&
+    liveResults === null &&
+    (envStatus !== "Running" ||
+      !environmentStartedAt ||
+      !lastQueryTime ||
+      lastQueryTime < environmentStartedAt);
   const dataframeDimensions = useMemo(() => {
     const dimensions = results
       .filter(result => result.type === "html")
@@ -662,6 +676,8 @@ function PythonBlock(props: Props) {
     return (
       <PythonOutputs
         className="flex flex-col h-full ph-no-capture"
+        containerRef={outputsRef}
+        awaitingLive={awaitingLive}
         outputs={results}
         isFixWithAILoading={isAIFixing}
         onFixWithAI={onFixWithAI}
@@ -902,6 +918,8 @@ function PythonBlock(props: Props) {
                   })}
                 >
                   <PythonOutputs
+                    containerRef={outputsRef}
+                    awaitingLive={awaitingLive}
                     outputs={results}
                     isFixWithAILoading={isAIFixing}
                     onFixWithAI={onFixWithAI}

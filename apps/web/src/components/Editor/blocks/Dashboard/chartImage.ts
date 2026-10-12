@@ -35,7 +35,7 @@ export function parseChartText(
   const legend: Legend[] = [];
   let source = "";
 
-  for (const output of outputs) {
+  outputs.forEach(output => {
     if (output.type === "html" && typeof output.html === "string") {
       const doc = new DOMParser().parseFromString(output.html, "text/html");
 
@@ -68,7 +68,7 @@ export function parseChartText(
         typeof layoutTitle === "string" ? layoutTitle : layoutTitle?.text
       );
     }
-  }
+  });
 
   return { title: title || cleanText(blockTitle), legend, source };
 }
@@ -77,7 +77,7 @@ export function parseChartText(
 function wrap(ctx: CanvasRenderingContext2D, text: string, maxWidth: number) {
   const lines: string[] = [];
   let line = "";
-  for (const word of text.split(" ")) {
+  text.split(" ").forEach(word => {
     const candidate = line ? `${line} ${word}` : word;
     if (line && ctx.measureText(candidate).width > maxWidth) {
       lines.push(line);
@@ -85,7 +85,7 @@ function wrap(ctx: CanvasRenderingContext2D, text: string, maxWidth: number) {
     } else {
       line = candidate;
     }
-  }
+  });
   if (line) lines.push(line);
   return lines;
 }
@@ -134,7 +134,7 @@ export async function renderChartPng(
   const legendRows: Legend[][] = [];
   let row: Legend[] = [];
   let rowWidth = 0;
-  for (const item of text.legend) {
+  text.legend.forEach(item => {
     const width = 20 + measure.measureText(item.name).width + 18;
     if (row.length && rowWidth + width > innerWidth) {
       legendRows.push(row);
@@ -143,7 +143,7 @@ export async function renderChartPng(
     }
     row.push(item);
     rowWidth += width;
-  }
+  });
   if (row.length) legendRows.push(row);
   measure.font = `400 13px ${FONT}`;
   const sourceLines = text.source ? wrap(measure, text.source, innerWidth) : [];
@@ -211,13 +211,12 @@ export async function renderChartPng(
     ctx.fillText(line, PAD, y - 6);
   });
 
-  return new Promise((resolve, reject) =>
-    canvas.toBlob(
-      blob =>
-        blob ? resolve(blob) : reject(new Error("Could not make the image")),
-      "image/png"
-    )
-  );
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(blob => {
+      if (blob) resolve(blob);
+      else reject(new Error("Could not make the image"));
+    }, "image/png");
+  });
 }
 
 export function fileNameFor(title: string): string {
