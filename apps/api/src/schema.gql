@@ -458,7 +458,7 @@ type Query {
   """Get current user (from token)"""
   currentUser: AuthPayload!
 
-  """Get user by id"""
+  """Get user by id or username"""
   getUser(userId: String!): User!
 
   """Users who follow a given user"""

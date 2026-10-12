@@ -70,13 +70,17 @@ function WorkspaceTableHeader() {
 // =====================================
 function WorkspaceTableSkeleton() {
   return (
-    <div className="w-full" aria-busy="true" aria-label="Loading workspaces">
+    <div
+      className="w-full rounded-xl border border-border-secondary dark:border-border-tertiary overflow-hidden"
+      aria-busy="true"
+      aria-label="Loading workspaces"
+    >
       <WorkspaceTableHeader />
       <div className="space-y-0">
         {(["a", "b", "c"] as const).map(key => (
           <div
             key={key}
-            className="flex items-center px-5 py-4 border-b border-border-secondary dark:border-border-tertiary animate-pulse"
+            className="flex items-center px-5 py-4 border-b last:border-b-0 border-border-secondary dark:border-border-tertiary animate-pulse"
           >
             <div className="flex-1 flex items-center gap-4 min-w-0">
               <div className="h-10 w-10 rounded-full bg-inputBg dark:bg-base-100 shrink-0" />
@@ -142,7 +146,7 @@ function WorkspaceRow({
   return (
     <div
       className={clsx(
-        "flex items-center px-5 py-4 border-b border-border-secondary  dark:border-border-tertiary transition-colors",
+        "flex items-center px-5 py-4 border-b last:border-b-0 border-border-secondary dark:border-border-tertiary transition-colors",
         !isCurrentWorkspace && "hover:bg-hover-bg dark:hover:bg-dropdown-hover"
       )}
     >
@@ -256,7 +260,7 @@ function WorkspaceTable({
   );
 
   return (
-    <div className="w-full">
+    <div className="w-full rounded-xl border border-border-secondary dark:border-border-tertiary overflow-hidden">
       <WorkspaceTableHeader />
       {workspaces.length > WORKSPACE_SCROLL_THRESHOLD ? (
         <ScrollBar

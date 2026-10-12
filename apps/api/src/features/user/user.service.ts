@@ -20,6 +20,8 @@ import { UserSetting } from './model/graphql/user-setting.model';
 import { User } from './model/graphql/user.model';
 import { AuthPayload } from '../auth/graphql/models/auth-payload';
 
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
@@ -169,6 +171,16 @@ export class UserService {
     });
 
     return user ? user : null;
+  }
+
+  async findByUsername(username: string): Promise<UserEntity | null> {
+    return this.userRepository.findOne({ where: { username } });
+  }
+
+  async findByIdOrUsername(idOrUsername: string): Promise<UserEntity | null> {
+    return UUID_PATTERN.test(idOrUsername)
+      ? this.findById(idOrUsername)
+      : this.findByUsername(idOrUsername);
   }
 
   async findBySocialIdAndProvider(data: {

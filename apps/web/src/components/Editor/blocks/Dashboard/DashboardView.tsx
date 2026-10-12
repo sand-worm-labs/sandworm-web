@@ -2,7 +2,7 @@ import { range, sortWith, ascend } from "ramda";
 import type * as Y from "yjs";
 import { v4 as uuidv4 } from "uuid";
 import GridLayout from "react-grid-layout";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
 import type {
   ExecutionQueue,
@@ -106,9 +106,67 @@ const WhiteCard = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-const PlainCard = ({ children }: { children: React.ReactNode }) => (
-  <div className="h-full">{children}</div>
-);
+// A plain tile whose content is an HTML output (a profile card, a row of figures) is sized in
+// whole grid rows, so it usually has blank space under it. In view mode it reports how tall
+// its content really is, and the grid shortens the tile to fit.
+const PlainCard = ({
+  children,
+  fitId,
+  onFit,
+}: {
+  children: React.ReactNode;
+  fitId?: string;
+  onFit?: (id: string, px: number) => void;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const box = ref.current;
+    if (!box || !fitId || !onFit) {
+      return () => {};
+    }
+
+    let frame = 0;
+    const measure = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        // Charts fill their tile on purpose; only HTML outputs are fitted.
+        if (box.querySelector(".js-plotly-plot")) return;
+        const frames = Array.from(box.querySelectorAll("iframe"));
+        // An output that has not reported its height yet is hidden: wait for it.
+        if (
+          frames.length === 0 ||
+          frames.some(f => f.style.visibility === "hidden")
+        )
+          return;
+        const bottom = Math.max(
+          ...frames.map(f => f.getBoundingClientRect().bottom)
+        );
+        const needed = bottom - box.getBoundingClientRect().top;
+        if (needed > 0) onFit(fitId, needed);
+      });
+    };
+
+    measure();
+    const observer = new MutationObserver(measure);
+    observer.observe(box, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ["style"],
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [fitId, onFit]);
+
+  return (
+    <div ref={ref} className="h-full">
+      {children}
+    </div>
+  );
+};
 
 const TransparentCard = ({ children }: { children: React.ReactNode }) => (
   <div className="rounded-sm h-[calc(100%-4px)] outline outline-4 outline-offset-0  outline-border-tertiary">
@@ -134,10 +192,12 @@ function DashboardViewInner(props: InnerProps) {
 
   const onLayoutChange = useCallback(
     (_layout: GridLayout.Layout[], allLayouts: GridLayout.Layouts) => {
+      // Viewing never saves: the heights a view fits to its content are not the author's.
+      if (!props.isEditing) return;
       // eslint-disable-next-line dot-notation
       mergeGridLayoutIntoYDashboard(dashboard.value, allLayouts["lg"] ?? []);
     },
-    [dashboard]
+    [dashboard, props.isEditing]
   );
 
   const onSetChrome = useCallback(
@@ -159,6 +219,14 @@ function DashboardViewInner(props: InnerProps) {
     },
     [dashboard, blocks]
   );
+
+  // How tall each plain tile's content is, in pixels, as the tiles report it.
+  const [fit, setFit] = useState<Record<string, number>>({});
+  const onFit = useCallback((id: string, px: number) => {
+    setFit(prev =>
+      Math.abs((prev[id] ?? -1) - px) < 1 ? prev : { ...prev, [id]: px }
+    );
+  }, []);
 
   const children = useMemo(
     () =>
@@ -192,28 +260,36 @@ function DashboardViewInner(props: InnerProps) {
           WrapperCard = props.isEditing ? TransparentCard : PlainCard;
         }
 
+        const element = (
+          <GridElement
+            chrome={dashItem?.chrome}
+            onSetChrome={props.isEditing ? onSetChrome : undefined}
+            block={block}
+            onDelete={onDelete}
+            yDoc={props.yDoc}
+            document={props.document}
+            dataSources={props.dataSources}
+            item={item}
+            isEditingDashboard={props.isEditing}
+            latestBlockId={props.latestBlockId}
+            userId={props.userId}
+            executionQueue={props.executionQueue}
+            aiTasks={props.aiTasks}
+            onExpand={props.onExpand}
+            onViewResult={props.isEditing ? undefined : setViewing}
+            isPublicMode={props.isPublicMode}
+          />
+        );
+
         return (
           <div key={item.i} data-block-type={type}>
-            <WrapperCard>
-              <GridElement
-                chrome={dashItem?.chrome}
-                onSetChrome={props.isEditing ? onSetChrome : undefined}
-                block={block}
-                onDelete={onDelete}
-                yDoc={props.yDoc}
-                document={props.document}
-                dataSources={props.dataSources}
-                item={item}
-                isEditingDashboard={props.isEditing}
-                latestBlockId={props.latestBlockId}
-                userId={props.userId}
-                executionQueue={props.executionQueue}
-                aiTasks={props.aiTasks}
-                onExpand={props.onExpand}
-                onViewResult={props.isEditing ? undefined : setViewing}
-                isPublicMode={props.isPublicMode}
-              />
-            </WrapperCard>
+            {WrapperCard === PlainCard ? (
+              <PlainCard fitId={item.i} onFit={onFit}>
+                {element}
+              </PlainCard>
+            ) : (
+              <WrapperCard>{element}</WrapperCard>
+            )}
           </div>
         );
       }),
@@ -230,6 +306,7 @@ function DashboardViewInner(props: InnerProps) {
       props.userId,
       props.executionQueue,
       props.isPublicMode,
+      onFit,
     ]
   );
 
@@ -266,6 +343,23 @@ function DashboardViewInner(props: InnerProps) {
     [dashboard, props.draggingBlock]
   );
 
+  // In view mode a plain tile is as tall as its content needs, rounded up to whole rows, and
+  // the tiles under it move up. Phones show one column of full-width rows: left alone.
+  const fittedLayout = useMemo(() => {
+    if (props.isEditing || colsCount !== COLS_COUNT) return layout;
+    return layout.map(item => {
+      const px = fit[item.i];
+      if (px === undefined) return item;
+      const rows = Math.max(
+        1,
+        Math.ceil((px + MARGIN) / (cellHeight + MARGIN))
+      );
+      return rows < item.h
+        ? { ...item, h: rows, minH: Math.min(item.minH ?? rows, rows) }
+        : item;
+    });
+  }, [layout, fit, cellHeight, colsCount, props.isEditing]);
+
   const style = useMemo(
     () => ({
       minHeight: 1280,
@@ -299,7 +393,7 @@ function DashboardViewInner(props: InnerProps) {
       <ResponsiveGridLayout
         rowHeight={cellHeight}
         width={props.width}
-        layouts={{ lg: layout }}
+        layouts={{ lg: fittedLayout }}
         margin={[MARGIN, MARGIN]}
         onLayoutChange={onLayoutChange}
         breakpoints={BREAKPOINTS}

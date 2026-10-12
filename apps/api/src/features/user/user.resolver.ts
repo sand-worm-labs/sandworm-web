@@ -94,10 +94,10 @@ export class UserResolver {
   @Public()
   @Query(() => User, {
     name: 'getUser',
-    description: 'Get user by id',
+    description: 'Get user by id or username',
   })
   async getUser(@Args('userId', { type: () => String }) userId: string): Promise<User> {
-    const user = await this.userService.findById(userId);
+    const user = await this.userService.findByIdOrUsername(userId);
     return User.fromEntity(user);
   }
 
@@ -125,15 +125,17 @@ export class UserResolver {
     return User.fromEntities(following);
   }
 
+  // Public so a signed-out visitor can open a profile; they follow no one.
+  @Public()
   @Query(() => Boolean, {
     name: 'isFollowing',
     description: 'Auth user is following a userid ',
   })
   async isFollowing(
-    @CurrentUser('id') userId: string,
+    @CurrentUser('id') userId: string | undefined,
     @Args('followerId', { type: () => String }) followerId: string,
   ): Promise<boolean> {
-    if (!followerId) return false;
+    if (!userId || !followerId) return false;
     return this.userService.isFollowing(userId, followerId);
   }
 
