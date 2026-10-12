@@ -5,6 +5,7 @@ import { graphql, resolveWorkspaceId, type ToolContext } from '../../graphql.ts'
 import { rest } from '../../rest.ts';
 import { confirm, handle, workspaceId } from '../shared.ts';
 import { CHART_RESPONSIVE_RULES, DATA_AND_DASHBOARD_RULES } from './chart-rules.ts';
+import { JAVASCRIPT_GUIDANCE, LIVE_PYTHON_GUIDANCE } from './live-rules.ts';
 import { DATA_SOURCE_FALLBACK, OPEN_DATA_USAGE } from './open-data.ts';
 import { printedTableProblem } from './printed-table.ts';
 import {
@@ -19,6 +20,7 @@ import {
 const CELL_TYPES = [
   'sql',
   'python',
+  'javascript',
   'markdown',
   'rich_text',
   'visualization',
@@ -35,7 +37,13 @@ type Cell = { id: string; kind: string; title: string } & Record<string, unknown
 // A browser notebook (live_dashboard, local_analysis) never reaches the cloud:
 // no cells built by cloud-side code, and SQL only on its own DuckDB.
 const CLOUD_ONLY_CELL_TYPES = new Set<string>(['visualization', 'pivot_table', 'power_toolbox']);
+// And a cloud notebook is run by the server, which has no browser to run these
+// in. The API refuses them too; checking here gives the agent the way out.
+const BROWSER_ONLY_CELL_TYPES = new Set<string>(['javascript']);
 const BROWSER_DATA_SOURCE = 'duckdb';
+
+const CLOUD_NOTEBOOK_HINT =
+  'Use a python cell, or create the notebook as type "live_dashboard" or "local_analysis" (or change it with edit_notebook, which gives up its cloud-only cells and data sources).';
 
 const BROWSER_ONLY_HINT =
   'Make charts in a python cell, query the notebook\'s own DataFrames with Browser DuckDB (dataSource duckdb), or change the notebook to type "cloud" with edit_notebook.';
@@ -75,8 +83,10 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
     'add_cell',
     {
       description: [
-        'Add a cell to a notebook. It appears live in the editor next to cells added by hand. Returns the new cell\'s id. For a new analysis or any multi-cell build, call plan_notebook first and add cells in the order it returns. Cell types: sql, python, markdown, rich_text, visualization, pivot_table, input, dropdown_input, date_input, power_toolbox. For power_toolbox, find the toolId with search_tools first. Adding a cell does not run it: call run_notebook for that. In a browser notebook (live_dashboard, local_analysis) everything cloud-side is unavailable: only sql, python, markdown, rich_text and input cells, and sql runs only on Browser DuckDB (dataSource duckdb, over the notebook\'s own DataFrames), never dune or sandworm_cloud. Make charts in a python cell.',
+        'Add a cell to a notebook. It appears live in the editor next to cells added by hand. Returns the new cell\'s id. For a new analysis or any multi-cell build, call plan_notebook first and add cells in the order it returns. Cell types: sql, python, javascript, markdown, rich_text, visualization, pivot_table, input, dropdown_input, date_input, power_toolbox. For power_toolbox, find the toolId with search_tools first. Adding a cell does not run it: call run_notebook for that. In a browser notebook (live_dashboard, local_analysis) everything cloud-side is unavailable: only sql, python, javascript, markdown, rich_text and input cells, and sql runs only on Browser DuckDB (dataSource duckdb, over the notebook\'s own DataFrames), never dune or sandworm_cloud. Make charts in a python cell. A javascript cell is the reverse: it exists only in a browser notebook, and adding one to a cloud notebook fails.',
         PYTHON_GUIDANCE,
+        LIVE_PYTHON_GUIDANCE,
+        JAVASCRIPT_GUIDANCE,
         DATA_SOURCE_FALLBACK,
       ].join('\n\n'),
       inputSchema: {
@@ -89,7 +99,7 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
           .max(100_000)
           .optional()
           .describe(
-            'The cell text: SQL, Python, Markdown or rich text. For input cells, the default value (dropdown_input: one option per line; date_input: YYYY/MM/DD), with `title` as the visible label',
+            'The cell text: SQL, Python, JavaScript, Markdown or rich text. For input cells, the default value (dropdown_input: one option per line; date_input: YYYY/MM/DD), with `title` as the visible label',
           ),
         dataSource: z
           .enum(DATA_SOURCES)
@@ -115,6 +125,9 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
       if (problem) throw new Error(problem);
       const ws = await resolveWorkspaceId(ctx, workspaceId);
       let source = dataSource;
+      if (BROWSER_ONLY_CELL_TYPES.has(type) && !(await inBrowser(ws, notebookId))) {
+        throw new Error(`This is a cloud notebook, which can't have ${type} cells: they only run in the browser. ${CLOUD_NOTEBOOK_HINT}`);
+      }
       if ((type === 'sql' || CLOUD_ONLY_CELL_TYPES.has(type)) && (await inBrowser(ws, notebookId))) {
         if (CLOUD_ONLY_CELL_TYPES.has(type)) {
           throw new Error(`This notebook runs in the browser, which has no ${type} cells. ${BROWSER_ONLY_HINT}`);
@@ -137,9 +150,11 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
     {
       description: [
         'Change a cell in place: it keeps its id and position. Send only what should change; anything omitted stays as it is. `content` replaces the whole text of the cell, so send the complete new text, not a fragment. The type of a cell cannot be changed: delete it and add another.',
-        'What each type accepts: sql takes title, content, dataSource, dataframeName (renaming resets its result). python, markdown and rich_text take title, content. visualization and pivot_table take title, dataframeName. input, dropdown_input and date_input take title (the label) and content (the value; dropdown_input: the full list of options, one per line; date_input: YYYY/MM/DD). power_toolbox takes title and inputs (the full set of inputs, not a partial one).',
+        'What each type accepts: sql takes title, content, dataSource, dataframeName (renaming resets its result). python, javascript, markdown and rich_text take title, content. visualization and pivot_table take title, dataframeName. input, dropdown_input and date_input take title (the label) and content (the value; dropdown_input: the full list of options, one per line; date_input: YYYY/MM/DD). power_toolbox takes title and inputs (the full set of inputs, not a partial one).',
         'An edit does not run the cell: call run_notebook afterwards, and until then run results for the cell are marked stale. Fails while the cell is queued or running.',
         PYTHON_GUIDANCE,
+        LIVE_PYTHON_GUIDANCE,
+        JAVASCRIPT_GUIDANCE,
       ].join('\n\n'),
       inputSchema: {
         notebookId,
