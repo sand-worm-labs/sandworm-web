@@ -126,9 +126,7 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
                   @{query.author?.username}
                 </span>
               )}
-              <p className="font-body-mono text-[10px] uppercase tracking-[0.12em] text-ink-300">
-                {formattedDate}
-              </p>
+              <p className="text-xs text-ink-300">{formattedDate}</p>
             </div>
           </div>
         </td>

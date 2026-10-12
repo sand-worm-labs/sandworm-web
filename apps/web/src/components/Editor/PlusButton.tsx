@@ -60,7 +60,7 @@ interface OverflowItem {
 // ⬢ Utils
 // =====================================
 const TriangleUp = () => (
-  <div className="h-3 w-3 bg-white dark:bg-sidebar-surface border-t border-l border-border-secondary rotate-45 translate-y-1/2" />
+  <div className="h-3 w-3 bg-white dark:bg-page-surface border-t border-l border-border-secondary dark:border-border-tertiary rotate-45 translate-y-1/2" />
 );
 
 function pillToOverflowItems(pill: PillDef): OverflowItem[] {
@@ -414,7 +414,7 @@ function BlockList(props: BlockListProps) {
 
       <div
         ref={containerRef}
-        className="w-full py-1 flex items-center justify-center bg-white dark:bg-sidebar-surface"
+        className="w-full py-1 flex items-center justify-center bg-white dark:bg-page-surface"
       >
         {visiblePills.map(pill =>
           pill.kind === "single" ? (

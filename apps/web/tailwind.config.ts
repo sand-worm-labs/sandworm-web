@@ -58,6 +58,8 @@ const config: Config = {
         "pill-border": "var(--pill-border)",
         "pill-active-bg": "var(--pill-active-bg)",
         "search-bg": "var(--search-bg)",
+        "chat-input-bg": "var(--chat-input-bg)",
+        "chat-input-border": "var(--chat-input-border)",
         "search-ink": "var(--search-ink)",
         "search-kbd": "var(--search-kbd)",
         "search-input": "var(--search-input)",

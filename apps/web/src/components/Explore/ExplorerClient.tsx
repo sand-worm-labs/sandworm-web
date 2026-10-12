@@ -15,7 +15,7 @@ import { EmptyQueryState } from "@/components/EmptyState/EmptyQueryState";
 import { SortControl, type SortOption } from "@/components/Explore/SortControl";
 import { FeaturedExploreSection } from "@/components/Explore/FeaturedExploreSection";
 import { ExploreListSkeleton } from "@/components/Explore/ExploreSkeletons";
-import { eyebrowClass, SectionHero } from "@/components/Showcase/BoardKit";
+import { SectionHero } from "@/components/Showcase/BoardKit";
 import type { ApiDocument } from "@/types";
 
 // =====================================
@@ -133,7 +133,9 @@ export function ExploreClient({
       </div>
 
       <div className="flex justify-between items-center mt-6 mb-4 container mx-auto">
-        <p className={eyebrowClass}>All notebooks</p>
+        <p className="font-body text-[11px] uppercase tracking-[0.22em] text-ink-400">
+          All notebooks
+        </p>
         <SortControl
           sortBy={sortBy}
           onSortChange={handleSortChange}

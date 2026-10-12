@@ -154,7 +154,7 @@ export const MultimodalInputView = forwardRef<
     w-full min-h-[120px]
     rounded-3xl
     border-[1.5px] border-hover-border
-    bg-header-surface dark:bg-dropdown-bg dark:border-border-tertiary
+    bg-header-surface dark:bg-chat-input-bg dark:border-chat-input-border
     shadow-[0_3.5px_24px_rgba(120,147,208,0.09)] dark:shadow-none
 
     transition-all duration-300 ease-in-out font-tertiary text-[13px] 

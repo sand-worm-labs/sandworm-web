@@ -429,6 +429,10 @@
     /* Search trigger in the header */
     --search-bg: #383838;
 
+    /* Chat page: the prompt box and the example prompts (dark only) */
+    --chat-input-bg: #242424;
+    --chat-input-border: #333333;
+
     /* Search: the header trigger and the palette dialog (dark only) */
     --search-modal-bg: #242424;
     --search-ink: #ffffffb8; /* trigger text and its key hint */

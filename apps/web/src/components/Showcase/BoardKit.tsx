@@ -27,7 +27,7 @@ export const boardLabelClass =
 
 export const toggleClass = (active: boolean) =>
   cn(
-    "font-body-mono h-7 shrink-0 rounded-[5px] px-2.5 text-[11px] uppercase tracking-[0.12em] border transition-colors",
+    "font-body h-7 shrink-0 rounded-[5px] px-2.5 text-xs font-medium border transition-colors",
     active
       ? "bg-primary border-primary text-white"
       : "bg-base-100 border-border-secondary dark:border-border-tertiary text-ink-400 hover:text-ink-100 dark:hover:text-white hover:border-primary"

@@ -60,12 +60,13 @@ export default function NewNotebookDialog(props: Props) {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <DialogPanel className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl dark:bg-ink-navy font-body">
+            <DialogPanel className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl dark:bg-dropdown-bg dark:border dark:border-border-tertiary font-body">
               <DialogTitle className="text-lg font-semibold">
                 New notebook
               </DialogTitle>
               <p className="mt-1 text-sm text-ink-500 dark:text-ink-300">
-                Choose where it runs. You can change it later from the notebook's top bar.
+                Choose where it runs. You can change it later from the
+                notebook's top bar.
               </p>
 
               <div
@@ -73,41 +74,43 @@ export default function NewNotebookDialog(props: Props) {
                 aria-label="Where this notebook runs"
                 className="mt-5 grid gap-3 sm:grid-cols-3"
               >
-                {NOTEBOOK_TYPES.map(({ runtime: value, title, description, bestFor, Icon }) => {
-                  const selected = runtime === value;
-                  return (
-                    <button
-                      key={value}
-                      type="button"
-                      role="radio"
-                      aria-checked={selected}
-                      onClick={() => setRuntime(value)}
-                      className={clsx(
-                        "flex flex-col gap-2 rounded-lg border p-4 text-left transition-colors",
-                        selected
-                          ? "border-primary bg-primary-50 dark:bg-white/5"
-                          : "border-border hover:border-ink-300 dark:border-border-dark"
-                      )}
-                    >
-                      <span className="flex items-center gap-2 text-sm font-semibold">
-                        <Icon size={18} />
-                        {title}
-                      </span>
-                      <span className="text-xs text-ink-500 dark:text-ink-300">
-                        {description}
-                      </span>
-                      <span className="mt-auto text-xs font-medium text-ink-400">
-                        {bestFor}
-                      </span>
-                    </button>
-                  );
-                })}
+                {NOTEBOOK_TYPES.map(
+                  ({ runtime: value, title, description, bestFor, Icon }) => {
+                    const selected = runtime === value;
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        onClick={() => setRuntime(value)}
+                        className={clsx(
+                          "flex flex-col gap-2 rounded-xl border p-4 text-left transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary",
+                          selected
+                            ? "block-focus-ring border-primary dark:bg-primary/10"
+                            : "border-border hover:border-border-focus dark:border-border-tertiary"
+                        )}
+                      >
+                        <span className="flex items-center gap-2 text-sm font-semibold">
+                          <Icon size={18} />
+                          {title}
+                        </span>
+                        <span className="text-xs text-ink-500 dark:text-ink-300">
+                          {description}
+                        </span>
+                        <span className="mt-auto text-xs font-medium text-ink-400">
+                          {bestFor}
+                        </span>
+                      </button>
+                    );
+                  }
+                )}
               </div>
 
               <div className="mt-6 flex justify-end gap-x-3">
                 <button
                   type="button"
-                  className="rounded-md px-3 py-1.5 text-sm hover:bg-black/5 dark:hover:bg-white/10"
+                  className="rounded-xl px-3 py-1.5 text-sm hover:bg-black/5 dark:hover:bg-white/10"
                   onClick={props.onHide}
                 >
                   Cancel
@@ -116,7 +119,7 @@ export default function NewNotebookDialog(props: Props) {
                   type="button"
                   disabled={creating}
                   onClick={onSubmit}
-                  className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60"
+                  className="rounded-xl bg-primary px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60"
                 >
                   {creating ? "Creating…" : "Create notebook"}
                 </button>
