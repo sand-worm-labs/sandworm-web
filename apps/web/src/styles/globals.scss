@@ -184,6 +184,7 @@
     --base-600: 180 43% 95%; /* #EBF7F7 */
     --header-surface: 0 0% 100%; /* #FFFFFF */
     --block-surface: 0 0% 100%; /* #FFFFFF */
+    --modal-surface: 0 0% 100%; /* #FFFFFF */
     --page-surface: 0 0% 100%; /* #FFFFFF */
     --dropdown-bg: 0 0% 100%; /* #FFFFFF */
     --dropdown-hover: 210 17% 96%; /* light default; components keep their own light hover for now */
@@ -321,6 +322,8 @@
     /* Surface of a notebook block, result and dashboard tile: the same as the Explore cards (--dropdown-bg), lighter than the page. */
     --block-surface: 0 0% 10.2%; /* #1A1A1A */
     --page-surface: 0 0% 7.1%; /* #121212 */
+    /* Surface of a modal dialog: lighter than cards and the page, so it lifts off whatever is behind it. */
+    --modal-surface: 0 0% 17.6%; /* #2D2D2D */
     --dropdown-bg: 0 0% 10.2%; /* #1A1A1A */
     --dropdown-hover: 0 0% 18%; /* #2F2F2F */
     --chat-assistant-surface: 0 0% 10.2%; /* #1A1A1A, matches --dropdown-bg */

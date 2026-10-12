@@ -140,7 +140,7 @@ export default function InviteUserModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-dropdown-bg py-10 px-8 text-left align-middle shadow-xl transition-all">
+              <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-modal-surface dark:border dark:border-white/10 py-10 px-8 text-left align-middle shadow-xl transition-all">
                 <div className="flex items-center justify-between mb-7">
                   <DialogTitle
                     as="h3"
@@ -171,7 +171,7 @@ export default function InviteUserModal({
                         value={selectedWorkspaceId}
                         onChange={e => setSelectedWorkspaceId(e.target.value)}
                         disabled={isSubmitting}
-                        className="w-full px-3 py-2 rounded-xl dark:bg-base-400 border dark:border-border-tertiary border-border dark:text-white focus:outline-none focus:ring focus:ring-primary transition text-xs md:text-sm bg-inputBg"
+                        className="w-full px-3 py-2 rounded-xl dark:bg-modal-surface border dark:border-border-tertiary border-border dark:text-white focus:outline-none focus:ring focus:ring-primary transition text-xs md:text-sm bg-inputBg"
                       >
                         <option value="">Select a workspace</option>
                         {workspaces.map(ws => (
@@ -200,7 +200,7 @@ export default function InviteUserModal({
                       }}
                       placeholder="colleague@example.com"
                       disabled={isSubmitting}
-                      className="w-full px-5 py-3.5 rounded-xl dark:bg-base-400 border dark:border-border-tertiary border-border dark:text-white placeholder:dark:text-ink-300 placeholder-[#868E96] focus:outline-none focus:ring focus:ring-primary transition text-xs md:text-sm bg-inputBg"
+                      className="w-full px-5 py-3.5 rounded-xl dark:bg-modal-surface border dark:border-border-tertiary border-border dark:text-white dark:placeholder:text-white/50 placeholder-[#868E96] focus:outline-none focus:ring focus:ring-primary transition text-xs md:text-sm bg-inputBg"
                     />
                   </div>
 
@@ -218,7 +218,7 @@ export default function InviteUserModal({
                         setRole(e.target.value as UserWorkspaceRole)
                       }
                       disabled={isSubmitting}
-                      className="w-auto px-3 py-1 rounded-lg dark:bg-base-400 border dark:border-border-tertiary border-border dark:text-white focus:outline-none focus:ring focus:ring-primary transition text-xs md:text-sm bg-inputBg"
+                      className="w-auto px-3 py-1 rounded-lg dark:bg-modal-surface border dark:border-border-tertiary border-border dark:text-white focus:outline-none focus:ring focus:ring-primary transition text-xs md:text-sm bg-inputBg"
                     >
                       <option value="editor">Editor</option>
                       <option value="viewer">Viewer</option>
@@ -236,7 +236,7 @@ export default function InviteUserModal({
                         !email.trim() ||
                         (isMultiWorkspace && !selectedWorkspaceId)
                       }
-                      className={`flex-1 px-4 py-3.5 text-sm font-medium text-white bg-primary rounded-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-transparent ${tintPillDarkClassName}`}
+                      className={`flex-1 px-4 py-3.5 text-sm font-medium text-white bg-primary rounded-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-transparent dark:!border-white/10 ${tintPillDarkClassName}`}
                     >
                       {isSubmitting ? "Sending..." : "Send invite"}
                     </button>

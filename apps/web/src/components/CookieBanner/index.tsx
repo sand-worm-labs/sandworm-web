@@ -52,14 +52,16 @@ export default function CookieBanner() {
       className={[
         "fixed bottom-4 left-4 right-4 sm:bottom-6 sm:left-auto sm:right-6 z-50 font-body",
         "w-auto sm:w-[400px] max-w-[720px]",
-        "bg-white border dark:border-border-secondary border-border-secondary  rounded-2xl shadow-[0_4px_4px_0_#73768726] ",
+        "bg-white dark:bg-block-surface border border-border-secondary dark:border-border-tertiary rounded-2xl shadow-[0_4px_4px_0_#73768726] ",
         "flex flex-col  gap-4 px-5 py-2.5",
         leaving
           ? "animate-[cookieDown_0.28s_cubic-bezier(0.4,0,1,1)_forwards]"
           : "animate-[cookieUp_0.35s_cubic-bezier(0.16,1,0.3,1)_forwards]",
       ].join(" ")}
     >
-      <h2 className="font-medium mt-2">Cookie Settings</h2>
+      <h2 className="font-medium mt-2 text-ink-100 dark:text-white">
+        Cookie Settings
+      </h2>
       <p className="flex-1 text-[13px] leading-relaxed dark:text-ink-400 text-ink-500 m-0 pr-2">
         We use essential functionality cookies to make the site work. If you
         accept, we may also use cookies to enhance your experience, measure ad
@@ -78,14 +80,14 @@ export default function CookieBanner() {
         <button
           type="button"
           onClick={() => dismiss("accepted")}
-          className="w-full text-[13px] font-medium px-5 py-2 rounded-full bg-base-400 text-white border  hover:opacity-85 active:scale-[0.97] transition-all"
+          className="w-full text-[13px] font-medium px-5 py-2 rounded-full bg-base-400 text-white border border-transparent dark:bg-white dark:text-page-surface hover:opacity-85 active:scale-[0.97] transition-all"
         >
           Accept
         </button>
         <button
           type="button"
-          onClick={() => dismiss("accepted")}
-          className="w-full inline-block text-[13px] font-medium px-5 py-2 rounded-full bg-inputBg text-ink-100  border  hover:opacity-85 active:scale-[0.97] transition-all"
+          onClick={() => dismiss("declined")}
+          className="w-full inline-block text-[13px] font-medium px-5 py-2 rounded-full bg-inputBg text-ink-100 border dark:bg-transparent dark:text-white dark:border-border-tertiary hover:opacity-85 active:scale-[0.97] transition-all"
         >
           Decline
         </button>

@@ -66,7 +66,7 @@ function UserItem(props: UserItemProps) {
   return (
     <tr
       className={clsx(
-        "border-b border-border-secondary  dark:border-border-tertiary   transition-colors",
+        "border-b border-border-secondary dark:border-border-tertiary dark:last:border-b-0 transition-colors",
         props.isSelected && ""
       )}
     >
@@ -214,7 +214,7 @@ function UsersList(props: Props) {
   return (
     <div className="h-full">
       <div className="overflow-visible">
-        <div className="w-full overflow-x-auto dark:border-border-tertiary border-b-0">
+        <div className="w-full overflow-x-auto border-b-0 dark:rounded-xl dark:border dark:border-border-tertiary dark:bg-block-surface">
           <table className="min-w-full border-collapse">
             <thead className="rounded-t-2xl sticky top-0 z-10 border-b border-border-secondary   dark:border-border-tertiary">
               <tr>
@@ -229,7 +229,7 @@ function UsersList(props: Props) {
                 </th>
                 <th
                   scope="col"
-                  className="text-left p-4 text-xs font-bold text-ink-400 sticky left-0 min-w-[250px] uppercase bg-base-100 dark:bg-page-surface"
+                  className="text-left p-4 text-xs font-bold text-ink-400 sticky left-0 min-w-[250px] uppercase bg-base-100 dark:bg-block-surface"
                 >
                   user
                 </th>

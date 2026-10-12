@@ -53,7 +53,7 @@ interface Props {
 function EllipsisDropdown(props: Props) {
   return (
     <Menu as="div" className="relative h-full w-full">
-      <Menu.Button className="flex items-center rounded-none px-3 py-3.5 text-sm text-ink-400 hover:bg-gray-100 dark:bg-base-500 border-t border-b dark:border-border-tertiary h-full bg-white w-full dark:text-ink-100 focus:ring-border-primary/50 focus-visible:outline-none focus:outline-none">
+      <Menu.Button className="flex items-center rounded-none px-3 py-3.5 text-sm text-ink-400 hover:bg-gray-100 dark:bg-transparent dark:hover:bg-base-600 border-t border-b dark:border-border-tertiary h-full bg-white w-full dark:text-ink-100 focus:ring-border-primary/50 focus-visible:outline-none focus:outline-none">
         <PiDotsThree className="w-5 h-4 shrink-0" />
       </Menu.Button>
       <Transition

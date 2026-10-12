@@ -9,6 +9,9 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/layouts/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  // packages/ui is not scanned, so a class only it uses is never generated. The Avatar's
+  // fallback and image need size-full: without it the fallback shrinks to its letter.
+  safelist: ["size-full"],
   theme: {
     extend: {
       screens: {
@@ -50,6 +53,7 @@ const config: Config = {
 
         "header-surface": "hsl(var(--header-surface))",
         "block-surface": "hsl(var(--block-surface))",
+        "modal-surface": "hsl(var(--modal-surface))",
         "page-surface": "hsl(var(--page-surface))",
         "sidebar-surface": "hsl(var(--sidebar-surface))",
         "sidebar-hover": "hsl(var(--sidebar-hover))",

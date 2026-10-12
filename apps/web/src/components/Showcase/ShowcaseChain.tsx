@@ -236,8 +236,6 @@ export function ProtocolCard({
 // =====================================
 // ⬢  Community
 // =====================================
-// A notebook the community published about the category. When it also has a dashboard, that
-// has its own link: the card itself opens the notebook.
 export function CommunityCard({ item }: { item: ShowcaseCommunityItem }) {
   return (
     <div

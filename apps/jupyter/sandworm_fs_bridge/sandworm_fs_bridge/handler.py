@@ -189,7 +189,7 @@ class CWDHandler(BaseFileHandler):
 
 def setup_handlers(web_app):
     base_url = web_app.settings["base_url"]
-    base = f"{base_url}api/sandworm"  # Changed from 'briefer'
+    base = f"{base_url}api/sandworm"  
 
     handlers = [
         (f"{base}/files/list", ListFilesHandler),
