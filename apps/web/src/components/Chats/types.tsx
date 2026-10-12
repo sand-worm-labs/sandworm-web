@@ -82,6 +82,7 @@ export const BLOCK_KIND_META: Record<BlockKind, { label: string }> = {
   [BlockType.VisualizationV2]: { label: "Visualization" },
   [BlockType.PowerToolbox]: { label: "Power Toolbox" },
   [BlockType.Markdown]: { label: "Markdown" },
+  [BlockType.JavaScript]: { label: "JavaScript" },
 };
 
 // =====================================

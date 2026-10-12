@@ -4,6 +4,7 @@ import {
   DashboardHeaderBlock,
   FileUploadBlock,
   InputBlock,
+  JavaScriptBlock,
   MarkdownBlock,
   PythonBlock,
   RichTextBlock,
@@ -331,6 +332,7 @@ export function switchBlockType<T>(
     onPivotTable: (block: Y.XmlElement<PivotTableBlock>) => T;
     onPowerToolbox: (block: Y.XmlElement<PowerToolboxBlock>) => T;
     onMarkdown?: (block: Y.XmlElement<MarkdownBlock>) => T;
+    onJavaScript?: (block: Y.XmlElement<JavaScriptBlock>) => T;
   }
 ): T {
   const type = block.getAttribute("type") as BlockType;
@@ -366,6 +368,15 @@ export function switchBlockType<T>(
     case BlockType.Markdown:
       return handles.onMarkdown
         ? handles.onMarkdown(block as Y.XmlElement<MarkdownBlock>)
+        : handles.onRichText(block as unknown as Y.XmlElement<RichTextBlock>);
+    // A JavaScript block has a markdown block's shape (see blocks/javascript.ts),
+    // so a caller with nothing to say about it handles it as one.
+    case BlockType.JavaScript:
+      if (handles.onJavaScript) {
+        return handles.onJavaScript(block as Y.XmlElement<JavaScriptBlock>);
+      }
+      return handles.onMarkdown
+        ? handles.onMarkdown(block as unknown as Y.XmlElement<MarkdownBlock>)
         : handles.onRichText(block as unknown as Y.XmlElement<RichTextBlock>);
   }
 }
