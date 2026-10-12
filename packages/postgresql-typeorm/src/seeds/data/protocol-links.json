@@ -1,0 +1,772 @@
+{
+  "1inch": {
+    "name": "1inch",
+    "links": {
+      "website": "https://1inch.com",
+      "twitter": "https://x.com/1inch",
+      "github": "https://github.com/1inch"
+    }
+  },
+  "aave": {
+    "name": "Aave",
+    "links": {
+      "website": "https://aave.com",
+      "twitter": "https://x.com/aave",
+      "github": "https://github.com/aave"
+    }
+  },
+  "across": {
+    "name": "Across",
+    "links": {
+      "website": "https://across.to",
+      "twitter": "https://x.com/AcrossProtocol",
+      "github": "https://github.com/across-protocol"
+    }
+  },
+  "aerodrome": {
+    "name": "Aerodrome",
+    "links": {
+      "website": "https://aerodrome.finance",
+      "twitter": "https://x.com/aeroxyz",
+      "github": "https://github.com/aerodrome-finance"
+    }
+  },
+  "aevo": {
+    "name": "Aevo",
+    "links": {
+      "website": "https://app.aevo.xyz",
+      "twitter": "https://x.com/aevoxyz",
+      "github": "https://github.com/aevoxyz"
+    }
+  },
+  "axie-infinity": {
+    "name": "Axie Infinity",
+    "links": {
+      "website": "https://axieinfinity.com",
+      "twitter": "https://x.com/axieinfinity"
+    }
+  },
+  "axiom": {
+    "name": "Axiom",
+    "links": {
+      "website": "https://axiom.trade/@defillama",
+      "twitter": "https://x.com/AxiomExchange"
+    }
+  },
+  "backpack": {
+    "name": "Backpack",
+    "links": {
+      "website": "https://backpack.exchange",
+      "twitter": "https://x.com/Backpack"
+    }
+  },
+  "beefy": {
+    "name": "Beefy",
+    "links": {
+      "website": "https://beefy.com",
+      "twitter": "https://x.com/beefyfinance",
+      "github": "https://github.com/beefyfinance"
+    }
+  },
+  "benji": {
+    "name": "BENJI",
+    "links": {
+      "website": "https://www.franklintempleton.com"
+    }
+  },
+  "blur": {
+    "name": "Blur",
+    "links": {
+      "website": "https://blur.io",
+      "twitter": "https://x.com/blur_io",
+      "github": "https://github.com/blur-io"
+    }
+  },
+  "bonk": {
+    "name": "BONK",
+    "links": {
+      "website": "https://www.bonkcoin.com",
+      "twitter": "https://x.com/bonk_inu",
+      "discord": "https://discord.gg/ubqvDDFUhf"
+    }
+  },
+  "buidl": {
+    "name": "BUIDL",
+    "links": {
+      "website": "https://securitize.io",
+      "twitter": "https://x.com/BlackRock"
+    }
+  },
+  "bullx": {
+    "name": "BullX",
+    "links": {
+      "website": "https://bullx.io",
+      "twitter": "https://x.com/bullx_io"
+    }
+  },
+  "centrifuge": {
+    "name": "Centrifuge",
+    "links": {
+      "website": "https://centrifuge.io",
+      "twitter": "https://x.com/centrifuge",
+      "github": "https://github.com/centrifuge"
+    }
+  },
+  "chainlink": {
+    "name": "Chainlink",
+    "links": {
+      "website": "https://chain.link",
+      "twitter": "https://x.com/chainlink"
+    }
+  },
+  "compound": {
+    "name": "Compound",
+    "links": {
+      "website": "https://www.compound.xyz",
+      "twitter": "https://x.com/Compound_xyz"
+    }
+  },
+  "convex": {
+    "name": "Convex",
+    "links": {
+      "website": "https://www.convexfinance.com",
+      "twitter": "https://x.com/ConvexFinance",
+      "github": "https://github.com/convex-eth"
+    }
+  },
+  "cow-swap": {
+    "name": "CoW Swap",
+    "links": {
+      "twitter": "https://x.com/CoWSwap"
+    }
+  },
+  "debridge": {
+    "name": "deBridge",
+    "links": {
+      "website": "https://app.debridge.com",
+      "twitter": "https://x.com/debridge",
+      "github": "https://github.com/debridge-finance"
+    }
+  },
+  "derive": {
+    "name": "Derive",
+    "links": {
+      "website": "https://app.derive.xyz",
+      "twitter": "https://x.com/derivexyz",
+      "github": "https://github.com/lyra-finance"
+    }
+  },
+  "dinari": {
+    "name": "Dinari",
+    "links": {
+      "website": "https://dinari.com",
+      "twitter": "https://x.com/DinariGlobal"
+    }
+  },
+  "drift": {
+    "name": "Drift",
+    "links": {
+      "website": "https://app.drift.trade",
+      "twitter": "https://x.com/DriftProtocol",
+      "github": "https://github.com/drift-labs"
+    }
+  },
+  "dydx": {
+    "name": "dYdX",
+    "links": {
+      "website": "https://dydx.trade",
+      "twitter": "https://x.com/dYdX",
+      "github": "https://github.com/dydxfoundation"
+    }
+  },
+  "eigenlayer": {
+    "name": "EigenLayer",
+    "links": {
+      "website": "https://www.eigencloud.xyz",
+      "twitter": "https://x.com/eigencloud",
+      "github": "https://github.com/Layr-Labs"
+    }
+  },
+  "elizaos": {
+    "name": "elizaOS",
+    "links": {
+      "website": "https://elizaos.ai",
+      "twitter": "https://x.com/elizaOS",
+      "github": "https://github.com/elizaOS"
+    }
+  },
+  "ethena": {
+    "name": "Ethena",
+    "links": {
+      "website": "https://www.app.ethena.fi",
+      "twitter": "https://x.com/ethena",
+      "github": "https://github.com/ethena-labs"
+    }
+  },
+  "ether-fi": {
+    "name": "ether.fi",
+    "links": {
+      "website": "https://www.ether.fi",
+      "twitter": "https://x.com/ether_fi"
+    }
+  },
+  "ether-fi-cash": {
+    "name": "Ether.fi Cash",
+    "links": {
+      "website": "https://www.ether.fi",
+      "twitter": "https://x.com/ether_fi"
+    }
+  },
+  "farcaster": {
+    "name": "Farcaster",
+    "links": {
+      "website": "https://www.farcaster.xyz",
+      "twitter": "https://x.com/farcaster_xyz"
+    }
+  },
+  "gmx": {
+    "name": "GMX",
+    "links": {
+      "website": "https://gmx.io",
+      "twitter": "https://x.com/GMX_IO",
+      "github": "https://github.com/gmx-io"
+    }
+  },
+  "gnosis-pay": {
+    "name": "Gnosis Pay",
+    "links": {
+      "website": "https://gnosispay.com",
+      "twitter": "https://x.com/gnosispay"
+    }
+  },
+  "goldfinch": {
+    "name": "Goldfinch",
+    "links": {
+      "website": "https://goldfinch.finance",
+      "twitter": "https://x.com/goldfinch_fi",
+      "github": "https://github.com/goldfinch-eng"
+    }
+  },
+  "grass": {
+    "name": "Grass",
+    "links": {
+      "website": "https://app.grass.io/register?referralCode=ZWjOHixbjd5Z31b",
+      "twitter": "https://x.com/grass"
+    }
+  },
+  "helio": {
+    "name": "Helio",
+    "links": {
+      "website": "https://app.hel.io",
+      "twitter": "https://x.com/helio_pay"
+    }
+  },
+  "helium": {
+    "name": "Helium",
+    "links": {
+      "website": "https://www.helium.com",
+      "twitter": "https://x.com/helium"
+    }
+  },
+  "hivemapper": {
+    "name": "Hivemapper",
+    "links": {
+      "website": "https://hivemapper.com",
+      "twitter": "https://x.com/hivemapper"
+    }
+  },
+  "hyperliquid": {
+    "name": "Hyperliquid",
+    "links": {
+      "website": "https://app.hyperliquid.xyz",
+      "twitter": "https://x.com/HyperliquidX",
+      "github": "https://github.com/hyperliquid-dex"
+    }
+  },
+  "jito": {
+    "name": "Jito",
+    "links": {
+      "website": "https://jito.network",
+      "twitter": "https://x.com/jito",
+      "github": "https://github.com/jito-foundation"
+    }
+  },
+  "jupiter": {
+    "name": "Jupiter",
+    "links": {
+      "website": "https://jup.ag",
+      "twitter": "https://x.com/JupiterExchange",
+      "github": "https://github.com/jup-ag"
+    }
+  },
+  "jupiter-perps": {
+    "name": "Jupiter Perps",
+    "links": {
+      "website": "https://jup.ag/?ref=f6y1ryr2snn3",
+      "twitter": "https://x.com/JupiterExchange"
+    }
+  },
+  "kamino": {
+    "name": "Kamino",
+    "links": {
+      "website": "https://kamino.finance",
+      "twitter": "https://x.com/Kamino",
+      "github": "https://github.com/Kamino-Finance"
+    }
+  },
+  "kast": {
+    "name": "KAST",
+    "links": {
+      "website": "https://www.kast.xyz",
+      "twitter": "https://x.com/KASTxyz"
+    }
+  },
+  "kelp": {
+    "name": "Kelp",
+    "links": {
+      "website": "https://kelpdao.xyz/restake/?utm_source=0x798fF1e6D7AFd28c333eE6eBe03125d30ec6eF10",
+      "twitter": "https://x.com/KelpDAO"
+    }
+  },
+  "kyberswap": {
+    "name": "KyberSwap",
+    "links": {
+      "website": "https://kyberswap.com",
+      "twitter": "https://x.com/KyberNetwork",
+      "github": "https://github.com/KyberNetwork"
+    }
+  },
+  "letsbonk": {
+    "name": "LetsBonk",
+    "links": {
+      "website": "https://letsbonk.fun"
+    }
+  },
+  "lido": {
+    "name": "Lido",
+    "links": {
+      "website": "https://lido.fi",
+      "twitter": "https://x.com/LidoFinance",
+      "github": "https://github.com/lidofinance"
+    }
+  },
+  "limitless": {
+    "name": "Limitless",
+    "links": {
+      "twitter": "https://x.com/limitlessdefi"
+    }
+  },
+  "liquity": {
+    "name": "Liquity",
+    "links": {
+      "website": "https://www.liquity.org",
+      "twitter": "https://x.com/LiquityProtocol",
+      "github": "https://github.com/liquity"
+    }
+  },
+  "magic-eden": {
+    "name": "Magic Eden",
+    "links": {
+      "website": "https://magiceden.io",
+      "twitter": "https://x.com/MagicEden"
+    }
+  },
+  "maple": {
+    "name": "Maple",
+    "links": {
+      "website": "https://www.maple.finance",
+      "twitter": "https://x.com/maplefinance"
+    }
+  },
+  "marinade": {
+    "name": "Marinade",
+    "links": {
+      "website": "https://marinade.finance",
+      "twitter": "https://x.com/MarinadeFinance",
+      "github": "https://github.com/marinade-finance"
+    }
+  },
+  "metamask": {
+    "name": "MetaMask",
+    "links": {
+      "website": "https://metamask.io",
+      "twitter": "https://x.com/MetaMask",
+      "github": "https://github.com/MetaMask"
+    }
+  },
+  "moonpay": {
+    "name": "MoonPay",
+    "links": {
+      "website": "https://www.moonpay.com",
+      "twitter": "https://x.com/moonpay"
+    }
+  },
+  "morpho": {
+    "name": "Morpho",
+    "links": {
+      "website": "https://morpho.org",
+      "twitter": "https://x.com/Morpho",
+      "github": "https://github.com/morpho-org"
+    }
+  },
+  "ondo": {
+    "name": "Ondo",
+    "links": {
+      "website": "https://ondo.finance",
+      "twitter": "https://x.com/OndoFinance"
+    }
+  },
+  "ondo-global-markets": {
+    "name": "Ondo Global Markets",
+    "links": {
+      "website": "https://ondo.finance",
+      "twitter": "https://x.com/OndoFinance"
+    }
+  },
+  "opensea": {
+    "name": "OpenSea",
+    "links": {
+      "website": "https://opensea.io",
+      "twitter": "https://x.com/opensea"
+    }
+  },
+  "orca": {
+    "name": "Orca",
+    "links": {
+      "website": "https://www.orca.so",
+      "twitter": "https://x.com/orca_so"
+    }
+  },
+  "paj-cash": {
+    "name": "Paj Cash",
+    "links": {
+      "website": "https://paj.cash",
+      "twitter": "https://x.com/paj_cash"
+    }
+  },
+  "pancakeswap": {
+    "name": "PancakeSwap",
+    "links": {
+      "website": "https://pancakeswap.finance",
+      "twitter": "https://x.com/PancakeSwap",
+      "github": "https://github.com/pancakeswap"
+    }
+  },
+  "paxg": {
+    "name": "PAXG",
+    "links": {
+      "website": "https://www.paxg.com",
+      "twitter": "https://x.com/Paxos",
+      "github": "https://github.com/paxosglobal/paxos-gold-contract"
+    }
+  },
+  "pendle": {
+    "name": "Pendle",
+    "links": {
+      "website": "https://pendle.finance",
+      "twitter": "https://x.com/pendle_fi",
+      "github": "https://github.com/pendle-finance"
+    }
+  },
+  "pepe": {
+    "name": "PEPE",
+    "links": {
+      "website": "https://www.pepe.vip",
+      "twitter": "https://x.com/pepecoineth"
+    }
+  },
+  "perpl": {
+    "name": "Perpl",
+    "links": {
+      "website": "https://perpl.xyz",
+      "twitter": "https://x.com/perpltrade"
+    }
+  },
+  "phantom": {
+    "name": "Phantom",
+    "links": {
+      "website": "https://phantom.com",
+      "twitter": "https://x.com/phantom"
+    }
+  },
+  "photon": {
+    "name": "Photon",
+    "links": {
+      "website": "https://photon-sol.tinyastro.io",
+      "twitter": "https://x.com/tradewithPhoton"
+    }
+  },
+  "pixels": {
+    "name": "Pixels",
+    "links": {
+      "website": "https://www.pixels.xyz",
+      "twitter": "https://x.com/pixels_online",
+      "discord": "https://discord.gg/pixels"
+    }
+  },
+  "polymarket": {
+    "name": "Polymarket",
+    "links": {
+      "website": "https://polymarket.com",
+      "twitter": "https://x.com/Polymarket"
+    }
+  },
+  "pump-fun": {
+    "name": "pump.fun",
+    "links": {
+      "website": "https://pump.fun",
+      "twitter": "https://x.com/Pumpfun"
+    }
+  },
+  "pyth": {
+    "name": "Pyth",
+    "links": {
+      "website": "https://www.pyth.network",
+      "twitter": "https://x.com/PythNetwork",
+      "github": "https://github.com/pyth-network"
+    }
+  },
+  "pyusd": {
+    "name": "PYUSD",
+    "links": {
+      "website": "https://www.paypal.com/us/digital-wallet/manage-money/crypto/pyusd",
+      "twitter": "https://x.com/PayPal"
+    }
+  },
+  "rabby": {
+    "name": "Rabby",
+    "links": {
+      "website": "https://rabby.io",
+      "twitter": "https://x.com/Rabby_io",
+      "github": "https://github.com/RabbyHub"
+    }
+  },
+  "raydium": {
+    "name": "Raydium",
+    "links": {
+      "website": "https://raydium.io",
+      "twitter": "https://x.com/RaydiumProtocol"
+    }
+  },
+  "redstone": {
+    "name": "RedStone",
+    "links": {
+      "website": "https://redstone.xyz",
+      "twitter": "https://x.com/redstonexyz"
+    }
+  },
+  "render": {
+    "name": "Render",
+    "links": {
+      "website": "https://rendernetwork.com",
+      "twitter": "https://x.com/rendernetwork"
+    }
+  },
+  "renzo": {
+    "name": "Renzo",
+    "links": {
+      "website": "https://app.renzoprotocol.com/restake",
+      "twitter": "https://x.com/RenzoProtocol",
+      "github": "https://github.com/Renzo-Protocol"
+    }
+  },
+  "request": {
+    "name": "Request",
+    "links": {
+      "website": "https://request.network",
+      "twitter": "https://x.com/RequestNetwork"
+    }
+  },
+  "resolv": {
+    "name": "Resolv",
+    "links": {
+      "website": "https://resolv.xyz",
+      "twitter": "https://x.com/ResolvLabs",
+      "github": "https://github.com/resolv-im"
+    }
+  },
+  "rocket-pool": {
+    "name": "Rocket Pool",
+    "links": {
+      "website": "https://rocketpool.net",
+      "twitter": "https://x.com/Rocket_Pool",
+      "github": "https://github.com/rocket-pool"
+    }
+  },
+  "sky": {
+    "name": "Sky",
+    "links": {
+      "website": "https://sky.money",
+      "twitter": "https://x.com/SkyEcosystem",
+      "github": "https://github.com/makerdao"
+    }
+  },
+  "solana-pay": {
+    "name": "Solana Pay",
+    "links": {
+      "website": "https://solanapay.com",
+      "github": "https://github.com/solana-foundation/solana-pay"
+    }
+  },
+  "solayer": {
+    "name": "Solayer",
+    "links": {
+      "website": "https://solayer.org",
+      "twitter": "https://x.com/solayer_labs"
+    }
+  },
+  "spark": {
+    "name": "Spark",
+    "links": {
+      "website": "https://spark.finance",
+      "twitter": "https://x.com/sparkfinance",
+      "github": "https://github.com/sparkdotfi"
+    }
+  },
+  "sphere": {
+    "name": "Sphere",
+    "links": {
+      "website": "https://www.sphere.finance",
+      "twitter": "https://x.com/SphereDeFi"
+    }
+  },
+  "stargate": {
+    "name": "Stargate",
+    "links": {
+      "website": "https://stargate.vechain.org",
+      "twitter": "https://x.com/vechainofficial"
+    }
+  },
+  "superstate": {
+    "name": "Superstate",
+    "links": {
+      "website": "https://superstate.com",
+      "twitter": "https://x.com/superstatefunds",
+      "github": "https://github.com/superstateinc"
+    }
+  },
+  "symbiotic": {
+    "name": "Symbiotic",
+    "links": {
+      "website": "https://symbiotic.fi",
+      "twitter": "https://x.com/symbioticfi",
+      "github": "https://github.com/symbioticfi"
+    }
+  },
+  "tensor": {
+    "name": "Tensor",
+    "links": {
+      "website": "https://www.tensor.trade",
+      "twitter": "https://x.com/TensorFdn"
+    }
+  },
+  "transak": {
+    "name": "Transak",
+    "links": {
+      "website": "https://transak.com",
+      "telegram": "https://t.me/transakfinance"
+    }
+  },
+  "trojan": {
+    "name": "Trojan",
+    "links": {
+      "website": "https://trojan.com",
+      "twitter": "https://x.com/TrojanOnSolana"
+    }
+  },
+  "uniswap": {
+    "name": "Uniswap",
+    "links": {
+      "website": "https://app.uniswap.org",
+      "twitter": "https://x.com/Uniswap",
+      "github": "https://github.com/Uniswap"
+    }
+  },
+  "usdc": {
+    "name": "USDC",
+    "links": {
+      "website": "https://www.circle.com/en",
+      "twitter": "https://x.com/circle"
+    }
+  },
+  "usde": {
+    "name": "USDe",
+    "links": {
+      "website": "https://www.app.ethena.fi/join/3y20d",
+      "twitter": "https://x.com/ethena"
+    }
+  },
+  "usds": {
+    "name": "USDS",
+    "links": {
+      "website": "https://app.sky.money/?network=ethereum&widget=vaults",
+      "twitter": "https://x.com/SkyMoney"
+    }
+  },
+  "usdt": {
+    "name": "USDT",
+    "links": {
+      "website": "https://tether.to",
+      "twitter": "https://x.com/tether"
+    }
+  },
+  "virtuals": {
+    "name": "Virtuals",
+    "links": {
+      "website": "https://app.virtuals.io",
+      "twitter": "https://x.com/virtuals_io"
+    }
+  },
+  "wif": {
+    "name": "WIF",
+    "links": {
+      "website": "https://dogwifcoin.org",
+      "twitter": "https://x.com/dogwifcoin",
+      "telegram": "https://t.me/dogwifcoin"
+    }
+  },
+  "wormhole": {
+    "name": "Wormhole",
+    "links": {
+      "website": "https://portalbridge.com",
+      "twitter": "https://x.com/portalbridge_",
+      "github": "https://github.com/wormhole-foundation"
+    }
+  },
+  "xaut": {
+    "name": "XAUT",
+    "links": {
+      "website": "https://gold.tether.to",
+      "twitter": "https://x.com/tethergold"
+    }
+  },
+  "xstocks": {
+    "name": "xStocks",
+    "links": {
+      "website": "https://defi.xstocks.fi",
+      "twitter": "https://x.com/xStocksFi"
+    }
+  },
+  "yearn": {
+    "name": "Yearn",
+    "links": {
+      "website": "https://yearn.fi",
+      "twitter": "https://x.com/yearnfi",
+      "github": "https://github.com/yearn"
+    }
+  },
+  "yellow-card": {
+    "name": "Yellow Card",
+    "links": {
+      "website": "https://yellowcard.io",
+      "twitter": "https://x.com/yellowcard_app"
+    }
+  },
+  "zora": {
+    "name": "Zora",
+    "links": {
+      "website": "https://zora.co",
+      "twitter": "https://x.com/zora"
+    }
+  }
+}

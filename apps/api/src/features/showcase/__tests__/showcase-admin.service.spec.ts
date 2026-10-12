@@ -45,6 +45,10 @@ function makeService({
     create: jest.fn((row: unknown) => row),
     save: jest.fn(),
   } as any;
+  const protocolRepository = {
+    create: jest.fn((row: unknown) => row),
+    save: jest.fn(),
+  } as any;
   const membership = {
     assertCanEdit: jest.fn(async () => {
       if (!canEdit) throw new ForbiddenException('view-only');
@@ -67,6 +71,7 @@ function makeService({
     groupRepository,
     categoryRepository,
     chainRepository,
+    protocolRepository,
     membership,
     logoService,
     config,
@@ -79,6 +84,7 @@ function makeService({
     groupRepository,
     categoryRepository,
     chainRepository,
+    protocolRepository,
     membership,
     logoService,
     countQuery,
@@ -403,5 +409,40 @@ describe('filing a notebook', () => {
         showcase,
       ),
     ).rejects.toThrow(ForbiddenException);
+  });
+});
+
+describe('ShowcaseAdminService.saveProtocolLinks', () => {
+  const staff = { password: 'studio-pass' };
+
+  it('saves the cleaned links under the protocol slug', async () => {
+    const { service, protocolRepository } = makeService({ password: 'studio-pass' });
+    await service.saveProtocolLinks(staff, {
+      slug: 'pump-fun',
+      name: 'pump.fun',
+      links: { website: 'pump.fun', twitter: '@pumpdotfun', github: '' },
+    });
+
+    expect(protocolRepository.save).toHaveBeenCalledWith({
+      slug: 'pump-fun',
+      name: 'pump.fun',
+      links: { website: 'https://pump.fun', twitter: 'https://x.com/pumpdotfun' },
+    });
+  });
+
+  it('refuses an unsafe link without saving anything', async () => {
+    const { service, protocolRepository } = makeService({ password: 'studio-pass' });
+    await expect(
+      service.saveProtocolLinks(staff, { slug: 'a', name: 'A', links: { website: 'javascript:alert(1)' } }),
+    ).rejects.toThrow('website');
+    expect(protocolRepository.save).not.toHaveBeenCalled();
+  });
+
+  it('is for staff only', async () => {
+    const { service, protocolRepository } = makeService({ password: 'studio-pass' });
+    await expect(
+      service.saveProtocolLinks({ password: 'wrong' }, { slug: 'a', name: 'A', links: {} }),
+    ).rejects.toThrow('Sandworm team');
+    expect(protocolRepository.save).not.toHaveBeenCalled();
   });
 });

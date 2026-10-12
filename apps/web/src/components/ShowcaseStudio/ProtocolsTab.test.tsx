@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LogosTab } from "./LogosTab";
+import { ProtocolsTab } from "./ProtocolsTab";
 
 vi.mock("./logoImage", () => ({
   toLogoPng: vi.fn().mockResolvedValue("UE5H"),
@@ -22,6 +22,7 @@ const config = {
     ],
   },
   chains: {},
+  protocolLinks: { "paj-cash": { website: "https://paj.cash" } },
   templates: {},
 } as never;
 
@@ -29,22 +30,25 @@ const logos = [
   { slug: "paj-cash", name: "Paj Cash", etag: "abc", updatedAt: "2026-10-12" },
 ];
 
-describe("LogosTab", () => {
+describe("ProtocolsTab", () => {
   const onSave = vi.fn().mockResolvedValue(undefined);
   const onDelete = vi.fn().mockResolvedValue(undefined);
+  const onSaveLinks = vi.fn().mockResolvedValue(undefined);
 
   beforeEach(() => {
     onSave.mockClear();
     onDelete.mockClear();
+    onSaveLinks.mockClear();
   });
 
   const setup = () =>
     render(
-      <LogosTab
+      <ProtocolsTab
         config={config}
         logos={logos}
         onSave={onSave}
         onDelete={onDelete}
+        onSaveLinks={onSaveLinks}
       />
     );
 
@@ -53,7 +57,7 @@ describe("LogosTab", () => {
     expect(screen.getByText("Paj Cash")).toBeTruthy();
     expect(screen.getByText("MoonPay")).toBeTruthy();
     expect(screen.getByText("Aave")).toBeTruthy();
-    expect(screen.getByText(/Uploaded · paj-cash/)).toBeTruthy();
+    expect(screen.getByText(/Logo uploaded · 1 links · paj-cash/)).toBeTruthy();
     expect(screen.getByRole("button", { name: "Replace" })).toBeTruthy();
     expect(screen.getAllByRole("button", { name: "Upload" })).toHaveLength(2);
   });
@@ -88,5 +92,25 @@ describe("LogosTab", () => {
     setup();
     fireEvent.click(screen.getByRole("button", { name: "Remove" }));
     await waitFor(() => expect(onDelete).toHaveBeenCalledWith("paj-cash"));
+  });
+
+  it("opens a protocol's links, filled in from what is saved, and saves what is typed", async () => {
+    setup();
+    const [, , pajLinks] = screen.getAllByRole("button", { name: "Links" });
+    fireEvent.click(pajLinks as HTMLElement);
+    const website = screen.getByLabelText("Website link for Paj Cash");
+    expect((website as HTMLInputElement).value).toBe("https://paj.cash");
+
+    fireEvent.change(screen.getByLabelText("X link for Paj Cash"), {
+      target: { value: "@paj_cash" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save links" }));
+
+    await waitFor(() =>
+      expect(onSaveLinks).toHaveBeenCalledWith("paj-cash", "Paj Cash", {
+        website: "https://paj.cash",
+        twitter: "@paj_cash",
+      })
+    );
   });
 });

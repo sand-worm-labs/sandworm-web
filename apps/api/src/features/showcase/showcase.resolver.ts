@@ -222,4 +222,18 @@ export class ShowcaseResolver {
   ): Promise<boolean> {
     return this.adminService.deleteLogo({ userId, password }, slug);
   }
+
+  @Public()
+  @Mutation(() => Boolean, {
+    name: 'saveShowcaseProtocolLinks',
+    description:
+      "Set a protocol's links (website, twitter, github, discord, telegram), as URLs or handles. Empty ones are removed. Needs the studio password, or a staff account.",
+  })
+  saveShowcaseProtocolLinks(
+    @Args('input', { type: () => GraphQLJSON }) input: unknown,
+    @Args('password', { nullable: true }) password?: string,
+    @CurrentUser('id') userId?: string,
+  ): Promise<boolean> {
+    return this.adminService.saveProtocolLinks({ userId, password }, input);
+  }
 }

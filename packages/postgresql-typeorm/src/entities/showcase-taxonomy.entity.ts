@@ -96,3 +96,22 @@ export class ShowcaseProtocolLogoEntity extends AbstractEntity {
   @Column({ type: 'text' })
   etag!: string;
 }
+
+// What the Showcase knows about a protocol beyond its name: where it lives online. The links
+// are shown as icons under the protocol's description. Rows are content, edited in the studio.
+export const PROTOCOL_LINK_KEYS = ['website', 'twitter', 'github', 'discord', 'telegram'] as const;
+export type ProtocolLinkKey = (typeof PROTOCOL_LINK_KEYS)[number];
+
+@Entity('showcase_protocol')
+export class ShowcaseProtocolEntity extends AbstractEntity {
+  // The protocol's slug, as the Showcase links to it (/showcase/lending/aave -> aave).
+  @PrimaryColumn({ type: 'text', primaryKeyConstraintName: 'PK_showcase_protocol_slug' })
+  slug!: string;
+
+  @Column({ type: 'text' })
+  name!: string;
+
+  // Full https URLs by key (see PROTOCOL_LINK_KEYS); a key with no link is left out.
+  @Column({ type: 'jsonb', default: () => "'{}'" })
+  links!: Partial<Record<ProtocolLinkKey, string>>;
+}

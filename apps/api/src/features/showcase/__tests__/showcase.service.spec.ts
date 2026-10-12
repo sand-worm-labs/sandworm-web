@@ -25,6 +25,7 @@ function makeService(officialIds = OFFICIAL) {
     categories: { find: jest.fn().mockResolvedValue([]), findOne: jest.fn().mockResolvedValue(null) } as any,
     chains: { find: jest.fn().mockResolvedValue([]) } as any,
     templates: { find: jest.fn().mockResolvedValue([]) } as any,
+    protocols: { find: jest.fn().mockResolvedValue([]) } as any,
   };
   const service = new ShowcaseService(
     documentRepository,
@@ -33,6 +34,7 @@ function makeService(officialIds = OFFICIAL) {
     config_.categories,
     config_.chains,
     config_.templates,
+    config_.protocols,
     membership,
     config,
     { emit: jest.fn() } as any,

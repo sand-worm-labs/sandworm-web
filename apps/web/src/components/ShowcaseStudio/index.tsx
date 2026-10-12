@@ -8,7 +8,7 @@ import { CategoriesTab } from "./CategoriesTab";
 import { ChainsTab } from "./ChainsTab";
 import { inputClass, primaryButton, quietButton } from "./kit";
 import { LeadsTab } from "./LeadsTab";
-import { LogosTab } from "./LogosTab";
+import { ProtocolsTab } from "./ProtocolsTab";
 import { NotebooksTab } from "./NotebooksTab";
 import { useShowcaseStudio } from "./useShowcaseStudio";
 
@@ -19,7 +19,7 @@ const TABS = [
   { id: "notebooks", label: "Notebooks" },
   { id: "categories", label: "Categories" },
   { id: "chains", label: "Chains" },
-  { id: "logos", label: "Logos" },
+  { id: "protocols", label: "Protocols" },
   { id: "leads", label: "Leads" },
 ] as const;
 
@@ -146,12 +146,13 @@ export function ShowcaseStudio() {
         {tab === "chains" && (
           <ChainsTab config={config} onSave={studio.saveChain} />
         )}
-        {tab === "logos" && (
-          <LogosTab
+        {tab === "protocols" && (
+          <ProtocolsTab
             config={config}
             logos={studio.logos}
             onSave={studio.saveLogo}
             onDelete={studio.deleteLogo}
+            onSaveLinks={studio.saveProtocolLinks}
           />
         )}
         {tab === "leads" && (

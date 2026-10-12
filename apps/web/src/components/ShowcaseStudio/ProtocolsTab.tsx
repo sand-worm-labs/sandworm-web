@@ -4,13 +4,15 @@ import { useMemo, useRef, useState } from "react";
 
 import { ProtocolLogo } from "@/components/Showcase/ProtocolLogo";
 import { slugify } from "@/lib/showcase";
-import type { ShowcaseConfig } from "@/types";
+import type { ProtocolLinkKey, ProtocolLinks, ShowcaseConfig } from "@/types";
 
 import {
   attempt,
   dangerButton,
+  Field,
   inputClass,
   Notice,
+  primaryButton,
   quietButton,
   type NoticeState,
 } from "./kit";
@@ -18,21 +20,94 @@ import { toLogoPng } from "./logoImage";
 import type { StudioLogo } from "./useShowcaseStudio";
 
 // =====================================
+// ⬢  Links
+// =====================================
+const LINK_FIELDS: { key: ProtocolLinkKey; label: string; hint: string }[] = [
+  { key: "website", label: "Website", hint: "aave.com" },
+  { key: "twitter", label: "X", hint: "@aave" },
+  { key: "github", label: "GitHub", hint: "aave" },
+  { key: "discord", label: "Discord", hint: "invite code or link" },
+  { key: "telegram", label: "Telegram", hint: "aave" },
+];
+
+// A protocol's links: a URL or just a handle, whichever is quicker to type. The API stores a
+// full URL, and an empty field removes that link.
+function LinksForm({
+  name,
+  links,
+  onSave,
+}: {
+  name: string;
+  links: ProtocolLinks | undefined;
+  onSave: (next: Record<string, string>) => Promise<unknown>;
+}) {
+  const [draft, setDraft] = useState<Record<string, string>>({ ...links });
+  const [notice, setNotice] = useState<NoticeState>(null);
+  const [busy, setBusy] = useState(false);
+
+  const save = async () => {
+    setBusy(true);
+    setNotice(await attempt(() => onSave(draft), "Saved"));
+    setBusy(false);
+  };
+
+  return (
+    <div className="basis-full space-y-3 pt-1">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {LINK_FIELDS.map(({ key, label, hint }) => (
+          <Field key={key} label={label}>
+            <input
+              className={inputClass}
+              value={draft[key] ?? ""}
+              placeholder={hint}
+              aria-label={`${label} link for ${name}`}
+              onChange={e =>
+                setDraft(prev => ({ ...prev, [key]: e.target.value }))
+              }
+            />
+          </Field>
+        ))}
+      </div>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          className={primaryButton}
+          disabled={busy}
+          onClick={save}
+        >
+          Save links
+        </button>
+        <Notice notice={notice} />
+      </div>
+    </div>
+  );
+}
+
+// =====================================
 // ⬢  Row
 // =====================================
-function LogoRow({
+function ProtocolRow({
   name,
   slug,
   logo,
+  links,
   onSave,
   onDelete,
+  onSaveLinks,
 }: {
   name: string;
   slug: string;
   logo: StudioLogo | undefined;
+  links: ProtocolLinks | undefined;
   onSave: (id: string, title: string, imageBase64: string) => Promise<unknown>;
   onDelete: (id: string) => Promise<unknown>;
+  onSaveLinks: (
+    id: string,
+    title: string,
+    next: Record<string, string>
+  ) => Promise<unknown>;
 }) {
+  const [showLinks, setShowLinks] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   const [notice, setNotice] = useState<NoticeState>(null);
   const [busy, setBusy] = useState(false);
@@ -68,7 +143,8 @@ function LogoRow({
           {name}
         </p>
         <p className="text-xs text-ink-300">
-          {logo ? "Uploaded" : "DefiLlama icon, if it has one"} · {slug}
+          {logo ? "Logo uploaded" : "DefiLlama icon, if it has one"} ·{" "}
+          {Object.keys(links ?? {}).length} links · {slug}
         </p>
       </div>
       <Notice notice={notice} />
@@ -91,6 +167,14 @@ function LogoRow({
       >
         {logo ? "Replace" : "Upload"}
       </button>
+      <button
+        type="button"
+        className={quietButton}
+        aria-expanded={showLinks}
+        onClick={() => setShowLinks(open => !open)}
+      >
+        Links
+      </button>
       {logo && (
         <button
           type="button"
@@ -101,25 +185,39 @@ function LogoRow({
           Remove
         </button>
       )}
+      {showLinks && (
+        <LinksForm
+          name={name}
+          links={links}
+          onSave={next => onSaveLinks(slug, name, next)}
+        />
+      )}
     </li>
   );
 }
 
 // =====================================
-// ⬢  LogosTab
+// ⬢  ProtocolsTab
 // =====================================
-// Protocol logos: every protocol the categories list, and any logo uploaded for one they
-// do not. A protocol with no upload shows DefiLlama's icon where there is one.
-export function LogosTab({
+// Protocol logos and links: every protocol the categories list, and any logo uploaded for one
+// they do not. A protocol with no upload shows DefiLlama's icon where there is one; its links
+// show as icons under its description.
+export function ProtocolsTab({
   config,
   logos,
   onSave,
   onDelete,
+  onSaveLinks,
 }: {
   config: ShowcaseConfig;
   logos: StudioLogo[];
   onSave: (slug: string, name: string, imageBase64: string) => Promise<unknown>;
   onDelete: (slug: string) => Promise<unknown>;
+  onSaveLinks: (
+    slug: string,
+    name: string,
+    links: Record<string, string>
+  ) => Promise<unknown>;
 }) {
   const [query, setQuery] = useState("");
   const [onlyMissing, setOnlyMissing] = useState(false);
@@ -181,19 +279,22 @@ export function LogosTab({
       </div>
 
       <p className="max-w-2xl text-xs text-ink-300">
-        Any PNG, JPEG, WebP or SVG: it is resized to 256px here before it is
-        sent. A new protocol needs nothing until its logo is missing.
+        Logos: any PNG, JPEG, WebP or SVG, resized to 256px here before it is
+        sent. Links: a full address or just the handle; an empty box removes
+        that link.
       </p>
 
       <ul className="divide-y divide-border-secondary rounded-xl border border-border-secondary dark:divide-border-tertiary dark:border-border-tertiary">
         {shown.map(entry => (
-          <LogoRow
+          <ProtocolRow
             key={entry.slug}
             name={entry.name}
             slug={entry.slug}
             logo={uploaded.get(entry.slug)}
+            links={config.protocolLinks?.[entry.slug]}
             onSave={onSave}
             onDelete={onDelete}
+            onSaveLinks={onSaveLinks}
           />
         ))}
         {shown.length === 0 && (

@@ -10,6 +10,7 @@ import {
   heroClass,
   lineBackdrop,
 } from "@/components/Showcase/BoardKit";
+import { ProtocolLinks } from "@/components/Showcase/ProtocolLinks";
 import { ProtocolLogo } from "@/components/Showcase/ProtocolLogo";
 import { PageSection } from "@/components/Showcase/ShowcaseChain";
 import { SeriesChart } from "@/components/Showcase/SeriesChart";
@@ -23,7 +24,10 @@ import {
   type ProtocolProfile as Profile,
 } from "@/lib/protocolStats";
 import { categoryHref } from "@/lib/showcase";
-import type { ShowcaseTaxonomyEntry } from "@/types";
+import type {
+  ProtocolLinks as ProtocolLinksType,
+  ShowcaseTaxonomyEntry,
+} from "@/types";
 
 // =====================================
 // ⬢  Constants
@@ -94,11 +98,23 @@ function ChartCard({
 // =====================================
 // ⬢  ProtocolProfile
 // =====================================
+// What DefiLlama says, for a protocol the studio has no links for.
+const fromProfile = (profile: Profile | null): ProtocolLinksType | undefined =>
+  profile && (profile.website || profile.twitter)
+    ? {
+        ...(profile.website ? { website: profile.website } : {}),
+        ...(profile.twitter
+          ? { twitter: `https://x.com/${profile.twitter.replace(/^@/, "")}` }
+          : {}),
+      }
+    : undefined;
+
 export function ProtocolProfile({
   category,
   group,
   chain,
   name,
+  links,
   profile,
 }: {
   category: ShowcaseTaxonomyEntry;
@@ -108,6 +124,8 @@ export function ProtocolProfile({
   chain: string;
   // The protocol as the taxonomy names it.
   name: string;
+  // The protocol's links from the studio.
+  links?: ProtocolLinksType;
   profile: Profile | null;
 }) {
   const lastTvl = profile?.tvlHistory[profile.tvlHistory.length - 1];
@@ -158,6 +176,11 @@ export function ProtocolProfile({
                 {profile.description}
               </p>
             )}
+            <ProtocolLinks
+              name={name}
+              links={links ?? fromProfile(profile)}
+              className="mt-5"
+            />
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
               {profile?.website && (

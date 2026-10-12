@@ -884,6 +884,11 @@ type Mutation {
   deleteShowcaseLogo(slug: String!, password: String): Boolean!
 
   """
+  Set a protocol's links (website, twitter, github, discord, telegram), as URLs or handles. Empty ones are removed. Needs the studio password, or a staff account.
+  """
+  saveShowcaseProtocolLinks(input: JSON!, password: String): Boolean!
+
+  """
   Create a bounty as a draft. It is listed once its reward is funded in escrow.
   """
   createBounty(input: CreateBountyInput!): Bounty!

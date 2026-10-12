@@ -10,6 +10,7 @@ import {
   ShowcaseChainEntity,
   ShowcaseGroupEntity,
   ShowcaseLeadEntity,
+  ShowcaseProtocolEntity,
   ShowcaseTemplateEntity,
 } from '@sandworm/postgresql-typeorm';
 import { NotebookShowcase, ShowcaseLeadInput, type ShowcaseKind } from '@sandworm/types';
@@ -39,6 +40,8 @@ export type ShowcaseConfig = {
     }[];
   };
   chains: Record<string, { color: string }>;
+  // Each protocol's links by slug (website, twitter, github, discord, telegram), as full URLs.
+  protocolLinks: Record<string, Record<string, string>>;
   templates: Record<string, { sections: Record<string, unknown>[] }>;
 };
 
@@ -63,6 +66,8 @@ export class ShowcaseService {
     private readonly chainRepository: Repository<ShowcaseChainEntity>,
     @InjectRepository(ShowcaseTemplateEntity)
     private readonly templateRepository: Repository<ShowcaseTemplateEntity>,
+    @InjectRepository(ShowcaseProtocolEntity)
+    private readonly protocolRepository: Repository<ShowcaseProtocolEntity>,
     private readonly workspaceMembershipService: WorkspaceMembershipService,
     config: ConfigService,
     private readonly eventEmitter: EventEmitter2,
@@ -156,11 +161,12 @@ export class ShowcaseService {
   // Everything the Showcase pages are laid out from: the groups and their
   // categories, the chains and their order, and each template's sections.
   async getConfig(): Promise<ShowcaseConfig> {
-    const [groups, categories, chains, templates] = await Promise.all([
+    const [groups, categories, chains, templates, protocols] = await Promise.all([
       this.groupRepository.find({ order: { position: 'ASC' } }),
       this.categoryRepository.find({ order: { position: 'ASC' } }),
       this.chainRepository.find({ order: { name: 'ASC' } }),
       this.templateRepository.find(),
+      this.protocolRepository.find(),
     ]);
 
     const ordered = chains
@@ -182,6 +188,9 @@ export class ShowcaseService {
         })),
       },
       chains: Object.fromEntries(chains.map(chain => [chain.name, { color: chain.color }])),
+      protocolLinks: Object.fromEntries(
+        protocols.filter(protocol => Object.keys(protocol.links ?? {}).length > 0).map(protocol => [protocol.slug, protocol.links]),
+      ),
       templates: Object.fromEntries(templates.map(template => [template.kind, { sections: template.sections }])),
     };
   }

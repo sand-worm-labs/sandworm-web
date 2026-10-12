@@ -14,6 +14,7 @@ import {
   lineBackdrop,
 } from "@/components/Showcase/BoardKit";
 import { NotebookPlaceholder } from "@/components/Showcase/NotebookPlaceholder";
+import { ProtocolLinks } from "@/components/Showcase/ProtocolLinks";
 import { ProtocolLogo } from "@/components/Showcase/ProtocolLogo";
 import { ShowcaseHeader } from "@/components/Showcase/ShowcaseHeader";
 import {
@@ -47,7 +48,7 @@ type Props = { params: Promise<{ category: string; protocol: string }> };
 // =====================================
 async function loadCaseStudy(params: Props["params"]) {
   const { category: categorySlug, protocol } = await params;
-  const { taxonomy } = await fetchShowcaseConfig();
+  const { taxonomy, protocolLinks = {} } = await fetchShowcaseConfig();
   const category = findCategory(categorySlug, taxonomy);
   if (!category) return null;
 
@@ -60,6 +61,7 @@ async function loadCaseStudy(params: Props["params"]) {
     group: groupLabel(category.group, taxonomy),
     caseStudy,
     notebooks,
+    protocolLinks,
   };
 }
 
@@ -67,7 +69,7 @@ async function loadCaseStudy(params: Props["params"]) {
 // publishes on it. A protocol the category does not list has no page.
 async function loadListedProtocol(params: Props["params"]) {
   const { category: categorySlug, protocol } = await params;
-  const { taxonomy } = await fetchShowcaseConfig();
+  const { taxonomy, protocolLinks = {} } = await fetchShowcaseConfig();
   const category = findCategory(categorySlug, taxonomy);
   const name = category?.protocols?.find(n => slugify(n) === protocol);
   if (!category || !name) return null;
@@ -78,6 +80,7 @@ async function loadListedProtocol(params: Props["params"]) {
     group: groupLabel(category.group, taxonomy),
     name,
     chain,
+    links: protocolLinks[protocol],
     profile: await fetchProtocolProfile(protocol, chain),
   };
 }
@@ -122,7 +125,7 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
     return <ProtocolProfile {...listed} />;
   }
 
-  const { category, group, caseStudy, notebooks } = loaded;
+  const { category, group, caseStudy, notebooks, protocolLinks } = loaded;
   const { showcase } = caseStudy;
   const protocol = showcase.protocol ?? caseStudy.title;
   const projects = projectsOf(notebooks);
@@ -165,6 +168,11 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
             {caseStudy.description}
           </p>
         )}
+        <ProtocolLinks
+          name={protocol}
+          links={protocolLinks[slugify(protocol)]}
+          className="mt-5"
+        />
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <OpenNotebookLink

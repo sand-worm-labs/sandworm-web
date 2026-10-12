@@ -14,12 +14,14 @@ import {
   ShowcaseChainEntity,
   ShowcaseGroupEntity,
   ShowcaseLeadEntity,
+  ShowcaseProtocolEntity,
 } from '@sandworm/postgresql-typeorm';
 import { NotebookShowcase } from '@sandworm/types';
 import { timingSafeEqual } from 'crypto';
 import { In, IsNull, Not, Repository } from 'typeorm';
 import { z } from 'zod';
 import { WorkspaceMembershipService } from '../workspace/service/workspace-membership.service';
+import { cleanLinks, ProtocolLinksInput } from './showcase-links';
 import { ShowcaseLogoService } from './showcase-logo.service';
 
 const MAX_NOTEBOOKS = 500;
@@ -76,6 +78,8 @@ export class ShowcaseAdminService {
     private readonly categoryRepository: Repository<ShowcaseCategoryEntity>,
     @InjectRepository(ShowcaseChainEntity)
     private readonly chainRepository: Repository<ShowcaseChainEntity>,
+    @InjectRepository(ShowcaseProtocolEntity)
+    private readonly protocolRepository: Repository<ShowcaseProtocolEntity>,
     private readonly workspaceMembershipService: WorkspaceMembershipService,
     private readonly logoService: ShowcaseLogoService,
     config: ConfigService,
@@ -267,6 +271,23 @@ export class ShowcaseAdminService {
       }),
     );
     this.eventEmitter.emit(SEARCH_INDEX_STALE_EVENT);
+    return true;
+  }
+
+  // A protocol's links, shown as icons under its description. Every link left empty is
+  // removed, so saving an empty form clears them.
+  async saveProtocolLinks(who: StudioCaller, input: unknown): Promise<boolean> {
+    await this.assertStaff(who);
+    const { slug, name, links } = this.parse(ProtocolLinksInput, input);
+
+    const cleaned = cleanLinks(links);
+    if (cleaned.problems.length > 0) {
+      throw new BadRequestException(cleaned.problems.join('; '));
+    }
+
+    await this.protocolRepository.save(
+      this.protocolRepository.create({ slug, name, links: cleaned.links }),
+    );
     return true;
   }
 

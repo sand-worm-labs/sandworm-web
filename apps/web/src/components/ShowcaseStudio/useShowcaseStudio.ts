@@ -72,6 +72,12 @@ const DELETE_LOGO = gql`
   }
 `;
 
+const SAVE_PROTOCOL_LINKS = gql`
+  mutation SaveShowcaseProtocolLinks($input: JSON!, $password: String) {
+    saveShowcaseProtocolLinks(input: $input, password: $password)
+  }
+`;
+
 const APPROVE_CLAIM = gql`
   mutation ApproveShowcaseClaim($leadId: String!, $password: String) {
     approveShowcaseClaim(leadId: $leadId, password: $password)
@@ -174,6 +180,7 @@ export function useShowcaseStudio() {
   const [approveClaimMutation] = useMutation(APPROVE_CLAIM);
   const [saveLogoMutation] = useMutation(SAVE_LOGO);
   const [deleteLogoMutation] = useMutation(DELETE_LOGO);
+  const [saveLinksMutation] = useMutation(SAVE_PROTOCOL_LINKS);
 
   // Handlers
   const unlock = useCallback((next: string) => {
@@ -227,6 +234,18 @@ export function useShowcaseStudio() {
   const deleteLogo = (slug: string) =>
     write(() => deleteLogoMutation({ variables: { slug, ...variables } }));
 
+  // Links are typed as URLs or handles; the API stores them as full URLs.
+  const saveProtocolLinks = (
+    slug: string,
+    name: string,
+    links: Record<string, string>
+  ) =>
+    write(() =>
+      saveLinksMutation({
+        variables: { input: { slug, name, links }, ...variables },
+      })
+    );
+
   return {
     overview: (data?.getShowcaseAdmin ?? null) as StudioOverview | null,
     config: (data?.getShowcaseConfig ?? null) as ShowcaseConfig | null,
@@ -244,5 +263,6 @@ export function useShowcaseStudio() {
     approveClaim,
     saveLogo,
     deleteLogo,
+    saveProtocolLinks,
   };
 }

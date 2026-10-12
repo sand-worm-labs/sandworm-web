@@ -432,8 +432,19 @@ export type ShowcaseTemplates = Record<
 export type ShowcaseConfig = {
   taxonomy: ShowcaseTaxonomy;
   chains: Record<string, { color: string }>;
+  // Each protocol's links by slug, as full URLs. A protocol with none is not listed.
+  protocolLinks?: Record<string, ProtocolLinks>;
   templates: ShowcaseTemplates;
 };
+
+// Where a protocol lives online. Each is a full http(s) URL; the ones it does not have are left out.
+export type ProtocolLinkKey =
+  | "website"
+  | "twitter"
+  | "github"
+  | "discord"
+  | "telegram";
+export type ProtocolLinks = Partial<Record<ProtocolLinkKey, string>>;
 
 export type UtmParams = Record<string, string>;
 
