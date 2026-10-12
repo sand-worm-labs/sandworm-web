@@ -2,6 +2,7 @@ import type * as Y from 'yjs';
 import type { YBlock } from '@sandworm/editor';
 import type { BlockDefinition, BlockKind, BlockSummary } from './block-definition';
 import { dateInputBlock, dropdownInputBlock, inputBlock } from './input.block';
+import { javascriptBlock } from './javascript.block';
 import { markdownBlock } from './markdown.block';
 import { pivotTableBlock } from './pivot-table.block';
 import { powerToolboxBlock } from './power-toolbox.block';
@@ -13,6 +14,7 @@ import { visualizationBlock } from './visualization.block';
 const DEFINITIONS: BlockDefinition[] = [
   sqlBlock,
   pythonBlock,
+  javascriptBlock,
   markdownBlock,
   richTextBlock,
   visualizationBlock,

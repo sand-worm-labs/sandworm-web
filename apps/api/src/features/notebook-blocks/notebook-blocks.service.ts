@@ -32,6 +32,7 @@ export class NotebookBlocksService {
 
   async createBlocks(ref: NotebookRef, { blocks: inputs, position }: CreateBlocksDto): Promise<BlockSummary[]> {
     await this.assertToolsExist(inputs);
+    if (inputs.some(block => block.kind === 'javascript')) await this.docs.assertRunsInBrowser(ref);
     const specs = inputs.map(({ kind, ...input }) => getDefinition(kind).toSpec(input));
 
     return this.docs.use(ref, 'editor', ({ ydoc }) => {

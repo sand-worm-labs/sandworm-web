@@ -5,6 +5,7 @@ import type { BlockSpec } from '../../collaboration/yjs/shared-doc/ai-blocks';
 export const BLOCK_KINDS = [
   'sql',
   'python',
+  'javascript',
   'markdown',
   'rich_text',
   'visualization',
