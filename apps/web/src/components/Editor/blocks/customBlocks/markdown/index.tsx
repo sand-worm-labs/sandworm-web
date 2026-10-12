@@ -503,7 +503,7 @@ const MarkdownBlock = (props: Props) => {
     >
       <div
         className={clsx(
-          "rounded-2xl border-[1.5px]",
+          "rounded-2xl border-[1.5px] dark:bg-block-surface",
           props.belongsToMultiTabGroup ? "rounded-tl-none" : "",
           {
             "border-primary block-focus-ring":

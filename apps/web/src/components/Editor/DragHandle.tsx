@@ -47,10 +47,7 @@ const DragHandle = ({
   const menuContainerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <Menu
-      as="div"
-      className="relative inline-flex flex-col items-center dark:bg-base-100"
-    >
+    <Menu as="div" className="relative inline-flex flex-col items-center">
       {({ open }) => {
         const portalStyle = computeMenuPosition(
           buttonRef,
@@ -111,7 +108,7 @@ const DragHandle = ({
             </Menu.Button> */}
             <Menu.Button
               ref={buttonRef}
-              className="opacity-0 group-hover/wrapper:opacity-100 h-3 w-5 flex items-center justify-center rounded hover:bg-gray-100 dark:bg-base-100 transition-opacity duration-200"
+              className="opacity-0 group-hover/wrapper:opacity-100 h-3 w-5 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-base-600 transition-opacity duration-200"
             >
               <span className="text-[8px] text-ink-400/60 leading-none">▾</span>
             </Menu.Button>
