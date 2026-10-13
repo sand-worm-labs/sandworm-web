@@ -5,6 +5,7 @@ import {
   formProblems,
   parseHeroStats,
   parseList,
+  parseTabs,
   toForm,
   toShowcase,
 } from "./studioForms";
@@ -26,6 +27,30 @@ describe("lists", () => {
       { label: "Volume", value: "$4.2M", cell: "volume_cell" },
       { label: "Users", value: "12k" },
     ]);
+  });
+});
+
+describe("tabs", () => {
+  it("reads one tab per line, with the notebook when there is one", () => {
+    expect(
+      parseTabs("Overview | perpl-overview\nMarkets\n | no label\nWallets|x")
+    ).toEqual([
+      { label: "Overview", slug: "perpl-overview" },
+      { label: "Markets" },
+      { label: "Wallets", slug: "x" },
+    ]);
+  });
+
+  it("sends tabs for an analysis only", () => {
+    const form = {
+      ...EMPTY_NOTEBOOK_FORM,
+      category: "monad",
+      tabs: "Overview",
+    };
+    expect(
+      toShowcase({ ...form, kind: "case_study", protocol: "Perpl" }).tabs
+    ).toEqual([{ label: "Overview" }]);
+    expect(toShowcase({ ...form, kind: "report" }).tabs).toBeUndefined();
   });
 });
 

@@ -185,6 +185,10 @@ const EXPENSIVE_TYPES = new Set<PythonBlock["result"][0]["type"]>([
 // =====================================
 
 const SANDWORM_TABLE_CSS = `
+  /* The charts and HTML cards (sandworm_theme) use Bricolage Grotesque. The Moderat files below cannot
+     load in this sandboxed frame (their font requests have no CORS origin), so without this import a
+     table fell back to the browser's default sans-serif. @import has to come before any other rule. */
+  @import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&display=swap");
 
   @font-face {
     font-family: "Moderat";
@@ -212,7 +216,7 @@ const SANDWORM_TABLE_CSS = `
   body {
     margin: 0;
     padding: 0;
-    font-family: "Moderat", sans-serif;
+    font-family: "Bricolage Grotesque", "Moderat", sans-serif;
     font-size: 12px;
     line-height: 16px;
     background: transparent;
@@ -232,6 +236,9 @@ const SANDWORM_TABLE_CSS = `
   }
 
   thead th {
+    /* pandas ships its own scoped "thead th { text-align: right }" (and a right-aligned header row),
+       which pushed every header away from its left-aligned column. */
+    text-align: left !important;
     padding: 8px;
     font-weight: 600;
     font-size: 12px;

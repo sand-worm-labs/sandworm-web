@@ -1,4 +1,9 @@
-import type { NotebookShowcase, ShowcaseHeroStat, ShowcaseKind } from "@/types";
+import type {
+  NotebookShowcase,
+  ShowcaseHeroStat,
+  ShowcaseKind,
+  ShowcaseTab,
+} from "@/types";
 
 // =====================================
 // ⬢  Types
@@ -15,6 +20,8 @@ export type NotebookForm = {
   dataAsOf: string;
   // One stat per line: "Label | value", optionally "| cell" after.
   heroStats: string;
+  // One tab per line: "Label | notebook-slug". The slug can be left off while the notebook is built.
+  tabs: string;
   parentCaseStudy: string;
   claimed: boolean;
 };
@@ -28,6 +35,7 @@ export const EMPTY_NOTEBOOK_FORM: NotebookForm = {
   status: "draft",
   dataAsOf: "",
   heroStats: "",
+  tabs: "",
   parentCaseStudy: "",
   claimed: false,
 };
@@ -60,6 +68,21 @@ export function formatHeroStats(stats: ShowcaseHeroStat[]): string {
     .join("\n");
 }
 
+export function parseTabs(text: string): ShowcaseTab[] {
+  return text
+    .split("\n")
+    .map(line => line.split("|").map(part => part.trim()))
+    .flatMap(([label, slug]) =>
+      label ? [{ label, ...(slug ? { slug } : {}) }] : []
+    );
+}
+
+export function formatTabs(tabs: ShowcaseTab[]): string {
+  return tabs
+    .map(tab => [tab.label, tab.slug].filter(Boolean).join(" | "))
+    .join("\n");
+}
+
 // =====================================
 // ⬢  Form <-> metadata
 // =====================================
@@ -74,6 +97,7 @@ export function toForm(showcase: NotebookShowcase | null): NotebookForm {
     status: showcase.status ?? "draft",
     dataAsOf: showcase.dataAsOf ?? "",
     heroStats: formatHeroStats(showcase.heroStats ?? []),
+    tabs: formatTabs(showcase.tabs ?? []),
     parentCaseStudy: showcase.parentCaseStudy ?? "",
     claimed: showcase.claimed ?? false,
   };
@@ -94,6 +118,7 @@ export function toShowcase(form: NotebookForm): Record<string, unknown> {
     status: form.status,
     dataAsOf: text(form.dataAsOf),
     heroStats: parseHeroStats(form.heroStats),
+    tabs: isCaseStudy ? parseTabs(form.tabs) : undefined,
     parentCaseStudy:
       form.kind === "working" ? text(form.parentCaseStudy) : undefined,
     claimed: isCaseStudy ? form.claimed : false,
@@ -109,6 +134,9 @@ export function formProblems(form: NotebookForm): string[] {
   }
   if (parseHeroStats(form.heroStats).length > 4) {
     problems.push("At most 4 headline stats");
+  }
+  if (parseTabs(form.tabs).length > 8) {
+    problems.push("At most 8 tabs");
   }
   return problems;
 }

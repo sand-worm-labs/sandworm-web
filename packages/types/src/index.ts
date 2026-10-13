@@ -1396,6 +1396,14 @@ export const ShowcaseHeroStat = z.object({
 })
 export type ShowcaseHeroStat = z.infer<typeof ShowcaseHeroStat>
 
+// One tab on a case study's page. `slug` is the published notebook whose dashboard the tab
+// shows; a tab without one is listed and says it is being built.
+export const ShowcaseTab = z.object({
+  label: z.string().min(1).max(30),
+  slug: z.string().max(200).optional(),
+})
+export type ShowcaseTab = z.infer<typeof ShowcaseTab>
+
 const showcaseSlug = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/).max(80)
 
 // Stored on the notebook. Who wrote it (official or community) and when it
@@ -1411,6 +1419,9 @@ export const NotebookShowcase = z
     status: ShowcaseNotebookStatus.default('draft'),
     dataAsOf: z.string().max(40).optional(),
     heroStats: z.array(ShowcaseHeroStat).max(4).default([]),
+    // Case studies only: when set, the page is a row of tabs, each showing one notebook's
+    // dashboard, in this order. Left out, the page shows its own notebook as before.
+    tabs: z.array(ShowcaseTab).max(8).optional(),
     // Working notebooks and forks: the slug of the case study they belong to.
     parentCaseStudy: z.string().max(200).optional(),
     // Case studies only: true once the protocol's team has claimed the page.

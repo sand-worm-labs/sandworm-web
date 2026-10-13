@@ -7,6 +7,7 @@ import {
   fetchShowcaseNotebooks,
 } from "@/components/Showcase/fetchShowcase";
 import { ProtocolProfile } from "@/components/Showcase/ProtocolProfile";
+import { ProtocolTabs } from "@/components/Showcase/ProtocolTabs";
 import { PublishedNotebook } from "@/components/Showcase/PublishedNotebook";
 import {
   heroBreadcrumbClass,
@@ -252,6 +253,22 @@ export default async function ShowcaseCaseStudyPage({ params }: Props) {
       )}
     </div>
   );
+
+  // A case study with tabs is a row of dashboards under the hero; without, it is its own notebook.
+  const tabs = showcase.tabs ?? [];
+  if (tabs.length > 0) {
+    return (
+      <div className="flex flex-col h-[100dvh] bg-page-surface font-body">
+        <ShowcaseHeader active="showcase" />
+        <TrackCaseStudyView category={category.slug} protocol={protocol} />
+        <div className="flex-1 min-w-0 overflow-y-auto">
+          {hero}
+          <ProtocolTabs tabs={tabs} protocol={protocol} />
+          {closing}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-[100dvh] bg-page-surface font-body">

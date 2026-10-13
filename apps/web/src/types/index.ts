@@ -8,6 +8,7 @@ import type {
   ShowcaseGroup,
   ShowcaseLeadKind,
   ShowcaseNotebook,
+  ShowcaseTab,
   ShowcaseTaxonomyEntry,
 } from "@sandworm/types";
 
@@ -370,6 +371,7 @@ export type {
   ShowcaseLeadInput,
   ShowcaseLeadKind,
   ShowcaseNotebook,
+  ShowcaseTab,
   ShowcaseTaxonomyEntry,
 } from "@sandworm/types";
 

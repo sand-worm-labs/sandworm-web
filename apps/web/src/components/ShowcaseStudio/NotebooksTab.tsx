@@ -256,6 +256,23 @@ function NotebookEditor({
       </Field>
 
       {form.kind === "case_study" && (
+        <Field
+          label="Tabs"
+          hint="One per line: Label | notebook-slug. Each tab shows that notebook's dashboard. Leave the slug off for a tab still being built. No tabs: the page shows its own notebook."
+        >
+          <textarea
+            className={textareaClass}
+            rows={5}
+            value={form.tabs}
+            onChange={e => set("tabs", e.target.value)}
+            placeholder={
+              "Overview | perpl-overview\nMarkets\nWallets | wallet-x-ray-7076932c"
+            }
+          />
+        </Field>
+      )}
+
+      {form.kind === "case_study" && (
         <label className="flex items-center gap-2 text-sm text-ink-100 dark:text-white">
           <input
             type="checkbox"
