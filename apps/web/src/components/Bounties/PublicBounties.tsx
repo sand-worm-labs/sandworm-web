@@ -7,8 +7,8 @@ import { useSession } from "@/components/Editor/hooks/useAuth";
 import { useModalStore } from "@/store/auth";
 
 import { BountiesBoard } from "./BountiesBoard";
-import { bountyPrimaryButtonClass } from "./BountyCard";
 import type { BountyRef } from "./bounties";
+import { bountyPrimaryButtonClass } from "./styles";
 
 // =====================================
 // ⬢ Use Public Bounty Actions

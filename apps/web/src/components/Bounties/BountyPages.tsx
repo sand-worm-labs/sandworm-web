@@ -4,7 +4,7 @@ import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 
 import { BountyDetail } from "./BountyDetail";
 import { usePublicBountyActions } from "./PublicBounties";
-import { useWorkspaceBountyActions } from "./WorkspaceBounties";
+import { useWorkspaceBountyActions } from "./useWorkspaceBountyActions";
 
 export const PublicBountyDetail = () => {
   const slug = useStringQuery("slug");

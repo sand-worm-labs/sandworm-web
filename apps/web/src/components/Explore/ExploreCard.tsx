@@ -1,18 +1,14 @@
 "use client";
 
 import { Star, GitFork } from "lucide-react";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@sandworm/ui/components/avatar";
-import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useState } from "react";
 
 import { profileHref } from "@/lib/profile";
+import { listCellClass, listRowClass } from "@/components/Showcase/BoardKit";
 import { Tag } from "@/components/Tag";
+import { AuthorCell } from "@/components/Explore/AuthorCell";
 import { ForkToWorkspaceModal } from "@/components/Explore/ForkToWorkspaceModal";
 import { cn } from "@/lib/utils";
 import type { ApiDocument } from "@/types";
@@ -96,42 +92,20 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
   // =====================================
   return (
     <>
-      <tr className="block md:table-row py-3 md:py-0 border-b border-border-secondary dark:border-border-tertiary last:border-b-0 hover:bg-inputBg dark:hover:bg-header-surface transition-colors shadow-[inset_2px_0_0_transparent] hover:shadow-[inset_2px_0_0_theme(colors.primary.DEFAULT)]">
-        <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <Avatar className="h-8 w-8 flex-shrink-0">
-              {query.authorId ? (
-                <AvatarImage src="/img/avatar.svg" alt="" />
-              ) : (
-                <AvatarFallback>
-                  <Image
-                    src="/img/avatar.svg"
-                    alt="fallback avatar"
-                    width={32}
-                    height={32}
-                  />
-                </AvatarFallback>
-              )}
-            </Avatar>
-            <div className="min-w-0">
-              {query.authorId ? (
-                <Link
-                  href={profileHref(workspaceId, query.authorId)}
-                  className="text-sm font-medium text-ink-100 dark:text-white hover:underline block truncate"
-                >
-                  @{query.author?.username}
-                </Link>
-              ) : (
-                <span className="text-sm font-medium text-ink-100 dark:text-white block truncate">
-                  @{query.author?.username}
-                </span>
-              )}
-              <p className="text-xs text-ink-300">{formattedDate}</p>
-            </div>
-          </div>
+      <tr className={listRowClass}>
+        <td className={listCellClass}>
+          <AuthorCell
+            username={query.author?.username}
+            date={formattedDate}
+            href={
+              query.authorId
+                ? profileHref(workspaceId, query.authorId)
+                : undefined
+            }
+          />
         </td>
 
-        <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top md:max-w-xs">
+        <td className={`${listCellClass} md:max-w-xs`}>
           <Link
             href={`/notebooks/${query.slug ?? query.id}`}
             className="text-sm font-medium text-ink-100 dark:text-white hover:underline break-words"
@@ -140,7 +114,7 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
           </Link>
         </td>
 
-        <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top">
+        <td className={listCellClass}>
           {tags.length > 0 && (
             <div className="flex flex-wrap items-center gap-1.5 max-w-xs">
               {visibleTags.map(tag => (
@@ -155,7 +129,7 @@ export const ExploreCard = ({ query }: ExploreCardProps) => {
           )}
         </td>
 
-        <td className="block md:table-cell px-4 py-1.5 md:p-4 align-top">
+        <td className={listCellClass}>
           <div className="flex items-center gap-4 md:gap-3 md:justify-end">
             <button
               type="button"

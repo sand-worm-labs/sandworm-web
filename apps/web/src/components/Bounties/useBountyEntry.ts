@@ -22,9 +22,8 @@ function read(workspaceId: string): Entries {
   }
 }
 
-// Which notebook is the user's entry for each bounty. The server holds it, so
-// it follows them to any device. This browser's own record is still read, for
-// entries started before the server kept them.
+// The notebook that is the user's entry for each bounty. The server holds it;
+// this browser's record covers entries started before the server did.
 export function useBountyEntries(workspaceId: string) {
   const [local, setLocal] = useState<Entries>({});
   const { data, refetch } = useGetMyBountyEntriesQuery();

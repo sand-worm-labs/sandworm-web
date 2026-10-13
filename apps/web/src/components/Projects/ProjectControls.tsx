@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { X, Check } from "lucide-react";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,10 +9,15 @@ import {
 import { Button } from "@sandworm/ui/components/button";
 import { Badge } from "@sandworm/ui/components/badge";
 import { IoFilterOutline } from "react-icons/io5";
-import { PiSquareSplitVerticalFill, PiListThin } from "react-icons/pi";
 
 import { cn } from "@/lib/utils";
-import { iconButtonMdClassName } from "@/styles/interactive";
+import { SearchField } from "@/components/inputs/SearchField";
+import {
+  GRID_VIEW,
+  LIST_VIEW,
+  ViewToggle,
+  type ViewOption,
+} from "@/components/inputs/ViewToggle";
 
 import type { FilterOption, SortOption } from "./useProjectFilter";
 
@@ -31,6 +35,11 @@ interface ProjectControlProps {
   onSortChange?: (sort: SortOption) => void;
   hideFilter?: boolean;
 }
+
+const VIEW_OPTIONS: ViewOption<ViewType>[] = [
+  GRID_VIEW,
+  { ...LIST_VIEW, value: "table", label: "Table view" },
+];
 
 const FILTER_OPTIONS: FilterOption[] = [
   "All",
@@ -74,17 +83,11 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
       <div className="mx-auto py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            {/* ✦ Search Input ✦ */}
-            <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400 dark:text-ink-400" />
-              <input
-                type="text"
-                placeholder="Search projects..."
-                value={searchValue ?? ""}
-                onChange={e => onSearchChange?.(e.target.value)}
-                className="w-52 pl-10 pr-4 py-1 h-8 rounded-lg border border-transparent dark:border-border-tertiary dark:bg-base-400 dark:text-white placeholder:dark:text-placeholder-muted focus:outline-none focus:ring focus:ring-primary transition text-xs md:text-sm bg-base-600 placeholder:text-ink-300"
-              />
-            </div>
+            <SearchField
+              placeholder="Search projects..."
+              value={searchValue ?? ""}
+              onChange={value => onSearchChange?.(value)}
+            />
 
             {/* ✦ Filter Dropdown ✦ */}
             {!hideFilter && (
@@ -176,34 +179,11 @@ const ProjectControl: React.FC<ProjectControlProps> = ({
 
             <div className="w-px h-6 bg-border-tertiary mx-1" />
 
-            {/* ✦ View Switcher ✦ */}
-            <button
-              type="button"
-              className={cn(
-                iconButtonMdClassName,
-                "border border-transparent rounded-[10px] hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600",
-                activeView === "grid" &&
-                  "text-primary hover:text-primary dark:text-white dark:hover:text-white dark:bg-base-400 dark:border-border-tertiary"
-              )}
-              onClick={() => handleViewChange("grid")}
-              title="Grid view"
-            >
-              <PiSquareSplitVerticalFill className="text-xl" />
-            </button>
-
-            <button
-              type="button"
-              className={cn(
-                iconButtonMdClassName,
-                "border border-transparent rounded-[10px] hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600",
-                activeView === "table" &&
-                  "text-primary hover:text-primary dark:text-white dark:hover:text-white dark:bg-base-400 dark:border-border-tertiary"
-              )}
-              onClick={() => handleViewChange("table")}
-              title="Table view"
-            >
-              <PiListThin className="text-xl" />
-            </button>
+            <ViewToggle
+              value={activeView}
+              onChange={handleViewChange}
+              options={VIEW_OPTIONS}
+            />
           </div>
         </div>
       </div>

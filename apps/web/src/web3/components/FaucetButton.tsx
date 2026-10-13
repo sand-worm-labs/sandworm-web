@@ -4,7 +4,7 @@ import { escrowTokens } from "@sandworm/types/escrow";
 import { useState } from "react";
 import { PiDrop } from "react-icons/pi";
 import { parseUnits } from "viem";
-import { useAccount, useSwitchChain } from "wagmi";
+import { useAccount, useBalance, useSwitchChain } from "wagmi";
 
 import { defaultChain, faucets } from "../config";
 import { describeError } from "../errors";
@@ -20,15 +20,15 @@ const buttonClassName =
 // =====================================
 // ⬢ Faucet Button
 // =====================================
-// Test tokens so anyone can try a bounty. Testnet only: it mints the bounty's
-// reward token (a demo token anyone can mint) and links the gas faucet.
+// Testnet only: mints the bounty's demo reward token and links the gas faucet.
 export const FaucetButton = ({
   rewardToken,
 }: {
   rewardToken?: string | null;
 }) => {
   const chain = defaultChain;
-  const { isConnected, chainId: connectedChainId } = useAccount();
+  const { address, isConnected, chainId: connectedChainId } = useAccount();
+  const { data: gasBalance } = useBalance({ address, chainId: chain.id });
   const { switchChainAsync, isPending: isSwitching } = useSwitchChain();
   const { mint, isMinting } = useMintTestToken(chain.id);
   const [error, setError] = useState<string | null>(null);
@@ -37,6 +37,10 @@ export const FaucetButton = ({
   const token = tokens.find(item => item.symbol === rewardToken) ?? tokens[0];
   const gasFaucets = faucets[chain.id] ?? [];
   if (!chain.testnet || (!token && gasFaucets.length === 0)) return null;
+
+  // Without gas, MetaMask shows "Review alert" instead of a Confirm button.
+  const needsGas =
+    isConnected && gasBalance !== undefined && gasBalance.value === BigInt(0);
 
   const run = async () => {
     if (!token) return;
@@ -74,6 +78,14 @@ export const FaucetButton = ({
         ) : (
           <ConnectWalletButton className="mt-3 w-full justify-center" />
         ))}
+
+      {needsGas && (
+        <p className="mt-3 text-xs leading-relaxed text-amber-600 dark:text-amber-400">
+          This wallet has no {chain.nativeCurrency.symbol} for gas, so MetaMask
+          cannot confirm the mint. Get {chain.nativeCurrency.symbol} from the
+          gas faucet first.
+        </p>
+      )}
 
       {gasFaucets.length > 0 && (
         <ul className="mt-3 space-y-1 text-xs">

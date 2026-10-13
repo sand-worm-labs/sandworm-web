@@ -1,90 +1,11 @@
 import Link from "next/link";
 import { PiTrophy } from "react-icons/pi";
 
-import { Tag } from "@/components/Tag";
+import type { Bounty } from "./bounties";
+import { BountyChips, BountyReward, BountyWinners } from "./BountyParts";
+import { SponsorLogo } from "./BountyLogos";
+import { bountyLinkClass } from "./styles";
 
-import { rewardToken, STATUS_LABEL, type Bounty } from "./bounties";
-import { SponsorLogo, TokenLogo } from "./BountyLogos";
-
-// =====================================
-// ⬢ Bounty Chips
-// =====================================
-export const BountyChips = ({
-  bounty,
-}: {
-  bounty: Pick<Bounty, "type" | "status" | "sample">;
-}) => (
-  <div className="flex flex-wrap items-center gap-1.5">
-    <Tag>{bounty.type}</Tag>
-    {bounty.status !== "open" && (
-      <Tag>{STATUS_LABEL[bounty.status] ?? bounty.status}</Tag>
-    )}
-    {bounty.sample && (
-      <Tag title="Posted by the sponsor outside Sandworm. Listed as an example: Sandworm does not pay its reward.">
-        Example
-      </Tag>
-    )}
-  </div>
-);
-
-// =====================================
-// ⬢ Bounty Winners
-// =====================================
-export const BountyWinners = ({ winners }: Pick<Bounty, "winners">) => (
-  <ul className="space-y-1 text-xs text-ink-400">
-    {winners.map(winner => (
-      <li key={winner.address ?? winner.notebookSlug}>
-        {winner.place}:{" "}
-        {/* A wallet paid from escrow that no entry names has no notebook. */}
-        {winner.notebookSlug ? (
-          <Link
-            href={`/notebooks/${winner.notebookSlug}`}
-            className="text-ink-100 dark:text-white hover:underline"
-          >
-            @{winner.author}
-          </Link>
-        ) : (
-          <span className="text-ink-100 dark:text-white">{winner.author}</span>
-        )}
-        {winner.amount && ` · ${winner.amount}`}
-      </li>
-    ))}
-  </ul>
-);
-
-// =====================================
-// ⬢ Bounty Reward
-// =====================================
-export const BountyReward = ({
-  reward,
-  size,
-  className = "text-sm font-semibold",
-}: {
-  reward: Bounty["reward"];
-  size: number;
-  className?: string;
-}) => {
-  const token = rewardToken(reward);
-  return (
-    <p
-      className={`flex items-center gap-1.5 text-ink-100 dark:text-white ${className}`}
-    >
-      {token && <TokenLogo token={token} size={size} />}
-      {reward ?? "Reward set by sponsor"}
-    </p>
-  );
-};
-
-// =====================================
-// ⬢ Constants
-// =====================================
-const bountyButtonBase = "h-[30px] rounded-lg px-3";
-export const bountyButtonClass = `${bountyButtonBase} border border-border-secondary dark:border-border-tertiary bg-transparent text-ink-100 dark:text-white hover:bg-transparent hover:border-primary`;
-export const bountyPrimaryButtonClass = `${bountyButtonBase} hover:bg-primary-710`;
-
-// =====================================
-// ⬢ Bounty Card
-// =====================================
 interface BountyCardProps {
   bounty: Bounty;
   href: string;
@@ -100,7 +21,7 @@ export const BountyCard = ({ bounty, href, actions }: BountyCardProps) => (
         {bounty.title}
       </Link>
     </h3>
-    <p className="mt-2 flex items-center gap-1.5 font-body-mono text-[10px] uppercase tracking-[0.14em] text-ink-300">
+    <p className="mt-2 flex items-center gap-1.5 text-xs text-ink-400">
       <SponsorLogo sponsor={bounty.sponsor} size={16} />
       {bounty.sponsor}
     </p>
@@ -122,17 +43,12 @@ export const BountyCard = ({ bounty, href, actions }: BountyCardProps) => (
       <div className="pt-5 border-t border-border-secondary dark:border-border-tertiary flex items-end justify-between gap-4">
         <div className="min-w-0">
           {bounty.sample && (
-            <p className="font-body-mono text-[10px] uppercase tracking-[0.14em] text-ink-300 mb-1">
-              Original reward
-            </p>
+            <p className="text-xs text-ink-400 mb-1">Original reward</p>
           )}
           <BountyReward reward={bounty.reward} size={18} />
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          <Link
-            href={href}
-            className="text-xs font-medium text-ink-400 hover:text-ink-100 dark:hover:text-white"
-          >
+          <Link href={href} className={bountyLinkClass}>
             Details
           </Link>
           {actions}

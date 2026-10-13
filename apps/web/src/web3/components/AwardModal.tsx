@@ -10,11 +10,11 @@ import { describeError } from "../errors";
 import { formatToken } from "../format";
 import { useEscrowActions } from "../hooks/useEscrowActions";
 
+import { ModalShell } from "./ModalShell";
 import {
-  ModalShell,
   modalInputClassName,
   modalPrimaryButtonClassName,
-} from "./ModalShell";
+} from "./modalStyles";
 
 // =====================================
 // ⬢ Types

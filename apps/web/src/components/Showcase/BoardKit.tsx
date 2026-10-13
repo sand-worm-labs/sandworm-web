@@ -31,6 +31,11 @@ export const listHeadClass =
 export const boardRowClass =
   "group relative border-b border-border-secondary dark:border-border-tertiary last:border-b-0 hover:bg-inputBg dark:hover:bg-header-surface transition-colors before:absolute before:inset-y-0 before:left-0 before:w-[2px] before:bg-primary before:opacity-0 hover:before:opacity-100";
 
+export const listRowClass =
+  "block md:table-row py-3 md:py-0 border-b border-border-secondary dark:border-border-tertiary last:border-b-0 hover:bg-inputBg dark:hover:bg-header-surface transition-colors shadow-[inset_2px_0_0_transparent] hover:shadow-[inset_2px_0_0_theme(colors.primary.DEFAULT)]";
+
+export const listCellClass = "block md:table-cell px-4 py-1.5 md:p-4 align-top";
+
 export const boardLabelClass =
   "font-body-mono text-[10px] uppercase tracking-[0.18em] text-ink-300";
 

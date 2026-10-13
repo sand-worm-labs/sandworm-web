@@ -36,6 +36,18 @@ export const useMintTestToken = (chainId: number) => {
             args: [address, amount],
           })
         );
+        // A wallet only lists tokens it knows, so offer to add the minted one.
+        // Declining is fine: the balance is there either way.
+        await walletClient
+          .watchAsset({
+            type: "ERC20",
+            options: {
+              address: token.address,
+              symbol: token.symbol,
+              decimals: token.decimals,
+            },
+          })
+          .catch(() => undefined);
       } finally {
         setIsMinting(false);
       }

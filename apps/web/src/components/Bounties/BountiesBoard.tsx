@@ -1,24 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { PiMagnifyingGlass } from "react-icons/pi";
-
 import { useGetBountiesQuery } from "@/generated/graphql";
-import {
-  BoardStat,
-  SectionHero,
-  toggleClass,
-} from "@/components/Showcase/BoardKit";
+import { useLocalStorage } from "@/hooks";
+import { BoardStat, SectionHero } from "@/components/Showcase/BoardKit";
 import { ConnectWalletButton } from "@/web3/components/ConnectWalletButton";
 
 import type { BountyRef } from "./bounties";
-import { BountyCard } from "./BountyCard";
+import { BountiesToolbar } from "./BountiesToolbar";
+import { BountyList, type BountyView } from "./BountyList";
+import { BountiesEmpty } from "./BountiesEmpty";
+import { useBountyFilter } from "./useBountyFilter";
+
+const VIEW_STORAGE_KEY = "sandworm:bounties:view";
 
 interface BountiesBoardProps {
   renderActions: (bounty: BountyRef) => React.ReactNode;
   detailHref: (slug: string) => string;
   headerAction?: React.ReactNode;
-  // A smaller headline, for the board shown inside a workspace.
   compact?: boolean;
   children?: React.ReactNode;
 }
@@ -30,21 +28,12 @@ export const BountiesBoard = ({
   compact = false,
   children,
 }: BountiesBoardProps) => {
-  const [type, setType] = useState("All");
-  const [query, setQuery] = useState("");
   const { data, loading, error } = useGetBountiesQuery();
+  const [view, setView] = useLocalStorage<BountyView>(VIEW_STORAGE_KEY, "grid");
   const all = data?.getBounties ?? [];
-  const types = Array.from(new Set(all.map(b => b.type)));
-  const needle = query.trim().toLowerCase();
-  const bounties = all.filter(
-    b =>
-      (type === "All" || b.type === type) &&
-      (!needle ||
-        [b.title, b.sponsor, b.summary].some(text =>
-          text?.toLowerCase().includes(needle)
-        ))
-  );
-  const open = all.filter(b => b.status === "open").length;
+  const { types, type, setType, query, setQuery, filtered, clearFilters } =
+    useBountyFilter(all);
+  const open = all.filter(bounty => bounty.status === "open").length;
 
   return (
     <div className="container mx-auto font-body">
@@ -69,65 +58,35 @@ export const BountiesBoard = ({
 
       {children}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
-        <div
-          className="flex gap-1.5 max-w-full overflow-x-auto pb-1 sm:pb-0"
-          role="group"
-          aria-label="Filter by type"
-        >
-          {["All", ...types].map(option => (
-            <button
-              key={option}
-              type="button"
-              aria-pressed={type === option}
-              onClick={() => setType(option)}
-              className={toggleClass(type === option)}
-            >
-              {option}
-            </button>
-          ))}
+      <BountiesToolbar
+        query={query}
+        onQueryChange={setQuery}
+        types={types}
+        type={type}
+        onTypeChange={setType}
+        view={view}
+        onViewChange={setView}
+      />
+
+      {filtered.length === 0 ? (
+        <BountiesEmpty
+          loading={loading}
+          failed={!!error}
+          hasBounties={all.length > 0}
+          query={query}
+          type={type}
+          onClear={clearFilters}
+        />
+      ) : (
+        <div className="pb-10">
+          <BountyList
+            bounties={filtered}
+            view={view}
+            detailHref={detailHref}
+            renderActions={renderActions}
+          />
         </div>
-
-        <label className="relative block w-full sm:w-64">
-          <PiMagnifyingGlass
-            size={14}
-            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-300 pointer-events-none"
-          />
-          <input
-            type="search"
-            value={query}
-            onChange={event => setQuery(event.target.value)}
-            placeholder="Search bounties"
-            aria-label="Search bounties"
-            className="font-body h-8 w-full rounded-[5px] border border-border-secondary dark:border-border-tertiary bg-base-100 pl-8 pr-2.5 text-xs text-ink-100 dark:text-white placeholder:text-ink-300 outline-none focus:border-primary"
-          />
-        </label>
-      </div>
-
-      {all.length === 0 && (
-        <p className="text-sm text-ink-400 pb-10">
-          {loading && "Loading bounties..."}
-          {error && "Could not load the bounties. Please try again."}
-          {!loading && !error && "There are no bounties yet."}
-        </p>
       )}
-
-      {all.length > 0 && bounties.length === 0 && (
-        <p className="text-sm text-ink-400 pb-10">
-          No bounties match your search.
-        </p>
-      )}
-
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3 pb-10">
-        {bounties.map(bounty => (
-          <BountyCard
-            key={bounty.slug}
-            bounty={bounty}
-            href={detailHref(bounty.slug)}
-            actions={renderActions(bounty)}
-          />
-        ))}
-      </div>
     </div>
   );
 };

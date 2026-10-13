@@ -10,19 +10,16 @@ import {
 import { Fragment, type ReactNode } from "react";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
-import { tintPillDarkClassName } from "@/styles/interactive";
-
-// The field and the full-width action every escrow modal uses
-export const modalInputClassName =
-  "w-full px-3 py-2.5 rounded-xl bg-inputBg dark:bg-base-400 border border-border dark:border-border-tertiary text-ink-100 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm font-medium";
-
-export const modalPrimaryButtonClassName = `w-full py-3.5 px-4 bg-primary hover:bg-primary-720 disabled:bg-disabled dark:disabled:bg-[#4a4a48] text-border-secondary font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm border border-transparent ${tintPillDarkClassName}`;
+import { cn } from "@/lib/utils";
 
 interface ModalShellProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   description?: string;
+  // A wide, fixed-height panel for a multi-step form, with its own header strip
+  wide?: boolean;
+  headerExtra?: ReactNode;
   children: ReactNode;
   footer?: ReactNode;
 }
@@ -35,6 +32,8 @@ export const ModalShell = ({
   onClose,
   title,
   description,
+  wide = false,
+  headerExtra,
   children,
   footer,
 }: ModalShellProps) => (
@@ -63,8 +62,20 @@ export const ModalShell = ({
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <DialogPanel className="relative flex max-h-[90vh] w-full max-w-lg flex-col rounded-3xl bg-white shadow-xl dark:border dark:border-border-tertiary dark:bg-dropdown-bg">
-              <div className="shrink-0 px-10 pt-8 pb-5">
+            <DialogPanel
+              className={cn(
+                "relative flex w-full flex-col rounded-3xl bg-white shadow-xl dark:border dark:border-border-tertiary dark:bg-dropdown-bg",
+                wide ? "h-[min(760px,90vh)] max-w-3xl" : "max-h-[90vh] max-w-lg"
+              )}
+            >
+              <div
+                className={cn(
+                  "shrink-0 px-10 pt-8",
+                  headerExtra
+                    ? "border-b border-border-secondary pb-6 dark:border-border-tertiary"
+                    : "pb-5"
+                )}
+              >
                 <div className="flex items-center justify-between">
                   <DialogTitle
                     as="h2"
@@ -77,8 +88,14 @@ export const ModalShell = ({
                 {description && (
                   <p className="mt-2 text-xs text-ink-400">{description}</p>
                 )}
+                {headerExtra && <div className="mt-5">{headerExtra}</div>}
               </div>
-              <div className="min-h-0 flex-1 overflow-y-auto px-10 pb-6">
+              <div
+                className={cn(
+                  "min-h-0 flex-1 overflow-y-auto px-10 pb-6",
+                  headerExtra && "pt-6"
+                )}
+              >
                 {children}
               </div>
               {footer && (

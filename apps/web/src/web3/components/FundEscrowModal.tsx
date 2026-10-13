@@ -14,7 +14,8 @@ import { useFundBounty } from "../hooks/useFundBounty";
 import { useMintTestToken } from "../hooks/useMintTestToken";
 
 import { ConnectWalletButton } from "./ConnectWalletButton";
-import { ModalShell, modalPrimaryButtonClassName } from "./ModalShell";
+import { ModalShell } from "./ModalShell";
+import { modalPrimaryButtonClassName } from "./modalStyles";
 
 // =====================================
 // ⬢ Types

@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { useState } from "react";
 
-import { SPONSOR_DOMAINS, type RewardToken } from "./bounties";
+import { SPONSOR_DOMAINS } from "./sponsors";
+import type { RewardToken } from "./tokens";
 
 // =====================================
 // ⬢ Sponsor Logo
