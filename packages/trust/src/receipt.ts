@@ -3,7 +3,7 @@
 import { keccak256, stringToBytes, type Hex } from 'viem';
 
 import { canonicalJson, type Json } from './canonical.ts';
-import { AGENT_REGISTRY, CHAIN } from './config.ts';
+import { agentRegistry, chain } from './config.ts';
 import { hashCode, hashInputs, type CellInput } from './inputs.ts';
 
 export const RECEIPT_TYPE = 'sandworm-input-receipt/v1';
@@ -40,11 +40,11 @@ export type ReceiptDraft = Pick<Receipt, 'agentId' | 'finding' | 'notebook' | 'i
 export function buildReceipt(draft: ReceiptDraft): { receipt: Receipt; bytes: Uint8Array; requestHash: Hex } {
   const receipt: Receipt = {
     type: RECEIPT_TYPE,
-    agentRegistry: AGENT_REGISTRY,
+    agentRegistry: agentRegistry(),
     ...draft,
     codeHash: hashCode(draft.inputs),
     inputHash: hashInputs(draft.inputs, draft.ranAt),
-    chainId: CHAIN.id,
+    chainId: chain().id,
     createdAt: new Date().toISOString(),
     commitsTo: 'inputs',
     note: NOTE,

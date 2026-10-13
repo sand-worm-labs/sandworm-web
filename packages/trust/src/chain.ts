@@ -15,7 +15,7 @@ import { privateKeyToAccount, type PrivateKeyAccount } from 'viem/accounts';
 
 import { identityAbi } from './abi-identity.ts';
 import { validationAbi } from './abi-validation.ts';
-import { CHAIN, REGISTRIES, optional, required } from './config.ts';
+import { REGISTRIES, chain, network, optional, required } from './config.ts';
 
 export const IDENTITY_ABI = identityAbi as unknown as Abi;
 export const VALIDATION_ABI = validationAbi as unknown as Abi;
@@ -23,16 +23,16 @@ export const VALIDATION_ABI = validationAbi as unknown as Abi;
 // =====================================
 // ⬢ Clients
 // =====================================
-const transport = () => http(optional('MONAD_RPC_URL') ?? CHAIN.rpcUrls.default.http[0]);
+const transport = () => http(optional('MONAD_RPC_URL') ?? chain().rpcUrls.default.http[0]);
 
-export const publicClient = (): PublicClient => createPublicClient({ chain: CHAIN, transport: transport() });
+export const publicClient = (): PublicClient => createPublicClient({ chain: chain(), transport: transport() });
 
 // A wallet from a private key. The key is never logged or written.
-export type TrustWallet = { account: PrivateKeyAccount; client: WalletClient<Transport, typeof CHAIN, PrivateKeyAccount> };
+export type TrustWallet = { account: PrivateKeyAccount; client: WalletClient<Transport, ReturnType<typeof chain>, PrivateKeyAccount> };
 
 export function walletFrom(key: string): TrustWallet {
   const account = privateKeyToAccount((key.startsWith('0x') ? key : `0x${key}`) as Hex);
-  return { account, client: createWalletClient({ account, chain: CHAIN, transport: transport() }) };
+  return { account, client: createWalletClient({ account, chain: chain(), transport: transport() }) };
 }
 
 // The same, from the env var that holds the key.
@@ -41,11 +41,12 @@ export const wallet = (keyVar: 'AGENT_PRIVATE_KEY' | 'VALIDATOR_PRIVATE_KEY'): T
 // =====================================
 // ⬢ Explorer links
 // =====================================
-const explorer = CHAIN.blockExplorers.default.url;
+// Monadscan on both networks: viem's default for testnet redirects to a host that fails its TLS handshake.
+const explorer = () => (network() === 'testnet' ? 'https://testnet.monadscan.com' : 'https://monadscan.com');
 
-export const txUrl = (hash: Hex) => `${explorer}/tx/${hash}`;
-export const addressUrl = (address: Address) => `${explorer}/address/${address}`;
-export const tokenUrl = (registry: Address, agentId: bigint) => `${explorer}/token/${registry}?a=${agentId}`;
+export const txUrl = (hash: Hex) => `${explorer()}/tx/${hash}`;
+export const addressUrl = (address: Address) => `${explorer()}/address/${address}`;
+export const tokenUrl = (registry: Address, agentId: bigint) => `${explorer()}/token/${registry}?a=${agentId}`;
 
 // =====================================
 // ⬢ Registry reads
