@@ -103,6 +103,7 @@ query GetBountyEntries($slug: String!) {
       ranAt
       requestTx
       responseTx
+      responseTxUrl
     }
   }
 }

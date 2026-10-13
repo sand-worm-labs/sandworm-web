@@ -1,6 +1,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { BooleanField, DateField, StringField, StringFieldOptional } from '@sandworm/graphql';
 import type { NotebookAttestationEntity } from '@sandworm/postgresql-typeorm';
+import { agentLink, receiptLink, txLink } from './trust.links';
 
 // What a notebook's attestation shows: who made it, what it commits to, and the
 // transactions anyone can open on the explorer.
@@ -46,6 +47,19 @@ export class NotebookAttestation {
   @DateField()
   createdAt!: Date;
 
+  // Links to look at it: the agent, the request and the verdict on the explorer, and the receipt itself
+  @StringField()
+  agentUrl!: string;
+
+  @StringField()
+  requestTxUrl!: string;
+
+  @StringFieldOptional()
+  responseTxUrl?: string | null;
+
+  @StringFieldOptional()
+  receiptUrl?: string | null;
+
   static fromEntity(entity: NotebookAttestationEntity): NotebookAttestation {
     const attestation = new NotebookAttestation();
     attestation.id = entity.id;
@@ -61,6 +75,10 @@ export class NotebookAttestation {
     attestation.requestTx = entity.requestTx;
     attestation.responseTx = entity.responseTx;
     attestation.createdAt = entity.createdAt;
+    attestation.agentUrl = agentLink(entity.agentId);
+    attestation.requestTxUrl = txLink(entity.requestTx);
+    attestation.responseTxUrl = entity.responseTx ? txLink(entity.responseTx) : null;
+    attestation.receiptUrl = receiptLink(entity.receiptUri);
     return attestation;
   }
 }
@@ -71,9 +89,27 @@ export class NotebookTrust {
   @BooleanField()
   trusted!: boolean;
 
+  // An attestation is being made: it re-runs the notebook and writes to the chain, so it takes a while
+  @BooleanField()
+  pending!: boolean;
+
   @StringFieldOptional()
   reason?: string | null;
 
   @Field(() => NotebookAttestation, { nullable: true })
   attestation?: NotebookAttestation | null;
+
+  static fromStatus(status: {
+    trusted: boolean;
+    pending: boolean;
+    reason?: string;
+    attestation?: NotebookAttestationEntity;
+  }): NotebookTrust {
+    const trust = new NotebookTrust();
+    trust.trusted = status.trusted;
+    trust.pending = status.pending;
+    trust.reason = status.reason ?? null;
+    trust.attestation = status.attestation ? NotebookAttestation.fromEntity(status.attestation) : null;
+    return trust;
+  }
 }

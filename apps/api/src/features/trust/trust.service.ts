@@ -36,6 +36,19 @@ const RERUN_WAIT_SECONDS = 45;
 const MAX_POLLS = 12;
 const FETCH_TRIES = 4;
 
+const CHECK_PROBLEMS: Record<keyof Checks, string> = {
+  receiptMatchesRequest: 'the receipt could not be read back from where it was published',
+  inputHashConsistent: 'the receipt is inconsistent',
+  notebookStillMatches: 'the notebook changed while it was being checked',
+  reran: 'a cell failed when the notebook was run again',
+};
+
+const failedChecks = (checks: Checks): string =>
+  (Object.keys(CHECK_PROBLEMS) as (keyof Checks)[])
+    .filter(name => !checks[name])
+    .map(name => CHECK_PROBLEMS[name])
+    .join('; ');
+
 const sameSet = (a: string[], b: string[]) => a.length === b.length && a.every(id => b.includes(id));
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -44,6 +57,9 @@ export class TrustService {
   private readonly logger = new Logger(TrustService.name);
   // One transaction at a time per wallet, or two attestations would race for a nonce.
   private chainQueue: Promise<unknown> = Promise.resolve();
+  // Attestations in flight, and the last one that failed, by notebook. Kept in memory: a restart
+  // forgets them, and the notebook is simply checked again.
+  private readonly running = new Map<string, { state: 'pending' } | { state: 'failed'; reason: string }>();
 
   constructor(
     @InjectRepository(NotebookAttestationEntity)
@@ -56,6 +72,34 @@ export class TrustService {
   // The latest attestation of a notebook, trusted or not, for showing.
   latest(documentId: string): Promise<NotebookAttestationEntity | null> {
     return this.attestations.findOne({ where: { documentId }, order: { createdAt: 'DESC' } });
+  }
+
+  // =====================================
+  // ⬢ Start
+  // =====================================
+  // Begins an attestation and returns at once: it re-runs the notebook and sends two
+  // transactions, longer than most clients will wait. Follow it with `status`.
+  async start(ref: NotebookRef): Promise<void> {
+    if (this.running.get(ref.documentId)?.state === 'pending') return;
+
+    // What can be refused now is, so the caller hears it straight away and not after a wait.
+    await this.docs.assertRunsInCloud(ref);
+    trustSigners();
+    await this.docs.use(ref, 'editor', ({ ydoc }) => this.snapshot(ydoc));
+
+    this.running.set(ref.documentId, { state: 'pending' });
+    void this.attest(ref).then(
+      attestation => {
+        if (attestation.response === 100) this.running.delete(ref.documentId);
+      },
+      (error: unknown) => {
+        this.logger.error(`Attesting ${ref.documentId} failed`, error instanceof Error ? error.stack : String(error));
+        this.running.set(ref.documentId, {
+          state: 'failed',
+          reason: error instanceof Error ? error.message : 'The attestation failed',
+        });
+      },
+    );
   }
 
   // =====================================
@@ -119,6 +163,7 @@ export class TrustService {
     );
 
     this.logger.log(`Attested ${ref.documentId}: response ${response}, ${txUrl(responseTx)}`);
+    if (response !== 100) this.running.set(ref.documentId, { state: 'failed', reason: failedChecks(checks) });
     return this.attestations.save(
       this.attestations.create({
         documentId: ref.documentId,
@@ -161,14 +206,22 @@ export class TrustService {
   }
 
   // The same check as `trusted`, answered instead of thrown, for showing before anything is submitted.
-  async status(ref: NotebookRef): Promise<{ trusted: boolean; reason?: string; attestation?: NotebookAttestationEntity }> {
+  // While an attestation is in flight the answer is "pending", and after one that failed, why.
+  async status(ref: NotebookRef): Promise<{
+    trusted: boolean;
+    pending: boolean;
+    reason?: string;
+    attestation?: NotebookAttestationEntity;
+  }> {
+    const running = this.running.get(ref.documentId);
+    if (running?.state === 'pending') return { trusted: false, pending: true };
+
     try {
-      return { trusted: true, attestation: await this.trusted(ref) };
+      return { trusted: true, pending: false, attestation: await this.trusted(ref) };
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        return { trusted: false, reason: error.message.replace(/^This notebook is not trusted: /, '') };
-      }
-      throw error;
+      if (!(error instanceof BadRequestException)) throw error;
+      const reason = running?.state === 'failed' ? running.reason : error.message.replace(/^This notebook is not trusted: /, '');
+      return { trusted: false, pending: false, reason };
     }
   }
 

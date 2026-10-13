@@ -332,10 +332,15 @@ type NotebookAttestation {
   requestTx: String!
   responseTx: String
   createdAt: DateTime!
+  agentUrl: String!
+  requestTxUrl: String!
+  responseTxUrl: String
+  receiptUrl: String
 }
 
 type NotebookTrust {
   trusted: Boolean!
+  pending: Boolean!
   reason: String
   attestation: NotebookAttestation
 }
@@ -976,9 +981,9 @@ type Mutation {
   submitBountyEntry(slug: String!, documentId: String!, wallet: String): BountyEntry!
 
   """
-  Commit to a cloud notebook's inputs (its code, data sources, parameters and when it ran) onchain, and have a validator re-check them. Run the notebook first. Bounties accept only attested notebooks.
+  Start committing a cloud notebook's inputs (its code, data sources, parameters and when it ran) onchain, with a validator re-checking them. Returns at once with pending set: follow it with getNotebookTrust. Run the notebook first. Bounties accept only attested notebooks.
   """
-  attestNotebook(workspaceId: String!, documentId: String!): NotebookAttestation!
+  attestNotebook(workspaceId: String!, documentId: String!): NotebookTrust!
 
   """Create a new execution schedule for a document"""
   createSchedule(workspaceId: String!, input: CreateScheduleInput!): Schedule!

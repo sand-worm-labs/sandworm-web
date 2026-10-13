@@ -8,17 +8,19 @@ import { TrustService } from './trust.service';
 export class TrustResolver {
   constructor(private readonly trust: TrustService) {}
 
-  @Mutation(() => NotebookAttestation, {
+  @Mutation(() => NotebookTrust, {
     name: 'attestNotebook',
     description:
-      'Commit to a cloud notebook\'s inputs (its code, data sources, parameters and when it ran) onchain, and have a validator re-check them. Run the notebook first. Bounties accept only attested notebooks.',
+      "Start committing a cloud notebook's inputs (its code, data sources, parameters and when it ran) onchain, with a validator re-checking them. Returns at once with pending set: follow it with getNotebookTrust. Run the notebook first. Bounties accept only attested notebooks.",
   })
   async attestNotebook(
     @CurrentUser('id') userId: string,
     @Args('workspaceId', new ParseUUIDPipe()) workspaceId: string,
     @Args('documentId', new ParseUUIDPipe()) documentId: string,
-  ): Promise<NotebookAttestation> {
-    return NotebookAttestation.fromEntity(await this.trust.attest({ userId, workspaceId, documentId }));
+  ): Promise<NotebookTrust> {
+    const ref = { userId, workspaceId, documentId };
+    await this.trust.start(ref);
+    return NotebookTrust.fromStatus(await this.trust.status(ref));
   }
 
   @Query(() => NotebookAttestation, {
@@ -42,7 +44,6 @@ export class TrustResolver {
     @Args('workspaceId', new ParseUUIDPipe()) workspaceId: string,
     @Args('documentId', new ParseUUIDPipe()) documentId: string,
   ): Promise<NotebookTrust> {
-    const { trusted, reason, attestation } = await this.trust.status({ userId, workspaceId, documentId });
-    return { trusted, reason: reason ?? null, attestation: attestation ? NotebookAttestation.fromEntity(attestation) : null };
+    return NotebookTrust.fromStatus(await this.trust.status({ userId, workspaceId, documentId }));
   }
 }

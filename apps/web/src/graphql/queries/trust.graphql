@@ -1,6 +1,7 @@
 query GetNotebookTrust($workspaceId: String!, $documentId: String!) {
   getNotebookTrust(workspaceId: $workspaceId, documentId: $documentId) {
     trusted
+    pending
     reason
     attestation {
       agentId
@@ -9,6 +10,8 @@ query GetNotebookTrust($workspaceId: String!, $documentId: String!) {
       ranAt
       requestTx
       responseTx
+      requestTxUrl
+      responseTxUrl
     }
   }
 }

@@ -1,12 +1,7 @@
 mutation AttestNotebook($workspaceId: String!, $documentId: String!) {
   attestNotebook(workspaceId: $workspaceId, documentId: $documentId) {
-    id
-    agentId
-    requestHash
-    validator
-    response
-    ranAt
-    requestTx
-    responseTx
+    trusted
+    pending
+    reason
   }
 }

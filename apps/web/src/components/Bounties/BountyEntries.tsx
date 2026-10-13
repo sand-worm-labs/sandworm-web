@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 import { PiSealCheck } from "react-icons/pi";
-import { monad } from "viem/chains";
 
 import { AuthorCell } from "@/components/Explore/AuthorCell";
 import { ListTable } from "@/components/Explore/ListTable";
 import { listCellClass, listRowClass } from "@/components/Showcase/BoardKit";
 import { useGetBountyEntriesQuery } from "@/generated/graphql";
-import { explorerTxUrl } from "@/web3/config";
 import { formatDay, shortAddress } from "@/web3/format";
 
 const HEADERS = ["Author", "Notebook", "Trust", "Wallet"] as const;
@@ -43,9 +41,9 @@ export const BountyEntries = ({ slug }: { slug: string }) => {
               </Link>
             </td>
             <td className={listCellClass}>
-              {entry.trusted && entry.attestation?.responseTx ? (
+              {entry.trusted && entry.attestation?.responseTxUrl ? (
                 <a
-                  href={explorerTxUrl(monad, entry.attestation.responseTx)}
+                  href={entry.attestation.responseTxUrl}
                   target="_blank"
                   rel="noreferrer"
                   title={`Inputs committed onchain by agent ${entry.attestation.agentId}, checked by ${shortAddress(entry.attestation.validator)}`}

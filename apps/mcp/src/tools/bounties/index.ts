@@ -5,13 +5,19 @@ import { graphql, resolveWorkspaceId, type ToolContext } from '../../graphql.ts'
 import { notebookId } from '../notebooks/shared.ts';
 import { handle, workspaceId } from '../shared.ts';
 
-// Attesting re-runs the notebook and sends two transactions, so it outlasts the usual call.
-const ATTEST_TIMEOUT_MS = 150_000;
+// Attesting re-runs the notebook and sends two transactions, which can outlast what a client waits for. The
+// tool starts it and then waits this long for the answer; a slower one is followed with check_notebook_trust.
+const ATTEST_WAIT_MS = 40_000;
+const POLL_MS = 3_000;
 
 const slug = z.string().min(1).describe('The bounty\'s slug, as returned by list_bounties');
 
 type Attestation = {
   id: string;
+  agentUrl: string;
+  requestTxUrl: string;
+  responseTxUrl?: string | null;
+  receiptUrl?: string | null;
   agentId: string;
   requestHash: string;
   receiptUri: string;
@@ -35,13 +41,36 @@ type Entry = {
 };
 
 const ATTESTATION_FIELDS =
-  'id agentId requestHash receiptUri codeHash ranAt validator response requestTx responseTx';
+  'id agentId requestHash receiptUri codeHash ranAt validator response requestTx responseTx agentUrl requestTxUrl responseTxUrl receiptUrl';
+
+type Trust = { trusted: boolean; pending: boolean; reason?: string | null; attestation?: Attestation | null };
+const TRUST_FIELDS = `trusted pending reason attestation { ${ATTESTATION_FIELDS} }`;
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const ENTRY_FIELDS = `id bountySlug documentId notebookTitle notebookSlug submittedAt trusted attestation { ${ATTESTATION_FIELDS} }`;
 
 const WORKFLOW =
   'The order is: build the notebook and run it, attest_notebook, publish_notebook, then submit_to_bounty. Changing any cell after attesting makes the attestation stale, so attest again.';
 
 export function registerBountyTools(server: McpServer, ctx: ToolContext): void {
+  // How trusted a notebook is, with the links and the reason, and whether an attestation is in flight.
+  const trustOf = async (ws: string, notebookId: string): Promise<Trust & { message: string }> => {
+    const data = await graphql<{ getNotebookTrust: Trust }>(
+      ctx,
+      `query ($workspaceId: String!, $documentId: String!) {
+        getNotebookTrust(workspaceId: $workspaceId, documentId: $documentId) { ${TRUST_FIELDS} }
+      }`,
+      { workspaceId: ws, documentId: notebookId },
+    );
+    const trust = data.getNotebookTrust;
+    const message = trust.trusted
+      ? 'Trusted. Publish the notebook, then submit it with submit_to_bounty. Give the user the explorer links.'
+      : trust.pending
+        ? 'Still being attested: call check_notebook_trust again in a few seconds.'
+        : `Not trusted${trust.reason ? `: ${trust.reason}` : ''}. Run the notebook, fix any cell that fails, and call attest_notebook.`;
+    return { ...trust, message };
+  };
+
   server.registerTool(
     'list_bounties',
     {
@@ -131,19 +160,12 @@ export function registerBountyTools(server: McpServer, ctx: ToolContext): void {
   server.registerTool(
     'check_notebook_trust',
     {
-      description: `Check whether a notebook can be submitted to a bounty right now: attested onchain, validated, and unchanged since. If not, says why. ${WORKFLOW}`,
+      description: `Check whether a notebook can be submitted to a bounty right now: attested onchain, validated, and unchanged since. If not, says why. While an attestation is still being made it says pending: check again in a few seconds. ${WORKFLOW}`,
       inputSchema: { notebookId, workspaceId },
     },
     handle(async ({ notebookId, workspaceId }) => {
       const ws = await resolveWorkspaceId(ctx, workspaceId);
-      const data = await graphql<{ getNotebookTrust: { trusted: boolean; reason?: string | null; attestation?: Attestation | null } }>(
-        ctx,
-        `query ($workspaceId: String!, $documentId: String!) {
-          getNotebookTrust(workspaceId: $workspaceId, documentId: $documentId) { trusted reason attestation { ${ATTESTATION_FIELDS} } }
-        }`,
-        { workspaceId: ws, documentId: notebookId },
-      );
-      return data.getNotebookTrust;
+      return trustOf(ws, notebookId);
     }),
   );
 
@@ -151,32 +173,31 @@ export function registerBountyTools(server: McpServer, ctx: ToolContext): void {
     'attest_notebook',
     {
       description: [
-        'Make a notebook trusted: commit its inputs onchain (the code, data sources and parameters of every cell, and when it last ran) and have a validator re-run it and check them. Run the notebook first, so every cell has a result. Takes up to a minute.',
+        'Make a notebook trusted: commit its inputs onchain (the code, data sources and parameters of every cell, and when it last ran) and have a validator re-run it and check them. Run the notebook first, so every cell has a result. It usually finishes within the call; if the answer is still pending, call check_notebook_trust until it is not.',
         'The attestation says exactly what was run and by which agent. It does not hash the output, which changes as the data does, and it does not prove the logic is correct.',
         'Cloud notebooks only. The code is pinned publicly (IPFS) for good, so attest only a notebook you are happy to share. Bounties accept only attested notebooks.',
+        'The result has links to the agent, the request and the validator\'s verdict on the explorer: give them to the user.',
         WORKFLOW,
       ].join(' '),
       inputSchema: { notebookId, workspaceId },
     },
     handle(async ({ notebookId, workspaceId }) => {
       const ws = await resolveWorkspaceId(ctx, workspaceId);
-      const data = await graphql<{ attestNotebook: Attestation }>(
+      await graphql(
         ctx,
         `mutation ($workspaceId: String!, $documentId: String!) {
-          attestNotebook(workspaceId: $workspaceId, documentId: $documentId) { ${ATTESTATION_FIELDS} }
+          attestNotebook(workspaceId: $workspaceId, documentId: $documentId) { pending }
         }`,
         { workspaceId: ws, documentId: notebookId },
-        { timeoutMs: ATTEST_TIMEOUT_MS },
       );
-      const a = data.attestNotebook;
-      return {
-        trusted: a.response === 100,
-        ...a,
-        message:
-          a.response === 100
-            ? 'The validator passed it. Publish the notebook, then submit it with submit_to_bounty.'
-            : 'The validator did not pass it: a cell failed when it was run again, or the notebook changed while it was checked. Fix it, run it, and attest again.',
-      };
+
+      // Wait for it, but not past what clients wait for a call.
+      let trust = await trustOf(ws, notebookId);
+      for (const deadline = Date.now() + ATTEST_WAIT_MS; trust.pending && Date.now() < deadline; ) {
+        await sleep(POLL_MS);
+        trust = await trustOf(ws, notebookId);
+      }
+      return trust;
     }),
   );
 

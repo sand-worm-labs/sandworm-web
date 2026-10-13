@@ -23,7 +23,8 @@ jest.mock('@sandworm/trust', () => ({
   hashCode: () => liveCode,
   extractInputs: () => [],
   runnableCellIds: () => liveCells,
-  walletFrom: jest.fn(),
+  ranAt: () => '2026-10-13T10:00:00.000Z',
+  walletFrom: (key: string) => ({ account: { address: `0x${key}` } }),
 }));
 jest.mock('viem', () => ({ keccak256: () => '0xrequest' }));
 jest.mock('../../notebook-blocks/notebook-doc.service', () => ({ NotebookDocService: class {} }));
@@ -39,13 +40,19 @@ const row = { id: 'a1', agentId: '7', requestHash: '0xrequest', receiptUri: 'ipf
 
 const setup = (rows: unknown[] = [row]) => {
   const attestations = { find: jest.fn().mockResolvedValue(rows) };
-  const docs = { use: jest.fn(async (_ref, _access, work: (doc: { ydoc: object }) => unknown) => work({ ydoc: {} })) };
-  return { service: new TrustService(attestations as never, docs as never, {} as never, {} as never), attestations };
+  const docs = {
+    use: jest.fn(async (_ref, _access, work: (doc: { ydoc: object }) => unknown) => work({ ydoc: {} })),
+    assertRunsInCloud: jest.fn().mockResolvedValue(undefined),
+  };
+  return { service: new TrustService(attestations as never, docs as never, {} as never, {} as never), attestations, docs };
 };
 
 beforeEach(() => {
   process.env.TRUST_VALIDATORS = VALIDATOR;
   delete process.env.TRUST_VALIDATOR_PRIVATE_KEY;
+  process.env.TRUST_AGENT_PRIVATE_KEY = 'aa';
+  process.env.TRUST_VALIDATOR_PRIVATE_KEY = 'bb';
+  process.env.TRUST_AGENT_ID = '7';
   liveCode = '0xcode';
   liveCells = ['c1', 'c2'];
   chain.validationStatus.mockResolvedValue({ validator: VALIDATOR, agentId: 7n, response: 100 });
@@ -117,5 +124,64 @@ describe('TrustService.trusted', () => {
   it('says it is a bad request, not a server error', async () => {
     const { service } = setup([]);
     await expect(service.trusted(REF)).rejects.toBeInstanceOf(BadRequestException);
+  });
+});
+
+describe('TrustService.start and status', () => {
+  const tick = () => new Promise(resolve => setImmediate(resolve));
+
+  it('returns at once and reports the attestation as pending while it runs', async () => {
+    const { service } = setup([]);
+    let finish: (value: unknown) => void = () => undefined;
+    jest.spyOn(service, 'attest').mockReturnValue(new Promise(resolve => (finish = resolve)) as never);
+
+    await service.start(REF);
+    await expect(service.status(REF)).resolves.toMatchObject({ trusted: false, pending: true });
+
+    finish({ response: 100 });
+    await tick();
+    await expect(service.status(REF)).resolves.toMatchObject({ pending: false });
+  });
+
+  it('does not start a second attestation while one is running', async () => {
+    const { service } = setup([]);
+    const attest = jest.spyOn(service, 'attest').mockReturnValue(new Promise(() => undefined) as never);
+
+    await service.start(REF);
+    await service.start(REF);
+    expect(attest).toHaveBeenCalledTimes(1);
+  });
+
+  it('refuses straight away what can be refused, such as a browser notebook', async () => {
+    const { service, docs } = setup([]);
+    docs.assertRunsInCloud.mockRejectedValue(new BadRequestException('This is a Live notebook'));
+    const attest = jest.spyOn(service, 'attest');
+
+    await expect(service.start(REF)).rejects.toThrow('Live notebook');
+    expect(attest).not.toHaveBeenCalled();
+    await expect(service.status(REF)).resolves.toMatchObject({ pending: false });
+  });
+
+  it('says why a failed attestation failed', async () => {
+    const { service } = setup([]);
+    jest.spyOn(service, 'attest').mockRejectedValue(new Error('The notebook is still running: try again'));
+
+    await service.start(REF);
+    await tick();
+    await expect(service.status(REF)).resolves.toMatchObject({
+      trusted: false,
+      pending: false,
+      reason: 'The notebook is still running: try again',
+    });
+  });
+
+  it('starts again after a failure', async () => {
+    const { service } = setup([]);
+    const attest = jest.spyOn(service, 'attest').mockRejectedValueOnce(new Error('boom')).mockResolvedValue({ response: 100 } as never);
+
+    await service.start(REF);
+    await tick();
+    await service.start(REF);
+    expect(attest).toHaveBeenCalledTimes(2);
   });
 });

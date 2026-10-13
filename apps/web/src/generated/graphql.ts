@@ -420,8 +420,8 @@ export type Mutation = {
   approveRoleRequest: Scalars['Boolean']['output'];
   /** Approve a claim lead: marks the case study it names as claimed by the protocol's team. Needs the studio password, or a staff account. */
   approveShowcaseClaim: Scalars['Boolean']['output'];
-  /** Commit to a cloud notebook's inputs (its code, data sources, parameters and when it ran) onchain, and have a validator re-check them. Run the notebook first. Bounties accept only attested notebooks. */
-  attestNotebook: NotebookAttestation;
+  /** Start committing a cloud notebook's inputs (its code, data sources, parameters and when it ran) onchain, with a validator re-checking them. Returns at once with pending set: follow it with getNotebookTrust. Run the notebook first. Bounties accept only attested notebooks. */
+  attestNotebook: NotebookTrust;
   /** Remove multiple users from workspaces */
   batchRemoveUsersFromWorkspace: Scalars['Boolean']['output'];
   /** Check a funding transaction onchain and open the bounty. Everything is read from the chain. */
@@ -1033,6 +1033,7 @@ export type MutationVoteMessageArgs = {
 export type NotebookAttestation = {
   __typename?: 'NotebookAttestation';
   agentId: Scalars['String']['output'];
+  agentUrl: Scalars['String']['output'];
   codeHash: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   documentId: Scalars['String']['output'];
@@ -1040,16 +1041,20 @@ export type NotebookAttestation = {
   inputHash: Scalars['String']['output'];
   ranAt: Scalars['DateTime']['output'];
   receiptUri: Scalars['String']['output'];
+  receiptUrl?: Maybe<Scalars['String']['output']>;
   requestHash: Scalars['String']['output'];
   requestTx: Scalars['String']['output'];
+  requestTxUrl: Scalars['String']['output'];
   response?: Maybe<Scalars['Int']['output']>;
   responseTx?: Maybe<Scalars['String']['output']>;
+  responseTxUrl?: Maybe<Scalars['String']['output']>;
   validator: Scalars['String']['output'];
 };
 
 export type NotebookTrust = {
   __typename?: 'NotebookTrust';
   attestation?: Maybe<NotebookAttestation>;
+  pending: Scalars['Boolean']['output'];
   reason?: Maybe<Scalars['String']['output']>;
   trusted: Scalars['Boolean']['output'];
 };
@@ -2210,7 +2215,7 @@ export type AttestNotebookMutationVariables = Exact<{
 }>;
 
 
-export type AttestNotebookMutation = { __typename?: 'Mutation', attestNotebook: { __typename?: 'NotebookAttestation', id: string, agentId: string, requestHash: string, validator: string, response?: number | null, ranAt: any, requestTx: string, responseTx?: string | null } };
+export type AttestNotebookMutation = { __typename?: 'Mutation', attestNotebook: { __typename?: 'NotebookTrust', trusted: boolean, pending: boolean, reason?: string | null } };
 
 export type CreateWorkspaceMutationVariables = Exact<{
   name: Scalars['String']['input'];
@@ -2373,7 +2378,7 @@ export type GetBountyEntriesQueryVariables = Exact<{
 }>;
 
 
-export type GetBountyEntriesQuery = { __typename?: 'Query', getBountyEntries: Array<{ __typename?: 'BountyEntry', id: string, documentId: string, author: string, notebookTitle: string, notebookSlug?: string | null, wallet?: string | null, submittedAt?: any | null, isMine: boolean, trusted: boolean, attestation?: { __typename?: 'NotebookAttestation', agentId: string, requestHash: string, validator: string, ranAt: any, requestTx: string, responseTx?: string | null } | null }> };
+export type GetBountyEntriesQuery = { __typename?: 'Query', getBountyEntries: Array<{ __typename?: 'BountyEntry', id: string, documentId: string, author: string, notebookTitle: string, notebookSlug?: string | null, wallet?: string | null, submittedAt?: any | null, isMine: boolean, trusted: boolean, attestation?: { __typename?: 'NotebookAttestation', agentId: string, requestHash: string, validator: string, ranAt: any, requestTx: string, responseTx?: string | null, responseTxUrl?: string | null } | null }> };
 
 export type GetMyBountyEntriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2610,7 +2615,7 @@ export type GetNotebookTrustQueryVariables = Exact<{
 }>;
 
 
-export type GetNotebookTrustQuery = { __typename?: 'Query', getNotebookTrust: { __typename?: 'NotebookTrust', trusted: boolean, reason?: string | null, attestation?: { __typename?: 'NotebookAttestation', agentId: string, requestHash: string, validator: string, ranAt: any, requestTx: string, responseTx?: string | null } | null } };
+export type GetNotebookTrustQuery = { __typename?: 'Query', getNotebookTrust: { __typename?: 'NotebookTrust', trusted: boolean, pending: boolean, reason?: string | null, attestation?: { __typename?: 'NotebookAttestation', agentId: string, requestHash: string, validator: string, ranAt: any, requestTx: string, responseTx?: string | null, requestTxUrl: string, responseTxUrl?: string | null } | null } };
 
 export type GetUserQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -4825,14 +4830,9 @@ export type DeleteScheduleMutationOptions = Apollo.BaseMutationOptions<DeleteSch
 export const AttestNotebookDocument = gql`
     mutation AttestNotebook($workspaceId: String!, $documentId: String!) {
   attestNotebook(workspaceId: $workspaceId, documentId: $documentId) {
-    id
-    agentId
-    requestHash
-    validator
-    response
-    ranAt
-    requestTx
-    responseTx
+    trusted
+    pending
+    reason
   }
 }
     `;
@@ -5737,6 +5737,7 @@ export const GetBountyEntriesDocument = gql`
       ranAt
       requestTx
       responseTx
+      responseTxUrl
     }
   }
 }
@@ -7306,6 +7307,7 @@ export const GetNotebookTrustDocument = gql`
     query GetNotebookTrust($workspaceId: String!, $documentId: String!) {
   getNotebookTrust(workspaceId: $workspaceId, documentId: $documentId) {
     trusted
+    pending
     reason
     attestation {
       agentId
@@ -7314,6 +7316,8 @@ export const GetNotebookTrustDocument = gql`
       ranAt
       requestTx
       responseTx
+      requestTxUrl
+      responseTxUrl
     }
   }
 }

@@ -1,0 +1,63 @@
+---
+// src/components/SectionTrust.astro
+
+interface TrustPoint {
+  title: string;
+  description: string;
+}
+
+const points: TrustPoint[] = [
+  {
+    title: "Exactly what was run",
+    description:
+      "The code, data sources and parameters of every cell are committed onchain, with the time they ran. Change one afterwards and the receipt no longer matches.",
+  },
+  {
+    title: "Checked by someone else",
+    description:
+      "A separate validator re-runs the notebook and posts its verdict onchain, so two wallets stand behind the same inputs.",
+  },
+  {
+    title: "Open to anyone",
+    description:
+      "The record is public, on the ERC-8004 registries on Monad. Anyone can check it without a Sandworm account, and bounties accept only verified notebooks.",
+  },
+];
+---
+
+<section class="relative bg-black py-20 overflow-hidden text-white" aria-labelledby="trust-section-heading">
+  <div class="lg:container mx-auto lg:px-6 px-4">
+    <p class="uppercase mb-5 font-semibold text-center text-[15px]">
+      <span aria-hidden="true">●</span> Analysis you can trust <span aria-hidden="true">●</span>
+    </p>
+    <h2
+      id="trust-section-heading"
+      class="text-[52px] lg:text-7xl text-[#C7C2FF] mb-6 uppercase lg:leading-tight leading-none text-center font-black font-mono"
+    >
+      Deep onchain analysis you can trust
+    </h2>
+    <p class="text-[#CDD6E7] font-light text-center mx-auto max-w-2xl mb-12 text-base lg:text-lg">
+      Every finding can carry a receipt of exactly what was run. It is recorded on Monad, and a second wallet
+      re-runs it before it counts.
+    </p>
+
+    <ul class="grid gap-5 lg:grid-cols-3 list-none p-0 m-0">
+      {
+        points.map((point, index) => (
+          <li class="rounded-3xl border border-white/10 bg-white/5 p-8">
+            <span class="font-mono text-[#C7C2FF] text-sm" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <h3 class="mt-3 mb-3 text-xl font-semibold">{point.title}</h3>
+            <p class="text-[#CDD6E7] font-light leading-relaxed">{point.description}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="mt-8 text-center text-sm text-[#9AA4B8] max-w-2xl mx-auto">
+      A receipt shows what was run and that someone else re-ran it. It does not prove the analysis is right, and it
+      does not hash the results, which change as the data does.
+    </p>
+  </div>
+</section>
