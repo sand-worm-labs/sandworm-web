@@ -78,8 +78,9 @@ export const BountyReward = ({
 // =====================================
 // ⬢ Constants
 // =====================================
-export const bountyButtonClass = "h-[30px] rounded-lg px-3";
-export const bountyPrimaryButtonClass = `${bountyButtonClass} hover:bg-primary-710`;
+const bountyButtonBase = "h-[30px] rounded-lg px-3";
+export const bountyButtonClass = `${bountyButtonBase} border border-border-secondary dark:border-border-tertiary bg-transparent text-ink-100 dark:text-white hover:bg-transparent hover:border-primary`;
+export const bountyPrimaryButtonClass = `${bountyButtonBase} hover:bg-primary-710`;
 
 // =====================================
 // ⬢ Bounty Card

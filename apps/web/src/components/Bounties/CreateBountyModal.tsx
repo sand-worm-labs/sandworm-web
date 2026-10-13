@@ -12,6 +12,13 @@ import { Fragment } from "react";
 import { PiCheck } from "react-icons/pi";
 import { toast } from "sonner";
 import { escrowTokens } from "@sandworm/types/escrow";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@sandworm/ui/components/select";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
 import { RichTextField } from "@/components/RichTextField";
@@ -50,6 +57,12 @@ const labelClassName =
   "block text-sm font-medium text-ink-100 dark:text-gray-300 mb-2";
 const inputClassName =
   "w-full px-4 py-3 rounded-xl bg-inputBg dark:bg-base-400 border border-border dark:border-border-tertiary text-ink-100 placeholder:text-ink-400 dark:placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm font-medium";
+const selectTriggerClassName =
+  "w-full px-4 py-3 rounded-xl border border-border dark:border-border-tertiary dark:bg-base-400 text-sm font-medium bg-inputBg text-ink-100 dark:text-white focus:border-primary outline-none transition-colors font-body h-auto";
+const selectContentClassName =
+  "z-[70] w-[var(--radix-select-trigger-width)] max-h-72 bg-white dark:bg-dropdown-bg border-border-tertiary font-body text-ink-200 dark:text-ink-300 dark:border-border-tertiary rounded-xl";
+const selectItemClassName =
+  "hover:bg-primary/20 dark:hover:bg-dropdown-hover dark:hover:text-white";
 const secondaryButtonClassName =
   "py-2.5 px-5 rounded-xl text-sm font-medium text-ink-100 dark:text-white border border-border dark:border-border-tertiary hover:bg-hover-bg dark:hover:bg-base-600 transition-colors";
 const primaryButtonClassName = `py-2.5 px-6 bg-primary hover:bg-primary-720 disabled:bg-disabled dark:disabled:bg-[#4a4a48] text-border-secondary font-medium rounded-xl transition-colors disabled:cursor-not-allowed text-sm border border-transparent ${tintPillDarkClassName}`;
@@ -331,28 +344,43 @@ export default function CreateBountyModal({
                         </div>
                         <div>
                           <p className={labelClassName}>Token</p>
-                          <div
-                            className={`${segmentedTabsClass} w-fit`}
-                            role="group"
-                            aria-label="Reward token"
+                          <Select
+                            value={token?.symbol}
+                            onValueChange={value => setForm({ token: value })}
                           >
-                            {ESCROW_TOKENS.map(option => (
-                              <button
-                                key={option.symbol}
-                                type="button"
-                                aria-pressed={token?.symbol === option.symbol}
-                                onClick={() =>
-                                  setForm({ token: option.symbol })
-                                }
-                                className={segmentedTabClass(
-                                  token?.symbol === option.symbol
+                            <SelectTrigger
+                              aria-label="Reward token"
+                              className={selectTriggerClassName}
+                            >
+                              <SelectValue placeholder="Select token">
+                                {token && (
+                                  <span className="flex items-center gap-2">
+                                    <TokenLogo token={token} size={16} />
+                                    {token.symbol}
+                                  </span>
                                 )}
-                              >
-                                <TokenLogo token={option} size={14} />
-                                {option.symbol}
-                              </button>
-                            ))}
-                          </div>
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent
+                              className={selectContentClassName}
+                              side="bottom"
+                              sideOffset={4}
+                              avoidCollisions={false}
+                            >
+                              {ESCROW_TOKENS.map(option => (
+                                <SelectItem
+                                  key={option.symbol}
+                                  value={option.symbol}
+                                  className={selectItemClassName}
+                                >
+                                  <span className="flex items-center gap-2">
+                                    <TokenLogo token={option} size={16} />
+                                    {option.symbol}
+                                  </span>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
 

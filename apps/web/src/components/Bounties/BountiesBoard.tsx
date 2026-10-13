@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PiMagnifyingGlass } from "react-icons/pi";
 
 import { useGetBountiesQuery } from "@/generated/graphql";
 import {
@@ -30,10 +31,19 @@ export const BountiesBoard = ({
   children,
 }: BountiesBoardProps) => {
   const [type, setType] = useState("All");
+  const [query, setQuery] = useState("");
   const { data, loading, error } = useGetBountiesQuery();
   const all = data?.getBounties ?? [];
   const types = Array.from(new Set(all.map(b => b.type)));
-  const bounties = all.filter(b => type === "All" || b.type === type);
+  const needle = query.trim().toLowerCase();
+  const bounties = all.filter(
+    b =>
+      (type === "All" || b.type === type) &&
+      (!needle ||
+        [b.title, b.sponsor, b.summary].some(text =>
+          text?.toLowerCase().includes(needle)
+        ))
+  );
   const open = all.filter(b => b.status === "open").length;
 
   return (
@@ -59,22 +69,39 @@ export const BountiesBoard = ({
 
       {children}
 
-      <div
-        className="flex gap-1.5 max-w-full overflow-x-auto pb-1 mb-6"
-        role="group"
-        aria-label="Filter by type"
-      >
-        {["All", ...types].map(option => (
-          <button
-            key={option}
-            type="button"
-            aria-pressed={type === option}
-            onClick={() => setType(option)}
-            className={toggleClass(type === option)}
-          >
-            {option}
-          </button>
-        ))}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+        <div
+          className="flex gap-1.5 max-w-full overflow-x-auto pb-1 sm:pb-0"
+          role="group"
+          aria-label="Filter by type"
+        >
+          {["All", ...types].map(option => (
+            <button
+              key={option}
+              type="button"
+              aria-pressed={type === option}
+              onClick={() => setType(option)}
+              className={toggleClass(type === option)}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+
+        <label className="relative block w-full sm:w-64">
+          <PiMagnifyingGlass
+            size={14}
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-300 pointer-events-none"
+          />
+          <input
+            type="search"
+            value={query}
+            onChange={event => setQuery(event.target.value)}
+            placeholder="Search bounties"
+            aria-label="Search bounties"
+            className="font-body h-8 w-full rounded-[5px] border border-border-secondary dark:border-border-tertiary bg-base-100 pl-8 pr-2.5 text-xs text-ink-100 dark:text-white placeholder:text-ink-300 outline-none focus:border-primary"
+          />
+        </label>
       </div>
 
       {all.length === 0 && (
@@ -82,6 +109,12 @@ export const BountiesBoard = ({
           {loading && "Loading bounties..."}
           {error && "Could not load the bounties. Please try again."}
           {!loading && !error && "There are no bounties yet."}
+        </p>
+      )}
+
+      {all.length > 0 && bounties.length === 0 && (
+        <p className="text-sm text-ink-400 pb-10">
+          No bounties match your search.
         </p>
       )}
 

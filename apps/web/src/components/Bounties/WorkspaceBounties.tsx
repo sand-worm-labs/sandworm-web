@@ -29,7 +29,7 @@ import {
 } from "./BountyCard";
 import { bountyStarterPrompt, bountyTag, type BountyRef } from "./bounties";
 import CreateBountyModal from "./CreateBountyModal";
-import { SubmitEntryModal } from "./SubmitEntryModal";
+import { SubmitEntryModal, type EntryNotebook } from "./SubmitEntryModal";
 import { useBountyEntries } from "./useBountyEntry";
 
 // =====================================
@@ -120,6 +120,13 @@ export const useWorkspaceBountyActions = () => {
     [publish, submitEntry, refetch]
   );
 
+  // Any notebook of theirs can be the entry, newest first, not only the one "Start" made.
+  const notebooks: EntryNotebook[] = documentsState.documents
+    .filter(doc => doc.deletedAt === null)
+    .sortBy(doc => -new Date(doc.updatedAt).getTime())
+    .map(doc => ({ id: doc.id, title: doc.title }))
+    .toArray();
+
   return (bounty: BountyRef) => {
     const isBusy = busy === bounty.slug;
     const entry = documentsState.documents.find(
@@ -128,16 +135,42 @@ export const useWorkspaceBountyActions = () => {
 
     if (bounty.status !== "open" && !entry) return null;
 
+    const submitModal = (
+      <SubmitEntryModal
+        isOpen={asking === bounty.slug}
+        onClose={() => setAsking(null)}
+        title={bounty.title}
+        isSubmitting={isBusy}
+        notebooks={notebooks}
+        defaultNotebookId={entry?.id}
+        needsWallet={!!bounty.onchainId}
+        onSubmit={(documentId, wallet) => onSubmit(bounty, documentId, wallet)}
+      />
+    );
+
     if (!entry) {
       return (
-        <Button
-          size="sm"
-          className={bountyPrimaryButtonClass}
-          disabled={isBusy || documentsState.loading}
-          onClick={() => onStart(bounty)}
-        >
-          Start bounty
-        </Button>
+        <>
+          <Button
+            size="sm"
+            className={bountyPrimaryButtonClass}
+            disabled={isBusy || documentsState.loading}
+            onClick={() => onStart(bounty)}
+          >
+            Start bounty
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            className={bountyButtonClass}
+            disabled={isBusy || documentsState.loading}
+            title="Enter a notebook you already have"
+            onClick={() => setAsking(bounty.slug)}
+          >
+            Submit a notebook
+          </Button>
+          {submitModal}
+        </>
       );
     }
 
@@ -175,24 +208,14 @@ export const useWorkspaceBountyActions = () => {
               size="sm"
               className={bountyPrimaryButtonClass}
               disabled={isBusy}
-              title="Publishes this notebook so anyone can view it"
-              onClick={() =>
-                bounty.onchainId
-                  ? setAsking(bounty.slug)
-                  : onSubmit(bounty, entry.id)
-              }
+              title="Publishes a notebook so anyone can view it"
+              onClick={() => setAsking(bounty.slug)}
             >
               Publish and submit
             </Button>
           )
         )}
-        <SubmitEntryModal
-          isOpen={asking === bounty.slug}
-          onClose={() => setAsking(null)}
-          title={bounty.title}
-          isSubmitting={isBusy}
-          onSubmit={wallet => onSubmit(bounty, entry.id, wallet)}
-        />
+        {submitModal}
       </>
     );
   };

@@ -96,23 +96,23 @@ export const BountyDetail = ({
     <div className="container mx-auto font-body pt-4 pb-12">
       {back}
 
-      <header className="mt-5 max-w-3xl">
-        <BountyChips bounty={bounty} />
-        <h1 className="mt-3 text-2xl font-bold text-ink-100 dark:text-white">
-          {bounty.title}
-        </h1>
-        <p className="mt-1.5 flex items-center gap-1.5 text-xs text-ink-400">
-          <SponsorLogo sponsor={bounty.sponsor} size={18} />
-          Sponsored by {bounty.sponsor}
-          {bounty.postedOn && ` · Posted ${bounty.postedOn}`}
-        </p>
-        <p className="mt-4 text-[0.95rem] leading-relaxed text-ink-200 dark:text-gray-300">
-          {bounty.summary}
-        </p>
-      </header>
+      <div className="mt-5 grid gap-x-8 lg:grid-cols-[minmax(0,1fr)_320px] items-start">
+        <header className="order-1 lg:order-none lg:col-start-1 lg:row-start-1 max-w-3xl">
+          <BountyChips bounty={bounty} />
+          <h1 className="mt-3 text-2xl font-bold text-ink-100 dark:text-white">
+            {bounty.title}
+          </h1>
+          <p className="mt-1.5 flex items-center gap-1.5 text-xs text-ink-400">
+            <SponsorLogo sponsor={bounty.sponsor} size={18} />
+            Sponsored by {bounty.sponsor}
+            {bounty.postedOn && ` · Posted ${bounty.postedOn}`}
+          </p>
+          <p className="mt-4 text-[0.95rem] leading-relaxed text-ink-200 dark:text-gray-300">
+            {bounty.summary}
+          </p>
+        </header>
 
-      <div className="mt-2 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] items-start">
-        <div className="min-w-0 max-w-3xl">
+        <div className="order-3 lg:order-none lg:col-start-1 lg:row-start-2 min-w-0 max-w-3xl">
           {bounty.details && (
             <section className="mt-8">
               <RichTextView markdown={bounty.details} />
@@ -154,7 +154,7 @@ export const BountyDetail = ({
           <BountyEntries slug={bounty.slug} />
         </div>
 
-        <aside className="lg:sticky lg:top-6 mt-8 rounded-3xl bg-base-100 border border-border-secondary dark:border-border-tertiary p-6">
+        <aside className="order-2 lg:order-none lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:sticky lg:top-6 mt-8 lg:mt-0 rounded-3xl bg-base-100 border border-border-secondary dark:border-border-tertiary p-6">
           <p className="text-xs text-ink-400">
             {bounty.sample ? "Original reward" : "Reward"}
           </p>
@@ -180,14 +180,16 @@ export const BountyDetail = ({
           {!bounty.sample && <FaucetButton rewardToken={bounty.rewardToken} />}
 
           {actions && (
-            <div className="mt-5 flex flex-wrap items-center gap-2">
+            <div className="mt-5 flex items-center gap-2 [&>a]:flex-1 [&>button]:flex-1 [&>a]:whitespace-nowrap [&>button]:whitespace-nowrap [&>a]:px-2 [&>button]:px-2">
               {actions}
             </div>
           )}
 
           <p className="mt-5 text-xs leading-relaxed text-ink-400">
-            Starting a bounty creates a notebook for it in your workspace.
-            Publishing that notebook submits it as your entry.
+            Starting a bounty creates a notebook for it in your workspace, but
+            you are not tied to it. You can start with one notebook and submit
+            another: pick any of yours when you submit, and it is published as
+            your entry.
           </p>
 
           {bounty.sample && (
