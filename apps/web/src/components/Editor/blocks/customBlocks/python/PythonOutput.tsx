@@ -21,7 +21,12 @@ import remarkGfm from "remark-gfm";
 import type { PythonBlock } from "@sandworm/editor";
 
 import { downloadFile } from "@/utils/file";
-import { ChartSkeleton, Shimmer, TableSkeleton } from "@/components/Skeletons";
+import {
+  ChartSkeleton,
+  KpiRowSkeleton,
+  Shimmer,
+  TableSkeleton,
+} from "@/components/Skeletons";
 
 import useResettableState from "../../../hooks/useResettableState";
 import { useTileChrome } from "../../Dashboard/TileChromeContext";
@@ -768,17 +773,21 @@ function HTMLOutput(props: {
   return (
     <div className="relative w-full">
       {labelled && <NotebookContentLabel />}
-      {!loaded && (
-        <TableSkeleton
-          className="w-full"
-          style={{
-            minHeight: props.isDashboardTile
-              ? HTML_TILE_PLACEHOLDER_HEIGHT
-              : HTML_PLACEHOLDER_HEIGHT,
-          }}
-          aria-label="Loading output"
-        />
-      )}
+      {!loaded &&
+        (props.isDashboardTile && plainTile ? (
+          // A plain tile draws its own cards (figures, a chart with buttons), so hint at cards, not a table.
+          <KpiRowSkeleton className="w-full" />
+        ) : (
+          <TableSkeleton
+            className="w-full"
+            style={{
+              minHeight: props.isDashboardTile
+                ? HTML_TILE_PLACEHOLDER_HEIGHT
+                : HTML_PLACEHOLDER_HEIGHT,
+            }}
+            aria-label="Loading output"
+          />
+        ))}
       <iframe
         ref={iframeRef}
         srcDoc={styledHtml}

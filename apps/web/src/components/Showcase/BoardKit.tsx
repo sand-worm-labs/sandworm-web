@@ -12,7 +12,8 @@ import { cn } from "@/lib/utils";
 // The dark hero at the top of a Showcase page: navy in light mode, the card surface in dark mode,
 // with white text either way. Pair it with `lineBackdrop` and `heroBreadcrumbClass`.
 // (`bg-ink-navy` alone turns near-white in dark mode, as ink-navy is a text color.)
-export const heroClass = "bg-ink-navy dark:bg-block-surface text-white";
+export const heroClass =
+  "bg-linear-to-br from-[#341a6a] to-[#1e0a2b] bg-[#1e0a2b] text-white";
 
 export const heroBreadcrumbClass = "[&_ol]:text-white/60 [&_span]:!text-white";
 

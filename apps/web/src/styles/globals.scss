@@ -1800,3 +1800,26 @@ label {
   stroke-linejoin: round;
   stroke-width: 8px;
 }
+
+/* A skeleton waits a beat before it shows, so a fast load never flashes one. It does that in CSS, not
+   with a timer in React, so the skeleton in the server's HTML also paints before the page's JavaScript
+   has loaded: that wait used to be a blank page. */
+@keyframes skeleton-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.skeleton-delayed {
+  opacity: 0;
+  animation: skeleton-in 180ms ease-out 200ms forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-delayed {
+    animation-duration: 1ms;
+  }
+}

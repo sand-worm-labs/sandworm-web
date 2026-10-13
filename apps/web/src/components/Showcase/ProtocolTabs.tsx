@@ -1,11 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 
 import { cn } from "@/lib/utils";
-import { notebookHref, slugify } from "@/lib/showcase";
+import { slugify } from "@/lib/showcase";
 import type { ShowcaseTab } from "@/types";
 
 import { PublishedDashboard } from "./PublishedDashboard";
@@ -107,17 +106,7 @@ export function ProtocolTabs({
         className="container mx-auto px-4 sm:px-8 py-6"
       >
         {active.slug ? (
-          <>
-            <div className="mb-4 flex justify-end">
-              <Link
-                href={`${notebookHref(active.slug)}/dashboard`}
-                className="text-[13px] font-medium text-primary dark:text-primary-tint-75 hover:underline"
-              >
-                Open full screen →
-              </Link>
-            </div>
-            <PublishedDashboard key={active.slug} slug={active.slug} />
-          </>
+          <PublishedDashboard key={active.slug} slug={active.slug} />
         ) : (
           <p className="rounded-xl border border-dashed border-border-secondary dark:border-border-tertiary p-6 text-sm text-ink-400">
             {active.label} is being built. It will appear here once its notebook

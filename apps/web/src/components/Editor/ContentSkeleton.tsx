@@ -1,12 +1,13 @@
 import clsx from "clsx";
-import { useEffect, useMemo } from "react";
-
-import useResettableState from "./hooks/useResettableState";
 
 // =====================================
 // ⬢  Constants
 // =====================================
-const TIMEOUT_TO_SHOW = 200;
+// Enough rows to fill a tall screen. A fixed count keeps the server's HTML and the browser's first
+// render identical.
+const ROW_COUNT = 36;
+// The same tokens as the other skeletons, so it follows light and dark mode.
+const BLOCK = "bg-base-300 dark:bg-base-700";
 
 const rowPatterns = [
   { key: "full-1", widths: ["w-full"] },
@@ -28,7 +29,7 @@ const SkeletonRow = ({ pattern }: { pattern: string[] }) => (
     {pattern.map(width => (
       <div
         key={width}
-        className={clsx("h-[1.3rem] bg-[#F3F4F7] rounded-full", width)}
+        className={clsx("h-[1.3rem] rounded-full", BLOCK, width)}
       />
     ))}
   </div>
@@ -42,18 +43,15 @@ interface Props {
 // ⬢  Tile Skeleton
 // =====================================
 export function TitleSkeleton({ visible }: Props) {
-  const [show, setShow] = useResettableState(() => false, [visible]);
-
-  useEffect(() => {
-    if (!visible) return () => {};
-    const t = setTimeout(() => setShow(true), TIMEOUT_TO_SHOW);
-    return () => clearTimeout(t);
-  }, [visible, setShow]);
-
-  if (!visible || !show) return null;
+  if (!visible) return null;
 
   return (
-    <div className="animate-pulse w-full h-16 rounded-full bg-[#F3F4F7]  mb-2 px-12" />
+    <div
+      className={clsx(
+        "skeleton-delayed animate-pulse w-full h-16 rounded-full mb-2 px-12",
+        BLOCK
+      )}
+    />
   );
 }
 
@@ -61,46 +59,21 @@ export function TitleSkeleton({ visible }: Props) {
 // ⬢  Content Skeleton
 // =====================================
 export function ContentSkeleton({ visible }: Props) {
-  const [show, setShow] = useResettableState(() => false, [visible]);
-
-  useEffect(() => {
-    if (!visible) return () => {};
-    const t = setTimeout(() => setShow(true), TIMEOUT_TO_SHOW);
-    return () => clearTimeout(t);
-  }, [visible, setShow]);
-
-  const rows = useMemo(() => {
-    const ROW_HEIGHT = 22;
-    const viewportHeight =
-      typeof window !== "undefined" ? window.innerHeight : 800;
-    const rowsNeeded = Math.ceil(viewportHeight / ROW_HEIGHT) * 2;
-
-    return Array.from({ length: rowsNeeded }).map((_, i) => {
-      const { key, widths } =
-        rowPatterns[i % rowPatterns.length] ?? rowPatterns[0]!;
-      return (
-        <SkeletonRow
-          key={`${key}-${Math.floor(i / rowPatterns.length)}`}
-          pattern={widths}
-        />
-      );
-    });
-  }, []);
-
-  if (!visible || !show) return null;
+  if (!visible) return null;
 
   return (
-    <div className="relative w-full min-h-[100dvh] p-6">
-      <div
-        className="
-          animate-pulse
-          grid
-          grid-cols-1
-          gap-x-8
-          gap-y-3
-        "
-      >
-        {rows}
+    <div className="skeleton-delayed relative w-full max-h-[100dvh] overflow-hidden p-6">
+      <div className="animate-pulse grid grid-cols-1 gap-x-8 gap-y-3">
+        {Array.from({ length: ROW_COUNT }).map((_, i) => {
+          const { key, widths } =
+            rowPatterns[i % rowPatterns.length] ?? rowPatterns[0]!;
+          return (
+            <SkeletonRow
+              key={`${key}-${Math.floor(i / rowPatterns.length)}`}
+              pattern={widths}
+            />
+          );
+        })}
       </div>
     </div>
   );

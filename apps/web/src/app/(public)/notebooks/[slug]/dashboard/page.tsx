@@ -9,12 +9,14 @@ import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import { usePublicYDoc } from "@/components/Editor/hooks/usePublicYDoc";
 import PublicNotebookBanner from "@/components/Editor/PublicNotebookBanner";
 import type { NotebookView } from "@/components/Editor/ViewSwitcher";
-import { PublicSkeleton } from "@/components/Editor/PublicSkeleton";
+import { DashboardPageSkeleton } from "@/components/Skeletons";
 import { EmptyState } from "@/components/EmptyState";
 
+// The dashboard's code loads on its own, so the page shows the dashboard-shaped skeleton meanwhile
+// instead of an empty gap.
 const PublicDashboard = dynamic(
   () => import("@/components/Editor/PublicDashboard"),
-  { ssr: false }
+  { ssr: false, loading: () => <DashboardPageSkeleton /> }
 );
 
 // ─────────────────────────────────────────────────────────────
@@ -36,7 +38,8 @@ export default function PublicDashboardPage() {
   );
 
   const notEligible =
-    !isSyncing && (!hasDashboardContent || document?.isDashboardPublic === false);
+    !isSyncing &&
+    (!hasDashboardContent || document?.isDashboardPublic === false);
 
   useEffect(() => {
     if (error) {
@@ -66,7 +69,7 @@ export default function PublicDashboardPage() {
     }
 
     if (isSyncing || !document || !yDoc || notEligible) {
-      return <PublicSkeleton />;
+      return <DashboardPageSkeleton />;
     }
 
     return <PublicDashboard document={document} yDoc={yDoc} />;

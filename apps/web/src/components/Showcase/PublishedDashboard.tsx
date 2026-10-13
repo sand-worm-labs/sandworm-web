@@ -4,13 +4,18 @@ import { useMemo } from "react";
 import dynamic from "next/dynamic";
 import { getDashboard } from "@sandworm/editor";
 
-import { PublicSkeleton } from "@/components/Editor/PublicSkeleton";
+import { DashboardPageSkeleton } from "@/components/Skeletons";
 import { usePublicYDoc } from "@/components/Editor/hooks/usePublicYDoc";
 
 // The dashboard only works in the browser.
+// The page around it already has its own side padding.
+const SKELETON_CLASS = "px-0 lg:px-0 py-0";
 const PublicDashboard = dynamic(
   () => import("@/components/Editor/PublicDashboard"),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => <DashboardPageSkeleton className={SKELETON_CLASS} />,
+  }
 );
 
 // =====================================
@@ -36,7 +41,7 @@ export function PublishedDashboard({ slug }: { slug: string }) {
   }
 
   if (isSyncing || !notebook || !yDoc) {
-    return <PublicSkeleton />;
+    return <DashboardPageSkeleton className={SKELETON_CLASS} />;
   }
 
   if (!hasDashboard) {
