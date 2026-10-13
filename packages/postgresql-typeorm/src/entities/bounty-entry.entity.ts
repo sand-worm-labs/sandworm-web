@@ -2,6 +2,7 @@ import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, t
 import { AbstractEntity } from './abstract.entity';
 import { BountyEntity } from './bounty.entity';
 import { DocumentEntity } from './document.entity';
+import { NotebookAttestationEntity } from './notebook-attestation.entity';
 import { UserEntity } from './user.entity';
 
 // The notebook someone is writing for a bounty. One per person per bounty.
@@ -30,6 +31,10 @@ export class BountyEntryEntity extends AbstractEntity {
   @Column({ type: 'varchar', nullable: true })
   wallet!: string | null;
 
+  // The attestation that made this notebook trusted, set when it is submitted
+  @Column({ name: 'attestation_id', type: 'uuid', nullable: true })
+  attestationId!: string | null;
+
   // Null while the notebook is still being worked on
   @Column({ name: 'submitted_at', type: 'timestamptz', nullable: true })
   submittedAt!: Date | null;
@@ -57,4 +62,12 @@ export class BountyEntryEntity extends AbstractEntity {
     foreignKeyConstraintName: 'FK_bounty_entry_author',
   })
   author!: Relation<UserEntity>;
+
+  @ManyToOne(() => NotebookAttestationEntity, { onDelete: 'SET NULL', nullable: true })
+  @JoinColumn({
+    name: 'attestation_id',
+    referencedColumnName: 'id',
+    foreignKeyConstraintName: 'FK_bounty_entry_attestation',
+  })
+  attestation!: Relation<NotebookAttestationEntity> | null;
 }

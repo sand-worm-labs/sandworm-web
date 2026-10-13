@@ -15,5 +15,6 @@ import { NotebookRunService } from './notebook-run.service';
   imports: [YjsModule, DocumentModule, WorkspaceModule, ToolModule],
   controllers: [NotebookBlocksController, NotebookDashboardController, NotebookRunController, NotebookViewController],
   providers: [NotebookDocService, NotebookBlocksService, NotebookDashboardService, NotebookRunService],
+  exports: [NotebookDocService, NotebookRunService],
 })
 export class NotebookBlocksModule {}

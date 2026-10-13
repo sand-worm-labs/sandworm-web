@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BountyEntity, BountyEntryEntity, DocumentEntity } from '@sandworm/postgresql-typeorm';
 import { IsNull, Not, Repository } from 'typeorm';
 import { getAddress, isAddress } from 'viem';
+import { bountiesRequireTrust, TRUST_GATE, type TrustGate } from '../trust/trust.gate';
 import { BountyEntry, bountyStatus, ENTRY_RELATIONS } from './bounty.model';
 
 @Injectable()
@@ -14,6 +15,7 @@ export class BountyEntryService {
     private readonly bountyRepository: Repository<BountyEntity>,
     @InjectRepository(DocumentEntity)
     private readonly documentRepository: Repository<DocumentEntity>,
+    @Inject(TRUST_GATE) private readonly trust: TrustGate,
   ) { }
 
   // The submitted entries, oldest first. Everyone can read them: an entry is a
@@ -60,7 +62,8 @@ export class BountyEntryService {
   }
 
   // The notebook has to be published already: publishing is what makes it
-  // readable by the sponsor.
+  // readable by the sponsor, and it has to be trusted: attested onchain, with
+  // nothing changed since, so every entry is one that can be re-run as submitted.
   async submitEntry(slug: string, documentId: string, wallet: string | undefined, userId: string): Promise<BountyEntry> {
     const bounty = await this.openBounty(slug);
     const document = await this.ownDocument(documentId, userId);
@@ -71,9 +74,14 @@ export class BountyEntryService {
     // A funded bounty pays from escrow to an address, so it needs one.
     if (bounty.onchainId && !address) throw new BadRequestException('Add the wallet the reward should be paid to');
 
+    const attestation = bountiesRequireTrust()
+      ? await this.trust.trusted({ userId, workspaceId: document.workspaceId, documentId })
+      : null;
+
     const existing = await this.entryRepository.findOneBy({ bountySlug: slug, authorId: userId });
     const entry = existing ?? this.entryRepository.create({ bountySlug: slug, authorId: userId });
     entry.documentId = documentId;
+    entry.attestationId = attestation?.id ?? null;
     entry.wallet = address ? getAddress(address) : null;
     entry.submittedAt = existing?.submittedAt ?? new Date();
     return this.saved(entry, userId);

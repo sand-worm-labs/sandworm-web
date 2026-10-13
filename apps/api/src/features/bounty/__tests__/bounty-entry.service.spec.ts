@@ -1,6 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { BountyEntryService } from '../bounty-entry.service';
 
+const WORKSPACE_ID = 'w1';
 const WALLET = '0x000000000000000000000000000000000000dEaD';
 const FUTURE = new Date(Date.now() + 86_400_000);
 const PAST = new Date(Date.now() - 86_400_000);
@@ -10,9 +11,11 @@ const setup = (options: {
   document?: Record<string, unknown> | null;
   existing?: Record<string, unknown> | null;
   entries?: Record<string, unknown>[];
+  // What the trust check does: resolves with an attestation, or rejects with a reason.
+  trusted?: () => Promise<unknown>;
 } = {}) => {
   const bounty = options.bounty === null ? null : { slug: 'pyth-1a2b', status: 'open', deadline: FUTURE, creatorId: 'sponsor', onchainId: '7', ...options.bounty };
-  const document = options.document === null ? null : { id: 'd1', authorId: 'u1', deletedAt: null, publishedAt: new Date(), slug: 'my-entry', title: 'My entry', ...options.document };
+  const document = options.document === null ? null : { id: 'd1', authorId: 'u1', deletedAt: null, publishedAt: new Date(), slug: 'my-entry', title: 'My entry', workspaceId: WORKSPACE_ID, ...options.document };
   const author = { username: 'ada', fullName: 'Ada L', email: 'ada@example.com' };
   const entryRepository = {
     find: jest.fn().mockResolvedValue(options.entries ?? []),
@@ -21,13 +24,48 @@ const setup = (options: {
     create: jest.fn((value: unknown) => ({ ...(value as object) })),
     save: jest.fn(async (value: unknown) => ({ ...(value as object), id: 'e1' })),
   };
+  const trust = { trusted: jest.fn(options.trusted ?? (async () => ({ id: 'a1' }))) };
   const service = new BountyEntryService(
     entryRepository as never,
     { findOneBy: jest.fn().mockResolvedValue(bounty) } as never,
     { findOneBy: jest.fn().mockResolvedValue(document) } as never,
+    trust as never,
   );
-  return { service, entryRepository, author, document };
+  return { service, entryRepository, author, document, trust };
 };
+
+describe('BountyEntryService.submitEntry: trust', () => {
+  it('records which attestation made the notebook trusted', async () => {
+    const { service, entryRepository, trust } = setup();
+    await service.submitEntry('pyth-1a2b', 'd1', WALLET, 'u1');
+
+    expect(trust.trusted).toHaveBeenCalledWith({ userId: 'u1', workspaceId: WORKSPACE_ID, documentId: 'd1' });
+    expect(entryRepository.save).toHaveBeenCalledWith(expect.objectContaining({ attestationId: 'a1' }));
+  });
+
+  it('refuses a notebook that is not trusted, and saves nothing', async () => {
+    const { service, entryRepository } = setup({
+      trusted: async () => {
+        throw new BadRequestException('This notebook is not trusted yet');
+      },
+    });
+
+    await expect(service.submitEntry('pyth-1a2b', 'd1', WALLET, 'u1')).rejects.toThrow('not trusted');
+    expect(entryRepository.save).not.toHaveBeenCalled();
+  });
+
+  it('does not ask for trust when trust is switched off', async () => {
+    process.env.BOUNTY_REQUIRE_TRUST = 'false';
+    try {
+      const { service, trust, entryRepository } = setup();
+      await service.submitEntry('pyth-1a2b', 'd1', WALLET, 'u1');
+      expect(trust.trusted).not.toHaveBeenCalled();
+      expect(entryRepository.save).toHaveBeenCalledWith(expect.objectContaining({ attestationId: null }));
+    } finally {
+      delete process.env.BOUNTY_REQUIRE_TRUST;
+    }
+  });
+});
 
 describe('BountyEntryService.submitEntry', () => {
   it('records a published notebook with the checksummed wallet', async () => {
