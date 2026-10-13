@@ -10,6 +10,13 @@ import {
 import { Fragment, type ReactNode } from "react";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
+import { tintPillDarkClassName } from "@/styles/interactive";
+
+// The field and the full-width action every escrow modal uses
+export const modalInputClassName =
+  "w-full px-3 py-2.5 rounded-xl bg-inputBg dark:bg-base-400 border border-border dark:border-border-tertiary text-ink-100 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm font-medium";
+
+export const modalPrimaryButtonClassName = `w-full py-3.5 px-4 bg-primary hover:bg-primary-720 disabled:bg-disabled dark:disabled:bg-[#4a4a48] text-border-secondary font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm border border-transparent ${tintPillDarkClassName}`;
 
 interface ModalShellProps {
   isOpen: boolean;

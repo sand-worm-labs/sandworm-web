@@ -9,6 +9,7 @@ import { EscrowPanel } from "@/web3/components/EscrowPanel";
 
 import type { BountyRef } from "./bounties";
 import { BountyChips, BountyReward, BountyWinners } from "./BountyCard";
+import { BountyEntries } from "./BountyEntries";
 import { SponsorLogo } from "./BountyLogos";
 
 const Section = ({
@@ -148,6 +149,8 @@ export const BountyDetail = ({
               <BountyWinners winners={bounty.winners} />
             </Section>
           )}
+
+          <BountyEntries slug={bounty.slug} />
         </div>
 
         <aside className="lg:sticky lg:top-6 mt-8 rounded-3xl bg-base-100 border border-border-secondary dark:border-border-tertiary p-6">

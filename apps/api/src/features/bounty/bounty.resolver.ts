@@ -1,8 +1,10 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
 import { Public } from '@sandworm/nest-common';
-import { Bounty } from './bounty.model';
+import { ParseUUIDPipe } from '@nestjs/common';
+import { Bounty, BountyEntry } from './bounty.model';
 import { BountyService } from './bounty.service';
+import { BountyEntryService } from './bounty-entry.service';
 import { BountyEscrowService } from './bounty-escrow.service';
 import { CreateBountyInput } from './dto/bounty.dto';
 
@@ -11,6 +13,7 @@ export class BountyResolver {
   constructor(
     private readonly bountyService: BountyService,
     private readonly escrowService: BountyEscrowService,
+    private readonly entryService: BountyEntryService,
   ) { }
 
   @Public()
@@ -70,5 +73,58 @@ export class BountyResolver {
     @Args('txHash') txHash: string,
   ): Promise<Bounty> {
     return this.escrowService.confirmFunding(slug, chainId, txHash, userId);
+  }
+
+  @Mutation(() => Bounty, {
+    name: 'syncBountyEscrow',
+    description: 'Read a funded bounty\'s escrow and record who was paid and whether it is closed. Everything is read from the chain.',
+  })
+  syncBountyEscrow(@Args('slug') slug: string): Promise<Bounty> {
+    return this.escrowService.syncEscrow(slug);
+  }
+
+  @Public()
+  @Query(() => [BountyEntry], {
+    name: 'getBountyEntries',
+    description: 'Get the entries submitted to a bounty, oldest first. Wallets are returned only to the bounty\'s creator and to each entry\'s author.',
+  })
+  getBountyEntries(
+    @Args('slug') slug: string,
+    @CurrentUser('id') userId?: string,
+  ): Promise<BountyEntry[]> {
+    return this.entryService.getEntries(slug, userId);
+  }
+
+  @Query(() => [BountyEntry], {
+    name: 'getMyBountyEntries',
+    description: 'Get the entries the current user has started or submitted, across all bounties.',
+  })
+  getMyBountyEntries(@CurrentUser('id') userId: string): Promise<BountyEntry[]> {
+    return this.entryService.getMyEntries(userId);
+  }
+
+  @Mutation(() => BountyEntry, {
+    name: 'startBountyEntry',
+    description: 'Record the notebook the current user is writing for a bounty.',
+  })
+  startBountyEntry(
+    @CurrentUser('id') userId: string,
+    @Args('slug') slug: string,
+    @Args('documentId', new ParseUUIDPipe()) documentId: string,
+  ): Promise<BountyEntry> {
+    return this.entryService.startEntry(slug, documentId, userId);
+  }
+
+  @Mutation(() => BountyEntry, {
+    name: 'submitBountyEntry',
+    description: 'Submit a published notebook as the current user\'s entry. A bounty funded in escrow needs the wallet the reward should be paid to.',
+  })
+  submitBountyEntry(
+    @CurrentUser('id') userId: string,
+    @Args('slug') slug: string,
+    @Args('documentId', new ParseUUIDPipe()) documentId: string,
+    @Args('wallet', { nullable: true }) wallet?: string,
+  ): Promise<BountyEntry> {
+    return this.entryService.submitEntry(slug, documentId, wallet, userId);
   }
 }

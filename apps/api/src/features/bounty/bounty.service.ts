@@ -4,14 +4,12 @@ import { BountyEntity } from '@sandworm/postgresql-typeorm';
 import { randomBytes } from 'crypto';
 import { Not, Repository } from 'typeorm';
 import { WorkspaceMembershipService } from '../workspace/service/workspace-membership.service';
+import { formatAmount } from './bounty.format';
 import { Bounty } from './bounty.model';
 import { CreateBountyInput } from './dto/bounty.dto';
 
 const slugify = (title: string) =>
   title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
-
-const formatAmount = (amount: string) =>
-  Number(amount).toLocaleString('en-US', { maximumFractionDigits: 6 });
 
 @Injectable()
 export class BountyService {

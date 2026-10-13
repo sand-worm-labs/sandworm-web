@@ -5,14 +5,16 @@ import { useMemo, useRef, useState } from "react";
 import { PiPlus, PiTrash } from "react-icons/pi";
 import { toast } from "sonner";
 
-import { tintPillDarkClassName } from "@/styles/interactive";
-
 import { checkAward, type AwardRow } from "../award";
 import { describeError } from "../errors";
 import { formatToken } from "../format";
 import { useEscrowActions } from "../hooks/useEscrowActions";
 
-import { ModalShell } from "./ModalShell";
+import {
+  ModalShell,
+  modalInputClassName,
+  modalPrimaryButtonClassName,
+} from "./ModalShell";
 
 // =====================================
 // ⬢ Types
@@ -26,13 +28,10 @@ interface AwardModalProps {
   decimals: number;
   symbol: string;
   feeBps: number;
+  // Entries that gave a wallet, offered as winners to pick
+  candidates?: { label: string; address: string }[];
   onDone: () => void;
 }
-
-const inputClassName =
-  "w-full px-3 py-2.5 rounded-xl bg-inputBg dark:bg-base-400 border border-border dark:border-border-tertiary text-ink-100 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm font-medium";
-
-const primaryButtonClassName = `w-full py-3.5 px-4 bg-primary hover:bg-primary-720 disabled:bg-disabled dark:disabled:bg-[#4a4a48] text-border-secondary font-medium rounded-xl transition-colors disabled:cursor-not-allowed text-sm border border-transparent ${tintPillDarkClassName}`;
 
 // =====================================
 // ⬢ Award Modal
@@ -46,6 +45,7 @@ export const AwardModal = ({
   decimals,
   symbol,
   feeBps,
+  candidates = [],
   onDone,
 }: AwardModalProps) => {
   const nextId = useRef(1);
@@ -74,6 +74,19 @@ export const AwardModal = ({
     setRows(current => [...current, { id, address: "", amount: "" }]);
   };
 
+  // Puts an entry's wallet in the first empty row, or in a new one.
+  const pick = (address: string) => {
+    nextId.current += 1;
+    const id = nextId.current;
+    setRows(current => {
+      const empty = current.findIndex(row => !row.address);
+      return empty === -1
+        ? [...current, { id, address, amount: "" }]
+        : current.map((row, i) => (i === empty ? { ...row, address } : row));
+    });
+  };
+  const picked = new Set(rows.map(row => row.address.toLowerCase()));
+
   const submit = async () => {
     setIsSending(true);
     try {
@@ -101,12 +114,37 @@ export const AwardModal = ({
           type="button"
           disabled={isSending || check.errors.length > 0}
           onClick={submit}
-          className={primaryButtonClassName}
+          className={modalPrimaryButtonClassName}
         >
           {isSending ? "Paying winners..." : "Award winners"}
         </button>
       }
     >
+      {candidates.length > 0 && (
+        <div className="mb-4">
+          <p className="text-xs font-medium text-ink-100 dark:text-white">
+            Pick from the entries
+          </p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {candidates.map(candidate => (
+              <button
+                key={candidate.address}
+                type="button"
+                title={candidate.address}
+                disabled={
+                  picked.has(candidate.address.toLowerCase()) ||
+                  rows.length >= MAX_WINNERS
+                }
+                onClick={() => pick(candidate.address)}
+                className="rounded-lg border border-border dark:border-border-tertiary px-2.5 py-1 text-xs font-medium text-ink-100 dark:text-white hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                @{candidate.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="space-y-3">
         {rows.map((row, index) => (
           <div key={row.id} className="flex items-center gap-2">
@@ -115,7 +153,7 @@ export const AwardModal = ({
               value={row.address}
               onChange={e => update(index, { address: e.target.value.trim() })}
               placeholder="0x... wallet address"
-              className={`${inputClassName} min-w-0 flex-1`}
+              className={`${modalInputClassName} min-w-0 flex-1`}
             />
             <input
               aria-label={`Winner ${index + 1} amount`}
@@ -123,7 +161,7 @@ export const AwardModal = ({
               inputMode="decimal"
               onChange={e => update(index, { amount: e.target.value.trim() })}
               placeholder={symbol}
-              className={`${inputClassName} w-28 shrink-0`}
+              className={`${modalInputClassName} w-28 shrink-0`}
             />
             <button
               type="button"

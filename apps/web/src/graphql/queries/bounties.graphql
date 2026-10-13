@@ -1,3 +1,11 @@
+fragment BountyWinnerFields on BountyWinner {
+  place
+  author
+  notebookSlug
+  amount
+  address
+}
+
 query GetBounties {
   getBounties {
     slug
@@ -8,11 +16,10 @@ query GetBounties {
     status
     summary
     winners {
-      place
-      author
-      notebookSlug
+      ...BountyWinnerFields
     }
     sample
+    onchainId
   }
 }
 
@@ -32,9 +39,7 @@ query GetBounty($slug: String!) {
     judging
     dataHints
     winners {
-      place
-      author
-      notebookSlug
+      ...BountyWinnerFields
     }
     postedOn
     sample
@@ -60,13 +65,34 @@ query GetBountyDrafts($workspaceId: String!) {
     status
     summary
     winners {
-      place
-      author
-      notebookSlug
+      ...BountyWinnerFields
     }
     sample
+    onchainId
     rewardToken
     rewardAmount
     deadline
+  }
+}
+
+query GetBountyEntries($slug: String!) {
+  getBountyEntries(slug: $slug) {
+    id
+    documentId
+    author
+    notebookTitle
+    notebookSlug
+    wallet
+    submittedAt
+    isMine
+  }
+}
+
+query GetMyBountyEntries {
+  getMyBountyEntries {
+    id
+    bountySlug
+    documentId
+    submittedAt
   }
 }

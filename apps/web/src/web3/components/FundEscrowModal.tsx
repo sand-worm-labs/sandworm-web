@@ -12,8 +12,6 @@ import {
   useWalletClient,
 } from "wagmi";
 
-import { tintPillDarkClassName } from "@/styles/interactive";
-
 import { defaultChain, faucets, supportsEscrow, targetChains } from "../config";
 import { erc20Abi } from "../erc20";
 import { describeError } from "../errors";
@@ -22,7 +20,7 @@ import { useFundBounty } from "../hooks/useFundBounty";
 import { useTx } from "../hooks/useTx";
 
 import { ConnectWalletButton } from "./ConnectWalletButton";
-import { ModalShell } from "./ModalShell";
+import { ModalShell, modalPrimaryButtonClassName } from "./ModalShell";
 
 // =====================================
 // ⬢ Types
@@ -49,8 +47,6 @@ const STEP_LABEL = {
   confirming: "Confirming with Sandworm...",
   done: "Done",
 } as const;
-
-const primaryButtonClassName = `w-full py-3.5 px-4 bg-primary hover:bg-primary-720 disabled:bg-disabled dark:disabled:bg-[#4a4a48] text-border-secondary font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm border border-transparent ${tintPillDarkClassName}`;
 
 const Row = ({ label, value }: { label: string; value: string }) => (
   <div className="flex items-center justify-between gap-4 py-2 text-sm">
@@ -152,7 +148,7 @@ export const FundEscrowModal = ({
           type="button"
           disabled={isSwitching}
           onClick={() => switchChainAsync({ chainId })}
-          className={primaryButtonClassName}
+          className={modalPrimaryButtonClassName}
         >
           Switch to {chain.name}
         </button>
@@ -163,7 +159,7 @@ export const FundEscrowModal = ({
         type="button"
         disabled={!token || !hasBalance || isRunning}
         onClick={run}
-        className={primaryButtonClassName}
+        className={modalPrimaryButtonClassName}
       >
         {isRunning
           ? STEP_LABEL[step]

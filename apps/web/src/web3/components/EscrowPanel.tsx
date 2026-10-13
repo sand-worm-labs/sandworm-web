@@ -5,11 +5,15 @@ import {
   escrowTokens,
   JUDGING_PERIOD_SECONDS,
 } from "@sandworm/types/escrow";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { PiLockKey } from "react-icons/pi";
 import { useAccount, useReadContract, useSwitchChain } from "wagmi";
 
 import { Tag } from "@/components/Tag";
+import {
+  useGetBountyEntriesQuery,
+  useSyncBountyEscrowMutation,
+} from "@/generated/graphql";
 
 import { explorerAddressUrl, explorerTxUrl, targetChains } from "../config";
 import { describeError } from "../errors";
@@ -29,6 +33,7 @@ export type EscrowBounty = FundableBounty & {
   chainId?: number | null;
   onchainId?: string | null;
   fundTxHash?: string | null;
+  winners?: unknown[];
 };
 
 const PHASE_LABEL = {
@@ -142,6 +147,35 @@ const LiveEscrow = ({
     query: { enabled: Boolean(escrow.address) },
   });
 
+  // The entries that named a wallet: who the sponsor can pay.
+  const entries = useGetBountyEntriesQuery({
+    variables: { slug: bounty.slug },
+  });
+  const [syncEscrow] = useSyncBountyEscrowMutation();
+
+  // Has the server read the escrow again, so the bounty's page shows its
+  // winners and that it is closed.
+  const sync = useCallback(async () => {
+    try {
+      await syncEscrow({ variables: { slug: bounty.slug } });
+    } catch {
+      // Signed out, or the chain could not be read. This panel still shows
+      // the escrow itself.
+    }
+    onChanged();
+  }, [syncEscrow, bounty.slug, onChanged]);
+
+  // Catches payments made somewhere else, such as by the arbiter.
+  const outOfDate =
+    (escrow.bounty?.closed === true && bounty.status !== "closed") ||
+    (escrow.payouts.length > 0 && (bounty.winners?.length ?? 0) === 0);
+  const synced = useRef(false);
+  useEffect(() => {
+    if (!outOfDate || synced.current) return;
+    synced.current = true;
+    sync();
+  }, [outOfDate, sync]);
+
   const data = escrow.bounty;
   if (!chain || !data || escrow.remaining === undefined) {
     return (
@@ -185,7 +219,7 @@ const LiveEscrow = ({
     try {
       await refund();
       await escrow.refetch();
-      onChanged();
+      await sync();
     } catch (err) {
       setError(describeError(err));
     } finally {
@@ -315,9 +349,12 @@ const LiveEscrow = ({
         decimals={decimals}
         symbol={symbol}
         feeBps={data.feeBps}
+        candidates={(entries.data?.getBountyEntries ?? []).flatMap(entry =>
+          entry.wallet ? [{ label: entry.author, address: entry.wallet }] : []
+        )}
         onDone={() => {
           escrow.refetch();
-          onChanged();
+          sync();
         }}
       />
     </div>
