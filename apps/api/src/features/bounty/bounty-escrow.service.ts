@@ -6,7 +6,7 @@ import { BountyEntity, BountyEntryEntity, type BountyWinner } from '@sandworm/po
 import { bountyEscrowAbi, bountyRef, escrowAddressFor, escrowTokens } from '@sandworm/types/escrow';
 import { IsNull, Not, Repository } from 'typeorm';
 import { createPublicClient, formatUnits, http, parseEventLogs, type Chain, type Hash } from 'viem';
-import { monad, monadTestnet } from 'viem/chains';
+import {  monad, monadTestnet } from 'viem/chains';
 import { formatAmount, ordinal, shortAddress } from './bounty.format';
 import { authorName, Bounty, ENTRY_RELATIONS, notebookSlug } from './bounty.model';
 
