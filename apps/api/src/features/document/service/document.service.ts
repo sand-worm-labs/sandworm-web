@@ -9,6 +9,7 @@ import {
   DocumentVisibility,
   DocumentForkEntity,
   UserEntity,
+  ExecutionScheduleEntity,
   runsInBrowser,
 } from '@sandworm/postgresql-typeorm';
 import { getBlocks, isJavaScriptBlock } from '@sandworm/editor';
@@ -217,6 +218,12 @@ export class DocumentService {
       updatedDocument.runtime = input.runtime;
     }
     await this.documentRepository.save(updatedDocument);
+
+    // Schedules only run cloud notebooks: one left on a notebook that now runs
+    // in the browser would fail on every tick.
+    if (input.runtime !== undefined && runsInBrowser(input.runtime) && !runsInBrowser(document.runtime)) {
+      await this.dataSource.getRepository(ExecutionScheduleEntity).delete({ documentId });
+    }
     const result = Document.fromEntity(updatedDocument);
 
     // Emit events
