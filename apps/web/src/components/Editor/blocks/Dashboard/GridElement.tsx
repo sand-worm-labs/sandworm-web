@@ -404,7 +404,7 @@ function GridElement(props: Props) {
             title="View result"
             aria-label="View result"
             className={clsx(
-              "absolute top-2 right-2 z-20 flex h-7 w-7 items-center justify-center rounded-md border border-border-secondary dark:border-border-tertiary bg-base-100/90 dark:bg-dropdown-bg/90 text-ink-400 shadow-sm backdrop-blur-sm hover:text-primary-600",
+              "absolute top-2 right-2 z-20 flex h-7 w-7 items-center justify-center rounded-md border border-border-secondary dark:border-border-tertiary bg-base-100/90 dark:bg-block-surface/90 text-ink-400 shadow-sm backdrop-blur-sm hover:text-primary-600",
               // Shown on hover or focus, and always on a screen that cannot hover.
               "opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100"
             )}

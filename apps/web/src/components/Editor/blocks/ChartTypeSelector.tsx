@@ -121,7 +121,7 @@ export default function ChartTypeSelector({
             ref={buttonRef}
             onClick={onClickButton}
           >
-            <div className="border border-border-tertiary rounded-lg px-3 flex items-center justify-between gap-x-2 w-full min-h-8 bg-inputBg dark:bg-dropdown-bg transition-colors hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600">
+            <div className="border border-border-tertiary rounded-lg px-3 flex items-center justify-between gap-x-2 w-full min-h-8 bg-inputBg dark:bg-block-surface transition-colors hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600">
               <div className="flex items-center justify-left gap-x-2 text-left w-full h-6">
                 <div className="h-4 w-6 rounded-sm grayscale">
                   <img src={`/img/charts/${selected.icon}`} alt="" />
@@ -191,7 +191,7 @@ export default function ChartTypeSelector({
                                 active
                                   ? "text-ink-100 dark:text-white"
                                   : "text-ink-400 dark:text-white",
-                                "text-center px-1.5 text-[11.5px] absolute bottom-0 translate-y-1/2 bg-inputBg dark:bg-dropdown-bg"
+                                "text-center px-1.5 text-[11.5px] absolute bottom-0 translate-y-1/2 bg-inputBg dark:bg-block-surface"
                               )}
                             >
                               {option.label}

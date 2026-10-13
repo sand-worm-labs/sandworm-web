@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { Toaster } from "sonner";
 
 import { SandwormLogo } from "@/components/Assets";
 
@@ -42,6 +43,8 @@ export default function OnboardingLayout({
 
   return (
     <div className="h-dvh relative overflow-hidden bg-white dark:bg-[#141412]">
+      {/* Sign-in and sign-up report their errors as toasts; this layout is outside the ones that mount a Toaster. */}
+      <Toaster position="bottom-right" />
       <div className="grid md:grid-cols-2 h-full">
         {children}
 

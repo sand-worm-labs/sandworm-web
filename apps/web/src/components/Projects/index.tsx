@@ -446,7 +446,7 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
               {projects.map(project => (
                 <div
                   key={project.id}
-                  className={`bg-page-surface dark:bg-dropdown-bg rounded-3xl border transition-all duration-200 p-4 py-3 relative group flex flex-col hover:shadow-[0_1px_3px_rgba(208,0,255,0.08)] ${
+                  className={`bg-page-surface dark:bg-block-surface rounded-3xl border transition-all duration-200 p-4 py-3 relative group flex flex-col hover:shadow-[0_1px_3px_rgba(208,0,255,0.08)] ${
                     selectedIds.has(project.id)
                       ? "border-primary ring-1 ring-primary bg-primary/[0.03] dark:!bg-primary/[0.06]"
                       : "border-border-tertiary"
@@ -545,7 +545,7 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
                     </div>
                   </div>
 
-                  <div className="bg-page-surface dark:bg-dropdown-bg rounded-lg h-10 mb-4 flex items-center justify-center" />
+                  <div className="bg-page-surface dark:bg-block-surface rounded-lg h-10 mb-4 flex items-center justify-center" />
 
                   <div className="flex items-center justify-between mt-auto relative z-[1]">
                     <div className="relative">

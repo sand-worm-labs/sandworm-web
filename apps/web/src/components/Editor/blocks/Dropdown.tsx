@@ -60,7 +60,7 @@ function Dropdown(props: Props) {
                 </span>
               </Listbox.Button>
 
-              <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-border-tertiary bg-white dark:bg-header-surface dark:border-border-tertiary py-1 text-base focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm">
+              <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-border-tertiary bg-white dark:bg-dropdown-bg dark:border-border-tertiary py-1 text-base focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm">
                 {props.options.map(option => (
                   <Listbox.Option
                     key={option.value}

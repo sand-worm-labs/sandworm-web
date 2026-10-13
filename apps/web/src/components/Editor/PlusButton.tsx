@@ -158,7 +158,7 @@ function MultiBlockSuggestion({
       >
         <Menu.Items
           as="div"
-          className="w-44 mt-2 rounded-2xl bg-white dark:bg-sidebar-surface shadow-sm ring-1 ring-border-secondary dark:ring-border-tertiary focus:outline-none font-body px-1.5 py-1.5"
+          className="w-44 mt-2 rounded-2xl bg-white dark:bg-dropdown-bg shadow-sm ring-1 ring-border-secondary dark:ring-border-tertiary focus:outline-none font-body px-1.5 py-1.5"
         >
           {options.map((option, index) => (
             <Menu.Item key={option.text}>
@@ -213,7 +213,7 @@ function OverflowMenu({ items }: { items: OverflowItem[] }) {
       >
         <Menu.Items
           as="div"
-          className="w-44 mt-2 rounded-2xl bg-white dark:bg-sidebar-surface shadow-sm ring-1 ring-border-secondary dark:ring-border-tertiary focus:outline-none font-body px-1.5 py-1.5"
+          className="w-44 mt-2 rounded-2xl bg-white dark:bg-dropdown-bg shadow-sm ring-1 ring-border-secondary dark:ring-border-tertiary focus:outline-none font-body px-1.5 py-1.5"
         >
           {items.map((item, index) => (
             <Menu.Item key={item.text}>

@@ -154,7 +154,7 @@ export function ChainSelectField({
               <Listbox.Options
                 className={clsx(
                   "absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg py-1",
-                  "bg-base-100 border border-border-tertiary shadow-lg outline-none"
+                  "bg-base-100 dark:bg-dropdown-bg border border-border-tertiary shadow-lg outline-none"
                 )}
               >
                 {options.map(opt => (

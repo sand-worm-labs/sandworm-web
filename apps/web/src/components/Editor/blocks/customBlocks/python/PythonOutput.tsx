@@ -106,7 +106,7 @@ function PlotWithPlaceholder(
             plainTile ? "bg-transparent" : "bg-base-100",
             !plainTile &&
               (onDashboardTile
-                ? "dark:bg-dropdown-bg"
+                ? "dark:bg-block-surface"
                 : "dark:bg-block-surface")
           )}
           aria-label="Loading chart"
@@ -486,7 +486,7 @@ export function PythonOutputs(props: Props) {
               !plainTile && "bg-base-100",
               !plainTile &&
                 (props.isDashboardTile
-                  ? "dark:bg-dropdown-bg"
+                  ? "dark:bg-block-surface"
                   : "dark:bg-block-surface")
             )}
           >

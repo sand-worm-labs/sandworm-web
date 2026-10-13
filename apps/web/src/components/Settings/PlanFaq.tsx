@@ -69,7 +69,7 @@ function FaqRow({
   onToggle: () => void;
 }) {
   return (
-    <div className="rounded-2xl bg-[#F8F9FC] dark:bg-dropdown-bg px-5 py-4">
+    <div className="rounded-2xl bg-[#F8F9FC] dark:bg-block-surface px-5 py-4">
       <button
         type="button"
         onClick={onToggle}

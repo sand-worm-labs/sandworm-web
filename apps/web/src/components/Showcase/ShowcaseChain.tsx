@@ -85,7 +85,7 @@ export function SectionNav({
 // ⬢  Card
 // =====================================
 const CARD_CLASS =
-  "group flex flex-col h-full rounded-xl p-4 bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary transition-colors";
+  "group flex flex-col h-full rounded-xl p-4 bg-base-100 dark:bg-block-surface border border-border-secondary dark:border-border-tertiary transition-colors";
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-US", {

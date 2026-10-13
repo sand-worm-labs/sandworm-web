@@ -62,7 +62,7 @@ const ThemeCard: React.FC<{
     <button
       type="button"
       onClick={onClick}
-      className={`relative w-full p-6  border border-border-secondary  dark:border-border-tertiary transition-all text-left  rounded-3xl dark:bg-dropdown-bg ${
+      className={`relative w-full p-6  border border-border-secondary  dark:border-border-tertiary transition-all text-left  rounded-3xl dark:bg-block-surface ${
         selected ? "" : "border-border-secondary    dark:border-border-tertiary"
       }`}
     >
@@ -126,7 +126,7 @@ export const EditorThemeCard: React.FC<{
     <button
       type="button"
       onClick={onClick}
-      className={`relative p-4 rounded-3xl border transition-all text-left dark:bg-dropdown-bg ${
+      className={`relative p-4 rounded-3xl border transition-all text-left dark:bg-block-surface ${
         selected
           ? "border-primary    dark:border-primary"
           : "border-border-secondary  dark:border-border-tertiary hover:border-gray-300 dark:hover:border-border-tertiary font-body"

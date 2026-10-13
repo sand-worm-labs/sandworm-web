@@ -15,6 +15,7 @@ import {
 } from "@sandworm/ui/components/dropdown-menu";
 
 import type { ApiUser } from "@/types";
+import { cn } from "@/lib/utils";
 import { useModalStore } from "@/store/auth";
 
 import { useSignout } from "../hooks/useAuth";
@@ -22,6 +23,8 @@ import { useSignout } from "../hooks/useAuth";
 interface AccountMenuProps {
   user: ApiUser | null;
   loading: boolean;
+  // The name beside the avatar. Off, the avatar alone opens the menu.
+  showName?: boolean;
 }
 
 function UserAvatar({ user, className }: { user: ApiUser; className: string }) {
@@ -43,7 +46,11 @@ function UserAvatar({ user, className }: { user: ApiUser; className: string }) {
   );
 }
 
-export default function AccountMenu({ user, loading }: AccountMenuProps) {
+export default function AccountMenu({
+  user,
+  loading,
+  showName = true,
+}: AccountMenuProps) {
   const signout = useSignout();
   const openSignIn = useModalStore(state => state.openSignIn);
 
@@ -72,12 +79,18 @@ export default function AccountMenu({ user, loading }: AccountMenuProps) {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full border border-transparent hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors"
+          aria-label={showName ? undefined : "Account menu"}
+          className={cn(
+            "flex items-center gap-2 pl-1 py-1 rounded-full border border-transparent hover:bg-hover-bg hover:border-hover-border dark:hover:bg-base-600 transition-colors",
+            showName ? "pr-2.5" : "pr-1"
+          )}
         >
           <UserAvatar user={user} className="h-7 w-7" />
-          <span className="hidden sm:inline text-sm font-medium text-ink-100 dark:text-white max-w-[120px] truncate">
-            {displayName}
-          </span>
+          {showName && (
+            <span className="hidden sm:inline text-sm font-medium text-ink-100 dark:text-white max-w-[120px] truncate">
+              {displayName}
+            </span>
+          )}
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

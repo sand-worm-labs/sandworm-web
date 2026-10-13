@@ -19,7 +19,7 @@ const MAX_PROTOCOLS = 3;
 // Hover and keyboard focus take the same active state as a notebook block (primary
 // border and focus ring, see .block-active-hover), not a lift and a drop shadow.
 const CARD_CLASS =
-  "block-active-hover group flex h-full w-full flex-col rounded-2xl border-[1.5px] border-border-secondary dark:border-border-tertiary bg-base-100 dark:bg-dropdown-bg p-5 text-left transition-[border-color,box-shadow] duration-150 outline-none";
+  "block-active-hover group flex h-full w-full flex-col rounded-2xl border-[1.5px] border-border-secondary dark:border-border-tertiary bg-base-100 dark:bg-block-surface p-5 text-left transition-[border-color,box-shadow] duration-150 outline-none";
 
 // =====================================
 // ⬢  Card

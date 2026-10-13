@@ -17,7 +17,7 @@ export const heroClass = "bg-ink-navy dark:bg-block-surface text-white";
 export const heroBreadcrumbClass = "[&_ol]:text-white/60 [&_span]:!text-white";
 
 export const boardClass =
-  "rounded-xl overflow-hidden bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary";
+  "rounded-xl overflow-hidden bg-base-100 dark:bg-block-surface border border-border-secondary dark:border-border-tertiary";
 
 export const boardHeadClass =
   "font-body-mono text-[10px] uppercase tracking-[0.18em] text-primary dark:text-primary-tint-75 bg-inputBg dark:bg-header-surface border-b border-border-secondary dark:border-border-tertiary";

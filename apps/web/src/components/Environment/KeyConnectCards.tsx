@@ -192,7 +192,7 @@ function ConnectedRow({
       <div className="flex min-w-0 items-center gap-3">
         <span
           aria-hidden="true"
-          className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-primary-tint-50 text-primary dark:bg-dropdown-bg"
+          className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-primary-tint-50 text-primary dark:bg-block-surface"
         >
           <PiCheckCircle size={20} />
         </span>
@@ -243,7 +243,7 @@ function ConnectedRow({
           </div>
         ) : (
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-primary-tint-50 px-2 py-0.5 text-xs font-medium text-primary-700 dark:bg-dropdown-bg dark:text-primary-300">
+            <span className="rounded-full bg-primary-tint-50 px-2 py-0.5 text-xs font-medium text-primary-700 dark:bg-block-surface dark:text-primary-300">
               Connected
             </span>
             <span className="font-mono text-sm text-ink-400 dark:text-ink-200">

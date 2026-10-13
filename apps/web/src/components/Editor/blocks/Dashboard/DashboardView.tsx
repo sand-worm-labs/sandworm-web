@@ -101,7 +101,7 @@ interface InnerProps {
 }
 
 const WhiteCard = ({ children }: { children: React.ReactNode }) => (
-  <div className="bg-base-100 dark:bg-dropdown-bg rounded-2xl h-full border border-border dark:border-border-tertiary">
+  <div className="bg-base-100 dark:bg-block-surface rounded-2xl h-full border border-border dark:border-border-tertiary">
     {children}
   </div>
 );

@@ -65,7 +65,7 @@ function Stat({
   note?: string;
 }) {
   return (
-    <div className="rounded-xl border border-border-secondary dark:border-border-tertiary bg-base-100 dark:bg-dropdown-bg p-4">
+    <div className="rounded-xl border border-border-secondary dark:border-border-tertiary bg-base-100 dark:bg-block-surface p-4">
       <dt className="text-[12px] text-ink-400">{label}</dt>
       <dd className="mt-1 text-2xl font-semibold tracking-[-0.01em] text-ink-100 dark:text-white">
         {value}
@@ -85,7 +85,7 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <figure className="rounded-xl border border-border-secondary dark:border-border-tertiary bg-base-100 dark:bg-dropdown-bg p-4">
+    <figure className="rounded-xl border border-border-secondary dark:border-border-tertiary bg-base-100 dark:bg-block-surface p-4">
       <figcaption className="text-sm font-semibold text-ink-100 dark:text-white">
         {title}
       </figcaption>
@@ -300,7 +300,7 @@ export function ProtocolProfile({
             </p>
           )}
 
-          <section className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary p-5">
+          <section className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-base-100 dark:bg-block-surface border border-border-secondary dark:border-border-tertiary p-5">
             <div className="min-w-0">
               <p className="text-sm font-semibold text-ink-100 dark:text-white">
                 Run {name}? Get this page for your protocol.

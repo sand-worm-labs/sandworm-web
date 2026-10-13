@@ -141,7 +141,7 @@ export default function ApiKeyNudge({
     <section
       aria-label={`${provider.name} key missing`}
       className="relative mb-4 overflow-hidden rounded-2xl border border-primary/50
-        bg-primary-tint-50 dark:bg-dropdown-bg dark:border-primary/60
+        bg-primary-tint-50 dark:bg-block-surface dark:border-primary/60
         px-5 py-4 sm:px-6 sm:py-5
         shadow-[0_0_0_4px_rgba(163,8,240,0.10)] dark:shadow-[0_0_0_4px_rgba(163,8,240,0.18)]"
     >

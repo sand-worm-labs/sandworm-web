@@ -293,7 +293,7 @@ export default async function ShowcaseCategoryPage({ params }: Props) {
         </PageSection>
       )}
 
-      <section className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary p-5">
+      <section className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-base-100 dark:bg-block-surface border border-border-secondary dark:border-border-tertiary p-5">
         <div className="min-w-0">
           <p className="text-sm font-semibold text-ink-100 dark:text-white">
             Missing a protocol, or a question?

@@ -127,7 +127,7 @@ export function FeaturedExploreCard({
       <div
         onClick={() => router.push(`/notebooks/${slug}`)}
         className={cn(
-          "flex flex-col rounded-3xl py-5 border px-4 sm:px-6 cursor-pointer transition-shadow font-body group/card dark:bg-dropdown-bg dark:border-border-tertiary",
+          "flex flex-col rounded-3xl py-5 border px-4 sm:px-6 cursor-pointer transition-shadow font-body group/card dark:bg-block-surface dark:border-border-tertiary",
           isPurple
             ? "bg-primary border-teal/[20%] text-white"
             : "bg-[#F2F3FB] border-teal/[20%]"

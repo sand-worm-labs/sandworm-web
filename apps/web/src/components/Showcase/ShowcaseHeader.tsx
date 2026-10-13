@@ -61,7 +61,7 @@ export function ShowcaseHeader({ active }: ShowcaseHeaderProps) {
           <SearchBar />
         </div>
         <HelpDropdown />
-        <AccountMenu user={user} loading={loading} />
+        <AccountMenu user={user} loading={loading} showName={false} />
       </div>
     </header>
   );

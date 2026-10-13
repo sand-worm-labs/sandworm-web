@@ -487,7 +487,7 @@ function PricingCard({
   return (
     <div
       className={cn(
-        "flex flex-col rounded-3xl p-6 border font-body dark:bg-dropdown-bg dark:border-border-tertiary",
+        "flex flex-col rounded-3xl p-6 border font-body dark:bg-block-surface dark:border-border-tertiary",
         plan.highlight
           ? "bg-primary border-primary text-white"
           : "bg-[#F2F3FB] border-teal/[20%]"

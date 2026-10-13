@@ -55,7 +55,11 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
       );
 
       if (res.status === 403)
-        throw new Error("A valid referral code is required to sign up");
+        throw new Error(
+          variant === "signin"
+            ? "We couldn't find an account for that login. Signing up needs a valid referral code."
+            : "A valid referral code is required to sign up"
+        );
       if (!res.ok) throw new Error("Login failed");
 
       const data = await res.json();

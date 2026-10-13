@@ -91,7 +91,7 @@ export default function ComboboxV2<T>({
         label
       )}
       <div className="relative mt-1 mb-0.5" ref={inputContainerRef}>
-        <div className="flex items-center space-x-1.5 rounded-lg border border-border-tertiary focus-within:border-hover-border bg-inputBg group pl-2.5 pr-8 text-ink-100 dark:bg-dropdown-bg dark:text-white transition-colors">
+        <div className="flex items-center space-x-1.5 rounded-lg border border-border-tertiary focus-within:border-hover-border bg-inputBg group pl-2.5 pr-8 text-ink-100 dark:bg-block-surface dark:text-white transition-colors">
           {value && icon(value)}
           <input
             className={clsx(

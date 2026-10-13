@@ -408,7 +408,7 @@ function AIConfigSection({
       <button
         type="button"
         onClick={onOpenPicker}
-        className="flex items-center justify-between w-full rounded-[10px] xl:py-2 py-1.5 pl-4 pr-3 ring-1 ring-inset ring-border-tertiary dark:ring-border-tertiary focus:ring-primary dark:bg-dropdown-bg text-sm font-medium text-ink-100 dark:text-white transition-colors hover:ring-primary/50"
+        className="flex items-center justify-between w-full rounded-[10px] xl:py-2 py-1.5 pl-4 pr-3 ring-1 ring-inset ring-border-tertiary dark:ring-border-tertiary focus:ring-primary dark:bg-block-surface text-sm font-medium text-ink-100 dark:text-white transition-colors hover:ring-primary/50"
       >
         <span className="text-ink-400 dark:text-ink-400">
           {selectedModelId ?? assistantModel}

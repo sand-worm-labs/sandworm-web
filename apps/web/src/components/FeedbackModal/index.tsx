@@ -317,7 +317,7 @@ export function FeedbackModal({
                           >
                             <Listbox.Options
                               className="absolute z-10 mt-1.5 w-full
-                              bg-white dark:bg-base-730
+                              bg-white dark:bg-dropdown-bg
                               border border-border-secondary dark:border-border-tertiary
                               rounded-xl shadow-sm
                               overflow-hidden focus:outline-none p-1"

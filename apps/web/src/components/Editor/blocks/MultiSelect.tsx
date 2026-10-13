@@ -103,7 +103,7 @@ export default function MultiSelect<T>(props: Props<T>) {
                 <Menu.Items
                   as="div"
                   ref={menuContainerRef}
-                  className="w-full rounded-xl bg-white dark:bg-base-720
+                  className="w-full rounded-xl bg-white dark:bg-dropdown-bg
                     shadow-lg border border-border-secondary dark:border-base-710
                     focus:outline-none font-body flex flex-col py-1.5 overflow-hidden"
                 >

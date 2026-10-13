@@ -74,7 +74,7 @@ export function ShowcaseStats({
             "rounded-xl p-4 border",
             dark
               ? "border-white/15 bg-white/5"
-              : "border-border-secondary dark:border-border-tertiary bg-base-100 dark:bg-dropdown-bg"
+              : "border-border-secondary dark:border-border-tertiary bg-base-100 dark:bg-block-surface"
           )}
         >
           <dd
@@ -113,7 +113,7 @@ export function CaseStudyCard({ notebook }: { notebook: ShowcaseNotebook }) {
   return (
     <Link
       href={caseStudyHref(notebook)}
-      className="group flex flex-col h-full rounded-xl p-4 bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
+      className="group flex flex-col h-full rounded-xl p-4 bg-base-100 dark:bg-block-surface border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
     >
       <div className="flex flex-wrap items-center gap-1.5">
         <Tag>On-chain analysis</Tag>
@@ -174,7 +174,7 @@ export function ProjectCard({
   return (
     <Link
       href={projectHref(category, project.slug)}
-      className="group flex items-center justify-between gap-4 h-full rounded-xl px-4 py-3.5 bg-base-100 dark:bg-dropdown-bg border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
+      className="group flex items-center justify-between gap-4 h-full rounded-xl px-4 py-3.5 bg-base-100 dark:bg-block-surface border border-border-secondary dark:border-border-tertiary hover:border-primary transition-colors"
     >
       <span className="flex min-w-0 items-center gap-3">
         <ProtocolLogo
