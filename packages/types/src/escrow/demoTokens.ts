@@ -2,4 +2,77 @@
 
 import type { EscrowToken } from "./tokens";
 
-export const demoTokens: Record<number, EscrowToken[]> = {};
+export const demoTokens: Record<number, EscrowToken[]> = {
+  "10143": [
+    {
+      "symbol": "USDG",
+      "name": "Global Dollar",
+      "decimals": 6,
+      "address": "0xeca2cf24eef2a3c112aa48ab8c56b85a82640a62",
+      "demo": true
+    },
+    {
+      "symbol": "USDC",
+      "name": "USD Coin",
+      "decimals": 6,
+      "address": "0x90c317a8b5355a92defc8dd67b63c442423ee2ba",
+      "demo": true
+    },
+    {
+      "symbol": "USDT",
+      "name": "Tether USD",
+      "decimals": 6,
+      "address": "0x64d96e42e148c167a7fa76de1c3ef1697c1479d1",
+      "demo": true
+    },
+    {
+      "symbol": "DAI",
+      "name": "Dai",
+      "decimals": 18,
+      "address": "0x2dbaca2dffa8e3c57d83abd92e2499ba5b816b39",
+      "demo": true
+    },
+    {
+      "symbol": "PYTH",
+      "name": "Pyth Network",
+      "decimals": 6,
+      "address": "0x9703cfb8eb53131cb1a275746d11e0b5aae8f81f",
+      "demo": true
+    },
+    {
+      "symbol": "ARB",
+      "name": "Arbitrum",
+      "decimals": 18,
+      "address": "0x578cef2d2a4417b49746e741c047c7742d54f018",
+      "demo": true
+    },
+    {
+      "symbol": "UNI",
+      "name": "Uniswap",
+      "decimals": 18,
+      "address": "0x3304ba36ec1222ed5d05e79c0acfd29cc6c11809",
+      "demo": true
+    },
+    {
+      "symbol": "OP",
+      "name": "Optimism",
+      "decimals": 18,
+      "address": "0x5d7cc30672817dc03f05582504823928325eee6f",
+      "demo": true
+    },
+    {
+      "symbol": "MNT",
+      "name": "Mantle",
+      "decimals": 18,
+      "address": "0x8ad41b0f7000fd25773342e5fe3715d3b3805e3d",
+      "demo": true
+    },
+    {
+      "symbol": "WETH",
+      "name": "Wrapped Ether",
+      "decimals": 18,
+      "address": "0xf4bba460749e5edd669960529e16c2007323f6df",
+      "demo": true
+    }
+  ]
+};
