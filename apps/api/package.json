@@ -45,6 +45,7 @@
     "@openrouter/sdk": "^0.9.11",
     "@sandworm/api": "workspace:*",
     "@sandworm/editor": "workspace:*",
+    "@sandworm/trust": "workspace:*",
     "@sandworm/graphql": "workspace:*",
     "@sandworm/jupyter": "workspace:*",
     "@sandworm/nest-common": "workspace:*",

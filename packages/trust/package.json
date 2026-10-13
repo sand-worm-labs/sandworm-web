@@ -1,0 +1,43 @@
+{
+  "name": "@sandworm/trust",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Onchain trust layer for Sandworm notebooks: ERC-8004 identity and validation on Monad",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "register-agent": "node --env-file=.env scripts/1-register-agent.ts",
+    "build-receipt": "node --env-file=.env scripts/2-build-receipt.ts",
+    "request-validation": "node --env-file=.env scripts/3-request-validation.ts",
+    "validate": "node --env-file=.env scripts/4-validate.ts",
+    "links": "node --env-file=.env scripts/5-links.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test 'src/**/*.test.ts'",
+    "build": "rm -rf dist types && tsc -p tsconfig.build.json && tsc -p tsconfig.cjs.json && echo '{\"type\": \"commonjs\"}' > dist/cjs/package.json"
+  },
+  "dependencies": {
+    "@sandworm/editor": "workspace:*",
+    "viem": "^2.57.2",
+    "yjs": "^13.6.14"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.9.2"
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./types/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "types"
+  ]
+}
