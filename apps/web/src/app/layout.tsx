@@ -45,6 +45,14 @@ const azeretMono = AzeretMono({
   weight: ["300", "400", "500"],
 });
 
+// The body text is Moderat, declared in fonts.scss. A font a stylesheet declares is only found once the
+// page's CSS is parsed and a node uses it, so it arrived after the first paint and the text showed in
+// the fallback font first. Preloading starts the download with the HTML.
+const PRELOADED_FONTS = [
+  "/fonts/moderat/Moderat-Regular.woff2",
+  "/fonts/moderat/Moderat-Medium.woff2",
+];
+
 const GTAG_ID = "G-GQB5QS1LHQ";
 const CLARITY_ID = "yg1ksw88ha";
 
@@ -53,6 +61,18 @@ const CLARITY_ID = "yg1ksw88ha";
 export default async function RootLayout({ children }: ChildrenProps) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {PRELOADED_FONTS.map(href => (
+          <link
+            key={href}
+            rel="preload"
+            href={href}
+            as="font"
+            type="font/woff2"
+            crossOrigin="anonymous"
+          />
+        ))}
+      </head>
       <Script
         strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${GTAG_ID}`}
