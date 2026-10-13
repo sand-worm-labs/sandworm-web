@@ -58,7 +58,7 @@ export default function CreateBountyModal({
             summary: form.summary.trim(),
             details: form.details.trim(),
             rewardToken: token?.symbol ?? form.token,
-            rewardAmount: form.amount,
+            prizes: form.prizes.map(prize => prize.trim()),
             deadline: new Date(`${form.deadline}T23:59:59`).toISOString(),
           },
         },

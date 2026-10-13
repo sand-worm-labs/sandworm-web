@@ -1,7 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { ArrayMaxSize, IsDate, IsIn, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsDate, IsIn, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import { StringField, StringFieldOptional, UUIDField } from '@sandworm/graphql';
-import { escrowTokens } from '@sandworm/types/escrow';
+import { escrowTokens, MAX_PRIZE_PLACES } from '@sandworm/types/escrow';
 
 export const BOUNTY_TYPES = ['Dashboard', 'Research', 'Investigation'] as const;
 export const BOUNTY_TOKENS = [...new Set(Object.values(escrowTokens).flatMap(tokens => tokens.map(token => token.symbol)))];
@@ -50,9 +50,13 @@ export class CreateBountyInput {
   @IsIn(BOUNTY_TOKENS)
   rewardToken: string;
 
-  @StringField({ maxLength: 30 })
-  @Matches(/^(?!0+(\.0+)?$)\d+(\.\d{1,6})?$/, { message: 'rewardAmount must be a positive amount with at most 6 decimals' })
-  rewardAmount: string;
+  // What each place's winner receives, 1st place first. Fixed once the bounty is made.
+  @Field(() => [String])
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(MAX_PRIZE_PLACES)
+  @Matches(/^(?!0+(\.0+)?$)\d+(\.\d{1,6})?$/, { each: true, message: 'each prize must be a positive amount with at most 6 decimals' })
+  prizes: string[];
 
   @Field(() => Date)
   @IsDate()

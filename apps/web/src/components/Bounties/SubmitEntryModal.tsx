@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { isAddress } from "viem";
-import { useAccount } from "wagmi";
 
 import { ModalShell } from "@/web3/components/ModalShell";
 import {
   modalInputClassName,
   modalPrimaryButtonClassName,
 } from "@/web3/components/modalStyles";
+
+import { PayoutWalletPicker } from "./PayoutWalletPicker";
 
 // =====================================
 // ⬢ Types
@@ -42,7 +43,6 @@ export const SubmitEntryModal = ({
   needsWallet,
   onSubmit,
 }: SubmitEntryModalProps) => {
-  const { address: connected } = useAccount();
   const [wallet, setWallet] = useState("");
   const [documentId, setDocumentId] = useState("");
 
@@ -54,12 +54,6 @@ export const SubmitEntryModal = ({
     );
     // Only on open: the list can refresh while the person is choosing.
   }, [isOpen]);
-
-  useEffect(() => {
-    if (isOpen && needsWallet && connected) {
-      setWallet(current => current || connected);
-    }
-  }, [isOpen, needsWallet, connected]);
 
   const valid = isAddress(wallet);
 
@@ -102,30 +96,7 @@ export const SubmitEntryModal = ({
       </select>
 
       {needsWallet && (
-        <>
-          <label
-            htmlFor="bounty-entry-wallet"
-            className="mt-4 block text-xs font-medium text-ink-100 dark:text-white"
-          >
-            Wallet to be paid
-          </label>
-          <input
-            id="bounty-entry-wallet"
-            value={wallet}
-            onChange={e => setWallet(e.target.value.trim())}
-            placeholder="0x... wallet address"
-            className={`${modalInputClassName} mt-1.5`}
-          />
-          <p className="mt-2 text-xs leading-relaxed text-ink-400">
-            If your entry wins, the reward is sent to this address from the
-            escrow contract. Only you and the sponsor can see it.
-          </p>
-          {wallet && !valid && (
-            <p className="mt-2 text-xs text-red-600 dark:text-red-400">
-              This is not a valid wallet address.
-            </p>
-          )}
-        </>
+        <PayoutWalletPicker value={wallet} onChange={setWallet} />
       )}
     </ModalShell>
   );

@@ -55,7 +55,7 @@ export const BountyDetail = ({
 
       {/* One grid: the sidebar sits beside the header on desktop and between
           the header and the brief on mobile. */}
-      <div className="mt-5 grid items-start gap-x-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="mt-5 grid items-start gap-x-8 lg:grid-cols-[minmax(0,1fr)_400px]">
         <header className="order-1 max-w-3xl lg:order-none lg:col-start-1 lg:row-start-1">
           <BountyHeader bounty={bounty} />
         </header>

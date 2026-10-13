@@ -62,6 +62,11 @@ export const BountyWinners = ({ winners }: Pick<Bounty, "winners">) => (
           <span className={winnerNameClass}>{winner.author}</span>
         )}
         {winner.amount && ` · ${winner.amount}`}
+        {winner.notes && winner.notes.length > 0 && (
+          <span className="mt-0.5 block text-amber-600 dark:text-amber-400">
+            Check: {winner.notes.join(". ")}.
+          </span>
+        )}
       </li>
     ))}
   </ul>

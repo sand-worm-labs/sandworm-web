@@ -6,6 +6,8 @@ import { PiDrop } from "react-icons/pi";
 import { parseUnits } from "viem";
 import { useAccount, useBalance, useSwitchChain } from "wagmi";
 
+import { Collapsible } from "@/components/Collapsible";
+
 import { defaultChain, faucets } from "../config";
 import { describeError } from "../errors";
 import { useMintTestToken } from "../hooks/useMintTestToken";
@@ -55,12 +57,17 @@ export const FaucetButton = ({
   };
 
   return (
-    <div className="mt-5 rounded-2xl bg-base-300 dark:bg-base-700 p-4">
-      <p className="flex items-center gap-1.5 text-xs font-bold text-ink-100 dark:text-white">
-        <PiDrop size={14} /> Try it on {chain.name}
-      </p>
-      <p className="mt-1 text-xs leading-relaxed text-ink-400">
-        Get free test tokens to fund or enter a bounty. They have no value.
+    <Collapsible
+      className="mt-3"
+      title={
+        <span className="flex items-center gap-1.5 text-sm font-semibold text-ink-100 dark:text-white">
+          <PiDrop size={16} /> Test tokens
+        </span>
+      }
+      summary={`Free on ${chain.name}. They have no value.`}
+    >
+      <p className="text-xs leading-relaxed text-ink-400 dark:text-white/70">
+        Get free test tokens to fund or enter a bounty.
       </p>
 
       {token &&
@@ -107,6 +114,6 @@ export const FaucetButton = ({
       {error && (
         <p className="mt-3 text-xs text-red-600 dark:text-red-400">{error}</p>
       )}
-    </div>
+    </Collapsible>
   );
 };

@@ -35,6 +35,7 @@ import clsx from "clsx";
 import { iconButtonSmClassName } from "@/styles/interactive";
 import { useFavorites } from "@/components/Editor/hooks/useFavorites";
 import { useSession } from "@/components/Editor/hooks/useAuth";
+import { EmptyResults } from "@/components/EmptyState/EmptyResults";
 import { StyledCheckbox } from "@/components/StyledCheckbox";
 import { formatDate } from "@/lib/date";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
@@ -423,24 +424,21 @@ export const Projects: React.FC<ProjectsProps> = ({ variant = "all" }) => {
 
         {activeView === "grid" ? (
           projects.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 gap-3">
-              <PiFolderLight
-                size={36}
-                className="text-ink-200 dark:text-ink-600"
-              />
-              <p className="text-sm font-medium text-ink-200 dark:text-ink-400">
-                {searchValue
+            <EmptyResults
+              icon={PiFolderLight}
+              title={
+                searchValue
                   ? `No projects matching "${searchValue}"`
                   : isFavorites
                     ? "No favorite projects yet"
-                    : `No ${activeFilter === "All" ? "" : `${activeFilter.toLowerCase()} `}projects found`}
-              </p>
-              <p className="text-xs text-ink-300 dark:text-ink-500">
-                {isFavorites && !searchValue
+                    : `No ${activeFilter === "All" ? "" : `${activeFilter.toLowerCase()} `}projects found`
+              }
+              hint={
+                isFavorites && !searchValue
                   ? "Star a project to see it here."
-                  : "Try adjusting or clearing your filters to see all Projects."}
-              </p>
-            </div>
+                  : "Try adjusting or clearing your filters to see all Projects."
+              }
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects.map(project => (

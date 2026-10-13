@@ -4,6 +4,7 @@ fragment BountyWinnerFields on BountyWinner {
   notebookSlug
   amount
   address
+  notes
 }
 
 query GetBounties {
@@ -52,6 +53,11 @@ query GetBounty($slug: String!) {
     fundTxHash
     rewardToken
     rewardAmount
+    prizeTiers {
+      place
+      amount
+    }
+    isMine
   }
 }
 
@@ -71,6 +77,10 @@ query GetBountyDrafts($workspaceId: String!) {
     onchainId
     rewardToken
     rewardAmount
+    prizeTiers {
+      place
+      amount
+    }
     deadline
   }
 }

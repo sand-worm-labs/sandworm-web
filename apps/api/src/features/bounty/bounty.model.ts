@@ -36,6 +36,20 @@ export class BountyWinner {
 
   @StringFieldOptional()
   address?: string | null;
+
+  // How this payment differs from what was agreed, if it does
+  @Field(() => [String], { nullable: true })
+  notes?: string[] | null;
+}
+
+@ObjectType()
+export class BountyPrizeTier {
+  @Field(() => Int)
+  place!: number;
+
+  // What the winner receives, as a decimal in the reward token
+  @StringField()
+  amount!: string;
 }
 
 @ObjectType()
@@ -122,6 +136,10 @@ export class Bounty {
   @Field(() => [String])
   prizes!: string[];
 
+  // The agreed prize for each place, fixed when the bounty is made. Empty for older bounties.
+  @Field(() => [BountyPrizeTier])
+  prizeTiers!: BountyPrizeTier[];
+
   @Field(() => [String])
   judging!: string[];
 
@@ -167,6 +185,10 @@ export class Bounty {
   @StringFieldOptional()
   fundTxHash?: string | null;
 
+  // The viewer created this bounty. Only getBounty sets it: everywhere else it is false.
+  @BooleanField()
+  isMine: boolean = false;
+
   static fromEntity(entity: BountyEntity): Bounty {
     const bounty = new Bounty();
     bounty.slug = entity.slug;
@@ -180,6 +202,7 @@ export class Bounty {
     bounty.requirements = entity.requirements;
     bounty.deliverables = entity.deliverables;
     bounty.prizes = entity.prizes;
+    bounty.prizeTiers = entity.prizeTiers ?? [];
     bounty.judging = entity.judging;
     bounty.dataHints = entity.dataHints;
     bounty.winners = entity.winners;

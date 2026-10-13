@@ -10,6 +10,17 @@ export type BountyWinner = {
   // What escrow paid them after the fee ("950 USDG"), and to which wallet
   amount?: string | null;
   address?: string | null;
+  // Anything about how this payment differs from what was agreed: it matched no place of the
+  // prize schedule, went to a wallet no entry gave, or was paid before the deadline.
+  notes?: string[];
+};
+
+// One prize of a bounty's schedule, fixed when the bounty is created. `amount` is what the winner
+// receives, as a decimal in the reward token. The escrow is funded with a little more, so the fee
+// leaves the winner exactly this.
+export type BountyPrizeTier = {
+  place: number;
+  amount: string;
 };
 
 @Entity('bounty')
@@ -70,6 +81,11 @@ export class BountyEntity extends AbstractEntity {
 
   @Column({ type: 'jsonb', default: '[]' })
   winners!: BountyWinner[];
+
+  // The agreed prize for each place, in order. Empty for a bounty made before schedules, which
+  // pays what is left in its escrow to one winner.
+  @Column({ name: 'prize_tiers', type: 'jsonb', default: '[]' })
+  prizeTiers!: BountyPrizeTier[];
 
   // When the sponsor first posted it, as free text ("May 2024")
   @Column({ name: 'posted_on', type: 'varchar', nullable: true })

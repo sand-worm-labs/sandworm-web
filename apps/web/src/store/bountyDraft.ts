@@ -10,7 +10,8 @@ export type BountyDraftForm = {
   type: string;
   summary: string;
   details: string;
-  amount: string;
+  // What each place's winner receives, 1st place first
+  prizes: string[];
   token: string;
   deadline: string;
 };
@@ -34,7 +35,7 @@ export const EMPTY_BOUNTY_DRAFT: BountyDraft = {
     type: "Dashboard",
     summary: "",
     details: "",
-    amount: "",
+    prizes: [""],
     token: "USDG",
     deadline: "",
   },
@@ -68,6 +69,23 @@ export const useBountyDraftStore = create<BountyDraftState>()(
     }),
     {
       name: "sandworm:bounty-draft",
+      // 1: a single `amount` became a list of `prizes`
+      version: 1,
+      migrate: (persisted, version) => {
+        const state = persisted as {
+          drafts?: Record<string, { form?: Record<string, unknown> }>;
+        };
+        if (version < 1) {
+          Object.values(state.drafts ?? {}).forEach(draft => {
+            const { form } = draft;
+            if (!form) return;
+            const amount = typeof form.amount === "string" ? form.amount : "";
+            form.prizes = [amount];
+            delete form.amount;
+          });
+        }
+        return state as unknown as BountyDraftState;
+      },
       storage: createJSONStorage(() => localStorage),
     }
   )

@@ -11,8 +11,13 @@ const buttonClassName =
 // =====================================
 export const ConnectWalletButton = ({
   className = "",
+  showChainSwitcher = false,
 }: {
   className?: string;
+  // The button with the network's name, which opens the network picker. Off: the pages
+  // already say which network they use, and "Wrong network" below still appears when it is
+  // needed.
+  showChainSwitcher?: boolean;
 }) => (
   <ConnectButton.Custom>
     {({
@@ -56,13 +61,15 @@ export const ConnectWalletButton = ({
 
       return (
         <div className={`flex items-center gap-2 ${className}`}>
-          <button
-            type="button"
-            onClick={openChainModal}
-            className={buttonClassName}
-          >
-            {chain.name}
-          </button>
+          {showChainSwitcher && (
+            <button
+              type="button"
+              onClick={openChainModal}
+              className={buttonClassName}
+            >
+              {chain.name}
+            </button>
+          )}
           <button
             type="button"
             onClick={openAccountModal}

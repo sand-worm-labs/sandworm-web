@@ -1,10 +1,17 @@
 "use client";
 
-import { escrowTokens } from "@sandworm/types/escrow";
+import {
+  bountyEscrowAbi,
+  depositFor,
+  escrowAddressFor,
+  escrowTokens,
+} from "@sandworm/types/escrow";
 import { useState } from "react";
 import { toast } from "sonner";
-import { parseUnits } from "viem";
+import { formatUnits, parseUnits } from "viem";
 import { useAccount, useReadContract, useSwitchChain } from "wagmi";
+
+import { ordinalPlace } from "@/components/Bounties/bounties";
 
 import { defaultChain, faucets, supportsEscrow, targetChains } from "../config";
 import { erc20Abi } from "../erc20";
@@ -24,7 +31,10 @@ export type FundableBounty = {
   slug: string;
   title: string;
   rewardToken?: string | null;
+  // What the winners are paid in all. For a bounty with prizes, the escrow holds this plus the fee.
   rewardAmount?: string | null;
+  // What each place's winner receives. Empty for a bounty made before schedules.
+  prizeTiers?: { place: number; amount: string }[] | null;
   deadline?: string | null;
 };
 
@@ -84,8 +94,37 @@ export const FundEscrowModal = ({
     query: { enabled: Boolean(token && address), refetchInterval: 10_000 },
   });
 
-  const amount = bounty.rewardAmount ?? "0";
-  const needed = token ? parseUnits(amount, token.decimals) : BigInt(0);
+  // The fee is the contract's own and is fixed for the bounty when it is created, so it is read
+  // here rather than assumed: the escrow is funded with exactly what pays every place after it.
+  const escrowAddress = escrowAddressFor(chainId);
+  const feeRead = useReadContract({
+    chainId,
+    address: escrowAddress,
+    abi: bountyEscrowAbi,
+    functionName: "feeBps",
+    query: { enabled: Boolean(escrowAddress) },
+  });
+  const feeBps = feeRead.data === undefined ? undefined : Number(feeRead.data);
+
+  const tiers = bounty.prizeTiers ?? [];
+  const scheduled = tiers.length > 0;
+  const nets = token
+    ? tiers.map(tier => parseUnits(tier.amount, token.decimals))
+    : [];
+  const pool = nets.reduce((sum, net) => sum + net, BigInt(0));
+  const feeReady = !scheduled || feeBps !== undefined;
+
+  let needed = BigInt(0);
+  if (token) {
+    needed =
+      scheduled && feeBps !== undefined
+        ? depositFor(nets, feeBps)
+        : parseUnits(bounty.rewardAmount ?? "0", token.decimals);
+  }
+  const amount =
+    token && (scheduled ? feeReady : true)
+      ? formatUnits(needed, token.decimals)
+      : "0";
   const hasBalance = balance.data !== undefined && balance.data >= needed;
   const isRunning = step !== "idle" && step !== "done";
 
@@ -137,7 +176,7 @@ export const FundEscrowModal = ({
     return (
       <button
         type="button"
-        disabled={!token || !hasBalance || isRunning}
+        disabled={!token || !feeReady || !hasBalance || isRunning}
         onClick={run}
         className={modalPrimaryButtonClassName}
       >
@@ -153,12 +192,36 @@ export const FundEscrowModal = ({
       isOpen={isOpen}
       onClose={isRunning ? () => undefined : onClose}
       title="Fund escrow"
-      description="Locks the reward in the escrow contract. The bounty opens once the deposit is confirmed onchain."
+      description="Locks the prizes in the escrow contract. The schedule is fixed once funded, and the bounty opens once the deposit is confirmed onchain."
       footer={action()}
     >
       <div className="divide-y divide-border-secondary dark:divide-border-tertiary">
         <Row label="Bounty" value={bounty.title} />
-        <Row label="Reward" value={`${amount} ${bounty.rewardToken ?? ""}`} />
+        {scheduled && token ? (
+          <>
+            {tiers.map((tier, index) => (
+              <Row
+                key={tier.place}
+                label={`${ordinalPlace(tier.place)} place prize`}
+                value={`${formatToken(nets[index] ?? BigInt(0), token.decimals)} ${token.symbol}`}
+              />
+            ))}
+            <Row
+              label={`Platform fee${feeBps === undefined ? "" : ` (${feeBps / 100}%)`}, on top`}
+              value={
+                feeReady
+                  ? `${formatToken(needed - pool, token.decimals)} ${token.symbol}`
+                  : "..."
+              }
+            />
+            <Row
+              label="You lock in escrow"
+              value={feeReady ? `${amount} ${token.symbol}` : "..."}
+            />
+          </>
+        ) : (
+          <Row label="Reward" value={`${amount} ${bounty.rewardToken ?? ""}`} />
+        )}
         <Row label="Network" value={chain.name} />
         {bounty.deadline && (
           <Row

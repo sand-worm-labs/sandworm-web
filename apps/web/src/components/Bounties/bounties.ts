@@ -25,3 +25,13 @@ export const bountyTag = (slug: string) => {
   const suffix = `-${hash.toString(36).padStart(6, "0").slice(-6)}`;
   return `${tag.slice(0, MAX_TAG_LENGTH - suffix.length)}${suffix}`;
 };
+
+// "1st", "2nd", "3rd", "11th": how a place is written.
+export const ordinalPlace = (n: number) => {
+  if (n % 100 >= 11 && n % 100 <= 13) return `${n}th`;
+  return `${n}${["th", "st", "nd", "rd"][n % 10] ?? "th"}`;
+};
+
+// A prize as a person reads it: "6,000" or "500.5".
+export const formatPrize = (amount: string) =>
+  Number(amount).toLocaleString("en-US", { maximumFractionDigits: 6 });

@@ -324,6 +324,12 @@ type BountyWinner {
   notebookSlug: String!
   amount: String
   address: String
+  notes: [String!]
+}
+
+type BountyPrizeTier {
+  place: Int!
+  amount: String!
 }
 
 type BountyEntry {
@@ -350,6 +356,7 @@ type Bounty {
   requirements: [String!]!
   deliverables: [String!]!
   prizes: [String!]!
+  prizeTiers: [BountyPrizeTier!]!
   judging: [String!]!
   dataHints: [String!]!
   winners: [BountyWinner!]!
@@ -365,6 +372,7 @@ type Bounty {
   onchainId: String
   sponsorAddress: String
   fundTxHash: String
+  isMine: Boolean!
 }
 
 type Comment {
@@ -1142,7 +1150,7 @@ input CreateBountyInput {
   requirements: [String!]
   deliverables: [String!]
   rewardToken: String!
-  rewardAmount: String!
+  prizes: [String!]!
   deadline: DateTime!
 }
 

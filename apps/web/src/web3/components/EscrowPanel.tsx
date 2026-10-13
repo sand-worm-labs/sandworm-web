@@ -1,20 +1,26 @@
 "use client";
 
 import {
+  assignPlaces,
   bountyEscrowAbi,
   escrowTokens,
+  grossFor,
   JUDGING_PERIOD_SECONDS,
+  payoutFor,
 } from "@sandworm/types/escrow";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PiLockKey } from "react-icons/pi";
+import { parseUnits } from "viem";
 import { useAccount, useReadContract, useSwitchChain } from "wagmi";
 
+import { Collapsible } from "@/components/Collapsible";
 import { Tag } from "@/components/Tag";
 import {
   useGetBountyEntriesQuery,
   useSyncBountyEscrowMutation,
 } from "@/generated/graphql";
 
+import type { AwardTier } from "../award";
 import { explorerAddressUrl, explorerTxUrl, targetChains } from "../config";
 import { describeError } from "../errors";
 import { formatDate, formatToken, shortAddress } from "../format";
@@ -56,7 +62,7 @@ const Row = ({
   children: React.ReactNode;
 }) => (
   <div className="flex items-center justify-between gap-4 py-2 text-xs">
-    <span className="text-ink-400">{label}</span>
+    <span className="text-ink-400 dark:text-white/65">{label}</span>
     <span className="text-right font-medium text-ink-100 dark:text-white">
       {children}
     </span>
@@ -92,11 +98,11 @@ const DraftFunding = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="mt-5 rounded-2xl bg-base-600 p-4">
-      <p className="flex items-center gap-1.5 text-sm font-medium text-ink-100 dark:text-white">
+    <div className="mt-5 rounded-2xl border border-border-secondary bg-base-600 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+      <p className="flex items-center gap-1.5 text-sm font-semibold text-ink-100 dark:text-white">
         <PiLockKey size={16} /> Not funded yet
       </p>
-      <p className="mt-1 text-xs leading-relaxed text-ink-400">
+      <p className="mt-1 text-xs leading-relaxed text-ink-400 dark:text-white/70">
         This draft is only visible to you. Lock the reward in the escrow
         contract to open it to everyone.
       </p>
@@ -200,10 +206,44 @@ const LiveEscrow = ({
   const isArbiter = me !== undefined && me === arbiter.data?.toLowerCase();
   const pastDeadline = escrow.phase !== "open";
   const onRightChain = connectedChainId === chainId;
+  const feeBps = Number(data.feeBps);
+
+  // What each place pays, and which have been paid, read from what the escrow actually paid. A
+  // bounty made before schedules has one place: whatever is left.
+  const nets = (bounty.prizeTiers ?? []).map(tier =>
+    parseUnits(tier.amount, decimals)
+  );
+  const scheduled = nets.length > 0;
+  const tiers: AwardTier[] = scheduled
+    ? nets.map((net, index) => ({
+        place: index + 1,
+        net,
+        gross: grossFor(net, feeBps),
+      }))
+    : [
+        {
+          place: 1,
+          net: payoutFor(escrow.remaining, feeBps),
+          gross: escrow.remaining,
+        },
+      ];
+  const taken = new Set<number>(
+    scheduled
+      ? Array.from(assignPlaces(nets, escrow.payouts, feeBps).taken, i => i + 1)
+      : []
+  );
+  const placesLeft = tiers.some(tier => !taken.has(tier.place));
+
+  // Winners are awarded once the entries are closed. The contract would let the sponsor pay
+  // sooner, so this is the app's rule, and a payment made earlier is flagged on the bounty.
   const canAward =
     !data.closed &&
     escrow.remaining > BigInt(0) &&
-    (isSponsor || (isArbiter && pastDeadline));
+    (isSponsor || isArbiter) &&
+    pastDeadline &&
+    placesLeft;
+  const waitsForDeadline =
+    !data.closed && (isSponsor || isArbiter) && !pastDeadline && placesLeft;
   const canRefund =
     !data.closed && ((isSponsor && escrow.phase === "refundable") || isArbiter);
   const refundDate = formatDate(Number(data.deadline) + JUDGING_PERIOD_SECONDS);
@@ -227,69 +267,89 @@ const LiveEscrow = ({
     }
   };
 
+  const left = money(data.closed ? BigInt(0) : escrow.remaining);
+
   return (
     <div className="mt-5">
-      <div className="flex items-center justify-between">
-        <p className="flex items-center gap-1.5 text-sm font-medium text-ink-100 dark:text-white">
-          <PiLockKey size={16} /> Escrow
-        </p>
-        <Tag>{label}</Tag>
-      </div>
-
-      <div className="mt-2 divide-y divide-border-secondary dark:divide-border-tertiary">
-        <Row label="Locked">{money(data.amount)}</Row>
-        <Row label="Paid out">{money(data.paid)}</Row>
-        <Row label="Left">
-          {money(data.closed ? BigInt(0) : escrow.remaining)}
-        </Row>
-        <Row label="Platform fee">{data.feeBps / 100}%</Row>
-        <Row label="Deadline">{formatDate(data.deadline)}</Row>
-        <Row label="Sponsor can refund after">{refundDate}</Row>
-        <Row label="Sponsor wallet">
-          <ExternalLink href={explorerAddressUrl(chain, data.sponsor)}>
-            {shortAddress(data.sponsor)}
-          </ExternalLink>
-        </Row>
-        <Row label="Contract">
-          <ExternalLink href={explorerAddressUrl(chain, escrow.address!)}>
-            {shortAddress(escrow.address!)}
-          </ExternalLink>
-        </Row>
-        {bounty.fundTxHash && (
-          <Row label="Funding transaction">
-            <ExternalLink href={explorerTxUrl(chain, bounty.fundTxHash)}>
-              {shortAddress(bounty.fundTxHash)}
+      <Collapsible
+        title={
+          <span className="flex items-center gap-1.5 text-sm font-semibold text-ink-100 dark:text-white">
+            <PiLockKey size={16} /> Escrow
+          </span>
+        }
+        summary={`${left} left of ${money(data.amount)}`}
+        trailing={<Tag>{label}</Tag>}
+      >
+        <div className="divide-y divide-border-secondary dark:divide-white/10">
+          <Row label="Locked">{money(data.amount)}</Row>
+          <Row label="Paid out">{money(data.paid)}</Row>
+          <Row label="Left">{left}</Row>
+          <Row label="Platform fee">{data.feeBps / 100}%</Row>
+          <Row label="Deadline">{formatDate(data.deadline)}</Row>
+          <Row label="Sponsor can refund after">{refundDate}</Row>
+          <Row label="Sponsor wallet">
+            <ExternalLink href={explorerAddressUrl(chain, data.sponsor)}>
+              {shortAddress(data.sponsor)}
             </ExternalLink>
           </Row>
-        )}
-      </div>
-
-      {(escrow.payouts.length > 0 || escrow.refund) && (
-        <div className="mt-4">
-          <p className="text-xs font-semibold text-ink-100 dark:text-white">
-            Payments
-          </p>
-          <ul className="mt-1.5 space-y-1 text-xs text-ink-400">
-            {escrow.payouts.map((payout: Payout) => (
-              <li key={`${payout.txHash}-${payout.winner}`}>
-                {shortAddress(payout.winner)} received {money(payout.amount)} (
-                <ExternalLink href={explorerTxUrl(chain, payout.txHash)}>
-                  tx
-                </ExternalLink>
-                )
-              </li>
-            ))}
-            {escrow.refund && (
-              <li>
-                {money(escrow.refund.amount)} returned to the sponsor (
-                <ExternalLink href={explorerTxUrl(chain, escrow.refund.txHash)}>
-                  tx
-                </ExternalLink>
-                )
-              </li>
-            )}
-          </ul>
+          <Row label="Contract">
+            <ExternalLink href={explorerAddressUrl(chain, escrow.address!)}>
+              {shortAddress(escrow.address!)}
+            </ExternalLink>
+          </Row>
+          {bounty.fundTxHash && (
+            <Row label="Funding transaction">
+              <ExternalLink href={explorerTxUrl(chain, bounty.fundTxHash)}>
+                {shortAddress(bounty.fundTxHash)}
+              </ExternalLink>
+            </Row>
+          )}
         </div>
+
+        {(escrow.payouts.length > 0 || escrow.refund) && (
+          <div className="mt-4">
+            <p className="text-xs font-semibold text-ink-100 dark:text-white">
+              Payments
+            </p>
+            <ul className="mt-1.5 space-y-1 text-xs text-ink-400 dark:text-white/70">
+              {escrow.payouts.map((payout: Payout) => (
+                <li key={`${payout.txHash}-${payout.winner}`}>
+                  {shortAddress(payout.winner)} received {money(payout.amount)}{" "}
+                  (
+                  <ExternalLink href={explorerTxUrl(chain, payout.txHash)}>
+                    tx
+                  </ExternalLink>
+                  )
+                </li>
+              ))}
+              {escrow.refund && (
+                <li>
+                  {money(escrow.refund.amount)} returned to the sponsor (
+                  <ExternalLink
+                    href={explorerTxUrl(chain, escrow.refund.txHash)}
+                  >
+                    tx
+                  </ExternalLink>
+                  )
+                </li>
+              )}
+            </ul>
+          </div>
+        )}
+
+        {isSponsor && !data.closed && escrow.phase !== "refundable" && (
+          <p className="mt-4 text-xs leading-relaxed text-ink-400 dark:text-white/70">
+            You can take back what is left on {refundDate}, 14 days after the
+            deadline.
+          </p>
+        )}
+      </Collapsible>
+
+      {waitsForDeadline && (
+        <p className="mt-4 text-xs leading-relaxed text-ink-400 dark:text-white/70">
+          Winners can be awarded once entries have closed, after{" "}
+          {formatDate(data.deadline)}.
+        </p>
       )}
 
       {(canAward || canRefund) && (
@@ -330,12 +390,6 @@ const LiveEscrow = ({
         </div>
       )}
 
-      {isSponsor && !data.closed && escrow.phase !== "refundable" && (
-        <p className="mt-3 text-xs text-ink-400">
-          You can take back what is left on {refundDate}, 14 days after the
-          deadline.
-        </p>
-      )}
       {error && (
         <p className="mt-3 text-xs text-red-600 dark:text-red-400">{error}</p>
       )}
@@ -345,13 +399,21 @@ const LiveEscrow = ({
         onClose={() => setIsAwarding(false)}
         chainId={chainId}
         onchainId={onchainId}
+        tiers={tiers}
+        taken={taken}
+        scheduled={scheduled}
+        entries={(entries.data?.getBountyEntries ?? []).map(entry => ({
+          id: entry.id,
+          author: entry.author,
+          notebookTitle: entry.notebookTitle,
+          notebookSlug: entry.notebookSlug ?? null,
+          wallet: entry.wallet ?? null,
+        }))}
         remaining={escrow.remaining}
         decimals={decimals}
         symbol={symbol}
-        feeBps={data.feeBps}
-        candidates={(entries.data?.getBountyEntries ?? []).flatMap(entry =>
-          entry.wallet ? [{ label: entry.author, address: entry.wallet }] : []
-        )}
+        feeBps={feeBps}
+        refundDate={refundDate}
         onDone={() => {
           escrow.refetch();
           sync();

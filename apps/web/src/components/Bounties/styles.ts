@@ -4,7 +4,4 @@ export const bountyButtonClass = `${buttonBase} border border-border-secondary d
 
 export const bountyPrimaryButtonClass = `${buttonBase} hover:bg-primary-710`;
 
-export const bountyLinkClass =
-  "text-xs font-medium text-ink-400 hover:text-ink-100 dark:hover:text-white";
-
 export const bountyGridClass = "grid gap-6 md:grid-cols-2 xl:grid-cols-3";

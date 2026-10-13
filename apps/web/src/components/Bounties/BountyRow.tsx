@@ -5,7 +5,6 @@ import { listCellClass, listRowClass } from "@/components/Showcase/BoardKit";
 import type { Bounty } from "./bounties";
 import { BountyChips, BountyReward } from "./BountyParts";
 import { SponsorLogo } from "./BountyLogos";
-import { bountyLinkClass } from "./styles";
 
 interface BountyRowProps {
   bounty: Bounty;
@@ -48,9 +47,6 @@ export const BountyRow = ({ bounty, href, actions }: BountyRowProps) => (
 
     <td className={listCellClass}>
       <div className="flex flex-wrap items-center gap-3 md:justify-end">
-        <Link href={href} className={bountyLinkClass}>
-          Details
-        </Link>
         {actions}
       </div>
     </td>

@@ -4,7 +4,6 @@ import { PiTrophy } from "react-icons/pi";
 import type { Bounty } from "./bounties";
 import { BountyChips, BountyReward, BountyWinners } from "./BountyParts";
 import { SponsorLogo } from "./BountyLogos";
-import { bountyLinkClass } from "./styles";
 
 interface BountyCardProps {
   bounty: Bounty;
@@ -47,12 +46,7 @@ export const BountyCard = ({ bounty, href, actions }: BountyCardProps) => (
           )}
           <BountyReward reward={bounty.reward} size={18} />
         </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <Link href={href} className={bountyLinkClass}>
-            Details
-          </Link>
-          {actions}
-        </div>
+        <div className="flex items-center gap-3 shrink-0">{actions}</div>
       </div>
     </div>
   </article>

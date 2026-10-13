@@ -8,6 +8,11 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/layouts/**/*.{js,ts,jsx,tsx,mdx}",
+    // These hold class names too (the escrow UI, shared button styles). Left out, a class used
+    // only there is never generated and the element is silently unstyled.
+    "./src/web3/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/styles/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   // packages/ui is not scanned, so a class only it uses is never generated. The Avatar's
   // fallback and image need size-full: without it the fallback shrinks to its letter.

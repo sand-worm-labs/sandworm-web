@@ -65,10 +65,12 @@ export type Bounty = {
   details?: Maybe<Scalars['String']['output']>;
   featured: Scalars['Boolean']['output'];
   fundTxHash?: Maybe<Scalars['String']['output']>;
+  isMine: Scalars['Boolean']['output'];
   judging: Array<Scalars['String']['output']>;
   onchainId?: Maybe<Scalars['String']['output']>;
   position: Scalars['Int']['output'];
   postedOn?: Maybe<Scalars['String']['output']>;
+  prizeTiers: Array<BountyPrizeTier>;
   prizes: Array<Scalars['String']['output']>;
   requirements: Array<Scalars['String']['output']>;
   reward?: Maybe<Scalars['String']['output']>;
@@ -98,12 +100,19 @@ export type BountyEntry = {
   wallet?: Maybe<Scalars['String']['output']>;
 };
 
+export type BountyPrizeTier = {
+  __typename?: 'BountyPrizeTier';
+  amount: Scalars['String']['output'];
+  place: Scalars['Int']['output'];
+};
+
 export type BountyWinner = {
   __typename?: 'BountyWinner';
   address?: Maybe<Scalars['String']['output']>;
   amount?: Maybe<Scalars['String']['output']>;
   author: Scalars['String']['output'];
   notebookSlug: Scalars['String']['output'];
+  notes?: Maybe<Array<Scalars['String']['output']>>;
   place: Scalars['String']['output'];
 };
 
@@ -157,8 +166,8 @@ export type CreateBountyInput = {
   deadline: Scalars['DateTime']['input'];
   deliverables?: InputMaybe<Array<Scalars['String']['input']>>;
   details: Scalars['String']['input'];
+  prizes: Array<Scalars['String']['input']>;
   requirements?: InputMaybe<Array<Scalars['String']['input']>>;
-  rewardAmount: Scalars['String']['input'];
   rewardToken: Scalars['String']['input'];
   sponsor: Scalars['String']['input'];
   summary: Scalars['String']['input'];
@@ -1869,7 +1878,7 @@ export type SyncBountyEscrowMutationVariables = Exact<{
 }>;
 
 
-export type SyncBountyEscrowMutation = { __typename?: 'Mutation', syncBountyEscrow: { __typename?: 'Bounty', slug: string, status: string, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null }> } };
+export type SyncBountyEscrowMutation = { __typename?: 'Mutation', syncBountyEscrow: { __typename?: 'Bounty', slug: string, status: string, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null, notes?: Array<string> | null }> } };
 
 export type StartBountyEntryMutationVariables = Exact<{
   slug: Scalars['String']['input'];
@@ -2281,26 +2290,26 @@ export type GetUserFollowingQueryVariables = Exact<{
 
 export type GetUserFollowingQuery = { __typename?: 'Query', getUserFollowing: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null, followersCount: number, followingCount: number }> };
 
-export type BountyWinnerFieldsFragment = { __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null };
+export type BountyWinnerFieldsFragment = { __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null, notes?: Array<string> | null };
 
 export type GetBountiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBountiesQuery = { __typename?: 'Query', getBounties: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, sample: boolean, onchainId?: string | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null }> }> };
+export type GetBountiesQuery = { __typename?: 'Query', getBounties: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, sample: boolean, onchainId?: string | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null, notes?: Array<string> | null }> }> };
 
 export type GetBountyQueryVariables = Exact<{
   slug: Scalars['String']['input'];
 }>;
 
 
-export type GetBountyQuery = { __typename?: 'Query', getBounty?: { __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, background?: string | null, requirements: Array<string>, deliverables: Array<string>, prizes: Array<string>, judging: Array<string>, dataHints: Array<string>, postedOn?: string | null, sample: boolean, details?: string | null, deadline?: any | null, chainId?: number | null, onchainId?: string | null, sponsorAddress?: string | null, fundTxHash?: string | null, rewardToken?: string | null, rewardAmount?: string | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null }> } | null };
+export type GetBountyQuery = { __typename?: 'Query', getBounty?: { __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, background?: string | null, requirements: Array<string>, deliverables: Array<string>, prizes: Array<string>, judging: Array<string>, dataHints: Array<string>, postedOn?: string | null, sample: boolean, details?: string | null, deadline?: any | null, chainId?: number | null, onchainId?: string | null, sponsorAddress?: string | null, fundTxHash?: string | null, rewardToken?: string | null, rewardAmount?: string | null, isMine: boolean, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null, notes?: Array<string> | null }>, prizeTiers: Array<{ __typename?: 'BountyPrizeTier', place: number, amount: string }> } | null };
 
 export type GetBountyDraftsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
 }>;
 
 
-export type GetBountyDraftsQuery = { __typename?: 'Query', getBountyDrafts: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, sample: boolean, onchainId?: string | null, rewardToken?: string | null, rewardAmount?: string | null, deadline?: any | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null }> }> };
+export type GetBountyDraftsQuery = { __typename?: 'Query', getBountyDrafts: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, sample: boolean, onchainId?: string | null, rewardToken?: string | null, rewardAmount?: string | null, deadline?: any | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null, notes?: Array<string> | null }>, prizeTiers: Array<{ __typename?: 'BountyPrizeTier', place: number, amount: string }> }> };
 
 export type GetBountyEntriesQueryVariables = Exact<{
   slug: Scalars['String']['input'];
@@ -2726,6 +2735,7 @@ export const BountyWinnerFieldsFragmentDoc = gql`
   notebookSlug
   amount
   address
+  notes
 }
     `;
 export const EditTitleWithAiDocument = gql`
@@ -5503,6 +5513,11 @@ export const GetBountyDocument = gql`
     fundTxHash
     rewardToken
     rewardAmount
+    prizeTiers {
+      place
+      amount
+    }
+    isMine
   }
 }
     ${BountyWinnerFieldsFragmentDoc}`;
@@ -5556,6 +5571,10 @@ export const GetBountyDraftsDocument = gql`
     onchainId
     rewardToken
     rewardAmount
+    prizeTiers {
+      place
+      amount
+    }
     deadline
   }
 }
