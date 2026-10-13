@@ -1,14 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { PiSealCheck } from "react-icons/pi";
+import { monad } from "viem/chains";
 
 import { AuthorCell } from "@/components/Explore/AuthorCell";
 import { ListTable } from "@/components/Explore/ListTable";
 import { listCellClass, listRowClass } from "@/components/Showcase/BoardKit";
 import { useGetBountyEntriesQuery } from "@/generated/graphql";
+import { explorerTxUrl } from "@/web3/config";
 import { formatDay, shortAddress } from "@/web3/format";
 
-const HEADERS = ["Author", "Notebook", "Wallet"] as const;
+const HEADERS = ["Author", "Notebook", "Trust", "Wallet"] as const;
 
 export const BountyEntries = ({ slug }: { slug: string }) => {
   const { data } = useGetBountyEntriesQuery({ variables: { slug } });
@@ -38,6 +41,21 @@ export const BountyEntries = ({ slug }: { slug: string }) => {
               >
                 {entry.notebookTitle || "Untitled notebook"}
               </Link>
+            </td>
+            <td className={listCellClass}>
+              {entry.trusted && entry.attestation?.responseTx ? (
+                <a
+                  href={explorerTxUrl(monad, entry.attestation.responseTx)}
+                  target="_blank"
+                  rel="noreferrer"
+                  title={`Inputs committed onchain by agent ${entry.attestation.agentId}, checked by ${shortAddress(entry.attestation.validator)}`}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-green-700 dark:text-green-400 hover:underline"
+                >
+                  <PiSealCheck size={14} /> Verified
+                </a>
+              ) : (
+                <span className="text-xs text-ink-400">Not verified</span>
+              )}
             </td>
             <td className={`${listCellClass} md:text-right`}>
               {entry.wallet && (

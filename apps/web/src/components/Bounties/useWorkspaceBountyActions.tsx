@@ -122,6 +122,7 @@ export const useWorkspaceBountyActions = () => {
 
     const submitModal = (
       <SubmitEntryModal
+        workspaceId={workspaceId}
         isOpen={asking === bounty.slug}
         onClose={() => setAsking(null)}
         title={bounty.title}
