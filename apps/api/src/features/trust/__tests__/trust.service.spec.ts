@@ -12,6 +12,7 @@ const receipt = {
   codeHash: '0xcode',
 };
 let liveCode = '0xcode';
+let cellsHaveRun = true;
 let liveCells = ['c1', 'c2'];
 
 jest.mock('@sandworm/trust', () => ({
@@ -23,7 +24,11 @@ jest.mock('@sandworm/trust', () => ({
   hashCode: () => liveCode,
   extractInputs: () => [],
   runnableCellIds: () => liveCells,
-  ranAt: () => '2026-10-13T10:00:00.000Z',
+  NotRunError: class NotRunError extends Error {},
+  ranAt: () => {
+    if (!cellsHaveRun) throw new (jest.requireMock('@sandworm/trust').NotRunError)();
+    return '2026-10-13T10:00:00.000Z';
+  },
   walletFrom: (key: string) => ({ account: { address: `0x${key}` } }),
 }));
 jest.mock('viem', () => ({ keccak256: () => '0xrequest' }));
@@ -54,6 +59,7 @@ beforeEach(() => {
   process.env.TRUST_VALIDATOR_PRIVATE_KEY = 'bb';
   process.env.TRUST_AGENT_ID = '7';
   liveCode = '0xcode';
+  cellsHaveRun = true;
   liveCells = ['c1', 'c2'];
   chain.validationStatus.mockResolvedValue({ validator: VALIDATOR, agentId: 7n, response: 100 });
   chain.agentOwner.mockResolvedValue(AGENT_OWNER);
@@ -160,6 +166,16 @@ describe('TrustService.start and status', () => {
     await expect(service.start(REF)).rejects.toThrow('Live notebook');
     expect(attest).not.toHaveBeenCalled();
     await expect(service.status(REF)).resolves.toMatchObject({ pending: false });
+  });
+
+  it('tells the user to run the notebook first when none of its cells has run', async () => {
+    cellsHaveRun = false;
+    const { service } = setup([]);
+    const attest = jest.spyOn(service, 'attest');
+
+    await expect(service.start(REF)).rejects.toThrow('Run the notebook first');
+    await expect(service.start(REF)).rejects.toBeInstanceOf(BadRequestException);
+    expect(attest).not.toHaveBeenCalled();
   });
 
   it('says why a failed attestation failed', async () => {

@@ -9,6 +9,7 @@ import {
   buildReceipt,
   encode,
   extractInputs,
+  NotRunError,
   fetchBytes,
   hashCode,
   inputHashIsConsistent,
@@ -260,6 +261,9 @@ export class TrustService {
     try {
       return { ids, inputs: extractInputs(ydoc, ids), ranAt: ranAt(ydoc, ids) };
     } catch (error) {
+      if (error instanceof NotRunError) {
+        throw new BadRequestException('Run the notebook first: none of its cells has a result yet. Run it, then verify it.');
+      }
       throw new BadRequestException(error instanceof Error ? error.message : 'Could not read the notebook');
     }
   }

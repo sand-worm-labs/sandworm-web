@@ -121,6 +121,14 @@ export const hashCode = (inputs: CellInput[]) => hashCanonical(inputs as unknown
 export const hashInputs = (inputs: CellInput[], ranAt: string) =>
   hashCanonical({ cells: inputs as unknown as Json, ranAt });
 
+// A notebook whose cells have never run: nothing says which data the finding came from.
+export class NotRunError extends Error {
+  constructor() {
+    super('None of these cells has run yet: run the notebook, then build the receipt');
+    this.name = 'NotRunError';
+  }
+}
+
 // =====================================
 // ⬢ When it ran
 // =====================================
@@ -150,6 +158,6 @@ export function ranAt(ydoc: Y.Doc, cellIds: string[]): string {
     const parsed = time ? new Date(time) : null;
     return parsed && !Number.isNaN(parsed.getTime()) ? [parsed.getTime()] : [];
   });
-  if (times.length === 0) throw new Error('None of these cells has run yet: run the notebook, then build the receipt');
+  if (times.length === 0) throw new NotRunError();
   return new Date(Math.max(...times)).toISOString();
 }
