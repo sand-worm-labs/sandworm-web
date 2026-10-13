@@ -322,6 +322,20 @@ type BountyWinner {
   place: String!
   author: String!
   notebookSlug: String!
+  amount: String
+  address: String
+}
+
+type BountyEntry {
+  id: String!
+  bountySlug: String!
+  documentId: String!
+  author: String!
+  notebookTitle: String!
+  notebookSlug: String
+  wallet: String
+  submittedAt: DateTime
+  isMine: Boolean!
 }
 
 type Bounty {
@@ -644,6 +658,16 @@ type Query {
   """
   getBountyDrafts(workspaceId: String!): [Bounty!]!
 
+  """
+  Get the entries submitted to a bounty, oldest first. Wallets are returned only to the bounty's creator and to each entry's author.
+  """
+  getBountyEntries(slug: String!): [BountyEntry!]!
+
+  """
+  Get the entries the current user has started or submitted, across all bounties.
+  """
+  getMyBountyEntries: [BountyEntry!]!
+
   """Get a single schedule by ID"""
   schedule(scheduleId: String!): Schedule!
 
@@ -897,6 +921,19 @@ type Mutation {
   Check a funding transaction onchain and open the bounty. Everything is read from the chain.
   """
   confirmBountyFunding(slug: String!, chainId: Int!, txHash: String!): Bounty!
+
+  """
+  Read a funded bounty's escrow and record who was paid and whether it is closed. Everything is read from the chain.
+  """
+  syncBountyEscrow(slug: String!): Bounty!
+
+  """Record the notebook the current user is writing for a bounty."""
+  startBountyEntry(slug: String!, documentId: String!): BountyEntry!
+
+  """
+  Submit a published notebook as the current user's entry. A bounty funded in escrow needs the wallet the reward should be paid to.
+  """
+  submitBountyEntry(slug: String!, documentId: String!, wallet: String): BountyEntry!
 
   """Create a new execution schedule for a document"""
   createSchedule(workspaceId: String!, input: CreateScheduleInput!): Schedule!

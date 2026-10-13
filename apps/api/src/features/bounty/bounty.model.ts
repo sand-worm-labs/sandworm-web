@@ -1,6 +1,24 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { BooleanField, DateFieldOptional, StringField, StringFieldOptional } from '@sandworm/graphql';
-import { BountyEntity } from '@sandworm/postgresql-typeorm';
+import { BountyEntity, BountyEntryEntity, DocumentEntity, UserEntity } from '@sandworm/postgresql-typeorm';
+
+// An open bounty stops taking entries at its deadline, with nothing having to
+// write that to the database: from then on it reads as being judged.
+export const bountyStatus = (entity: Pick<BountyEntity, 'status' | 'deadline'>, now = Date.now()) =>
+  entity.status === 'open' && entity.deadline && entity.deadline.getTime() <= now ? 'judging' : entity.status;
+
+// The name shown on a public page. Never the email address, which
+// getDisplayName falls back to.
+export const authorName = (author?: Pick<UserEntity, 'username' | 'fullName'> | null) =>
+  author?.username || author?.fullName || 'Anonymous';
+
+// Where a published notebook is read, as in /notebooks/<slug>. Null until it
+// is published.
+export const notebookSlug = (document?: Pick<DocumentEntity, 'id' | 'slug' | 'publishedAt'> | null) =>
+  document?.publishedAt ? (document.slug ?? document.id) : null;
+
+// What an entry is loaded with to be shown
+export const ENTRY_RELATIONS = { author: true, document: true } as const;
 
 @ObjectType()
 export class BountyWinner {
@@ -12,6 +30,59 @@ export class BountyWinner {
 
   @StringField()
   notebookSlug!: string;
+
+  @StringFieldOptional()
+  amount?: string | null;
+
+  @StringFieldOptional()
+  address?: string | null;
+}
+
+@ObjectType()
+export class BountyEntry {
+  @StringField()
+  id!: string;
+
+  @StringField()
+  bountySlug!: string;
+
+  @StringField()
+  documentId!: string;
+
+  @StringField()
+  author!: string;
+
+  @StringField()
+  notebookTitle!: string;
+
+  // Set once the notebook is published, as in /notebooks/<slug>
+  @StringFieldOptional()
+  notebookSlug?: string | null;
+
+  // Only the bounty's creator and the entry's author are given the wallet
+  @StringFieldOptional()
+  wallet?: string | null;
+
+  @DateFieldOptional()
+  submittedAt?: Date | null;
+
+  @BooleanField()
+  isMine!: boolean;
+
+  static fromEntity(entity: BountyEntryEntity, viewer: { userId?: string; seesWallets: boolean }): BountyEntry {
+    const entry = new BountyEntry();
+    const isMine = entity.authorId === viewer.userId;
+    entry.id = entity.id;
+    entry.bountySlug = entity.bountySlug;
+    entry.documentId = entity.documentId;
+    entry.author = authorName(entity.author);
+    entry.notebookTitle = entity.document?.title ?? '';
+    entry.notebookSlug = notebookSlug(entity.document);
+    entry.wallet = viewer.seesWallets || isMine ? entity.wallet : null;
+    entry.submittedAt = entity.submittedAt;
+    entry.isMine = isMine;
+    return entry;
+  }
 }
 
 // sourceUrl stays in the database only: it is for checking the brief against
@@ -103,7 +174,7 @@ export class Bounty {
     bounty.sponsor = entity.sponsor;
     bounty.type = entity.type;
     bounty.reward = entity.reward;
-    bounty.status = entity.status;
+    bounty.status = bountyStatus(entity);
     bounty.summary = entity.summary;
     bounty.background = entity.background;
     bounty.requirements = entity.requirements;

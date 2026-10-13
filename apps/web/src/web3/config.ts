@@ -1,24 +1,14 @@
-import {
-  arbitrum,
-  arbitrumSepolia,
-  robinhood,
-  robinhoodTestnet,
-} from "viem/chains";
+import { monad, monadTestnet } from "viem/chains";
 import { escrowAddressFor } from "@sandworm/types/escrow";
 
 // =====================================
 // ⬢ Chains
 // =====================================
-export const targetChains = [
-  robinhoodTestnet,
-  arbitrumSepolia,
-  robinhood,
-  arbitrum,
-] as const;
+export const targetChains = [monadTestnet, monad] as const;
 
 export type TargetChainId = (typeof targetChains)[number]["id"];
 
-export const defaultChain = robinhoodTestnet;
+export const defaultChain = monadTestnet;
 
 export const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? "";
@@ -42,11 +32,7 @@ export const explorerAddressUrl = (
 
 export const faucets: Partial<Record<number, { name: string; url: string }[]>> =
   {
-    [robinhoodTestnet.id]: [
-      {
-        name: "Robinhood Chain faucet (gas)",
-        url: "https://faucet.testnet.chain.robinhood.com/",
-      },
-      { name: "Paxos faucet (USDG)", url: "https://faucet.paxos.com/" },
+    [monadTestnet.id]: [
+      { name: "Monad faucet (gas)", url: "https://faucet.monad.xyz/" },
     ],
   };

@@ -4,8 +4,12 @@ import { AbstractEntity } from './abstract.entity';
 export type BountyWinner = {
   place: string;
   author: string;
-  // Slug of the published notebook, as in /notebooks/<slug>
+  // Slug of the published notebook, as in /notebooks/<slug>. Empty when a
+  // wallet was paid from escrow that no entry names.
   notebookSlug: string;
+  // What escrow paid them after the fee ("950 USDG"), and to which wallet
+  amount?: string | null;
+  address?: string | null;
 };
 
 @Entity('bounty')

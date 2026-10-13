@@ -33,14 +33,20 @@ export const BountyChips = ({
 export const BountyWinners = ({ winners }: Pick<Bounty, "winners">) => (
   <ul className="space-y-1 text-xs text-ink-400">
     {winners.map(winner => (
-      <li key={winner.notebookSlug}>
+      <li key={winner.address ?? winner.notebookSlug}>
         {winner.place}:{" "}
-        <Link
-          href={`/notebooks/${winner.notebookSlug}`}
-          className="text-ink-100 dark:text-white hover:underline"
-        >
-          @{winner.author}
-        </Link>
+        {/* A wallet paid from escrow that no entry names has no notebook. */}
+        {winner.notebookSlug ? (
+          <Link
+            href={`/notebooks/${winner.notebookSlug}`}
+            className="text-ink-100 dark:text-white hover:underline"
+          >
+            @{winner.author}
+          </Link>
+        ) : (
+          <span className="text-ink-100 dark:text-white">{winner.author}</span>
+        )}
+        {winner.amount && ` · ${winner.amount}`}
       </li>
     ))}
   </ul>

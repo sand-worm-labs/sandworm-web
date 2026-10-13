@@ -14,3 +14,32 @@ mutation ConfirmBountyFunding($slug: String!, $chainId: Int!, $txHash: String!) 
     onchainId
   }
 }
+
+mutation SyncBountyEscrow($slug: String!) {
+  syncBountyEscrow(slug: $slug) {
+    slug
+    status
+    winners {
+      ...BountyWinnerFields
+    }
+  }
+}
+
+mutation StartBountyEntry($slug: String!, $documentId: String!) {
+  startBountyEntry(slug: $slug, documentId: $documentId) {
+    id
+    bountySlug
+    documentId
+    submittedAt
+  }
+}
+
+mutation SubmitBountyEntry($slug: String!, $documentId: String!, $wallet: String) {
+  submitBountyEntry(slug: $slug, documentId: $documentId, wallet: $wallet) {
+    id
+    bountySlug
+    documentId
+    wallet
+    submittedAt
+  }
+}

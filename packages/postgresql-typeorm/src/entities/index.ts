@@ -29,6 +29,7 @@ export * from "./lock.entity";
 export * from "./tool.entity";
 export * from "./tool-category.entity";
 export * from "./bounty.entity";
+export * from "./bounty-entry.entity";
 export * from './audit-log.entity';
 export * from './referral-code.entity';
 export * from './showcase-lead.entity';

@@ -6,9 +6,11 @@ import { PiArrowLeft, PiTrophy } from "react-icons/pi";
 import { RichTextView } from "@/components/RichTextField";
 import { useGetBountyQuery } from "@/generated/graphql";
 import { EscrowPanel } from "@/web3/components/EscrowPanel";
+import { FaucetButton } from "@/web3/components/FaucetButton";
 
 import type { BountyRef } from "./bounties";
 import { BountyChips, BountyReward, BountyWinners } from "./BountyCard";
+import { BountyEntries } from "./BountyEntries";
 import { SponsorLogo } from "./BountyLogos";
 
 const Section = ({
@@ -148,6 +150,8 @@ export const BountyDetail = ({
               <BountyWinners winners={bounty.winners} />
             </Section>
           )}
+
+          <BountyEntries slug={bounty.slug} />
         </div>
 
         <aside className="lg:sticky lg:top-6 mt-8 rounded-3xl bg-base-100 border border-border-secondary dark:border-border-tertiary p-6">
@@ -172,6 +176,8 @@ export const BountyDetail = ({
           )}
 
           <EscrowPanel bounty={bounty} onChanged={() => refetch()} />
+
+          {!bounty.sample && <FaucetButton rewardToken={bounty.rewardToken} />}
 
           {actions && (
             <div className="mt-5 flex flex-wrap items-center gap-2">

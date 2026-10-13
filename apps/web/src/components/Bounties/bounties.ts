@@ -6,12 +6,43 @@ import type { GetBountiesQuery, GetBountyQuery } from "@/generated/graphql";
 export type Bounty = GetBountiesQuery["getBounties"][number];
 export type BountyDetails = NonNullable<GetBountyQuery["getBounty"]>;
 
-export type BountyRef = Pick<Bounty, "slug" | "title" | "status">;
+// onchainId is set once the reward is locked in escrow.
+export type BountyRef = Pick<Bounty, "slug" | "title" | "status" | "onchainId">;
 
 // =====================================
 // ⬢ Helpers
 // =====================================
 export const bountyTag = (slug: string) => `bounty-${slug}`;
+
+const PROMPT_DETAILS_CHARS = 2500;
+
+const section = (
+  title: string,
+  items: string[] | string | null | undefined
+) => {
+  const body = Array.isArray(items)
+    ? items.map(item => `- ${item}`).join("\n")
+    : items?.trim();
+  return body ? `\n## ${title}\n${body}\n` : "";
+};
+
+// What the AI panel is asked when someone starts a bounty: the whole brief,
+// so the starter notebook answers this bounty and not a generic one.
+export const bountyStarterPrompt = (bounty: BountyDetails) =>
+  [
+    `I just started the bounty "${bounty.title}" (sponsored by ${bounty.sponsor}).`,
+    "Build me a starter notebook for it in this notebook.",
+    "Open with a markdown cell that restates the brief, then add a SQL or Python cell for each question below, and a chart where one helps. Run what you add and fix any errors. Do not invent figures.",
+    section("Summary", bounty.summary),
+    section("Details", bounty.details?.slice(0, PROMPT_DETAILS_CHARS)),
+    section("Background", bounty.background),
+    section("What to answer", bounty.requirements),
+    section("What to submit", bounty.deliverables),
+    section("How it is judged", bounty.judging),
+    section("Data hints", bounty.dataHints),
+  ]
+    .filter(Boolean)
+    .join("\n");
 
 export const STATUS_LABEL: Record<string, string> = {
   draft: "Draft",

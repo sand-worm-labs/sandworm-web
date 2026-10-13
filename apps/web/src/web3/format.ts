@@ -9,9 +9,12 @@ export const formatToken = (amount: bigint, decimals: number) => {
   return fraction ? `${grouped}.${fraction}` : grouped;
 };
 
-export const formatDate = (unixSeconds: number | bigint) =>
-  new Date(Number(unixSeconds) * 1000).toLocaleDateString(undefined, {
+export const formatDay = (date: Date | string) =>
+  new Date(date).toLocaleDateString(undefined, {
     year: "numeric",
     month: "short",
     day: "numeric",
   });
+
+export const formatDate = (unixSeconds: number | bigint) =>
+  formatDay(new Date(Number(unixSeconds) * 1000));

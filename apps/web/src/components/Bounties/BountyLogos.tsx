@@ -63,11 +63,7 @@ export const TokenLogo = ({
     alt=""
     width={size}
     height={size}
-    title={
-      token.arbitrum
-        ? `${token.name} (${token.symbol}), available on Arbitrum`
-        : `${token.name} (${token.symbol}), not available on Arbitrum`
-    }
+    title={`${token.name} (${token.symbol})`}
     className="rounded-full object-contain shrink-0"
   />
 );

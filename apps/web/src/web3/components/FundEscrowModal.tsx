@@ -1,28 +1,20 @@
 "use client";
 
-import { demoTokenAbi, escrowTokens } from "@sandworm/types/escrow";
+import { escrowTokens } from "@sandworm/types/escrow";
 import { useState } from "react";
 import { toast } from "sonner";
 import { parseUnits } from "viem";
-import {
-  useAccount,
-  usePublicClient,
-  useReadContract,
-  useSwitchChain,
-  useWalletClient,
-} from "wagmi";
-
-import { tintPillDarkClassName } from "@/styles/interactive";
+import { useAccount, useReadContract, useSwitchChain } from "wagmi";
 
 import { defaultChain, faucets, supportsEscrow, targetChains } from "../config";
 import { erc20Abi } from "../erc20";
 import { describeError } from "../errors";
 import { formatDate, formatToken } from "../format";
 import { useFundBounty } from "../hooks/useFundBounty";
-import { useTx } from "../hooks/useTx";
+import { useMintTestToken } from "../hooks/useMintTestToken";
 
 import { ConnectWalletButton } from "./ConnectWalletButton";
-import { ModalShell } from "./ModalShell";
+import { ModalShell, modalPrimaryButtonClassName } from "./ModalShell";
 
 // =====================================
 // ⬢ Types
@@ -49,8 +41,6 @@ const STEP_LABEL = {
   confirming: "Confirming with Sandworm...",
   done: "Done",
 } as const;
-
-const primaryButtonClassName = `w-full py-3.5 px-4 bg-primary hover:bg-primary-720 disabled:bg-disabled dark:disabled:bg-[#4a4a48] text-border-secondary font-medium rounded-xl transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm border border-transparent ${tintPillDarkClassName}`;
 
 const Row = ({ label, value }: { label: string; value: string }) => (
   <div className="flex items-center justify-between gap-4 py-2 text-sm">
@@ -83,10 +73,7 @@ export const FundEscrowModal = ({
   const onRightChain = connectedChainId === chainId;
 
   const { fund, step } = useFundBounty(chainId);
-  const { data: walletClient } = useWalletClient({ chainId });
-  const publicClient = usePublicClient({ chainId });
-  const runTx = useTx();
-  const [isMinting, setIsMinting] = useState(false);
+  const { mint: mintTestToken, isMinting } = useMintTestToken(chainId);
   const balance = useReadContract({
     chainId,
     address: token?.address,
@@ -102,25 +89,13 @@ export const FundEscrowModal = ({
   const isRunning = step !== "idle" && step !== "done";
 
   const mint = async () => {
-    if (!token || !walletClient || !publicClient || !address) return;
+    if (!token) return;
     setError(null);
-    setIsMinting(true);
     try {
-      await runTx(`Mint ${token.symbol}`, chain, publicClient, () =>
-        walletClient.writeContract({
-          account: address,
-          chain,
-          address: token.address,
-          abi: demoTokenAbi,
-          functionName: "mint",
-          args: [address, needed],
-        })
-      );
+      await mintTestToken(token, needed);
       await balance.refetch();
     } catch (err) {
       setError(describeError(err));
-    } finally {
-      setIsMinting(false);
     }
   };
 
@@ -152,7 +127,7 @@ export const FundEscrowModal = ({
           type="button"
           disabled={isSwitching}
           onClick={() => switchChainAsync({ chainId })}
-          className={primaryButtonClassName}
+          className={modalPrimaryButtonClassName}
         >
           Switch to {chain.name}
         </button>
@@ -163,7 +138,7 @@ export const FundEscrowModal = ({
         type="button"
         disabled={!token || !hasBalance || isRunning}
         onClick={run}
-        className={primaryButtonClassName}
+        className={modalPrimaryButtonClassName}
       >
         {isRunning
           ? STEP_LABEL[step]

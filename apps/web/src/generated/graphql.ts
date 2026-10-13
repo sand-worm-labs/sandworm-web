@@ -21,7 +21,7 @@ export type Scalars = {
 
 export type AiResult = {
   __typename?: 'AiResult';
-  chatId: Scalars['String']['output'];
+  chatId?: Maybe<Scalars['String']['output']>;
   result: Scalars['String']['output'];
 };
 
@@ -85,8 +85,23 @@ export type Bounty = {
   winners: Array<BountyWinner>;
 };
 
+export type BountyEntry = {
+  __typename?: 'BountyEntry';
+  author: Scalars['String']['output'];
+  bountySlug: Scalars['String']['output'];
+  documentId: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  isMine: Scalars['Boolean']['output'];
+  notebookSlug?: Maybe<Scalars['String']['output']>;
+  notebookTitle: Scalars['String']['output'];
+  submittedAt?: Maybe<Scalars['DateTime']['output']>;
+  wallet?: Maybe<Scalars['String']['output']>;
+};
+
 export type BountyWinner = {
   __typename?: 'BountyWinner';
+  address?: Maybe<Scalars['String']['output']>;
+  amount?: Maybe<Scalars['String']['output']>;
   author: Scalars['String']['output'];
   notebookSlug: Scalars['String']['output'];
   place: Scalars['String']['output'];
@@ -177,9 +192,9 @@ export type CreateComponentInstanceInput = {
 export type CreateDocumentInput = {
   orderIndex?: Scalars['Float']['input'];
   parentId?: InputMaybe<Scalars['String']['input']>;
+  runtime?: InputMaybe<DocumentRuntime>;
   title?: InputMaybe<Scalars['String']['input']>;
   version: Scalars['Float']['input'];
-  runtime?: InputMaybe<DocumentRuntime>;
 };
 
 export type CreateReusableComponentInput = {
@@ -258,9 +273,11 @@ export type Document = {
   publishedAt?: Maybe<Scalars['DateTime']['output']>;
   runSQLSelection: Scalars['Boolean']['output'];
   runUnexecutedBlocks: Scalars['Boolean']['output'];
-  shareLinksWithoutSidebar: Scalars['Boolean']['output'];
-  slug?: Maybe<Scalars['String']['output']>;
   runtime: DocumentRuntime;
+  shareLinksWithoutSidebar: Scalars['Boolean']['output'];
+  /** Showcase metadata, when the notebook is part of the Showcase */
+  showcase?: Maybe<Scalars['JSON']['output']>;
+  slug?: Maybe<Scalars['String']['output']>;
   tags: Array<Scalars['String']['output']>;
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -270,16 +287,16 @@ export type Document = {
   workspaceId: Scalars['String']['output'];
 };
 
-export enum DocumentVisibility {
-  Link = 'LINK',
-  Public = 'PUBLIC',
-  Workspace = 'WORKSPACE'
-}
-
 export enum DocumentRuntime {
   BrowserAnalysis = 'BROWSER_ANALYSIS',
   BrowserDashboard = 'BROWSER_DASHBOARD',
   Cloud = 'CLOUD'
+}
+
+export enum DocumentVisibility {
+  Link = 'LINK',
+  Public = 'PUBLIC',
+  Workspace = 'WORKSPACE'
 }
 
 export type DuplicateDocumentInput = {
@@ -390,6 +407,8 @@ export type Mutation = {
   addWorkspaceFavoriteDocument: Document;
   /** Approve a pending role request */
   approveRoleRequest: Scalars['Boolean']['output'];
+  /** Approve a claim lead: marks the case study it names as claimed by the protocol's team. Needs the studio password, or a staff account. */
+  approveShowcaseClaim: Scalars['Boolean']['output'];
   /** Remove multiple users from workspaces */
   batchRemoveUsersFromWorkspace: Scalars['Boolean']['output'];
   /** Check a funding transaction onchain and open the bounty. Everything is read from the chain. */
@@ -428,6 +447,10 @@ export type Mutation = {
   deleteFile: Scalars['Boolean']['output'];
   /** Delete a schedule */
   deleteSchedule: Scalars['Boolean']['output'];
+  /** Delete a Showcase category that has no notebooks filed under it. Needs the studio password, or a staff account. */
+  deleteShowcaseCategory: Scalars['Boolean']['output'];
+  /** Remove an uploaded protocol logo, so the protocol shows DefiLlama's icon again. Needs the studio password, or a staff account. */
+  deleteShowcaseLogo: Scalars['Boolean']['output'];
   /** Delete a workspace */
   deleteWorkspace: Scalars['Boolean']['output'];
   /** Create a duplicate of a document in the same workspace */
@@ -468,19 +491,39 @@ export type Mutation = {
   restartEnvironment: Environment;
   /** Restore a previously deleted document */
   restoreDocument: Document;
+  /** Create a Showcase category, or change the one with the same slug. Needs the studio password, or a staff account. */
+  saveShowcaseCategory: Scalars['Boolean']['output'];
+  /** Set a chain's color and its place among the Showcase chain filters. Needs the studio password, or a staff account. */
+  saveShowcaseChain: Scalars['Boolean']['output'];
+  /** Set a protocol's logo: a base64 PNG, JPEG or WebP of up to 256 KB, served at /api/showcase/logos/:slug. Needs the studio password, or a staff account. */
+  saveShowcaseLogo: Scalars['Boolean']['output'];
+  /** Set an official notebook's Showcase metadata, or pass null to take it off the Showcase. Needs the studio password, or a staff account. */
+  saveShowcaseNotebook: Scalars['Boolean']['output'];
+  /** Set a protocol's links (website, twitter, github, discord, telegram), as URLs or handles. Empty ones are removed. Needs the studio password, or a staff account. */
+  saveShowcaseProtocolLinks: Scalars['Boolean']['output'];
   /** Send a user message */
   sendMessage: Message;
   /** Let any authenticated user with the link view this document read-only, without publishing it to the community */
   setDocumentLinkVisibility: Document;
+  /** Set a notebook's Showcase metadata, or pass null to take it off the Showcase. */
+  setDocumentShowcase: Scalars['Boolean']['output'];
   /** Add or remove environment variables */
   setEnvironmentVariables: Array<EnvironmentVariable>;
   setWorkspaceDefaultAiModel: Scalars['Boolean']['output'];
   /** Dev only: simulate a payment and set the workspace plan */
   simulateWorkspaceUpgrade: Workspace;
+  /** Record the notebook the current user is writing for a bounty. */
+  startBountyEntry: BountyEntry;
   /** Move a free workspace onto the trial plan */
   startWorkspaceTrial: Workspace;
+  /** Submit a published notebook as the current user's entry. A bounty funded in escrow needs the wallet the reward should be paid to. */
+  submitBountyEntry: BountyEntry;
+  /** Ask for a protocol to be covered, ask for a report, or claim the case study about your protocol. Saved for the sales team. */
+  submitShowcaseLead: Scalars['Boolean']['output'];
   /** Switch to a different workspace */
   switchWorkspace: Scalars['Boolean']['output'];
+  /** Read a funded bounty's escrow and record who was paid and whether it is closed. Everything is read from the chain. */
+  syncBountyEscrow: Bounty;
   /** Unfollow User */
   unfollowUser: Profile;
   /** Unpublish a document */
@@ -528,6 +571,12 @@ export type MutationAddWorkspaceFavoriteDocumentArgs = {
 export type MutationApproveRoleRequestArgs = {
   userId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationApproveShowcaseClaimArgs = {
+  leadId: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -635,6 +684,18 @@ export type MutationDeleteFileArgs = {
 
 export type MutationDeleteScheduleArgs = {
   input: DeleteScheduleInput;
+};
+
+
+export type MutationDeleteShowcaseCategoryArgs = {
+  password?: InputMaybe<Scalars['String']['input']>;
+  slug: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteShowcaseLogoArgs = {
+  password?: InputMaybe<Scalars['String']['input']>;
+  slug: Scalars['String']['input'];
 };
 
 
@@ -774,6 +835,39 @@ export type MutationRestoreDocumentArgs = {
 };
 
 
+export type MutationSaveShowcaseCategoryArgs = {
+  input: Scalars['JSON']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationSaveShowcaseChainArgs = {
+  input: Scalars['JSON']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationSaveShowcaseLogoArgs = {
+  imageBase64: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
+  slug: Scalars['String']['input'];
+};
+
+
+export type MutationSaveShowcaseNotebookArgs = {
+  documentId: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
+  showcase?: InputMaybe<Scalars['JSON']['input']>;
+};
+
+
+export type MutationSaveShowcaseProtocolLinksArgs = {
+  input: Scalars['JSON']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationSendMessageArgs = {
   input: SendMessageInput;
 };
@@ -781,6 +875,13 @@ export type MutationSendMessageArgs = {
 
 export type MutationSetDocumentLinkVisibilityArgs = {
   documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationSetDocumentShowcaseArgs = {
+  documentId: Scalars['String']['input'];
+  showcase?: InputMaybe<Scalars['JSON']['input']>;
   workspaceId: Scalars['String']['input'];
 };
 
@@ -803,13 +904,36 @@ export type MutationSimulateWorkspaceUpgradeArgs = {
 };
 
 
+export type MutationStartBountyEntryArgs = {
+  documentId: Scalars['String']['input'];
+  slug: Scalars['String']['input'];
+};
+
+
 export type MutationStartWorkspaceTrialArgs = {
   workspaceId: Scalars['String']['input'];
 };
 
 
+export type MutationSubmitBountyEntryArgs = {
+  documentId: Scalars['String']['input'];
+  slug: Scalars['String']['input'];
+  wallet?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationSubmitShowcaseLeadArgs = {
+  input: Scalars['JSON']['input'];
+};
+
+
 export type MutationSwitchWorkspaceArgs = {
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationSyncBountyEscrowArgs = {
+  slug: Scalars['String']['input'];
 };
 
 
@@ -950,13 +1074,15 @@ export type Query = {
   getBounty?: Maybe<Bounty>;
   /** Get the bounties the current user drafted in a workspace and has not funded yet. */
   getBountyDrafts: Array<Bounty>;
+  /** Get the entries submitted to a bounty, oldest first. Wallets are returned only to the bounty's creator and to each entry's author. */
+  getBountyEntries: Array<BountyEntry>;
   /** Get a reusable component by ID */
   getComponent: ReusableComponent;
   /** Fetch a verified contract's real function and event signatures from its block explorer ABI, for tool params that let a user pick one instead of guessing (e.g. calldata_decoder). */
   getContractAbi: ContractAbi;
   /** Get a single document by ID */
   getDocument: Document;
-  /** Get the base64-encoded Yjs state of a document by ID (authenticated snapshot, used to render optimistically before the live collaboration socket syncs) */
+  /** Get the base64-encoded Yjs state of a document by ID (authenticated snapshot, used to render optimistically before the live collaboration socket syncs). With isApp, returns the caller's published view-mode copy instead of the editable doc, so view mode can load without the socket. */
   getDocumentState: Scalars['String']['output'];
   /** Get documents in a workspace organized as a tree for explorer view */
   getExplorerDocuments: Array<Document>;
@@ -968,6 +1094,8 @@ export type Query = {
   getForkedDocuments: Array<Document>;
   /** Get invitation details from hash without accepting it */
   getInvitationInfo: WorkspaceInvitationInfo;
+  /** Get the entries the current user has started or submitted, across all bounties. */
+  getMyBountyEntries: Array<BountyEntry>;
   /** Get all pending invites for a workspace */
   getPendingInvites: Array<WorkspaceMember>;
   /** Get pending role requests for a workspace */
@@ -976,13 +1104,23 @@ export type Query = {
   getPublishedDocumentBySlug: Document;
   /** Get the base64-encoded Yjs state of a published document by its public slug (unauthenticated) */
   getPublishedDocumentState: Scalars['String']['output'];
+  /** For the studio: every notebook in the official workspaces with its Showcase metadata (drafts too), and the leads that came in. Needs the studio password, or a staff account. */
+  getShowcaseAdmin: Scalars['JSON']['output'];
+  /** Notebooks the community published about a category (a chain or a sector), most forked first. Not on the Showcase itself: found by tag, title or description. */
+  getShowcaseCommunity: Array<ShowcaseCommunityItem>;
+  /** What the Showcase is laid out from: its taxonomy (groups, categories, chain order), chain colors and template sections. */
+  getShowcaseConfig: Scalars['JSON']['output'];
+  /** For the studio: the protocol logos that have been uploaded (slug, name and version, not the image). Needs the studio password, or a staff account. */
+  getShowcaseLogos: Scalars['JSON']['output'];
+  /** The official notebooks on the Showcase, newest first. Filter by category slug and by kind (category, case_study, working). */
+  getShowcaseNotebooks: Array<ShowcaseNotebook>;
   /** Get the power tool category taxonomy */
   getToolCategories: Array<ToolCategory>;
   /** Get the full power tool catalog (SQL/Python analytics tools available to the notebook) */
   getTools: Array<Tool>;
   /** Get trending published documents across all workspaces */
   getTrendingPublishedDocuments: Array<Document>;
-  /** Get user by id */
+  /** Get user by id or username */
   getUser: User;
   /** Users who follow a given user */
   getUserFollowers: Array<User>;
@@ -1105,6 +1243,11 @@ export type QueryGetBountyDraftsArgs = {
 };
 
 
+export type QueryGetBountyEntriesArgs = {
+  slug: Scalars['String']['input'];
+};
+
+
 export type QueryGetComponentArgs = {
   componentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
@@ -1168,6 +1311,28 @@ export type QueryGetPublishedDocumentBySlugArgs = {
 
 export type QueryGetPublishedDocumentStateArgs = {
   slug: Scalars['String']['input'];
+};
+
+
+export type QueryGetShowcaseAdminArgs = {
+  password?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryGetShowcaseCommunityArgs = {
+  category: Scalars['String']['input'];
+  limit?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetShowcaseLogosArgs = {
+  password?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryGetShowcaseNotebooksArgs = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  kind?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1350,6 +1515,35 @@ export type SendMessageInput = {
 export type SetEnvironmentVariablesInput = {
   add: Array<EnvironmentVariableInput>;
   remove: Array<Scalars['String']['input']>;
+};
+
+export type ShowcaseCommunityItem = {
+  __typename?: 'ShowcaseCommunityItem';
+  authorName?: Maybe<Scalars['String']['output']>;
+  authorUsername?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  forks: Scalars['Int']['output'];
+  /** It also has a public dashboard, at /notebooks/:slug/dashboard */
+  hasDashboard: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  publishedAt: Scalars['DateTime']['output'];
+  slug: Scalars['String']['output'];
+  tags: Array<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+};
+
+export type ShowcaseNotebook = {
+  __typename?: 'ShowcaseNotebook';
+  /** official or community */
+  author: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  /** The notebook has a dashboard its author left public */
+  hasDashboard: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  publishedAt: Scalars['DateTime']['output'];
+  showcase: Scalars['JSON']['output'];
+  slug: Scalars['String']['output'];
+  title: Scalars['String']['output'];
 };
 
 export type SocialLinksInput = {
@@ -1567,7 +1761,7 @@ export type EditSqlWithAiMutationVariables = Exact<{
 }>;
 
 
-export type EditSqlWithAiMutation = { __typename?: 'Mutation', editSqlWithAi: { __typename?: 'AiResult', chatId: string } };
+export type EditSqlWithAiMutation = { __typename?: 'Mutation', editSqlWithAi: { __typename?: 'AiResult', chatId?: string | null } };
 
 export type EditPythonWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
@@ -1576,7 +1770,7 @@ export type EditPythonWithAiMutationVariables = Exact<{
 }>;
 
 
-export type EditPythonWithAiMutation = { __typename?: 'Mutation', editPythonWithAi: { __typename?: 'AiResult', chatId: string } };
+export type EditPythonWithAiMutation = { __typename?: 'Mutation', editPythonWithAi: { __typename?: 'AiResult', chatId?: string | null } };
 
 export type FixSqlWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
@@ -1585,7 +1779,7 @@ export type FixSqlWithAiMutationVariables = Exact<{
 }>;
 
 
-export type FixSqlWithAiMutation = { __typename?: 'Mutation', fixSqlWithAi: { __typename?: 'AiResult', chatId: string } };
+export type FixSqlWithAiMutation = { __typename?: 'Mutation', fixSqlWithAi: { __typename?: 'AiResult', chatId?: string | null } };
 
 export type FixPythonWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
@@ -1594,7 +1788,7 @@ export type FixPythonWithAiMutationVariables = Exact<{
 }>;
 
 
-export type FixPythonWithAiMutation = { __typename?: 'Mutation', fixPythonWithAi: { __typename?: 'AiResult', chatId: string } };
+export type FixPythonWithAiMutation = { __typename?: 'Mutation', fixPythonWithAi: { __typename?: 'AiResult', chatId?: string | null } };
 
 export type EditTextWithAiMutationVariables = Exact<{
   documentId: Scalars['String']['input'];
@@ -1603,7 +1797,7 @@ export type EditTextWithAiMutationVariables = Exact<{
 }>;
 
 
-export type EditTextWithAiMutation = { __typename?: 'Mutation', editTextWithAi: { __typename?: 'AiResult', chatId: string } };
+export type EditTextWithAiMutation = { __typename?: 'Mutation', editTextWithAi: { __typename?: 'AiResult', chatId?: string | null } };
 
 export type CreateUserMutationVariables = Exact<{
   input: CreateUserInput;
@@ -1669,6 +1863,30 @@ export type ConfirmBountyFundingMutationVariables = Exact<{
 
 
 export type ConfirmBountyFundingMutation = { __typename?: 'Mutation', confirmBountyFunding: { __typename?: 'Bounty', slug: string, status: string, chainId?: number | null, onchainId?: string | null } };
+
+export type SyncBountyEscrowMutationVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type SyncBountyEscrowMutation = { __typename?: 'Mutation', syncBountyEscrow: { __typename?: 'Bounty', slug: string, status: string, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null }> } };
+
+export type StartBountyEntryMutationVariables = Exact<{
+  slug: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+}>;
+
+
+export type StartBountyEntryMutation = { __typename?: 'Mutation', startBountyEntry: { __typename?: 'BountyEntry', id: string, bountySlug: string, documentId: string, submittedAt?: any | null } };
+
+export type SubmitBountyEntryMutationVariables = Exact<{
+  slug: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+  wallet?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type SubmitBountyEntryMutation = { __typename?: 'Mutation', submitBountyEntry: { __typename?: 'BountyEntry', id: string, bountySlug: string, documentId: string, wallet?: string | null, submittedAt?: any | null } };
 
 export type CreateChatMutationVariables = Exact<{
   input: CreateChatInput;
@@ -2063,24 +2281,38 @@ export type GetUserFollowingQueryVariables = Exact<{
 
 export type GetUserFollowingQuery = { __typename?: 'Query', getUserFollowing: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null, followersCount: number, followingCount: number }> };
 
+export type BountyWinnerFieldsFragment = { __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null };
+
 export type GetBountiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBountiesQuery = { __typename?: 'Query', getBounties: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, sample: boolean, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string }> }> };
+export type GetBountiesQuery = { __typename?: 'Query', getBounties: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, sample: boolean, onchainId?: string | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null }> }> };
 
 export type GetBountyQueryVariables = Exact<{
   slug: Scalars['String']['input'];
 }>;
 
 
-export type GetBountyQuery = { __typename?: 'Query', getBounty?: { __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, background?: string | null, requirements: Array<string>, deliverables: Array<string>, prizes: Array<string>, judging: Array<string>, dataHints: Array<string>, postedOn?: string | null, sample: boolean, details?: string | null, deadline?: any | null, chainId?: number | null, onchainId?: string | null, sponsorAddress?: string | null, fundTxHash?: string | null, rewardToken?: string | null, rewardAmount?: string | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string }> } | null };
+export type GetBountyQuery = { __typename?: 'Query', getBounty?: { __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, background?: string | null, requirements: Array<string>, deliverables: Array<string>, prizes: Array<string>, judging: Array<string>, dataHints: Array<string>, postedOn?: string | null, sample: boolean, details?: string | null, deadline?: any | null, chainId?: number | null, onchainId?: string | null, sponsorAddress?: string | null, fundTxHash?: string | null, rewardToken?: string | null, rewardAmount?: string | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null }> } | null };
 
 export type GetBountyDraftsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
 }>;
 
 
-export type GetBountyDraftsQuery = { __typename?: 'Query', getBountyDrafts: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, sample: boolean, rewardToken?: string | null, rewardAmount?: string | null, deadline?: any | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string }> }> };
+export type GetBountyDraftsQuery = { __typename?: 'Query', getBountyDrafts: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, sample: boolean, onchainId?: string | null, rewardToken?: string | null, rewardAmount?: string | null, deadline?: any | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null }> }> };
+
+export type GetBountyEntriesQueryVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type GetBountyEntriesQuery = { __typename?: 'Query', getBountyEntries: Array<{ __typename?: 'BountyEntry', id: string, documentId: string, author: string, notebookTitle: string, notebookSlug?: string | null, wallet?: string | null, submittedAt?: any | null, isMine: boolean }> };
+
+export type GetMyBountyEntriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMyBountyEntriesQuery = { __typename?: 'Query', getMyBountyEntries: Array<{ __typename?: 'BountyEntry', id: string, bountySlug: string, documentId: string, submittedAt?: any | null }> };
 
 export type GetChatsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -2447,6 +2679,7 @@ export const DocumentFieldsFragmentDoc = gql`
   runSQLSelection
   shareLinksWithoutSidebar
   isDashboardPublic
+  runtime
   orderIndex
   deletedAt
   createdAt
@@ -2484,6 +2717,15 @@ export const EnvironmentFieldsFragmentDoc = gql`
   status
   resourceVersion
   lastActivityAt
+}
+    `;
+export const BountyWinnerFieldsFragmentDoc = gql`
+    fragment BountyWinnerFields on BountyWinner {
+  place
+  author
+  notebookSlug
+  amount
+  address
 }
     `;
 export const EditTitleWithAiDocument = gql`
@@ -2537,7 +2779,6 @@ export type EditSqlWithAiMutationFn = Apollo.MutationFunction<EditSqlWithAiMutat
  * To run a mutation, you first call `useEditSqlWithAiMutation` within a React component and pass it any options that fit your needs.
  * When your component renders, `useEditSqlWithAiMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
-  runtime
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
@@ -3031,6 +3272,119 @@ export function useConfirmBountyFundingMutation(baseOptions?: Apollo.MutationHoo
 export type ConfirmBountyFundingMutationHookResult = ReturnType<typeof useConfirmBountyFundingMutation>;
 export type ConfirmBountyFundingMutationResult = Apollo.MutationResult<ConfirmBountyFundingMutation>;
 export type ConfirmBountyFundingMutationOptions = Apollo.BaseMutationOptions<ConfirmBountyFundingMutation, ConfirmBountyFundingMutationVariables>;
+export const SyncBountyEscrowDocument = gql`
+    mutation SyncBountyEscrow($slug: String!) {
+  syncBountyEscrow(slug: $slug) {
+    slug
+    status
+    winners {
+      ...BountyWinnerFields
+    }
+  }
+}
+    ${BountyWinnerFieldsFragmentDoc}`;
+export type SyncBountyEscrowMutationFn = Apollo.MutationFunction<SyncBountyEscrowMutation, SyncBountyEscrowMutationVariables>;
+
+/**
+ * __useSyncBountyEscrowMutation__
+ *
+ * To run a mutation, you first call `useSyncBountyEscrowMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSyncBountyEscrowMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [syncBountyEscrowMutation, { data, loading, error }] = useSyncBountyEscrowMutation({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *   },
+ * });
+ */
+export function useSyncBountyEscrowMutation(baseOptions?: Apollo.MutationHookOptions<SyncBountyEscrowMutation, SyncBountyEscrowMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SyncBountyEscrowMutation, SyncBountyEscrowMutationVariables>(SyncBountyEscrowDocument, options);
+      }
+export type SyncBountyEscrowMutationHookResult = ReturnType<typeof useSyncBountyEscrowMutation>;
+export type SyncBountyEscrowMutationResult = Apollo.MutationResult<SyncBountyEscrowMutation>;
+export type SyncBountyEscrowMutationOptions = Apollo.BaseMutationOptions<SyncBountyEscrowMutation, SyncBountyEscrowMutationVariables>;
+export const StartBountyEntryDocument = gql`
+    mutation StartBountyEntry($slug: String!, $documentId: String!) {
+  startBountyEntry(slug: $slug, documentId: $documentId) {
+    id
+    bountySlug
+    documentId
+    submittedAt
+  }
+}
+    `;
+export type StartBountyEntryMutationFn = Apollo.MutationFunction<StartBountyEntryMutation, StartBountyEntryMutationVariables>;
+
+/**
+ * __useStartBountyEntryMutation__
+ *
+ * To run a mutation, you first call `useStartBountyEntryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useStartBountyEntryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [startBountyEntryMutation, { data, loading, error }] = useStartBountyEntryMutation({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *      documentId: // value for 'documentId'
+ *   },
+ * });
+ */
+export function useStartBountyEntryMutation(baseOptions?: Apollo.MutationHookOptions<StartBountyEntryMutation, StartBountyEntryMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<StartBountyEntryMutation, StartBountyEntryMutationVariables>(StartBountyEntryDocument, options);
+      }
+export type StartBountyEntryMutationHookResult = ReturnType<typeof useStartBountyEntryMutation>;
+export type StartBountyEntryMutationResult = Apollo.MutationResult<StartBountyEntryMutation>;
+export type StartBountyEntryMutationOptions = Apollo.BaseMutationOptions<StartBountyEntryMutation, StartBountyEntryMutationVariables>;
+export const SubmitBountyEntryDocument = gql`
+    mutation SubmitBountyEntry($slug: String!, $documentId: String!, $wallet: String) {
+  submitBountyEntry(slug: $slug, documentId: $documentId, wallet: $wallet) {
+    id
+    bountySlug
+    documentId
+    wallet
+    submittedAt
+  }
+}
+    `;
+export type SubmitBountyEntryMutationFn = Apollo.MutationFunction<SubmitBountyEntryMutation, SubmitBountyEntryMutationVariables>;
+
+/**
+ * __useSubmitBountyEntryMutation__
+ *
+ * To run a mutation, you first call `useSubmitBountyEntryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSubmitBountyEntryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [submitBountyEntryMutation, { data, loading, error }] = useSubmitBountyEntryMutation({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *      documentId: // value for 'documentId'
+ *      wallet: // value for 'wallet'
+ *   },
+ * });
+ */
+export function useSubmitBountyEntryMutation(baseOptions?: Apollo.MutationHookOptions<SubmitBountyEntryMutation, SubmitBountyEntryMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SubmitBountyEntryMutation, SubmitBountyEntryMutationVariables>(SubmitBountyEntryDocument, options);
+      }
+export type SubmitBountyEntryMutationHookResult = ReturnType<typeof useSubmitBountyEntryMutation>;
+export type SubmitBountyEntryMutationResult = Apollo.MutationResult<SubmitBountyEntryMutation>;
+export type SubmitBountyEntryMutationOptions = Apollo.BaseMutationOptions<SubmitBountyEntryMutation, SubmitBountyEntryMutationVariables>;
 export const CreateChatDocument = gql`
     mutation CreateChat($input: CreateChatInput!) {
   createChat(input: $input) {
@@ -5080,14 +5434,13 @@ export const GetBountiesDocument = gql`
     status
     summary
     winners {
-      place
-      author
-      notebookSlug
+      ...BountyWinnerFields
     }
     sample
+    onchainId
   }
 }
-    `;
+    ${BountyWinnerFieldsFragmentDoc}`;
 
 /**
  * __useGetBountiesQuery__
@@ -5137,9 +5490,7 @@ export const GetBountyDocument = gql`
     judging
     dataHints
     winners {
-      place
-      author
-      notebookSlug
+      ...BountyWinnerFields
     }
     postedOn
     sample
@@ -5154,7 +5505,7 @@ export const GetBountyDocument = gql`
     rewardAmount
   }
 }
-    `;
+    ${BountyWinnerFieldsFragmentDoc}`;
 
 /**
  * __useGetBountyQuery__
@@ -5199,17 +5550,16 @@ export const GetBountyDraftsDocument = gql`
     status
     summary
     winners {
-      place
-      author
-      notebookSlug
+      ...BountyWinnerFields
     }
     sample
+    onchainId
     rewardToken
     rewardAmount
     deadline
   }
 }
-    `;
+    ${BountyWinnerFieldsFragmentDoc}`;
 
 /**
  * __useGetBountyDraftsQuery__
@@ -5243,6 +5593,95 @@ export type GetBountyDraftsQueryHookResult = ReturnType<typeof useGetBountyDraft
 export type GetBountyDraftsLazyQueryHookResult = ReturnType<typeof useGetBountyDraftsLazyQuery>;
 export type GetBountyDraftsSuspenseQueryHookResult = ReturnType<typeof useGetBountyDraftsSuspenseQuery>;
 export type GetBountyDraftsQueryResult = Apollo.QueryResult<GetBountyDraftsQuery, GetBountyDraftsQueryVariables>;
+export const GetBountyEntriesDocument = gql`
+    query GetBountyEntries($slug: String!) {
+  getBountyEntries(slug: $slug) {
+    id
+    documentId
+    author
+    notebookTitle
+    notebookSlug
+    wallet
+    submittedAt
+    isMine
+  }
+}
+    `;
+
+/**
+ * __useGetBountyEntriesQuery__
+ *
+ * To run a query within a React component, call `useGetBountyEntriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetBountyEntriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetBountyEntriesQuery({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *   },
+ * });
+ */
+export function useGetBountyEntriesQuery(baseOptions: Apollo.QueryHookOptions<GetBountyEntriesQuery, GetBountyEntriesQueryVariables> & ({ variables: GetBountyEntriesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetBountyEntriesQuery, GetBountyEntriesQueryVariables>(GetBountyEntriesDocument, options);
+      }
+export function useGetBountyEntriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetBountyEntriesQuery, GetBountyEntriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetBountyEntriesQuery, GetBountyEntriesQueryVariables>(GetBountyEntriesDocument, options);
+        }
+export function useGetBountyEntriesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetBountyEntriesQuery, GetBountyEntriesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetBountyEntriesQuery, GetBountyEntriesQueryVariables>(GetBountyEntriesDocument, options);
+        }
+export type GetBountyEntriesQueryHookResult = ReturnType<typeof useGetBountyEntriesQuery>;
+export type GetBountyEntriesLazyQueryHookResult = ReturnType<typeof useGetBountyEntriesLazyQuery>;
+export type GetBountyEntriesSuspenseQueryHookResult = ReturnType<typeof useGetBountyEntriesSuspenseQuery>;
+export type GetBountyEntriesQueryResult = Apollo.QueryResult<GetBountyEntriesQuery, GetBountyEntriesQueryVariables>;
+export const GetMyBountyEntriesDocument = gql`
+    query GetMyBountyEntries {
+  getMyBountyEntries {
+    id
+    bountySlug
+    documentId
+    submittedAt
+  }
+}
+    `;
+
+/**
+ * __useGetMyBountyEntriesQuery__
+ *
+ * To run a query within a React component, call `useGetMyBountyEntriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMyBountyEntriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMyBountyEntriesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetMyBountyEntriesQuery(baseOptions?: Apollo.QueryHookOptions<GetMyBountyEntriesQuery, GetMyBountyEntriesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMyBountyEntriesQuery, GetMyBountyEntriesQueryVariables>(GetMyBountyEntriesDocument, options);
+      }
+export function useGetMyBountyEntriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyBountyEntriesQuery, GetMyBountyEntriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMyBountyEntriesQuery, GetMyBountyEntriesQueryVariables>(GetMyBountyEntriesDocument, options);
+        }
+export function useGetMyBountyEntriesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyBountyEntriesQuery, GetMyBountyEntriesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetMyBountyEntriesQuery, GetMyBountyEntriesQueryVariables>(GetMyBountyEntriesDocument, options);
+        }
+export type GetMyBountyEntriesQueryHookResult = ReturnType<typeof useGetMyBountyEntriesQuery>;
+export type GetMyBountyEntriesLazyQueryHookResult = ReturnType<typeof useGetMyBountyEntriesLazyQuery>;
+export type GetMyBountyEntriesSuspenseQueryHookResult = ReturnType<typeof useGetMyBountyEntriesSuspenseQuery>;
+export type GetMyBountyEntriesQueryResult = Apollo.QueryResult<GetMyBountyEntriesQuery, GetMyBountyEntriesQueryVariables>;
 export const GetChatsDocument = gql`
     query GetChats($workspaceId: String!, $documentId: String!) {
   chats(workspaceId: $workspaceId, documentId: $documentId) {
@@ -5787,7 +6226,11 @@ export type GetPublishedDocumentStateSuspenseQueryHookResult = ReturnType<typeof
 export type GetPublishedDocumentStateQueryResult = Apollo.QueryResult<GetPublishedDocumentStateQuery, GetPublishedDocumentStateQueryVariables>;
 export const GetDocumentStateDocument = gql`
     query GetDocumentState($documentId: String!, $workspaceId: String!, $isApp: Boolean) {
-  getDocumentState(documentId: $documentId, workspaceId: $workspaceId, isApp: $isApp)
+  getDocumentState(
+    documentId: $documentId
+    workspaceId: $workspaceId
+    isApp: $isApp
+  )
 }
     `;
 

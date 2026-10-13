@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useApolloClient } from "@apollo/client";
 import { useCallback, useState } from "react";
 import { PiPlus } from "react-icons/pi";
 import { toast } from "sonner";
@@ -9,7 +10,12 @@ import { Button } from "@sandworm/ui/components/button";
 
 import { useDocuments } from "@/components/Editor/hooks/useDocuments";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
-import { useGetBountyDraftsQuery } from "@/generated/graphql";
+import {
+  GetBountyDocument,
+  useGetBountyDraftsQuery,
+  useSubmitBountyEntryMutation,
+  type GetBountyQuery,
+} from "@/generated/graphql";
 import {
   FundEscrowModal,
   type FundableBounty,
@@ -21,8 +27,9 @@ import {
   bountyButtonClass,
   bountyPrimaryButtonClass,
 } from "./BountyCard";
-import { bountyTag, type BountyRef } from "./bounties";
+import { bountyStarterPrompt, bountyTag, type BountyRef } from "./bounties";
 import CreateBountyModal from "./CreateBountyModal";
+import { SubmitEntryModal } from "./SubmitEntryModal";
 import { useBountyEntries } from "./useBountyEntry";
 
 // =====================================
@@ -31,10 +38,17 @@ import { useBountyEntries } from "./useBountyEntry";
 export const useWorkspaceBountyActions = () => {
   const workspaceId = useStringQuery("workspace");
   const router = useRouter();
+  const client = useApolloClient();
   const [documentsState, { createDocument, publish }] =
     useDocuments(workspaceId);
-  const { entries, saveEntry } = useBountyEntries(workspaceId);
+  const { entries, submitted, saveEntry, refetch } =
+    useBountyEntries(workspaceId);
+  const [submitEntry] = useSubmitBountyEntryMutation({
+    refetchQueries: ["GetBountyEntries"],
+  });
   const [busy, setBusy] = useState<string | null>(null);
+  // The bounty whose wallet is being asked for
+  const [asking, setAsking] = useState<string | null>(null);
 
   const onStart = useCallback(
     async (bounty: BountyRef) => {
@@ -46,33 +60,64 @@ export const useWorkspaceBountyActions = () => {
           version: 2,
           title: bounty.title,
         });
-        saveEntry(bounty.slug, doc.id);
-        router.push(`/workspace/${workspaceId}/documents/${doc.id}`);
+        await saveEntry(bounty.slug, doc.id);
+        // Open the notebook with the AI panel already asked for a starter
+        // built from the full brief. Without the brief, open it empty.
+        const prompt = await client
+          .query<GetBountyQuery>({
+            query: GetBountyDocument,
+            variables: { slug: bounty.slug },
+          })
+          .then(({ data }) =>
+            data?.getBounty ? bountyStarterPrompt(data.getBounty) : null
+          )
+          .catch(() => null);
+        router.push(
+          prompt
+            ? `/workspace/${workspaceId}/documents/${doc.id}/notebook/edit?prompt=${encodeURIComponent(prompt)}&panel=ai`
+            : `/workspace/${workspaceId}/documents/${doc.id}`
+        );
       } catch (err) {
         console.error(err);
         setBusy(null);
       }
     },
-    [documentsState.loading, createDocument, saveEntry, router, workspaceId]
+    [
+      documentsState.loading,
+      createDocument,
+      saveEntry,
+      client,
+      router,
+      workspaceId,
+    ]
   );
 
   const onSubmit = useCallback(
-    async (bounty: BountyRef, documentId: string) => {
+    async (bounty: BountyRef, documentId: string, wallet?: string) => {
       setBusy(bounty.slug);
       try {
         await publish(documentId, {
           description: `Entry for the bounty "${bounty.title}".`,
           tags: ["bounty", bountyTag(bounty.slug)],
         });
+        await submitEntry({
+          variables: { slug: bounty.slug, documentId, wallet },
+        });
+        await refetch();
+        setAsking(null);
         toast.success("Entry submitted. Your notebook is now public.");
       } catch (err) {
         console.error(err);
-        toast.error("Could not submit the entry. Please try again.");
+        toast.error(
+          err instanceof Error && err.message
+            ? err.message
+            : "Could not submit the entry. Please try again."
+        );
       } finally {
         setBusy(null);
       }
     },
-    [publish]
+    [publish, submitEntry, refetch]
   );
 
   return (bounty: BountyRef) => {
@@ -96,8 +141,10 @@ export const useWorkspaceBountyActions = () => {
       );
     }
 
-    const submitted =
-      !!entry.publishedAt && entry.tags?.includes(bountyTag(bounty.slug));
+    // Entries from before the server kept them are known by their tag.
+    const isSubmitted =
+      submitted.has(bounty.slug) ||
+      (!!entry.publishedAt && !!entry.tags?.includes(bountyTag(bounty.slug)));
 
     return (
       <>
@@ -108,10 +155,10 @@ export const useWorkspaceBountyActions = () => {
           className={bountyButtonClass}
         >
           <Link href={`/workspace/${workspaceId}/documents/${entry.id}`}>
-            {submitted ? "Edit entry" : "Continue entry"}
+            {isSubmitted ? "Edit entry" : "Continue entry"}
           </Link>
         </Button>
-        {submitted ? (
+        {isSubmitted ? (
           <Button
             asChild
             size="sm"
@@ -129,12 +176,23 @@ export const useWorkspaceBountyActions = () => {
               className={bountyPrimaryButtonClass}
               disabled={isBusy}
               title="Publishes this notebook so anyone can view it"
-              onClick={() => onSubmit(bounty, entry.id)}
+              onClick={() =>
+                bounty.onchainId
+                  ? setAsking(bounty.slug)
+                  : onSubmit(bounty, entry.id)
+              }
             >
               Publish and submit
             </Button>
           )
         )}
+        <SubmitEntryModal
+          isOpen={asking === bounty.slug}
+          onClose={() => setAsking(null)}
+          title={bounty.title}
+          isSubmitting={isBusy}
+          onSubmit={wallet => onSubmit(bounty, entry.id, wallet)}
+        />
       </>
     );
   };
