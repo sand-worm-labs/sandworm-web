@@ -7,9 +7,11 @@ import { ModalShell } from "@/web3/components/ModalShell";
 import {
   modalInputClassName,
   modalPrimaryButtonClassName,
+  modalSecondaryButtonClassName,
 } from "@/web3/components/modalStyles";
 
 import { PayoutWalletPicker } from "./PayoutWalletPicker";
+import { useNotebookTrust } from "./useNotebookTrust";
 
 // =====================================
 // ⬢ Types
@@ -20,6 +22,7 @@ export interface EntryNotebook {
 }
 
 interface SubmitEntryModalProps {
+  workspaceId: string;
   isOpen: boolean;
   onClose: () => void;
   title: string;
@@ -34,6 +37,7 @@ interface SubmitEntryModalProps {
 // ⬢ Submit Entry Modal
 // =====================================
 export const SubmitEntryModal = ({
+  workspaceId,
   isOpen,
   onClose,
   title,
@@ -56,17 +60,23 @@ export const SubmitEntryModal = ({
   }, [isOpen]);
 
   const valid = isAddress(wallet);
+  const trust = useNotebookTrust(workspaceId, documentId, isOpen);
 
   return (
     <ModalShell
       isOpen={isOpen}
       onClose={isSubmitting ? () => undefined : onClose}
       title="Submit your entry"
-      description={`Publishes the notebook you pick so anyone can view it, and enters it for "${title}". It can be a different notebook from the one you started with.`}
+      description={`Publishes the notebook you pick so anyone can view it, and enters it for "${title}". Only a verified notebook can be submitted: its inputs are committed onchain, so every entry can be re-run as it was submitted.`}
       footer={
         <button
           type="button"
-          disabled={isSubmitting || !documentId || (needsWallet && !valid)}
+          disabled={
+            isSubmitting ||
+            !documentId ||
+            !trust.trusted ||
+            (needsWallet && !valid)
+          }
           onClick={() => onSubmit(documentId, needsWallet ? wallet : undefined)}
           className={modalPrimaryButtonClassName}
         >
@@ -94,6 +104,33 @@ export const SubmitEntryModal = ({
           </option>
         ))}
       </select>
+
+      <div className="mt-3 rounded-2xl bg-base-600 p-4 text-xs text-ink-400">
+        {trust.isChecking ? (
+          <p>Checking the notebook...</p>
+        ) : trust.trusted ? (
+          <p className="text-green-700 dark:text-green-400">
+            Verified. Its inputs are committed onchain and nothing has changed
+            since.
+          </p>
+        ) : (
+          <>
+            <p>
+              Not verified yet{trust.reason ? `: ${trust.reason}` : "."} Run the
+              notebook first, then verify it. This re-runs it and takes up to a
+              minute. Its code is pinned publicly for good.
+            </p>
+            <button
+              type="button"
+              disabled={trust.isAttesting || !documentId}
+              onClick={trust.attest}
+              className={`${modalSecondaryButtonClassName} mt-3`}
+            >
+              {trust.isAttesting ? "Verifying..." : "Verify notebook"}
+            </button>
+          </>
+        )}
+      </div>
 
       {needsWallet && (
         <PayoutWalletPicker value={wallet} onChange={setWallet} />

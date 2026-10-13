@@ -95,6 +95,16 @@ query GetBountyEntries($slug: String!) {
     wallet
     submittedAt
     isMine
+    trusted
+    attestation {
+      agentId
+      requestHash
+      validator
+      ranAt
+      requestTx
+      responseTx
+      responseTxUrl
+    }
   }
 }
 

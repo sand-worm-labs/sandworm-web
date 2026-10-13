@@ -24,12 +24,14 @@ export async function graphql<T>(
   ctx: ToolContext,
   query: string,
   variables: Record<string, unknown> = {},
+  // For a call that does slow work on purpose, such as attesting a notebook.
+  { timeoutMs = 30_000 }: { timeoutMs?: number } = {},
 ): Promise<T> {
   const res = await callApi({ userId: ctx.auth.userId, token: ctx.auth.token, apiUrl: ctx.apiUrl }, {
     method: 'POST',
     path: '/api/graphql',
     body: { query, variables },
-    timeoutMs: 30_000,
+    timeoutMs,
   });
 
   const body = res.json as { data?: T; errors?: { message: string }[] } | null;

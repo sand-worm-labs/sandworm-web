@@ -5,6 +5,7 @@ import { TagModule } from '@/features/tag/tag.module';
 import { ShowcaseModule } from '@/features/showcase/showcase.module';
 import { ToolModule } from '@/features/tool/tool.module';
 import { BountyModule } from '@/features/bounty/bounty.module';
+import { TrustModule } from '@/features/trust/trust.module';
 import { UserModule } from '@/features/user/user.module';
 import { WorkspaceModule } from '@/features/workspace/workspace.module';
 import { DocumentModule } from '@/features/document/document.module';
@@ -64,6 +65,7 @@ import { McpOauthModule } from './features/mcp-oauth/mcp-oauth.module';
         ShowcaseModule,
         ToolModule,
         BountyModule,
+        TrustModule,
         ScheduleModule,
         SearchModule,
 

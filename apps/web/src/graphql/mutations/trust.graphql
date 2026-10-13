@@ -1,0 +1,7 @@
+mutation AttestNotebook($workspaceId: String!, $documentId: String!) {
+  attestNotebook(workspaceId: $workspaceId, documentId: $documentId) {
+    trusted
+    pending
+    reason
+  }
+}

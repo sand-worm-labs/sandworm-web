@@ -1,6 +1,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { BooleanField, DateFieldOptional, StringField, StringFieldOptional } from '@sandworm/graphql';
 import { BountyEntity, BountyEntryEntity, DocumentEntity, UserEntity } from '@sandworm/postgresql-typeorm';
+import { NotebookAttestation } from '../trust/trust.model';
 
 // An open bounty stops taking entries at its deadline, with nothing having to
 // write that to the database: from then on it reads as being judged.
@@ -18,7 +19,7 @@ export const notebookSlug = (document?: Pick<DocumentEntity, 'id' | 'slug' | 'pu
   document?.publishedAt ? (document.slug ?? document.id) : null;
 
 // What an entry is loaded with to be shown
-export const ENTRY_RELATIONS = { author: true, document: true } as const;
+export const ENTRY_RELATIONS = { author: true, document: true, attestation: true } as const;
 
 @ObjectType()
 export class BountyWinner {
@@ -83,6 +84,13 @@ export class BountyEntry {
   @BooleanField()
   isMine!: boolean;
 
+  // Submitted with an attestation: its inputs were committed onchain and re-checked
+  @BooleanField()
+  trusted!: boolean;
+
+  @Field(() => NotebookAttestation, { nullable: true })
+  attestation?: NotebookAttestation | null;
+
   static fromEntity(entity: BountyEntryEntity, viewer: { userId?: string; seesWallets: boolean }): BountyEntry {
     const entry = new BountyEntry();
     const isMine = entity.authorId === viewer.userId;
@@ -93,6 +101,8 @@ export class BountyEntry {
     entry.notebookTitle = entity.document?.title ?? '';
     entry.notebookSlug = notebookSlug(entity.document);
     entry.wallet = viewer.seesWallets || isMine ? entity.wallet : null;
+    entry.trusted = !!entity.attestation;
+    entry.attestation = entity.attestation ? NotebookAttestation.fromEntity(entity.attestation) : null;
     entry.submittedAt = entity.submittedAt;
     entry.isMine = isMine;
     return entry;

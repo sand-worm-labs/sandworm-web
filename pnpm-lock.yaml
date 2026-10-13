@@ -288,6 +288,9 @@ importers:
       '@sandworm/postgresql-typeorm':
         specifier: workspace:*
         version: link:../../packages/postgresql-typeorm
+      '@sandworm/trust':
+        specifier: workspace:*
+        version: link:../../packages/trust
       '@sandworm/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -1614,6 +1617,25 @@ importers:
         version: 3.7.1(typeorm@0.3.31(ioredis@5.8.2)(pg@8.16.3)(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@24.7.2)(typescript@5.9.3)))
       typescript:
         specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/trust:
+    dependencies:
+      '@sandworm/editor':
+        specifier: workspace:*
+        version: link:../editor
+      viem:
+        specifier: ^2.57.2
+        version: 2.57.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.5.4)
+      yjs:
+        specifier: 13.6.14
+        version: 13.6.14
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.0
+        version: 22.20.4
+      typescript:
+        specifier: ^5.9.2
         version: 5.9.3
 
   packages/types:

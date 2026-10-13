@@ -5,10 +5,11 @@ import { BountyResolver } from './bounty.resolver';
 import { BountyService } from './bounty.service';
 import { BountyEntryService } from './bounty-entry.service';
 import { BountyEscrowService } from './bounty-escrow.service';
+import { TrustModule } from '../trust/trust.module';
 import { WorkspaceModule } from '../workspace/workspace.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BountyEntity, BountyEntryEntity, DocumentEntity]), WorkspaceModule],
+  imports: [TypeOrmModule.forFeature([BountyEntity, BountyEntryEntity, DocumentEntity]), WorkspaceModule, TrustModule],
   providers: [BountyResolver, BountyService, BountyEntryService, BountyEscrowService],
 })
 export class BountyModule {}

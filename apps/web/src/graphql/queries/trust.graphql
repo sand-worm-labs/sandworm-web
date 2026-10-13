@@ -1,0 +1,17 @@
+query GetNotebookTrust($workspaceId: String!, $documentId: String!) {
+  getNotebookTrust(workspaceId: $workspaceId, documentId: $documentId) {
+    trusted
+    pending
+    reason
+    attestation {
+      agentId
+      requestHash
+      validator
+      ranAt
+      requestTx
+      responseTx
+      requestTxUrl
+      responseTxUrl
+    }
+  }
+}

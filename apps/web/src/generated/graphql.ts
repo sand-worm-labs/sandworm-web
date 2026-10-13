@@ -89,6 +89,7 @@ export type Bounty = {
 
 export type BountyEntry = {
   __typename?: 'BountyEntry';
+  attestation?: Maybe<NotebookAttestation>;
   author: Scalars['String']['output'];
   bountySlug: Scalars['String']['output'];
   documentId: Scalars['String']['output'];
@@ -97,6 +98,7 @@ export type BountyEntry = {
   notebookSlug?: Maybe<Scalars['String']['output']>;
   notebookTitle: Scalars['String']['output'];
   submittedAt?: Maybe<Scalars['DateTime']['output']>;
+  trusted: Scalars['Boolean']['output'];
   wallet?: Maybe<Scalars['String']['output']>;
 };
 
@@ -418,6 +420,8 @@ export type Mutation = {
   approveRoleRequest: Scalars['Boolean']['output'];
   /** Approve a claim lead: marks the case study it names as claimed by the protocol's team. Needs the studio password, or a staff account. */
   approveShowcaseClaim: Scalars['Boolean']['output'];
+  /** Start committing a cloud notebook's inputs (its code, data sources, parameters and when it ran) onchain, with a validator re-checking them. Returns at once with pending set: follow it with getNotebookTrust. Run the notebook first. Bounties accept only attested notebooks. */
+  attestNotebook: NotebookTrust;
   /** Remove multiple users from workspaces */
   batchRemoveUsersFromWorkspace: Scalars['Boolean']['output'];
   /** Check a funding transaction onchain and open the bounty. Everything is read from the chain. */
@@ -586,6 +590,12 @@ export type MutationApproveRoleRequestArgs = {
 export type MutationApproveShowcaseClaimArgs = {
   leadId: Scalars['String']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationAttestNotebookArgs = {
+  documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -1020,6 +1030,35 @@ export type MutationVoteMessageArgs = {
   input: VoteMessageInput;
 };
 
+export type NotebookAttestation = {
+  __typename?: 'NotebookAttestation';
+  agentId: Scalars['String']['output'];
+  agentUrl: Scalars['String']['output'];
+  codeHash: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  documentId: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  inputHash: Scalars['String']['output'];
+  ranAt: Scalars['DateTime']['output'];
+  receiptUri: Scalars['String']['output'];
+  receiptUrl?: Maybe<Scalars['String']['output']>;
+  requestHash: Scalars['String']['output'];
+  requestTx: Scalars['String']['output'];
+  requestTxUrl: Scalars['String']['output'];
+  response?: Maybe<Scalars['Int']['output']>;
+  responseTx?: Maybe<Scalars['String']['output']>;
+  responseTxUrl?: Maybe<Scalars['String']['output']>;
+  validator: Scalars['String']['output'];
+};
+
+export type NotebookTrust = {
+  __typename?: 'NotebookTrust';
+  attestation?: Maybe<NotebookAttestation>;
+  pending: Scalars['Boolean']['output'];
+  reason?: Maybe<Scalars['String']['output']>;
+  trusted: Scalars['Boolean']['output'];
+};
+
 export type OpenRouterAccountCredits = {
   __typename?: 'OpenRouterAccountCredits';
   availableCredits: Scalars['Float']['output'];
@@ -1105,6 +1144,10 @@ export type Query = {
   getInvitationInfo: WorkspaceInvitationInfo;
   /** Get the entries the current user has started or submitted, across all bounties. */
   getMyBountyEntries: Array<BountyEntry>;
+  /** The latest attestation of a notebook, or null if it has none. */
+  getNotebookAttestation?: Maybe<NotebookAttestation>;
+  /** Whether a notebook is trusted right now (attested, and unchanged since), and if not, why. */
+  getNotebookTrust: NotebookTrust;
   /** Get all pending invites for a workspace */
   getPendingInvites: Array<WorkspaceMember>;
   /** Get pending role requests for a workspace */
@@ -1300,6 +1343,17 @@ export type QueryGetFeaturedDocumentsArgs = {
 
 export type QueryGetInvitationInfoArgs = {
   hash: Scalars['String']['input'];
+};
+
+
+export type QueryGetNotebookAttestationArgs = {
+  documentId: Scalars['String']['input'];
+};
+
+
+export type QueryGetNotebookTrustArgs = {
+  documentId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -2155,6 +2209,14 @@ export type DeleteScheduleMutationVariables = Exact<{
 
 export type DeleteScheduleMutation = { __typename?: 'Mutation', deleteSchedule: boolean };
 
+export type AttestNotebookMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+}>;
+
+
+export type AttestNotebookMutation = { __typename?: 'Mutation', attestNotebook: { __typename?: 'NotebookTrust', trusted: boolean, pending: boolean, reason?: string | null } };
+
 export type CreateWorkspaceMutationVariables = Exact<{
   name: Scalars['String']['input'];
 }>;
@@ -2316,7 +2378,7 @@ export type GetBountyEntriesQueryVariables = Exact<{
 }>;
 
 
-export type GetBountyEntriesQuery = { __typename?: 'Query', getBountyEntries: Array<{ __typename?: 'BountyEntry', id: string, documentId: string, author: string, notebookTitle: string, notebookSlug?: string | null, wallet?: string | null, submittedAt?: any | null, isMine: boolean }> };
+export type GetBountyEntriesQuery = { __typename?: 'Query', getBountyEntries: Array<{ __typename?: 'BountyEntry', id: string, documentId: string, author: string, notebookTitle: string, notebookSlug?: string | null, wallet?: string | null, submittedAt?: any | null, isMine: boolean, trusted: boolean, attestation?: { __typename?: 'NotebookAttestation', agentId: string, requestHash: string, validator: string, ranAt: any, requestTx: string, responseTx?: string | null, responseTxUrl?: string | null } | null }> };
 
 export type GetMyBountyEntriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2546,6 +2608,14 @@ export type RenderToolSourceQueryVariables = Exact<{
 
 
 export type RenderToolSourceQuery = { __typename?: 'Query', renderToolSource: string };
+
+export type GetNotebookTrustQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+}>;
+
+
+export type GetNotebookTrustQuery = { __typename?: 'Query', getNotebookTrust: { __typename?: 'NotebookTrust', trusted: boolean, pending: boolean, reason?: string | null, attestation?: { __typename?: 'NotebookAttestation', agentId: string, requestHash: string, validator: string, ranAt: any, requestTx: string, responseTx?: string | null, requestTxUrl: string, responseTxUrl?: string | null } | null } };
 
 export type GetUserQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -4757,6 +4827,42 @@ export function useDeleteScheduleMutation(baseOptions?: Apollo.MutationHookOptio
 export type DeleteScheduleMutationHookResult = ReturnType<typeof useDeleteScheduleMutation>;
 export type DeleteScheduleMutationResult = Apollo.MutationResult<DeleteScheduleMutation>;
 export type DeleteScheduleMutationOptions = Apollo.BaseMutationOptions<DeleteScheduleMutation, DeleteScheduleMutationVariables>;
+export const AttestNotebookDocument = gql`
+    mutation AttestNotebook($workspaceId: String!, $documentId: String!) {
+  attestNotebook(workspaceId: $workspaceId, documentId: $documentId) {
+    trusted
+    pending
+    reason
+  }
+}
+    `;
+export type AttestNotebookMutationFn = Apollo.MutationFunction<AttestNotebookMutation, AttestNotebookMutationVariables>;
+
+/**
+ * __useAttestNotebookMutation__
+ *
+ * To run a mutation, you first call `useAttestNotebookMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAttestNotebookMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [attestNotebookMutation, { data, loading, error }] = useAttestNotebookMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      documentId: // value for 'documentId'
+ *   },
+ * });
+ */
+export function useAttestNotebookMutation(baseOptions?: Apollo.MutationHookOptions<AttestNotebookMutation, AttestNotebookMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AttestNotebookMutation, AttestNotebookMutationVariables>(AttestNotebookDocument, options);
+      }
+export type AttestNotebookMutationHookResult = ReturnType<typeof useAttestNotebookMutation>;
+export type AttestNotebookMutationResult = Apollo.MutationResult<AttestNotebookMutation>;
+export type AttestNotebookMutationOptions = Apollo.BaseMutationOptions<AttestNotebookMutation, AttestNotebookMutationVariables>;
 export const CreateWorkspaceDocument = gql`
     mutation CreateWorkspace($name: String!) {
   createWorkspace(name: $name) {
@@ -5623,6 +5729,16 @@ export const GetBountyEntriesDocument = gql`
     wallet
     submittedAt
     isMine
+    trusted
+    attestation {
+      agentId
+      requestHash
+      validator
+      ranAt
+      requestTx
+      responseTx
+      responseTxUrl
+    }
   }
 }
     `;
@@ -7187,6 +7303,59 @@ export type RenderToolSourceQueryHookResult = ReturnType<typeof useRenderToolSou
 export type RenderToolSourceLazyQueryHookResult = ReturnType<typeof useRenderToolSourceLazyQuery>;
 export type RenderToolSourceSuspenseQueryHookResult = ReturnType<typeof useRenderToolSourceSuspenseQuery>;
 export type RenderToolSourceQueryResult = Apollo.QueryResult<RenderToolSourceQuery, RenderToolSourceQueryVariables>;
+export const GetNotebookTrustDocument = gql`
+    query GetNotebookTrust($workspaceId: String!, $documentId: String!) {
+  getNotebookTrust(workspaceId: $workspaceId, documentId: $documentId) {
+    trusted
+    pending
+    reason
+    attestation {
+      agentId
+      requestHash
+      validator
+      ranAt
+      requestTx
+      responseTx
+      requestTxUrl
+      responseTxUrl
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetNotebookTrustQuery__
+ *
+ * To run a query within a React component, call `useGetNotebookTrustQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetNotebookTrustQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetNotebookTrustQuery({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      documentId: // value for 'documentId'
+ *   },
+ * });
+ */
+export function useGetNotebookTrustQuery(baseOptions: Apollo.QueryHookOptions<GetNotebookTrustQuery, GetNotebookTrustQueryVariables> & ({ variables: GetNotebookTrustQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetNotebookTrustQuery, GetNotebookTrustQueryVariables>(GetNotebookTrustDocument, options);
+      }
+export function useGetNotebookTrustLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetNotebookTrustQuery, GetNotebookTrustQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetNotebookTrustQuery, GetNotebookTrustQueryVariables>(GetNotebookTrustDocument, options);
+        }
+export function useGetNotebookTrustSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetNotebookTrustQuery, GetNotebookTrustQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetNotebookTrustQuery, GetNotebookTrustQueryVariables>(GetNotebookTrustDocument, options);
+        }
+export type GetNotebookTrustQueryHookResult = ReturnType<typeof useGetNotebookTrustQuery>;
+export type GetNotebookTrustLazyQueryHookResult = ReturnType<typeof useGetNotebookTrustLazyQuery>;
+export type GetNotebookTrustSuspenseQueryHookResult = ReturnType<typeof useGetNotebookTrustSuspenseQuery>;
+export type GetNotebookTrustQueryResult = Apollo.QueryResult<GetNotebookTrustQuery, GetNotebookTrustQueryVariables>;
 export const GetUserDocument = gql`
     query GetUser($userId: String!) {
   getUser(userId: $userId) {

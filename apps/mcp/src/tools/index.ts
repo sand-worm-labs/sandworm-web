@@ -2,6 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import type { ToolContext } from '../graphql.ts';
 import { apiRecorder, logToolCalls } from './call-log.ts';
+import { registerBountyTools } from './bounties/index.ts';
 import { registerCommentTools } from './comments/index.ts';
 import { registerDataSourceTools } from './data-sources/index.ts';
 import { registerEnvironmentTools } from './environment/index.ts';
@@ -19,6 +20,7 @@ export function registerTools(server: McpServer, ctx: ToolContext): void {
   registerProjectTools(server, ctx);
   registerNotebookTools(server, ctx);
   registerCommentTools(server, ctx);
+  registerBountyTools(server, ctx);
   registerDataSourceTools(server, ctx);
   registerEnvironmentTools(server, ctx);
   registerFileTools(server, ctx);

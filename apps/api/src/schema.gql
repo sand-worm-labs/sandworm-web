@@ -318,6 +318,33 @@ type ShowcaseCommunityItem {
   authorUsername: String
 }
 
+type NotebookAttestation {
+  id: String!
+  documentId: String!
+  agentId: String!
+  requestHash: String!
+  receiptUri: String!
+  codeHash: String!
+  inputHash: String!
+  ranAt: DateTime!
+  validator: String!
+  response: Int
+  requestTx: String!
+  responseTx: String
+  createdAt: DateTime!
+  agentUrl: String!
+  requestTxUrl: String!
+  responseTxUrl: String
+  receiptUrl: String
+}
+
+type NotebookTrust {
+  trusted: Boolean!
+  pending: Boolean!
+  reason: String
+  attestation: NotebookAttestation
+}
+
 type BountyWinner {
   place: String!
   author: String!
@@ -342,6 +369,8 @@ type BountyEntry {
   wallet: String
   submittedAt: DateTime
   isMine: Boolean!
+  trusted: Boolean!
+  attestation: NotebookAttestation
 }
 
 type Bounty {
@@ -676,6 +705,14 @@ type Query {
   """
   getMyBountyEntries: [BountyEntry!]!
 
+  """The latest attestation of a notebook, or null if it has none."""
+  getNotebookAttestation(documentId: String!): NotebookAttestation
+
+  """
+  Whether a notebook is trusted right now (attested, and unchanged since), and if not, why.
+  """
+  getNotebookTrust(workspaceId: String!, documentId: String!): NotebookTrust!
+
   """Get a single schedule by ID"""
   schedule(scheduleId: String!): Schedule!
 
@@ -942,6 +979,11 @@ type Mutation {
   Submit a published notebook as the current user's entry. A bounty funded in escrow needs the wallet the reward should be paid to.
   """
   submitBountyEntry(slug: String!, documentId: String!, wallet: String): BountyEntry!
+
+  """
+  Start committing a cloud notebook's inputs (its code, data sources, parameters and when it ran) onchain, with a validator re-checking them. Returns at once with pending set: follow it with getNotebookTrust. Run the notebook first. Bounties accept only attested notebooks.
+  """
+  attestNotebook(workspaceId: String!, documentId: String!): NotebookTrust!
 
   """Create a new execution schedule for a document"""
   createSchedule(workspaceId: String!, input: CreateScheduleInput!): Schedule!
