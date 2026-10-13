@@ -13,6 +13,7 @@
     "request-validation": "node --env-file=.env scripts/3-request-validation.ts",
     "validate": "node --env-file=.env scripts/4-validate.ts",
     "links": "node --env-file=.env scripts/5-links.ts",
+    "sample": "node --env-file=.env scripts/sample.ts",
     "typecheck": "tsc --noEmit",
     "test": "node --test 'src/**/*.test.ts'",
     "build": "rm -rf dist types && tsc -p tsconfig.build.json && tsc -p tsconfig.cjs.json && echo '{\"type\": \"commonjs\"}' > dist/cjs/package.json"

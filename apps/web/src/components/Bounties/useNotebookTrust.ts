@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -30,6 +30,10 @@ export const useNotebookTrust = (
   );
   const [attestMutation, { loading: isStarting }] = useAttestNotebookMutation();
 
+  // Why the last attempt could not verify the notebook, for the dialog. Null when nothing is wrong.
+  const [failure, setFailure] = useState<string | null>(null);
+  const dismissFailure = useCallback(() => setFailure(null), []);
+
   const trust = data?.getNotebookTrust;
   const pending = trust?.pending ?? false;
 
@@ -44,7 +48,7 @@ export const useNotebookTrust = (
         if (trust.trusted) {
           toast.success("Notebook verified. Its inputs are committed onchain.");
         } else {
-          toast.error(trust.reason ?? "The notebook could not be verified.");
+          setFailure(trust.reason ?? "The notebook could not be verified.");
         }
       }
     }
@@ -52,19 +56,21 @@ export const useNotebookTrust = (
   }, [pending, trust, startPolling, stopPolling]);
 
   const attest = useCallback(async () => {
+    setFailure(null);
     try {
       const { data: started } = await attestMutation({
         variables: { workspaceId, documentId },
       });
       // Nothing to wait for when it could not start: the reason is in the answer.
-      if (started && !started.attestNotebook.pending)
-        toast.error(
+      if (started && !started.attestNotebook.pending) {
+        setFailure(
           started.attestNotebook.reason ?? "Could not verify the notebook."
         );
+        return;
+      }
       startPolling(POLL_MS);
     } catch (err) {
-      console.error(err);
-      toast.error(
+      setFailure(
         err instanceof Error && err.message
           ? err.message
           : "Could not verify the notebook. Please try again."
@@ -78,5 +84,7 @@ export const useNotebookTrust = (
     isChecking: loading,
     isAttesting: isStarting || pending,
     attest,
+    failure,
+    dismissFailure,
   };
 };

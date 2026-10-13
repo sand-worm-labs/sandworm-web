@@ -14,8 +14,8 @@ export {
   type TrustWallet,
 } from './chain.ts';
 export { canonicalJson, hashCanonical, keccakText, normalizeText, type Json } from './canonical.ts';
-export { AGENT_REGISTRY, CHAIN, REGISTRIES, TAG } from './config.ts';
-export { extractInputs, hashCode, hashInputs, ranAt, runnableCellIds, type CellInput } from './inputs.ts';
+export { REGISTRIES, TAG, agentRegistry, chain, network, type TrustNetwork } from './config.ts';
+export { NotRunError, extractInputs, hashCode, hashInputs, ranAt, runnableCellIds, type CellInput } from './inputs.ts';
 export { fetchBytes, publish } from './ipfs.ts';
 export {
   RECEIPT_TYPE,
