@@ -223,7 +223,7 @@ export default function CreateBountyModal({
                           value={form.title}
                           maxLength={120}
                           onChange={e => setForm({ title: e.target.value })}
-                          placeholder="Create a Dashboard: Stablecoin Flows on Arbitrum"
+                          placeholder="Create a Dashboard: Stablecoin Flows on Monad"
                           className={inputClassName}
                         />
                       </div>
@@ -389,7 +389,7 @@ export default function CreateBountyModal({
                         </p>
                         <p className="mt-3 text-xs leading-relaxed text-ink-400">
                           Saved as a draft that only you can see. It goes live
-                          once you fund the reward in escrow on Arbitrum.
+                          once you fund the reward in escrow on Monad.
                         </p>
                       </div>
                     </div>

@@ -1,23 +1,17 @@
 "use client";
 
-import { demoTokenAbi, escrowTokens } from "@sandworm/types/escrow";
+import { escrowTokens } from "@sandworm/types/escrow";
 import { useState } from "react";
 import { toast } from "sonner";
 import { parseUnits } from "viem";
-import {
-  useAccount,
-  usePublicClient,
-  useReadContract,
-  useSwitchChain,
-  useWalletClient,
-} from "wagmi";
+import { useAccount, useReadContract, useSwitchChain } from "wagmi";
 
 import { defaultChain, faucets, supportsEscrow, targetChains } from "../config";
 import { erc20Abi } from "../erc20";
 import { describeError } from "../errors";
 import { formatDate, formatToken } from "../format";
 import { useFundBounty } from "../hooks/useFundBounty";
-import { useTx } from "../hooks/useTx";
+import { useMintTestToken } from "../hooks/useMintTestToken";
 
 import { ConnectWalletButton } from "./ConnectWalletButton";
 import { ModalShell, modalPrimaryButtonClassName } from "./ModalShell";
@@ -79,10 +73,7 @@ export const FundEscrowModal = ({
   const onRightChain = connectedChainId === chainId;
 
   const { fund, step } = useFundBounty(chainId);
-  const { data: walletClient } = useWalletClient({ chainId });
-  const publicClient = usePublicClient({ chainId });
-  const runTx = useTx();
-  const [isMinting, setIsMinting] = useState(false);
+  const { mint: mintTestToken, isMinting } = useMintTestToken(chainId);
   const balance = useReadContract({
     chainId,
     address: token?.address,
@@ -98,25 +89,13 @@ export const FundEscrowModal = ({
   const isRunning = step !== "idle" && step !== "done";
 
   const mint = async () => {
-    if (!token || !walletClient || !publicClient || !address) return;
+    if (!token) return;
     setError(null);
-    setIsMinting(true);
     try {
-      await runTx(`Mint ${token.symbol}`, chain, publicClient, () =>
-        walletClient.writeContract({
-          account: address,
-          chain,
-          address: token.address,
-          abi: demoTokenAbi,
-          functionName: "mint",
-          args: [address, needed],
-        })
-      );
+      await mintTestToken(token, needed);
       await balance.refetch();
     } catch (err) {
       setError(describeError(err));
-    } finally {
-      setIsMinting(false);
     }
   };
 
