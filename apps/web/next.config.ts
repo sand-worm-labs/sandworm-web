@@ -45,7 +45,21 @@ const securityHeaders = [
 const nextConfig = {
   reactStrictMode: true,
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      {
+        // Notebook output frames have an opaque origin (sandboxed without allow-same-origin), so a font
+        // they load needs a CORS header or the browser refuses it. Fonts never change under a name.
+        source: "/fonts/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
   },
   turbopack: {
     resolveAlias: { "@base-org/account": baseAccountStub },

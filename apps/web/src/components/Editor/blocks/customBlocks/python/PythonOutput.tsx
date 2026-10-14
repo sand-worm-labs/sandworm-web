@@ -190,16 +190,34 @@ const EXPENSIVE_TYPES = new Set<PythonBlock["result"][0]["type"]>([
 // =====================================
 
 const SANDWORM_TABLE_CSS = `
-  /* The charts and HTML cards (sandworm_theme) use Bricolage Grotesque. The Moderat files below cannot
-     load in this sandboxed frame (their font requests have no CORS origin), so without this import a
-     table fell back to the browser's default sans-serif. @import has to come before any other rule. */
-  @import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&display=swap");
+  /* The charts and HTML cards (sandworm_theme) use Bricolage Grotesque. It is served from /fonts (with a
+     CORS header, see next.config.ts) instead of Google: this frame has an opaque origin, so a font
+     request without that header fails, and a request to another site only starts after the frame paints.
+     font-display: block holds the text for the few ms the file takes rather than showing a fallback. */
+  @font-face {
+    font-family: "Bricolage Grotesque";
+    src: url("/fonts/bricolage/BricolageGrotesque-latin-ext.woff2") format("woff2");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: block;
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  }
+
+  @font-face {
+    font-family: "Bricolage Grotesque";
+    src: url("/fonts/bricolage/BricolageGrotesque-latin.woff2") format("woff2");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: block;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
 
   @font-face {
     font-family: "Moderat";
     src: url("/fonts/moderat/Moderat-Regular.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
+    font-display: block;
   }
 
   @font-face {
@@ -207,6 +225,7 @@ const SANDWORM_TABLE_CSS = `
     src: url("/fonts/moderat/Moderat-Medium.woff2") format("woff2");
     font-weight: 500;
     font-style: normal;
+    font-display: block;
   }
 
   @font-face {
@@ -214,6 +233,7 @@ const SANDWORM_TABLE_CSS = `
     src: url("/fonts/moderat/Moderat-Bold.woff2") format("woff2");
     font-weight: 700;
     font-style: normal;
+    font-display: block;
   }
 
   * { box-sizing: border-box; }
@@ -293,6 +313,14 @@ const SANDWORM_TABLE_CSS_DARK = `
 `;
 
 // Matches pandas' truncated-repr caption, e.g. "500 rows × 4 columns"
+// The frame starts fetching the font while it parses its styles, not after the first paint.
+const FONT_PRELOAD = `<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/bricolage/BricolageGrotesque-latin.woff2">`;
+
+// The theme's own cards import Bricolage from Google; the self-hosted faces above replace it, so drop the
+// import rather than let a second, slower copy of the font arrive after the first paint.
+const GOOGLE_FONT_IMPORT_REGEX =
+  /@import\s+url\(\s*["']?https:\/\/fonts\.googleapis\.com[^)]*\)\s*;?|<link\b[^>]*fonts\.(?:googleapis|gstatic)\.com[^>]*>/gi;
+
 const DATAFRAME_DIMENSIONS_REGEX = /<p>\s*(\d+ rows × \d+ columns)\s*<\/p>/;
 
 export function getDataFrameDimensions(html: string): string | null {
@@ -397,11 +425,13 @@ function injectTableStyles(
   const themeCss = isDark
     ? `${SANDWORM_TABLE_CSS_DARK}${SANDWORM_THEME_CSS_DARK}`
     : SANDWORM_TABLE_CSS;
-  const styleTag = `<style>${themeCss}${tileCss}</style>`;
+  const styleTag = `${FONT_PRELOAD}<style>${themeCss}${tileCss}</style>`;
 
   // The "N rows × M columns" caption is surfaced in the block's result
   // footer instead, so drop it from the iframe content entirely.
-  const withoutDimensions = html.replace(DATAFRAME_DIMENSIONS_REGEX, "");
+  const withoutDimensions = html
+    .replace(DATAFRAME_DIMENSIONS_REGEX, "")
+    .replace(GOOGLE_FONT_IMPORT_REGEX, "");
 
   if (withoutDimensions.includes("</head>")) {
     return withoutDimensions
