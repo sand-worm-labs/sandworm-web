@@ -45,7 +45,9 @@ export const richTextExtensions = ({
   TextStyleKit,
   Color.configure({ types: ["textStyle"] }),
   Highlight.configure({ multicolor: true }),
+  // The editor never opens a link itself: the external-link dialog (components/ExternalLink) does, after asking.
   Link.extend({ inclusive: false }).configure({
+    openOnClick: false,
     HTMLAttributes: {
       class: "cursor-pointer text-ink-400 hover:text-gray-700",
       target: "_blank",

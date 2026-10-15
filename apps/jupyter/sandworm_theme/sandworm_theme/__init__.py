@@ -18,11 +18,22 @@ hand, take colors from `CSS` (f"color:{CSS.ink}") rather than hex codes; `show`,
 
 For a dashboard, open with `kpi_row` (compact figure cards) and, if wanted, a `banner`.
 Both are drawn as a plain tile that adds no card of its own.
+
+Do not hand-write HTML or JavaScript for the pieces below; they carry the theme's colours, padding and
+phone layout, and a notebook that copies its own version drifts from the theme:
+
+    card_grid(finding(...), finding(...))     findings: a small label, one big number, the sentence, the evidence
+    card_grid(profile_card(...), caption=)    a wallet, token or protocol: figure, verdict, meter(...) bars, fact(...) grid
+    switchable(uid, {"Winners": fig, ...})    buttons that switch between views of one question, on a published page
+    data_table(uid, df, [tcol(...), ...])     a table the reader can sort, search and page through
+
+`card_grid` puts padding around the cards, so a row of cards never touches the tile edge.
 """
 from .charts import chart
-from .html import banner, card, chart_head, kpi_row, note, placeholder, render, show, stat_card
+from .html import banner, card, card_grid, chart_head, fact, finding, kpi_row, meter, note, placeholder, profile_card, render, show, stat_card
 from .plotly_theme import PLOT_CONFIG, TEMPLATE_NAME
 from .theme import use_theme
+from .widgets import data_table, switchable, tcol
 from .tokens import BRAND, CHAIN_COLORS, CSS, DARK, HEATMAP_SCALE, INK, MUTED, NEG, POS, SERIES
 
 __all__ = [
@@ -40,13 +51,21 @@ __all__ = [
     "TEMPLATE_NAME",
     "banner",
     "card",
+    "card_grid",
     "chart",
     "chart_head",
+    "data_table",
+    "fact",
+    "finding",
     "kpi_row",
+    "meter",
     "note",
     "placeholder",
+    "profile_card",
     "render",
     "show",
     "stat_card",
+    "switchable",
+    "tcol",
     "use_theme",
 ]

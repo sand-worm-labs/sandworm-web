@@ -41,6 +41,28 @@ _CSS = f"""
 .sw-banner-links {{ margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap; }}
 .sw-link {{ border: 1px solid {t.CSS.rule}; border-radius: 999px; padding: 6px 14px; font-size: 13px; color: {t.CSS.ink}; text-decoration: none; }}
 .sw-link:hover {{ background: {t.CSS.shade}; }}
+.sw-cards {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--sw-min, 270px), 1fr)); gap: 16px; }}
+.sw-cards-wrap {{ padding: 20px 16px; }}
+.sw-cards-cap {{ margin: 0 0 12px; font-size: 13px; font-weight: 600; color: {t.CSS.ink}; }}
+.sw-c {{ display: flex; flex-direction: column; gap: 12px; padding: 20px 20px 18px; border: 1px solid {t.CSS.rule}; border-radius: 16px; background: {t.CSS.paper}; min-width: 0; }}
+.sw-c-kicker {{ font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: {t.SERIES[0]}; }}
+.sw-c-big {{ font-size: 38px; font-weight: 700; line-height: 1.05; color: {t.CSS.ink}; overflow-wrap: anywhere; }}
+.sw-c-big.pos, .sw-c-fv.pos {{ color: {t.CSS.pos}; }}
+.sw-c-big.neg, .sw-c-fv.neg {{ color: {t.CSS.neg}; }}
+.sw-c-head {{ font-size: 15px; font-weight: 600; line-height: 1.45; color: {t.CSS.ink}; }}
+.sw-c-detail {{ font-size: 13px; line-height: 1.6; color: {t.CSS.muted}; }}
+.sw-c-verdict {{ font-size: 13px; line-height: 1.55; padding: 2px 0 2px 12px; border-left: 3px solid {t.SERIES[0]}; color: {t.CSS.ink}; }}
+.sw-c-top {{ display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }}
+.sw-c-title {{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; font-weight: 600; color: {t.CSS.ink}; }}
+.sw-c-chip {{ font-size: 12px; padding: 2px 10px; border: 1px solid {t.CSS.rule}; border-radius: 999px; color: {t.CSS.ink_2}; white-space: nowrap; }}
+.sw-c-sub {{ margin-top: -6px; font-size: 13px; color: {t.CSS.muted}; }}
+.sw-c-facts {{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; padding-top: 12px; border-top: 1px solid {t.CSS.rule}; }}
+.sw-c-fl {{ font-size: 11px; color: {t.CSS.muted}; }}
+.sw-c-fv {{ margin-top: 2px; font-size: 15px; font-weight: 600; color: {t.CSS.ink}; }}
+.sw-c-meter-row {{ display: flex; justify-content: space-between; gap: 12px; font-size: 12px; color: {t.CSS.muted}; }}
+.sw-c-meter-row b {{ color: {t.CSS.ink}; }}
+.sw-c-bar {{ height: 6px; margin-top: 5px; border-radius: 3px; background: {t.CSS.shade}; }}
+.sw-c-bar i {{ display: block; height: 6px; border-radius: 3px; background: {t.SERIES[0]}; }}
 """
 
 _Secondary = Iterable[Tuple[str, str]]
@@ -155,6 +177,76 @@ def banner(
     )
     link_box = f'<div class="sw-banner-links">{anchors}</div>' if anchors else ""
     return f'<div class="sw-banner">{logo}{text}{link_box}</div>'
+
+
+def _tone(tone: str) -> str:
+    return tone if tone in ("pos", "neg") else ""
+
+
+def finding(kicker: str, big: str, head: str, detail: str = "", verdict: str = "", tone: str = "") -> str:
+    """One finding as a card: a small label, one big number, the sentence it belongs to, the evidence, the takeaway.
+
+    Put one card per finding in `card_grid`. `tone` ("pos" or "neg") colours the big number.
+    """
+    parts = [
+        f'<div class="sw-c-kicker">{escape(kicker)}</div>',
+        f'<div class="sw-c-big {_tone(tone)}">{escape(big)}</div>',
+        f'<div class="sw-c-head">{escape(head)}</div>',
+    ]
+    if detail:
+        parts.append(f'<div class="sw-c-detail">{escape(detail)}</div>')
+    if verdict:
+        parts.append(f'<div class="sw-c-verdict">{escape(verdict)}</div>')
+    return f'<div class="sw-c">{"".join(parts)}</div>'
+
+
+def fact(label: str, value: str, tone: str = "") -> str:
+    """One small labelled figure for `profile_card(facts=[...])`."""
+    return f'<div><div class="sw-c-fl">{escape(label)}</div><div class="sw-c-fv {_tone(tone)}">{escape(value)}</div></div>'
+
+
+def meter(label: str, share: float, text: str) -> str:
+    """A labelled bar for a share between 0 and 1 (how much is still held, a win rate)."""
+    width = max(0.0, min(1.0, float(share))) * 100
+    return (
+        f'<div><div class="sw-c-meter-row"><span>{escape(label)}</span><b>{escape(text)}</b></div>'
+        f'<div class="sw-c-bar"><i style="width:{width:.0f}%"></i></div></div>'
+    )
+
+
+def profile_card(
+    title: str,
+    big: str,
+    chip: str = "",
+    sub: str = "",
+    verdict: str = "",
+    meters: Iterable[str] = (),
+    facts: Iterable[str] = (),
+    tone: str = "",
+) -> str:
+    """A card for one wallet, token or protocol: a title and chip, one big figure, a verdict, bars and a facts grid.
+
+    Build `meters` with `meter(...)` and `facts` with `fact(...)`. Put the cards in `card_grid`.
+    """
+    chip_html = f'<span class="sw-c-chip">{escape(chip)}</span>' if chip else ""
+    sub_html = f'<div class="sw-c-sub">{escape(sub)}</div>' if sub else ""
+    verdict_html = f'<div class="sw-c-verdict">{escape(verdict)}</div>' if verdict else ""
+    facts_html = "".join(facts)
+    grid = f'<div class="sw-c-facts">{facts_html}</div>' if facts_html else ""
+    return (
+        f'<div class="sw-c"><div class="sw-c-top"><span class="sw-c-title">{escape(title)}</span>{chip_html}</div>'
+        f'<div class="sw-c-big {_tone(tone)}">{escape(big)}</div>{sub_html}{verdict_html}{"".join(meters)}{grid}</div>'
+    )
+
+
+def card_grid(*cards: str, caption: str = "", min_width: int = 270) -> str:
+    """Cards in a responsive grid with the padding and spacing built in, so they never touch the tile edge.
+
+    Use it for any row of `finding` or `profile_card` cards. `caption` is an optional line above the grid. Two or
+    more grids in one `show(...)` stack with space between them.
+    """
+    cap = f'<div class="sw-cards-cap">{escape(caption)}</div>' if caption else ""
+    return f'<div class="sw-cards-wrap">{cap}<div class="sw-cards" style="--sw-min:{int(min_width)}px">{"".join(cards)}</div></div>'
 
 
 def render(*fragments: str) -> str:

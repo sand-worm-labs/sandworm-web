@@ -1,3 +1,5 @@
+import { LINK_GUARD_SCRIPT } from "@/lib/linkGuardScript";
+
 // =====================================
 // ⬢ JavaScript cell frame
 // =====================================
@@ -147,6 +149,8 @@ const BOOTSTRAP = String.raw`
   // The cell is as tall as what it draws.
   const report = () => post({ sw: "height", height: Math.ceil(document.documentElement.getBoundingClientRect().height) });
   new ResizeObserver(report).observe(document.documentElement);
+
+  ${LINK_GUARD_SCRIPT}
 
   // As a module: imports by URL and top-level await both work. Added from
   // here rather than written into the page so a failed import is reported.

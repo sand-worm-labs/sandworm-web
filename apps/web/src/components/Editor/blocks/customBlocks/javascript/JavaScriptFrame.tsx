@@ -175,6 +175,7 @@ export default function JavaScriptFrame(props: {
       // Scripts, and links that open in a new tab. Without allow-same-origin
       // the frame has its own empty origin: no cookies, no storage, and no
       // way to reach the notebook's page except the messages above.
+      data-link-guard
       sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
       className="w-full border-0 block bg-transparent"
       style={{ height: props.fillHeight ? "100%" : height }}

@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { graphql, resolveWorkspaceId, type ToolContext } from '../../graphql.ts';
 import { rest } from '../../rest.ts';
 import { confirm, handle, workspaceId } from '../shared.ts';
-import { CHART_RESPONSIVE_RULES, DATA_AND_DASHBOARD_RULES } from './chart-rules.ts';
+import { CHART_RESPONSIVE_RULES, COMPONENT_RULES, DATA_AND_DASHBOARD_RULES } from './chart-rules.ts';
 import { JAVASCRIPT_GUIDANCE, LIVE_PYTHON_GUIDANCE } from './live-rules.ts';
 import { DATA_SOURCE_FALLBACK, OPEN_DATA_USAGE } from './open-data.ts';
 import { printedTableProblem } from './printed-table.ts';
@@ -53,6 +53,7 @@ const BROWSER_ONLY_HINT =
 const PYTHON_GUIDANCE = [
   'Python cells.',
   CHART_RESPONSIVE_RULES,
+  COMPONENT_RULES,
   DATA_AND_DASHBOARD_RULES,
   'Charts: prefer Plotly (interactive, any chart type that suits the data); matplotlib also works.',
   'Plotly and matplotlib charts already get Sandworm\'s colors and font: the theme is applied when the session starts, so do not import or call it. Do not hard-code your own palette or fonts unless the data needs something else.',

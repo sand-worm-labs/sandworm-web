@@ -21,6 +21,7 @@ import remarkGfm from "remark-gfm";
 import type { PythonBlock } from "@sandworm/editor";
 
 import { downloadFile } from "@/utils/file";
+import { LINK_GUARD_SCRIPT } from "@/lib/linkGuardScript";
 import {
   ChartSkeleton,
   KpiRowSkeleton,
@@ -363,6 +364,7 @@ const RESIZE_REPORTER_SCRIPT = `
     });
     reportHeight();
     new ResizeObserver(reportHeight).observe(document.body);
+    ${LINK_GUARD_SCRIPT}
   </script>
 `;
 
@@ -372,10 +374,12 @@ const DASHBOARD_TILE_CSS = `
   .sw-card { border: none !important; border-radius: 0 !important; background: transparent !important; }
 `;
 
-// A card tile has no padding of its own around an HTML result, so a source note
-// under a chart would start on the card's edge. A plain tile sits on the page and
-// keeps the note flush with the grid.
+// A card tile has no padding of its own around an HTML result, so a chart's title
+// and the source note under it would start on the card's edge. A plain tile sits
+// on the page and keeps them flush with the grid. The title is set here, not left
+// to the theme, so a notebook whose kernel carries an older theme pads it too.
 const DASHBOARD_CARD_TILE_CSS = `
+  .sw-chart-head { padding: 16px 20px 0 !important; }
   .sw-note { padding: 10px 20px 16px !important; }
 `;
 
@@ -822,6 +826,7 @@ function HTMLOutput(props: {
         ref={iframeRef}
         srcDoc={styledHtml}
         title="HTML block"
+        data-link-guard
         // Scripts, plus links that open in a new tab so a banner or a social icon
         // works. The popup is not sandboxed, or the site it opens would be broken
         // too; without allow-same-origin the notebook's own page stays out of reach.
