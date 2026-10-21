@@ -14,12 +14,15 @@ import {
   PiLink,
   PiCheck,
   PiLockSimple,
+  PiEyeSlash,
+  PiArrowsClockwise,
   PiGlobe,
   PiCheckCircle,
   PiShareNetwork,
   PiFilePdf,
   PiSpinner,
 } from "react-icons/pi";
+import type { IconType } from "react-icons";
 import { cn } from "@sandworm/ui/lib/utils";
 
 import { CloseIconButton } from "@/components/CloseIconButton";
@@ -31,10 +34,15 @@ import { TooltipV2 } from "./ToolTips";
 // ⬢ Types
 // =====================================
 
-type ShareVisibility = "WORKSPACE" | "LINK" | "PUBLIC";
+type ShareVisibility = "WORKSPACE" | "LINK" | "UNLISTED" | "PUBLIC";
+
+const NO_TAGS: string[] = [];
 
 type ShareModalProps = {
   link?: string;
+
+  unlistedLink?: string | null;
+  onRotateLink?: () => Promise<void> | void;
   initialVisibility?: ShareVisibility;
   initialDescription?: string | null;
   initialTags?: string[];
@@ -44,10 +52,6 @@ type ShareModalProps = {
   ) => Promise<void> | void;
   onExportPDF?: () => void;
   isExportingPDF?: boolean;
-  // Optional external control — lets another button (e.g. a top-bar
-  // "Publish" action) open this same modal. Falls back to its own
-  // internal state when omitted, so the existing icon trigger keeps
-  // working unchanged.
   isOpen?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
 };
@@ -56,7 +60,23 @@ type ShareModalProps = {
 // ⬢ Visibility Options
 // =====================================
 
-const visibilityOptions = [
+// Sharing with signed-in users only is no longer offered: it sat next to "Unlisted link" and the two were easy to
+// confuse. A notebook that was already shared that way keeps working and is shown as this option, until it is changed.
+type VisibilityOption = {
+  id: ShareVisibility;
+  name: string;
+  description: string;
+  icon: IconType;
+};
+
+const signedInLinkOption: VisibilityOption = {
+  id: "LINK",
+  name: "Signed-in users with link",
+  description: "View-only for people signed in to Sandworm — not on explore",
+  icon: PiLink,
+};
+
+const visibilityOptions: VisibilityOption[] = [
   {
     id: "WORKSPACE" as const,
     name: "Workspace only",
@@ -64,10 +84,11 @@ const visibilityOptions = [
     icon: PiLockSimple,
   },
   {
-    id: "LINK" as const,
-    name: "Anyone with link",
-    description: "View-only with URL — not on explore",
-    icon: PiLink,
+    id: "UNLISTED" as const,
+    name: "Unlisted link",
+    description:
+      "Anyone with the link can view, no sign-in. Not listed or searchable",
+    icon: PiEyeSlash,
   },
   {
     id: "PUBLIC" as const,
@@ -166,9 +187,11 @@ function TagsInput({
 
 export default function ShareModal({
   link = "https://app.sandworm.dev/notebooks/demo",
+  unlistedLink = null,
+  onRotateLink,
   initialVisibility = "WORKSPACE",
   initialDescription = "",
-  initialTags = [],
+  initialTags = NO_TAGS,
   onVisibilityChange,
   onExportPDF,
   isExportingPDF = false,
@@ -206,14 +229,42 @@ export default function ShareModal({
     }
   }, [isOpen, initialVisibility, initialDescription, initialTags]);
 
-  const showLink = visibility === "LINK" || visibility === "PUBLIC";
+  // The signed-in option goes where it always was, between Workspace only and Unlisted link.
+  const shownOptions = visibilityOptions.flatMap(
+    (option): VisibilityOption[] =>
+      option.id === "UNLISTED" && initialVisibility === "LINK"
+        ? [signedInLinkOption, option]
+        : [option]
+  );
+
+  const showLink =
+    visibility === "LINK" ||
+    visibility === "PUBLIC" ||
+    visibility === "UNLISTED";
   const showMeta = visibility === "PUBLIC";
+  // An unlisted notebook has a link only once it is saved as one: until then there is nothing to copy.
+  const hasUnlistedLink = initialVisibility === "UNLISTED" && !!unlistedLink;
+  const shownLink = visibility === "UNLISTED" ? unlistedLink : link;
+  const [isRotating, setIsRotating] = useState(false);
 
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(link);
+    if (!shownLink) return;
+    navigator.clipboard.writeText(shownLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, [link]);
+  }, [shownLink]);
+
+  const handleRotate = useCallback(async () => {
+    if (!onRotateLink) return;
+    setIsRotating(true);
+    try {
+      await onRotateLink();
+    } catch (err) {
+      console.error("Failed to create a new link:", err);
+    } finally {
+      setIsRotating(false);
+    }
+  }, [onRotateLink]);
 
   const handleSave = useCallback(async () => {
     if (!onVisibilityChange) return;
@@ -223,7 +274,8 @@ export default function ShareModal({
         visibility,
         visibility === "PUBLIC" ? { description, tags } : undefined
       );
-      setIsOpen(false);
+      // An unlisted notebook's link only exists now, so stay open to show it.
+      if (visibility !== "UNLISTED") setIsOpen(false);
     } catch (err) {
       console.error("Failed to update visibility:", err);
     } finally {
@@ -314,7 +366,7 @@ export default function ShareModal({
                       onChange={setVisibility}
                       className="flex flex-col gap-2"
                     >
-                      {visibilityOptions.map(option => (
+                      {shownOptions.map(option => (
                         <RadioGroup.Option
                           key={option.id}
                           value={option.id}
@@ -448,9 +500,9 @@ export default function ShareModal({
                     show={showLink}
                     enter="transition-all duration-200 ease-out"
                     enterFrom="opacity-0 -translate-y-1 max-h-0"
-                    enterTo="opacity-100 translate-y-0 max-h-24"
+                    enterTo="opacity-100 translate-y-0 max-h-56"
                     leave="transition-all duration-150 ease-in"
-                    leaveFrom="opacity-100 translate-y-0 max-h-24"
+                    leaveFrom="opacity-100 translate-y-0 max-h-56"
                     leaveTo="opacity-0 -translate-y-1 max-h-0"
                   >
                     <div className="px-5 pb-4 overflow-hidden">
@@ -463,13 +515,20 @@ export default function ShareModal({
                         <input
                           type="text"
                           readOnly
-                          value={link}
+                          value={
+                            visibility === "UNLISTED" && !hasUnlistedLink
+                              ? "The link is made when you save"
+                              : (shownLink ?? "")
+                          }
                           className="flex-1 min-w-0 bg-transparent text-sm
                             text-ink-400 dark:text-placeholder-muted outline-none truncate"
                         />
                         <button
                           type="button"
                           onClick={handleCopy}
+                          disabled={
+                            visibility === "UNLISTED" && !hasUnlistedLink
+                          }
                           className={cn(
                             "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-150",
                             copied
@@ -490,6 +549,30 @@ export default function ShareModal({
                           )}
                         </button>
                       </div>
+                      {visibility === "UNLISTED" && hasUnlistedLink && (
+                        <div className="mt-2 flex items-start justify-between gap-3">
+                          <p className="text-[12px] text-ink-300 dark:text-placeholder-muted">
+                            Anyone who has this link can view the notebook.
+                            Search engines are asked to skip it.
+                          </p>
+                          {onRotateLink && (
+                            <button
+                              type="button"
+                              onClick={handleRotate}
+                              disabled={isRotating}
+                              className="flex shrink-0 items-center gap-1 text-[12px] font-medium text-ink-400 hover:text-ink-100 dark:hover:text-white disabled:opacity-50"
+                              title="The current link stops working"
+                            >
+                              {isRotating ? (
+                                <PiSpinner size={12} className="animate-spin" />
+                              ) : (
+                                <PiArrowsClockwise size={12} />
+                              )}
+                              New link
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </Transition>
 

@@ -317,6 +317,21 @@ export class DocumentResolver {
   }
 
   @Mutation(() => Document, {
+    name: 'setDocumentUnlisted',
+    description:
+      'Share a document by an unguessable link that anyone can open without signing in. It is never listed or searched. Run again with rotate to replace the link; the old one stops working',
+  })
+  async setDocumentUnlisted(
+    @Args('workspaceId') workspaceId: string,
+    @Args('documentId') documentId: string,
+    @Args('rotate', { type: () => Boolean, nullable: true }) rotate?: boolean,
+    @Args('meta', { type: () => PublishDocumentMetaInput, nullable: true })
+    meta?: PublishDocumentMetaInput,
+  ): Promise<Document> {
+    return this.documentService.setDocumentUnlisted(documentId, workspaceId, { rotate: rotate ?? false, meta });
+  }
+
+  @Mutation(() => Document, {
     name: 'setDocumentLinkVisibility',
     description: 'Let any authenticated user with the link view this document read-only, without publishing it to the community',
   })

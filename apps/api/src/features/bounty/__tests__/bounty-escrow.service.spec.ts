@@ -121,7 +121,7 @@ describe('BountyEscrowService.syncEscrow', () => {
   const entry = (wallet: string, username: string, slug: string | null) => ({
     wallet,
     author: { username },
-    document: { id: 'doc-id', slug, publishedAt: new Date() },
+    document: { id: 'doc-id', slug, publishedAt: new Date(), visibility: 'PUBLIC' },
   });
 
   it('records the winners in order of what they were paid, and closes the bounty', async () => {

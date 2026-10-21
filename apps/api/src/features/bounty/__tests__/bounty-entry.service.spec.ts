@@ -15,7 +15,7 @@ const setup = (options: {
   trusted?: () => Promise<unknown>;
 } = {}) => {
   const bounty = options.bounty === null ? null : { slug: 'pyth-1a2b', status: 'open', deadline: FUTURE, creatorId: 'sponsor', onchainId: '7', ...options.bounty };
-  const document = options.document === null ? null : { id: 'd1', authorId: 'u1', deletedAt: null, publishedAt: new Date(), slug: 'my-entry', title: 'My entry', workspaceId: WORKSPACE_ID, ...options.document };
+  const document = options.document === null ? null : { id: 'd1', authorId: 'u1', deletedAt: null, publishedAt: new Date(), visibility: 'PUBLIC', slug: 'my-entry', title: 'My entry', workspaceId: WORKSPACE_ID, ...options.document };
   const author = { username: 'ada', fullName: 'Ada L', email: 'ada@example.com' };
   const entryRepository = {
     find: jest.fn().mockResolvedValue(options.entries ?? []),
@@ -83,6 +83,17 @@ describe('BountyEntryService.submitEntry', () => {
     await expect(service.submitEntry('pyth-1a2b', 'd1', WALLET, 'u1')).rejects.toThrow(BadRequestException);
   });
 
+  it('refuses an unlisted notebook: its secret link would be printed on a public page', async () => {
+    const { service, entryRepository } = setup({ document: { visibility: 'UNLISTED' } });
+    await expect(service.submitEntry('pyth-1a2b', 'd1', WALLET, 'u1')).rejects.toThrow(/publicly/);
+    expect(entryRepository.save).not.toHaveBeenCalled();
+  });
+
+  it.each(['WORKSPACE', 'LINK'])('refuses a %s notebook too', async visibility => {
+    const { service } = setup({ document: { visibility } });
+    await expect(service.submitEntry('pyth-1a2b', 'd1', WALLET, 'u1')).rejects.toThrow(BadRequestException);
+  });
+
   it("refuses someone else's notebook", async () => {
     const { service } = setup({ document: { authorId: 'someone-else' } });
     await expect(service.submitEntry('pyth-1a2b', 'd1', WALLET, 'u1')).rejects.toThrow(NotFoundException);
@@ -142,6 +153,14 @@ describe('BountyEntryService.getEntries', () => {
     { id: 'e1', bountySlug: 'pyth-1a2b', documentId: 'd1', authorId: 'u1', wallet: WALLET, submittedAt: new Date(), author, document },
     { id: 'e2', bountySlug: 'pyth-1a2b', documentId: 'd2', authorId: 'u2', wallet: WALLET, submittedAt: new Date(), author, document: { ...document, publishedAt: null } },
   ];
+
+  it('does not list an entry whose notebook was made unlisted after it was submitted', async () => {
+    const { author, document } = setup();
+    const { service } = setup({ entries: [
+      { id: 'e1', bountySlug: 'pyth-1a2b', documentId: 'd1', authorId: 'u1', wallet: WALLET, submittedAt: new Date(), author, document: { ...document, visibility: 'UNLISTED' } },
+    ] });
+    expect(await service.getEntries('pyth-1a2b', 'a-reader')).toHaveLength(0);
+  });
 
   it('lists published entries and hides wallets from other readers', async () => {
     const { author, document } = setup();

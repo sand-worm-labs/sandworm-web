@@ -29,6 +29,7 @@ import {
   PublishDocumentMetaInput
 } from '../dto/document.dto';
 import { Document } from '../model/document.model';
+import { generateUnlistedSlug } from './unlisted-slug';
 import { DocumentTreeService } from './document-tree.service';
 
 
@@ -481,15 +482,60 @@ export class DocumentService {
     await this.yjsDocumentService.publishDocument(documentId);
     document.visibility = DocumentVisibility.PUBLIC;
 
-    // Only overwrite when explicitly provided — the no-meta "quick publish"
-    // path (useDocument.ts -> api.publish(documentId)) must not wipe
-    // metadata a previous Share-modal save already persisted.
+    this.applyPublishMeta(document, meta);
+
+    await this.documentRepository.save(document);
+
+    const result = Document.fromEntity(document);
+    await this.documentTreeService.emitDocumentUpdate(workspaceId, result);
+    this.searchIndexIsStale();
+    return result;
+  }
+
+  // Only overwrite when explicitly provided — the no-meta "quick publish"
+  // path (useDocument.ts -> api.publish(documentId)) must not wipe
+  // metadata a previous Share-modal save already persisted.
+  private applyPublishMeta(document: DocumentEntity, meta?: PublishDocumentMetaInput): void {
     if (meta?.description !== undefined) {
       document.description = meta.description;
     }
     if (meta?.tags !== undefined) {
       document.tags = meta.tags;
     }
+  }
+
+  // Shared by link alone: anyone who has the address can read it, with no sign-in, and nothing lists it.
+  // Explore, trending, search, profiles and the showcase all filter on PUBLIC, so UNLISTED never reaches them.
+  // The address carries a random token (see generateUnlistedSlug). A new token is made whenever the notebook becomes
+  // unlisted again, and on `rotate`, so an address that was revoked or rotated away stays dead.
+  async setDocumentUnlisted(
+    documentId: string,
+    workspaceId: string,
+    options: { rotate?: boolean; meta?: PublishDocumentMetaInput } = {},
+  ): Promise<Document> {
+    const document = await this.documentRepository.findOne({
+      where: { id: documentId, workspaceId },
+      relations: { author: true },
+    });
+
+    if (!document || document.deletedAt) throw new ValidationException(ErrorCode.E003);
+
+    const yjsDoc = await this.yjsDocumentRepository.findOne({
+      where: { documentId },
+    });
+
+    if (!yjsDoc) throw new ValidationException(ErrorCode.E003);
+
+    const alreadyUnlisted = document.visibility === DocumentVisibility.UNLISTED && !!document.slug;
+    if (!alreadyUnlisted || options.rotate) {
+      document.slug = generateUnlistedSlug(document.title);
+    }
+
+    // The page reads the published copy, so publish a fresh snapshot of it.
+    await this.yjsDocumentService.publishDocument(documentId);
+    document.publishedAt = new Date();
+    document.visibility = DocumentVisibility.UNLISTED;
+    this.applyPublishMeta(document, options.meta);
 
     await this.documentRepository.save(document);
 
@@ -656,7 +702,8 @@ export class DocumentService {
       where: { slug },
     });
 
-    if (!document || !document.publishedAt) {
+    // A notebook in the trash is not readable by its address, public or unlisted.
+    if (!document || document.deletedAt || !document.publishedAt) {
       throw new ValidationException(ErrorCode.E003);
     }
 

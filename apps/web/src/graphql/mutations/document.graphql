@@ -256,3 +256,34 @@ mutation RemovePublicFavoriteDocument($input: FavoritePublicDocumentInput!) {
 # {
 #   "limit": 4
 # }
+
+mutation SetDocumentUnlisted($workspaceId: String!, $documentId: String!, $rotate: Boolean, $meta: PublishDocumentMetaInput) {
+  setDocumentUnlisted(workspaceId: $workspaceId, documentId: $documentId, rotate: $rotate, meta: $meta) {
+    id
+    title
+    slug
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    description
+    tags
+    visibility
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
+    isDashboardPublic
+  }
+}

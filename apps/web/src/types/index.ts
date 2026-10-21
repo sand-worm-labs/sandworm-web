@@ -201,7 +201,7 @@ export type ApiDocument = Document & {
   publishedAt: string | null;
   description: string | null;
   tags: string[];
-  visibility?: "WORKSPACE" | "LINK" | "PUBLIC";
+  visibility?: "WORKSPACE" | "LINK" | "UNLISTED" | "PUBLIC";
   clock: number;
   appClock: number;
   appId: string;

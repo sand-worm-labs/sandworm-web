@@ -7,6 +7,7 @@ import Script from "next/script";
 import type { Metadata } from "next";
 
 import type { ChildrenProps } from "@/types";
+import { OG_IMAGE } from "@/lib/ogImage";
 import { RootProvider } from "@/providers/RootProvider";
 import CookieBanner from "@/components/CookieBanner";
 
@@ -30,11 +31,13 @@ export const metadata: Metadata = {
     title: "Sand Worm",
     description: SITE_DESCRIPTION,
     type: "website",
+    images: [OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "Sand Worm",
     description: SITE_DESCRIPTION,
+    images: [OG_IMAGE.url],
   },
 };
 

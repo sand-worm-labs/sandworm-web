@@ -77,7 +77,10 @@ export function runsInBrowser(runtime: DocumentRuntime | null | undefined): bool
 }
 
 export enum DocumentVisibility {
-  WORKSPACE = "WORKSPACE", 
-  LINK = "LINK",          
-  PUBLIC = "PUBLIC", 
+  WORKSPACE = "WORKSPACE",
+  // Signed-in Sandworm users who have the in-app link, read-only.
+  LINK = "LINK",
+  // Anyone with the link, no sign-in, at /notebooks/<title>-<random token>. Never listed, searched or forked.
+  UNLISTED = "UNLISTED",
+  PUBLIC = "PUBLIC",
 }

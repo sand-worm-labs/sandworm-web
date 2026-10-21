@@ -115,6 +115,8 @@ export function NotebookActions({
     openSignIn,
   ]);
 
+  if (document?.visibility === "UNLISTED") return null;
+
   return (
     <div className="flex shrink-0 items-center gap-1 -ml-2 sm:ml-0">
       <TooltipV2<HTMLButtonElement>

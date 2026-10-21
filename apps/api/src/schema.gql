@@ -130,6 +130,7 @@ enum DocumentRuntime {
 enum DocumentVisibility {
   WORKSPACE
   LINK
+  UNLISTED
   PUBLIC
 }
 
@@ -865,6 +866,11 @@ type Mutation {
 
   """Unpublish a document"""
   unpublishDocument(workspaceId: String!, documentId: String!): Document!
+
+  """
+  Share a document by an unguessable link that anyone can open without signing in. It is never listed or searched. Run again with rotate to replace the link; the old one stops working
+  """
+  setDocumentUnlisted(workspaceId: String!, documentId: String!, rotate: Boolean, meta: PublishDocumentMetaInput): Document!
 
   """
   Let any authenticated user with the link view this document read-only, without publishing it to the community
