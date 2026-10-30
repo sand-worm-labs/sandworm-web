@@ -2,7 +2,7 @@ import { ErrorCode } from '@/constants/error-code.constant';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ValidationException } from '@sandworm/graphql';
-import { verifyPassword } from '@sandworm/nest-common';
+import { hashPassword, verifyPassword } from '@sandworm/nest-common';
 import {
   UserEntity,
   UserSettingEntity,
@@ -116,6 +116,12 @@ export class UserService {
       if (existingUser) {
         throw new ValidationException(ErrorCode.E001);
       }
+    }
+
+    // save() on a plain object skips the entity's hashing hook, so hash here.
+    const password = (input as Partial<UserEntity>).password;
+    if (password && !password.startsWith('$argon2')) {
+      input = { ...input, password: await hashPassword(password) };
     }
 
     const updatedUser = await this.userRepository.save({

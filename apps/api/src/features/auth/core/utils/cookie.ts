@@ -34,8 +34,10 @@ export function setTokenCookies(res: FastifyReply, tokens: TokenPair): void {
 }
 
 export function clearTokenCookies(res: any): void {
-  res.clearCookie(ACCESS_TOKEN_COOKIE);
-  res.clearCookie(REFRESH_TOKEN_COOKIE, { path: '/auth/refresh' });
+  // Browsers only delete a cookie when the path matches the one it was set
+  // with, which is "/" (see setTokenCookies).
+  res.clearCookie(ACCESS_TOKEN_COOKIE, { path: '/' });
+  res.clearCookie(REFRESH_TOKEN_COOKIE, { path: '/' });
 }
 
 export function getTokenFromCookie(req: FastifyRequest, cookie:CookieName): string | null {

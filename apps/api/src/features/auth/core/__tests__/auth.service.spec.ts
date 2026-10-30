@@ -75,19 +75,20 @@ describe('AuthService', () => {
 
   describe('issueTokenPair', () => {
     it('signs access and refresh tokens with the configured secrets and expiry', async () => {
-      const { service, jwtService } = makeService();
+      const { service, jwtService, usersService } = makeService();
+      usersService.findById.mockResolvedValue({ id: 'user-1', tokenVersion: 3 });
       jwtService.signAsync.mockResolvedValueOnce('access-token').mockResolvedValueOnce('refresh-token');
 
       const result = await service.issueTokenPair('user-1');
 
       expect(jwtService.signAsync).toHaveBeenNthCalledWith(
         1,
-        { sub: 'user-1' },
+        { sub: 'user-1', ver: 3 },
         { secret: AUTH_CONFIG.secret, expiresIn: AUTH_CONFIG.expires },
       );
       expect(jwtService.signAsync).toHaveBeenNthCalledWith(
         2,
-        { sub: 'user-1' },
+        { sub: 'user-1', ver: 3 },
         { secret: AUTH_CONFIG.refreshSecret, expiresIn: AUTH_CONFIG.refreshExpires },
       );
       expect(result.accessToken).toBe('access-token');
@@ -332,13 +333,13 @@ describe('AuthService', () => {
 
     it('signs a forgot-password hash and sends the email', async () => {
       const { service, usersService, jwtService, mailService } = makeService();
-      usersService.findByEmail.mockResolvedValue({ id: 'u1' });
+      usersService.findByEmail.mockResolvedValue({ id: 'u1', tokenVersion: 2 });
       jwtService.signAsync.mockResolvedValue('forgot-hash');
 
       await service.forgotPassword('a@b.com');
 
       expect(jwtService.signAsync).toHaveBeenCalledWith(
-        { forgotUserId: 'u1' },
+        { forgotUserId: 'u1', ver: 2 },
         { secret: AUTH_CONFIG.forgotSecret, expiresIn: AUTH_CONFIG.forgotExpires },
       );
       expect(mailService.forgotPassword).toHaveBeenCalledWith(
@@ -363,9 +364,21 @@ describe('AuthService', () => {
       await expect(service.resetPassword('hash', 'newpw')).rejects.toThrow(UnprocessableEntityException);
     });
 
+    it('rejects a link that was already used (or predates this check)', async () => {
+      const { service, jwtService, usersService } = makeService();
+      usersService.findById.mockResolvedValue({ id: 'u1', tokenVersion: 2 });
+
+      jwtService.verifyAsync.mockResolvedValue({ forgotUserId: 'u1', ver: 1 });
+      await expect(service.resetPassword('hash', 'newpw')).rejects.toThrow(UnprocessableEntityException);
+
+      jwtService.verifyAsync.mockResolvedValue({ forgotUserId: 'u1' });
+      await expect(service.resetPassword('hash', 'newpw')).rejects.toThrow(UnprocessableEntityException);
+      expect(usersService.update).not.toHaveBeenCalled();
+    });
+
     it('sets the new password and bumps tokenVersion on success', async () => {
       const { service, jwtService, usersService } = makeService();
-      jwtService.verifyAsync.mockResolvedValue({ forgotUserId: 'u1' });
+      jwtService.verifyAsync.mockResolvedValue({ forgotUserId: 'u1', ver: 1 });
       usersService.findById.mockResolvedValue({ id: 'u1', tokenVersion: 1 });
 
       await service.resetPassword('hash', 'newpw');
@@ -473,13 +486,22 @@ describe('AuthService', () => {
     });
 
     it('issues a new token pair for the verified user', async () => {
-      const { service, jwtService } = makeService();
-      jwtService.verifyAsync.mockResolvedValue({ sub: 'u1' });
+      const { service, jwtService, usersService } = makeService();
+      jwtService.verifyAsync.mockResolvedValue({ sub: 'u1', ver: 1 });
+      usersService.findById.mockResolvedValue({ id: 'u1', tokenVersion: 1 });
       jwtService.signAsync.mockResolvedValue('token');
 
       const result = await service.refreshTokens('good-token');
 
       expect(result.accessToken).toBe('token');
+    });
+
+    it('rejects a refresh token issued before the tokenVersion was bumped', async () => {
+      const { service, jwtService, usersService } = makeService();
+      jwtService.verifyAsync.mockResolvedValue({ sub: 'u1', ver: 0 });
+      usersService.findById.mockResolvedValue({ id: 'u1', tokenVersion: 1 });
+
+      await expect(service.refreshTokens('old-token')).rejects.toThrow(UnauthorizedException);
     });
   });
 
@@ -528,6 +550,16 @@ describe('AuthService', () => {
       usersService.findById.mockResolvedValue(null);
 
       const result = await service.validateTokenAndGetUser('good');
+
+      expect(result).toBeNull();
+    });
+
+    it('returns null for a token issued before the tokenVersion was bumped', async () => {
+      const { service, jwtService, usersService } = makeService();
+      jwtService.verifyAsync.mockResolvedValue({ sub: 'u1', ver: 0 });
+      usersService.findById.mockResolvedValue({ id: 'u1', tokenVersion: 1 });
+
+      const result = await service.validateTokenAndGetUser('revoked');
 
       expect(result).toBeNull();
     });

@@ -54,6 +54,13 @@ export class AuthGuard implements CanActivate {
       this.auditDenied(request, 'invalid_token');
       throw err;
     }
+    // validateTokenAndGetUser returns null for a bad, expired or revoked
+    // token; without this the request would go through with no user id.
+    if (!user?.id) {
+      if (isAuthOptional) return true;
+      this.auditDenied(request, 'invalid_token');
+      throw new UnauthorizedException();
+    }
     request['user'] = {
       ...user,
       token: accessToken,

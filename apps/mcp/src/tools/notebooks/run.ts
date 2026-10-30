@@ -82,7 +82,9 @@ export function registerRunTools(server: McpServer, ctx: ToolContext): void {
         notebookId,
         request: turnRequest,
         workspaceId,
-        cellIds: cellIds.describe('Run only these cells, in notebook order. Omit to run the whole notebook'),
+        cellIds: cellIds.describe(
+          'Run only these cells, in notebook order: the ones you added or changed. Every query runs once, so never pass a cell that already has a result for its current content. Omit only for a notebook that has never run',
+        ),
       },
     },
     handle(async ({ notebookId, workspaceId, cellIds }) => {

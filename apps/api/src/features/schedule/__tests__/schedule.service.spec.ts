@@ -11,12 +11,16 @@ function makeService() {
     delete: jest.fn(),
   } as any;
   const documentRepository = {
-    findOne: jest.fn(),
+    // Tests that care about the notebook set their own value.
+    findOne: jest.fn().mockResolvedValue({ id: 'doc-1', workspaceId: 'ws-1' }),
+  } as any;
+  const memberRepository = {
+    findOne: jest.fn().mockResolvedValue({ workspaceId: 'ws-1', userId: 'user-1' }),
   } as any;
 
-  const service = new ScheduleService(scheduleRepository, documentRepository);
+  const service = new ScheduleService(scheduleRepository, documentRepository, memberRepository);
 
-  return { service, scheduleRepository, documentRepository };
+  return { service, scheduleRepository, documentRepository, memberRepository };
 }
 
 function getErrorCode(err: unknown): unknown {
@@ -37,7 +41,7 @@ describe('ScheduleService', () => {
         documentId: 'doc-1',
       });
 
-      const result = await service.getSchedule('sched-1');
+      const result = await service.getSchedule('sched-1', 'user-1');
 
       expect(scheduleRepository.findOne).toHaveBeenCalledWith({ where: { id: 'sched-1' } });
       expect(result).toMatchObject({ id: 'sched-1', hour: 9, minute: 30, documentId: 'doc-1' });
@@ -47,7 +51,15 @@ describe('ScheduleService', () => {
       const { service, scheduleRepository } = makeService();
       scheduleRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.getSchedule('missing')).rejects.toThrow(ValidationException);
+      await expect(service.getSchedule('missing', 'user-1')).rejects.toThrow(ValidationException);
+    });
+
+    it("hides a schedule from someone outside the notebook's workspace", async () => {
+      const { service, scheduleRepository, memberRepository } = makeService();
+      scheduleRepository.findOne.mockResolvedValue({ id: 'sched-1', documentId: 'doc-1' });
+      memberRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.getSchedule('sched-1', 'outsider')).rejects.toThrow(ValidationException);
     });
   });
 
@@ -58,7 +70,7 @@ describe('ScheduleService', () => {
         { id: 'sched-1', type: ExecutionScheduleType.HOURLY, minute: 0, timezone: 'UTC', isActive: true, documentId: 'doc-1' },
       ]);
 
-      const result = await service.listSchedules({ documentId: 'doc-1' });
+      const result = await service.listSchedules({ documentId: 'doc-1' }, 'user-1');
 
       expect(scheduleRepository.find).toHaveBeenCalledWith({
         where: { documentId: 'doc-1' },
@@ -252,7 +264,7 @@ describe('ScheduleService', () => {
       const { service, scheduleRepository } = makeService();
       scheduleRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.updateSchedule('missing', {} as any)).rejects.toThrow(ValidationException);
+      await expect(service.updateSchedule('missing', {} as any, 'user-1')).rejects.toThrow(ValidationException);
     });
 
     it('applies partial updates and re-validates against the effective type', async () => {
@@ -269,7 +281,7 @@ describe('ScheduleService', () => {
       scheduleRepository.findOne.mockResolvedValue(existing);
       scheduleRepository.save.mockImplementation(async (s: any) => s);
 
-      const result = await service.updateSchedule('sched-1', { minute: 45 } as any);
+      const result = await service.updateSchedule('sched-1', { minute: 45 } as any, 'user-1');
 
       expect(scheduleRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({ minute: 45, hour: 9 }),
@@ -291,7 +303,7 @@ describe('ScheduleService', () => {
       });
 
       await expect(
-        service.updateSchedule('sched-1', { weekdays: '9' } as any),
+        service.updateSchedule('sched-1', { weekdays: '9' } as any, 'user-1'),
       ).rejects.toThrow(ValidationException);
       expect(scheduleRepository.save).not.toHaveBeenCalled();
     });

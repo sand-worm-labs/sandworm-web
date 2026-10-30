@@ -30,6 +30,21 @@ export class QueryExecutionService {
         configuration: SQLQueryConfiguration | null,
         knownDataframes: { name: string; queryId: string }[] = [],
     ): Promise<[Promise<RunQueryResult>, () => Promise<void>]> {
+        // Both are written into the generated Python as-is, so a crafted
+        // notebook could otherwise smuggle in code of its own.
+        if (!isPythonIdentifier(dataframeName) || !isSafeQueryId(queryId)) {
+            return [
+                Promise.resolve({
+                    type: 'python-error',
+                    ename: 'InvalidName',
+                    evalue: `"${dataframeName}" is not a valid dataframe name: use letters, numbers and underscores, not starting with a number`,
+                    traceback: [],
+                }),
+                async () => {},
+            ];
+        }
+        knownDataframes = knownDataframes.filter(d => isPythonIdentifier(d.name) && isSafeQueryId(d.queryId));
+
         // Dune (trino) needs Pro or Enterprise, Sandworm Cloud (postgres) any
         // paid plan. Not a syntax-error: the AI would then try to fix the query.
         if (datasource !== 'duckdb') {
@@ -85,4 +100,20 @@ export class QueryExecutionService {
             knownDataframes,
         );
     }
+}
+
+const PYTHON_IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]{0,254}$/;
+const PYTHON_KEYWORDS = new Set([
+    'False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class', 'continue',
+    'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 'global', 'if', 'import', 'in',
+    'is', 'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield',
+]);
+
+export function isPythonIdentifier(name: string): boolean {
+    return PYTHON_IDENTIFIER.test(name) && !PYTHON_KEYWORDS.has(name);
+}
+
+// Block ids are UUIDs; also used in file paths, so no dots or slashes.
+export function isSafeQueryId(id: string): boolean {
+    return /^[A-Za-z0-9_-]{1,128}$/.test(id);
 }

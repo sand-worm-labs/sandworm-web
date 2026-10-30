@@ -1,5 +1,5 @@
 import { EnvironmentResolver } from '../environment.resolver';
-import { EnvironmentStatus } from '@sandworm/postgresql-typeorm';
+import { EnvironmentStatus, UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
 
 function makeResolver() {
   const environmentService = {
@@ -42,14 +42,29 @@ describe('EnvironmentResolver', () => {
     expect(result).toBe(EnvironmentStatus.RUNNING);
   });
 
-  it('getEnvironmentVariables delegates to service', async () => {
+  it('getEnvironmentVariables shows values in full to editors', async () => {
     const { resolver, environmentService } = makeResolver();
-    environmentService.getEnvironmentVariables.mockResolvedValue([]);
+    environmentService.getEnvironmentVariables.mockResolvedValue([{ name: 'KEY', value: 'sk-1234567890' }]);
 
-    const result = await resolver.getEnvironmentVariables(WORKSPACE_ID);
+    const result = await resolver.getEnvironmentVariables(WORKSPACE_ID, {
+      req: { workspaceRoles: { [WORKSPACE_ID]: UserWorkspaceRole.EDITOR } },
+    });
 
     expect(environmentService.getEnvironmentVariables).toHaveBeenCalledWith(WORKSPACE_ID);
-    expect(result).toEqual([]);
+    expect(result).toEqual([{ name: 'KEY', value: 'sk-1234567890' }]);
+  });
+
+  it('getEnvironmentVariables masks values for viewers and unknown roles', async () => {
+    const { resolver, environmentService } = makeResolver();
+    environmentService.getEnvironmentVariables.mockImplementation(async () => [{ name: 'KEY', value: 'sk-1234567890' }]);
+
+    const viewer = await resolver.getEnvironmentVariables(WORKSPACE_ID, {
+      req: { workspaceRoles: { [WORKSPACE_ID]: UserWorkspaceRole.VIEWER } },
+    });
+    const unknown = await resolver.getEnvironmentVariables(WORKSPACE_ID, {});
+
+    expect(viewer[0].value).toBe('••••••••7890');
+    expect(unknown[0].value).toBe('••••••••7890');
   });
 
   it('currentSysInfo delegates to sysinfoService.collect', async () => {

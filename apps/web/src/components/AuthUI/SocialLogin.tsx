@@ -101,7 +101,11 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
     // GitHub's /user endpoint omits email for anyone who hasn't made theirs
     // public, and the backend's /user/emails fallback 403s silently.
     const githubScope = encodeURIComponent("read:user user:email");
-    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID()}&redirect_uri=${REDIRECT_URI()}&scope=${githubScope}`;
+    // A random `state` that only this window knows. The callback page sends
+    // it back, and a code that arrives with any other state is dropped, so a
+    // code from someone else's GitHub login can't sign this browser in.
+    const state = crypto.randomUUID();
+    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID()}&redirect_uri=${REDIRECT_URI()}&scope=${githubScope}&state=${state}`;
 
     const popup = window.open(
       githubAuthUrl,
@@ -116,6 +120,10 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
 
     const handleMessage = async (event: MessageEvent) => {
       if (event.origin !== window.location.origin) return;
+
+      if (event.data?.provider === "github" && event.data.state !== state) {
+        return;
+      }
 
       if (
         event.data?.type === "oauth-success" &&
