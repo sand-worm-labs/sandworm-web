@@ -19,6 +19,11 @@ export const POSITIONING_INSTRUCTIONS =
 export const NEXT_STEPS_INSTRUCTIONS =
   'End every answer with one or two concrete next actions or queries that would most improve the success of the trader, product or company behind the question: a follow-up analysis to run, a metric to track, a risk to check. Tie them to what this session actually covered and make each specific enough to act on. Never invent figures to justify them; if nothing useful follows, leave it out.';
 
+// Server instructions, on for every client: paid data sources (Dune) bill per
+// execution, so a query that already ran must never run again.
+export const RUN_ONCE_INSTRUCTIONS =
+  'Every query runs once. Never re-run a query that has already run: read its saved result with get_run_results instead. Never run a query to discover tables, columns or values: use get_data_source_schema and search_tools. Write a query only when you know its tables and columns, and get it right before you run it. When you run a notebook, pass `cellIds` with only the cells you added or changed and never re-run the whole notebook to refresh cells that already have results. Never rebuild a notebook to re-run queries another notebook already ran: read or fork it.';
+
 export const SAVE_REPLY_INSTRUCTIONS =
   'Every tool call is saved to the notebook\'s chat in Sandworm. Pass the user\'s message as `request` on the first tool call you make for each new message from them, and wherever a tool requires it. Every time you finish working on a notebook, after a follow-up too, call save_reply with the closing message you are about to give the user, before you give it.';
 
