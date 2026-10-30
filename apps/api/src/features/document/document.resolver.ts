@@ -23,6 +23,7 @@ import {
 } from './dto/document.dto';
 import { DocumentTreeService } from './service/document-tree.service';
 import { Public } from '@sandworm/nest-common';
+import { AllowSharedDocument } from '@/core/decorators/workspace-access.decorator';
 import { User } from '../user/model/graphql/user.model';
 import { UserService } from '../user/user.service';
 import { NoAudit } from '@/features/audit/audit.decorators';
@@ -36,6 +37,8 @@ export class DocumentResolver {
     private readonly documentTreeService: DocumentTreeService
   ) { }
 
+  // Also open to anyone signed in when the notebook is shared by link.
+  @AllowSharedDocument()
   @Query(() => Document, {
     name: 'getDocument',
     description: 'Get a single document by ID',

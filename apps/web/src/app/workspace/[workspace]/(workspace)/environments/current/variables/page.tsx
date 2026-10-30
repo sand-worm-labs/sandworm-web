@@ -21,6 +21,7 @@ import EnvBar from "@/components/Editor/blocks/EnvBar";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import Spin from "@/components/Editor/blocks/Spin";
 import KeyConnectCards from "@/components/Environment/KeyConnectCards";
+import { getWorkspaceRole } from "@/utils/workspaceRole";
 
 // =====================================
 // ⬢ Constants
@@ -187,7 +188,7 @@ export default function EnvironmentVariablesPage() {
 
   const variables = fetchedVariables.filter(v => !removed.includes(v.id));
   const isViewer =
-    session?.user?.role?.find(r => r[workspaceId])?.[workspaceId] === "viewer";
+    getWorkspaceRole(session?.user?.role, workspaceId) === "viewer";
 
   const isDirty = added.length > 0 || removed.length > 0;
 

@@ -89,7 +89,8 @@ export class UserEntity extends AbstractEntity {
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {
-    if (this.password) {
+    // Skip a value that is already a hash, so it is never hashed twice.
+    if (this.password && !this.password.startsWith('$argon2')) {
       this.password = await hashPass(this.password);
     }
   }

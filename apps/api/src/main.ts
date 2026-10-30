@@ -1,6 +1,8 @@
 import compression from '@fastify/compress';
 import helmet from '@fastify/helmet';
 import cookie from '@fastify/cookie';
+import rateLimit from '@fastify/rate-limit';
+import { rateLimitKey, rateLimitMax } from './core/rate-limit';
 import {
   HttpStatus,
   UnprocessableEntityException,
@@ -27,7 +29,10 @@ import { AppModule } from './app.module';
 import { AllConfigType } from './core/config/config.type';
 import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
 import { AuditService } from '@/features/audit/audit.service';
+import { DataSource } from 'typeorm';
+import { DocumentEntity, UserWorkspaceEntity } from '@sandworm/postgresql-typeorm';
 import { AuthGuard } from './core/guards/auth.guard';
+import { WorkspaceAccessGuard } from './core/guards/workspace-access.guard';
 import { setupSwagger } from './common/utils/setup-swagger';
 import { AuthService } from './features/auth/core/auth.service';
 import { YjsGateway } from './features/collaboration/yjs/yjs.gateway';
@@ -40,6 +45,10 @@ async function bootstrap() {
     // Fastify's default is 1MB, which the workspace file-upload endpoint
     // (raw octet-stream body) blows past for anything but a tiny file.
     bodyLimit: 20 * 1024 * 1024, // 20MB
+    // Caddy (in Docker) and local services sit in front of the API. Trusting
+    // only loopback and private ranges gives the real client IP for rate
+    // limits and audit logs, without letting public callers spoof it.
+    trustProxy: 'loopback,uniquelocal',
   });
 
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -81,6 +90,15 @@ async function bootstrap() {
   });
   app.register(compression);
   await app.register(cookie);
+  // preHandler, so the GraphQL body is parsed and the login mutation can be
+  // counted like the REST login route.
+  await app.register(rateLimit, {
+    global: true,
+    hook: 'preHandler',
+    timeWindow: '1 minute',
+    max: (request) => rateLimitMax(request),
+    keyGenerator: (request) => rateLimitKey(request),
+  });
 
   // ⬢ CORS
   const corsOrigin = configService.getOrThrow('app.corsOrigin', { infer: true });
@@ -111,7 +129,16 @@ async function bootstrap() {
   });
 
   // ⬢ Guards, filters, pipes
-  app.useGlobalGuards(new AuthGuard(reflector, app.get(AuthService), app.get(AuditService)));
+  const dataSource = app.get(DataSource);
+  app.useGlobalGuards(
+    new AuthGuard(reflector, app.get(AuthService), app.get(AuditService)),
+    // Order matters: it reads the user AuthGuard attaches.
+    new WorkspaceAccessGuard(
+      reflector,
+      dataSource.getRepository(UserWorkspaceEntity),
+      dataSource.getRepository(DocumentEntity),
+    ),
+  );
   app.useGlobalFilters(new GlobalExceptionFilter(httpAdapterHost, debug));
   app.useGlobalPipes(
     new ValidationPipe({

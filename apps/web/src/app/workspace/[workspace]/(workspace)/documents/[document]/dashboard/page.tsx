@@ -6,6 +6,7 @@ import Head from "next/head";
 import { useSession } from "@/components/Editor/hooks/useAuth";
 import { useStringQuery } from "@/components/Editor/hooks/useQueryArgs";
 import useDocument from "@/components/Editor/hooks/useDocument";
+import { getWorkspaceRole } from "@/utils/workspaceRole";
 
 const Dashboard = dynamic(
   () => import("@/components/Editor/blocks/Dashboard"),
@@ -28,7 +29,7 @@ export default function DashboardPage() {
   }
 
   const role =
-    session?.user?.role?.find(r => r[workspaceId])?.[workspaceId] ?? "viewer";
+    getWorkspaceRole(session?.user?.role, workspaceId) ?? "viewer";
 
   return (
     <>

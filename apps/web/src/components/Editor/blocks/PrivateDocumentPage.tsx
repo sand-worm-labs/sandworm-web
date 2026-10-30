@@ -49,6 +49,7 @@ import EnvironmentPanel from "./EnvironmentPanel";
 import EnvVariablesPanel from "./EnvVariablesPanel";
 import { Tooltip, TooltipV2 } from "./ToolTips";
 import ShareModal from "./ShareModal";
+import { getWorkspaceRole } from "@/utils/workspaceRole";
 
 function EditorColumnPlaceholder() {
   return (
@@ -209,13 +210,8 @@ function PrivateDocumentPageInner(
 
   const router = useRouter();
 
-  const roleEntry = props?.user?.role?.find(
-    entry => props.workspaceId in entry
-  );
-  const isViewer = roleEntry?.[props.workspaceId] === "viewer";
-  const role =
-    props?.user?.role?.find(r => r[props.workspaceId])?.[props.workspaceId] ??
-    "viewer";
+  const role = getWorkspaceRole(props?.user?.role, props.workspaceId) ?? "viewer";
+  const isViewer = role === "viewer";
 
   const isDeleted = !isNil(props.document.deletedAt);
 
