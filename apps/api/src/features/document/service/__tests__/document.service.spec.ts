@@ -893,4 +893,113 @@ describe('DocumentService', () => {
       expect(result).toHaveLength(1);
     });
   });
+  describe('setDocumentUnlisted', () => {
+    const TOKEN_SLUG = /^my-notebook-[A-Za-z0-9_-]{22}$/;
+
+    function ready(overrides: Record<string, unknown> = {}) {
+      const ctx = makeService();
+      ctx.documentRepository.findOne.mockResolvedValue(makeDocumentEntity({ title: 'My notebook', ...overrides }));
+      ctx.yjsDocumentRepository.findOne.mockResolvedValue({ documentId: DOCUMENT_ID });
+      ctx.documentRepository.save.mockImplementation(async (entity: unknown) => entity);
+      return ctx;
+    }
+
+    it('shares the notebook by an unguessable address and publishes a fresh copy to read', async () => {
+      const { service, documentRepository, yjsDocumentService, documentTreeService } = ready();
+
+      const result = await service.setDocumentUnlisted(DOCUMENT_ID, WORKSPACE_ID);
+
+      expect(result.visibility).toBe(DocumentVisibility.UNLISTED);
+      expect(result.slug).toMatch(TOKEN_SLUG);
+      expect(result.publishedAt).toBeInstanceOf(Date);
+      expect(yjsDocumentService.publishDocument).toHaveBeenCalledWith(DOCUMENT_ID);
+      expect(documentRepository.save).toHaveBeenCalledTimes(1);
+      expect(documentTreeService.emitDocumentUpdate).toHaveBeenCalled();
+    });
+
+    it('is not the address a public notebook would get (no document id in it)', async () => {
+      const { service } = ready();
+      const result = await service.setDocumentUnlisted(DOCUMENT_ID, WORKSPACE_ID);
+      expect(result.slug).not.toContain(DOCUMENT_ID.slice(0, 8));
+    });
+
+    it('keeps the same address when it is already unlisted, so a link already shared still works', async () => {
+      const { service } = ready({ visibility: DocumentVisibility.UNLISTED, slug: 'my-notebook-keepTHISaddress1234' });
+      const result = await service.setDocumentUnlisted(DOCUMENT_ID, WORKSPACE_ID);
+      expect(result.slug).toBe('my-notebook-keepTHISaddress1234');
+    });
+
+    it('makes a new address on rotate, so the old one stops working', async () => {
+      const { service } = ready({ visibility: DocumentVisibility.UNLISTED, slug: 'my-notebook-oldOLDoldOLDoldOLDold' });
+      const result = await service.setDocumentUnlisted(DOCUMENT_ID, WORKSPACE_ID, { rotate: true });
+      expect(result.slug).toMatch(TOKEN_SLUG);
+      expect(result.slug).not.toBe('my-notebook-oldOLDoldOLDoldOLDold');
+    });
+
+    it.each([
+      ['a notebook that was private', DocumentVisibility.WORKSPACE],
+      ['a public notebook', DocumentVisibility.PUBLIC],
+      ['a signed-in link share', DocumentVisibility.LINK],
+    ])('replaces the old address when it was %s, so an address that was once public or revoked is not reused', async (_name, visibility) => {
+      const { service } = ready({ visibility, slug: 'my-notebook-12345678' });
+      const result = await service.setDocumentUnlisted(DOCUMENT_ID, WORKSPACE_ID);
+      expect(result.slug).toMatch(TOKEN_SLUG);
+    });
+
+    it('applies a description and tags when given, and leaves them alone when not', async () => {
+      const withMeta = ready({ description: 'old', tags: ['old'] });
+      const a = await withMeta.service.setDocumentUnlisted(DOCUMENT_ID, WORKSPACE_ID, { meta: { description: 'new', tags: ['nansen'] } });
+      expect(a.description).toBe('new');
+      expect(a.tags).toEqual(['nansen']);
+
+      const without = ready({ description: 'old', tags: ['old'] });
+      const b = await without.service.setDocumentUnlisted(DOCUMENT_ID, WORKSPACE_ID);
+      expect(b.description).toBe('old');
+      expect(b.tags).toEqual(['old']);
+    });
+
+    it('refuses a notebook that is missing, in the trash, or has never been saved', async () => {
+      const missing = makeService();
+      missing.documentRepository.findOne.mockResolvedValue(null);
+      await expect(missing.service.setDocumentUnlisted(DOCUMENT_ID, WORKSPACE_ID)).rejects.toThrow();
+
+      const trashed = ready({ deletedAt: new Date() });
+      await expect(trashed.service.setDocumentUnlisted(DOCUMENT_ID, WORKSPACE_ID)).rejects.toThrow();
+
+      const unsaved = ready();
+      unsaved.yjsDocumentRepository.findOne.mockResolvedValue(null);
+      await expect(unsaved.service.setDocumentUnlisted(DOCUMENT_ID, WORKSPACE_ID)).rejects.toThrow();
+      expect(unsaved.documentRepository.save).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('reading a published notebook by its address', () => {
+    it('serves an unlisted notebook to anyone with the address', async () => {
+      const { service, documentRepository } = makeService();
+      documentRepository.findOne.mockResolvedValue(
+        makeDocumentEntity({ slug: 'my-notebook-abc', visibility: DocumentVisibility.UNLISTED, publishedAt: new Date() }),
+      );
+      const result = await service.getPublishedDocumentBySlug('my-notebook-abc');
+      expect(result.id).toBe(DOCUMENT_ID);
+    });
+
+    it('does not serve a notebook that has been moved to the trash, public or unlisted', async () => {
+      const { service, documentRepository } = makeService();
+      documentRepository.findOne.mockResolvedValue(
+        makeDocumentEntity({ slug: 'my-notebook-abc', visibility: DocumentVisibility.UNLISTED, publishedAt: new Date(), deletedAt: new Date() }),
+      );
+      await expect(service.getPublishedDocumentBySlug('my-notebook-abc')).rejects.toThrow();
+    });
+
+    it('does not serve a notebook that is not published, or is private again', async () => {
+      const { service, documentRepository } = makeService();
+      documentRepository.findOne.mockResolvedValue(makeDocumentEntity({ slug: 'my-notebook-abc', publishedAt: null }));
+      await expect(service.getPublishedDocumentBySlug('my-notebook-abc')).rejects.toThrow();
+
+      documentRepository.findOne.mockResolvedValue(
+        makeDocumentEntity({ slug: 'my-notebook-abc', publishedAt: new Date(), visibility: DocumentVisibility.WORKSPACE }),
+      );
+      await expect(service.getPublishedDocumentBySlug('my-notebook-abc')).rejects.toThrow();
+    });
+  });
 });

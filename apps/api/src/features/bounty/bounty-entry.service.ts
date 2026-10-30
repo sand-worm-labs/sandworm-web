@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BountyEntity, BountyEntryEntity, DocumentEntity } from '@sandworm/postgresql-typeorm';
+import { BountyEntity, BountyEntryEntity, DocumentEntity, DocumentVisibility } from '@sandworm/postgresql-typeorm';
 import { IsNull, Not, Repository } from 'typeorm';
 import { getAddress, isAddress } from 'viem';
 import { bountiesRequireTrust, TRUST_GATE, type TrustGate } from '../trust/trust.gate';
@@ -32,7 +32,7 @@ export class BountyEntryService {
     });
     const seesWallets = !!userId && bounty.creatorId === userId;
     return entries
-      .filter(entry => entry.document?.publishedAt && !entry.document.deletedAt)
+      .filter(entry => entry.document?.publishedAt && entry.document.visibility === DocumentVisibility.PUBLIC && !entry.document.deletedAt)
       .map(entry => BountyEntry.fromEntity(entry, { userId, seesWallets }));
   }
 
@@ -68,6 +68,10 @@ export class BountyEntryService {
     const bounty = await this.openBounty(slug);
     const document = await this.ownDocument(documentId, userId);
     if (!document.publishedAt) throw new BadRequestException('Publish the notebook before submitting it');
+    // An entry's notebook is linked from a public page, so an unlisted notebook (shared by a secret link) cannot be one.
+    if (document.visibility !== DocumentVisibility.PUBLIC) {
+      throw new BadRequestException('Publish the notebook publicly before submitting it: an unlisted link would be shown on the bounty page');
+    }
 
     const address = wallet?.trim();
     if (address && !isAddress(address)) throw new BadRequestException('The wallet address is not valid');

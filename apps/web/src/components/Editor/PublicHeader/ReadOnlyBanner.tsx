@@ -12,6 +12,8 @@ import { useForkFlow } from "./useForkFlow";
 interface ReadOnlyBannerProps {
   document: { id: string; title: string } | null;
   isAuthenticated: boolean;
+  // An unlisted notebook cannot be forked, so the notice does not offer it.
+  canFork?: boolean;
   onChangeView: (view: NotebookView) => void;
 }
 
@@ -19,7 +21,6 @@ export const READ_ONLY_BANNER_DISMISSED_KEY =
   "sandworm:read-only-banner:dismissed";
 
 function useDismissed() {
-
   const [dismissed, setDismissed] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -51,6 +52,7 @@ export default function ReadOnlyBanner({
   document,
   isAuthenticated,
   onChangeView,
+  canFork = true,
 }: ReadOnlyBannerProps) {
   const {
     triggerFork,
@@ -78,16 +80,22 @@ export default function ReadOnlyBanner({
         >
           View the query
         </button>
-        , or{" "}
-        <button
-          type="button"
-          disabled={!document}
-          onClick={triggerFork}
-          className={LINK_CLASS}
-        >
-          fork
-        </button>{" "}
-        to edit in your workspace.
+        {canFork ? (
+          <>
+            , or{" "}
+            <button
+              type="button"
+              disabled={!document}
+              onClick={triggerFork}
+              className={LINK_CLASS}
+            >
+              fork
+            </button>{" "}
+            to edit in your workspace.
+          </>
+        ) : (
+          "."
+        )}
       </p>
 
       <button

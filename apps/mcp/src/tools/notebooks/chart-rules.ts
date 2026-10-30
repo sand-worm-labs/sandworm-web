@@ -21,3 +21,13 @@ export const DATA_AND_DASHBOARD_RULES = [
   'A dashboard that ranks holdings, positions or counterparties also shows the full list as a table tile: a python cell that returns the DataFrame.',
   'The source goes under every chart through `chart(..., source=...)`: the renderer pads it inside a card tile, so add no spacing of your own.',
 ].join(' ');
+
+// What a notebook is built from. The theme ships the pieces below, so a notebook never writes its own HTML cards,
+// chart switcher or table script: those copies drift from the theme and have shipped hand-picked colours, labels that
+// flip in and out of bars, and cards that touch the tile edge. Same homes as the rules above (server instructions and
+// the cell tool guidance); the in-product AI carries the same rule in apps/ai prompt_rules.py.
+export const COMPONENT_RULES = [
+  'Never hard-code colours on a chart: no hex codes, `marker_color`, `colorway` or colour scale, and never red or green, even for gain and loss. Name every series and let the theme colour it; split in vs out or gain vs loss into two named traces. `POS` and `NEG` colour the text of a figure card only.',
+  'Build cards, switchable charts and searchable tables from `sandworm_theme`, not from HTML or JavaScript you write yourself. A row of findings is `show(card_grid(finding(kicker, big, head, detail, verdict), ...))`; a wallet, token or protocol is `profile_card(title, big, chip=, sub=, verdict=, meters=[meter(label, share, text)], facts=[fact(label, value)])` inside `card_grid`; `card_grid` carries the padding, so cards never touch the tile edge.',
+  'To let the reader switch between views of one question use `switchable(uid, {"Button text": (fig, "The finding as a title", "A note"), ...})` with ordinary Plotly figures that have no title, legend or colours of their own; it works on a published page. For a table the reader can sort, search and page through use `data_table(uid, df, [tcol(key, label, kind="num", fmt=..., bar=True), ...])`.',
+].join(' ');

@@ -21,6 +21,7 @@ import {
   usePublishDocumentMutation,
   useUnpublishDocumentMutation,
   useSetDocumentLinkVisibilityMutation,
+  useSetDocumentUnlistedMutation,
   type DocumentRuntime,
   type UpdateDocumentInput,
 } from "@/generated/graphql";
@@ -161,6 +162,15 @@ type API = {
   ) => Promise<void>;
   unpublish: (id: string) => Promise<void>;
   setLinkVisibility: (id: string) => Promise<void>;
+  // Share by an unguessable link anyone can open, listed nowhere. Resolves with the notebook's new
+  // address (its slug); with `rotate` the old address stops working.
+  setUnlisted: (
+    id: string,
+    options?: {
+      rotate?: boolean;
+      meta?: { description?: string; tags?: string[] };
+    }
+  ) => Promise<string | null>;
 };
 
 type UseDocumentsState = {
@@ -291,6 +301,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
   const [publishDocumentMutation] = usePublishDocumentMutation();
   const [unpublishDocumentMutation] = useUnpublishDocumentMutation();
   const [setLinkVisibilityMutation] = useSetDocumentLinkVisibilityMutation();
+  const [setUnlistedMutation] = useSetDocumentUnlistedMutation();
 
   const { documents, loading } = useMemo(
     (): StateValue =>
@@ -807,6 +818,75 @@ export function useDocuments(workspaceId: string): UseDocuments {
     [documents, workspaceId, setState, setLinkVisibilityMutation]
   );
 
+  // ⬢ Set Document Unlisted
+  // =====================================
+  const setUnlisted = useCallback(
+    async (
+      id: string,
+      options?: {
+        rotate?: boolean;
+        meta?: { description?: string; tags?: string[] };
+      }
+    ): Promise<string | null> => {
+      const document = documents.find(doc => doc.id === id);
+      if (!document) {
+        return null;
+      }
+
+      try {
+        const result = await setUnlistedMutation({
+          variables: {
+            workspaceId,
+            documentId: id,
+            rotate: options?.rotate ?? false,
+            meta: options?.meta,
+          },
+        });
+
+        const unlisted = result.data?.setDocumentUnlisted;
+        if (!unlisted) {
+          throw new Error(`Error making Document(${id}) unlisted`);
+        }
+
+        // The address is new, so the list has to carry it: the Share dialog shows it straight away.
+        setState(prev => {
+          const { loading: prevLoading, documents: prevDocuments } = prev.get(
+            workspaceId
+          ) ?? {
+            loading: true,
+            documents: List(),
+          };
+          return prev.set(workspaceId, {
+            loading: prevLoading,
+            documents: prevDocuments.map(doc =>
+              doc.id === id
+                ? {
+                    ...doc,
+                    slug: unlisted.slug,
+                    visibility: "UNLISTED" as const,
+                    publishedAt: unlisted.publishedAt,
+                    description: unlisted.description ?? null,
+                    tags: unlisted.tags,
+                  }
+                : doc
+            ),
+          });
+        });
+
+        toast.success(
+          options?.rotate
+            ? "New link created. The old one no longer works"
+            : "Anyone with the link can now view"
+        );
+        return unlisted.slug ?? null;
+      } catch (e) {
+        toast.error("Failed to update link sharing");
+        throw e;
+      }
+    },
+    [documents, workspaceId, setState, setUnlistedMutation]
+  );
+
   // ⬢ Update Document Settings
   // =====================================
   const updateDocumentSettings = useCallback(
@@ -886,6 +966,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
         publish,
         unpublish,
         setLinkVisibility,
+        setUnlisted,
         updateDocumentSettings,
       },
     ],
@@ -901,6 +982,7 @@ export function useDocuments(workspaceId: string): UseDocuments {
       publish,
       unpublish,
       setLinkVisibility,
+      setUnlisted,
       updateDocumentSettings,
     ]
   );

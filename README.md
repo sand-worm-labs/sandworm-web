@@ -18,7 +18,7 @@ This repo is the frontend interface for SandWorm, a multi-chain blockchain data 
 
 Sandworm existed before the hackathon. This section says what was already there, what was built during the build window (1 September to 14 October 2026), and which AI coding tools were used.
 
-**The submission:** AI agents that do onchain analysis step by step in a notebook, and publish the result as a live dashboard that runs in the viewer's browser.
+**The submission:** AI agents that do onchain analysis step by step in a notebook, publish the result as a live dashboard that runs in the viewer's browser, and can prove onchain, on Monad, exactly what they ran: a receipt of the notebook's code and inputs is recorded with the ERC-8004 registries, and a second wallet re-runs it and attests (see [Trusted notebooks](#trusted-notebooks)).
 
 ### Pre-existing foundation (before 1 September 2026)
 
@@ -35,6 +35,7 @@ These components were built before the build window and are used as the foundati
 
 | Area | What was added |
 | --- | --- |
+| **Trusted notebooks** (`packages/trust`) | Onchain receipts for what a notebook ran, on Monad, using the ERC-8004 registries that are already deployed (no new contracts). A second wallet re-runs the notebook and attests; bounties accept only attested notebooks. MCP tools and a Verify step in the bounty submit dialog |
 | **MCP server for agents** (`apps/mcp`) | A new server that lets AI clients build and run notebooks: an OAuth 2.1 authorization server, tools for cells, dashboards, comments, data sources and environments, and audit and tool-call logging |
 | **Agent editing in the app** | The in-app assistant edits and fixes cells through the same MCP tools, and replies are saved as they stream |
 | **Browser notebooks** | Three notebook types (Cloud, Live dashboard, Local analysis), a Python kernel that runs in the browser on Pyodide, and a browser executor that mirrors the server's |
@@ -47,6 +48,27 @@ These components were built before the build window and are used as the foundati
 | **Publishing** | Publish and unpublish, public notebooks and dashboards, forking, the explore page and scheduled runs |
 | **Theme and charts** | Dark mode, the Sandworm chart theme for Python output, pie charts and chart image export |
 
+### Trusted notebooks
+
+An agent can publish a finding, and anyone can ask: *what did it actually run?* The trust layer (`packages/trust`) answers that onchain, on **Monad mainnet (chain 143)**, with the [ERC-8004](https://github.com/erc-8004/erc-8004-contracts) identity and validation registries that are already deployed. There is no Solidity in this repository for it.
+
+1. **Attest.** The server's agent wallet pins a receipt of the notebook (each cell's code, data source and parameters, and when they ran) and records its hash onchain, tied to one agent identity.
+2. **Validate.** A second wallet re-checks the receipt: it matches its onchain hash, the cells still have the same code, and re-running the notebook succeeds. It posts a verdict (100 if every check passes, otherwise 0) with a report of what it saw.
+3. **Use.** A bounty accepts a notebook only if it is attested and validated by a trusted validator, and the agent and validator are different wallets.
+
+**What it proves:** who made the finding, exactly which code and inputs ran and when, and that someone else re-ran it.
+
+**What it does not prove:** that the logic is right, that the data source is honest, or that today's numbers equal the numbers then. Output is deliberately not hashed, because data changes; the receipt commits to the inputs and the run time instead.
+
+| Where | What |
+| --- | --- |
+| `packages/trust` | Receipt, hashing, the two registries' ABIs, and five scripts to run the steps by hand with your own wallets |
+| `apps/api` (`features/trust`) | `attestNotebook`, and the gate that makes `submitBountyEntry` accept only trusted notebooks |
+| `apps/mcp` (`tools/bounties`) | `check_notebook_trust`, `attest_notebook`, `submit_to_bounty`, and the other bounty tools, so an agent can build, attest, publish and submit |
+| `apps/web` | A Verify step in the bounty submit dialog, and a submissions table that links each verified entry to the validator's transaction |
+
+Configuration is `TRUST_*` in `apps/api/.env.example`: two different wallets (they only pay gas), the registered agent id, and `TRUST_NETWORK` (`mainnet`, or `testnet` where gas is free). `BOUNTY_REQUIRE_TRUST=false` turns the gate off for a local setup with no wallets. Details, the receipt format and the scripts are in [`packages/trust/README.md`](./packages/trust/README.md).
+
 ### Verifying the build window
 
 The commit history is the record. In this repository, 292 commits fall inside the window and 1,606 come before it.
@@ -57,6 +79,9 @@ git log --since="2026-09-01T00:00:00+00:00" --no-merges --oneline
 
 # Everything that changed since the last commit before the window
 git diff --stat 76e6f61b HEAD
+
+# Only the trusted-notebooks work: the package, the API gate and the MCP tools
+git log --since="2026-09-01T00:00:00+00:00" --no-merges --oneline -- packages/trust apps/api/src/features/trust apps/mcp/src/tools/bounties
 ```
 
 `apps/ai` is a submodule, so its history is in its own repository.
@@ -90,6 +115,7 @@ cp .env.example .env.local
 - `packages/ui`: UI components library
 - `packages/eslint-config`: ESLint configuration
 - `packages/typescript-config`: TypeScript configuration
+- `packages/trust`: Onchain receipts and validation for notebooks (ERC-8004 on Monad)
 
 ## System Requirements
 

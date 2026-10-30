@@ -307,6 +307,7 @@ export enum DocumentRuntime {
 export enum DocumentVisibility {
   Link = 'LINK',
   Public = 'PUBLIC',
+  Unlisted = 'UNLISTED',
   Workspace = 'WORKSPACE'
 }
 
@@ -520,6 +521,8 @@ export type Mutation = {
   setDocumentLinkVisibility: Document;
   /** Set a notebook's Showcase metadata, or pass null to take it off the Showcase. */
   setDocumentShowcase: Scalars['Boolean']['output'];
+  /** Share a document by an unguessable link that anyone can open without signing in. It is never listed or searched. Run again with rotate to replace the link; the old one stops working */
+  setDocumentUnlisted: Document;
   /** Add or remove environment variables */
   setEnvironmentVariables: Array<EnvironmentVariable>;
   setWorkspaceDefaultAiModel: Scalars['Boolean']['output'];
@@ -901,6 +904,14 @@ export type MutationSetDocumentLinkVisibilityArgs = {
 export type MutationSetDocumentShowcaseArgs = {
   documentId: Scalars['String']['input'];
   showcase?: InputMaybe<Scalars['JSON']['input']>;
+  workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationSetDocumentUnlistedArgs = {
+  documentId: Scalars['String']['input'];
+  meta?: InputMaybe<PublishDocumentMetaInput>;
+  rotate?: InputMaybe<Scalars['Boolean']['input']>;
   workspaceId: Scalars['String']['input'];
 };
 
@@ -2156,6 +2167,16 @@ export type RemovePublicFavoriteDocumentMutationVariables = Exact<{
 
 export type RemovePublicFavoriteDocumentMutation = { __typename?: 'Mutation', removePublicFavoriteDocument: { __typename?: 'Document', id: string, slug?: string | null, title: string, authorId: string, workspaceId: string, parentId?: string | null, runUnexecutedBlocks: boolean, runSQLSelection: boolean, shareLinksWithoutSidebar: boolean, isDashboardPublic: boolean, runtime: DocumentRuntime, orderIndex: number, deletedAt?: any | null, createdAt: any, updatedAt: any, version: number, publishedAt?: any | null, description?: string | null, tags: Array<string>, visibility: DocumentVisibility, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, forkCount: number, favoriteCount: number, isFavorite: boolean } };
 
+export type SetDocumentUnlistedMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+  rotate?: InputMaybe<Scalars['Boolean']['input']>;
+  meta?: InputMaybe<PublishDocumentMetaInput>;
+}>;
+
+
+export type SetDocumentUnlistedMutation = { __typename?: 'Mutation', setDocumentUnlisted: { __typename?: 'Document', id: string, title: string, slug?: string | null, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, description?: string | null, tags: Array<string>, visibility: DocumentVisibility, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean, isDashboardPublic: boolean } };
+
 export type RestartEnvironmentMutationVariables = Exact<{
   input: RestartEnvironmentInput;
 }>;
@@ -2456,7 +2477,7 @@ export type GetPublishedDocumentBySlugQueryVariables = Exact<{
 }>;
 
 
-export type GetPublishedDocumentBySlugQuery = { __typename?: 'Query', getPublishedDocumentBySlug: { __typename?: 'Document', id: string, title: string, slug?: string | null, icon?: string | null, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, description?: string | null, tags: Array<string>, favoriteCount: number, forkCount: number, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean, isDashboardPublic: boolean, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null } };
+export type GetPublishedDocumentBySlugQuery = { __typename?: 'Query', getPublishedDocumentBySlug: { __typename?: 'Document', id: string, title: string, slug?: string | null, icon?: string | null, parentId?: string | null, orderIndex: number, authorId: string, workspaceId: string, createdAt: any, updatedAt: any, deletedAt?: any | null, version: number, publishedAt?: any | null, visibility: DocumentVisibility, description?: string | null, tags: Array<string>, favoriteCount: number, forkCount: number, isDataApp: boolean, isSyncedWithYjs: boolean, hasDashboard: boolean, appId: string, clock: number, appClock: number, userAppClock: any, runSQLSelection: boolean, runUnexecutedBlocks: boolean, shareLinksWithoutSidebar: boolean, isDashboardPublic: boolean, author?: { __typename?: 'User', username?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null } | null } };
 
 export type GetPublishedDocumentStateQueryVariables = Exact<{
   slug: Scalars['String']['input'];
@@ -4581,6 +4602,72 @@ export function useRemovePublicFavoriteDocumentMutation(baseOptions?: Apollo.Mut
 export type RemovePublicFavoriteDocumentMutationHookResult = ReturnType<typeof useRemovePublicFavoriteDocumentMutation>;
 export type RemovePublicFavoriteDocumentMutationResult = Apollo.MutationResult<RemovePublicFavoriteDocumentMutation>;
 export type RemovePublicFavoriteDocumentMutationOptions = Apollo.BaseMutationOptions<RemovePublicFavoriteDocumentMutation, RemovePublicFavoriteDocumentMutationVariables>;
+export const SetDocumentUnlistedDocument = gql`
+    mutation SetDocumentUnlisted($workspaceId: String!, $documentId: String!, $rotate: Boolean, $meta: PublishDocumentMetaInput) {
+  setDocumentUnlisted(
+    workspaceId: $workspaceId
+    documentId: $documentId
+    rotate: $rotate
+    meta: $meta
+  ) {
+    id
+    title
+    slug
+    parentId
+    orderIndex
+    authorId
+    workspaceId
+    createdAt
+    updatedAt
+    deletedAt
+    version
+    publishedAt
+    description
+    tags
+    visibility
+    isDataApp
+    isSyncedWithYjs
+    hasDashboard
+    appId
+    clock
+    appClock
+    userAppClock
+    runSQLSelection
+    runUnexecutedBlocks
+    shareLinksWithoutSidebar
+    isDashboardPublic
+  }
+}
+    `;
+export type SetDocumentUnlistedMutationFn = Apollo.MutationFunction<SetDocumentUnlistedMutation, SetDocumentUnlistedMutationVariables>;
+
+/**
+ * __useSetDocumentUnlistedMutation__
+ *
+ * To run a mutation, you first call `useSetDocumentUnlistedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetDocumentUnlistedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setDocumentUnlistedMutation, { data, loading, error }] = useSetDocumentUnlistedMutation({
+ *   variables: {
+ *      workspaceId: // value for 'workspaceId'
+ *      documentId: // value for 'documentId'
+ *      rotate: // value for 'rotate'
+ *      meta: // value for 'meta'
+ *   },
+ * });
+ */
+export function useSetDocumentUnlistedMutation(baseOptions?: Apollo.MutationHookOptions<SetDocumentUnlistedMutation, SetDocumentUnlistedMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SetDocumentUnlistedMutation, SetDocumentUnlistedMutationVariables>(SetDocumentUnlistedDocument, options);
+      }
+export type SetDocumentUnlistedMutationHookResult = ReturnType<typeof useSetDocumentUnlistedMutation>;
+export type SetDocumentUnlistedMutationResult = Apollo.MutationResult<SetDocumentUnlistedMutation>;
+export type SetDocumentUnlistedMutationOptions = Apollo.BaseMutationOptions<SetDocumentUnlistedMutation, SetDocumentUnlistedMutationVariables>;
 export const RestartEnvironmentDocument = gql`
     mutation RestartEnvironment($input: RestartEnvironmentInput!) {
   restartEnvironment(input: $input) {
@@ -6264,6 +6351,7 @@ export const GetPublishedDocumentBySlugDocument = gql`
     deletedAt
     version
     publishedAt
+    visibility
     description
     tags
     favoriteCount

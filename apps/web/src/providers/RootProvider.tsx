@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { ExternalLinkProvider } from "@/components/ExternalLink/ExternalLinkProvider";
 import { GraphQLProvider } from "@/graphql/provider";
 import { NEXT_PUBLIC_API_URL } from "@/utils/env";
 
@@ -35,7 +36,9 @@ export function RootProvider({ children }: { children: ReactNode }) {
         refreshAccessToken={refreshAccessToken}
       >
         <PowerToolsBootstrap />
-        <AppProvider>{children}</AppProvider>
+        <ExternalLinkProvider>
+          <AppProvider>{children}</AppProvider>
+        </ExternalLinkProvider>
       </GraphQLProvider>
     </ThemeProvider>
   );

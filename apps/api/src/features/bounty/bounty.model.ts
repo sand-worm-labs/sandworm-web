@@ -1,6 +1,6 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { BooleanField, DateFieldOptional, StringField, StringFieldOptional } from '@sandworm/graphql';
-import { BountyEntity, BountyEntryEntity, DocumentEntity, UserEntity } from '@sandworm/postgresql-typeorm';
+import { BountyEntity, BountyEntryEntity, DocumentEntity, DocumentVisibility, UserEntity } from '@sandworm/postgresql-typeorm';
 import { NotebookAttestation } from '../trust/trust.model';
 
 // An open bounty stops taking entries at its deadline, with nothing having to
@@ -15,8 +15,9 @@ export const authorName = (author?: Pick<UserEntity, 'username' | 'fullName'> | 
 
 // Where a published notebook is read, as in /notebooks/<slug>. Null until it
 // is published.
-export const notebookSlug = (document?: Pick<DocumentEntity, 'id' | 'slug' | 'publishedAt'> | null) =>
-  document?.publishedAt ? (document.slug ?? document.id) : null;
+// Only a public notebook: an unlisted one is shared by a secret address, which a public bounty page must not print.
+export const notebookSlug = (document?: Pick<DocumentEntity, 'id' | 'slug' | 'publishedAt' | 'visibility'> | null) =>
+  document?.publishedAt && document.visibility === DocumentVisibility.PUBLIC ? (document.slug ?? document.id) : null;
 
 // What an entry is loaded with to be shown
 export const ENTRY_RELATIONS = { author: true, document: true, attestation: true } as const;

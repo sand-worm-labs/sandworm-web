@@ -2,19 +2,16 @@ import type { Metadata } from "next";
 
 import type { ChildrenProps } from "@/types";
 
+import {
+  buildNotebookMetadata,
+  type PublishedDocMeta,
+} from "./notebookMetadata";
+
 // ─────────────────────────────────────────────────────────────
 // ⬢ CONSTANTS
 // ─────────────────────────────────────────────────────────────
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://app.sandwormlab.xyz/api";
-const OG_IMAGE = {
-  url: "/og-thumbnail.png",
-  width: 1200,
-  height: 630,
-  alt: "Sandworm",
-};
-const FALLBACK_DESCRIPTION =
-  "A published blockchain data analysis on Sandworm.";
 
 const PUBLISHED_DOC_QUERY = `
   query GetPublishedDocumentMeta($slug: String!) {
@@ -22,25 +19,13 @@ const PUBLISHED_DOC_QUERY = `
       title
       description
       tags
+      visibility
       publishedAt
       updatedAt
       author { username firstName lastName }
     }
   }
 `;
-
-interface PublishedDocMeta {
-  title: string | null;
-  description: string | null;
-  tags: string[] | null;
-  publishedAt: string | null;
-  updatedAt: string | null;
-  author: {
-    username: string | null;
-    firstName: string | null;
-    lastName: string | null;
-  } | null;
-}
 
 // ─────────────────────────────────────────────────────────────
 // ⬢ HELPERS
@@ -66,17 +51,12 @@ async function fetchPublishedDoc(
   }
 }
 
-function authorName(author: PublishedDocMeta["author"]): string | null {
-  if (!author) return null;
-  const full = [author.firstName, author.lastName].filter(Boolean).join(" ");
-  return full || author.username || null;
-}
-
 // ─────────────────────────────────────────────────────────────
 // ⬢ METADATA
 // The notebook page is a client component, so link-preview crawlers
 // (WhatsApp, Telegram, X, Slack) never see its title. Resolve it here
-// on the server so shared links render like a blog post.
+// on the server so shared links render like a blog post. An unlisted
+// notebook also tells search engines to skip it (see notebookMetadata).
 // ─────────────────────────────────────────────────────────────
 export async function generateMetadata({
   params,
@@ -84,38 +64,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const doc = await fetchPublishedDoc(slug);
-  if (!doc?.title) return {};
-
-  const { title } = doc;
-  const description = doc.description?.trim() || FALLBACK_DESCRIPTION;
-  const author = authorName(doc.author);
-
-  return {
-    title,
-    description,
-    keywords: doc.tags ?? undefined,
-    authors: author ? [{ name: author }] : undefined,
-    alternates: { canonical: `/notebooks/${slug}` },
-    openGraph: {
-      type: "article",
-      siteName: "Sandworm",
-      title,
-      description,
-      url: `/notebooks/${slug}`,
-      images: [OG_IMAGE],
-      publishedTime: doc.publishedAt ?? undefined,
-      modifiedTime: doc.updatedAt ?? undefined,
-      authors: author ? [author] : undefined,
-      tags: doc.tags ?? undefined,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [OG_IMAGE.url],
-    },
-  };
+  return buildNotebookMetadata(await fetchPublishedDoc(slug), slug);
 }
 
 export default function PublicNotebookLayout({ children }: ChildrenProps) {

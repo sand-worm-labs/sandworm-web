@@ -214,3 +214,80 @@ def test_chart_prepare_leaves_a_single_series_without_a_legend_and_heatmaps_alon
     assert "sw-legend" not in head and "One series" in head
     head, _ = prepare(go.Figure(go.Heatmap(z=[[1, 2]], name="z")), title="Heat")
     assert "sw-legend" not in head
+
+
+# ---- cards, switchable charts and tables -------------------------------------------------------------------------
+
+def _shown(fn, *args, **kwargs):
+    """Run a function that displays HTML and return that HTML."""
+    import IPython.display as ipd
+
+    seen, original = [], ipd.display
+    ipd.display = lambda obj, *a, **k: seen.append(getattr(obj, "data", str(obj)))
+    try:
+        fn(*args, **kwargs)
+    finally:
+        ipd.display = original
+    return "".join(seen)
+
+
+def test_card_grid_carries_its_own_padding_so_cards_never_touch_the_tile_edge():
+    html = sw.render(sw.card_grid(sw.finding("Label", "97%", "of the supply")))
+    assert 'class="sw-cards-wrap"' in html
+    assert ".sw-cards-wrap { padding: 20px 16px; }" in html
+
+
+def test_finding_and_profile_card_escape_text_and_keep_only_known_tones():
+    bad = "<img src=x onerror=alert(1)>"
+    html = sw.finding(bad, bad, bad, bad, bad, tone="red") + sw.profile_card(bad, bad, chip=bad, sub=bad, verdict=bad, tone="x")
+    assert "<img" not in html
+    assert "sw-c-big red" not in html and "sw-c-big x" not in html
+    assert "sw-c-big pos" in sw.finding("a", "b", "c", tone="pos")
+
+
+def test_meter_clamps_its_bar_between_empty_and_full():
+    assert "width:100%" in sw.meter("held", 1.7, "170%")
+    assert "width:0%" in sw.meter("held", -0.2, "-20%")
+
+
+def test_card_colours_come_from_the_theme_variables_not_hex_codes_of_their_own():
+    css = sw.render("")
+    block = css[css.index(".sw-cards {"): css.index(".sw-c-bar i")]
+    assert "var(--sw-ink" in block and "var(--sw-rule" in block
+    assert "#B42318" not in block.replace("var(--sw-neg, #B42318)", "")
+
+
+def test_switchable_moves_title_into_text_and_keeps_the_figure_titleless():
+    sw.use_theme()
+    fig = go.Figure([go.Bar(x=["a", "b"], y=[1, 2], name="Up", text=["1", "2"]), go.Bar(x=["a", "b"], y=[2, 1], name="Down")])
+    fig.update_layout(title="Inside title")
+    html = _shown(sw.switchable, "t1", {"Winners": (fig, "The finding", "A note"), "Other": fig})
+    assert "The finding" in html and "A note" in html
+    assert '"title": {"text": ""}' in html or '"title":{"text":""}' in html
+    assert "Inside title" in html  # it becomes the title of the second view, as page text
+    assert '"textposition":"outside"' in html.replace(" ", "")
+    assert '"showlegend":true' in html.replace(" ", "")
+
+
+def test_switchable_refuses_charts_the_page_bundle_cannot_draw():
+    sw.use_theme()
+    with pytest.raises(ValueError):
+        sw.switchable("t2", {"Tree": go.Figure(go.Treemap(labels=["a"], parents=[""], values=[1]))})
+
+
+def test_switchable_cannot_be_broken_out_of_by_a_title():
+    sw.use_theme()
+    html = _shown(sw.switchable, 't"3', {"x": (go.Figure(go.Bar(y=[1])), "</script><script>alert(1)</script>", None)})
+    assert "</script><script>alert(1)" not in html
+    assert 'id="t&quot;3"' in html
+
+
+def test_data_table_keeps_the_full_value_for_copy_and_escapes_the_noun():
+    import pandas as pd
+
+    frame = pd.DataFrame({"wallet": ["0xABCDEF0123456789"], "value": [1500.0]})
+    html = _shown(sw.data_table, "w", frame, [sw.tcol("wallet", "Wallet", mono=True, copy=True, fmt=lambda a: a[:6]),
+                                              sw.tcol("value", "Held", kind="num", fmt=lambda v: f"${v:,.0f}", bar=True)],
+                  noun="</script>wallets")
+    assert "0xABCDEF0123456789" in html and "0xABCD" in html
+    assert "</script>wallets" not in html

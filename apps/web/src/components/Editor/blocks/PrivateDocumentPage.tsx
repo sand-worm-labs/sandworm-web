@@ -19,6 +19,7 @@ import { MiniChat } from "@/components/Chats/MiniChat";
 import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
 import { useExportPDF } from "@/lib/useExportPDF";
+import { unlistedNotebookUrl } from "@/lib/notebookLinks";
 import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
 
 import { useDataSources } from "../hooks/useDataSources";
@@ -219,8 +220,10 @@ function PrivateDocumentPageInner(
     props.document.id
   );
 
-  const [, { restoreDocument, publish, unpublish, setLinkVisibility }] =
-    useDocuments(props.workspaceId);
+  const [
+    ,
+    { restoreDocument, publish, unpublish, setLinkVisibility, setUnlisted },
+  ] = useDocuments(props.workspaceId);
   const onRestoreDocument = useCallback(() => {
     restoreDocument(props.documentId);
   }, [props.documentId, restoreDocument]);
@@ -309,7 +312,7 @@ function PrivateDocumentPageInner(
 
   const handleVisibilityChange = useCallback(
     async (
-      visibility: "WORKSPACE" | "LINK" | "PUBLIC",
+      visibility: "WORKSPACE" | "LINK" | "UNLISTED" | "PUBLIC",
       meta?: { description?: string; tags?: string[] }
     ) => {
       try {
@@ -317,6 +320,8 @@ function PrivateDocumentPageInner(
           await publish(props.document.id, meta);
         } else if (visibility === "LINK") {
           await setLinkVisibility(props.document.id);
+        } else if (visibility === "UNLISTED") {
+          await setUnlisted(props.document.id);
         } else {
           await unpublish(props.document.id);
         }
@@ -325,7 +330,7 @@ function PrivateDocumentPageInner(
         // nothing more to do.
       }
     },
-    [publish, unpublish, setLinkVisibility, props.document.id]
+    [publish, unpublish, setLinkVisibility, setUnlisted, props.document.id]
   );
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -404,6 +409,13 @@ function PrivateDocumentPageInner(
         <ShareModal
           link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.workspaceId}/documents/${props.documentId}/notebook${props.document.shareLinksWithoutSidebar ? "?sidebar=hidden" : ""}`}
           initialVisibility={props.document.visibility ?? "WORKSPACE"}
+          unlistedLink={unlistedNotebookUrl(
+            NEXT_PUBLIC_PUBLIC_URL(),
+            props.document
+          )}
+          onRotateLink={async () => {
+            await setUnlisted(props.document.id, { rotate: true });
+          }}
           initialDescription={props.document.description}
           initialTags={props.document.tags}
           onVisibilityChange={handleVisibilityChange}

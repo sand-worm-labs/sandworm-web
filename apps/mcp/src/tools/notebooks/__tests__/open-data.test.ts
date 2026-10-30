@@ -103,9 +103,16 @@ test('the mobile chart rules reach the server instructions and the cell tool gui
   assert.match(cells, /never use red or green/);
   assert.match(cells, /leave `marker_color` unset/);
   assert.doesNotMatch(cells, /for good and bad figures \(net inflow vs outflow, gain vs loss\) use/);
+  const { COMPONENT_RULES } = await import('../chart-rules.ts');
+  assert.match(COMPONENT_RULES, /Never hard-code colours on a chart/);
+  assert.match(COMPONENT_RULES, /never red or green/);
+  assert.match(COMPONENT_RULES, /card_grid/);
+  assert.match(COMPONENT_RULES, /switchable\(/);
+  assert.match(COMPONENT_RULES, /data_table\(/);
   for (const file of ['../../../server.ts', '../cells.ts']) {
     const source = readFileSync(new URL(file, import.meta.url), 'utf8');
     assert.match(source, /CHART_RESPONSIVE_RULES/, file);
+    assert.match(source, /COMPONENT_RULES/, file);
     assert.match(source, /DATA_AND_DASHBOARD_RULES/, file);
   }
 });

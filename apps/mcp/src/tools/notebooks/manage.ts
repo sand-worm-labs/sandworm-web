@@ -138,17 +138,45 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
   server.registerTool(
     'publish_notebook',
     {
-      description: 'Publish a notebook so it can be viewed by others. Returns the public link',
+      description:
+        'Publish a notebook so it can be viewed by others, and return its link. ' +
+        'visibility "public" (the default) lists it on Explore and in search, and lets anyone fork it. ' +
+        'visibility "unlisted" shares it by a link alone: anyone who has the link can view it without signing in, nothing lists or searches it, ' +
+        'search engines are asked to skip it, and it cannot be forked. The link carries a long random token, so it cannot be guessed; share it only with the people who should see the notebook. ' +
+        'Publishing it again as unlisted keeps the same link; set newLink to true to replace it (the old link stops working). ' +
+        'unpublish_notebook turns either kind off. An unlisted notebook cannot be submitted to a bounty, because a bounty page is public. ' +
+        'The description (about 280 characters at most) and tags are saved either way',
       inputSchema: {
         notebookId,
         workspaceId,
+        visibility: z
+          .enum(['public', 'unlisted'])
+          .optional()
+          .describe('public (default): listed, searchable, forkable. unlisted: only people with the link, no sign-in needed, listed nowhere'),
+        newLink: z
+          .boolean()
+          .optional()
+          .describe('Unlisted only: replace the link with a new one, so the old link stops working'),
         description: z.string().optional(),
         tags: z.array(z.string()).optional(),
       },
     },
-    handle(async ({ notebookId, workspaceId, description, tags }) => {
+    handle(async ({ notebookId, workspaceId, visibility, newLink, description, tags }) => {
       const ws = await resolveWorkspaceId(ctx, workspaceId);
       const meta = description !== undefined || tags ? { description, tags } : undefined;
+
+      if (visibility === 'unlisted') {
+        const data = await graphql<{ setDocumentUnlisted: Doc }>(
+          ctx,
+          `mutation ($workspaceId: String!, $documentId: String!, $rotate: Boolean, $meta: PublishDocumentMetaInput) {
+            setDocumentUnlisted(workspaceId: $workspaceId, documentId: $documentId, rotate: $rotate, meta: $meta) { ${DOC_FIELDS} }
+          }`,
+          { workspaceId: ws, documentId: notebookId, rotate: newLink ?? false, meta },
+        );
+        return { ...summary(data.setDocumentUnlisted), listed: false };
+      }
+
+      if (newLink) throw new Error('newLink only applies to an unlisted notebook: set visibility to "unlisted"');
       const data = await graphql<{ publishDocument: Doc }>(
         ctx,
         `mutation ($workspaceId: String!, $documentId: String!, $meta: PublishDocumentMetaInput) {
@@ -156,7 +184,7 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
         }`,
         { workspaceId: ws, documentId: notebookId, meta },
       );
-      return summary(data.publishDocument);
+      return { ...summary(data.publishDocument), listed: true };
     }),
   );
 

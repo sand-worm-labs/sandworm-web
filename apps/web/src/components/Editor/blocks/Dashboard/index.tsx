@@ -27,6 +27,7 @@ import type { DataFrame } from "@sandworm/types";
 import { DataExplorerContent } from "@/components/ExplorerPanels/DataExplorerContent";
 import type { ApiDocument, UserWorkspaceRole } from "@/types";
 import { NEXT_PUBLIC_PUBLIC_URL } from "@/utils/env";
+import { unlistedNotebookUrl } from "@/lib/notebookLinks";
 import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
 import Layout from "@/components/Visualization/Layout";
 import VisualizationBlock from "@/components/Visualization/index";
@@ -577,15 +578,25 @@ export default function Dashboard(props: Props) {
 
   const isDeleted = !isNil(props.document.deletedAt);
 
-  const [, { publish, unpublish, setLinkVisibility, updateDocumentSettings }] =
-    useDocuments(props.document.workspaceId);
+  const [
+    ,
+    {
+      publish,
+      unpublish,
+      setLinkVisibility,
+      setUnlisted,
+      updateDocumentSettings,
+    },
+  ] = useDocuments(props.document.workspaceId);
   const handleVisibilityChange = useCallback(
-    async (visibility: "WORKSPACE" | "LINK" | "PUBLIC") => {
+    async (visibility: "WORKSPACE" | "LINK" | "UNLISTED" | "PUBLIC") => {
       try {
         if (visibility === "PUBLIC") {
           await publish(props.document.id);
         } else if (visibility === "LINK") {
           await setLinkVisibility(props.document.id);
+        } else if (visibility === "UNLISTED") {
+          await setUnlisted(props.document.id);
         } else {
           await unpublish(props.document.id);
         }
@@ -594,7 +605,7 @@ export default function Dashboard(props: Props) {
         // nothing more to do.
       }
     },
-    [publish, unpublish, setLinkVisibility, props.document.id]
+    [publish, unpublish, setLinkVisibility, setUnlisted, props.document.id]
   );
 
   const onGoToApp = useCallback(() => {
@@ -661,6 +672,13 @@ export default function Dashboard(props: Props) {
         <ShareModal
           link={`${NEXT_PUBLIC_PUBLIC_URL()}/workspace/${props.document.workspaceId}/documents/${props.document.id}/notebook${props.document.shareLinksWithoutSidebar ? "?sidebar=hidden" : ""}`}
           initialVisibility={props.document.visibility ?? "WORKSPACE"}
+          unlistedLink={unlistedNotebookUrl(
+            NEXT_PUBLIC_PUBLIC_URL(),
+            props.document
+          )}
+          onRotateLink={async () => {
+            await setUnlisted(props.document.id, { rotate: true });
+          }}
           onVisibilityChange={handleVisibilityChange}
         />
         <EllipsisDropdown

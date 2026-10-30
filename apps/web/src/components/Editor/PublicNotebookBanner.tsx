@@ -77,6 +77,7 @@ export default function PublicNotebookBanner({
           document={document && { id: document.id, title: document.title }}
           isAuthenticated={isAuthenticated}
           onChangeView={onChangeView}
+          canFork={document?.visibility !== "UNLISTED"}
         />
       )}
     </div>

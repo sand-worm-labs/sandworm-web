@@ -60,6 +60,7 @@ query GetPublishedDocumentBySlug($slug: String!) {
     deletedAt
     version
     publishedAt
+    visibility
     description
     tags
     favoriteCount
