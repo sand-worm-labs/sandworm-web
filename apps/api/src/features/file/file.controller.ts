@@ -12,7 +12,7 @@ import {
     Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ApiAuth, ApiPublic } from '@sandworm/api/decorators/http.decorators';
+import { ApiAuth } from '@sandworm/api/decorators/http.decorators';
 import { FileService } from './file.service';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import path from 'path';
@@ -38,7 +38,7 @@ export class FileController {
 
 
     @Get('file')
-    @ApiPublic({
+    @ApiAuth({
         summary: 'Download file from workspace',
     })
     async downloadFile(
@@ -76,12 +76,10 @@ export class FileController {
     ): Promise<void> {
         const buffer = req.body as Buffer;
         let filename = req.headers['x-file-name'] as string;
-        console.log('Received upload request. Headers:', req.headers);
         if (!filename) {
             return reply.status(HttpStatus.BAD_REQUEST).send();
         }
         const fileStream = Readable.from(buffer);
-        console.log('Uploading file:', filename, 'Replace:', replace);
         await this.fileService.uploadFile(
             workspaceId,
             filename,

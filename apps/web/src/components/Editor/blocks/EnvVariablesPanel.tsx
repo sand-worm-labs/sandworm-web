@@ -17,6 +17,7 @@ import {
 import { useEnvironmentStatus } from "@/components/Editor/hooks/useEnvironmentStatus";
 import { useSession } from "@/components/Editor/hooks/useAuth";
 import KeyConnectCards from "@/components/Environment/KeyConnectCards";
+import { getWorkspaceRole } from "@/utils/workspaceRole";
 
 // =====================================
 // ⬢ Constants
@@ -173,8 +174,7 @@ export default function EnvVariablesPanel(props: Props) {
   const environment = useEnvironmentStatus(props.workspaceId);
   const session = useSession({ redirectToLogin: false });
   const isViewer =
-    session?.user?.role?.find(r => r[props.workspaceId])?.[props.workspaceId] ===
-    "viewer";
+    getWorkspaceRole(session?.user?.role, props.workspaceId) === "viewer";
 
   const [errors, setErrors] = useState<Record<string, ErrorType>>({});
   const [added, setAdded] = useState<EnvVar[]>([]);

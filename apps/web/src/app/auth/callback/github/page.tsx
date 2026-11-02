@@ -11,13 +11,15 @@ export default function GithubOAuthCallbackPage() {
 
   useEffect(() => {
     const code = searchParams.get("code");
+    // Checked by the window that opened this popup (SocialLogin).
+    const state = searchParams.get("state");
     const error =
       searchParams.get("error_description") || searchParams.get("error");
 
     if (window.opener) {
       if (code) {
         window.opener.postMessage(
-          { type: "oauth-success", provider: "github", code },
+          { type: "oauth-success", provider: "github", code, state },
           window.location.origin
         );
       } else {
@@ -25,6 +27,7 @@ export default function GithubOAuthCallbackPage() {
           {
             type: "oauth-error",
             provider: "github",
+            state,
             error: error ?? "Authorization failed",
           },
           window.location.origin

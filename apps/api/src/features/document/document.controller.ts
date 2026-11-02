@@ -28,15 +28,14 @@ export class DocumentQueryController {
     ) {
         const filePath = `.sandworm/query-${queryId}.csv`;
         const result = await this.jupyterService.getFile(workspaceId, filePath);
-        const data = await this.jupyterService.listFiles(workspaceId);
-        this.logger.log( data);
-        this.logger.log(filePath);
 
         if (!result) {
             return reply.status(500).send({ message: 'Query result not found. Run the query first.' });
         }
 
-        const fileName = `${name ?? queryId}.csv`;
+        // `name` comes from the client and goes into a header: keep it plain.
+        const safeName = (name ?? queryId).replace(/[^\w .-]/g, '_').slice(0, 120) || 'query';
+        const fileName = `${safeName}.csv`;
 
         reply
             .header('Content-Disposition', `attachment; filename="${fileName}"`)

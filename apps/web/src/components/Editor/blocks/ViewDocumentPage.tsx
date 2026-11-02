@@ -27,6 +27,7 @@ import DashboardNotebookGroupButton from "./DashboarNotebookGroupButton";
 import { TopBarLead } from "./TopBarLead";
 import NotebookTypeMenu from "./NotebookTypeMenu";
 import UpgradePlanModal from "./UpgradePlanModal";
+import { getWorkspaceRole } from "@/utils/workspaceRole";
 
 function Placeholder() {
   return (
@@ -96,8 +97,7 @@ export default function ViewDocumentPage(props: Props) {
   const isRunning = isLive ? liveRunning : running;
 
   const role =
-    props.user.role?.find(r => r[props.workspaceId])?.[props.workspaceId] ??
-    "viewer";
+    getWorkspaceRole(props.user.role, props.workspaceId) ?? "viewer";
 
   // A failed first load takes over the page; a failed run only needs saying.
   const loaded = !isSyncing;

@@ -128,8 +128,8 @@ describe('AuthController', () => {
 
       await controller.logout(response);
 
-      expect(response.clearCookie).toHaveBeenCalledWith(ACCESS_TOKEN_COOKIE);
-      expect(response.clearCookie).toHaveBeenCalledWith(REFRESH_TOKEN_COOKIE, { path: '/auth/refresh' });
+      expect(response.clearCookie).toHaveBeenCalledWith(ACCESS_TOKEN_COOKIE, { path: '/' });
+      expect(response.clearCookie).toHaveBeenCalledWith(REFRESH_TOKEN_COOKIE, { path: '/' });
     });
   });
 });

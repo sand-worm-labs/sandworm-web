@@ -1,6 +1,5 @@
 import type { AxiosRequestConfig } from "axios";
 import axios from "axios";
-import { getSession, getCsrfToken } from "next-auth/react";
 
 export class AxiosService {
   private axiosInstance;
@@ -13,40 +12,10 @@ export class AxiosService {
       },
     });
 
+    // The API authenticates with httpOnly session cookies, so authed calls
+    // only need the browser to send them.
     if (isAuth) {
-      // Request interceptor to include token from NextAuth session
-      this.axiosInstance.interceptors.request.use(
-        async (config: AxiosRequestConfig) => {
-          const session = await getSession(); // Retrieve session info from NextAuth
-
-          // Check if session exists, then add the token to the headers
-          const newConfig = { ...config };
-
-          // Create a new headers object
-          newConfig.headers = { ...config.headers };
-
-          if (session?.user) {
-            newConfig.headers = {
-              ...newConfig.headers,
-              Authorization: `Bearer ${session.sessionToken}`,
-            };
-          }
-
-          // Add CSRF token if needed
-          const csrfToken = await getCsrfToken();
-          if (csrfToken) {
-            newConfig.headers = {
-              ...newConfig.headers,
-              "X-CSRF-Token": csrfToken,
-            };
-          }
-
-          return newConfig;
-        },
-        error => {
-          return Promise.reject(error);
-        }
-      );
+      this.axiosInstance.defaults.withCredentials = true;
     }
   }
 

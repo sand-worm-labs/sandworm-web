@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { EnvironmentService } from './environment.service';
 import { Environment} from './model/environment.model';
 import {EnvironmentVariable} from './model/environment_variable.model';
@@ -6,7 +6,7 @@ import {
   SetEnvironmentVariablesInput,
   RestartEnvironmentInput,
 } from './dto/environment.dto';
-import { EnvironmentStatus } from '@sandworm/postgresql-typeorm';
+import { EnvironmentStatus, UserWorkspaceRole } from '@sandworm/postgresql-typeorm';
 import GraphQLJSON from 'graphql-type-json';
 import { SysinfoService } from './sys.service';
 
@@ -36,12 +36,17 @@ export class EnvironmentResolver {
 
   @Query(() => [EnvironmentVariable], {
     name: 'environmentVariables',
-    description: 'Get all environment variables (values are masked)',
+    description: 'Get all environment variables. Values are masked for viewers; editors and admins, who can change them, see them in full',
   })
   async getEnvironmentVariables(
     @Args('workspaceId') workspaceId: string,
+    @Context() ctx: { req?: { workspaceRoles?: Record<string, UserWorkspaceRole> } },
   ): Promise<EnvironmentVariable[]> {
-    return this.environmentService.getEnvironmentVariables(workspaceId);
+    const variables = await this.environmentService.getEnvironmentVariables(workspaceId);
+    // Set by WorkspaceAccessGuard. Unknown role: mask, to be safe.
+    const role = ctx.req?.workspaceRoles?.[workspaceId];
+    if (role === UserWorkspaceRole.ADMIN || role === UserWorkspaceRole.EDITOR) return variables;
+    return variables.map(v => Object.assign(v, { value: maskValue(v.value) }));
   }
 
   @Query(() => GraphQLJSON, {
@@ -98,4 +103,9 @@ export class EnvironmentResolver {
     );
   }
 
+}
+
+// Keeps the last 4 characters so a viewer can tell keys apart.
+export function maskValue(value: string): string {
+  return value.length > 8 ? `••••••••${value.slice(-4)}` : '••••••••';
 }

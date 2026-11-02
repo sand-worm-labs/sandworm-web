@@ -22,6 +22,7 @@ import {
 } from "@/components/Editor/hooks/useWorkspaces";
 import { Loader } from "@/components/Loader";
 import { tintPillDarkClassName } from "@/styles/interactive";
+import { getWorkspaceRole } from "@/utils/workspaceRole";
 
 export default function UsersPage() {
   const workspaceId = useStringQuery("workspace");
@@ -37,7 +38,7 @@ export default function UsersPage() {
   const { inviteUser } = useInviteUserToWorkspace(workspaceId);
   const { batchRemoveUsers } = useBatchRemoveUsersFromWorkspace();
 
-  const isAdmin = true;
+  const isAdmin = getWorkspaceRole(session?.user?.role, workspaceId) === "admin";
 
   const members = useMemo(() => {
     return workspacesWithMembers.map(member => {

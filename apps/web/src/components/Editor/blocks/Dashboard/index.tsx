@@ -69,6 +69,7 @@ import { RightSidebarPanel } from "../../RightSidebarPanel";
 import DashboardSkeleton from "./DashboardSkeleton";
 import DashboardControls from "./DashboardControls";
 import DashboardView from "./DashboardView";
+import { getWorkspaceRole } from "@/utils/workspaceRole";
 
 // =====================================
 // ⬢ Types
@@ -492,10 +493,8 @@ export default function Dashboard(props: Props) {
 
   const router = useRouter();
 
-  const roleEntry = props?.user?.role?.find(
-    entry => props.document.workspaceId in entry
-  );
-  const isViewer = roleEntry?.[props.document.workspaceId] === "viewer";
+  const isViewer =
+    getWorkspaceRole(props?.user?.role, props.document.workspaceId) === "viewer";
 
   const onPublish = useCallback(async () => {
     if (props.publishing) {

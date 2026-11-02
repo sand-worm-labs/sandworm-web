@@ -6,6 +6,7 @@ import { RunNotebookDto } from './dto/run-notebook.dto';
 import { RunResultsQueryDto } from './dto/run-results-query.dto';
 import { ViewNotebookDto } from './dto/view-notebook.dto';
 import { NotebookRunService } from './notebook-run.service';
+import { SkipWorkspaceCheck } from '@/core/decorators/workspace-access.decorator';
 
 @ApiTags('Notebook runs')
 @Controller({
@@ -42,6 +43,8 @@ export class NotebookRunController {
 }
 
 // What the notebook's view page talks to: plain requests, no collaboration socket.
+// NotebookDocService.useView checks access: members, or anyone when shared by link.
+@SkipWorkspaceCheck()
 @ApiTags('Notebook runs')
 @Controller({
   path: 'workspaces/:workspaceId/documents/:documentId/view',

@@ -37,6 +37,7 @@ import { FeedbackModal } from "@/components/FeedbackModal";
 import useSideBar from "@/components/Editor/hooks/useSideBar";
 import { useNewNotebookDialog } from "@/components/Projects/NewNotebookDialog";
 import type { DocumentRuntime } from "@/generated/graphql";
+import { getWorkspaceRole } from "@/utils/workspaceRole";
 
 // =====================================
 // ⬢ Types
@@ -226,7 +227,7 @@ export const WorkspaceSidebar = () => {
   }, [pathname, sideBarApi]);
 
   const userRole =
-    user?.role?.find(r => r[workspaceId])?.[workspaceId] ?? "viewer";
+    getWorkspaceRole(user?.role, workspaceId) ?? "viewer";
 
   const isEditor = userRole !== "viewer";
 

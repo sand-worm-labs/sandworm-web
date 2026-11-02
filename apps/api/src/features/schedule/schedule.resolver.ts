@@ -20,8 +20,9 @@ export class ScheduleResolver {
   })
   async getSchedule(
     @Args('scheduleId') scheduleId: string,
+    @CurrentUser('id') userId: string,
   ): Promise<Schedule> {
-    return this.scheduleService.getSchedule(scheduleId);
+    return this.scheduleService.getSchedule(scheduleId, userId);
   }
 
   @Query(() => [Schedule], {
@@ -30,8 +31,9 @@ export class ScheduleResolver {
   })
   async listSchedules(
     @Args('input') input: ListSchedulesInput,
+    @CurrentUser('id') userId: string,
   ): Promise<Schedule[]> {
-    return this.scheduleService.listSchedules(input);
+    return this.scheduleService.listSchedules(input, userId);
   }
 
   @Mutation(() => Schedule, {
@@ -53,8 +55,9 @@ export class ScheduleResolver {
   async updateSchedule(
     @Args('scheduleId') scheduleId: string,
     @Args('input') input: UpdateScheduleInput,
+    @CurrentUser('id') userId: string,
   ): Promise<Schedule> {
-    return this.scheduleService.updateSchedule(scheduleId, input);
+    return this.scheduleService.updateSchedule(scheduleId, input, userId);
   }
 
   @Mutation(() => Boolean, {

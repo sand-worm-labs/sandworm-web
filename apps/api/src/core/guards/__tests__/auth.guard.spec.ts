@@ -49,3 +49,25 @@ describe('AuthGuard on public routes', () => {
     expect(request.user).toBeUndefined();
   });
 });
+
+describe('AuthGuard on protected routes', () => {
+  function protectedSetup(session: unknown) {
+    const ctx = setup(session);
+    ctx.guard['reflector'] = { getAllAndOverride: jest.fn(() => false) } as any;
+    return ctx;
+  }
+
+  it('rejects a token that fails validation instead of passing a user with no id', async () => {
+    const { guard, context, request } = protectedSetup(null);
+
+    await expect(guard.canActivate(context)).rejects.toThrow('Unauthorized');
+    expect(request.user).toBeUndefined();
+  });
+
+  it('attaches the user for a valid token', async () => {
+    const { guard, context, request } = protectedSetup({ id: 'user-1', user: { id: 'user-1' } });
+
+    await expect(guard.canActivate(context)).resolves.toBe(true);
+    expect(request.user).toMatchObject({ id: 'user-1', token: 'tok' });
+  });
+});

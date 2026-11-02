@@ -19,9 +19,9 @@ describe('ScheduleResolver', () => {
     const { resolver, scheduleService } = makeResolver();
     scheduleService.getSchedule.mockResolvedValue({ id: 'sched-1' });
 
-    const result = await resolver.getSchedule('sched-1');
+    const result = await resolver.getSchedule('sched-1', 'user-1');
 
-    expect(scheduleService.getSchedule).toHaveBeenCalledWith('sched-1');
+    expect(scheduleService.getSchedule).toHaveBeenCalledWith('sched-1', 'user-1');
     expect(result).toEqual({ id: 'sched-1' });
   });
 
@@ -29,9 +29,9 @@ describe('ScheduleResolver', () => {
     const { resolver, scheduleService } = makeResolver();
     scheduleService.listSchedules.mockResolvedValue([{ id: 'sched-1' }]);
 
-    const result = await resolver.listSchedules({ documentId: 'doc-1' } as any);
+    const result = await resolver.listSchedules({ documentId: 'doc-1' } as any, 'user-1');
 
-    expect(scheduleService.listSchedules).toHaveBeenCalledWith({ documentId: 'doc-1' });
+    expect(scheduleService.listSchedules).toHaveBeenCalledWith({ documentId: 'doc-1' }, 'user-1');
     expect(result).toEqual([{ id: 'sched-1' }]);
   });
 
@@ -51,9 +51,9 @@ describe('ScheduleResolver', () => {
     scheduleService.updateSchedule.mockResolvedValue({ id: 'sched-1', minute: 45 });
     const input = { minute: 45 } as any;
 
-    const result = await resolver.updateSchedule('sched-1', input);
+    const result = await resolver.updateSchedule('sched-1', input, 'user-1');
 
-    expect(scheduleService.updateSchedule).toHaveBeenCalledWith('sched-1', input);
+    expect(scheduleService.updateSchedule).toHaveBeenCalledWith('sched-1', input, 'user-1');
     expect(result).toEqual({ id: 'sched-1', minute: 45 });
   });
 

@@ -6,6 +6,8 @@ import {
   runsInBrowser,
   ExecutionScheduleEntity,
   ExecutionScheduleType,
+  UserWorkspaceEntity,
+  UserWorkspaceStatus,
 } from '@sandworm/postgresql-typeorm';
 import { ValidationException } from '@sandworm/graphql';
 import { ErrorCode } from '@/constants/error-code.constant';
@@ -26,9 +28,25 @@ export class ScheduleService {
     private readonly scheduleRepository: Repository<ExecutionScheduleEntity>,
     @InjectRepository(DocumentEntity)
     private readonly documentRepository: Repository<DocumentEntity>,
+    @InjectRepository(UserWorkspaceEntity)
+    private readonly memberRepository: Repository<UserWorkspaceEntity>,
   ) { }
 
-  async getSchedule(scheduleId: string): Promise<Schedule> {
+  // Schedules are looked up by their own id, so the caller's access is checked
+  // through the notebook they belong to.
+  private async assertMemberOfDocument(documentId: string, userId: string): Promise<void> {
+    const document = await this.documentRepository.findOne({
+      where: { id: documentId },
+      select: ['id', 'workspaceId'],
+    });
+    if (!document) throw new ValidationException(ErrorCode.E404, 'Notebook not found');
+    const membership = await this.memberRepository.findOne({
+      where: { workspaceId: document.workspaceId, userId, status: UserWorkspaceStatus.ACTIVE },
+    });
+    if (!membership) throw new ValidationException(ErrorCode.E404, 'Schedule not found');
+  }
+
+  async getSchedule(scheduleId: string, userId: string): Promise<Schedule> {
     const schedule = await this.scheduleRepository.findOne({
       where: { id: scheduleId },
     });
@@ -36,12 +54,14 @@ export class ScheduleService {
     if (!schedule) {
       throw new ValidationException(ErrorCode.E404, 'Schedule not found');
     }
+    await this.assertMemberOfDocument(schedule.documentId, userId);
 
     return Schedule.fromEntity(schedule);
   }
 
-  async listSchedules(input: ListSchedulesInput): Promise<Schedule[]> {
+  async listSchedules(input: ListSchedulesInput, userId: string): Promise<Schedule[]> {
     const { documentId } = input;
+    await this.assertMemberOfDocument(documentId, userId);
 
     const schedules = await this.scheduleRepository.find({
       where: { documentId },
@@ -114,6 +134,7 @@ export class ScheduleService {
   async updateSchedule(
     scheduleId: string,
     input: UpdateScheduleInput,
+    userId: string,
   ): Promise<Schedule> {
     const schedule = await this.scheduleRepository.findOne({
       where: { id: scheduleId },
@@ -122,6 +143,7 @@ export class ScheduleService {
     if (!schedule) {
       throw new ValidationException(ErrorCode.E404, 'Schedule not found');
     }
+    await this.assertMemberOfDocument(schedule.documentId, userId);
 
     // Validate if type is being changed
     const newType = input.type ?? schedule.type;

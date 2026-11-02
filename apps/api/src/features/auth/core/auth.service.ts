@@ -79,17 +79,21 @@ export class AuthService {
 
    async issueTokenPair(userId: string): Promise<TokenPair> {
     const authConfig = this.configService.getOrThrow('auth', { infer: true });
+    // `ver` ties the tokens to the user's tokenVersion: bumping it (password
+    // reset, email change) revokes every token issued before.
+    const user = await this.usersService.findById(userId);
+    const claims = { sub: userId, ver: user?.tokenVersion ?? 0 };
 
     const accessExpiresIn= authConfig.expires || "15m";
     const refreshExpiresIn = authConfig.refreshExpires || "7d";  
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
-        { sub: userId },
+        claims,
         { secret: authConfig.secret, expiresIn: accessExpiresIn },
       ),
       this.jwtService.signAsync(
-        { sub: userId },
+        claims,
         { secret: authConfig.refreshSecret, expiresIn: refreshExpiresIn },
       ),
     ]);
@@ -346,6 +350,8 @@ export class AuthService {
     const hash = await this.jwtService.signAsync(
       {
         forgotUserId: user.id,
+        // A reset bumps tokenVersion, so each link works once.
+        ver: user.tokenVersion ?? 0,
       },
       {
         secret: authConfig.forgotSecret,
@@ -364,17 +370,20 @@ export class AuthService {
 
   async resetPassword(hash: string, password: string): Promise<void> {
     let userId: UserResponse['id'];
+    let linkVersion: number | undefined;
 
     const authConfig = this.configService.getOrThrow('auth', { infer: true });
 
     try {
       const jwtData = await this.jwtService.verifyAsync<{
         forgotUserId: UserResponse['id'];
+        ver?: number;
       }>(hash, {
         secret: authConfig.forgotSecret,
       });
 
       userId = jwtData.forgotUserId;
+      linkVersion = jwtData.ver;
     } catch {
       throw new UnprocessableEntityException({
         status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -391,6 +400,15 @@ export class AuthService {
         status: HttpStatus.UNPROCESSABLE_ENTITY,
         errors: {
           hash: `notFound`,
+        },
+      });
+    }
+
+    if (linkVersion === undefined || linkVersion !== (user.tokenVersion ?? 0)) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          hash: `invalidHash`,
         },
       });
     }
@@ -454,6 +472,9 @@ export class AuthService {
           },
         });
       }
+
+      // A new password signs out every other session.
+      currentUser.tokenVersion = currentUser.tokenVersion + 1;
     }
 
     if (userDto.email && userDto.email !== currentUser.email) {
@@ -493,7 +514,8 @@ export class AuthService {
     delete userDto.email;
     delete userDto.oldPassword;
 
-    await this.usersService.update(userId, userDto);
+    // Persist the tokenVersion bumps above; userDto alone would drop them.
+    await this.usersService.update(userId, { ...userDto, tokenVersion: currentUser.tokenVersion });
     return this.usersService.findById(userId);
   }
 
@@ -501,13 +523,20 @@ export class AuthService {
     const authConfig = this.configService.getOrThrow('auth', { infer: true });
 
     let userId: string;
+    let ver: number;
     try {
-      const payload = await this.jwtService.verifyAsync<{ sub: string }>(
+      const payload = await this.jwtService.verifyAsync<{ sub: string; ver?: number }>(
         rawRefreshToken,
         { secret: authConfig.refreshSecret },
       );
       userId = payload.sub;
+      ver = payload.ver ?? 0;
     } catch {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+
+    const user = await this.usersService.findById(userId);
+    if (!user || (user.tokenVersion ?? 0) !== ver) {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
@@ -546,6 +575,7 @@ export class AuthService {
 
     const user = await this.usersService.findById(payload.sub);
     if (!user) return null;
+    if ((user.tokenVersion ?? 0) !== (payload.ver ?? 0)) return null;
 
     const roles = await this.usersService.getUserWorkspaceRoles(user.id);
     return { id: user.id, hash: token, user,roles };
