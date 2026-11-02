@@ -118,13 +118,10 @@ export class UserService {
       }
     }
 
-    const updatedUser = await this.userRepository.save({
-      ...user,
-      ...input,
-      id: userId,
-    });
-
-    return updatedUser;
+    // Save the entity itself, not a spread copy of it: TypeORM runs UserEntity's
+    // @BeforeUpdate hook (the one that hashes a new password) only on instances.
+    // A plain object stores the password as typed, and that user can never log in.
+    return this.userRepository.save(Object.assign(user, input, { id: userId }));
   }
 
   async getAllUsers(input: GetAllUsersInput): Promise<UserEntity[]> {
