@@ -12,7 +12,7 @@ export async function runPredefinedQuery({
   provider?: { executionMethod?: string };
 }) {
   const executionType = provider?.executionMethod ?? "rpc";
-  const API_URL = "https://node.sandwormlabs.xyz/run?";
+  const API_URL = "https://node.sandwormlab.xyz/run?";
 
   try {
     const result = await runQuery(

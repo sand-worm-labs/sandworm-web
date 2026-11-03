@@ -1,0 +1,334 @@
+/* Sandworm Terminal global styles.
+   The design tokens below are copied from apps/web/src/styles/globals.scss so the two apps
+   look the same. If you change a token there, change it here too (tracked in README.md). */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Moderat";
+  src: url("/fonts/moderat/Moderat-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Moderat";
+  src: url("/fonts/moderat/Moderat-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-body {
+  font-family: "Moderat", sans-serif;
+  font-weight: 400;
+}
+
+.font-body.font-medium {
+  font-family: "Moderat", sans-serif;
+  font-weight: 500;
+}
+
+@layer base {
+  :root {
+    /* Core */
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 0 0% 9%; /* #171717 */
+
+    /* Brand */
+    --primary: 276 90% 49%; /* #A308F0 */
+    --primary-foreground: 0 0% 98%; /* #FAFAFA */
+
+    --accent: 258 98% 66%; /* #8053FE */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+
+    /* Status */
+    --error: 0 100% 50%; /* #FF0000 */
+
+    /* Base surfaces */
+    --base-100: 0 0% 100%; /* #FFFFFF */
+    --base-200: 240 100% 99.8%;
+    --base-300: 210 17% 96%; /* #F1F3F4 */
+    --base-400: 0 0% 6%; /* #0F0F0F */
+    --base-500: #fbfbfb;
+    --base-600: 180 43% 95%; /* #EBF7F7 */
+    --header-surface: 0 0% 100%; /* #FFFFFF */
+    --block-surface: 0 0% 100%; /* #FFFFFF */
+    --page-surface: 0 0% 100%; /* #FFFFFF */
+    --dropdown-bg: 0 0% 100%; /* #FFFFFF */
+    --dropdown-hover: 210 17% 96%; /* light default; components keep their own light hover for now */
+    --dropdown-text: #1a1a1a; /* text on --dropdown-bg (light mode keeps the page's ink) */
+    --chat-assistant-surface: 0 0% 100%; /* #FFFFFF */
+    --sidebar-surface: 240 100% 99.8%;
+    --sidebar-hover: 180 43% 95%; /* #EBF7F7 */
+    --sidebar-active: 180 43% 95%; /* #EBF7F7 */
+    --create-project-tint: 60 3% 46%; /* oklch(56.74% .009 106.68) */
+
+    /* Inputs */
+    --bg-input: 210 17% 98%; /* #F8F9FA */
+    --input: 210 14% 89%; /* #DEE2E6 */
+    --border: 210 14% 89%; /* #DEE2E6 */
+    --border-secondary: 210 3% 93%; /* #E9ECEF */
+    --border-tertiary: 210 14% 83%; /* #CED4DA */
+    --border-focus: 210 14% 83%; /* #CED4DA */
+
+    /* Disabled */
+    --btn-disabled: 210 7% 56%; /* #868E96 */
+
+    /* Text */
+    --ink-100: #1a1a1a;
+    --ink-200: #455768;
+    --ink-300: #868e96;
+    --ink-400: #6c757d;
+    --placeholder-muted: #868e96;
+    --ink-450: #6d6c7d;
+    --ink-500: #343a40;
+    --ink-600: #8c98a3;
+    --ink-icon: #39414e;
+    --menu-ink: #39414e;
+    --menu-ink-200: #616a79;
+    --ink-navy: #1c3b5a;
+    --ink-700: #343330;
+
+    /* Extended surfaces (auto-extracted, same value in light/dark for now) */
+    --base-350: #e8e8e6;
+    --base-360: #e4e6e8;
+    --base-700: #2a2a28;
+    --base-710: #3a3a38;
+    --base-720: #252523;
+    --base-730: #1c1c1a;
+    --base-740: #30302e;
+    --base-750: #1e1e1c;
+    --base-760: #2e2e2c;
+    --base-770: #1a1a18;
+
+    /* Extended borders */
+    --border-quiet: #e3e5e8;
+    --border-faint: #d0d5dd;
+    --border-cool: #e7ebf0;
+
+    /* Always-dark editor/code surfaces (not theme-reactive) */
+    --editor-100: #181c21;
+    --editor-200: #262a30;
+    --editor-300: #161b22;
+    --editor-400: #0c1015;
+    --editor-500: #21262d;
+    --editor-600: #121417;
+
+    /* Hover states */
+    --hover-bg: #f1f2f4;
+    --hover-border: #e6e0f1;
+
+    /* Primary/purple tint-shade scale */
+    --primary-tint-50: #f9f5ff;
+    --primary-tint-75: #f7e8ff;
+    --primary-tint-100: #ede7ff;
+    --primary-200: #d9a8f8;
+    --primary-300: #c97ff5;
+    --primary-700: #7a06b8;
+    --primary-710: #8a06cc;
+    --primary-720: #8a07c9;
+    --primary-900: #1a0d26;
+    --primary-910: #2a1a3a;
+    --primary-920: #1f0a2e;
+
+    /* Standalone brand/status */
+    --warning: #d85a30;
+    --success: #22c55e;
+    --link: #005de7;
+    --link-tint: #e2ecff;
+    --accent-violet: #7f56d9;
+    --accent-fuchsia: #c44fff;
+    --error-tint: #faece7;
+    --error-shade: #1a0d08;
+    --info-tint: #e7f3f6;
+    --icon-muted: #c2d1d8;
+    --teal: #01e3d4;
+
+    --radius: 0.5rem;
+    --icon-bg: #f5f7fa;
+    --icon-stroke: #1c3b5a;
+
+    /* Showcase tab pills (light keeps the existing white / ink look) */
+    --pill-bg: #ffffff;
+    --pill-border: #e9ecef;
+    --pill-active-bg: #1a1a1a;
+
+    /* Search trigger in the header (light keeps base-600) */
+    --search-bg: #ebf7f7;
+
+    /* Search palette dialog (light keeps base-100) */
+    --search-modal-bg: #ffffff;
+
+    /* Beta badge — light matches the landing page badge; dark is outline-only */
+    --beta-badge-bg: #e4eaec;
+    --beta-badge-text: #3f1814;
+    --beta-badge-border: transparent;
+  }
+
+  .dark {
+    /* Core */
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 0 0% 9%; /* #171717 */
+
+    /* Brand */
+    --primary: 263 90% 65%; /* #9355F6 */
+    --primary-foreground: 0 0% 98%; /* #FAFAFA */
+
+    --accent: 258 98% 66%; /* #8053FE */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+
+    /* Status */
+    --error: 0 100% 50%; /* #FF0000 */
+
+    /* Base surfaces */
+    --base-100: 60 2% 15%; /* #272726 */
+    --base-200: 60 1% 27%; /* #454544 */
+    --base-300: 210 17% 96%; /* #F1F3F4 */
+    --base-400: 60 2% 12%; /* #1F1F1E */
+    --base-500: #232322;
+    --base-600: 60 5% 7%; /* #131311 */
+    --header-surface: 0 0% 10.2%; /* #1A1A1A */
+    /* Surface of a card, notebook block, result and dashboard tile: lighter than the page. Floating layers use --dropdown-bg. */
+    --block-surface: 0 0% 10.2%; /* #1A1A1A */
+    --page-surface: 0 0% 7.1%; /* #121212 */
+    /* Surface of everything that floats over the page: menus, dropdowns, selects, popovers and modals. Lighter than cards (--block-surface) so it lifts off them. */
+    --dropdown-bg: 0 0% 17.6%; /* #2D2D2D */
+    --dropdown-hover: 0 0% 22%; /* #383838, the hover on --dropdown-bg */
+    --dropdown-text: #f4f4f4; /* text on --dropdown-bg */
+    --chat-assistant-surface: 0 0% 10.2%; /* #1A1A1A, matches --block-surface */
+    --sidebar-surface: 0 0% 10.2%; /* #1A1A1A */
+    --sidebar-hover: 60 1% 19%; /* #313130 */
+    --sidebar-active: 240 3% 18%; /* #2D2D30 */
+    --create-project-tint: 60 3% 46%; /* oklch(56.74% .009 106.68) */
+
+    --gray-100: #363c46;
+
+    /* Inputs */
+    --bg-input: 210 17% 98%; /* #F8F9FA */
+    --input: 210 14% 89%; /* #DEE2E6 */
+    --border: 210 14% 89%; /* #DEE2E6 */
+    --border-secondary: 60 2% 28%; /* #494946 */
+    --border-tertiary: 60 2% 25%; /* oklch(37.2% .004 107) ≈ #40403E */
+    --border-focus: 60 2% 42%; /* #6C6C69 */
+
+    /* Disabled */
+    --btn-disabled: 210 7% 56%; /* #868E96 */
+
+    /* Text */
+    --ink-100: #ffffff;
+    --ink-200: #9c9a92;
+    --ink-300: #adb5bd;
+    --ink-400: #a5a5a4; /* oklch(72.34% .002 107) */
+    --placeholder-muted: #a5a5a4; /* oklch(72.34% .002 107) */
+    --ink-450: #6d6c7d;
+    --ink-600: #fff;
+    --ink-icon: #fff;
+    --ink-navy: #f8f9fa;
+    --ink-700: #343330;
+    --ink-800: #e9ecef;
+
+    /* Beta badge — outline only, no bright fill */
+    --beta-badge-bg: transparent;
+    --beta-badge-text: var(--ink-100);
+    --beta-badge-border: hsl(var(--border-tertiary));
+
+    /* Extended surfaces (auto-extracted, same value in light/dark for now) */
+    --base-350: #e8e8e6;
+    --base-360: #e4e6e8;
+    --base-700: #2a2a28;
+    --base-710: #3a3a38;
+    --base-720: #252523;
+    --base-730: #1c1c1a;
+    --base-740: #30302e;
+    --base-750: #1e1e1c;
+    --base-760: #2e2e2c;
+    --base-770: #1a1a18;
+    --base-800: #0f0f0f;
+
+    /* Extended borders */
+    --border-quiet: #e3e5e8;
+    --border-faint: #d0d5dd;
+    --border-cool: #343a40;
+    --border-dark: #40403e; /* neutral, as --border-tertiary: the old #212529 was blue-gray */
+
+    /* Always-dark editor/code surfaces (not theme-reactive) */
+    --editor-100: #181c21;
+    --editor-200: #262a30;
+    --editor-300: #161b22;
+    --editor-400: #0c1015;
+    --editor-500: #21262d;
+    --editor-600: #121417;
+
+    /* Hover states */
+    --hover-bg: #f1f2f4;
+    --hover-border: #343a40;
+
+    /* Primary/purple tint-shade scale */
+    --primary-tint-50: #f9f5ff;
+    --primary-tint-75: #f7e8ff;
+    --primary-tint-100: #ede7ff;
+    --primary-200: #d9a8f8;
+    --primary-300: #c97ff5;
+    --primary-700: #7a06b8;
+    --primary-710: #8a06cc;
+    --primary-720: #8a07c9;
+    --primary-900: #1a0d26;
+    --primary-910: #2a1a3a;
+    --primary-920: #1f0a2e;
+
+    /* Standalone brand/status */
+    --warning: #d85a30;
+    --success: #22c55e;
+    --link: #005de7;
+    --link-tint: #e2ecff;
+    --accent-violet: #7f56d9;
+    --accent-fuchsia: #c44fff;
+    --error-tint: #faece7;
+    --error-shade: #1a0d08;
+    --info-tint: #e7f3f6;
+    --icon-muted: #c2d1d8;
+    --teal: #01e3d4;
+
+    --radius: 0.5rem;
+    --icon-bg: #1c1f26;
+    --icon-stroke: #e6eaf0;
+
+    /* Showcase tab pills */
+    --pill-bg: #2d2d2d;
+    --pill-border: #ffffff1a;
+    --pill-active-bg: #494949;
+
+    /* Search trigger in the header */
+    --search-bg: #383838;
+
+    /* Chat page: the prompt box and the example prompts (dark only) */
+    --chat-input-bg: #242424;
+    --chat-input-border: #333333;
+
+    /* Search: the header trigger and the palette dialog (dark only) */
+    --search-modal-bg: #242424;
+    --search-ink: #ffffffb8; /* trigger text and its key hint */
+    --search-kbd: #a0acc526; /* key hint background */
+    --search-input: #f4f4f4; /* what you type in the palette */
+    --search-muted: #ffffff80; /* "View all" and the category tabs */
+    --search-hover: #282828; /* a hovered or highlighted row */
+    --search-shadow:
+      0px 11px 15px -7px rgba(0, 0, 0, 0.2),
+      0px 24px 38px 3px rgba(0, 0, 0, 0.14),
+      0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

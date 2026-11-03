@@ -16,7 +16,7 @@ const DISCORD_URL =
 
 const DOCS_URL =
   footerLinks.find(link => link.label === "Docs")?.href ??
-  "https://docs.sandwormlabs.xyz";
+  "https://docs.sandwormlab.xyz";
 
 // =====================================
 // ⬢ Data

@@ -13,7 +13,7 @@ import { socialLinks } from "@/data/socialLinks";
 
 const DOCS_URL =
   footerLinks.find(link => link.label === "Docs")?.href ??
-  "https://docs.sandwormlabs.xyz";
+  "https://docs.sandwormlab.xyz";
 
 const GITHUB_URL =
   socialLinks.find(link => link.name === "GitHub")?.href ??

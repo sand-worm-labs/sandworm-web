@@ -54,7 +54,7 @@ export const AppSidebar = ({
       isNewWindow: true,
     },
     {
-      to: "https://docs.sandwormlabs.xyz/",
+      to: "https://docs.sandwormlab.xyz/",
       label: "Documentation",
       icon: BookText,
       isNewWindow: true,
