@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   TerminalClientEntity,
+  TerminalInviteEntity,
   TerminalMemberEntity,
   UserEntity,
 } from '@sandworm/postgresql-typeorm';
@@ -12,7 +13,8 @@ import {
   type SetupDraft,
   type TerminalSession,
 } from '@sandworm/types/terminal';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, IsNull, Repository } from 'typeorm';
+import { canClaimInvite } from './terminal-invite';
 
 @Injectable()
 export class TerminalService {
@@ -33,16 +35,13 @@ export class TerminalService {
   }
 
   // The signed-in user and the client they are a member of (their first, while
-  // a user can only be in one). No client before their first setup save.
+  // a user can only be in one). Someone the team invited joins on their first
+  // visit. No client otherwise, until their first setup save.
   async getSession(userId: string): Promise<TerminalSession> {
-    const [user, member] = await Promise.all([
-      this.users.findOneByOrFail({ id: userId }),
-      this.members.findOne({
-        where: { userId },
-        relations: { client: true },
-        order: { createdAt: 'ASC' },
-      }),
-    ]);
+    const user = await this.users.findOneByOrFail({ id: userId });
+    const member =
+      (await this.findMember(userId)) ?? (await this.claimInvite(user));
+
     return {
       user: { name: user.getDisplayName() },
       client: member
@@ -53,7 +52,71 @@ export class TerminalService {
           }
         : null,
       firstBriefingDays: FIRST_BRIEFING_DAYS,
+      needsWelcome: member ? member.welcomedAt === null : false,
     };
+  }
+
+  // The welcome shows once: from here on this member has seen it.
+  async markWelcomed(userId: string): Promise<boolean> {
+    await this.members.update(
+      { userId, welcomedAt: IsNull() },
+      { welcomedAt: new Date() },
+    );
+    return true;
+  }
+
+  private findMember(userId: string) {
+    return this.members.findOne({
+      where: { userId },
+      relations: { client: true },
+      order: { createdAt: 'ASC' },
+    });
+  }
+
+  // The team invited this email: the person becomes a member, and the client is live.
+  private async claimInvite(user: UserEntity) {
+    if (!canClaimInvite(user) || !user.email) return null;
+    const email = user.email.trim().toLowerCase();
+
+    const clientId = await this.dataSource.transaction(async (manager) => {
+      const invite = await manager.findOne(TerminalInviteEntity, {
+        where: { email, status: In(['pending', 'sent']) },
+        order: { createdAt: 'ASC' },
+      });
+      if (!invite) return null;
+
+      await manager
+        .createQueryBuilder()
+        .insert()
+        .into(TerminalMemberEntity)
+        .values({
+          clientId: invite.clientId,
+          userId: user.id,
+          access: invite.access,
+        })
+        .orIgnore()
+        .execute();
+      await manager.update(
+        TerminalInviteEntity,
+        { id: invite.id },
+        { status: 'claimed', claimedAt: new Date() },
+      );
+      await manager.update(
+        TerminalClientEntity,
+        { id: invite.clientId },
+        { status: 'live' },
+      );
+      if (invite.access === 'admin') {
+        await manager.update(
+          TerminalClientEntity,
+          { id: invite.clientId, ownerId: IsNull() },
+          { ownerId: user.id },
+        );
+      }
+      return invite.clientId;
+    });
+
+    return clientId ? this.findMember(user.id) : null;
   }
 
   // Creates the client on the first save, with its owner as an admin member.

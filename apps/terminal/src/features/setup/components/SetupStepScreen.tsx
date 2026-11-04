@@ -1,8 +1,8 @@
 "use client";
 
 import { useSetup } from "../context";
-import { getSetupStep } from "../steps";
-import type { SetupStepId } from "../steps/routes";
+import { getSetupStep, SETUP_STEPS } from "../steps";
+import { setupStepPath, type SetupStepId } from "../steps/routes";
 import { getTemplatePreview } from "../template-preview";
 
 import { SetupHeader } from "./SetupHeader";
@@ -21,7 +21,12 @@ export function SetupStepScreen({ stepId }: { stepId: SetupStepId }) {
       <div className="flex min-h-0 flex-1">
         <main className="flex min-w-0 flex-1 flex-col px-6 py-8 md:px-16 md:pb-8 md:pt-10">
           <div className="flex w-full max-w-[640px] flex-1 flex-col gap-6">
-            <StepProgress currentStepId={stepId} />
+            <StepProgress
+              label="Setup steps"
+              steps={SETUP_STEPS}
+              currentId={stepId}
+              pathFor={id => setupStepPath(id as SetupStepId)}
+            />
             <StepIntro
               title={step.title(session)}
               description={step.description(session)}

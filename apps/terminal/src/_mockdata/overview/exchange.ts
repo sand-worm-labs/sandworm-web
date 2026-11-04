@@ -15,8 +15,7 @@ export const exchangeOverview: OverviewData = {
   clientKind: "exchange",
   typeName: "Trading app",
   subtitle: "Acme Wallet and Acme Chain. Data to 2 Nov, 23:59 UTC.",
-  loadingNote:
-    "Reading 1.2M transactions from Acme Wallet and Acme Chain.",
+  loadingNote: "Reading 1.2M transactions from Acme Wallet and Acme Chain.",
   setup: buildSetupProgress({
     clientName: "Acme",
   }),

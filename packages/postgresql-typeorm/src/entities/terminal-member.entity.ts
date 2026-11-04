@@ -31,6 +31,10 @@ export class TerminalMemberEntity extends AbstractEntity {
   @Column({ name: 'last_seen_briefing_at', type: 'timestamptz', nullable: true })
   lastSeenBriefingAt!: Date | null;
 
+  // When the member dismissed the welcome; null until then
+  @Column({ name: 'welcomed_at', type: 'timestamptz', nullable: true })
+  welcomedAt!: Date | null;
+
   @ManyToOne(() => TerminalClientEntity, { onDelete: 'CASCADE' })
   @JoinColumn({
     name: 'client_id',

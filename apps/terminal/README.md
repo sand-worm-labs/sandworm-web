@@ -115,6 +115,28 @@ different code.
   `standardLayout()` is the shared template.
 - Three states: `ready`, `settingUp` (day one) and `calculating`.
 
+### Team side (`/team`)
+
+How the Sandworm team sets a client up, so the client logs in to a ready Terminal (the design's
+"Setup B"). It lives in the terminal, behind a staff check, and looks like the client setup on
+purpose: the same steps, header, fields and aurora preview.
+
+- **Who can see it:** staff, the same people the Showcase studio lets in (anyone who can edit a
+  workspace in `SHOWCASE_OFFICIAL_WORKSPACE_IDS`). The check is one shared API service
+  (`StaffService`), enforced on every team query and mutation. The terminal only hides the screens
+  (`getTeamAccess`, a 404 for non-staff). There is no shared password.
+- **`/team`:** the Clients list (search, filter by type, status, "Mark invite sent") and the
+  "New client" button.
+- **`/team/clients/new/[step]`:** step 1 is the details (type, name, website, plan, client admin),
+  step 2 is what to track, the research the client starts with, and when to send the invite.
+  "Create Terminal" saves the client with no owner and an invite for its admin.
+- **Joining:** the admin signs in to Sandworm with the invited email. The first `terminalSession`
+  call claims the invite (only for a verified email), makes them a member, and marks the client
+  live. No email is sent yet.
+- **Day-one research:** `getStarterResearch()` returns a fixed list per client type. It is the seam
+  where the notebooks run during setup will plug in.
+- `/dev/preview?access=allowed` shows the team screens with fixed data and creates nothing.
+
 ### Access (`/access`)
 
 Every page in the `(app)` group asks `getAccess()` (`features/access/source.ts`) who is looking:
@@ -130,7 +152,7 @@ request form's action is a stub: nothing records a request yet. Setup (`/setup`)
 
 ### Welcome (first login)
 
-`features/welcome/` renders the "Welcome to your Terminal" dialog over a ready Overview. Its copy is
+`features/welcome/` renders the "Welcome to your Terminal" dialog over a ready Overview, once per member: the API's `needsWelcome` says whether it is due, and dismissing it calls `markTerminalWelcomed`. Its copy is
 data (`WelcomeContent`, one per client type) and `buildWelcome` adds the parts that come from the
 session: the analyst and the kick-off call's time and length. `getWelcome()` returns `undefined`
 when there is nothing to show; for now it always returns the welcome, so every load behaves like a

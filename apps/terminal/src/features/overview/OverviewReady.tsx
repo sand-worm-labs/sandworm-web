@@ -5,6 +5,7 @@ import { PiSlidersHorizontal } from "react-icons/pi";
 import { Button } from "@sandworm/ui/kit/button";
 
 import { WelcomeDialog } from "@/features/welcome/WelcomeDialog";
+import { dismissWelcome } from "@/features/welcome/actions";
 import type { WelcomeData } from "@/features/welcome/types";
 import { SectionHeader } from "@/features/sections/SectionHeader";
 import type { SectionCounts } from "@/features/sections/types";
@@ -32,6 +33,10 @@ export function OverviewReady({
   );
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [isWelcoming, setIsWelcoming] = useState(welcome !== undefined);
+  const changeWelcome = (isOpen: boolean) => {
+    setIsWelcoming(isOpen);
+    if (!isOpen) dismissWelcome();
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -60,9 +65,9 @@ export function OverviewReady({
           welcome={welcome}
           viewer={viewer}
           isOpen={isWelcoming}
-          onOpenChange={setIsWelcoming}
+          onOpenChange={changeWelcome}
           onCustomize={() => {
-            setIsWelcoming(false);
+            changeWelcome(false);
             setIsCustomizing(true);
           }}
         />

@@ -3,17 +3,25 @@ import { BooleanField, StringField } from '@sandworm/graphql';
 import {
   ACCESS_LEVEL_IDS,
   GOAL_IDS,
+  INVITE_TIMING_IDS,
   MAX_GOALS,
   ORGANISATION_TYPE_IDS,
+  PLAN_IDS,
   type AccessLevelId,
+  type ClientStatusId,
   type GoalId,
+  type InviteTimingId,
   type OrganisationTypeId,
+  type PlanId,
   type SetupDraft,
+  type TeamClientDraft,
+  type TeamClientSummary,
   type TerminalSession as TerminalSessionShape,
 } from '@sandworm/types/terminal';
 import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
+  IsEmail,
   IsIn,
   IsString,
   MaxLength,
@@ -156,4 +164,86 @@ export class TerminalSession implements TerminalSessionShape {
 
   @Field(() => Int)
   firstBriefingDays!: number;
+
+  @Field()
+  needsWelcome!: boolean;
+}
+
+// ── The Sandworm team's side ──
+
+@ObjectType('TerminalTeamDetails')
+@InputType('TerminalTeamDetailsInput')
+export class TerminalTeamDetails {
+  @StringField({ maxLength: 120 })
+  name!: string;
+
+  @StringField({ minLength: 0, maxLength: 255 })
+  website!: string;
+
+  @StringField()
+  @IsIn(ORGANISATION_TYPE_IDS)
+  type!: OrganisationTypeId;
+
+  @StringField({ minLength: 0, maxLength: 500 })
+  description!: string;
+
+  @StringField()
+  @IsIn(PLAN_IDS)
+  plan!: PlanId;
+
+  @StringField({ minLength: 0, maxLength: 120 })
+  adminName!: string;
+
+  @StringField({ maxLength: 254 })
+  @IsEmail()
+  adminEmail!: string;
+}
+
+@ObjectType('TerminalTeamClientDraft')
+@InputType('TerminalTeamClientDraftInput')
+export class TerminalTeamClientDraft implements TeamClientDraft {
+  @Field(() => TerminalTeamDetails)
+  @ValidateNested()
+  @Type(() => TerminalTeamDetails)
+  details!: TerminalTeamDetails;
+
+  @Field(() => TerminalTracking)
+  @ValidateNested()
+  @Type(() => TerminalTracking)
+  tracking!: TerminalTracking;
+
+  @Field(() => [String])
+  @IsString({ each: true })
+  @MaxLength(80, { each: true })
+  @ArrayMaxSize(MAX_LIST)
+  starterIds!: string[];
+
+  @StringField()
+  @IsIn(INVITE_TIMING_IDS)
+  inviteTiming!: InviteTimingId;
+}
+
+// A client as the team's list shows it. Output only, so no validation.
+@ObjectType('TerminalTeamClient')
+export class TerminalTeamClient implements TeamClientSummary {
+  @Field()
+  id!: string;
+
+  @Field()
+  name!: string;
+
+  @Field(() => String)
+  type!: OrganisationTypeId;
+
+  @Field(() => String)
+  plan!: PlanId;
+
+  @Field(() => String)
+  status!: ClientStatusId;
+
+  @Field(() => String, { nullable: true })
+  adminEmail!: string | null;
+
+  @Field()
+  createdAt!: string;
 }

@@ -31,6 +31,8 @@ export const ROUTES = {
   },
   contact: { path: "/contact", label: "Contact us", isBuilt: false },
   access: { path: "/access", label: "Request access", isBuilt: true },
+  team: { path: "/team", label: "Clients", isBuilt: true },
+  newClient: { path: "/team/clients/new", label: "New client", isBuilt: true },
   setupTracking: {
     path: "/setup/tracking",
     label: "What to track",

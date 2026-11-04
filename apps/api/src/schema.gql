@@ -339,6 +339,27 @@ type TerminalSession {
   user: TerminalSessionUser!
   client: TerminalSessionClient
   firstBriefingDays: Int!
+  needsWelcome: Boolean!
+}
+
+type TerminalTeamDetails {
+  name: String!
+  website: String!
+  type: String!
+  description: String!
+  plan: String!
+  adminName: String!
+  adminEmail: String!
+}
+
+type TerminalTeamClient {
+  id: String!
+  name: String!
+  type: String!
+  plan: String!
+  status: String!
+  adminEmail: String
+  createdAt: String!
 }
 
 type ShowcaseNotebook {
@@ -584,6 +605,16 @@ input TerminalSetupInput {
   team: TerminalTeamInput!
 }
 
+input TerminalTeamDetailsInput {
+  name: String!
+  website: String!
+  type: String!
+  description: String!
+  plan: String!
+  adminName: String!
+  adminEmail: String!
+}
+
 type Query {
   """List chats for workspace/document"""
   chats(workspaceId: String!, documentId: String!): [Chat!]!
@@ -817,6 +848,14 @@ type Query {
   The signed-in user and the terminal client they belong to (null before their first setup save).
   """
   terminalSession: TerminalSession!
+
+  """
+  Whether the current user is on the Sandworm team, for showing the terminal team tools.
+  """
+  terminalIsStaff: Boolean!
+
+  """Every terminal client, newest first. Staff only."""
+  terminalClients: [TerminalTeamClient!]!
 }
 
 input ListFilesInput {
@@ -1102,6 +1141,19 @@ type Mutation {
   Save the current user's terminal setup, as far as they have filled it in.
   """
   saveTerminalSetup(input: TerminalSetupInput!): TerminalSetup!
+
+  """The current member has seen the welcome; it is not shown again."""
+  markTerminalWelcomed: Boolean!
+
+  """
+  Set a client up: its details, plan, what to track and an invite for its admin. Staff only.
+  """
+  createTerminalClient(input: TerminalTeamClientDraftInput!): TerminalTeamClient!
+
+  """
+  Mark a client's admin invite as sent (the admin joins by signing in with the invited email). Staff only.
+  """
+  sendTerminalInvite(clientId: String!): TerminalTeamClient!
 }
 
 input CreateChatInput {
@@ -1332,4 +1384,11 @@ input DeleteScheduleInput {
   workspaceId: String!
   documentId: String!
   scheduleId: String!
+}
+
+input TerminalTeamClientDraftInput {
+  details: TerminalTeamDetailsInput!
+  tracking: TerminalTrackingInput!
+  starterIds: [String!]!
+  inviteTiming: String!
 }

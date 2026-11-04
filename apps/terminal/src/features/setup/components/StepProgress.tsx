@@ -1,25 +1,29 @@
 import Link from "next/link";
 
-import { SETUP_STEPS } from "../steps";
-import { setupStepPath, type SetupStepId } from "../steps/routes";
+type ProgressStep = { id: string; label: string };
+
+type StepProgressProps = {
+  label: string;
+  steps: readonly ProgressStep[];
+  currentId: string;
+  pathFor: (id: string) => string;
+};
 
 export function StepProgress({
-  currentStepId,
-}: {
-  currentStepId: SetupStepId;
-}) {
-  const currentIndex = SETUP_STEPS.findIndex(step => step.id === currentStepId);
+  label,
+  steps,
+  currentId,
+  pathFor,
+}: StepProgressProps) {
+  const currentIndex = steps.findIndex(step => step.id === currentId);
 
   return (
     <div className="flex flex-col gap-1">
       <span className="px-1 text-sm text-ink-200">
-        Step {currentIndex + 1} of {SETUP_STEPS.length}
+        Step {currentIndex + 1} of {steps.length}
       </span>
-      <ol
-        aria-label="Setup steps"
-        className="flex list-none gap-4 p-0 sm:gap-12"
-      >
-        {SETUP_STEPS.map((step, index) => {
+      <ol aria-label={label} className="flex list-none gap-4 p-0 sm:gap-12">
+        {steps.map((step, index) => {
           const isActive = index === currentIndex;
           const content = (
             <>
@@ -46,7 +50,7 @@ export function StepProgress({
               className="min-w-0 flex-1 sm:flex-none"
             >
               {index < currentIndex ? (
-                <Link href={setupStepPath(step.id)} className="block">
+                <Link href={pathFor(step.id)} className="block">
                   {content}
                 </Link>
               ) : (
