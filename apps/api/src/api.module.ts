@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthGraphqlModule } from '@/features/auth/graphql/auth-graphql.module';
 import { ProfileModule } from '@/features/profile/profile.module';
 import { TagModule } from '@/features/tag/tag.module';
+import { TerminalModule } from '@/features/terminal/terminal.module';
 import { ShowcaseModule } from '@/features/showcase/showcase.module';
 import { ToolModule } from '@/features/tool/tool.module';
 import { BountyModule } from '@/features/bounty/bounty.module';
@@ -68,6 +69,7 @@ import { McpOauthModule } from './features/mcp-oauth/mcp-oauth.module';
         TrustModule,
         ScheduleModule,
         SearchModule,
+        TerminalModule,
 
         // Websocket
         WebsocketModule,

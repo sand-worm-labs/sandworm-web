@@ -37,3 +37,5 @@ export * from './showcase-lead.entity';
 export * from './showcase-taxonomy.entity';
 export * from './terminal-client.entity';
 export * from './terminal-member.entity';
+export * from './terminal-briefing-item.entity';
+export * from './terminal-briefing-read.entity';

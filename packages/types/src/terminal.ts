@@ -28,3 +28,14 @@ export type SetupDraft = {
   goals: { selected: GoalId[] };
   team: { invites: TeamInvite[] };
 };
+
+// Who is using the terminal, and for which client. `client` is null until the
+// user first saves their setup.
+export const FIRST_BRIEFING_DAYS = 2;
+
+export type TerminalSession = {
+  user: { name: string };
+  client: { name: string; type: OrganisationTypeId; access: AccessLevelId } | null;
+  // How long after setup the first briefing is expected
+  firstBriefingDays: number;
+};
