@@ -16,7 +16,7 @@ export function OptionCard({
   onSelect,
 }: OptionCardProps) {
   return (
-    <label className="group flex min-h-[72px] cursor-pointer flex-col gap-1 rounded-[14px] border border-hover-border bg-block-surface px-4 py-3.5 has-[:checked]:border-primary has-[:checked]:bg-primary-tint-50 dark:has-[:checked]:bg-primary-910 has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-primary-tint-100">
+    <label className="group flex min-h-[72px] cursor-pointer flex-col gap-1 rounded-[14px] border border-hover-border bg-block-surface px-4 py-3.5 has-[:checked]:border-primary dark:has-[:checked]:bg-primary-910 has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-primary-tint-100">
       <input
         type="radio"
         className="sr-only"
