@@ -38,6 +38,9 @@ export class TerminalOrganisation {
 
   @StringField({ minLength: 0, maxLength: 255 })
   website!: string;
+
+  @StringField({ minLength: 0, maxLength: 500 })
+  description!: string;
 }
 
 @ObjectType('TerminalTracking')

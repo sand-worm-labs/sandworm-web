@@ -293,6 +293,7 @@ type TerminalOrganisation {
   type: String!
   name: String!
   website: String!
+  description: String!
 }
 
 type TerminalTracking {
@@ -551,6 +552,7 @@ input TerminalOrganisationInput {
   type: String!
   name: String!
   website: String!
+  description: String!
 }
 
 input TerminalTrackingInput {
