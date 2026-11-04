@@ -40,7 +40,6 @@ export type ResearchRequest = {
 
 export type QuestionEntry = {
   id: string;
-  kind: "call" | "question";
   title: string;
   detail: string;
   status: QuestionStatus;
@@ -51,7 +50,6 @@ export type AllowanceMeter = { used: number; total: number };
 
 export type Allowance = {
   research: AllowanceMeter;
-  calls: AllowanceMeter;
   resetsOn: string;
   resetsShort: string;
   resetsMonth: string;

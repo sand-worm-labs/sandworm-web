@@ -1,5 +1,3 @@
-import { analystFixture } from "@/features/session/fixtures";
-
 import type {
   ConcentrationBlock,
   DestinationsBlock,
@@ -10,7 +8,7 @@ import type {
   OverviewData,
   OpportunityEntry,
   OverviewBlock,
-} from "../types";
+} from "@/features/overview/types";
 
 type StandardContent = {
   kpis: readonly Kpi[];
@@ -27,10 +25,7 @@ const STANDARD_ROWS: readonly LayoutRow[] = [
   { id: "key-numbers", columns: [{ span: 12, blockIds: ["kpis"] }] },
   {
     id: "briefing",
-    columns: [
-      { span: 8, blockIds: ["briefing"] },
-      { span: 4, blockIds: ["allowance", "analyst"] },
-    ],
+    columns: [{ span: 12, blockIds: ["briefing"] }],
   },
   { id: "opportunities", columns: [{ span: 12, blockIds: ["opportunities"] }] },
   {
@@ -59,38 +54,6 @@ export function standardLayout(content: StandardContent): Composition {
       subtitle: "Since your last visit, Tue 28 Oct",
       isOptional: true,
       entries: content.briefing,
-    },
-    {
-      _tag: "allowance",
-      id: "allowance",
-      title: "This quarter",
-      subtitle: "Your plan's allowance. Resets 1 Jan 2027.",
-      isOptional: true,
-      meters: [
-        {
-          id: "research",
-          label: "Commissioned research",
-          used: 2,
-          total: 5,
-          tone: "brand",
-        },
-        {
-          id: "calls",
-          label: "Analyst calls",
-          used: 1,
-          total: 4,
-          tone: "navy",
-        },
-      ],
-    },
-    {
-      _tag: "analyst",
-      id: "analyst",
-      title: "Your analyst",
-      isOptional: false,
-      analyst: analystFixture,
-      message: "Questions about a report, or what to look at next.",
-      footnote: "30 minutes, confidential, included in your plan",
     },
     {
       _tag: "opportunities",

@@ -1,15 +1,13 @@
-import type { SetupProgress } from "../types";
+import { site } from "@/config/site";
+import type { SetupProgress } from "@/features/overview/types";
 
-type SetupProgressInit = { clientName: string; analystName: string };
+type SetupProgressInit = { clientName: string };
 
 export function buildSetupProgress({
   clientName,
-  analystName,
 }: SetupProgressInit): SetupProgress {
   return {
-    message: `${analystName} is confirming the contracts and wallets we'll track for ${clientName}. Your first briefing is expected on Thu 6 Nov.`,
-    kickoffMessage:
-      "Your kick-off call is on Thu 5 Nov at 15:00. Bring the questions you most want answered.",
+    message: `${site.name} is confirming the contracts and wallets we'll track for ${clientName}. Your first briefing is expected on Thu 6 Nov.`,
     steps: [
       {
         id: "workspace",
@@ -18,15 +16,9 @@ export function buildSetupProgress({
         isDone: true,
       },
       {
-        id: "call",
-        title: "Kick-off call booked",
-        detail: `Thu 5 Nov, 15:00 with ${analystName}`,
-        isDone: true,
-      },
-      {
         id: "tracking",
         title: "Confirm what we track",
-        detail: `${analystName} suggested 14 contracts and 3 competitors.`,
+        detail: `${site.name} suggested 14 contracts and 3 competitors.`,
         isDone: false,
         action: { label: "Review", route: "setupTracking" },
       },

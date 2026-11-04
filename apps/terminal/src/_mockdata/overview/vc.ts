@@ -1,6 +1,4 @@
-import { analystFixture } from "@/features/session/fixtures";
-
-import type { OverviewData } from "../types";
+import type { OverviewData } from "@/features/overview/types";
 
 import {
   briefingEntry,
@@ -21,7 +19,6 @@ export const vcOverview: OverviewData = {
     "Reading activity for 28 portfolio projects and 140 of their competitors.",
   setup: buildSetupProgress({
     clientName: "Kestrel Ventures",
-    analystName: analystFixture.name,
   }),
   library: [
     {

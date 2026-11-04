@@ -1,4 +1,4 @@
-import type { OpportunitiesFeed } from "../types";
+import type { OpportunitiesFeed } from "@/features/opportunities/types";
 
 import { opportunity } from "./builders";
 

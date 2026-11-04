@@ -5,13 +5,12 @@ import { Card } from "@/components/Card";
 import { BriefingKindTag } from "../BriefingKindTag";
 import type { BriefingItem } from "../types";
 
-import { BarBreakdown } from "./BarBreakdown";
+import { CellOutputs } from "./CellOutputs";
 import { HeadlineMetric } from "./HeadlineMetric";
 
 type BriefingDetailPanelProps = {
   item: BriefingItem;
   clientName: string;
-  analystName: string;
 };
 
 function DetailSection({ title, text }: { title: string; text: string }) {
@@ -26,9 +25,8 @@ function DetailSection({ title, text }: { title: string; text: string }) {
 export function BriefingDetailPanel({
   item,
   clientName,
-  analystName,
 }: BriefingDetailPanelProps) {
-  const { headline, breakdown, what, why } = item.detail;
+  const { headline, outputs, what, why } = item.detail;
   const titleId = `briefing-${item.id}-title`;
 
   return (
@@ -52,24 +50,17 @@ export function BriefingDetailPanel({
         </h2>
       </div>
       {headline && <HeadlineMetric headline={headline} />}
-      {breakdown && <BarBreakdown breakdown={breakdown} />}
+      {outputs && outputs.length > 0 && (
+        <CellOutputs outputs={outputs} title={item.title} />
+      )}
       {what && <DetailSection title="What happened" text={what} />}
       {why && (
         <DetailSection title={`Why it matters for ${clientName}`} text={why} />
       )}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border-secondary pt-4">
-        <div className="flex flex-wrap gap-2">
-          <AppLink route={item.action.route} className={buttonClassName()}>
-            {item.action.label}
-          </AppLink>
-          <AppLink
-            route="bookCall"
-            className={buttonClassName({ variant: "secondary" })}
-          >
-            Ask {analystName} about this
-          </AppLink>
-        </div>
-        <span className="text-xs text-ink-400">Source: Sandworm</span>
+      <div className="border-t border-border-secondary pt-4">
+        <AppLink route={item.action.route} className={buttonClassName()}>
+          {item.action.label}
+        </AppLink>
       </div>
     </Card>
   );

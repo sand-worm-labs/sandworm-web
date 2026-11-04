@@ -1,13 +1,5 @@
 import type { OrganisationTypeId } from "@/features/setup/options/organisation-types";
-
-import type { Analyst, Session } from "./types";
-
-export const analystFixture: Analyst = {
-  name: "Tobi",
-  fullName: "Tobi Adeyemi",
-  initials: "TA",
-  role: "Senior analyst, Sandworm",
-};
+import type { Session } from "@/features/session/types";
 
 type ClientSeed = { clientName: string; userName: string };
 
@@ -16,14 +8,12 @@ function buildSession(seed: ClientSeed): Session {
     user: { name: seed.userName },
     client: {
       name: seed.clientName,
-      analyst: analystFixture,
-      kickoffCall: { when: "Thu 5 Nov, 15:00 PT · 30 minutes" },
       firstBriefingDays: 2,
     },
   };
 }
 
-export const sessionFixtures: Record<OrganisationTypeId, Session> = {
+export const sessionMockData: Record<OrganisationTypeId, Session> = {
   exchange: buildSession({ clientName: "Robinhood", userName: "Maya Chen" }),
   nft: buildSession({ clientName: "OpenSea", userName: "Jordan Lee" }),
   protocol: buildSession({ clientName: "Aave", userName: "Lena Ortiz" }),

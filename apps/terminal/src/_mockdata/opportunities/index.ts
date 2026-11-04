@@ -1,19 +1,18 @@
-import { overviewFixtures } from "@/features/overview/fixtures";
+import { overviewMockData } from "@/_mockdata/overview";
 import type { OrganisationTypeId } from "@/features/setup/options/organisation-types";
-
-import type { OpportunitiesFeed } from "../types";
+import type { OpportunitiesFeed } from "@/features/opportunities/types";
 
 import { exchangeOpportunities } from "./exchange";
 import { opportunitiesFromOverview } from "./from-overview";
 
-export const opportunityFixtures: Record<
+export const opportunityMockData: Record<
   OrganisationTypeId,
   OpportunitiesFeed
 > = {
   exchange: exchangeOpportunities,
-  nft: opportunitiesFromOverview(overviewFixtures.nft),
-  protocol: opportunitiesFromOverview(overviewFixtures.protocol),
-  chain: opportunitiesFromOverview(overviewFixtures.chain),
-  vc: opportunitiesFromOverview(overviewFixtures.vc),
-  accelerator: opportunitiesFromOverview(overviewFixtures.accelerator),
+  nft: opportunitiesFromOverview(overviewMockData.nft),
+  protocol: opportunitiesFromOverview(overviewMockData.protocol),
+  chain: opportunitiesFromOverview(overviewMockData.chain),
+  vc: opportunitiesFromOverview(overviewMockData.vc),
+  accelerator: opportunitiesFromOverview(overviewMockData.accelerator),
 };

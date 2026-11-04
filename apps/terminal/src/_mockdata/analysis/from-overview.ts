@@ -1,7 +1,6 @@
 import { findBlock, type OverviewData } from "@/features/overview/types";
 import { groupInOrder } from "@/lib/group-in-order";
-
-import type { AnalysisCatalog } from "../types";
+import type { AnalysisCatalog } from "@/features/analysis/types";
 
 import { analysisRow, highlight } from "./builders";
 

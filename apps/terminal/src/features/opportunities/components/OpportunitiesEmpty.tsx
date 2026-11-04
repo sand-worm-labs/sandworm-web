@@ -3,8 +3,9 @@ import { PiClockCountdown } from "react-icons/pi";
 import { AppLink } from "@/components/AppLink";
 import { buttonClassName } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { site } from "@/config/site";
 
-export function OpportunitiesEmpty({ analystName }: { analystName: string }) {
+export function OpportunitiesEmpty() {
   return (
     <Card
       aria-labelledby="opportunities-empty"
@@ -20,9 +21,9 @@ export function OpportunitiesEmpty({ analystName }: { analystName: string }) {
         No opportunities yet
       </h2>
       <p className="max-w-[480px] text-sm leading-[1.55] text-ink-500">
-        Opportunities usually appear 2 to 3 weeks after setup, once{" "}
-        {analystName} has a full picture of your numbers. Each one comes with an
-        estimated value and how sure we are.
+        Opportunities usually appear 2 to 3 weeks after setup, once {site.name}{" "}
+        has a full picture of your numbers. Each one comes with an estimated
+        value and how sure we are.
       </p>
       <div className="mt-1.5 flex flex-wrap justify-center gap-2">
         <AppLink

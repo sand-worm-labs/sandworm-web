@@ -23,11 +23,18 @@ const FILTERS: readonly { id: BriefingFilter; label: string }[] = [
 type BriefingScreenProps = {
   feed: BriefingFeed;
   counts: SectionCounts;
-  viewer: { clientName: string; analystName: string };
+  viewer: { clientName: string };
+  // The item to open on, from ?item=
+  initialItemId?: string;
 };
 
-export function BriefingScreen({ feed, counts, viewer }: BriefingScreenProps) {
-  const inbox = useBriefingInbox(feed.items);
+export function BriefingScreen({
+  feed,
+  counts,
+  viewer,
+  initialItemId,
+}: BriefingScreenProps) {
+  const inbox = useBriefingInbox(feed.items, initialItemId);
   const hasItems = feed.items.length > 0;
 
   const filterOptions = FILTERS.map(option => ({
@@ -71,7 +78,6 @@ export function BriefingScreen({ feed, counts, viewer }: BriefingScreenProps) {
           <BriefingDetailPanel
             item={inbox.selected}
             clientName={viewer.clientName}
-            analystName={viewer.analystName}
           />
         </div>
       ) : (

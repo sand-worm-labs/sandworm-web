@@ -1,10 +1,8 @@
-import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
-
-import { Button } from "@/components/Button";
 import { NativeSelect } from "@/components/form/NativeSelect";
 import { TextField } from "@/components/form/TextField";
 import { ToggleChip } from "@/components/form/ToggleChip";
 import { pluralise } from "@/lib/format";
+import { site } from "@/config/site";
 
 import { useSetup } from "../context";
 import { ACCESS_LEVELS } from "../options/access-levels";
@@ -16,7 +14,6 @@ import type { SetupStepDefinition } from "./types";
 function GoalsStep() {
   const {
     draft: { goals, team },
-    session: { client },
     patch,
   } = useSetup();
 
@@ -76,26 +73,6 @@ function GoalsStep() {
           allowance.
         </span>
       </div>
-      <div className="flex items-center justify-between gap-3 rounded-[14px] border border-hover-border bg-block-surface px-4 py-3.5">
-        <div className="flex items-center gap-2.5">
-          <Avatar className="size-8">
-            <AvatarFallback className="bg-primary-tint-75 dark:bg-primary-910 text-[11px] font-semibold text-primary-700 dark:text-primary-200">
-              {client.analyst.initials}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <span className="font-semibold text-ink-100">
-              Kick-off call with {client.analyst.name}
-            </span>
-            <span className="text-xs text-ink-400">
-              {client.kickoffCall.when}
-            </span>
-          </div>
-        </div>
-        <Button variant="link" disabled>
-          Change
-        </Button>
-      </div>
     </div>
   );
 }
@@ -132,10 +109,10 @@ export const goalsStep: SetupStepDefinition = {
   id: "goals",
   label: "Goals and team",
   title: () => "What do you want from Terminal?",
-  description: ({ client }) =>
-    `${client.analyst.name} uses this to decide what to research for you first.`,
+  description: () =>
+    `${site.name} uses this to decide what to research for you first.`,
   Component: GoalsStep,
   canContinue: () => true,
   previewNote: ({ session: { client } }) =>
-    `Your first briefing is expected ${pluralise(client.firstBriefingDays, "day")} after ${client.analyst.name} approves your setup.`,
+    `Your first briefing is expected ${pluralise(client.firstBriefingDays, "day")} after ${site.name} checks your setup.`,
 };

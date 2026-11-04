@@ -6,6 +6,10 @@ const toneClassNames = {
   muted: "bg-inputBg",
 } as const;
 
+// A line between the rows of a list inside a card, none above the first.
+export const cardRowDividerClassName =
+  "border-t border-border-secondary first:border-t-0";
+
 type CardProps = ComponentProps<"section"> & {
   tone?: keyof typeof toneClassNames;
 };

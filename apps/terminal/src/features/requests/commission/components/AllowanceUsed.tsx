@@ -1,14 +1,10 @@
 import type { IconType } from "react-icons";
-import {
-  PiCaretRight,
-  PiChatCircleText,
-  PiNotePencil,
-  PiPlus,
-} from "react-icons/pi";
+import { PiCaretRight, PiNotePencil, PiPlus } from "react-icons/pi";
 
 import { AppLink } from "@/components/AppLink";
 import { buttonClassName } from "@/components/Button";
 import type { RouteId } from "@/config/routes";
+import { site } from "@/config/site";
 
 import type { Allowance } from "../../types";
 
@@ -23,24 +19,16 @@ type Option = {
   detail: string;
 };
 
-function options(allowance: Allowance, analystName: string): Option[] {
+function options(allowance: Allowance): Option[] {
   return [
     {
       id: "add-more",
-      route: "bookCall",
+      route: "contact",
       Icon: PiPlus,
       iconClassName:
         "bg-primary-tint-75 text-primary-700 dark:bg-primary-910 dark:text-primary-200",
-      title: "Talk to us about adding more",
+      title: "Add more to your plan",
       detail: "Add studies to this quarter or move to a bigger plan.",
-    },
-    {
-      id: "ask-analyst",
-      route: "bookCall",
-      Icon: PiChatCircleText,
-      iconClassName: "bg-info-tint text-ink-navy dark:bg-base-600",
-      title: "Ask an analyst instead",
-      detail: "Quick questions and calls don't use research allowance.",
     },
     {
       id: "save-draft",
@@ -48,18 +36,12 @@ function options(allowance: Allowance, analystName: string): Option[] {
       Icon: PiNotePencil,
       iconClassName: "bg-hover-bg text-ink-500",
       title: `Save it for ${allowance.resetsMonth}`,
-      detail: `We'll keep your draft and send it to ${analystName} on ${allowance.resetsShort}.`,
+      detail: `We'll keep your draft and send it to ${site.name} on ${allowance.resetsShort}.`,
     },
   ];
 }
 
-export function AllowanceUsed({
-  allowance,
-  analystName,
-}: {
-  allowance: Allowance;
-  analystName: string;
-}) {
+export function AllowanceUsed({ allowance }: { allowance: Allowance }) {
   return (
     <div className="flex flex-col">
       <div className="flex flex-col gap-2.5 px-8 pb-2 pt-6">
@@ -81,7 +63,7 @@ export function AllowanceUsed({
       </div>
       <div className="flex flex-col gap-2.5 px-8 pb-2 pt-5">
         <span className="font-medium text-ink-100">What you can do now</span>
-        {options(allowance, analystName).map(option => (
+        {options(allowance).map(option => (
           <AppLink
             key={option.id}
             route={option.route}

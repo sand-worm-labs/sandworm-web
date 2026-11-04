@@ -2,17 +2,16 @@ import { PiMagnifyingGlass } from "react-icons/pi";
 
 import { AppLink } from "@/components/AppLink";
 import { Button, buttonClassName } from "@/components/Button";
+import { site } from "@/config/site";
 
 type AnalysisNoResultsProps = {
   query: string;
-  analystName: string;
   suggestion?: string;
   onClear: () => void;
 };
 
 export function AnalysisNoResults({
   query,
-  analystName,
   suggestion,
   onClear,
 }: AnalysisNoResultsProps) {
@@ -28,8 +27,8 @@ export function AnalysisNoResults({
         No analysis matches &ldquo;{query}&rdquo;
       </h2>
       <p className="max-w-[440px] text-sm leading-[1.55] text-ink-500">
-        We haven&apos;t researched this yet. {analystName} can scope it with
-        you. It counts toward your allowance only once you approve the scope.
+        We haven&apos;t researched this yet. {site.name} can scope it for you.
+        It counts toward your allowance only once you approve the scope.
       </p>
       <div className="mt-1.5 flex flex-wrap justify-center gap-2">
         <Button variant="secondary" onClick={onClear}>

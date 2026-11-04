@@ -1,6 +1,6 @@
-import type { BriefingFeed } from "../types";
+import type { BriefingFeed } from "@/features/briefing/types";
 
-import { bar, briefingItem } from "./builders";
+import { briefingItem, line, markdown, rankedBars } from "./builders";
 
 export const exchangeBriefing: BriefingFeed = {
   subtitle: "Since your last visit, Tue 28 Oct",
@@ -27,15 +27,15 @@ export const exchangeBriefing: BriefingFeed = {
           label: "average fee to cash out to pesos",
           delta: { text: "Nigeria: 0.9%", tone: "neutral" },
         },
-        breakdown: {
-          title: "Average fee to cash out stablecoins, October",
-          bars: [
-            bar("Argentina", 100, "2.2%", true),
-            bar("Brazil", 64, "1.4%"),
-            bar("Mexico", 50, "1.1%"),
-            bar("Nigeria", 41, "0.9%"),
-          ],
-        },
+        outputs: [
+          markdown("**Average fee to cash out stablecoins, October**"),
+          rankedBars("Fee", [
+            ["Argentina", 2.2],
+            ["Brazil", 1.4],
+            ["Mexico", 1.1],
+            ["Nigeria", 0.9],
+          ]),
+        ],
         what: "Cashing out stablecoins to pesos costs 2.2% on average, more than twice what it costs in Nigeria. Argentina's ramps have stayed this expensive for six months while volume kept growing.",
         why: "11,200 of your wallets cash out to pesos every month, about $14.2M. A cheaper route inside Robinhood Wallet could keep that flow and earn about $43K a month.",
       },
@@ -56,14 +56,14 @@ export const exchangeBriefing: BriefingFeed = {
           label: "swap volume in October",
           delta: { text: "▼ 9% vs September", tone: "negative" },
         },
-        breakdown: {
-          title: "Change in swap volume, October vs September",
-          bars: [
-            bar("Top 50", 100, "−21%", true),
-            bar("Next 5,000", 14, "−3%"),
-            bar("Everyone else", 10, "+2%"),
-          ],
-        },
+        outputs: [
+          markdown("**Change in swap volume, October vs September**"),
+          rankedBars("Change", [
+            ["Top 50", -21],
+            ["Next 5,000", -3],
+            ["Everyone else", 2],
+          ]),
+        ],
         what: "7 of your 50 largest wallets traded 41% less than in September. Everyone else traded about the same as before.",
         why: "Your top 50 wallets make 38% of swap volume, so a few of them slowing down moves the whole number.",
       },
@@ -124,15 +124,15 @@ export const exchangeBriefing: BriefingFeed = {
           label: "new wallets in October",
           delta: { text: "▼ 12% vs September", tone: "negative" },
         },
-        breakdown: {
-          title: "New wallets by country, change vs September",
-          bars: [
-            bar("Brazil", 100, "−31%", true),
-            bar("Mexico", 74, "−23%"),
-            bar("United States", 13, "−4%"),
-            bar("Others", 6, "+2%"),
-          ],
-        },
+        outputs: [
+          markdown("**New wallets by country, change vs September**"),
+          rankedBars("Change", [
+            ["Brazil", -31],
+            ["Mexico", -23],
+            ["United States", -4],
+            ["Others", 2],
+          ]),
+        ],
         what: "October had the fewest new wallets since May. Brazil and Mexico account for most of the drop.",
         why: "Fewer new wallets now means fewer active wallets in three months, when 34% of them would still be trading.",
       },
@@ -173,6 +173,19 @@ export const exchangeBriefing: BriefingFeed = {
           label: "bridged to Solana by your users in October",
           delta: { text: "3× July", tone: "neutral" },
         },
+        outputs: [
+          markdown("**Bridged to Solana by your users, $M a month**"),
+          line(
+            "Bridged",
+            [
+              ["Jul", 32],
+              ["Aug", 51],
+              ["Sep", 74],
+              ["Oct", 96],
+            ],
+            "$"
+          ),
+        ],
         what: "24,500 of your wallets bridged to Solana in October, most of them to trade tokens you do not list.",
         why: "Every bridge is a trade that happens somewhere else.",
       },
@@ -213,7 +226,7 @@ export const exchangeBriefing: BriefingFeed = {
           label: "from request to delivery",
           delta: { text: "Delivered", tone: "positive" },
         },
-        what: "Tobi delivered the research you asked for: how much your users cash out in Argentina, Brazil and Mexico, and what they pay.",
+        what: "Sandworm delivered the research you asked for: how much your users cash out in Argentina, Brazil and Mexico, and what they pay.",
         why: "It sizes the Argentina opportunity and two smaller ones in Brazil and Mexico.",
       },
       action: { label: "Read report", route: "report" },

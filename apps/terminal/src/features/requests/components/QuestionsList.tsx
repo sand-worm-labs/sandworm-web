@@ -1,24 +1,10 @@
-import { PiChatCircleText, PiPhone } from "react-icons/pi";
+import { PiChatCircleText } from "react-icons/pi";
 
-import { AppLink } from "@/components/AppLink";
-import { buttonClassName } from "@/components/Button";
 import { Card } from "@/components/Card";
 
 import type { QuestionEntry } from "../types";
 
 import { StatusChip } from "./StatusChip";
-
-const KIND_ICON = {
-  call: {
-    Icon: PiPhone,
-    className: "bg-info-tint text-ink-navy dark:bg-base-600",
-  },
-  question: {
-    Icon: PiChatCircleText,
-    className:
-      "bg-primary-tint-75 text-primary-700 dark:bg-primary-910 dark:text-primary-200",
-  },
-} as const satisfies Record<QuestionEntry["kind"], unknown>;
 
 export function QuestionsList({
   questions,
@@ -29,20 +15,10 @@ export function QuestionsList({
     <Card aria-labelledby="questions-title" className="px-4 pb-2.5 pt-5">
       <div className="flex items-baseline justify-between gap-3 px-2 pb-2">
         <h2 id="questions-title" className="text-base font-medium text-ink-100">
-          Questions and calls
+          Questions
         </h2>
-        <AppLink
-          route="bookCall"
-          className={buttonClassName({
-            variant: "link",
-            className: "text-[13px] font-medium",
-          })}
-        >
-          Ask an analyst
-        </AppLink>
       </div>
       {questions.map((question, index) => {
-        const { Icon, className } = KIND_ICON[question.kind];
         return (
           <div
             key={question.id}
@@ -54,9 +30,9 @@ export function QuestionsList({
           >
             <span
               aria-hidden="true"
-              className={`flex size-[30px] items-center justify-center rounded-[9px] ${className}`}
+              className="flex size-[30px] items-center justify-center rounded-[9px] bg-primary-tint-75 text-primary-700 dark:bg-primary-910 dark:text-primary-200"
             >
-              <Icon size={15} />
+              <PiChatCircleText size={15} />
             </span>
             <span className="flex min-w-0 flex-col gap-0.5">
               <span className="text-sm font-medium text-ink-100">

@@ -1,3 +1,5 @@
+import { site } from "@/config/site";
+
 import type { TimelineStep } from "../types";
 
 import { TIMINGS, USE_CASES } from "./options";
@@ -36,17 +38,14 @@ export function formatSubmittedAt(date: Date): string {
   return `Today, ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-export function submittedTimeline(
-  submittedAt: string,
-  analystName: string
-): TimelineStep[] {
+export function submittedTimeline(submittedAt: string): TimelineStep[] {
   return [
     { id: "submitted", label: "Submitted", state: "done", detail: submittedAt },
     {
       id: "scoping",
       label: "Scoping",
       state: "next",
-      detail: `${analystName} replies with a scope for you to approve`,
+      detail: `${site.name} replies with a scope for you to approve`,
     },
     {
       id: "in-progress",

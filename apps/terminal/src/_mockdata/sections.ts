@@ -1,8 +1,7 @@
 import type { OrganisationTypeId } from "@/features/setup/options/organisation-types";
+import type { SectionCounts } from "@/features/sections/types";
 
-import type { SectionCounts } from "./types";
-
-export const sectionCountsFixtures: Record<OrganisationTypeId, SectionCounts> =
+export const sectionCountsMockData: Record<OrganisationTypeId, SectionCounts> =
   {
     exchange: {
       briefing: "6",

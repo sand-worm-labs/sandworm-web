@@ -2,8 +2,8 @@ import {
   getPreviewClientKind,
   getPreviewOpportunities,
 } from "@/features/preview/cookies";
+import { opportunityMockData } from "@/_mockdata/opportunities";
 
-import { opportunityFixtures } from "./fixtures";
 import type { OpportunitiesFeed } from "./types";
 
 export async function getOpportunities(): Promise<OpportunitiesFeed> {
@@ -11,7 +11,7 @@ export async function getOpportunities(): Promise<OpportunitiesFeed> {
     getPreviewClientKind(),
     getPreviewOpportunities(),
   ]);
-  const feed = opportunityFixtures[clientKind];
+  const feed = opportunityMockData[clientKind];
 
   return mode === "empty" ? { ...feed, items: [] } : feed;
 }

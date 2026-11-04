@@ -1,6 +1,4 @@
-import { analystFixture } from "@/features/session/fixtures";
-
-import type { OverviewData } from "../types";
+import type { OverviewData } from "@/features/overview/types";
 
 import {
   briefingEntry,
@@ -21,7 +19,6 @@ export const exchangeOverview: OverviewData = {
     "Reading 1.2M transactions from Robinhood Wallet and Robinhood Chain.",
   setup: buildSetupProgress({
     clientName: "Robinhood",
-    analystName: analystFixture.name,
   }),
   library: [
     {

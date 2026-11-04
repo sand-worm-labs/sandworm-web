@@ -4,18 +4,13 @@ import { RequestsScreen } from "@/features/requests/RequestsScreen";
 
 export default async function CommissionRoute() {
   const { data, counts, session } = await loadRequestsScreen();
-  const { analyst, name: clientName } = {
-    analyst: session.client.analyst,
-    name: session.client.name,
-  };
 
   return (
     <>
-      <RequestsScreen data={data} counts={counts} analyst={analyst} />
+      <RequestsScreen data={data} counts={counts} />
       <CommissionDialog
         allowance={data.allowance}
-        analystName={analyst.name}
-        clientName={clientName}
+        clientName={session.client.name}
       />
     </>
   );

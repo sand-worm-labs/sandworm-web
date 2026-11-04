@@ -10,6 +10,7 @@ import {
 } from "@sandworm/ui/components/dialog";
 
 import { ROUTES } from "@/config/routes";
+import { site } from "@/config/site";
 
 import { isResearchUsedUp } from "../requests-state";
 import type { Allowance } from "../types";
@@ -24,7 +25,6 @@ import type { CommissionDraft } from "./types";
 
 type CommissionDialogProps = {
   allowance: Allowance;
-  analystName: string;
   clientName: string;
 };
 
@@ -32,7 +32,6 @@ type Phase = { _tag: "editing" } | { _tag: "sent"; submittedAt: string };
 
 export function CommissionDialog({
   allowance,
-  analystName,
   clientName,
 }: CommissionDialogProps) {
   const router = useRouter();
@@ -64,17 +63,13 @@ export function CommissionDialog({
       >
         <DialogTitle className="sr-only">Commission research</DialogTitle>
         <DialogDescription className="sr-only">
-          Ask {analystName} for a piece of research.
+          Ask {site.name} for a piece of research.
         </DialogDescription>
         <CommissionTabs />
         {isResearchUsedUp(allowance) ? (
-          <AllowanceUsed allowance={allowance} analystName={analystName} />
+          <AllowanceUsed allowance={allowance} />
         ) : phase._tag === "sent" ? (
-          <CommissionSent
-            draft={draft}
-            submittedAt={phase.submittedAt}
-            analystName={analystName}
-          />
+          <CommissionSent draft={draft} submittedAt={phase.submittedAt} />
         ) : (
           <CommissionForm
             draft={draft}
@@ -82,7 +77,6 @@ export function CommissionDialog({
             onSubmit={send}
             isSending={isSending}
             allowance={allowance}
-            analystName={analystName}
             clientName={clientName}
           />
         )}

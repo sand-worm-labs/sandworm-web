@@ -1,6 +1,4 @@
-import { analystFixture } from "@/features/session/fixtures";
-
-import type { OverviewData } from "../types";
+import type { OverviewData } from "@/features/overview/types";
 
 import {
   briefingEntry,
@@ -20,7 +18,6 @@ export const protocolOverview: OverviewData = {
   loadingNote: "Reading 2.6M deposits, borrows and withdrawals on Aave v3.",
   setup: buildSetupProgress({
     clientName: "Aave",
-    analystName: analystFixture.name,
   }),
   library: [
     {

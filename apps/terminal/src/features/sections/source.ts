@@ -1,8 +1,8 @@
 import { getPreviewClientKind } from "@/features/preview/cookies";
+import { sectionCountsMockData } from "@/_mockdata/sections";
 
-import { sectionCountsFixtures } from "./fixtures";
 import type { SectionCounts } from "./types";
 
 export async function getSectionCounts(): Promise<SectionCounts> {
-  return sectionCountsFixtures[await getPreviewClientKind()];
+  return sectionCountsMockData[await getPreviewClientKind()];
 }

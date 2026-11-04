@@ -1,11 +1,10 @@
 import { toId } from "@/lib/slug";
-
 import type {
   QuestionEntry,
   ResearchRequest,
   StepState,
   TimelineStep,
-} from "../types";
+} from "@/features/requests/types";
 
 export function step(
   label: string,

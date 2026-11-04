@@ -1,6 +1,4 @@
-import { analystFixture } from "@/features/session/fixtures";
-
-import type { OverviewData } from "../types";
+import type { OverviewData } from "@/features/overview/types";
 
 import {
   briefingEntry,
@@ -20,7 +18,6 @@ export const nftOverview: OverviewData = {
   loadingNote: "Reading 4.8M trades from OpenSea on Ethereum, Base and Solana.",
   setup: buildSetupProgress({
     clientName: "OpenSea",
-    analystName: analystFixture.name,
   }),
   library: [
     {

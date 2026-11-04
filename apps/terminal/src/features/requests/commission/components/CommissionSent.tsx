@@ -2,6 +2,7 @@ import { PiCheck } from "react-icons/pi";
 
 import { AppLink } from "@/components/AppLink";
 import { buttonClassName } from "@/components/Button";
+import { site } from "@/config/site";
 
 import { Timeline } from "../../components/Timeline";
 import { describeDraft, submittedTimeline } from "../draft";
@@ -10,14 +11,9 @@ import type { CommissionDraft } from "../types";
 type CommissionSentProps = {
   draft: CommissionDraft;
   submittedAt: string;
-  analystName: string;
 };
 
-export function CommissionSent({
-  draft,
-  submittedAt,
-  analystName,
-}: CommissionSentProps) {
+export function CommissionSent({ draft, submittedAt }: CommissionSentProps) {
   return (
     <div className="flex flex-col">
       <div className="flex flex-col items-start gap-2.5 px-8 pb-2 pt-7">
@@ -28,7 +24,7 @@ export function CommissionSent({
           <PiCheck size={20} />
         </span>
         <h2 className="mt-1 text-xl font-medium text-ink-100">
-          Request sent to {analystName}
+          Request sent to {site.name}
         </h2>
         <p className="text-sm leading-[1.55] text-ink-500">
           They&apos;ll come back with a scope: what they&apos;ll answer, how,
@@ -39,7 +35,7 @@ export function CommissionSent({
         <Timeline
           label="What happens next"
           size="md"
-          steps={submittedTimeline(submittedAt, analystName)}
+          steps={submittedTimeline(submittedAt)}
         />
       </div>
       <div className="mx-8 mt-1 flex flex-col gap-1 rounded-xl bg-inputBg px-4 py-3.5 ring-1 ring-inset ring-border-secondary">

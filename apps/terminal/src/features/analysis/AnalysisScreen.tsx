@@ -32,7 +32,7 @@ const SORT_OPTIONS: readonly { id: AnalysisSort; label: string }[] = [
 type AnalysisScreenProps = {
   catalog: AnalysisCatalog;
   counts: SectionCounts;
-  viewer: { clientName: string; analystName: string };
+  viewer: { clientName: string };
 };
 
 export function AnalysisScreen({
@@ -101,7 +101,6 @@ export function AnalysisScreen({
         ) : (
           <AnalysisNoResults
             query={query}
-            analystName={viewer.analystName}
             suggestion={catalog.suggestion}
             onClear={() => setQuery("")}
           />

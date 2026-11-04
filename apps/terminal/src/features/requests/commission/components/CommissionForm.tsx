@@ -8,6 +8,7 @@ import { NativeSelect } from "@/components/form/NativeSelect";
 import { TextAreaField } from "@/components/form/TextAreaField";
 import { ToggleChip } from "@/components/form/ToggleChip";
 import { labelClassName } from "@/components/form/styles";
+import { site } from "@/config/site";
 
 import type { Allowance } from "../../types";
 import { canSubmit } from "../draft";
@@ -22,7 +23,6 @@ type CommissionFormProps = {
   onSubmit: () => void;
   isSending: boolean;
   allowance: Allowance;
-  analystName: string;
   clientName: string;
 };
 
@@ -32,7 +32,6 @@ export function CommissionForm({
   onSubmit,
   isSending,
   allowance,
-  analystName,
   clientName,
 }: CommissionFormProps) {
   const update = (patch: Partial<CommissionDraft>) =>
@@ -51,7 +50,7 @@ export function CommissionForm({
           Commission research
         </h2>
         <p className="text-sm text-ink-500">
-          Tell {analystName} what you want to know. They&apos;ll reply with a
+          Tell {site.name} what you want to know. They&apos;ll reply with a
           scope for you to approve.
         </p>
       </div>
@@ -73,7 +72,7 @@ export function CommissionForm({
             onChange={event => update({ question: event.target.value })}
           />
           <span className="text-xs text-ink-400">
-            One question is best. {analystName} will suggest how to split bigger
+            One question is best. {site.name} will suggest how to split bigger
             ones.
           </span>
         </div>
@@ -120,16 +119,7 @@ export function CommissionForm({
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border-secondary px-6 py-3.5">
-        <AppLink
-          route="bookCall"
-          className={buttonClassName({
-            variant: "link",
-            className: "text-[13px] font-medium",
-          })}
-        >
-          Just a quick question? Ask an analyst
-        </AppLink>
+      <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border-secondary px-6 py-3.5">
         <div className="flex gap-2">
           <AppLink
             route="requests"
@@ -138,7 +128,7 @@ export function CommissionForm({
             Cancel
           </AppLink>
           <Button type="submit" disabled={!canSubmit(draft) || isSending}>
-            Send to {analystName}
+            Send to {site.name}
           </Button>
         </div>
       </div>

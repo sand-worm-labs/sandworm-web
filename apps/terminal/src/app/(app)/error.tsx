@@ -12,8 +12,8 @@ export default function AppError({ reset }: { reset: () => void }) {
         We couldn&apos;t load this page
       </h1>
       <p className="text-ink-400">
-        Your numbers are safe. Try again, and if it keeps happening, tell your
-        analyst.
+        Your numbers are safe. Try again, and if it keeps happening, contact
+        support.
       </p>
       <Button onClick={reset}>Try again</Button>
     </div>

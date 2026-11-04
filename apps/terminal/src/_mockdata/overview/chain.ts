@@ -1,6 +1,4 @@
-import { analystFixture } from "@/features/session/fixtures";
-
-import type { OverviewData } from "../types";
+import type { OverviewData } from "@/features/overview/types";
 
 import {
   briefingEntry,
@@ -20,7 +18,6 @@ export const chainOverview: OverviewData = {
   loadingNote: "Reading 312M transactions on Base mainnet.",
   setup: buildSetupProgress({
     clientName: "Base",
-    analystName: analystFixture.name,
   }),
   library: [
     {

@@ -2,8 +2,8 @@ import {
   getPreviewBriefing,
   getPreviewClientKind,
 } from "@/features/preview/cookies";
+import { briefingMockData } from "@/_mockdata/briefing";
 
-import { briefingFixtures } from "./fixtures";
 import type { BriefingFeed } from "./types";
 
 export async function getBriefing(): Promise<BriefingFeed> {
@@ -11,7 +11,7 @@ export async function getBriefing(): Promise<BriefingFeed> {
     getPreviewClientKind(),
     getPreviewBriefing(),
   ]);
-  const feed = briefingFixtures[clientKind];
+  const feed = briefingMockData[clientKind];
 
   return mode === "empty" ? { ...feed, items: [] } : feed;
 }

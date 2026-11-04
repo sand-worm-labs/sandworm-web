@@ -1,10 +1,11 @@
 import Image from "next/image";
 
+// Matches the web app's header logo (PublicHeaderLogo).
 export function BrandMark() {
   return (
     <span className="flex items-center gap-2">
-      <Image src="/logo.svg" alt="" width={30} height={30} />
-      <span className="font-tertiary text-[1.05rem] font-bold uppercase leading-normal text-ink-100">
+      <Image src="/logo.svg" alt="" width={26} height={26} />
+      <span className="hidden font-tertiary text-[0.95rem] font-bold uppercase text-ink-100 sm:inline dark:text-white">
         SandWorm
       </span>
     </span>

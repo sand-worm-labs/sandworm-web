@@ -1,6 +1,5 @@
 import type { OrganisationTypeId } from "@/features/setup/options/organisation-types";
-
-import type { OverviewData } from "../types";
+import type { OverviewData } from "@/features/overview/types";
 
 import { acceleratorOverview } from "./accelerator";
 import { chainOverview } from "./chain";
@@ -9,7 +8,7 @@ import { nftOverview } from "./nft";
 import { protocolOverview } from "./protocol";
 import { vcOverview } from "./vc";
 
-export const overviewFixtures: Record<OrganisationTypeId, OverviewData> = {
+export const overviewMockData: Record<OrganisationTypeId, OverviewData> = {
   exchange: exchangeOverview,
   nft: nftOverview,
   protocol: protocolOverview,

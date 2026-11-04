@@ -1,6 +1,4 @@
-import { analystFixture } from "@/features/session/fixtures";
-
-import type { OverviewData } from "../types";
+import type { OverviewData } from "@/features/overview/types";
 
 import {
   briefingEntry,
@@ -22,7 +20,6 @@ export const acceleratorOverview: OverviewData = {
     "Reading onchain activity for 41 companies in your S26 and F26 batches.",
   setup: buildSetupProgress({
     clientName: "Y Combinator",
-    analystName: analystFixture.name,
   }),
   library: [
     {

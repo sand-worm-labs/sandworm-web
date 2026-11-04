@@ -1,7 +1,7 @@
-import type { RequestsData } from "../types";
+import type { RequestsData } from "@/features/requests/types";
 
 import { exchangeRequests } from "./exchange";
-import { questionEntry, researchRequest, step } from "./builders";
+import { researchRequest, step } from "./builders";
 
 export function genericRequests(userName: string): RequestsData {
   return {
@@ -42,14 +42,6 @@ export function genericRequests(userName: string): RequestsData {
         reportLabel: "Read the report",
       }),
     ],
-    questions: [
-      questionEntry({
-        kind: "call",
-        title: "Walkthrough of your latest report",
-        detail: "30 minutes with your analyst",
-        status: "Upcoming",
-        when: "Thu 5 Nov, 15:00 PT",
-      }),
-    ],
+    questions: [],
   };
 }

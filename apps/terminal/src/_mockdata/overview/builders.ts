@@ -1,5 +1,4 @@
 import { toId } from "@/lib/slug";
-
 import type {
   BriefingEntry,
   ConcentrationSegment,
@@ -7,7 +6,7 @@ import type {
   GapEntry,
   Kpi,
   OpportunityEntry,
-} from "../types";
+} from "@/features/overview/types";
 
 type KpiInit = Omit<Kpi, "id" | "comparison"> & { comparison?: string };
 

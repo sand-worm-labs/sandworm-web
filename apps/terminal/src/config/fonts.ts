@@ -1,10 +1,12 @@
-import { Azeret_Mono as AzeretMono } from "next/font/google";
+import localFont from "next/font/local";
 
-export const baseFont = AzeretMono({
-  subsets: ["latin"],
+// Azeret Mono (OFL), latin, weights 300 to 500 in one variable file. Self-
+// hosted because Turbopack can't load the URLs Google Fonts now serves it from.
+export const baseFont = localFont({
+  src: "../../public/fonts/azeret-mono/AzeretMono-Latin-Variable.woff2",
+  weight: "300 500",
   display: "swap",
   adjustFontFallback: false,
-  weight: ["300", "400", "500"],
 });
 
 export const preloadedFontPaths = [

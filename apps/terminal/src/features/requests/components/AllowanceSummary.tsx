@@ -37,7 +37,6 @@ export function AllowanceSummary({ allowance }: { allowance: Allowance }) {
         meter={allowance.research}
         tone="brand"
       />
-      <MeterCell label="Analyst calls" meter={allowance.calls} tone="navy" />
       <div className="flex flex-col justify-center gap-0.5 px-6 py-[18px]">
         <span className="font-medium">Resets {allowance.resetsOn}</span>
         <span className="text-xs text-ink-400">

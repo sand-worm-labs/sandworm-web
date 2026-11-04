@@ -1,4 +1,4 @@
-import type { AnalysisCatalog } from "../types";
+import type { AnalysisCatalog } from "@/features/analysis/types";
 
 import { analysisRow, highlight } from "./builders";
 

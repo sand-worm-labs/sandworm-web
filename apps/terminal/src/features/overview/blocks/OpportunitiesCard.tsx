@@ -2,12 +2,11 @@ import clsx from "clsx";
 
 import { AppLink } from "@/components/AppLink";
 import { buttonClassName } from "@/components/Button";
-import { Card } from "@/components/Card";
+import { Card, cardRowDividerClassName } from "@/components/Card";
 import { ConfidenceMeter } from "@/features/opportunities/components/ConfidenceMeter";
 import { OpportunityStatusIcon } from "@/features/opportunities/components/OpportunityStatusIcon";
 
 import { BlockHeader } from "../components/BlockHeader";
-import { LIST_ROW_DIVIDER_CLASSNAME } from "../components/list-row";
 import type { OpportunitiesBlock } from "../types";
 
 export function OpportunitiesCard({ block }: { block: OpportunitiesBlock }) {
@@ -39,7 +38,7 @@ export function OpportunitiesCard({ block }: { block: OpportunitiesBlock }) {
           route="opportunity"
           className={clsx(
             "flex flex-wrap items-start gap-x-4 gap-y-2 rounded-xl px-2 py-3.5 transition-colors hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover md:grid md:grid-cols-[14px_minmax(0,1fr)_140px_130px_84px]",
-            LIST_ROW_DIVIDER_CLASSNAME
+            cardRowDividerClassName
           )}
         >
           <OpportunityStatusIcon status={item.status} />

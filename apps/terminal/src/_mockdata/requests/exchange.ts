@@ -1,11 +1,10 @@
-import type { RequestsData } from "../types";
+import type { RequestsData } from "@/features/requests/types";
 
 import { questionEntry, researchRequest, step } from "./builders";
 
 export const exchangeRequests: RequestsData = {
   allowance: {
     research: { used: 2, total: 5 },
-    calls: { used: 1, total: 4 },
     resetsOn: "1 Jan 2027",
     resetsShort: "1 Jan",
     resetsMonth: "January",
@@ -94,25 +93,11 @@ export const exchangeRequests: RequestsData = {
   ],
   questions: [
     questionEntry({
-      kind: "call",
-      title: "Walkthrough of the Paycrest report",
-      detail: "30 minutes with Tobi",
-      status: "Upcoming",
-      when: "Thu 5 Nov, 15:00 PT",
-    }),
-    questionEntry({
-      kind: "question",
       title: "Does the 2.2% include the exchange-rate spread?",
-      detail: "Tobi: Yes. It is the full cost of cashing out, spread included.",
+      detail:
+        "Sandworm: Yes. It is the full cost of cashing out, spread included.",
       status: "Answered",
       when: "Mon 2 Nov",
-    }),
-    questionEntry({
-      kind: "call",
-      title: "Q3 review",
-      detail: "Notes are in the call summary",
-      status: "Done",
-      when: "14 Oct",
     }),
   ],
 };
