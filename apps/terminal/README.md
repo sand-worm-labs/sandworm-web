@@ -102,6 +102,14 @@ different code.
   `standardLayout()` is the shared template.
 - Three states: `ready`, `settingUp` (day one) and `calculating`.
 
+### Welcome (first login)
+
+`features/welcome/` renders the "Welcome to your Terminal" dialog over a ready Overview. Its copy is
+data (`WelcomeContent`, one per client type) and `buildWelcome` adds the parts that come from the
+session: the analyst and the kick-off call's time and length. `getWelcome()` returns `undefined`
+when there is nothing to show; for now it always returns the welcome, so every load behaves like a
+first login. "See what's on your Overview" hands off to the customize drawer.
+
 ## Sections and Briefing (`/briefing`)
 
 Overview, Briefing, Analysis, Opportunities and Requests are tabs (`features/sections`), not

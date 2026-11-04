@@ -84,7 +84,7 @@ function GoalsStep() {
               Kick-off call with {client.analyst.name}
             </span>
             <span className="text-xs text-ink-400">
-              {client.kickoffCall.when}
+              {client.kickoffCall.when} · {client.kickoffCall.minutes} minutes
             </span>
           </div>
         </div>

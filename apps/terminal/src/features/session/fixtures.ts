@@ -17,7 +17,7 @@ function buildSession(seed: ClientSeed): Session {
     client: {
       name: seed.clientName,
       analyst: analystFixture,
-      kickoffCall: { when: "Thu 5 Nov, 15:00 PT · 30 minutes" },
+      kickoffCall: { when: "Thu 5 Nov, 15:00 PT", minutes: 30 },
       firstBriefingDays: 2,
     },
   };

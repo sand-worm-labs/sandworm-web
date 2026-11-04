@@ -10,7 +10,7 @@ export type Session = {
   client: {
     name: string;
     analyst: Analyst;
-    kickoffCall: { when: string };
+    kickoffCall: { when: string; minutes: number };
     firstBriefingDays: number;
   };
 };

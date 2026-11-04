@@ -8,6 +8,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@sandworm/ui/components/dialog";
+import { MODAL_CLASSNAME } from "@sandworm/ui/kit/modal";
 
 import { ROUTES } from "@/config/routes";
 
@@ -60,7 +61,7 @@ export function CommissionDialog({
       <DialogContent
         showCloseButton={false}
         aria-describedby={undefined}
-        className="top-14 max-h-[calc(100vh-7rem)] outline-none translate-y-0 gap-0 overflow-auto rounded-[22px] border border-hover-border bg-block-surface p-0 font-body text-[13px] leading-[1.45] text-ink-100 sm:max-w-[640px]"
+        className={`${MODAL_CLASSNAME} sm:max-w-[640px]`}
       >
         <DialogTitle className="sr-only">Commission research</DialogTitle>
         <DialogDescription className="sr-only">

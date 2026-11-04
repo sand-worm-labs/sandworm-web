@@ -1,4 +1,6 @@
 import type { SectionCounts } from "@/features/sections/types";
+import type { Analyst } from "@/features/session/types";
+import type { WelcomeData } from "@/features/welcome/types";
 import { exhaustiveCheck } from "@/lib/exhaustive";
 
 import { OverviewCalculating } from "./OverviewCalculating";
@@ -9,13 +11,26 @@ import type { Overview } from "./types";
 type OverviewPageProps = {
   overview: Overview;
   counts: SectionCounts;
-  viewer: { clientName: string; firstName: string };
+  viewer: { clientName: string; firstName: string; analyst: Analyst };
+  welcome?: WelcomeData;
 };
 
-export function OverviewPage({ overview, counts, viewer }: OverviewPageProps) {
+export function OverviewPage({
+  overview,
+  counts,
+  viewer,
+  welcome,
+}: OverviewPageProps) {
   switch (overview.status) {
     case "ready":
-      return <OverviewReady data={overview.data} counts={counts} />;
+      return (
+        <OverviewReady
+          data={overview.data}
+          counts={counts}
+          welcome={welcome}
+          viewer={viewer}
+        />
+      );
     case "settingUp":
       return (
         <OverviewSettingUp data={overview.data} firstName={viewer.firstName} />
