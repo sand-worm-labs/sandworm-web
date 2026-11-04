@@ -24,9 +24,9 @@ export const ROUTES = {
     isBuilt: false,
   },
   requests: { path: "/requests", label: "Requests", isBuilt: true },
-  commission: {
+  newRequest: {
     path: "/requests/new",
-    label: "Commission research",
+    label: "Submit a request",
     isBuilt: true,
   },
   contact: { path: "/contact", label: "Contact us", isBuilt: false },

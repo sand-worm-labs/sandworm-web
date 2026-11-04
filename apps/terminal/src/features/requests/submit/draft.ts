@@ -3,9 +3,9 @@ import { site } from "@/config/site";
 import type { TimelineStep } from "../types";
 
 import { TIMINGS, USE_CASES } from "./options";
-import type { CommissionDraft } from "./types";
+import type { RequestDraft } from "./types";
 
-export function emptyDraft(): CommissionDraft {
+export function emptyDraft(): RequestDraft {
   return {
     question: "",
     useCase: "plan-launch",
@@ -15,11 +15,11 @@ export function emptyDraft(): CommissionDraft {
   };
 }
 
-export function canSubmit(draft: CommissionDraft): boolean {
+export function canSubmit(draft: RequestDraft): boolean {
   return draft.question.trim().length > 0;
 }
 
-export function describeDraft(draft: CommissionDraft): string {
+export function describeDraft(draft: RequestDraft): string {
   const useCase = USE_CASES.find(option => option.id === draft.useCase);
   const timing = TIMINGS.find(option => option.id === draft.timing);
 

@@ -1,7 +1,7 @@
 "use server";
 
-import type { CommissionDraft } from "./types";
+import type { RequestDraft } from "./types";
 
-export async function submitCommission(_draft: CommissionDraft): Promise<void> {
+export async function submitRequest(_draft: RequestDraft): Promise<void> {
   // Stub: persists nothing until the API has somewhere to send a request.
 }

@@ -34,8 +34,8 @@ export function AnalysisNoResults({
         <Button variant="secondary" onClick={onClear}>
           Clear search
         </Button>
-        <AppLink route="commission" className={buttonClassName()}>
-          Commission research on this
+        <AppLink route="newRequest" className={buttonClassName()}>
+          Request research on this
         </AppLink>
       </div>
       {suggestion && (

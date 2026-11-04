@@ -49,9 +49,8 @@ export function AllowanceUsed({ allowance }: { allowance: Allowance }) {
           You&apos;ve used this quarter&apos;s research
         </h2>
         <p className="text-sm leading-[1.55] text-ink-500">
-          All {allowance.research.total} commissioned studies in your plan are
-          in progress or delivered. Your allowance resets on{" "}
-          {allowance.resetsOn}.
+          All {allowance.research.total} research requests in your plan are in
+          progress or delivered. Your allowance resets on {allowance.resetsOn}.
         </p>
       </div>
       <div className="mx-8 mt-2">

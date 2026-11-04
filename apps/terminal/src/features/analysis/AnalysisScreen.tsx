@@ -57,11 +57,11 @@ export function AnalysisScreen({
         counts={counts}
         actions={
           <AppLink
-            route="commission"
+            route="newRequest"
             className={buttonClassName({ className: "gap-2" })}
           >
             <PiPlus size={14} />
-            Commission research
+            Submit a request
           </AppLink>
         }
       />

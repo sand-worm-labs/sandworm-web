@@ -49,11 +49,11 @@ export function RequestsScreen({ data, counts }: RequestsScreenProps) {
       <SectionHeader
         current="requests"
         title="Requests"
-        subtitle="Research you've commissioned and questions you've asked."
+        subtitle="Research and questions you've submitted."
         counts={counts}
         actions={
-          <AppLink route="commission" className={buttonClassName()}>
-            Commission research
+          <AppLink route="newRequest" className={buttonClassName()}>
+            Submit a request
           </AppLink>
         }
       />

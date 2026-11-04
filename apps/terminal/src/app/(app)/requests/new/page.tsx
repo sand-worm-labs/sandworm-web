@@ -1,14 +1,14 @@
-import { CommissionDialog } from "@/features/requests/commission/CommissionDialog";
+import { SubmitRequestDialog } from "@/features/requests/submit/SubmitRequestDialog";
 import { loadRequestsScreen } from "@/features/requests/load";
 import { RequestsScreen } from "@/features/requests/RequestsScreen";
 
-export default async function CommissionRoute() {
+export default async function NewRequestRoute() {
   const { data, counts, session } = await loadRequestsScreen();
 
   return (
     <>
       <RequestsScreen data={data} counts={counts} />
-      <CommissionDialog
+      <SubmitRequestDialog
         allowance={data.allowance}
         clientName={session.client.name}
       />

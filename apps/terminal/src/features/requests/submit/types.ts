@@ -1,6 +1,6 @@
 import type { TimingId, UseCaseId } from "./options";
 
-export type CommissionDraft = {
+export type RequestDraft = {
   question: string;
   useCase: UseCaseId;
   about: readonly string[];

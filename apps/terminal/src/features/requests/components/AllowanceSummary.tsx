@@ -33,7 +33,7 @@ export function AllowanceSummary({ allowance }: { allowance: Allowance }) {
       className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] divide-border-secondary overflow-hidden md:divide-x"
     >
       <MeterCell
-        label="Commissioned research"
+        label="Research requests"
         meter={allowance.research}
         tone="brand"
       />

@@ -6,14 +6,14 @@ import { site } from "@/config/site";
 
 import { Timeline } from "../../components/Timeline";
 import { describeDraft, submittedTimeline } from "../draft";
-import type { CommissionDraft } from "../types";
+import type { RequestDraft } from "../types";
 
-type CommissionSentProps = {
-  draft: CommissionDraft;
+type RequestSentProps = {
+  draft: RequestDraft;
   submittedAt: string;
 };
 
-export function CommissionSent({ draft, submittedAt }: CommissionSentProps) {
+export function RequestSent({ draft, submittedAt }: RequestSentProps) {
   return (
     <div className="flex flex-col">
       <div className="flex flex-col items-start gap-2.5 px-8 pb-2 pt-7">

@@ -69,8 +69,8 @@ function GoalsStep() {
           ))}
         </div>
         <span className="text-xs text-ink-400">
-          People who can request may commission research. It uses your plan's
-          allowance.
+          People who can request may submit research requests. It uses your
+          plan's allowance.
         </span>
       </div>
     </div>

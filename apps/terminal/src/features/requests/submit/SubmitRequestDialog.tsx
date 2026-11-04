@@ -15,34 +15,34 @@ import { site } from "@/config/site";
 import { isResearchUsedUp } from "../requests-state";
 import type { Allowance } from "../types";
 
-import { submitCommission } from "./actions";
+import { submitRequest } from "./actions";
 import { AllowanceUsed } from "./components/AllowanceUsed";
-import { CommissionForm } from "./components/CommissionForm";
-import { CommissionSent } from "./components/CommissionSent";
-import { CommissionTabs } from "./components/CommissionTabs";
+import { RequestForm } from "./components/RequestForm";
+import { RequestSent } from "./components/RequestSent";
+import { RequestDialogHeader } from "./components/RequestDialogHeader";
 import { emptyDraft, formatSubmittedAt } from "./draft";
-import type { CommissionDraft } from "./types";
+import type { RequestDraft } from "./types";
 
-type CommissionDialogProps = {
+type SubmitRequestDialogProps = {
   allowance: Allowance;
   clientName: string;
 };
 
 type Phase = { _tag: "editing" } | { _tag: "sent"; submittedAt: string };
 
-export function CommissionDialog({
+export function SubmitRequestDialog({
   allowance,
   clientName,
-}: CommissionDialogProps) {
+}: SubmitRequestDialogProps) {
   const router = useRouter();
-  const [draft, setDraft] = useState<CommissionDraft>(emptyDraft);
+  const [draft, setDraft] = useState<RequestDraft>(emptyDraft);
   const [phase, setPhase] = useState<Phase>({ _tag: "editing" });
   const [isSending, setIsSending] = useState(false);
 
   const send = async () => {
     setIsSending(true);
     try {
-      await submitCommission(draft);
+      await submitRequest(draft);
       setPhase({ _tag: "sent", submittedAt: formatSubmittedAt(new Date()) });
     } finally {
       setIsSending(false);
@@ -61,17 +61,17 @@ export function CommissionDialog({
         aria-describedby={undefined}
         className="top-14 max-h-[calc(100vh-7rem)] outline-none translate-y-0 gap-0 overflow-auto rounded-[22px] border border-hover-border bg-block-surface p-0 font-body text-[13px] leading-[1.45] text-ink-100 sm:max-w-[640px]"
       >
-        <DialogTitle className="sr-only">Commission research</DialogTitle>
+        <DialogTitle className="sr-only">Submit a request</DialogTitle>
         <DialogDescription className="sr-only">
           Ask {site.name} for a piece of research.
         </DialogDescription>
-        <CommissionTabs />
+        <RequestDialogHeader />
         {isResearchUsedUp(allowance) ? (
           <AllowanceUsed allowance={allowance} />
         ) : phase._tag === "sent" ? (
-          <CommissionSent draft={draft} submittedAt={phase.submittedAt} />
+          <RequestSent draft={draft} submittedAt={phase.submittedAt} />
         ) : (
-          <CommissionForm
+          <RequestForm
             draft={draft}
             onChange={setDraft}
             onSubmit={send}

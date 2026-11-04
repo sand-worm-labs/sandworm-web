@@ -32,8 +32,8 @@ export function OpportunitiesEmpty() {
         >
           See a sample opportunity
         </AppLink>
-        <AppLink route="commission" className={buttonClassName()}>
-          Commission research
+        <AppLink route="newRequest" className={buttonClassName()}>
+          Submit a request
         </AppLink>
       </div>
     </Card>

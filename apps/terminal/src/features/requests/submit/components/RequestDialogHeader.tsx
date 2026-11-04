@@ -1,11 +1,11 @@
 import { PiX } from "react-icons/pi";
 import { DialogClose } from "@sandworm/ui/components/dialog";
 
-export function CommissionTabs() {
+export function RequestDialogHeader() {
   return (
     <div className="flex items-center justify-between gap-3 px-6 pt-[18px]">
       <span className="text-base font-medium text-ink-100">
-        Commission research
+        Submit a request
       </span>
       <DialogClose
         aria-label="Close"

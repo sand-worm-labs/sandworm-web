@@ -13,28 +13,28 @@ import { site } from "@/config/site";
 import type { Allowance } from "../../types";
 import { canSubmit } from "../draft";
 import { TIMINGS, USE_CASES } from "../options";
-import type { CommissionDraft } from "../types";
+import type { RequestDraft } from "../types";
 
 import { AllowancePips } from "./AllowancePips";
 
-type CommissionFormProps = {
-  draft: CommissionDraft;
-  onChange: (draft: CommissionDraft) => void;
+type RequestFormProps = {
+  draft: RequestDraft;
+  onChange: (draft: RequestDraft) => void;
   onSubmit: () => void;
   isSending: boolean;
   allowance: Allowance;
   clientName: string;
 };
 
-export function CommissionForm({
+export function RequestForm({
   draft,
   onChange,
   onSubmit,
   isSending,
   allowance,
   clientName,
-}: CommissionFormProps) {
-  const update = (patch: Partial<CommissionDraft>) =>
+}: RequestFormProps) {
+  const update = (patch: Partial<RequestDraft>) =>
     onChange({ ...draft, ...patch });
 
   return (
@@ -46,12 +46,10 @@ export function CommissionForm({
       }}
     >
       <div className="flex flex-col gap-1.5 px-6 pb-1 pt-[18px]">
-        <h2 className="text-xl font-medium text-ink-100">
-          Commission research
-        </h2>
+        <h2 className="text-xl font-medium text-ink-100">Submit a request</h2>
         <p className="text-sm text-ink-500">
-          Tell {site.name} what you want to know. They&apos;ll reply with a
-          scope for you to approve.
+          Tell {site.name} what you want to know. You&apos;ll get a scope to
+          approve before work starts.
         </p>
       </div>
       <div className="mx-6 mt-3">
@@ -64,7 +62,7 @@ export function CommissionForm({
       <div className="flex flex-col gap-[18px] px-6 py-[18px]">
         <div className="flex flex-col gap-1.5">
           <TextAreaField
-            id="commission-question"
+            id="request-question"
             label="What do you want to know?"
             rows={4}
             value={draft.question}
