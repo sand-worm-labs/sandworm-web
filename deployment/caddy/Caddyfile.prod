@@ -63,6 +63,19 @@ app.sandwormlab.xyz {
 	}
 }
 
+# ─── Terminal (apps/terminal, `next start` on :3001) ─────────────────────────
+terminal.sandwormlab.xyz {
+	# The API on the terminal's own origin, so the browser sends the session
+	# cookies without CORS
+	handle /api/* {
+		reverse_proxy host.docker.internal:8003
+	}
+
+	handle {
+		reverse_proxy host.docker.internal:3001
+	}
+}
+
 # ─── MCP server (apps/mcp) ───────────────────────────────────────────────────
 # Its OAuth authorization server is the app domain above.
 mcp.sandwormlab.xyz {

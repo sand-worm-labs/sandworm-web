@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  transpilePackages: ["@sandworm/ui"],
+  transpilePackages: ["@sandworm/types", "@sandworm/ui"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "avatars.githubusercontent.com" },

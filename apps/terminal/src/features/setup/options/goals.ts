@@ -1,3 +1,7 @@
+import type { GoalId } from "@sandworm/types/terminal";
+
+export { type GoalId, MAX_GOALS } from "@sandworm/types/terminal";
+
 export const GOALS = [
   { id: "markets", label: "Find new markets" },
   { id: "retain", label: "Keep users from leaving" },
@@ -5,8 +9,4 @@ export const GOALS = [
   { id: "partners", label: "Find partners" },
   { id: "board", label: "Board and investor updates" },
   { id: "product", label: "Decide what to build next" },
-] as const;
-
-export type GoalId = (typeof GOALS)[number]["id"];
-
-export const MAX_GOALS = 3;
+] as const satisfies readonly { id: GoalId; label: string }[];
