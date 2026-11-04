@@ -10,9 +10,9 @@ export const opportunityMockData: Record<
   OpportunitiesFeed
 > = {
   exchange: exchangeOpportunities,
-  nft: opportunitiesFromOverview(overviewMockData.nft),
   protocol: opportunitiesFromOverview(overviewMockData.protocol),
   chain: opportunitiesFromOverview(overviewMockData.chain),
   vc: opportunitiesFromOverview(overviewMockData.vc),
   accelerator: opportunitiesFromOverview(overviewMockData.accelerator),
+  other: opportunitiesFromOverview(overviewMockData.other),
 };

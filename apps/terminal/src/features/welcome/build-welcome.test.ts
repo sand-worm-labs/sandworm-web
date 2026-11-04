@@ -21,7 +21,7 @@ describe("buildWelcome", () => {
 
   it("names the client and Sandworm from the session and the site, not the copy", () => {
     expect(welcome.items[1]?.detail).toBe(
-      "Picked for Robinhood from our existing research"
+      "Picked for Acme from our existing research"
     );
     expect(welcome.items[2]?.detail).toContain("Sandworm");
   });

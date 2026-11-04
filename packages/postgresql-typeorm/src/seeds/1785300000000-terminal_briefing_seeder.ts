@@ -15,7 +15,7 @@ import {
     type TerminalBriefingKind,
 } from '../entities';
 
-// A briefing for one terminal client (the Robinhood exchange story the terminal's
+// A briefing for one terminal client (the Acme exchange story the terminal's
 // fixtures tell), each item linked to a random cell of a random notebook. Uses the
 // first terminal client, or makes one for the oldest user. Skips a client that
 // already has a briefing.
@@ -46,14 +46,14 @@ const ITEMS: Seed[] = [
         detail: {
             headline: { value: '2.2%', label: 'average fee to cash out to pesos', delta: { text: 'Nigeria: 0.9%', tone: 'neutral' } },
             what: "Cashing out stablecoins to pesos costs 2.2% on average, more than twice what it costs in Nigeria. Argentina's ramps have stayed this expensive for six months while volume kept growing.",
-            why: '11,200 of your wallets cash out to pesos every month, about $14.2M. A cheaper route inside Robinhood Wallet could keep that flow and earn about $43K a month.',
+            why: '11,200 of your wallets cash out to pesos every month, about $14.2M. A cheaper route inside Acme Wallet could keep that flow and earn about $43K a month.',
         },
     },
     {
         kind: 'metric',
         title: 'Swap volume fell 9% this month',
         summary: '7 of your top 50 wallets traded less.',
-        subject: 'Robinhood Wallet',
+        subject: 'Acme Wallet',
         ago: 2 * HOUR + 2 * 60 * 1000,
         isRead: false,
         detail: {
@@ -74,7 +74,7 @@ const ITEMS: Seed[] = [
         kind: 'metric',
         title: 'Your notebook: active wallets up 4%',
         summary: 'From your own notebook. 312,400 wallets were active in October.',
-        subject: 'Robinhood Wallet',
+        subject: 'Acme Wallet',
         ago: DAY - 2 * HOUR,
         isRead: false,
         isPersonal: true,
@@ -143,8 +143,8 @@ export class TerminalBriefingSeeder1785300000000 implements Seeder {
             client = await clients.save(new TerminalClientEntity({
                 ownerId: owner.id,
                 type: 'exchange',
-                name: 'Robinhood',
-                website: 'https://robinhood.com',
+                name: 'Acme',
+                website: 'https://acme.example',
             }));
         }
 

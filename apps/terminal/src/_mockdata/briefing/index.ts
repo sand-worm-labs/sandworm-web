@@ -7,9 +7,9 @@ import { briefingFromOverview } from "./from-overview";
 
 export const briefingMockData: Record<OrganisationTypeId, BriefingFeed> = {
   exchange: exchangeBriefing,
-  nft: briefingFromOverview(overviewMockData.nft),
   protocol: briefingFromOverview(overviewMockData.protocol),
   chain: briefingFromOverview(overviewMockData.chain),
   vc: briefingFromOverview(overviewMockData.vc),
   accelerator: briefingFromOverview(overviewMockData.accelerator),
+  other: briefingFromOverview(overviewMockData.other),
 };

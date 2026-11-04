@@ -8,7 +8,7 @@ import {
 import { TerminalBrand } from "@/components/TerminalBrand";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ROUTES } from "@/config/routes";
-import { getCurrentUser } from "@/features/auth/user";
+import { getHeaderAccount } from "@/features/auth/account";
 
 import { AccountMenu } from "./AccountMenu";
 import { HeaderSearch } from "./HeaderSearch";
@@ -19,8 +19,7 @@ const GITHUB_URL = "https://github.com/sand-worm-labs";
 // The web app's header (ShowcaseHeader), built from the same shared pieces.
 // The only difference is the "terminal" badge.
 export async function AppHeader() {
-  const user = await getCurrentUser();
-  const name = user?.firstName || user?.username || "Account";
+  const { user, workspaceName } = await getHeaderAccount();
 
   return (
     <AppHeaderFrame>
@@ -38,17 +37,7 @@ export async function AppHeader() {
         </div>
         <HelpMenu docsUrl={DOCS_URL} githubUrl={GITHUB_URL} />
         <ThemeToggle />
-        <AccountMenu
-          user={
-            user && {
-              name,
-              fullName:
-                user.fullName ?? `${name} ${user.lastName ?? ""}`.trim(),
-              email: user.email,
-              avatarUrl: user.avater,
-            }
-          }
-        />
+        <AccountMenu user={user} workspaceName={workspaceName} />
       </AppHeaderActions>
     </AppHeaderFrame>
   );

@@ -44,31 +44,6 @@ export const ORGANISATION_TYPES = [
     },
   },
   {
-    id: "nft",
-    label: "NFT marketplace",
-    description: "Traders, collections and rival marketplaces",
-    template: {
-      name: "NFT marketplace",
-      kpis: [
-        "Trading volume",
-        "Market share",
-        "Unique traders",
-        "Fees and royalties",
-      ],
-      blocks: [
-        {
-          title: "Who carries your volume",
-          summary: "Your top traders against rivals",
-        },
-        {
-          title: "Where your traders also trade",
-          summary: "Overlap with other marketplaces",
-        },
-        { title: "Gaps", summary: "Things your traders do somewhere else" },
-      ],
-    },
-  },
-  {
     id: "protocol",
     label: "DeFi protocol",
     description: "Deposits, borrowers and competing protocols",
@@ -160,6 +135,31 @@ export const ORGANISATION_TYPES = [
           summary: "Weekly growth after launch",
         },
         { title: "Gaps", summary: "Sectors with no company in your batches" },
+      ],
+    },
+  },
+  {
+    id: "other",
+    label: "Something else",
+    description: "Tell us what you do and we'll shape the layout with you",
+    template: {
+      name: "General",
+      kpis: [
+        "Active users",
+        "New users",
+        "Transactions",
+        "Still active after 90 days",
+      ],
+      blocks: [
+        {
+          title: "Who carries your activity",
+          summary: "How much depends on a few wallets",
+        },
+        {
+          title: "Where users go next",
+          summary: "The apps and chains they move to",
+        },
+        { title: "Gaps", summary: "Things your users do somewhere else" },
       ],
     },
   },

@@ -21,16 +21,28 @@ async function signOut() {
 
 // The web app's account menu. Sign-in is on the main app, which sends the
 // visitor back to this page.
-export function AccountMenu({ user }: { user: HeaderUser | null }) {
+type AccountMenuProps = {
+  user: HeaderUser | null;
+  workspaceName?: string | null;
+  // The name beside the avatar. Off, the avatar alone opens the menu.
+  showName?: boolean;
+};
+
+export function AccountMenu({
+  user,
+  workspaceName,
+  showName = false,
+}: AccountMenuProps) {
   const pathname = usePathname() ?? "/";
 
   return (
     <SharedAccountMenu
       user={user}
-      showName={false}
+      showName={showName}
       signIn={<SignInButton href={signInUrl(pathname)} />}
       onSignOut={signOut}
       workspaceHref={`${env.webAppUrl}/workspace`}
+      workspaceName={workspaceName}
     />
   );
 }

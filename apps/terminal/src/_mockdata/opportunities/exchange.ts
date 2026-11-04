@@ -7,7 +7,7 @@ export const exchangeOpportunities: OpportunitiesFeed = {
     opportunity({
       status: "New",
       title: "Argentina's off-ramps charge 2× Nigeria's fees",
-      summary: "Offer a cheaper cash-out to pesos inside Robinhood Wallet.",
+      summary: "Offer a cheaper cash-out to pesos inside Acme Wallet.",
       kind: "Market entry",
       value: "$43K/mo",
       valueLabel: "possible revenue",

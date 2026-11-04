@@ -28,6 +28,10 @@ export class TerminalClientEntity extends AbstractEntity {
   @Column({ type: 'varchar', length: 255, default: '' })
   website!: string;
 
+  // What the organisation does, in the client's words
+  @Column({ type: 'varchar', length: 500, default: '' })
+  description!: string;
+
   // A SetupTracking (@sandworm/types/terminal)
   @Column({ type: 'jsonb', default: '{}' })
   tracking!: Record<string, unknown>;

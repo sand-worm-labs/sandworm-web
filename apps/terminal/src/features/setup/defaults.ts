@@ -3,7 +3,12 @@ import type { SetupDraft } from "./types";
 
 // Where setup starts for someone who hasn't saved anything yet.
 export const EMPTY_SETUP_DRAFT: SetupDraft = {
-  organisation: { type: ORGANISATION_TYPES[0].id, name: "", website: "" },
+  organisation: {
+    type: ORGANISATION_TYPES[0].id,
+    name: "",
+    website: "",
+    description: "",
+  },
   tracking: {
     addresses: "",
     autoDiscover: true,

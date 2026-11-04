@@ -14,8 +14,7 @@ function buildSession(seed: ClientSeed): Session {
 }
 
 export const sessionMockData: Record<OrganisationTypeId, Session> = {
-  exchange: buildSession({ clientName: "Robinhood", userName: "Maya Chen" }),
-  nft: buildSession({ clientName: "OpenSea", userName: "Jordan Lee" }),
+  exchange: buildSession({ clientName: "Acme", userName: "Alex Morgan" }),
   protocol: buildSession({ clientName: "Aave", userName: "Lena Ortiz" }),
   chain: buildSession({ clientName: "Base", userName: "Ama Mensah" }),
   vc: buildSession({ clientName: "Kestrel Ventures", userName: "Rhea Kapoor" }),
@@ -23,4 +22,5 @@ export const sessionMockData: Record<OrganisationTypeId, Session> = {
     clientName: "Y Combinator",
     userName: "Sam Okafor",
   }),
+  other: buildSession({ clientName: "Northwind", userName: "Alex Morgan" }),
 };

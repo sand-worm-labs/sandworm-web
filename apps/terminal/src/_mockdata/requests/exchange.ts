@@ -12,7 +12,7 @@ export const exchangeRequests: RequestsData = {
   research: [
     researchRequest({
       title: "Brazil cash-out: users, apps and fees",
-      by: "Maya Chen · today",
+      by: "Alex Morgan · today",
       status: "Submitted",
       next: "Waiting for scope",
       steps: [
@@ -45,7 +45,7 @@ export const exchangeRequests: RequestsData = {
     }),
     researchRequest({
       title: "Stablecoin yield: what would it take?",
-      by: "Maya Chen · 20 Oct",
+      by: "Alex Morgan · 20 Oct",
       status: "In progress",
       next: "Due Fri 13 Nov",
       steps: [
@@ -61,7 +61,7 @@ export const exchangeRequests: RequestsData = {
     }),
     researchRequest({
       title: "LatAm cash-out sizing",
-      by: "Maya Chen · 14 Oct",
+      by: "Alex Morgan · 14 Oct",
       status: "Delivered",
       next: "Mon 26 Oct",
       steps: [

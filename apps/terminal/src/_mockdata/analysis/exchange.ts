@@ -22,7 +22,7 @@ export const exchangeAnalysis: AnalysisCatalog = {
       tag: "Delivered",
       when: "Mon 26 Oct",
       title: "LatAm cash-out sizing",
-      line: "The research Maya requested on 14 Oct.",
+      line: "The research Alex requested on 14 Oct.",
       entity: "Your request",
     }),
   ],

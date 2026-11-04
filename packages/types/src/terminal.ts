@@ -2,7 +2,7 @@
 // shape the API stores. Labels and templates live with the terminal's UI; the
 // API only needs to know which ids are valid.
 
-export const ORGANISATION_TYPE_IDS = ['exchange', 'nft', 'protocol', 'chain', 'vc', 'accelerator'] as const;
+export const ORGANISATION_TYPE_IDS = ['exchange', 'protocol', 'chain', 'vc', 'accelerator', 'other'] as const;
 export type OrganisationTypeId = (typeof ORGANISATION_TYPE_IDS)[number];
 
 export const GOAL_IDS = ['markets', 'retain', 'rivals', 'partners', 'board', 'product'] as const;
@@ -23,7 +23,7 @@ export type SetupTracking = {
 };
 
 export type SetupDraft = {
-  organisation: { type: OrganisationTypeId; name: string; website: string };
+  organisation: { type: OrganisationTypeId; name: string; website: string; description: string };
   tracking: SetupTracking;
   goals: { selected: GoalId[] };
   team: { invites: TeamInvite[] };

@@ -12,12 +12,12 @@ import { StepProgress } from "./StepProgress";
 import { TemplatePreview } from "./TemplatePreview";
 
 export function SetupStepScreen({ stepId }: { stepId: SetupStepId }) {
-  const { draft, session } = useSetup();
+  const { draft, session, account } = useSetup();
   const step = getSetupStep(stepId);
 
   return (
     <div className="flex min-h-screen flex-col bg-page-surface font-body text-[13px] leading-snug text-ink-100">
-      <SetupHeader session={session} />
+      <SetupHeader account={account} />
       <div className="flex min-h-0 flex-1">
         <main className="flex min-w-0 flex-1 flex-col px-6 py-8 md:px-16 md:pb-8 md:pt-10">
           <div className="flex w-full max-w-[640px] flex-1 flex-col gap-6">

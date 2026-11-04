@@ -1,4 +1,5 @@
 import { OptionCard } from "@sandworm/ui/kit/form/option-card";
+import { TextAreaField } from "@sandworm/ui/kit/form/text-area-field";
 import { TextField } from "@sandworm/ui/kit/form/text-field";
 
 import { useSetup } from "../context";
@@ -33,6 +34,19 @@ function OrganisationStep() {
           ))}
         </div>
       </fieldset>
+      {organisation.type === "other" && (
+        <TextAreaField
+          id="organisation-description"
+          label="What does your organisation do?"
+          rows={3}
+          maxLength={500}
+          placeholder="For example: a payments app for freelancers, built on Base."
+          value={organisation.description}
+          onChange={event =>
+            patch("organisation", { description: event.target.value })
+          }
+        />
+      )}
       <div className="flex flex-wrap gap-3">
         <TextField
           id="organisation-name"

@@ -15,6 +15,15 @@ export const PREVIEW_BRIEFING_COOKIE = "preview-briefing";
 export const PREVIEW_OPPORTUNITIES_COOKIE = "preview-opportunities";
 
 export const PREVIEW_ALLOWANCE_COOKIE = "preview-allowance";
+export const PREVIEW_ACCESS_COOKIE = "preview-access";
+
+export const ACCESS_PREVIEW_MODES = ["allowed", "noClient"] as const;
+
+export type AccessPreviewMode = (typeof ACCESS_PREVIEW_MODES)[number];
+
+export function isAccessPreviewMode(value: string): value is AccessPreviewMode {
+  return ACCESS_PREVIEW_MODES.some(mode => mode === value);
+}
 
 export const CONTENT_PREVIEW_MODES = ["items", "empty"] as const;
 
@@ -71,3 +80,10 @@ export const getPreviewAllowance = () =>
     isAllowancePreviewMode,
     "available"
   );
+
+export async function getPreviewAccess(): Promise<
+  AccessPreviewMode | undefined
+> {
+  const value = (await cookies()).get(PREVIEW_ACCESS_COOKIE)?.value;
+  return value && isAccessPreviewMode(value) ? value : undefined;
+}

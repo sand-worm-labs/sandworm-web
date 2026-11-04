@@ -15,11 +15,11 @@ const exchangePages: readonly EntityPage[] = [
 export const entityFixtures: Record<OrganisationTypeId, readonly EntityPage[]> =
   {
     exchange: exchangePages,
-    nft: [],
     protocol: [],
     chain: [],
     vc: [],
     accelerator: [],
+    other: [],
   };
 
 export function findEntityPage(
