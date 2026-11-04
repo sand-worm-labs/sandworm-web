@@ -35,3 +35,5 @@ export * from './audit-log.entity';
 export * from './referral-code.entity';
 export * from './showcase-lead.entity';
 export * from './showcase-taxonomy.entity';
+export * from './terminal-client.entity';
+export * from './terminal-member.entity';
