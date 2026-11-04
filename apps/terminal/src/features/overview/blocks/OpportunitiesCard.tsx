@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { buttonClassName } from "@sandworm/ui/kit/button";
 import { Card } from "@sandworm/ui/kit/card";
+import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 
 import { AppLink } from "@/components/AppLink";
 import { ConfidenceMeter } from "@/features/opportunities/components/ConfidenceMeter";
@@ -14,8 +15,8 @@ export function OpportunitiesCard({ block }: { block: OpportunitiesBlock }) {
   const titleId = `${block.id}-title`;
 
   return (
-    <Card aria-labelledby={titleId} className="px-4 pb-2.5 pt-[22px]">
-      <div className="px-2 pb-2">
+    <Card aria-labelledby={titleId} className="px-3 pb-2.5 pt-[22px]">
+      <div className="px-3 pb-2">
         <BlockHeader
           id={titleId}
           title={block.title}
@@ -38,7 +39,8 @@ export function OpportunitiesCard({ block }: { block: OpportunitiesBlock }) {
           key={item.id}
           route="opportunity"
           className={clsx(
-            "flex flex-wrap items-start gap-x-4 gap-y-2 rounded-xl px-2 py-3.5 transition-colors hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover md:grid md:grid-cols-[14px_minmax(0,1fr)_140px_130px_84px]",
+            ROW_HOVER_CLASSNAME,
+            "flex flex-wrap items-start gap-x-4 gap-y-2 px-3 py-3.5 md:grid md:grid-cols-[14px_minmax(0,1fr)_140px_130px_84px]",
             LIST_ROW_DIVIDER_CLASSNAME
           )}
         >

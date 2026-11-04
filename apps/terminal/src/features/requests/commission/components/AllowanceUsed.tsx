@@ -85,7 +85,7 @@ export function AllowanceUsed({
           <AppLink
             key={option.id}
             route={option.route}
-            className="grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-[14px] border border-hover-border bg-block-surface px-4 py-3.5 transition-colors hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover"
+            className="grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-[14px] border border-hover-border bg-block-surface px-4 py-3.5 transition-colors hover:bg-hover-bg dark:hover:bg-sidebar-hover"
           >
             <span
               aria-hidden="true"

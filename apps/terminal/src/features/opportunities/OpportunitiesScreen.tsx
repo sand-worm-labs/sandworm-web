@@ -67,9 +67,9 @@ export function OpportunitiesScreen({
               Values are Sandworm estimates
             </span>
           </div>
-          <div className="px-3 pb-2.5 pt-1">
+          <div className="px-2 pb-2.5 pt-1">
             {groups.length === 0 && (
-              <p className="px-2 py-10 text-center text-sm text-ink-400">
+              <p className="px-3 py-10 text-center text-sm text-ink-400">
                 Nothing here yet.
               </p>
             )}
@@ -79,7 +79,7 @@ export function OpportunitiesScreen({
                 aria-label={group.status}
                 className="flex flex-col"
               >
-                <h2 className="flex items-center gap-2 px-2 pb-1.5 pt-3.5 text-xs font-medium text-ink-500">
+                <h2 className="flex items-center gap-2 px-3 pb-1.5 pt-3.5 text-xs font-medium text-ink-500">
                   <OpportunityStatusIcon status={group.status} />
                   {group.status}
                   <span className="font-normal text-ink-400">

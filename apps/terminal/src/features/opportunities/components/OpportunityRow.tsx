@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 
 import { AppLink } from "@/components/AppLink";
 
@@ -12,7 +13,8 @@ export function OpportunityRow({ item }: { item: Opportunity }) {
     <AppLink
       route="opportunity"
       className={clsx(
-        "flex flex-wrap items-start gap-x-4 gap-y-2 rounded-xl px-2 py-3.5 transition-colors hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover md:grid md:grid-cols-[14px_minmax(0,1fr)_120px_140px_84px_60px]",
+        ROW_HOVER_CLASSNAME,
+        "flex flex-wrap items-start gap-x-4 gap-y-2 px-3 py-3.5 md:grid md:grid-cols-[14px_minmax(0,1fr)_120px_140px_84px_60px]",
         item.status === "Passed" && "opacity-75"
       )}
     >

@@ -42,9 +42,9 @@ export function BriefingCard({ block }: { block: BriefingBlock }) {
   return (
     <Card
       aria-labelledby={titleId}
-      className="flex h-full flex-col gap-3.5 px-4 pb-3 pt-[22px]"
+      className="flex h-full flex-col gap-3.5 px-3 pb-3 pt-[22px]"
     >
-      <div className="px-2">
+      <div className="px-3">
         <BlockHeader
           id={titleId}
           title={block.title}
@@ -62,7 +62,7 @@ export function BriefingCard({ block }: { block: BriefingBlock }) {
           }
         />
       </div>
-      <div className="px-2">
+      <div className="px-3">
         <SegmentedControl
           label="Filter briefing"
           options={options}
@@ -73,7 +73,7 @@ export function BriefingCard({ block }: { block: BriefingBlock }) {
       <div className="flex flex-col">
         {groupInOrder(visibleEntries, entry => entry.group).map(group => (
           <div key={group.key} className="flex flex-col">
-            <div className="flex items-center gap-1.5 px-2 pb-1 pt-2.5 text-xs font-medium text-ink-400">
+            <div className="flex items-center gap-1.5 px-3 pb-1 pt-2.5 text-xs font-medium text-ink-400">
               {group.key}
               <span className="font-normal">{group.items.length}</span>
             </div>

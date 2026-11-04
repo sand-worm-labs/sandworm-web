@@ -59,6 +59,7 @@
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
     "./kit/tone": "./src/kit/tone.ts",
+    "./kit/interactive": "./src/kit/interactive.ts",
     "./kit/form/styles": "./src/kit/form/styles.ts",
     "./kit/lib/*": "./src/kit/lib/*.ts",
     "./kit/*": "./src/kit/*.tsx"
