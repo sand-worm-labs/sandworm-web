@@ -39,3 +39,34 @@ export type TerminalSession = {
   // How long after setup the first briefing is expected
   firstBriefingDays: number;
 };
+
+// A request a client submits: research (scoped, approved, then worked on by
+// Sandworm's agents into a report) or a question (answered without a scope).
+export const REQUEST_KIND_IDS = ['research', 'question'] as const;
+export type RequestKindId = (typeof REQUEST_KIND_IDS)[number];
+
+// A question goes submitted → in_progress → delivered and skips the scope steps.
+export const REQUEST_STATUS_IDS = [
+  'submitted',
+  'scoping',
+  'awaiting_approval',
+  'in_progress',
+  'delivered',
+  'declined',
+  'failed',
+] as const;
+export type RequestStatusId = (typeof REQUEST_STATUS_IDS)[number];
+
+export const REQUEST_USE_CASE_IDS = ['plan-launch', 'pick-partner', 'investor-update', 'other'] as const;
+export type RequestUseCaseId = (typeof REQUEST_USE_CASE_IDS)[number];
+
+export const REQUEST_TIMING_IDS = ['two-weeks', 'one-week', 'no-rush'] as const;
+export type RequestTimingId = (typeof REQUEST_TIMING_IDS)[number];
+
+// What the agent proposes after reading the request, for the client to approve.
+export type RequestScope = {
+  summary: string;
+  questions: string[];
+  sources: string[];
+  dueAt: string; // ISO date
+};

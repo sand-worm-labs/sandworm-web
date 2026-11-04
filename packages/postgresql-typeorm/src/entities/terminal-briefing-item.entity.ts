@@ -20,8 +20,8 @@ export type TerminalBriefingDetail = {
 };
 
 // One item in a terminal client's briefing. Every item comes from a notebook
-// cell, from Sandworm's analysts or from the client's own workspace, and links
-// back to it. Drafts (published_at null) are seen by analysts only.
+// cell, from Sandworm's agents or from the client's own workspace, and links
+// back to it. Drafts (published_at null) are not shown to the client.
 @Entity('terminal_briefing_item')
 @Index('IDX_terminal_briefing_item_feed', ['clientId', 'publishedAt'])
 @Index('IDX_terminal_briefing_item_member', ['memberId'])
@@ -73,7 +73,7 @@ export class TerminalBriefingItemEntity extends AbstractEntity {
   @Column({ name: 'published_at', type: 'timestamptz', nullable: true })
   publishedAt!: Date | null;
 
-  // The analyst or user who made it; null once they are deleted
+  // The user who made it; null when an agent made it, or once they are deleted
   @Column({ name: 'created_by', type: 'uuid', nullable: true })
   createdBy!: string | null;
 
