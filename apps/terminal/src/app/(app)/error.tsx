@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/Button";
+import { Button } from "@sandworm/ui/kit/button";
 
 export default function AppError({ reset }: { reset: () => void }) {
   return (

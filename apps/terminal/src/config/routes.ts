@@ -10,9 +10,9 @@ export const ROUTES = {
   },
   analysis: { path: "/analysis", label: "Analysis", isBuilt: true },
   report: { path: "/analysis/report", label: "Report", isBuilt: false },
-  project: { path: "/analysis/project", label: "Project", isBuilt: false },
-  region: { path: "/analysis/region", label: "Region", isBuilt: false },
-  sector: { path: "/analysis/sector", label: "Sector", isBuilt: false },
+  project: { path: "/analysis/project", label: "Project", isBuilt: true },
+  region: { path: "/analysis/region", label: "Region", isBuilt: true },
+  sector: { path: "/analysis/sector", label: "Sector", isBuilt: true },
   opportunities: {
     path: "/opportunities",
     label: "Opportunities",
@@ -40,8 +40,22 @@ export const ROUTES = {
 
 export type RouteId = keyof typeof ROUTES;
 
+export function routePath(route: RouteId, slug?: string): string {
+  const { path } = ROUTES[route];
+  return slug ? `${path}/${slug}` : path;
+}
+
 export function findRouteByPath(pathname: string) {
-  return Object.values(ROUTES).find(route => route.path === pathname);
+  const routes = Object.values<RouteDefinition>(ROUTES);
+
+  return (
+    routes.find(route => route.path === pathname) ??
+    routes
+      .filter(
+        route => route.path !== "/" && pathname.startsWith(`${route.path}/`)
+      )
+      .sort((a, b) => b.path.length - a.path.length)[0]
+  );
 }
 
 // Where a page that isn't built yet sends people instead: the section it
@@ -56,13 +70,18 @@ const FALLBACK_ROUTES: Partial<Record<RouteId, RouteId>> = {
 };
 
 // The address a link to `route` goes to, or null when there is nowhere to go.
+// A slug (an entity page) only applies when the route itself is built; the
+// fallback section has no page for it.
 export function routeHref(
   route: RouteId,
-  query?: Record<string, string>
+  query?: Record<string, string>,
+  slug?: string
 ): string | null {
-  const target = ROUTES[route].isBuilt ? route : FALLBACK_ROUTES[route];
+  const { isBuilt } = ROUTES[route];
+  const target = isBuilt ? route : FALLBACK_ROUTES[route];
   if (!target) return null;
 
+  const path = isBuilt ? routePath(route, slug) : ROUTES[target].path;
   const search = query ? `?${new URLSearchParams(query)}` : "";
-  return `${ROUTES[target].path}${search}`;
+  return `${path}${search}`;
 }

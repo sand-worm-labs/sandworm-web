@@ -2,8 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-import { Button } from "@/components/Button";
+import { Button } from "@sandworm/ui/kit/button";
 
 import { saveSetupDraft } from "../actions";
 import { useSetup } from "../context";

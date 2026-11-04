@@ -3,8 +3,8 @@
 import type { Output } from "@sandworm/types";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
+import { Skeleton } from "@sandworm/ui/kit/skeleton";
 
-import { Skeleton } from "@/components/Skeleton";
 import { env } from "@/config/env";
 
 // A notebook cell's saved outputs, drawn by the main app exactly as its public

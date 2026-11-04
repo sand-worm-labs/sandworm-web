@@ -1,6 +1,5 @@
 import clsx from "clsx";
-
-import { Card, cardRowDividerClassName } from "@/components/Card";
+import { Card, cardRowDividerClassName } from "@sandworm/ui/kit/card";
 
 import { BlockHeader } from "../components/BlockHeader";
 import type { ConcentrationBlock } from "../types";

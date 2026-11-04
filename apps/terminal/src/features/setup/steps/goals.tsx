@@ -1,6 +1,7 @@
-import { NativeSelect } from "@/components/form/NativeSelect";
-import { TextField } from "@/components/form/TextField";
-import { ToggleChip } from "@/components/form/ToggleChip";
+import { OptionDropdown } from "@sandworm/ui/kit/form/option-dropdown";
+import { TextField } from "@sandworm/ui/kit/form/text-field";
+import { ToggleChip } from "@sandworm/ui/kit/form/toggle-chip";
+
 import { pluralise } from "@/lib/format";
 import { site } from "@/config/site";
 
@@ -94,12 +95,12 @@ function InviteRow({ invite, onChange }: InviteRowProps) {
         value={invite.email}
         onChange={event => onChange({ email: event.target.value })}
       />
-      <NativeSelect
+      <OptionDropdown
         label={`Access for ${invite.email || "new teammate"}`}
         value={invite.access}
         options={ACCESS_LEVELS}
         onChange={access => onChange({ access })}
-        className="self-end"
+        className="h-[38px] self-end"
       />
     </>
   );

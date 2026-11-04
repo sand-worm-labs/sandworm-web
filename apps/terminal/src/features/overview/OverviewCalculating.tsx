@@ -1,5 +1,6 @@
-import { Card } from "@/components/Card";
-import { Skeleton } from "@/components/Skeleton";
+import { Card } from "@sandworm/ui/kit/card";
+import { Skeleton } from "@sandworm/ui/kit/skeleton";
+
 import { SectionHeader } from "@/features/sections/SectionHeader";
 
 import { BlockHeader } from "./components/BlockHeader";

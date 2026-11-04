@@ -1,7 +1,7 @@
 import { PiMagnifyingGlass } from "react-icons/pi";
+import { Button, buttonClassName } from "@sandworm/ui/kit/button";
 
 import { AppLink } from "@/components/AppLink";
-import { Button, buttonClassName } from "@/components/Button";
 import { site } from "@/config/site";
 
 type AnalysisNoResultsProps = {

@@ -1,8 +1,8 @@
 import clsx from "clsx";
+import { InitialsAvatar } from "@sandworm/ui/kit/initials-avatar";
+import { Pill } from "@sandworm/ui/kit/pill";
 
 import { AppLink } from "@/components/AppLink";
-import { InitialsAvatar } from "@/components/InitialsAvatar";
-import { Pill } from "@/components/Pill";
 
 import type { AnalysisView } from "../types";
 
@@ -11,11 +11,11 @@ type AnalysisTableProps = {
   rows: AnalysisView["rows"];
 };
 
-const headerCellClassName = "px-2 py-2.5 text-xs font-medium text-ink-400";
+const headerCellClassName = "px-3 py-2.5 text-xs font-medium text-ink-400";
 
 function cellClassName(index: number, extra?: string) {
   return clsx(
-    "px-2 py-3 align-middle group-hover:bg-primary-tint-50 dark:group-hover:bg-dropdown-hover",
+    "px-3 py-3 align-middle group-hover:bg-hover-bg dark:group-hover:bg-sidebar-hover",
     index > 0 && "border-t border-border-secondary",
     extra
   );
@@ -24,7 +24,7 @@ function cellClassName(index: number, extra?: string) {
 export function AnalysisTable({ view, rows }: AnalysisTableProps) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[860px] table-fixed border-separate border-spacing-0 px-3 pb-2.5 pt-1.5 text-left text-[13px]">
+      <table className="w-full min-w-[860px] table-fixed border-separate border-spacing-0 px-2 pb-2.5 pt-1.5 text-left text-[13px]">
         <thead>
           <tr>
             <th scope="col" className={clsx(headerCellClassName, "w-[26%]")}>
@@ -57,12 +57,19 @@ export function AnalysisTable({ view, rows }: AnalysisTableProps) {
                 <span className="flex items-center gap-2.5">
                   <InitialsAvatar initials={row.name.charAt(0)} size="sm" />
                   <span className="flex min-w-0 flex-col">
-                    <AppLink
-                      route={view.rowRoute}
-                      className="truncate text-sm font-medium text-ink-100 after:absolute after:inset-0"
-                    >
-                      {row.name}
-                    </AppLink>
+                    {row.hasPage ? (
+                      <AppLink
+                        route={view.rowRoute}
+                        slug={row.slug}
+                        className="truncate text-sm font-medium text-ink-100 after:absolute after:inset-0"
+                      >
+                        {row.name}
+                      </AppLink>
+                    ) : (
+                      <span className="truncate text-sm font-medium text-ink-100">
+                        {row.name}
+                      </span>
+                    )}
                     <span className="truncate text-xs text-ink-400">
                       {row.kind}
                     </span>

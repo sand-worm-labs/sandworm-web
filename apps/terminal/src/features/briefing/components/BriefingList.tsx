@@ -1,7 +1,11 @@
 import clsx from "clsx";
+import { Card } from "@sandworm/ui/kit/card";
+import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
+import {
+  ROW_HOVER_CLASSNAME,
+  ROW_SELECTED_CLASSNAME,
+} from "@sandworm/ui/kit/interactive";
 
-import { Card } from "@/components/Card";
-import { SegmentedControl } from "@/components/SegmentedControl";
 import { groupInOrder } from "@/lib/group-in-order";
 
 import { BriefingKindTag } from "../BriefingKindTag";
@@ -34,9 +38,9 @@ export function BriefingList({
   return (
     <Card
       aria-label="Briefing items"
-      className="flex flex-col gap-2.5 px-3 pb-2.5 pt-4"
+      className="flex flex-col gap-2.5 px-2 pb-2.5 pt-4"
     >
-      <div className="flex flex-wrap items-center justify-between gap-2 px-1.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3">
         <SegmentedControl
           label="Filter briefing"
           options={filterOptions}
@@ -50,7 +54,7 @@ export function BriefingList({
       <div className="flex flex-col">
         {groupInOrder(items, item => item.group).map(group => (
           <div key={group.key} className="flex flex-col">
-            <div className="flex items-center gap-1.5 px-2 pb-1 pt-2.5 text-xs font-medium text-ink-400">
+            <div className="flex items-center gap-1.5 px-3 pb-1 pt-2.5 text-xs font-medium text-ink-400">
               {group.key}
               <span className="font-normal">{group.items.length}</span>
             </div>
@@ -64,10 +68,9 @@ export function BriefingList({
                   aria-pressed={isSelected}
                   onClick={() => onSelect(item.id)}
                   className={clsx(
-                    "grid w-full grid-cols-[8px_minmax(0,1fr)_auto] items-start gap-x-3 rounded-xl px-2.5 py-3 text-left transition-colors",
-                    isSelected
-                      ? "bg-primary-tint-50 ring-1 ring-inset ring-primary-tint-100 dark:bg-primary-910 dark:ring-border-tertiary"
-                      : "hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover"
+                    ROW_HOVER_CLASSNAME,
+                    "grid w-full grid-cols-[8px_minmax(0,1fr)_auto] items-start gap-x-3 px-3 py-3 text-left",
+                    isSelected && ROW_SELECTED_CLASSNAME
                   )}
                 >
                   <span

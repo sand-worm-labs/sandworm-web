@@ -1,6 +1,7 @@
+import { Button, buttonClassName } from "@sandworm/ui/kit/button";
+import { Card } from "@sandworm/ui/kit/card";
+
 import { AppLink } from "@/components/AppLink";
-import { Button, buttonClassName } from "@/components/Button";
-import { Card } from "@/components/Card";
 import { site } from "@/config/site";
 
 import { canApprove } from "../requests-state";

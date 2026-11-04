@@ -1,6 +1,5 @@
 import { PiChatCircleText } from "react-icons/pi";
-
-import { Card } from "@/components/Card";
+import { Card } from "@sandworm/ui/kit/card";
 
 import type { QuestionEntry } from "../types";
 

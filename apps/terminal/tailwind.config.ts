@@ -16,6 +16,17 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        "rainbow-bar":
+          "linear-gradient(to right, #6368ff 0.62%, #cbecff 15.71%, #7bff42 25.15%, #2db2ff 42.6%, #f00 60.53%, #ded757 80.81%, #ff00e1 98.74%)",
+      },
+      keyframes: {
+        "shift-colors": {
+          "0%": { backgroundPosition: "200% 0" },
+          "100%": { backgroundPosition: "-200% 0" },
+        },
+      },
+      animation: { "shift-colors": "shift-colors 2s linear infinite" },
       screens: {
         sm: "500px",
         md: "800px",
@@ -146,6 +157,7 @@ const config: Config = {
         },
 
         "hover-bg": "var(--hover-bg)",
+        "option-hover": "var(--option-hover)",
         "hover-border": "var(--hover-border)",
 
         warning: "var(--warning)",

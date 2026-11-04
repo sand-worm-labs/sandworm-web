@@ -5,6 +5,8 @@ import { routeHref, type RouteId } from "@/config/routes";
 
 type AppLinkProps = {
   route: RouteId;
+  // An entity page under the route, e.g. /analysis/project/<slug>
+  slug?: string;
   // Search params, e.g. which item a list opens on
   query?: Record<string, string>;
   isCurrent?: boolean;
@@ -16,6 +18,7 @@ type AppLinkProps = {
 
 export function AppLink({
   route,
+  slug,
   query,
   isCurrent,
   isSelected,
@@ -23,7 +26,7 @@ export function AppLink({
   className,
   children,
 }: AppLinkProps) {
-  const href = routeHref(route, query);
+  const href = routeHref(route, query, slug);
 
   if (!href) {
     return (

@@ -1,6 +1,6 @@
 import type { Output } from "@sandworm/types";
+import type { Tone } from "@sandworm/ui/kit/tone";
 
-import type { Tone } from "@/components/tone";
 import type { RouteId } from "@/config/routes";
 
 export type BriefingKind = "Analysis" | "Opportunity" | "Metric";

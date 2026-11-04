@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import { PiCheck } from "react-icons/pi";
+import { buttonClassName } from "@sandworm/ui/kit/button";
+import { cardRowDividerClassName } from "@sandworm/ui/kit/card";
 
-import { cardRowDividerClassName } from "@/components/Card";
 import { AppLink } from "@/components/AppLink";
-import { buttonClassName } from "@/components/Button";
 
 import type { SetupStep } from "../types";
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { PiChecks } from "react-icons/pi";
+import { Button } from "@sandworm/ui/kit/button";
 
-import { Button } from "@/components/Button";
 import { SectionHeader } from "@/features/sections/SectionHeader";
 import type { SectionCounts } from "@/features/sections/types";
 

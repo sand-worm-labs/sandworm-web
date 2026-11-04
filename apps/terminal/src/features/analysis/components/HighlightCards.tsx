@@ -1,5 +1,6 @@
+import { InitialsAvatar } from "@sandworm/ui/kit/initials-avatar";
+
 import { AppLink } from "@/components/AppLink";
-import { InitialsAvatar } from "@/components/InitialsAvatar";
 
 import type { AnalysisHighlight } from "../types";
 
@@ -25,7 +26,7 @@ export function HighlightCards({
           <AppLink
             key={item.id}
             route="report"
-            className="flex min-h-[168px] flex-col gap-2.5 rounded-[22px] border border-hover-border bg-block-surface p-5 block-shadow-soft transition-colors hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover"
+            className="flex min-h-[168px] flex-col gap-2.5 rounded-[22px] border border-hover-border bg-block-surface p-5 block-shadow-soft transition-colors hover:bg-hover-bg dark:hover:bg-sidebar-hover"
           >
             <span className="flex items-center justify-between gap-2">
               <HighlightTag tag={item.tag} />

@@ -5,7 +5,7 @@ import { PiMagnifyingGlass } from "react-icons/pi";
 import { Input } from "@sandworm/ui/components/input";
 import { cn } from "@sandworm/ui/lib/utils";
 
-import { fieldClassName } from "./styles";
+import { fieldClassName } from "@sandworm/ui/kit/form/styles";
 
 type SearchFieldProps = Omit<ComponentProps<typeof Input>, "type"> & {
   label: string;

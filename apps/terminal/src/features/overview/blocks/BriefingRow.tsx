@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 
 import { AppLink } from "@/components/AppLink";
 import { BriefingKindTag } from "@/features/briefing/BriefingKindTag";
@@ -10,7 +11,10 @@ export function BriefingRow({ entry }: { entry: BriefingEntry }) {
     <AppLink
       route="briefing"
       query={{ item: entry.id }}
-      className="flex flex-col gap-2 rounded-xl px-2 py-3 transition-colors hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover md:grid md:grid-cols-[8px_104px_minmax(0,1fr)_auto] md:items-start md:gap-x-3"
+      className={clsx(
+        ROW_HOVER_CLASSNAME,
+        "flex flex-col gap-2 px-3 py-3 md:grid md:grid-cols-[8px_104px_minmax(0,1fr)_auto] md:items-start md:gap-x-3"
+      )}
     >
       <span
         aria-label={entry.isUnread ? "Unread" : "Read"}

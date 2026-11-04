@@ -1,8 +1,8 @@
 import type { IconType } from "react-icons";
 import { PiCaretRight, PiNotePencil, PiPlus } from "react-icons/pi";
+import { buttonClassName } from "@sandworm/ui/kit/button";
 
 import { AppLink } from "@/components/AppLink";
-import { buttonClassName } from "@/components/Button";
 import type { RouteId } from "@/config/routes";
 import { site } from "@/config/site";
 
@@ -66,7 +66,7 @@ export function AllowanceUsed({ allowance }: { allowance: Allowance }) {
           <AppLink
             key={option.id}
             route={option.route}
-            className="grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-[14px] border border-hover-border bg-block-surface px-4 py-3.5 transition-colors hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover"
+            className="grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-[14px] border border-hover-border bg-block-surface px-4 py-3.5 transition-colors hover:bg-hover-bg dark:hover:bg-sidebar-hover"
           >
             <span
               aria-hidden="true"

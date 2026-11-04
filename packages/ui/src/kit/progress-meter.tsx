@@ -1,4 +1,4 @@
-import { toPercent } from "@/lib/percent";
+import { toPercent } from "@sandworm/ui/kit/lib/percent";
 
 const toneClassNames = { brand: "bg-primary", navy: "bg-ink-navy" } as const;
 

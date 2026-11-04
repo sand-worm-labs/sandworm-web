@@ -1,6 +1,7 @@
-import { CheckboxField } from "@/components/form/CheckboxField";
-import { ChipInput } from "@/components/form/ChipInput";
-import { TextAreaField } from "@/components/form/TextAreaField";
+import { CheckboxField } from "@sandworm/ui/kit/form/checkbox-field";
+import { ChipInput } from "@sandworm/ui/kit/form/chip-input";
+import { TextAreaField } from "@sandworm/ui/kit/form/text-area-field";
+
 import { pluralise } from "@/lib/format";
 import { site } from "@/config/site";
 
@@ -24,7 +25,6 @@ function TrackingStep() {
         <TextAreaField
           id="tracking-addresses"
           label="Your contracts and wallets"
-          monospaced
           rows={3}
           value={tracking.addresses}
           onChange={event =>

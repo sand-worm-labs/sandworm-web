@@ -1,4 +1,4 @@
-import type { Tone } from "@/components/tone";
+import type { Tone } from "@sandworm/ui/kit/tone";
 
 export const SPARKLINE_CLASSNAME: Record<Tone, string> = {
   positive: "text-primary",

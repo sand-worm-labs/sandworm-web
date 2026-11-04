@@ -1,8 +1,8 @@
 import clsx from "clsx";
+import { Card } from "@sandworm/ui/kit/card";
+import { TONE_TEXT_CLASSNAME } from "@sandworm/ui/kit/tone";
 
-import { Card } from "@/components/Card";
 import { Sparkline } from "@/components/Sparkline";
-import { TONE_TEXT_CLASSNAME } from "@/components/tone";
 
 import { SPARKLINE_CLASSNAME } from "../tone";
 import type { KpisBlock } from "../types";
