@@ -2,7 +2,7 @@
 
 import { cn } from "@sandworm/ui/lib/utils";
 
-import { focusRingClassName } from "./styles";
+import { focusRingClassName } from "@sandworm/ui/kit/form/styles";
 
 type SelectOption<Id extends string> = { id: Id; label: string };
 

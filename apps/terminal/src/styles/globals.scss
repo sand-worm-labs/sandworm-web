@@ -399,7 +399,12 @@
   box-shadow: none;
 }
 
+:root {
+  --option-hover: #eaecef;
+}
+
 .dark {
+  --option-hover: #383838;
   --hover-bg: #131311;
   --bg-input: 0 0% 10.2%;
   --ink-500: #adb5bd;

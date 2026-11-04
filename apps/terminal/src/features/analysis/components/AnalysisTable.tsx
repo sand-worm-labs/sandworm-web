@@ -1,8 +1,8 @@
 import clsx from "clsx";
+import { InitialsAvatar } from "@sandworm/ui/kit/initials-avatar";
+import { Pill } from "@sandworm/ui/kit/pill";
 
 import { AppLink } from "@/components/AppLink";
-import { InitialsAvatar } from "@/components/InitialsAvatar";
-import { Pill } from "@/components/Pill";
 
 import type { AnalysisView } from "../types";
 

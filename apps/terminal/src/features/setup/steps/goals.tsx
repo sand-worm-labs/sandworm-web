@@ -1,9 +1,9 @@
-import { Avatar, AvatarFallback } from "@sandworm/ui/components/avatar";
+import { Button } from "@sandworm/ui/kit/button";
+import { OptionDropdown } from "@sandworm/ui/kit/form/option-dropdown";
+import { TextField } from "@sandworm/ui/kit/form/text-field";
+import { ToggleChip } from "@sandworm/ui/kit/form/toggle-chip";
+import { UserAvatar } from "@sandworm/ui/kit/user-avatar";
 
-import { Button } from "@/components/Button";
-import { NativeSelect } from "@/components/form/NativeSelect";
-import { TextField } from "@/components/form/TextField";
-import { ToggleChip } from "@/components/form/ToggleChip";
 import { pluralise } from "@/lib/format";
 
 import { useSetup } from "../context";
@@ -78,11 +78,7 @@ function GoalsStep() {
       </div>
       <div className="flex items-center justify-between gap-3 rounded-[14px] border border-hover-border bg-block-surface px-4 py-3.5">
         <div className="flex items-center gap-2.5">
-          <Avatar className="size-8">
-            <AvatarFallback className="bg-primary-tint-75 dark:bg-primary-910 text-[11px] font-semibold text-primary-700 dark:text-primary-200">
-              {client.analyst.initials}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar name={client.analyst.name} />
           <div className="flex flex-col">
             <span className="font-semibold text-ink-100">
               Kick-off call with {client.analyst.name}
@@ -117,12 +113,12 @@ function InviteRow({ invite, onChange }: InviteRowProps) {
         value={invite.email}
         onChange={event => onChange({ email: event.target.value })}
       />
-      <NativeSelect
+      <OptionDropdown
         label={`Access for ${invite.email || "new teammate"}`}
         value={invite.access}
         options={ACCESS_LEVELS}
         onChange={access => onChange({ access })}
-        className="self-end"
+        className="h-[38px] self-end"
       />
     </>
   );

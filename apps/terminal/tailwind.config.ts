@@ -146,6 +146,7 @@ const config: Config = {
         },
 
         "hover-bg": "var(--hover-bg)",
+        "option-hover": "var(--option-hover)",
         "hover-border": "var(--hover-border)",
 
         warning: "var(--warning)",

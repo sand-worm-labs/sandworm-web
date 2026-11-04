@@ -1,8 +1,8 @@
 import { PiClockCountdown } from "react-icons/pi";
+import { buttonClassName } from "@sandworm/ui/kit/button";
+import { Card } from "@sandworm/ui/kit/card";
 
 import { AppLink } from "@/components/AppLink";
-import { buttonClassName } from "@/components/Button";
-import { Card } from "@/components/Card";
 
 export function OpportunitiesEmpty({ analystName }: { analystName: string }) {
   return (

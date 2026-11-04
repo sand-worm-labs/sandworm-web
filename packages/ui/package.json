@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "test": "vitest run"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -31,6 +32,7 @@
     "next-themes": "catalog:react",
     "react": "catalog:react",
     "react-dom": "catalog:react",
+    "react-icons": "^5.5.0",
     "react-resizable-panels": "^2.1.9",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
@@ -47,13 +49,18 @@
     "@types/react-dom": "catalog:react",
     "tailwindcss": "catalog:ui",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "^3.2.6"
   },
   "exports": {
     "./globals.css": "./src/styles/globals.css",
     "./postcss.config": "./postcss.config.mjs",
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
-    "./hooks/*": "./src/hooks/*.ts"
+    "./hooks/*": "./src/hooks/*.ts",
+    "./kit/tone": "./src/kit/tone.ts",
+    "./kit/form/styles": "./src/kit/form/styles.ts",
+    "./kit/lib/*": "./src/kit/lib/*.ts",
+    "./kit/*": "./src/kit/*.tsx"
   }
 }

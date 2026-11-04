@@ -1,7 +1,8 @@
+import { buttonClassName } from "@sandworm/ui/kit/button";
+import { Card } from "@sandworm/ui/kit/card";
+import { ProgressMeter } from "@sandworm/ui/kit/progress-meter";
+
 import { AppLink } from "@/components/AppLink";
-import { buttonClassName } from "@/components/Button";
-import { Card } from "@/components/Card";
-import { ProgressMeter } from "@/components/ProgressMeter";
 
 import { BlockHeader } from "../components/BlockHeader";
 import type { AllowanceBlock } from "../types";

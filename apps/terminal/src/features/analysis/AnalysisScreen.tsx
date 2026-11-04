@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { PiPlus } from "react-icons/pi";
+import { buttonClassName } from "@sandworm/ui/kit/button";
+import { Card } from "@sandworm/ui/kit/card";
+import { NativeSelect } from "@sandworm/ui/kit/form/native-select";
+import { SearchField } from "@sandworm/ui/kit/form/search-field";
+import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
 
 import { AppLink } from "@/components/AppLink";
-import { buttonClassName } from "@/components/Button";
-import { Card } from "@/components/Card";
-import { NativeSelect } from "@/components/form/NativeSelect";
-import { SearchField } from "@/components/form/SearchField";
-import { SegmentedControl } from "@/components/SegmentedControl";
 import { SectionHeader } from "@/features/sections/SectionHeader";
 import type { SectionCounts } from "@/features/sections/types";
 

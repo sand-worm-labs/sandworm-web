@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { toPercent } from "./percent";
+import { toPercent } from "@sandworm/ui/kit/lib/percent";
 
 describe("toPercent", () => {
   it("rounds to a whole percent", () => {

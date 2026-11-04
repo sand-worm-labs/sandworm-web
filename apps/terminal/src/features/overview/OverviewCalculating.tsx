@@ -1,6 +1,7 @@
-import { Card } from "@/components/Card";
+import { Card } from "@sandworm/ui/kit/card";
+import { Skeleton } from "@sandworm/ui/kit/skeleton";
+
 import { SectionHeader } from "@/features/sections/SectionHeader";
-import { Skeleton } from "@/components/Skeleton";
 
 import { AnalystPanel } from "./components/AnalystPanel";
 import { findBlock, type OverviewData } from "./types";

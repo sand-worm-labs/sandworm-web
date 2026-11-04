@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { buttonClassName } from "@sandworm/ui/kit/button";
 
 import { AppLink } from "@/components/AppLink";
-import { buttonClassName } from "@/components/Button";
 import { SectionHeader } from "@/features/sections/SectionHeader";
 import type { SectionCounts } from "@/features/sections/types";
 import type { Analyst } from "@/features/session/types";

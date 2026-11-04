@@ -1,8 +1,9 @@
-import { AppLink } from "@/components/AppLink";
-import { buttonClassName } from "@/components/Button";
-import { Card } from "@/components/Card";
+import { buttonClassName } from "@sandworm/ui/kit/button";
+import { Card } from "@sandworm/ui/kit/card";
+import { ProgressMeter } from "@sandworm/ui/kit/progress-meter";
+
 import { SectionHeader } from "@/features/sections/SectionHeader";
-import { ProgressMeter } from "@/components/ProgressMeter";
+import { AppLink } from "@/components/AppLink";
 
 import { BLOCK_ABOUT } from "./blocks/catalogue";
 import { AnalystPanel } from "./components/AnalystPanel";

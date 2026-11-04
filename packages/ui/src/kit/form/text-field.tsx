@@ -5,7 +5,7 @@ import { Input } from "@sandworm/ui/components/input";
 import { Label } from "@sandworm/ui/components/label";
 import { cn } from "@sandworm/ui/lib/utils";
 
-import { fieldClassName, labelClassName } from "./styles";
+import { fieldClassName, labelClassName } from "@sandworm/ui/kit/form/styles";
 
 type TextFieldProps = Omit<ComponentProps<typeof Input>, "id"> & {
   id: string;

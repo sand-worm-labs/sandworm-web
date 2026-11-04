@@ -1,7 +1,7 @@
 import clsx from "clsx";
+import { Card } from "@sandworm/ui/kit/card";
+import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
 
-import { Card } from "@/components/Card";
-import { SegmentedControl } from "@/components/SegmentedControl";
 import { groupInOrder } from "@/lib/group-in-order";
 
 import { BriefingKindTag } from "../BriefingKindTag";

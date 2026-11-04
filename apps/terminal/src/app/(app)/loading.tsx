@@ -1,5 +1,5 @@
-import { Card } from "@/components/Card";
-import { Skeleton } from "@/components/Skeleton";
+import { Card } from "@sandworm/ui/kit/card";
+import { Skeleton } from "@sandworm/ui/kit/skeleton";
 
 export default function Loading() {
   return (

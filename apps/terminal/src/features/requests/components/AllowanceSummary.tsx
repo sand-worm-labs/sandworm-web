@@ -1,5 +1,5 @@
-import { Card } from "@/components/Card";
-import { ProgressMeter } from "@/components/ProgressMeter";
+import { Card } from "@sandworm/ui/kit/card";
+import { ProgressMeter } from "@sandworm/ui/kit/progress-meter";
 
 import type { Allowance, AllowanceMeter } from "../types";
 

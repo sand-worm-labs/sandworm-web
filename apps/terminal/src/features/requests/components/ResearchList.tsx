@@ -1,6 +1,5 @@
 import clsx from "clsx";
-
-import { Card } from "@/components/Card";
+import { Card } from "@sandworm/ui/kit/card";
 
 import type { ResearchRequest } from "../types";
 

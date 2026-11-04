@@ -1,7 +1,7 @@
 import clsx from "clsx";
+import { Card } from "@sandworm/ui/kit/card";
 
 import { AppLink } from "@/components/AppLink";
-import { Card } from "@/components/Card";
 
 import { BlockHeader } from "../components/BlockHeader";
 import {

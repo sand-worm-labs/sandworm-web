@@ -7,7 +7,7 @@ import {
 import { Transition } from "@headlessui/react";
 import clsx from "clsx";
 import ReactDOM from "react-dom";
-import { useStableKeys } from "@sandworm/ui/lib/utils";
+import { useStableKeys } from "@sandworm/ui/hooks/use-stable-keys";
 
 import useDropdownPosition from "../Editor/hooks/dropdownposition";
 

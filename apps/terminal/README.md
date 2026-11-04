@@ -41,11 +41,14 @@ shared package.
 
 - `@sandworm/ui`: components, imported as `@sandworm/ui/components/input`. Its folder is in the
   Tailwind `content` list, so its classes are generated here.
-- Buttons are the terminal's own (`src/components/Button.tsx`), copied from web's primary
-  ("Create New Team") and secondary ("Edit") styles, not the ui package's.
-- Import `@sandworm/ui` only from `"use client"` files (see `src/components/form/TextField.tsx`).
-  `@sandworm/ui/lib/utils` exports a hook next to `cn` and the components are not marked
-  `"use client"`, so a server component that imports one fails the build.
+- `@sandworm/ui/kit/*` holds the reusable components that follow our design standard: buttons
+  (copied from web's primary "Create New Team" and secondary "Edit" styles), cards, pills, status
+  tones, the form fields, the dropdown and the avatars. They are separate from the shadcn files in
+  `components/`, which web uses and which stay as generated. Put a component in the kit when a
+  second place needs it; see `packages/ui/src/kit/README.md` for the rules. App-specific pieces
+  (`AppLink`, `PageTabs`, the shell, the theme toggle) stay in `src/components`.
+- Keep `@sandworm/ui` imports in `"use client"` files for now. `lib/utils` no longer exports a hook
+  (it moved to `hooks/use-stable-keys`), but the kit is not yet checked from server components.
 - Add `@sandworm/types` (and `transpilePackages`) when you need the shared types.
 
 ## Conventions

@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { buttonClassName } from "@sandworm/ui/kit/button";
+import { Card } from "@sandworm/ui/kit/card";
+import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
 
 import { AppLink } from "@/components/AppLink";
-import { buttonClassName } from "@/components/Button";
-import { Card } from "@/components/Card";
-import { SegmentedControl } from "@/components/SegmentedControl";
 import type { BriefingKind } from "@/features/briefing/types";
 import { groupInOrder } from "@/lib/group-in-order";
 

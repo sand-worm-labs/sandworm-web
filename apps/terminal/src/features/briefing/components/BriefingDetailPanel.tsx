@@ -1,6 +1,7 @@
+import { buttonClassName } from "@sandworm/ui/kit/button";
+import { Card } from "@sandworm/ui/kit/card";
+
 import { AppLink } from "@/components/AppLink";
-import { buttonClassName } from "@/components/Button";
-import { Card } from "@/components/Card";
 
 import { BriefingKindTag } from "../BriefingKindTag";
 import type { BriefingItem } from "../types";

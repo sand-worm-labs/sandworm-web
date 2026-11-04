@@ -1,8 +1,8 @@
 import clsx from "clsx";
+import { buttonClassName } from "@sandworm/ui/kit/button";
+import { Card } from "@sandworm/ui/kit/card";
 
 import { AppLink } from "@/components/AppLink";
-import { buttonClassName } from "@/components/Button";
-import { Card } from "@/components/Card";
 import { ConfidenceMeter } from "@/features/opportunities/components/ConfidenceMeter";
 import { OpportunityStatusIcon } from "@/features/opportunities/components/OpportunityStatusIcon";
 

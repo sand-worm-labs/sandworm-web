@@ -1,6 +1,5 @@
 import clsx from "clsx";
-
-import { TONE_BADGE_CLASSNAME } from "@/components/tone";
+import { TONE_BADGE_CLASSNAME } from "@sandworm/ui/kit/tone";
 
 import type { RequestStatus } from "../types";
 

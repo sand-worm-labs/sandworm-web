@@ -5,9 +5,9 @@ import {
   PiNotePencil,
   PiPlus,
 } from "react-icons/pi";
+import { buttonClassName } from "@sandworm/ui/kit/button";
 
 import { AppLink } from "@/components/AppLink";
-import { buttonClassName } from "@/components/Button";
 import type { RouteId } from "@/config/routes";
 
 import type { Allowance } from "../../types";

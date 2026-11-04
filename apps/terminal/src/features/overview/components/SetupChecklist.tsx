@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import { PiCheck } from "react-icons/pi";
+import { buttonClassName } from "@sandworm/ui/kit/button";
 
 import { AppLink } from "@/components/AppLink";
-import { buttonClassName } from "@/components/Button";
 
 import type { SetupStep } from "../types";
 

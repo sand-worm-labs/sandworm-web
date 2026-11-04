@@ -1,5 +1,5 @@
-import { OptionCard } from "@/components/form/OptionCard";
-import { TextField } from "@/components/form/TextField";
+import { OptionCard } from "@sandworm/ui/kit/form/option-card";
+import { TextField } from "@sandworm/ui/kit/form/text-field";
 
 import { useSetup } from "../context";
 import {

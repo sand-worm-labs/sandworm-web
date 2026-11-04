@@ -1,4 +1,5 @@
-import type { Tone } from "@/components/tone";
+import type { Tone } from "@sandworm/ui/kit/tone";
+
 import type { RouteId } from "@/config/routes";
 
 export type BriefingKind = "Analysis" | "Opportunity" | "Metric";

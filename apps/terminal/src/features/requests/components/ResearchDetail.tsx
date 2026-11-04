@@ -1,7 +1,8 @@
+import { Button, buttonClassName } from "@sandworm/ui/kit/button";
+import { Card } from "@sandworm/ui/kit/card";
+import { InitialsAvatar } from "@sandworm/ui/kit/initials-avatar";
+
 import { AppLink } from "@/components/AppLink";
-import { Button, buttonClassName } from "@/components/Button";
-import { Card } from "@/components/Card";
-import { InitialsAvatar } from "@/components/InitialsAvatar";
 import type { Analyst } from "@/features/session/types";
 
 import { canApprove } from "../requests-state";

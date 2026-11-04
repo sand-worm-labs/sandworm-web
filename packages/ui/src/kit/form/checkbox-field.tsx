@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Label } from "@sandworm/ui/components/label";
 import { cn } from "@sandworm/ui/lib/utils";
 
-import { Checkbox } from "./Checkbox";
+import { Checkbox } from "@sandworm/ui/kit/form/checkbox";
 
 type CheckboxFieldProps = {
   id: string;

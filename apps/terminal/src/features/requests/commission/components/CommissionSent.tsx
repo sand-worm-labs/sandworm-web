@@ -1,7 +1,7 @@
 import { PiCheck } from "react-icons/pi";
+import { buttonClassName } from "@sandworm/ui/kit/button";
 
 import { AppLink } from "@/components/AppLink";
-import { buttonClassName } from "@/components/Button";
 
 import { Timeline } from "../../components/Timeline";
 import { describeDraft, submittedTimeline } from "../draft";

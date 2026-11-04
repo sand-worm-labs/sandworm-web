@@ -1,6 +1,5 @@
 import clsx from "clsx";
-
-import { Card } from "@/components/Card";
+import { Card } from "@sandworm/ui/kit/card";
 
 import { BlockHeader } from "../components/BlockHeader";
 import { LIST_ROW_DIVIDER_CLASSNAME } from "../components/list-row";

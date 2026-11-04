@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Card } from "@sandworm/ui/kit/card";
+import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
 
-import { Card } from "@/components/Card";
-import { SegmentedControl } from "@/components/SegmentedControl";
 import { SectionHeader } from "@/features/sections/SectionHeader";
 import type { SectionCounts } from "@/features/sections/types";
 
