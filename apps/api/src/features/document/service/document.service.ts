@@ -17,7 +17,7 @@ import * as Y from 'yjs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { SEARCH_INDEX_STALE_EVENT } from '@/features/search/search.events';
-import { DataSource, FindOptionsWhere, In, Repository } from 'typeorm';
+import { DataSource, FindOptionsWhere, In, IsNull, Repository } from 'typeorm';
 import { YjsDocumentService } from "@/features/collaboration/yjs/yjs-document.service"
 import {
   CreateDocumentInput,
@@ -105,11 +105,41 @@ export class DocumentService {
 
   async getChildren(parentId: string): Promise<Document[]> {
     const documents = await this.documentRepository.find({
-      where: { parentId, deletedAt: null },
+      // TypeORM ignores a bare null in where, so trashed children need IsNull().
+      where: { parentId, deletedAt: IsNull() },
       order: { orderIndex: 'ASC' },
     });
 
     return Document.fromEntities(documents);
+  }
+
+  // A document nests only under a live document of the same workspace, and
+  // never under itself or one of its own descendants (that would cut the
+  // subtree off from the root).
+  private async assertValidParent(
+    workspaceId: string,
+    parentId: string | null | undefined,
+    documentId?: string,
+  ): Promise<void> {
+    const seen = new Set<string>();
+    let id = parentId ?? null;
+    while (id && !seen.has(id)) {
+      if (id === documentId) {
+        throw new ValidationException(
+          ErrorCode.V000,
+          'A notebook cannot be nested under itself or under one of its own nested notebooks',
+        );
+      }
+      seen.add(id);
+      const doc = await this.documentRepository.findOne({
+        where: { id, workspaceId, deletedAt: IsNull() },
+        select: ['id', 'parentId'],
+      });
+      if (!doc) {
+        throw new ValidationException(ErrorCode.V000, 'The parent notebook was not found in this workspace');
+      }
+      id = doc.parentId;
+    }
   }
 
   async createDocument(
@@ -117,6 +147,7 @@ export class DocumentService {
     userId: string,
     input: CreateDocumentInput,
   ): Promise<Document> {
+    await this.assertValidParent(workspaceId, input.parentId);
     const documentEntity = await this.documentTreeService.createDocument(
       workspaceId,
       userId,
@@ -172,7 +203,11 @@ export class DocumentService {
     }
 
     if (input.parentId !== undefined || input.orderIndex !== undefined) {
-      const newParentId = input.parentId ?? document.parentId;
+      // null moves the document to the top level, so only undefined keeps the parent.
+      const newParentId = input.parentId !== undefined ? input.parentId : document.parentId;
+      if (newParentId !== document.parentId) {
+        await this.assertValidParent(workspaceId, newParentId, documentId);
+      }
       const newOrderIndex = input.orderIndex ?? document.orderIndex;
 
       if (newParentId !== document.parentId || newOrderIndex !== document.orderIndex) {

@@ -103,7 +103,15 @@ const STEPS: Record<string, (args: Args, result: Result) => string> = {
   search_tools: args => `Searched tools for: ${str(args.query)}`,
   get_notebook: () => 'Read the notebook',
   create_notebook: (args, result) => `Created notebook: ${str(result.title) || str(args.title)}`,
-  edit_notebook: args => `Renamed the notebook to: ${str(args.title)}`,
+  edit_notebook: args =>
+    [
+      args.title !== undefined ? `Renamed the notebook to: ${str(args.title)}` : '',
+      args.type !== undefined ? `Changed the notebook type to ${str(args.type)}` : '',
+      args.parentId === null ? 'Moved the notebook to the top level' : '',
+      typeof args.parentId === 'string' ? 'Nested the notebook under another notebook' : '',
+    ]
+      .filter(Boolean)
+      .join('. ') || 'Edited the notebook',
   publish_notebook: (_, result) => `Published the notebook: ${str(result.publicUrl)}`,
   set_dashboard: (_, result) => `Laid out the dashboard: ${tileCount(result)} tile(s) in ${rowCount(result)} row(s)`,
   edit_header: args => `Changed a dashboard heading to "${String(args.content ?? '')}"`,
