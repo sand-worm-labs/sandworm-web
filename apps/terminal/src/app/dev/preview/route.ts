@@ -1,9 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import {
+  isAccessPreviewMode,
   isAllowancePreviewMode,
   isClientKind,
   isContentPreviewMode,
+  PREVIEW_ACCESS_COOKIE,
   PREVIEW_ALLOWANCE_COOKIE,
   PREVIEW_BRIEFING_COOKIE,
   PREVIEW_CLIENT_COOKIE,
@@ -23,6 +25,7 @@ export function GET(request: NextRequest) {
   const briefing = searchParams.get("briefing");
   const opportunities = searchParams.get("opportunities");
   const allowance = searchParams.get("allowance");
+  const access = searchParams.get("access");
   const response = NextResponse.redirect(new URL("/", request.url));
 
   if (client && isClientKind(client)) {
@@ -41,6 +44,10 @@ export function GET(request: NextRequest) {
   }
   if (allowance && isAllowancePreviewMode(allowance)) {
     response.cookies.set(PREVIEW_ALLOWANCE_COOKIE, allowance, { path: "/" });
+  }
+
+  if (access && isAccessPreviewMode(access)) {
+    response.cookies.set(PREVIEW_ACCESS_COOKIE, access, { path: "/" });
   }
 
   return response;
