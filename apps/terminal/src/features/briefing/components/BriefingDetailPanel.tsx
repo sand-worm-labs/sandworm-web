@@ -59,9 +59,20 @@ export function BriefingDetailPanel({
         <DetailSection title={`Why it matters for ${clientName}`} text={why} />
       )}
       <div className="border-t border-border-secondary pt-4">
-        <AppLink route={item.action.route} className={buttonClassName()}>
-          {item.action.label}
-        </AppLink>
+        {item.action.url ? (
+          <a
+            href={item.action.url}
+            target="_blank"
+            rel="noreferrer"
+            className={buttonClassName()}
+          >
+            {item.action.label}
+          </a>
+        ) : (
+          <AppLink route={item.action.route} className={buttonClassName()}>
+            {item.action.label}
+          </AppLink>
+        )}
       </div>
     </Card>
   );

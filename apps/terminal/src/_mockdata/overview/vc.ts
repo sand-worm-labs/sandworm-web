@@ -5,7 +5,7 @@ import {
   destination,
   gapEntry,
   kpi,
-  opportunityEntry,
+  signalEntry,
   segment,
 } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
@@ -86,13 +86,13 @@ export const vcOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Today",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Stablecoin payments in Africa tripled",
         summary: "You hold no project in this sector.",
         entity: "Payments",
         time: "06:00",
         isUnread: true,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Yesterday",
@@ -106,13 +106,13 @@ export const vcOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Nimbus Pay is growing 40% a week",
         summary: "Not in your portfolio. 12,000 users and no token yet.",
         entity: "Nimbus Pay",
         time: "Mon 11:32",
         isUnread: false,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Last week",
@@ -135,33 +135,33 @@ export const vcOverview: OverviewData = {
         route: "briefing",
       }),
     ],
-    opportunities: [
-      opportunityEntry({
+    signals: [
+      signalEntry({
         status: "New",
         title: "Look at Nimbus Pay before its round",
-        summary: "Growing 40% a week with no token.",
+        observed: "Growing 40% a week with no token.",
         kind: "Sourcing",
-        value: "12,000",
-        valueLabel: "users, +40% a week",
-        confidence: "Medium",
+        size: "12,000",
+        sizeLabel: "users, +40% a week",
+        evidence: "Some",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Find a stablecoin payments company in Africa",
-        summary: "Users tripled in six months; you hold nothing there.",
+        observed: "Users tripled in six months; you hold nothing there.",
         kind: "Thesis gap",
-        value: "3.0×",
-        valueLabel: "user growth",
-        confidence: "High",
+        size: "3.0×",
+        sizeLabel: "user growth",
+        evidence: "Strong",
       }),
-      opportunityEntry({
-        status: "Reviewing",
+      signalEntry({
+        status: "Looking into it",
         title: "Ask Lumen DEX to rethink rewards",
-        summary: "68% of new users leave when rewards end.",
+        observed: "68% of new users leave when rewards end.",
         kind: "Portfolio support",
-        value: "$1.1M/mo",
-        valueLabel: "rewards spend",
-        confidence: "High",
+        size: "$1.1M/mo",
+        sizeLabel: "rewards spend",
+        evidence: "Strong",
       }),
     ],
     concentration: {
@@ -193,8 +193,8 @@ export const vcOverview: OverviewData = {
           detail: "Users tripled in six months across 14 projects.",
           value: "3.0×",
           valueLabel: "users in 6 months",
-          cta: "See opportunity",
-          route: "opportunities",
+          cta: "See signal",
+          route: "signals",
         }),
         gapEntry({
           title: "Prediction markets",

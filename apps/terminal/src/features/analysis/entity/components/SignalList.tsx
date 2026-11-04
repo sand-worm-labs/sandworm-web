@@ -2,13 +2,14 @@ import { Card } from "@sandworm/ui/kit/card";
 import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 
 import { AppLink } from "@/components/AppLink";
-import { OpportunityStatusIcon } from "@/features/opportunities/components/OpportunityStatusIcon";
+import { EVIDENCE_LABELS } from "@/features/signals/components/EvidenceMeter";
+import { SignalStatusIcon } from "@/features/signals/components/SignalStatusIcon";
 
 import type { EntityBlock } from "../types";
 
-type OpportunityListBlock = Extract<EntityBlock, { _tag: "opportunityList" }>;
+type SignalListBlock = Extract<EntityBlock, { _tag: "signalList" }>;
 
-export function OpportunityList({ block }: { block: OpportunityListBlock }) {
+export function SignalList({ block }: { block: SignalListBlock }) {
   const titleId = `${block.id}-title`;
 
   return (
@@ -22,20 +23,20 @@ export function OpportunityList({ block }: { block: OpportunityListBlock }) {
           className={index > 0 ? "border-t border-border-secondary" : undefined}
         >
           <AppLink
-            route="opportunity"
+            route="signal"
             className={`${ROW_HOVER_CLASSNAME} grid grid-cols-[14px_minmax(0,1fr)_auto] items-center gap-3 px-3 py-3.5`}
           >
-            <OpportunityStatusIcon status={item.status} />
+            <SignalStatusIcon status={item.status} />
             <span className="flex min-w-0 flex-col gap-0.5">
               <span className="text-sm font-medium text-ink-100">
                 {item.title}
               </span>
               <span className="text-xs text-ink-400">
-                {item.status} · {item.confidence} confidence
+                {item.status} · {EVIDENCE_LABELS[item.evidence]}
               </span>
             </span>
             <span className="whitespace-nowrap text-sm font-medium text-ink-100">
-              {item.value}
+              {item.size}
             </span>
           </AppLink>
         </div>

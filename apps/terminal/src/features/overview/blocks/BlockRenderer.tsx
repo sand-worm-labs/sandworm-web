@@ -7,7 +7,7 @@ import { ConcentrationCard } from "./ConcentrationCard";
 import { DestinationsCard } from "./DestinationsCard";
 import { GapsCard } from "./GapsCard";
 import { KpisCard } from "./KpisCard";
-import { OpportunitiesCard } from "./OpportunitiesCard";
+import { SignalsCard } from "./SignalsCard";
 
 export function BlockRenderer({ block }: { block: OverviewBlock }) {
   switch (block._tag) {
@@ -15,8 +15,8 @@ export function BlockRenderer({ block }: { block: OverviewBlock }) {
       return <KpisCard block={block} />;
     case "briefing":
       return <BriefingCard block={block} />;
-    case "opportunities":
-      return <OpportunitiesCard block={block} />;
+    case "signals":
+      return <SignalsCard block={block} />;
     case "concentration":
       return <ConcentrationCard block={block} />;
     case "destinations":

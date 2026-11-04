@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { markBriefingRead, markBriefingSeen } from "./actions";
 import {
   countUnread,
   filterItems,
@@ -21,18 +22,32 @@ export function useBriefingInbox(
     opened ? [opened] : []
   );
 
+  // Opening Briefing is a visit; an item opened from a link counts as read
+  useEffect(() => {
+    markBriefingSeen();
+    if (opened) markBriefingRead([opened]);
+  }, [opened]);
+
   const visibleItems = useMemo(
     () => filterItems(items, filter),
     [items, filter]
   );
-  const select = useCallback((id: string) => {
-    setSelectedId(id);
-    setReadIds(current => (current.includes(id) ? current : [...current, id]));
-  }, []);
-  const markAllRead = useCallback(
-    () => setReadIds(items.map(item => item.id)),
+  const select = useCallback(
+    (id: string) => {
+      setSelectedId(id);
+      setReadIds(current =>
+        current.includes(id) ? current : [...current, id]
+      );
+      if (items.find(item => item.id === id)?.isUnread) {
+        markBriefingRead([id]);
+      }
+    },
     [items]
   );
+  const markAllRead = useCallback(() => {
+    setReadIds(items.map(item => item.id));
+    markBriefingRead(items.filter(item => item.isUnread).map(item => item.id));
+  }, [items]);
 
   return {
     filter,

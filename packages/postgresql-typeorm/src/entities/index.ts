@@ -40,3 +40,5 @@ export * from './terminal-member.entity';
 export * from './terminal-briefing-item.entity';
 export * from './terminal-briefing-read.entity';
 export * from './terminal-request.entity';
+export * from './terminal-analysis-subject.entity';
+export * from './terminal-signal.entity';

@@ -5,7 +5,7 @@ import {
   destination,
   gapEntry,
   kpi,
-  opportunityEntry,
+  signalEntry,
   segment,
 } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
@@ -76,13 +76,13 @@ export const chainOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Payment apps your users love only exist on Solana",
         summary: "180,000 of your users pay with them there.",
         entity: "Solana",
         time: "06:02",
         isUnread: true,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Today",
@@ -106,13 +106,13 @@ export const chainOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Back a Base-native NFT lending app",
         summary: "Base NFT traders borrow $14M a month on Ethereum.",
         entity: "NFT lending",
         time: "Mon 11:32",
         isUnread: false,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Last week",
@@ -135,33 +135,33 @@ export const chainOverview: OverviewData = {
         route: "briefing",
       }),
     ],
-    opportunities: [
-      opportunityEntry({
+    signals: [
+      signalEntry({
         status: "New",
         title: "Bring Solana payment apps to Base",
-        summary: "180,000 of your users already pay with them on Solana.",
+        observed: "180,000 of your users already pay with them on Solana.",
         kind: "Ecosystem gap",
-        value: "180,000",
-        valueLabel: "users to win",
-        confidence: "High",
+        size: "180,000",
+        sizeLabel: "users to win",
+        evidence: "Strong",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Back a Base-native NFT lending app",
-        summary: "NFT traders borrow on Ethereum today.",
+        observed: "NFT traders borrow on Ethereum today.",
         kind: "Ecosystem gap",
-        value: "$14M/mo",
-        valueLabel: "borrowing",
-        confidence: "Medium",
+        size: "$14M/mo",
+        sizeLabel: "borrowing",
+        evidence: "Some",
       }),
-      opportunityEntry({
-        status: "Reviewing",
+      signalEntry({
+        status: "Looking into it",
         title: "Keep perps traders on Base",
-        summary: "41,000 of your users trade perps on Hyperliquid.",
+        observed: "41,000 of your users trade perps on Hyperliquid.",
         kind: "Retention",
-        value: "$2.3B/mo",
-        valueLabel: "volume",
-        confidence: "Medium",
+        size: "$2.3B/mo",
+        sizeLabel: "volume",
+        evidence: "Some",
       }),
     ],
     concentration: {
@@ -194,16 +194,16 @@ export const chainOverview: OverviewData = {
           detail: "There is no Base version of the top three.",
           value: "$210M",
           valueLabel: "a month",
-          cta: "See opportunity",
-          route: "opportunities",
+          cta: "See signal",
+          route: "signals",
         }),
         gapEntry({
           title: "41,000 of your users trade perps on Hyperliquid",
           detail: "Base perps venues hold 12% of their volume.",
           value: "$2.3B",
           valueLabel: "a month",
-          cta: "See opportunity",
-          route: "opportunity",
+          cta: "See signal",
+          route: "signal",
         }),
         gapEntry({
           title: "Your NFT traders borrow on Ethereum",

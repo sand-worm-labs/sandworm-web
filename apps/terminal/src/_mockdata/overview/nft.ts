@@ -5,7 +5,7 @@ import {
   destination,
   gapEntry,
   kpi,
-  opportunityEntry,
+  signalEntry,
   segment,
 } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
@@ -77,14 +77,14 @@ export const nftOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Solana collectors buy 4× more on Magic Eden",
         summary:
           "52,000 of your traders also buy there. Worth about $310K a month.",
         entity: "Solana",
         time: "06:02",
         isUnread: true,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Today",
@@ -108,13 +108,13 @@ export const nftOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Offer loans against NFTs",
         summary: "4,100 of your collectors borrow on Blend today.",
         entity: "Blend",
         time: "Mon 11:32",
         isUnread: false,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Last week",
@@ -137,34 +137,34 @@ export const nftOverview: OverviewData = {
         route: "briefing",
       }),
     ],
-    opportunities: [
-      opportunityEntry({
+    signals: [
+      signalEntry({
         status: "New",
         title: "Win Solana collectors from Magic Eden",
-        summary:
+        observed:
           "Lower fees on the Solana collections your traders already buy.",
         kind: "Market share",
-        value: "$310K/mo",
-        valueLabel: "possible revenue",
-        confidence: "High",
+        size: "$310K/mo",
+        sizeLabel: "possible revenue",
+        evidence: "Strong",
       }),
-      opportunityEntry({
-        status: "Reviewing",
+      signalEntry({
+        status: "Looking into it",
         title: "Offer loans against NFTs",
-        summary: "4,100 of your collectors borrow on Blend.",
+        observed: "4,100 of your collectors borrow on Blend.",
         kind: "Product gap",
-        value: "$22M",
-        valueLabel: "borrowed elsewhere",
-        confidence: "Medium",
+        size: "$22M",
+        sizeLabel: "borrowed elsewhere",
+        evidence: "Some",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Bring royalty-paying creators back",
-        summary: "340 creators moved collections to Zora this quarter.",
+        observed: "340 creators moved collections to Zora this quarter.",
         kind: "Partnership",
-        value: "$1.2M/mo",
-        valueLabel: "trading volume",
-        confidence: "Medium",
+        size: "$1.2M/mo",
+        sizeLabel: "trading volume",
+        evidence: "Some",
       }),
     ],
     concentration: {
@@ -198,16 +198,16 @@ export const nftOverview: OverviewData = {
           detail: "You don't offer NFT-backed loans.",
           value: "$22M",
           valueLabel: "borrowed",
-          cta: "See opportunity",
-          route: "opportunities",
+          cta: "See signal",
+          route: "signals",
         }),
         gapEntry({
           title: "52,000 of your traders buy Solana NFTs on Magic Eden",
           detail: "Your Solana listings are thinner in their top collections.",
           value: "$33M",
           valueLabel: "a month",
-          cta: "See opportunity",
-          route: "opportunity",
+          cta: "See signal",
+          route: "signal",
         }),
         gapEntry({
           title: "9,300 of your creators mint on Zora first",

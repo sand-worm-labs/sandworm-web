@@ -5,10 +5,10 @@ import { Card } from "@sandworm/ui/kit/card";
 import { AppLink } from "@/components/AppLink";
 import { site } from "@/config/site";
 
-export function OpportunitiesEmpty() {
+export function SignalsEmpty() {
   return (
     <Card
-      aria-labelledby="opportunities-empty"
+      aria-labelledby="signals-empty"
       className="flex flex-col items-center gap-3.5 px-8 pb-[72px] pt-16 text-center"
     >
       <span
@@ -17,20 +17,20 @@ export function OpportunitiesEmpty() {
       >
         <PiClockCountdown size={28} />
       </span>
-      <h2 id="opportunities-empty" className="text-xl font-medium text-ink-100">
-        No opportunities yet
+      <h2 id="signals-empty" className="text-xl font-medium text-ink-100">
+        No signals yet
       </h2>
       <p className="max-w-[480px] text-sm leading-[1.55] text-ink-500">
-        Opportunities usually appear 2 to 3 weeks after setup, once {site.name}{" "}
-        has a full picture of your numbers. Each one comes with an estimated
-        value and how sure we are.
+        Signals usually appear 2 to 3 weeks after setup, once {site.name} has a
+        full picture of your numbers. Each one says what we saw, what it could
+        mean and how strong the evidence is.
       </p>
       <div className="mt-1.5 flex flex-wrap justify-center gap-2">
         <AppLink
-          route="opportunity"
+          route="signal"
           className={buttonClassName({ variant: "secondary" })}
         >
-          See a sample opportunity
+          See a sample signal
         </AppLink>
         <AppLink route="newRequest" className={buttonClassName()}>
           Submit a request

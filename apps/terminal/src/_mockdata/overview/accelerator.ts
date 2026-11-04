@@ -5,7 +5,7 @@ import {
   destination,
   gapEntry,
   kpi,
-  opportunityEntry,
+  signalEntry,
   segment,
 } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
@@ -88,13 +88,13 @@ export const acceleratorOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Today",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Two companies serve the same Kenya corridor",
         summary: "Paylane and Kito could share liquidity.",
         entity: "Kenya",
         time: "06:00",
         isUnread: true,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Yesterday",
@@ -108,13 +108,13 @@ export const acceleratorOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Stablecoin payroll has no company in your batches",
         summary: "Users up 2.6× in six months.",
         entity: "Payroll",
         time: "Mon 11:32",
         isUnread: false,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Last week",
@@ -137,33 +137,33 @@ export const acceleratorOverview: OverviewData = {
         route: "briefing",
       }),
     ],
-    opportunities: [
-      opportunityEntry({
+    signals: [
+      signalEntry({
         status: "New",
         title: "Introduce Paylane and Kito",
-        summary: "Both route payouts through the same Kenya corridor.",
+        observed: "Both route payouts through the same Kenya corridor.",
         kind: "Portfolio support",
-        value: "2",
-        valueLabel: "companies",
-        confidence: "High",
+        size: "2",
+        sizeLabel: "companies",
+        evidence: "Strong",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Recruit a stablecoin payroll company",
-        summary: "Users up 2.6× in six months; none in your batches.",
+        observed: "Users up 2.6× in six months; none in your batches.",
         kind: "Sourcing",
-        value: "2.6×",
-        valueLabel: "user growth",
-        confidence: "Medium",
+        size: "2.6×",
+        sizeLabel: "user growth",
+        evidence: "Some",
       }),
-      opportunityEntry({
-        status: "Reviewing",
+      signalEntry({
+        status: "Looking into it",
         title: "Check in with three flat companies",
-        summary: "No user growth for six weeks.",
+        observed: "No user growth for six weeks.",
         kind: "Portfolio support",
-        value: "3",
-        valueLabel: "companies",
-        confidence: "High",
+        size: "3",
+        sizeLabel: "companies",
+        evidence: "Strong",
       }),
     ],
     concentration: {
@@ -195,8 +195,8 @@ export const acceleratorOverview: OverviewData = {
           detail: "Users up 2.6× in six months across 9 projects.",
           value: "2.6×",
           valueLabel: "users in 6 months",
-          cta: "See opportunity",
-          route: "opportunities",
+          cta: "See signal",
+          route: "signals",
         }),
         gapEntry({
           title: "Agent payments",

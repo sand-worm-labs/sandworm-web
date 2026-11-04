@@ -1,22 +1,18 @@
 import clsx from "clsx";
 
-import type { OpportunityStatus } from "../types";
+import type { SignalStatus } from "../types";
 
-const statusClassNames: Record<OpportunityStatus, string> = {
+const statusClassNames: Record<SignalStatus, string> = {
   New: "border-[1.5px] border-dashed border-primary",
-  Reviewing:
+  "Looking into it":
     "border-[1.5px] border-ink-navy bg-gradient-to-r from-ink-navy from-50% to-transparent to-50%",
-  Pursuing:
+  "Acting on it":
     "border-[1.5px] border-emerald-700 bg-emerald-700 shadow-[inset_0_0_0_3px_white]",
-  Passed:
+  "Not for us":
     "border-[1.5px] border-current text-ink-400 bg-[linear-gradient(135deg,transparent_45%,currentColor_45%,currentColor_55%,transparent_55%)]",
 };
 
-export function OpportunityStatusIcon({
-  status,
-}: {
-  status: OpportunityStatus;
-}) {
+export function SignalStatusIcon({ status }: { status: SignalStatus }) {
   return (
     <span
       role="img"

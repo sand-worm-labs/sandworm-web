@@ -36,6 +36,8 @@ export type ResearchRequest = {
   note: { when: string; text: string };
   scopeApproval?: ScopeApproval;
   reportLabel?: string;
+  // The report in the web app; fixtures have none
+  reportUrl?: string;
 };
 
 export type QuestionEntry = {

@@ -7,7 +7,7 @@ import {
   PREVIEW_ALLOWANCE_COOKIE,
   PREVIEW_BRIEFING_COOKIE,
   PREVIEW_CLIENT_COOKIE,
-  PREVIEW_OPPORTUNITIES_COOKIE,
+  PREVIEW_SIGNALS_COOKIE,
   PREVIEW_STATUS_COOKIE,
 } from "@/features/preview/cookies";
 import { isOverviewStatus } from "@/features/overview/types";
@@ -21,7 +21,7 @@ export function GET(request: NextRequest) {
   const client = searchParams.get("client");
   const status = searchParams.get("status");
   const briefing = searchParams.get("briefing");
-  const opportunities = searchParams.get("opportunities");
+  const signals = searchParams.get("signals");
   const allowance = searchParams.get("allowance");
   const response = NextResponse.redirect(new URL("/", request.url));
 
@@ -34,8 +34,8 @@ export function GET(request: NextRequest) {
   if (briefing && isContentPreviewMode(briefing)) {
     response.cookies.set(PREVIEW_BRIEFING_COOKIE, briefing, { path: "/" });
   }
-  if (opportunities && isContentPreviewMode(opportunities)) {
-    response.cookies.set(PREVIEW_OPPORTUNITIES_COOKIE, opportunities, {
+  if (signals && isContentPreviewMode(signals)) {
+    response.cookies.set(PREVIEW_SIGNALS_COOKIE, signals, {
       path: "/",
     });
   }

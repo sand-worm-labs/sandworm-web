@@ -4,7 +4,7 @@ import type { BriefingKind } from "./types";
 
 const kindClassNames: Record<BriefingKind, string> = {
   Analysis: "bg-info-tint dark:bg-base-600 text-ink-navy",
-  Opportunity:
+  Signal:
     "bg-primary-tint-75 dark:bg-primary-910 text-primary-700 dark:text-primary-200",
   Metric: "bg-base-600 text-ink-500",
 };

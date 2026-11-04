@@ -4,58 +4,55 @@ import { useState } from "react";
 import { Card } from "@sandworm/ui/kit/card";
 import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
 
+import { site } from "@/config/site";
 import { SectionHeader } from "@/features/sections/SectionHeader";
 import type { SectionCounts } from "@/features/sections/types";
 
-import { OpportunitiesEmpty } from "./components/OpportunitiesEmpty";
-import { OpportunityRow } from "./components/OpportunityRow";
-import { OpportunityStatusIcon } from "./components/OpportunityStatusIcon";
+import { SignalsEmpty } from "./components/SignalsEmpty";
+import { SignalRow } from "./components/SignalRow";
+import { SignalStatusIcon } from "./components/SignalStatusIcon";
 import {
-  filterOpportunities,
+  filterSignals,
   groupByStatus,
-  type OpportunityFilter,
-} from "./opportunity-state";
-import type { OpportunitiesFeed } from "./types";
+  type SignalFilter,
+} from "./signal-state";
+import type { SignalsFeed } from "./types";
 
-const FILTERS: readonly { id: OpportunityFilter; label: string }[] = [
+const FILTERS: readonly { id: SignalFilter; label: string }[] = [
   { id: "open", label: "All open" },
   { id: "New", label: "New" },
-  { id: "Reviewing", label: "Reviewing" },
-  { id: "Pursuing", label: "Pursuing" },
-  { id: "Passed", label: "Passed" },
+  { id: "Looking into it", label: "Looking into it" },
+  { id: "Acting on it", label: "Acting on it" },
+  { id: "Not for us", label: "Not for us" },
 ];
 
-type OpportunitiesScreenProps = {
-  feed: OpportunitiesFeed;
+type SignalsScreenProps = {
+  feed: SignalsFeed;
   counts: SectionCounts;
   viewer: { clientName: string };
 };
 
-export function OpportunitiesScreen({
-  feed,
-  counts,
-  viewer,
-}: OpportunitiesScreenProps) {
-  const [filter, setFilter] = useState<OpportunityFilter>("open");
+export function SignalsScreen({ feed, counts, viewer }: SignalsScreenProps) {
+  const [filter, setFilter] = useState<SignalFilter>("open");
 
   const filterOptions = FILTERS.map(option => ({
     ...option,
-    count: filterOpportunities(feed.items, option.id).length,
+    count: filterSignals(feed.items, option.id).length,
   }));
-  const groups = groupByStatus(filterOpportunities(feed.items, filter));
+  const groups = groupByStatus(filterSignals(feed.items, filter));
 
   return (
     <div className="flex flex-col gap-6">
       <SectionHeader
-        current="opportunities"
-        title="Opportunities"
-        subtitle={`Moves for ${viewer.clientName}, ranked by estimated value.`}
+        current="signals"
+        title="Signals"
+        subtitle={`What ${site.name} saw in ${viewer.clientName}'s data, and what it could mean.`}
         counts={counts}
       />
       {feed.items.length === 0 ? (
-        <OpportunitiesEmpty />
+        <SignalsEmpty />
       ) : (
-        <Card aria-label="Opportunities" className="flex flex-col">
+        <Card aria-label="Signals" className="flex flex-col">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-secondary px-5 py-4">
             <SegmentedControl
               label="Filter by status"
@@ -64,7 +61,7 @@ export function OpportunitiesScreen({
               onChange={setFilter}
             />
             <span className="text-xs text-ink-400">
-              Values are Sandworm estimates
+              Sizes are what we measured, not forecasts
             </span>
           </div>
           <div className="px-2 pb-2.5 pt-1">
@@ -80,7 +77,7 @@ export function OpportunitiesScreen({
                 className="flex flex-col"
               >
                 <h2 className="flex items-center gap-2 px-3 pb-1.5 pt-3.5 text-xs font-medium text-ink-500">
-                  <OpportunityStatusIcon status={group.status} />
+                  <SignalStatusIcon status={group.status} />
                   {group.status}
                   <span className="font-normal text-ink-400">
                     {group.items.length}
@@ -93,7 +90,7 @@ export function OpportunitiesScreen({
                       index > 0 ? "border-t border-border-secondary" : undefined
                     }
                   >
-                    <OpportunityRow item={item} />
+                    <SignalRow item={item} />
                   </div>
                 ))}
               </section>

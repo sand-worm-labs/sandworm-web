@@ -6,7 +6,7 @@ import { TerminalClientEntity } from './terminal-client.entity';
 import { TerminalMemberEntity } from './terminal-member.entity';
 import { UserEntity } from './user.entity';
 
-export const TERMINAL_BRIEFING_KINDS = ['analysis', 'opportunity', 'metric'] as const;
+export const TERMINAL_BRIEFING_KINDS = ['analysis', 'signal', 'metric'] as const;
 export type TerminalBriefingKind = (typeof TERMINAL_BRIEFING_KINDS)[number];
 
 // What the item's detail panel shows. `outputs` is a frozen copy of the cell's

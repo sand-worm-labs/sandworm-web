@@ -5,7 +5,7 @@ import type {
   DestinationRow,
   GapEntry,
   Kpi,
-  OpportunityEntry,
+  SignalEntry,
 } from "@/features/overview/types";
 
 type KpiInit = Omit<Kpi, "id" | "comparison"> & { comparison?: string };
@@ -22,9 +22,7 @@ export function briefingEntry(init: Omit<BriefingEntry, "id">): BriefingEntry {
   return { ...init, id: toId(init.title) };
 }
 
-export function opportunityEntry(
-  init: Omit<OpportunityEntry, "id">
-): OpportunityEntry {
+export function signalEntry(init: Omit<SignalEntry, "id">): SignalEntry {
   return { ...init, id: toId(init.title) };
 }
 

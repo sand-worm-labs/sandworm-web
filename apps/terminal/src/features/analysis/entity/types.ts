@@ -1,10 +1,7 @@
 import type { Tone } from "@sandworm/ui/kit/tone";
 
 import type { RouteId } from "@/config/routes";
-import type {
-  Confidence,
-  OpportunityStatus,
-} from "@/features/opportunities/types";
+import type { Evidence, SignalStatus } from "@/features/signals/types";
 
 export const ENTITY_KINDS = ["project", "region", "sector"] as const;
 
@@ -86,12 +83,12 @@ export type ReportLink = {
   isNew?: boolean;
 };
 
-export type OpportunityLink = {
+export type SignalLink = {
   id: string;
   title: string;
-  status: OpportunityStatus;
-  confidence: Confidence;
-  value: string;
+  status: SignalStatus;
+  evidence: Evidence;
+  size: string;
 };
 
 type BlockBase = { id: string; title: string };
@@ -125,8 +122,8 @@ export type EntityBlock =
     })
   | (BlockBase & { _tag: "reportList"; items: readonly ReportLink[] })
   | (BlockBase & {
-      _tag: "opportunityList";
-      items: readonly OpportunityLink[];
+      _tag: "signalList";
+      items: readonly SignalLink[];
     });
 
 export type RowSplit = "full" | "wide-narrow";

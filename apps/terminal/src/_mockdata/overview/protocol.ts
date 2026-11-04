@@ -5,7 +5,7 @@ import {
   destination,
   gapEntry,
   kpi,
-  opportunityEntry,
+  signalEntry,
   segment,
 } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
@@ -76,14 +76,14 @@ export const protocolOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Your borrowers take cbBTC on Morpho",
         summary:
           "3,400 of your users borrow it there. Worth about $1.2M a month in fees.",
         entity: "Morpho",
         time: "06:02",
         isUnread: true,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Today",
@@ -108,13 +108,13 @@ export const protocolOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "List USDe as collateral on Base",
         summary: "$640M of USDe sits idle in your users' wallets.",
         entity: "Ethena",
         time: "Mon 11:32",
         isUnread: false,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Last week",
@@ -137,33 +137,33 @@ export const protocolOverview: OverviewData = {
         route: "briefing",
       }),
     ],
-    opportunities: [
-      opportunityEntry({
+    signals: [
+      signalEntry({
         status: "New",
         title: "List cbBTC borrowing on more markets",
-        summary: "3,400 of your users borrow it on Morpho.",
+        observed: "3,400 of your users borrow it on Morpho.",
         kind: "Product gap",
-        value: "$1.2M/mo",
-        valueLabel: "fees",
-        confidence: "High",
+        size: "$1.2M/mo",
+        sizeLabel: "fees",
+        evidence: "Strong",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "List USDe as collateral on Base",
-        summary: "$640M sits idle in your users' wallets.",
+        observed: "$640M sits idle in your users' wallets.",
         kind: "Product gap",
-        value: "$640M",
-        valueLabel: "possible deposits",
-        confidence: "Medium",
+        size: "$640M",
+        sizeLabel: "possible deposits",
+        evidence: "Some",
       }),
-      opportunityEntry({
-        status: "Reviewing",
+      signalEntry({
+        status: "Looking into it",
         title: "Win back depositors from Spark",
-        summary: "Two top-10 depositors moved there this month.",
+        observed: "Two top-10 depositors moved there this month.",
         kind: "Retention",
-        value: "$410M",
-        valueLabel: "deposits at risk",
-        confidence: "High",
+        size: "$410M",
+        sizeLabel: "deposits at risk",
+        evidence: "Strong",
       }),
     ],
     concentration: {
@@ -196,16 +196,16 @@ export const protocolOverview: OverviewData = {
           detail: "Rates there are 0.8 points lower.",
           value: "$1.2M",
           valueLabel: "fees a month",
-          cta: "See opportunity",
-          route: "opportunities",
+          cta: "See signal",
+          route: "signals",
         }),
         gapEntry({
           title: "$640M of USDe sits idle in your users' wallets",
           detail: "You don't accept it as collateral on Base.",
           value: "$640M",
           valueLabel: "idle",
-          cta: "See opportunity",
-          route: "opportunity",
+          cta: "See signal",
+          route: "signal",
         }),
         gapEntry({
           title: "6,800 of your users loop stETH on Spark",

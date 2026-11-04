@@ -9,7 +9,7 @@ const SECTIONS: readonly Section[] = [
   { route: "overview" },
   { route: "briefing", countKey: "briefing" },
   { route: "analysis", countKey: "analysis" },
-  { route: "opportunities", countKey: "opportunities" },
+  { route: "signals", countKey: "signals" },
   { route: "requests", countKey: "requests" },
 ];
 

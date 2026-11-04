@@ -3,7 +3,7 @@ import type { Tone } from "@sandworm/ui/kit/tone";
 
 import type { RouteId } from "@/config/routes";
 
-export type BriefingKind = "Analysis" | "Opportunity" | "Metric";
+export type BriefingKind = "Analysis" | "Signal" | "Metric";
 
 export type BriefingDetail = {
   headline?: {
@@ -29,7 +29,8 @@ export type BriefingItem = {
   when: string;
   isUnread: boolean;
   detail: BriefingDetail;
-  action: { label: string; route: RouteId };
+  // `url` opens the source in the web app (a report's notebook) instead of a terminal route
+  action: { label: string; route: RouteId; url?: string };
 };
 
 export type BriefingFeed = {

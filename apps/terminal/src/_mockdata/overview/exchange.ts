@@ -5,7 +5,7 @@ import {
   destination,
   gapEntry,
   kpi,
-  opportunityEntry,
+  signalEntry,
   segment,
 } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
@@ -78,14 +78,14 @@ export const exchangeOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Argentina's off-ramps charge 2× Nigeria's fees",
         summary:
           "11,200 of your wallets cash out to pesos. Worth about $43K a month.",
         entity: "Argentina",
         time: "06:02",
         isUnread: true,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Today",
@@ -109,13 +109,13 @@ export const exchangeOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Let users send money home with Paycrest",
         summary: "$5.1M a month already leaves your app to do this.",
         entity: "Paycrest",
         time: "Mon 11:32",
         isUnread: false,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Last week",
@@ -138,33 +138,35 @@ export const exchangeOverview: OverviewData = {
         route: "briefing",
       }),
     ],
-    opportunities: [
-      opportunityEntry({
+    signals: [
+      signalEntry({
         status: "New",
         title: "Argentina's off-ramps charge 2× Nigeria's fees",
-        summary: "Offer a cheaper cash-out to pesos inside Robinhood Wallet.",
-        kind: "Market entry",
-        value: "$43K/mo",
-        valueLabel: "possible revenue",
-        confidence: "High",
+        observed:
+          "11,200 of your wallets cash out to pesos, paying 2.2% on average.",
+        kind: "Market",
+        size: "$14.2M/mo",
+        sizeLabel: "cashed out to pesos",
+        evidence: "Strong",
       }),
-      opportunityEntry({
-        status: "Reviewing",
-        title: "Offer interest on stablecoins",
-        summary: "38,000 of your wallets earn it on Aave instead.",
-        kind: "Product gap",
-        value: "$212M",
-        valueLabel: "deposited elsewhere",
-        confidence: "High",
+      signalEntry({
+        status: "Looking into it",
+        title: "Your users earn on stablecoins elsewhere",
+        observed: "38,000 of your wallets hold $212M in Aave stablecoin pools.",
+        kind: "Product",
+        size: "$212M",
+        sizeLabel: "deposited in Aave",
+        evidence: "Strong",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
-        title: "Let users send money home with Paycrest",
-        summary: "2,140 of your users already leave your app to do it.",
-        kind: "Partnership",
-        value: "$5.1M/mo",
-        valueLabel: "flow you could keep",
-        confidence: "Medium",
+        title: "Your users send money home through Paycrest",
+        observed:
+          "2,140 of your users moved $5.1M through Paycrest last month.",
+        kind: "Partner",
+        size: "$5.1M/mo",
+        sizeLabel: "sent through Paycrest",
+        evidence: "Some",
       }),
     ],
     concentration: {
@@ -199,8 +201,8 @@ export const exchangeOverview: OverviewData = {
           detail: "Robinhood Wallet has no way to earn on USDC.",
           value: "$212M",
           valueLabel: "deposited",
-          cta: "See opportunity",
-          route: "opportunities",
+          cta: "See signal",
+          route: "signals",
         }),
         gapEntry({
           title:
@@ -208,8 +210,8 @@ export const exchangeOverview: OverviewData = {
           detail: "They pay 2.2% on average. Nigeria pays 0.9%.",
           value: "$14.2M",
           valueLabel: "a month",
-          cta: "See opportunity",
-          route: "opportunity",
+          cta: "See signal",
+          route: "signal",
         }),
         gapEntry({
           title:

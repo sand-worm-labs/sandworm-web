@@ -2,6 +2,7 @@ import { Button, buttonClassName } from "@sandworm/ui/kit/button";
 import { Card } from "@sandworm/ui/kit/card";
 
 import { AppLink } from "@/components/AppLink";
+import { ReportLink } from "@/components/ReportLink";
 import { site } from "@/config/site";
 
 import { canApprove } from "../requests-state";
@@ -63,15 +64,15 @@ export function ResearchDetail({
         </>
       )}
       {request.reportLabel && (
-        <AppLink
-          route="report"
+        <ReportLink
+          url={request.reportUrl}
           className={buttonClassName({
             variant: "secondary",
             className: "self-start",
           })}
         >
           {request.reportLabel}
-        </AppLink>
+        </ReportLink>
       )}
     </Card>
   );

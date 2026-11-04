@@ -12,7 +12,7 @@ import {
 export const PREVIEW_CLIENT_COOKIE = "preview-client";
 export const PREVIEW_STATUS_COOKIE = "preview-status";
 export const PREVIEW_BRIEFING_COOKIE = "preview-briefing";
-export const PREVIEW_OPPORTUNITIES_COOKIE = "preview-opportunities";
+export const PREVIEW_SIGNALS_COOKIE = "preview-signals";
 
 export const PREVIEW_ALLOWANCE_COOKIE = "preview-allowance";
 
@@ -62,8 +62,8 @@ async function readPreviewMode<Mode extends string>(
 export const getPreviewBriefing = () =>
   readPreviewMode(PREVIEW_BRIEFING_COOKIE, isContentPreviewMode, "items");
 
-export const getPreviewOpportunities = () =>
-  readPreviewMode(PREVIEW_OPPORTUNITIES_COOKIE, isContentPreviewMode, "items");
+export const getPreviewSignals = () =>
+  readPreviewMode(PREVIEW_SIGNALS_COOKIE, isContentPreviewMode, "items");
 
 export const getPreviewAllowance = () =>
   readPreviewMode(

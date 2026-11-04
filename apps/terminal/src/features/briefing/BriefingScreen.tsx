@@ -16,7 +16,7 @@ import { useBriefingInbox } from "./useBriefingInbox";
 const FILTERS: readonly { id: BriefingFilter; label: string }[] = [
   { id: "all", label: "All" },
   { id: "Analysis", label: "Analysis" },
-  { id: "Opportunity", label: "Opportunities" },
+  { id: "Signal", label: "Signals" },
   { id: "Metric", label: "Metrics" },
 ];
 

@@ -37,7 +37,7 @@ type Seed = {
 
 const ITEMS: Seed[] = [
     {
-        kind: 'opportunity',
+        kind: 'signal',
         title: "Argentina's off-ramps charge 2× Nigeria's fees",
         summary: '11,200 of your wallets cash out to pesos. Worth about $43K a month.',
         subject: 'Argentina',
@@ -80,7 +80,7 @@ const ITEMS: Seed[] = [
         isPersonal: true,
     },
     {
-        kind: 'opportunity',
+        kind: 'signal',
         title: 'Let users send money home with Paycrest',
         summary: '$5.1M a month already leaves your app to do this.',
         subject: 'Paycrest',

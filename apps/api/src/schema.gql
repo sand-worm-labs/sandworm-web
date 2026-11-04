@@ -289,6 +289,104 @@ type Profile {
   following: Boolean!
 }
 
+type TerminalAnalysisReport {
+  id: String!
+  title: String!
+  line: String!
+  publishedAt: String!
+  isNew: Boolean!
+  path: String!
+}
+
+type TerminalAnalysisSubject {
+  id: String!
+  view: String!
+  slug: String!
+  name: String!
+  kind: String!
+  impact: String!
+  impactSize: Int!
+  reports: [TerminalAnalysisReport!]!
+}
+
+type TerminalAnalysis {
+  subjects: [TerminalAnalysisSubject!]!
+}
+
+type TerminalBriefingItem {
+  id: String!
+  kind: String!
+  title: String!
+  summary: String!
+  subject: String!
+  detail: JSON!
+  publishedAt: String!
+  isRead: Boolean!
+  sourcePath: String
+}
+
+type TerminalBriefing {
+  lastSeenAt: String
+  items: [TerminalBriefingItem!]!
+  archivedCount: Int!
+}
+
+type TerminalSignal {
+  id: String!
+  status: String!
+  title: String!
+  observed: String!
+  couldMean: String!
+  kind: String!
+  size: String!
+  sizeLabel: String!
+  evidence: String!
+  subject: String!
+  publishedAt: String!
+  reportPath: String
+}
+
+type TerminalSignals {
+  items: [TerminalSignal!]!
+}
+
+type TerminalRequest {
+  id: String!
+  kind: String!
+  question: String!
+  status: String!
+  useCase: String
+  about: [String!]!
+  timing: String
+  requestedBy: String
+  scope: JSON
+  progressNote: String
+  outcome: String
+  reportPath: String
+  submittedAt: String!
+  scopedAt: String
+  approvedAt: String
+  closedAt: String
+}
+
+type TerminalAllowance {
+  used: Int!
+  total: Int!
+  resetsAt: String!
+}
+
+type TerminalRequests {
+  allowance: TerminalAllowance!
+  requests: [TerminalRequest!]!
+}
+
+type TerminalCounts {
+  briefing: Int!
+  analysis: Int!
+  signals: Int!
+  requests: Int!
+}
+
 type TerminalOrganisation {
   type: String!
   name: String!
@@ -815,6 +913,31 @@ type Query {
   The signed-in user and the terminal client they belong to (null before their first setup save).
   """
   terminalSession: TerminalSession!
+
+  """
+  The numbers on the terminal section tabs: unread briefing, reports, open signals and open requests.
+  """
+  terminalCounts: TerminalCounts!
+
+  """
+  The Analysis catalog of the user's terminal client: projects, regions and sectors with their reports.
+  """
+  terminalAnalysis: TerminalAnalysis!
+
+  """
+  The user's briefing: recent items for their client and for them, with what they have read.
+  """
+  terminalBriefing: TerminalBriefing!
+
+  """
+  Patterns Sandworm saw in the client data and what they could mean, with the client triage.
+  """
+  terminalSignals: TerminalSignals!
+
+  """
+  The client's research requests and questions, with this year's research allowance.
+  """
+  terminalRequests: TerminalRequests!
 }
 
 input ListFilesInput {
@@ -1100,6 +1223,19 @@ type Mutation {
   Save the current user's terminal setup, as far as they have filled it in.
   """
   saveTerminalSetup(input: TerminalSetupInput!): TerminalSetup!
+  markTerminalBriefingRead(itemIds: [ID!]!): Boolean!
+
+  """
+  Records that the user opened Briefing now: the start of their next "since your last visit".
+  """
+  markTerminalBriefingSeen: Boolean!
+  setTerminalSignalStatus(signalId: ID!, status: String!): TerminalSignal!
+  submitTerminalRequest(input: TerminalRequestInput!): TerminalRequest!
+
+  """
+  Approves the scope of a research request: the work starts and it counts toward the allowance.
+  """
+  approveTerminalRequestScope(requestId: ID!): TerminalRequest!
 }
 
 input CreateChatInput {
@@ -1330,4 +1466,13 @@ input DeleteScheduleInput {
   workspaceId: String!
   documentId: String!
   scheduleId: String!
+}
+
+input TerminalRequestInput {
+  kind: String!
+  question: String!
+  useCase: String
+  about: [String!]!
+  timing: String
+  files: [String!]!
 }

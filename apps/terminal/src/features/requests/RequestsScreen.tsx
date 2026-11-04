@@ -11,6 +11,7 @@ import { AllowanceSummary } from "./components/AllowanceSummary";
 import { QuestionsList } from "./components/QuestionsList";
 import { ResearchDetail } from "./components/ResearchDetail";
 import { ResearchList } from "./components/ResearchList";
+import { approveRequestScope } from "./submit/actions";
 import {
   approveScope,
   pickDefaultRequest,
@@ -42,6 +43,7 @@ export function RequestsScreen({ data, counts }: RequestsScreenProps) {
       requests.map(r => (r.id === selected.id ? approveScope(r) : r))
     );
     setApprovedCount(count => count + 1);
+    approveRequestScope(selected.id);
   };
 
   return (

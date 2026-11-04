@@ -36,6 +36,8 @@ export type AnalysisHighlight = {
   title: string;
   line: string;
   entity: string;
+  // The report in the web app; fixtures have none
+  url?: string;
 };
 
 export type AnalysisCatalog = {

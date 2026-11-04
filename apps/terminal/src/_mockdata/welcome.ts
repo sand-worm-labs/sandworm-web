@@ -17,12 +17,12 @@ const exchangeContent: WelcomeContent = {
 function contentFromOverview(kind: OrganisationTypeId): WelcomeContent {
   const overview = overviewMockData[kind];
   const briefing = findBlock(overview.blocks, "briefing");
-  const topOpportunity = findBlock(overview.blocks, "opportunities")?.items[0];
+  const topSignal = findBlock(overview.blocks, "signals")?.items[0];
 
   return {
     firstBriefingCount: briefing?.entries.length ?? 0,
-    briefingHighlight: topOpportunity
-      ? `Including ${topOpportunity.title}: ${topOpportunity.value} ${topOpportunity.valueLabel}`
+    briefingHighlight: topSignal
+      ? `Including ${topSignal.title}: ${topSignal.size} ${topSignal.sizeLabel}`
       : "Fresh findings for your first look",
     readyReports: analysisMockData[kind].highlights.length,
     trackingSummary: `Tracking the contracts, competitors and regions you added for ${sessionMockData[kind].client.name}.`,

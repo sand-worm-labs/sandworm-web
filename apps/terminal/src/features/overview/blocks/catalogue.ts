@@ -10,9 +10,9 @@ export const BLOCK_ABOUT: Partial<Record<BlockTag, BlockAbout>> = {
   briefing: {
     cadence: "Every visit",
     description:
-      "New analysis, new opportunities and big moves in your numbers since you last looked.",
+      "New analysis, new signals and big moves in your numbers since you last looked.",
   },
-  opportunities: {
+  signals: {
     cadence: "Weekly",
     description:
       "Markets to enter, partners to approach and products your users want, ranked by value.",

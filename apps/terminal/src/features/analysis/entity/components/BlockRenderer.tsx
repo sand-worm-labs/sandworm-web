@@ -6,7 +6,7 @@ import { BarList } from "./BarList";
 import { ColumnChart } from "./ColumnChart";
 import { DataTable } from "./DataTable";
 import { LineChart } from "./LineChart";
-import { OpportunityList } from "./OpportunityList";
+import { SignalList } from "./SignalList";
 import { ReportList } from "./ReportList";
 
 export function BlockRenderer({ block }: { block: EntityBlock }) {
@@ -21,8 +21,8 @@ export function BlockRenderer({ block }: { block: EntityBlock }) {
       return <DataTable block={block} />;
     case "reportList":
       return <ReportList block={block} />;
-    case "opportunityList":
-      return <OpportunityList block={block} />;
+    case "signalList":
+      return <SignalList block={block} />;
     default:
       return exhaustiveCheck(block);
   }

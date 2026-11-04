@@ -42,7 +42,7 @@ export const paycrestPage: EntityPage = {
   insight: {
     heading: "2,140 of your users sent $5.1M through Paycrest in October",
     text: "They move stablecoins out of Robinhood Wallet first, then send them home. Up 18% on September.",
-    action: { label: "See the opportunity", route: "opportunity" },
+    action: { label: "See the signal", route: "signal" },
   },
   rows: [
     {

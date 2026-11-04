@@ -1,17 +1,17 @@
-import { OpportunitiesScreen } from "@/features/opportunities/OpportunitiesScreen";
-import { getOpportunities } from "@/features/opportunities/source";
+import { SignalsScreen } from "@/features/signals/SignalsScreen";
+import { getSignals } from "@/features/signals/source";
 import { getSectionCounts } from "@/features/sections/source";
 import { getSession } from "@/features/session/source";
 
-export default async function OpportunitiesRoute() {
+export default async function SignalsRoute() {
   const [feed, counts, session] = await Promise.all([
-    getOpportunities(),
+    getSignals(),
     getSectionCounts(),
     getSession(),
   ]);
 
   return (
-    <OpportunitiesScreen
+    <SignalsScreen
       feed={feed}
       counts={counts}
       viewer={{

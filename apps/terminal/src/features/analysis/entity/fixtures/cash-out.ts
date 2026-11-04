@@ -5,7 +5,7 @@ import {
   change,
   entity,
   kpi,
-  opportunityLink,
+  signalLink,
   reportLink,
   scaledBarRow,
   tableRow,
@@ -46,7 +46,7 @@ export const cashOutPage: EntityPage = {
   insight: {
     heading: "Your users pay about $537K a month to cash out somewhere else",
     text: "$31.6M left your app through other ramps in October, at 1.7% on average.",
-    action: { label: "See 2 opportunities", route: "opportunities" },
+    action: { label: "See 2 signals", route: "signals" },
   },
   rows: [
     {
@@ -187,7 +187,7 @@ export const cashOutPage: EntityPage = {
       ],
     },
     {
-      id: "reports-and-opportunities",
+      id: "reports-and-signals",
       split: "wide-narrow",
       blocks: [
         {
@@ -215,21 +215,21 @@ export const cashOutPage: EntityPage = {
           ],
         },
         {
-          _tag: "opportunityList",
-          id: "opportunities-list",
-          title: "Opportunities in this sector",
+          _tag: "signalList",
+          id: "signals-list",
+          title: "Signals in this sector",
           items: [
-            opportunityLink({
+            signalLink({
               title: "Argentina's off-ramps charge 2× Nigeria's fees",
               status: "New",
-              confidence: "High",
-              value: "$43K/mo",
+              evidence: "Strong",
+              size: "$43K/mo",
             }),
-            opportunityLink({
+            signalLink({
               title: "Let users send money home with Paycrest",
               status: "New",
-              confidence: "Medium",
-              value: "$5.1M/mo",
+              evidence: "Some",
+              size: "$5.1M/mo",
             }),
           ],
         },
