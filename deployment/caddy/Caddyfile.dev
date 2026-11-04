@@ -3,6 +3,12 @@
 	reverse_proxy localhost:4321
 }
 
+# ─── Terminal — :8082 ────────────────────────────────────────────────────────
+# apps/terminal (Next.js dev server on :3001)
+:8082 {
+	reverse_proxy localhost:3001
+}
+
 # ─── App — :8081 ─────────────────────────────────────────────────────────────
 :8081 {
 	# SSE — flush immediately for streaming AI responses

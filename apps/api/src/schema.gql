@@ -552,7 +552,9 @@ type Query {
   """Get current environment status"""
   environmentStatus(workspaceId: String!): EnvironmentStatus!
 
-  """Get all environment variables (values are masked)"""
+  """
+  Get all environment variables. Values are masked for viewers; editors and admins, who can change them, see them in full
+  """
   environmentVariables(workspaceId: String!): [EnvironmentVariable!]!
 
   """Get current system info"""

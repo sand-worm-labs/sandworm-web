@@ -10,15 +10,18 @@
     "eslint": "pnpm exec next lint --fix --dir src",
     "prettier": "pnpm exec prettier --write .",
     "lint": "pnpm eslint && pnpm prettier",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@sandworm/ui": "workspace:*",
     "clsx": "^2.1.1",
+    "lucide-react": "^0.476.0",
     "next": "catalog:react",
     "next-themes": "catalog:react",
     "react": "catalog:react",
     "react-dom": "catalog:react",
+    "react-icons": "^5.5.0",
     "sass": "^1.93.3",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "catalog:ui",
@@ -41,7 +44,8 @@
     "eslint-plugin-simple-import-sort": "^12.0.0",
     "postcss": "^8.5.23",
     "prettier": "^3.3.3",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.6"
   },
   "packageManager": "pnpm@10.17.0"
 }

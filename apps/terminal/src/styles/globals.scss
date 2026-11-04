@@ -1,6 +1,4 @@
-/* Sandworm Terminal global styles.
-   The design tokens below are copied from apps/web/src/styles/globals.scss so the two apps
-   look the same. If you change a token there, change it here too (tracked in README.md). */
+/* The design tokens and the rainbow gradient are copied from apps/web/src/styles/globals.scss. Keep them in step (see README). */
 
 @tailwind base;
 @tailwind components;
@@ -22,6 +20,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Moderat";
+  src: url("/fonts/moderat/Moderat-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 .font-body {
   font-family: "Moderat", sans-serif;
   font-weight: 400;
@@ -30,6 +36,28 @@
 .font-body.font-medium {
   font-family: "Moderat", sans-serif;
   font-weight: 500;
+}
+
+@font-face {
+  font-family: "Moderat Mono";
+  src: url("/fonts/moderat/Moderat-Mono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-body-mono {
+  font-family: "Moderat Mono", monospace;
+}
+
+.font-tertiary {
+  font-family: "Azeret Mono", sans-serif;
+  font-weight: 400;
+}
+
+.font-tertiary.font-bold {
+  font-family: "Azeret Mono", sans-serif;
+  font-weight: 700;
 }
 
 @layer base {
@@ -331,4 +359,48 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.bg-rainbow-gradient {
+  background: linear-gradient(
+    99deg,
+    #6368ff 0.62%,
+    #cbecff 15.71%,
+    #7bff42 25.15%,
+    #2db2ff 42.6%,
+    #f00 60.53%,
+    #ded757 80.81%,
+    #ff00e1 98.74%
+  );
+  background-size: 250% 250%;
+  animation: gradientScroll 8s ease-in-out infinite;
+  will-change: background-position;
+}
+
+@keyframes gradientScroll {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.block-shadow-soft {
+  box-shadow: 0px 7.5px 8px 0px #8497c30a;
+}
+
+.dark .block-shadow-soft {
+  box-shadow: none;
+}
+
+.dark {
+  --hover-bg: #131311;
+  --bg-input: 0 0% 10.2%;
+  --ink-500: #adb5bd;
 }

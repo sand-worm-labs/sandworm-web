@@ -1,0 +1,70 @@
+import { OptionCard } from "@/components/form/OptionCard";
+import { TextField } from "@/components/form/TextField";
+
+import { useSetup } from "../context";
+import {
+  getOrganisationType,
+  ORGANISATION_TYPES,
+} from "../options/organisation-types";
+
+import type { SetupStepDefinition } from "./types";
+
+function OrganisationStep() {
+  const {
+    draft: { organisation },
+    patch,
+  } = useSetup();
+
+  return (
+    <>
+      <fieldset className="min-w-0 border-0 p-0">
+        <legend className="sr-only">Organisation type</legend>
+        <div className="grid gap-2.5 sm:grid-cols-2">
+          {ORGANISATION_TYPES.map(type => (
+            <OptionCard
+              key={type.id}
+              name="organisation-type"
+              value={type.id}
+              checked={organisation.type === type.id}
+              title={type.label}
+              description={type.description}
+              onSelect={() => patch("organisation", { type: type.id })}
+            />
+          ))}
+        </div>
+      </fieldset>
+      <div className="flex flex-wrap gap-3">
+        <TextField
+          id="organisation-name"
+          label="Organisation name"
+          className="min-w-[240px] flex-1"
+          value={organisation.name}
+          onChange={event =>
+            patch("organisation", { name: event.target.value })
+          }
+        />
+        <TextField
+          id="organisation-website"
+          label="Website"
+          className="min-w-[240px] flex-1"
+          value={organisation.website}
+          onChange={event =>
+            patch("organisation", { website: event.target.value })
+          }
+        />
+      </div>
+    </>
+  );
+}
+
+export const organisationStep: SetupStepDefinition = {
+  id: "organisation",
+  label: "Your organisation",
+  title: ({ client }) => `What kind of organisation is ${client.name}?`,
+  description: () =>
+    "This picks the starting layout for your Terminal. You can change any of it later.",
+  Component: OrganisationStep,
+  canContinue: ({ organisation }) => organisation.name.trim().length > 0,
+  previewNote: ({ draft }) =>
+    `Same layout every ${getOrganisationType(draft.organisation.type).template.name.toLowerCase()} client starts with. Your own numbers fill it in.`,
+};

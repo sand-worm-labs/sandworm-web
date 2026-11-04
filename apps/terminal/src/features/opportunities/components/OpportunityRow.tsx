@@ -1,0 +1,37 @@
+import clsx from "clsx";
+
+import { AppLink } from "@/components/AppLink";
+
+import type { Opportunity } from "../types";
+
+import { ConfidenceMeter } from "./ConfidenceMeter";
+import { OpportunityStatusIcon } from "./OpportunityStatusIcon";
+
+export function OpportunityRow({ item }: { item: Opportunity }) {
+  return (
+    <AppLink
+      route="opportunity"
+      className={clsx(
+        "flex flex-wrap items-start gap-x-4 gap-y-2 rounded-xl px-2 py-3.5 transition-colors hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover md:grid md:grid-cols-[14px_minmax(0,1fr)_120px_140px_84px_60px]",
+        item.status === "Passed" && "opacity-75"
+      )}
+    >
+      <OpportunityStatusIcon status={item.status} />
+      <span className="flex min-w-0 basis-[calc(100%-30px)] flex-col gap-0.5 md:basis-auto">
+        <span className="text-sm font-medium text-ink-100">{item.title}</span>
+        <span className="text-[13px] text-ink-400">{item.summary}</span>
+      </span>
+      <span className="inline-flex h-[22px] items-center justify-self-start whitespace-nowrap rounded-md bg-hover-bg px-2 text-xs text-ink-400">
+        {item.kind}
+      </span>
+      <span className="flex flex-col md:items-end">
+        <span className="text-[15px] font-medium text-ink-100">
+          {item.value}
+        </span>
+        <span className="text-xs text-ink-400">{item.valueLabel}</span>
+      </span>
+      <ConfidenceMeter confidence={item.confidence} />
+      <span className="text-xs text-ink-400 md:text-right">{item.when}</span>
+    </AppLink>
+  );
+}

@@ -8,6 +8,7 @@ const config: Config = {
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/lib/**/*.{js,ts,jsx,tsx,mdx}",
     // Components shared from @sandworm/ui carry their own class names. Web does not scan
     // this folder and has to safelist the classes it needs; here it is scanned instead.
