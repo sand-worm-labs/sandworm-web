@@ -1,8 +1,8 @@
 import { getPreviewClientKind } from "@/features/preview/cookies";
 import { getSession } from "@/features/session/source";
+import { welcomeMockData } from "@/_mockdata/welcome";
 
 import { buildWelcome } from "./build-welcome";
-import { welcomeContentFixtures } from "./fixtures";
 import type { WelcomeData } from "./types";
 
 export async function getWelcome(): Promise<WelcomeData | undefined> {
@@ -11,5 +11,5 @@ export async function getWelcome(): Promise<WelcomeData | undefined> {
     getSession(),
   ]);
 
-  return buildWelcome(welcomeContentFixtures[clientKind], session);
+  return buildWelcome(welcomeMockData[clientKind], session);
 }

@@ -7,7 +7,6 @@ import type {
   OpportunityStatus,
 } from "@/features/opportunities/types";
 import type { OrganisationTypeId } from "@/features/setup/options/organisation-types";
-import type { Analyst } from "@/features/session/types";
 
 export const OVERVIEW_STATUSES = ["ready", "settingUp", "calculating"] as const;
 
@@ -63,27 +62,6 @@ export type BriefingBlock = BlockBase & {
   _tag: "briefing";
   subtitle: string;
   entries: readonly BriefingEntry[];
-};
-
-export type AllowanceMeter = {
-  id: string;
-  label: string;
-  used: number;
-  total: number;
-  tone: "brand" | "navy";
-};
-
-export type AllowanceBlock = BlockBase & {
-  _tag: "allowance";
-  subtitle: string;
-  meters: readonly AllowanceMeter[];
-};
-
-export type AnalystBlock = BlockBase & {
-  _tag: "analyst";
-  analyst: Analyst;
-  message: string;
-  footnote: string;
 };
 
 export type OpportunityEntry = Omit<Opportunity, "status" | "when"> & {
@@ -142,8 +120,6 @@ export type GapsBlock = BlockBase & {
 export type OverviewBlock =
   | KpisBlock
   | BriefingBlock
-  | AllowanceBlock
-  | AnalystBlock
   | OpportunitiesBlock
   | ConcentrationBlock
   | DestinationsBlock
@@ -174,7 +150,6 @@ export type SetupStep = {
 export type SetupProgress = {
   message: string;
   steps: readonly SetupStep[];
-  kickoffMessage: string;
 };
 
 export type OverviewData = {

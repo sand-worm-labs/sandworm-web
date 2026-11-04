@@ -26,7 +26,7 @@ export function ResearchList({
         id="research-title"
         className="px-3 pb-2 text-base font-medium text-ink-100"
       >
-        Commissioned research
+        Research requests
       </h2>
       {requests.map((request, index) => {
         const isSelected = request.id === selectedId;

@@ -1,8 +1,7 @@
 import clsx from "clsx";
-import { Card } from "@sandworm/ui/kit/card";
+import { Card, cardRowDividerClassName } from "@sandworm/ui/kit/card";
 
 import { BlockHeader } from "../components/BlockHeader";
-import { LIST_ROW_DIVIDER_CLASSNAME } from "../components/list-row";
 import type { ConcentrationBlock } from "../types";
 
 const segmentClassNames = [
@@ -46,7 +45,7 @@ export function ConcentrationCard({ block }: { block: ConcentrationBlock }) {
             key={segment.id}
             className={clsx(
               "grid grid-cols-[12px_minmax(0,1fr)_90px_52px] items-center gap-2.5 py-2.5",
-              LIST_ROW_DIVIDER_CLASSNAME
+              cardRowDividerClassName
             )}
           >
             <span

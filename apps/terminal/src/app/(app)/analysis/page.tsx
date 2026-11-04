@@ -16,7 +16,6 @@ export default async function AnalysisRoute() {
       counts={counts}
       viewer={{
         clientName: session.client.name,
-        analystName: session.client.analyst.name,
       }}
     />
   );

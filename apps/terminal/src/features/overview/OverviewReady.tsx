@@ -6,7 +6,6 @@ import { Button } from "@sandworm/ui/kit/button";
 
 import { WelcomeDialog } from "@/features/welcome/WelcomeDialog";
 import type { WelcomeData } from "@/features/welcome/types";
-import type { Analyst } from "@/features/session/types";
 import { SectionHeader } from "@/features/sections/SectionHeader";
 import type { SectionCounts } from "@/features/sections/types";
 
@@ -19,7 +18,7 @@ type OverviewReadyProps = {
   data: OverviewData;
   counts: SectionCounts;
   welcome?: WelcomeData;
-  viewer: { clientName: string; firstName: string; analyst: Analyst };
+  viewer: { clientName: string; firstName: string };
 };
 
 export function OverviewReady({

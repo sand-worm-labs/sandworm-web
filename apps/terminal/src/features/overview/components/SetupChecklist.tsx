@@ -1,12 +1,11 @@
 import clsx from "clsx";
 import { PiCheck } from "react-icons/pi";
 import { buttonClassName } from "@sandworm/ui/kit/button";
+import { cardRowDividerClassName } from "@sandworm/ui/kit/card";
 
 import { AppLink } from "@/components/AppLink";
 
 import type { SetupStep } from "../types";
-
-import { LIST_ROW_DIVIDER_CLASSNAME } from "./list-row";
 
 function StepIcon({ isDone }: { isDone: boolean }) {
   if (!isDone) {
@@ -38,7 +37,7 @@ export function SetupChecklist({ steps }: { steps: readonly SetupStep[] }) {
           key={step.id}
           className={clsx(
             "grid grid-cols-[20px_minmax(0,1fr)_auto] items-start gap-3 py-3",
-            LIST_ROW_DIVIDER_CLASSNAME
+            cardRowDividerClassName
           )}
         >
           <StepIcon isDone={step.isDone} />

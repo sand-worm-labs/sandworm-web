@@ -289,6 +289,57 @@ type Profile {
   following: Boolean!
 }
 
+type TerminalOrganisation {
+  type: String!
+  name: String!
+  website: String!
+}
+
+type TerminalTracking {
+  addresses: String!
+  autoDiscover: Boolean!
+  competitors: [String!]!
+  regions: [String!]!
+  shareInternalData: Boolean!
+}
+
+type TerminalGoals {
+  selected: [String!]!
+}
+
+type TerminalInvite {
+  id: String!
+  email: String!
+  access: String!
+}
+
+type TerminalTeam {
+  invites: [TerminalInvite!]!
+}
+
+type TerminalSetup {
+  organisation: TerminalOrganisation!
+  tracking: TerminalTracking!
+  goals: TerminalGoals!
+  team: TerminalTeam!
+}
+
+type TerminalSessionUser {
+  name: String!
+}
+
+type TerminalSessionClient {
+  name: String!
+  type: String!
+  access: String!
+}
+
+type TerminalSession {
+  user: TerminalSessionUser!
+  client: TerminalSessionClient
+  firstBriefingDays: Int!
+}
+
 type ShowcaseNotebook {
   id: String!
   slug: String!
@@ -494,6 +545,41 @@ enum AuditResult {
   SUCCESS
   FAILURE
   DENIED
+}
+
+input TerminalOrganisationInput {
+  type: String!
+  name: String!
+  website: String!
+}
+
+input TerminalTrackingInput {
+  addresses: String!
+  autoDiscover: Boolean!
+  competitors: [String!]!
+  regions: [String!]!
+  shareInternalData: Boolean!
+}
+
+input TerminalGoalsInput {
+  selected: [String!]!
+}
+
+input TerminalInviteInput {
+  id: String!
+  email: String!
+  access: String!
+}
+
+input TerminalTeamInput {
+  invites: [TerminalInviteInput!]!
+}
+
+input TerminalSetupInput {
+  organisation: TerminalOrganisationInput!
+  tracking: TerminalTrackingInput!
+  goals: TerminalGoalsInput!
+  team: TerminalTeamInput!
 }
 
 type Query {
@@ -721,6 +807,14 @@ type Query {
 
   """Get all schedules for a document"""
   schedules(input: ListSchedulesInput!): [Schedule!]!
+
+  """The current user's terminal setup, or null before they first save it."""
+  terminalSetup: TerminalSetup
+
+  """
+  The signed-in user and the terminal client they belong to (null before their first setup save).
+  """
+  terminalSession: TerminalSession!
 }
 
 input ListFilesInput {
@@ -1001,6 +1095,11 @@ type Mutation {
 
   """Delete a schedule"""
   deleteSchedule(input: DeleteScheduleInput!): Boolean!
+
+  """
+  Save the current user's terminal setup, as far as they have filled it in.
+  """
+  saveTerminalSetup(input: TerminalSetupInput!): TerminalSetup!
 }
 
 input CreateChatInput {

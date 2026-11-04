@@ -6,15 +6,13 @@ import { SectionHeader } from "@/features/sections/SectionHeader";
 import { AppLink } from "@/components/AppLink";
 
 import { BLOCK_ABOUT } from "./blocks/catalogue";
-import { AnalystPanel } from "./components/AnalystPanel";
 import { SetupChecklist } from "./components/SetupChecklist";
-import { findBlock, type OverviewData } from "./types";
+import type { OverviewData } from "./types";
 
 type OverviewSettingUpProps = { data: OverviewData; firstName: string };
 
 export function OverviewSettingUp({ data, firstName }: OverviewSettingUpProps) {
   const { setup } = data;
-  const analystBlock = findBlock(data.blocks, "analyst");
   const doneCount = setup.steps.filter(step => step.isDone).length;
   const previews = data.blocks.flatMap(block => {
     const about = BLOCK_ABOUT[block._tag];
@@ -26,45 +24,34 @@ export function OverviewSettingUp({ data, firstName }: OverviewSettingUpProps) {
       <SectionHeader
         current="overview"
         title="Overview"
-        subtitle="Setup in progress. Your analyst is checking what we track."
+        subtitle="Setup in progress. We're checking what we track."
       />
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <Card
-          aria-labelledby="setup-welcome"
-          className="flex flex-col gap-[18px] px-7 pb-5 pt-7 lg:col-span-2"
-        >
-          <div>
-            <span className="text-sm text-ink-400">Welcome, {firstName}</span>
-            <h2
-              id="setup-welcome"
-              className="mt-1 text-[22px] font-medium leading-tight text-ink-100"
-            >
-              Your Terminal is being set up
-            </h2>
-            <p className="mt-1.5 max-w-[560px] text-sm text-ink-500">
-              {setup.message}
-            </p>
+      <Card
+        aria-labelledby="setup-welcome"
+        className="flex flex-col gap-[18px] px-7 pb-5 pt-7"
+      >
+        <div>
+          <span className="text-sm text-ink-400">Welcome, {firstName}</span>
+          <h2
+            id="setup-welcome"
+            className="mt-1 text-[22px] font-medium leading-tight text-ink-100"
+          >
+            Your Terminal is being set up
+          </h2>
+          <p className="mt-1.5 max-w-[560px] text-sm text-ink-500">
+            {setup.message}
+          </p>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <div className="flex-1">
+            <ProgressMeter value={doneCount} max={setup.steps.length} />
           </div>
-          <div className="flex items-center gap-2.5">
-            <div className="flex-1">
-              <ProgressMeter value={doneCount} max={setup.steps.length} />
-            </div>
-            <span className="whitespace-nowrap text-xs text-ink-400">
-              {doneCount} of {setup.steps.length} done
-            </span>
-          </div>
-          <SetupChecklist steps={setup.steps} />
-        </Card>
-        {analystBlock && (
-          <AnalystPanel
-            id="setup-analyst"
-            title={analystBlock.title}
-            analyst={analystBlock.analyst}
-            message={setup.kickoffMessage}
-            actionLabel="Change the time"
-          />
-        )}
-      </div>
+          <span className="whitespace-nowrap text-xs text-ink-400">
+            {doneCount} of {setup.steps.length} done
+          </span>
+        </div>
+        <SetupChecklist steps={setup.steps} />
+      </Card>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 className="text-base font-medium text-ink-100">

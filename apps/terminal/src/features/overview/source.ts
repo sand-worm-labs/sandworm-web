@@ -2,8 +2,8 @@ import {
   getPreviewClientKind,
   getPreviewStatus,
 } from "@/features/preview/cookies";
+import { overviewMockData } from "@/_mockdata/overview";
 
-import { overviewFixtures } from "./fixtures";
 import type { Overview } from "./types";
 
 export async function getOverview(): Promise<Overview> {
@@ -12,5 +12,5 @@ export async function getOverview(): Promise<Overview> {
     getPreviewStatus(),
   ]);
 
-  return { status, data: overviewFixtures[clientKind] };
+  return { status, data: overviewMockData[clientKind] };
 }

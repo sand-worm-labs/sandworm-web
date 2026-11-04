@@ -5,8 +5,7 @@ type BlockAbout = { cadence: string; description: string };
 export const BLOCK_ABOUT: Partial<Record<BlockTag, BlockAbout>> = {
   kpis: {
     cadence: "Daily",
-    description:
-      "Your headline numbers, checked by your analyst before they go live.",
+    description: "Your headline numbers, checked before they go live.",
   },
   briefing: {
     cadence: "Every visit",

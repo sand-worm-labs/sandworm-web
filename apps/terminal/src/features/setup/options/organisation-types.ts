@@ -1,3 +1,7 @@
+import type { OrganisationTypeId } from "@sandworm/types/terminal";
+
+export type { OrganisationTypeId } from "@sandworm/types/terminal";
+
 export type TemplateBlock = { title: string; summary: string };
 
 export type TemplateBlueprint = {
@@ -7,7 +11,7 @@ export type TemplateBlueprint = {
 };
 
 type OrganisationTypeDefinition = {
-  id: string;
+  id: OrganisationTypeId;
   label: string;
   description: string;
   template: TemplateBlueprint;
@@ -160,8 +164,6 @@ export const ORGANISATION_TYPES = [
     },
   },
 ] as const satisfies readonly OrganisationTypeDefinition[];
-
-export type OrganisationTypeId = (typeof ORGANISATION_TYPES)[number]["id"];
 
 export function getOrganisationType(id: OrganisationTypeId) {
   return (

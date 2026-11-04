@@ -1,8 +1,8 @@
 import { getPreviewClientKind } from "@/features/preview/cookies";
+import { analysisMockData } from "@/_mockdata/analysis";
 
-import { analysisFixtures } from "./fixtures";
 import type { AnalysisCatalog } from "./types";
 
 export async function getAnalysis(): Promise<AnalysisCatalog> {
-  return analysisFixtures[await getPreviewClientKind()];
+  return analysisMockData[await getPreviewClientKind()];
 }

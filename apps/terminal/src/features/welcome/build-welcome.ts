@@ -1,4 +1,5 @@
 import type { Session } from "@/features/session/types";
+import { site } from "@/config/site";
 
 import type { WelcomeContent, WelcomeData } from "./types";
 
@@ -32,11 +33,11 @@ export function buildWelcome(
         },
       },
       {
-        id: "kickoff",
-        route: "bookCall",
-        title: `Kick-off call, ${client.kickoffCall.when}`,
-        detail: `${client.kickoffCall.minutes} minutes with ${client.analyst.name}. Change the time if it doesn't suit.`,
-        lead: { _tag: "calendar" },
+        id: "contact",
+        route: "contact",
+        title: "Questions along the way?",
+        detail: `Contact ${site.name} about a report or what to look at next.`,
+        lead: { _tag: "chat" },
       },
     ],
   };

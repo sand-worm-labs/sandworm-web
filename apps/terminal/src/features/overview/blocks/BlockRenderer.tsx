@@ -2,8 +2,6 @@ import { exhaustiveCheck } from "@/lib/exhaustive";
 
 import type { OverviewBlock } from "../types";
 
-import { AllowanceCard } from "./AllowanceCard";
-import { AnalystCard } from "./AnalystCard";
 import { BriefingCard } from "./BriefingCard";
 import { ConcentrationCard } from "./ConcentrationCard";
 import { DestinationsCard } from "./DestinationsCard";
@@ -17,10 +15,6 @@ export function BlockRenderer({ block }: { block: OverviewBlock }) {
       return <KpisCard block={block} />;
     case "briefing":
       return <BriefingCard block={block} />;
-    case "allowance":
-      return <AllowanceCard block={block} />;
-    case "analyst":
-      return <AnalystCard block={block} />;
     case "opportunities":
       return <OpportunitiesCard block={block} />;
     case "concentration":

@@ -16,7 +16,6 @@ export default async function OpportunitiesRoute() {
       counts={counts}
       viewer={{
         clientName: session.client.name,
-        analystName: session.client.analyst.name,
       }}
     />
   );

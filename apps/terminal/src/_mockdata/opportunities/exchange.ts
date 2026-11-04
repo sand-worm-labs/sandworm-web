@@ -1,0 +1,78 @@
+import type { OpportunitiesFeed } from "@/features/opportunities/types";
+
+import { opportunity } from "./builders";
+
+export const exchangeOpportunities: OpportunitiesFeed = {
+  items: [
+    opportunity({
+      status: "New",
+      title: "Argentina's off-ramps charge 2× Nigeria's fees",
+      summary: "Offer a cheaper cash-out to pesos inside Robinhood Wallet.",
+      kind: "Market entry",
+      value: "$43K/mo",
+      valueLabel: "possible revenue",
+      confidence: "High",
+      when: "Today",
+    }),
+    opportunity({
+      status: "New",
+      title: "Let users send money home with Paycrest",
+      summary: "2,140 of your users already leave your app to do it.",
+      kind: "Partnership",
+      value: "$5.1M/mo",
+      valueLabel: "flow you could keep",
+      confidence: "Medium",
+      when: "Mon",
+    }),
+    opportunity({
+      status: "New",
+      title: "List the Solana tokens your users bridge for",
+      summary: "24,500 of your wallets bridge to Solana to buy them.",
+      kind: "Product gap",
+      value: "$96M/mo",
+      valueLabel: "trading volume",
+      confidence: "Medium",
+      when: "Wed",
+    }),
+    opportunity({
+      status: "Reviewing",
+      title: "Offer interest on stablecoins",
+      summary: "38,000 of your wallets earn it on Aave instead.",
+      kind: "Product gap",
+      value: "$212M",
+      valueLabel: "deposited elsewhere",
+      confidence: "High",
+      when: "27 Oct",
+    }),
+    opportunity({
+      status: "Reviewing",
+      title: "Let Brazilian users buy with Pix",
+      summary: "19,600 of your wallets in Brazil buy through other apps.",
+      kind: "Market entry",
+      value: "$18K/mo",
+      valueLabel: "possible revenue",
+      confidence: "Medium",
+      when: "16 Oct",
+    }),
+    opportunity({
+      status: "Pursuing",
+      title: "Win back wallets leaving for Phantom",
+      summary: "1,670 of your leavers went to Phantom in October.",
+      kind: "Retention",
+      value: "1,670",
+      valueLabel: "wallets a month",
+      confidence: "Medium",
+      when: "9 Oct",
+    }),
+    opportunity({
+      status: "Passed",
+      title: "Launch an NFT marketplace in the app",
+      summary: "Few of your users trade NFTs today.",
+      kind: "Product gap",
+      value: "$0.4M/mo",
+      valueLabel: "trading volume",
+      confidence: "Low",
+      when: "2 Oct",
+    }),
+  ],
+};

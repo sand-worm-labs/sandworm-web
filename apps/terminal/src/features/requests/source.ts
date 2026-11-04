@@ -2,8 +2,8 @@ import {
   getPreviewAllowance,
   getPreviewClientKind,
 } from "@/features/preview/cookies";
+import { requestMockData } from "@/_mockdata/requests";
 
-import { requestFixtures } from "./fixtures";
 import type { RequestsData } from "./types";
 
 export async function getRequests(): Promise<RequestsData> {
@@ -11,7 +11,7 @@ export async function getRequests(): Promise<RequestsData> {
     getPreviewClientKind(),
     getPreviewAllowance(),
   ]);
-  const data = requestFixtures[clientKind];
+  const data = requestMockData[clientKind];
 
   if (allowanceMode === "available") return data;
 

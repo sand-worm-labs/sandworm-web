@@ -1,5 +1,4 @@
 import type { SectionCounts } from "@/features/sections/types";
-import type { Analyst } from "@/features/session/types";
 import type { WelcomeData } from "@/features/welcome/types";
 import { exhaustiveCheck } from "@/lib/exhaustive";
 
@@ -11,7 +10,7 @@ import type { Overview } from "./types";
 type OverviewPageProps = {
   overview: Overview;
   counts: SectionCounts;
-  viewer: { clientName: string; firstName: string; analyst: Analyst };
+  viewer: { clientName: string; firstName: string };
   welcome?: WelcomeData;
 };
 

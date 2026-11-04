@@ -1,26 +1,55 @@
-"use client";
+import Link from "next/link";
+import {
+  AppHeaderActions,
+  AppHeaderFrame,
+  HelpMenu,
+} from "@sandworm/ui/kit/app-header";
 
-import { usePathname } from "next/navigation";
-
+import { TerminalBrand } from "@/components/TerminalBrand";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
-import { findRouteByPath } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
+import { getCurrentUser } from "@/features/auth/user";
 
+import { AccountMenu } from "./AccountMenu";
 import { HeaderSearch } from "./HeaderSearch";
 
-export function AppHeader() {
-  const title = findRouteByPath(usePathname())?.label ?? "Terminal";
+const DOCS_URL = "https://docs.sandwormlab.xyz";
+const GITHUB_URL = "https://github.com/sand-worm-labs";
+
+// The web app's header (ShowcaseHeader), built from the same shared pieces.
+// The only difference is the "terminal" badge.
+export async function AppHeader() {
+  const user = await getCurrentUser();
+  const name = user?.firstName || user?.username || "Account";
 
   return (
-    <header className="flex items-center justify-between border-b border-border-secondary bg-header-surface px-8 py-[5.3px] dark:border-border-tertiary">
-      <span className="hidden text-sm font-medium text-ink-400 dark:text-ink-100 md:block">
-        {title}
-      </span>
-      <div className="ml-auto flex items-center">
-        <div className="mr-3 hidden md:block">
+    <AppHeaderFrame>
+      <Link
+        href={ROUTES.overview.path}
+        aria-label="Terminal home"
+        className="flex items-center shrink-0"
+      >
+        <TerminalBrand />
+      </Link>
+
+      <AppHeaderActions>
+        <div className="hidden md:block">
           <HeaderSearch />
         </div>
+        <HelpMenu docsUrl={DOCS_URL} githubUrl={GITHUB_URL} />
         <ThemeToggle />
-      </div>
-    </header>
+        <AccountMenu
+          user={
+            user && {
+              name,
+              fullName:
+                user.fullName ?? `${name} ${user.lastName ?? ""}`.trim(),
+              email: user.email,
+              avatarUrl: user.avater,
+            }
+          }
+        />
+      </AppHeaderActions>
+    </AppHeaderFrame>
   );
 }

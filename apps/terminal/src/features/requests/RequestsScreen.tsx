@@ -6,7 +6,6 @@ import { buttonClassName } from "@sandworm/ui/kit/button";
 import { AppLink } from "@/components/AppLink";
 import { SectionHeader } from "@/features/sections/SectionHeader";
 import type { SectionCounts } from "@/features/sections/types";
-import type { Analyst } from "@/features/session/types";
 
 import { AllowanceSummary } from "./components/AllowanceSummary";
 import { QuestionsList } from "./components/QuestionsList";
@@ -22,10 +21,9 @@ import type { RequestsData, ResearchRequest } from "./types";
 type RequestsScreenProps = {
   data: RequestsData;
   counts: SectionCounts;
-  analyst: Analyst;
 };
 
-export function RequestsScreen({ data, counts, analyst }: RequestsScreenProps) {
+export function RequestsScreen({ data, counts }: RequestsScreenProps) {
   const [requests, setRequests] = useState<readonly ResearchRequest[]>(
     data.research
   );
@@ -51,20 +49,12 @@ export function RequestsScreen({ data, counts, analyst }: RequestsScreenProps) {
       <SectionHeader
         current="requests"
         title="Requests"
-        subtitle="Research you've commissioned and questions you've asked."
+        subtitle="Research and questions you've submitted."
         counts={counts}
         actions={
-          <div className="flex flex-wrap gap-2">
-            <AppLink
-              route="bookCall"
-              className={buttonClassName({ variant: "secondary" })}
-            >
-              Ask an analyst
-            </AppLink>
-            <AppLink route="commission" className={buttonClassName()}>
-              Commission research
-            </AppLink>
-          </div>
+          <AppLink route="newRequest" className={buttonClassName()}>
+            Submit a request
+          </AppLink>
         }
       />
       <AllowanceSummary allowance={allowance} />
@@ -77,7 +67,6 @@ export function RequestsScreen({ data, counts, analyst }: RequestsScreenProps) {
           />
           <ResearchDetail
             request={selected}
-            analyst={analyst}
             allowance={allowance}
             onApprove={approveSelected}
           />

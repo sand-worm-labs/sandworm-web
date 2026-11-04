@@ -1,6 +1,7 @@
 "use client";
 
-import { PiCalendarBlank, PiCaretRight } from "react-icons/pi";
+import Image from "next/image";
+import { PiCaretRight, PiChatCircleText } from "react-icons/pi";
 import {
   Dialog,
   DialogClose,
@@ -10,11 +11,10 @@ import {
 } from "@sandworm/ui/components/dialog";
 import { buttonClassName } from "@sandworm/ui/kit/button";
 import { MODAL_CLASSNAME } from "@sandworm/ui/kit/modal";
-import { UserAvatar } from "@sandworm/ui/kit/user-avatar";
 import clsx from "clsx";
 
 import { AppLink } from "@/components/AppLink";
-import type { Analyst } from "@/features/session/types";
+import { site } from "@/config/site";
 
 import type { WelcomeData, WelcomeLead } from "./types";
 
@@ -38,13 +38,13 @@ function LeadTile({ lead }: { lead: WelcomeLead }) {
           {lead.value}
         </span>
       );
-    case "calendar":
+    case "chat":
       return (
         <span
           aria-hidden="true"
           className="flex size-9 items-center justify-center rounded-[10px] bg-sidebar-hover text-ink-navy"
         >
-          <PiCalendarBlank size={16} />
+          <PiChatCircleText size={16} />
         </span>
       );
     default:
@@ -54,7 +54,7 @@ function LeadTile({ lead }: { lead: WelcomeLead }) {
 
 type WelcomeDialogProps = {
   welcome: WelcomeData;
-  viewer: { clientName: string; firstName: string; analyst: Analyst };
+  viewer: { clientName: string; firstName: string };
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   onCustomize: () => void;
@@ -67,8 +67,6 @@ export function WelcomeDialog({
   onOpenChange,
   onCustomize,
 }: WelcomeDialogProps) {
-  const { analyst } = viewer;
-
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent
@@ -77,14 +75,16 @@ export function WelcomeDialog({
       >
         <div className="flex flex-col gap-4 px-8 pt-7">
           <span className="flex items-center gap-2.5">
-            <UserAvatar name={analyst.name} size="md" />
+            <Image
+              src={site.logoPath}
+              alt=""
+              width={36}
+              height={36}
+              className="size-9"
+            />
             <span className="flex flex-col leading-snug">
-              <span className="font-medium text-ink-100">
-                {analyst.fullName}
-              </span>
-              <span className="text-xs text-ink-400">
-                Your analyst at Sandworm
-              </span>
+              <span className="font-medium text-ink-100">{site.name}</span>
+              <span className="text-xs text-ink-400">Your research team</span>
             </span>
           </span>
           <DialogTitle className="text-[26px] font-medium leading-tight text-ink-100">

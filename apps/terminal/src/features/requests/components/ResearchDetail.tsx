@@ -1,9 +1,8 @@
 import { Button, buttonClassName } from "@sandworm/ui/kit/button";
 import { Card } from "@sandworm/ui/kit/card";
-import { InitialsAvatar } from "@sandworm/ui/kit/initials-avatar";
 
 import { AppLink } from "@/components/AppLink";
-import type { Analyst } from "@/features/session/types";
+import { site } from "@/config/site";
 
 import { canApprove } from "../requests-state";
 import type { Allowance, ResearchRequest } from "../types";
@@ -13,14 +12,12 @@ import { Timeline } from "./Timeline";
 
 type ResearchDetailProps = {
   request: ResearchRequest;
-  analyst: Analyst;
   allowance: Allowance;
   onApprove: () => void;
 };
 
 export function ResearchDetail({
   request,
-  analyst,
   allowance,
   onApprove,
 }: ResearchDetailProps) {
@@ -41,8 +38,7 @@ export function ResearchDetail({
       <Timeline label="Progress" steps={request.steps} />
       <div className="flex flex-col gap-2 rounded-[14px] bg-inputBg p-4 ring-1 ring-inset ring-border-secondary">
         <span className="flex items-center gap-2">
-          <InitialsAvatar initials={analyst.initials} size="sm" />
-          <span className="font-medium text-ink-100">{analyst.fullName}</span>
+          <span className="font-medium text-ink-100">{site.name}</span>
           <span className="text-xs text-ink-400">{request.note.when}</span>
         </span>
         <p className="whitespace-pre-line text-sm leading-[1.55] text-ink-500">
@@ -54,7 +50,7 @@ export function ResearchDetail({
           <div className="flex flex-wrap gap-2">
             <Button onClick={onApprove}>Approve scope</Button>
             <AppLink
-              route="bookCall"
+              route="contact"
               className={buttonClassName({ variant: "secondary" })}
             >
               Suggest changes

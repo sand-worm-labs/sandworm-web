@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { buttonClassName } from "@sandworm/ui/kit/button";
-import { Card } from "@sandworm/ui/kit/card";
+import { Card, cardRowDividerClassName } from "@sandworm/ui/kit/card";
 import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 
 import { AppLink } from "@/components/AppLink";
@@ -8,7 +8,6 @@ import { ConfidenceMeter } from "@/features/opportunities/components/ConfidenceM
 import { OpportunityStatusIcon } from "@/features/opportunities/components/OpportunityStatusIcon";
 
 import { BlockHeader } from "../components/BlockHeader";
-import { LIST_ROW_DIVIDER_CLASSNAME } from "../components/list-row";
 import type { OpportunitiesBlock } from "../types";
 
 export function OpportunitiesCard({ block }: { block: OpportunitiesBlock }) {
@@ -41,7 +40,7 @@ export function OpportunitiesCard({ block }: { block: OpportunitiesBlock }) {
           className={clsx(
             ROW_HOVER_CLASSNAME,
             "flex flex-wrap items-start gap-x-4 gap-y-2 px-3 py-3.5 md:grid md:grid-cols-[14px_minmax(0,1fr)_140px_130px_84px]",
-            LIST_ROW_DIVIDER_CLASSNAME
+            cardRowDividerClassName
           )}
         >
           <OpportunityStatusIcon status={item.status} />

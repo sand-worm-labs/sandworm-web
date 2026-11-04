@@ -1,11 +1,14 @@
 import Link from "next/link";
 import type { AriaRole, ReactNode } from "react";
 
-import { ROUTES, routePath, type RouteId } from "@/config/routes";
+import { routeHref, type RouteId } from "@/config/routes";
 
 type AppLinkProps = {
   route: RouteId;
+  // An entity page under the route, e.g. /analysis/project/<slug>
   slug?: string;
+  // Search params, e.g. which item a list opens on
+  query?: Record<string, string>;
   isCurrent?: boolean;
   isSelected?: boolean;
   role?: AriaRole;
@@ -16,15 +19,16 @@ type AppLinkProps = {
 export function AppLink({
   route,
   slug,
+  query,
   isCurrent,
   isSelected,
   role,
   className,
   children,
 }: AppLinkProps) {
-  const { isBuilt } = ROUTES[route];
+  const href = routeHref(route, query, slug);
 
-  if (!isBuilt) {
+  if (!href) {
     return (
       <span
         role={role}
@@ -39,7 +43,7 @@ export function AppLink({
 
   return (
     <Link
-      href={routePath(route, slug)}
+      href={href}
       role={role}
       aria-selected={isSelected}
       aria-current={isCurrent ? "page" : undefined}

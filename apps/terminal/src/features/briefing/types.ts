@@ -1,16 +1,9 @@
+import type { Output } from "@sandworm/types";
 import type { Tone } from "@sandworm/ui/kit/tone";
 
 import type { RouteId } from "@/config/routes";
 
 export type BriefingKind = "Analysis" | "Opportunity" | "Metric";
-
-export type BriefingBar = {
-  id: string;
-  label: string;
-  share: number;
-  value: string;
-  isHighlighted?: boolean;
-};
 
 export type BriefingDetail = {
   headline?: {
@@ -18,7 +11,9 @@ export type BriefingDetail = {
     label: string;
     delta?: { text: string; tone: Tone };
   };
-  breakdown?: { title: string; bars: readonly BriefingBar[] };
+  // A frozen copy of the source cell's outputs from the run the item was made
+  // from: whatever the notebook drew (chart, table, card, markdown).
+  outputs?: readonly Output[];
   what?: string;
   why?: string;
 };

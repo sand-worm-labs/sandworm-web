@@ -6,7 +6,15 @@
 # ─── Terminal — :8082 ────────────────────────────────────────────────────────
 # apps/terminal (Next.js dev server on :3001)
 :8082 {
-	reverse_proxy localhost:3001
+	# The API on the terminal's own origin, so the browser sends the session
+	# cookies without CORS
+	handle /api/* {
+		reverse_proxy localhost:8003
+	}
+
+	handle {
+		reverse_proxy localhost:3001
+	}
 }
 
 # ─── App — :8081 ─────────────────────────────────────────────────────────────

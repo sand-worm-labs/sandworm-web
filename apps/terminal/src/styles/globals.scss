@@ -50,6 +50,16 @@
   font-family: "Moderat Mono", monospace;
 }
 
+/* next/font/local registers Azeret Mono under a generated name, so the
+   .font-tertiary rules below need it declared under its own name too. */
+@font-face {
+  font-family: "Azeret Mono";
+  src: url("/fonts/azeret-mono/AzeretMono-Latin-Variable.woff2") format("woff2");
+  font-weight: 300 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 .font-tertiary {
   font-family: "Azeret Mono", sans-serif;
   font-weight: 400;

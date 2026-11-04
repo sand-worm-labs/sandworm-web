@@ -3,6 +3,7 @@ import { ChipInput } from "@sandworm/ui/kit/form/chip-input";
 import { TextAreaField } from "@sandworm/ui/kit/form/text-area-field";
 
 import { pluralise } from "@/lib/format";
+import { site } from "@/config/site";
 
 import { useSetup } from "../context";
 
@@ -15,7 +16,6 @@ function countListedAddresses(addresses: string): number {
 function TrackingStep() {
   const {
     draft: { tracking },
-    session,
     patch,
   } = useSetup();
 
@@ -35,7 +35,7 @@ function TrackingStep() {
           id="tracking-auto-discover"
           checked={tracking.autoDiscover}
           onCheckedChange={autoDiscover => patch("tracking", { autoDiscover })}
-          label={`Let ${session.client.analyst.name} find the rest of our contracts`}
+          label={`Let ${site.name} find the rest of our contracts`}
         />
       </div>
       <ChipInput
@@ -73,8 +73,8 @@ export const trackingStep: SetupStepDefinition = {
   id: "tracking",
   label: "What to track",
   title: () => "What should we track?",
-  description: ({ client }) =>
-    `Add what you know. ${client.analyst.name} finds the rest and checks everything before your numbers go live.`,
+  description: () =>
+    `Add what you know. ${site.name} finds the rest and checks everything before your numbers go live.`,
   Component: TrackingStep,
   canContinue: () => true,
   previewNote: ({ draft: { tracking } }) =>

@@ -34,8 +34,8 @@ export function BriefingUpToDate({
         >
           Browse analysis
         </AppLink>
-        <AppLink route="commission" className={buttonClassName()}>
-          Commission research
+        <AppLink route="newRequest" className={buttonClassName()}>
+          Submit a request
         </AppLink>
       </div>
       <AppLink

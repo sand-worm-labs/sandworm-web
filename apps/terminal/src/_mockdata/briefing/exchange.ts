@@ -1,0 +1,235 @@
+import type { BriefingFeed } from "@/features/briefing/types";
+
+import { briefingItem, line, markdown, rankedBars } from "./builders";
+
+export const exchangeBriefing: BriefingFeed = {
+  subtitle: "Since your last visit, Tue 28 Oct",
+  upToDate: {
+    subtitle: "Since your last visit, Sun 2 Nov",
+    message:
+      "Nothing new since your last visit on Sun 2 Nov at 18:40. New analysis, new opportunities and big moves in your numbers show up here.",
+    archivedCount: 9,
+  },
+  items: [
+    briefingItem({
+      group: "Today",
+      kind: "Opportunity",
+      title: "Argentina's off-ramps charge 2× Nigeria's fees",
+      summary:
+        "11,200 of your wallets cash out to pesos. Worth about $43K a month.",
+      entity: "Argentina",
+      time: "06:02",
+      when: "Today at 06:02",
+      isUnread: true,
+      detail: {
+        headline: {
+          value: "2.2%",
+          label: "average fee to cash out to pesos",
+          delta: { text: "Nigeria: 0.9%", tone: "neutral" },
+        },
+        outputs: [
+          markdown("**Average fee to cash out stablecoins, October**"),
+          rankedBars("Fee", [
+            ["Argentina", 2.2],
+            ["Brazil", 1.4],
+            ["Mexico", 1.1],
+            ["Nigeria", 0.9],
+          ]),
+        ],
+        what: "Cashing out stablecoins to pesos costs 2.2% on average, more than twice what it costs in Nigeria. Argentina's ramps have stayed this expensive for six months while volume kept growing.",
+        why: "11,200 of your wallets cash out to pesos every month, about $14.2M. A cheaper route inside Robinhood Wallet could keep that flow and earn about $43K a month.",
+      },
+      action: { label: "Open opportunity", route: "opportunity" },
+    }),
+    briefingItem({
+      group: "Today",
+      kind: "Metric",
+      title: "Swap volume fell 9% this month",
+      summary: "7 of your top 50 wallets traded less.",
+      entity: "Robinhood Wallet",
+      time: "06:00",
+      when: "Today at 06:00",
+      isUnread: true,
+      detail: {
+        headline: {
+          value: "$1.84B",
+          label: "swap volume in October",
+          delta: { text: "▼ 9% vs September", tone: "negative" },
+        },
+        outputs: [
+          markdown("**Change in swap volume, October vs September**"),
+          rankedBars("Change", [
+            ["Top 50", -21],
+            ["Next 5,000", -3],
+            ["Everyone else", 2],
+          ]),
+        ],
+        what: "7 of your 50 largest wallets traded 41% less than in September. Everyone else traded about the same as before.",
+        why: "Your top 50 wallets make 38% of swap volume, so a few of them slowing down moves the whole number.",
+      },
+      action: { label: "See who carries your volume", route: "overview" },
+    }),
+    briefingItem({
+      group: "Yesterday",
+      kind: "Analysis",
+      title: "Paycrest: who actually cashes out in Africa",
+      summary: "New report. 2,140 of your users sent money through Paycrest.",
+      entity: "Paycrest",
+      time: "Mon 14:10",
+      when: "Mon 2 Nov at 14:10",
+      isUnread: true,
+      detail: {
+        headline: {
+          value: "2,140",
+          label: "of your users sent money through Paycrest in October",
+          delta: { text: "▲ 18% vs September", tone: "positive" },
+        },
+        what: "A new report on who uses Paycrest, which countries the money goes to and what each route costs.",
+        why: "Your users already rely on it to send money to Nigeria, Kenya and Ghana. The report shows how big that flow is and how fast it grows.",
+      },
+      action: { label: "Read report", route: "report" },
+    }),
+    briefingItem({
+      group: "Yesterday",
+      kind: "Opportunity",
+      title: "Let users send money home with Paycrest",
+      summary: "$5.1M a month already leaves your app to do this.",
+      entity: "Paycrest",
+      time: "Mon 11:32",
+      when: "Mon 2 Nov at 11:32",
+      isUnread: false,
+      detail: {
+        headline: {
+          value: "$5.1M",
+          label: "a month leaves your app to send money home",
+          delta: { text: "2,140 users", tone: "neutral" },
+        },
+        what: "Your users move stablecoins out of Robinhood Wallet, then send them home through Paycrest.",
+        why: "A partnership could keep that $5.1M a month inside Robinhood Wallet and earn a share of the fees.",
+      },
+      action: { label: "Open opportunity", route: "opportunity" },
+    }),
+    briefingItem({
+      group: "Yesterday",
+      kind: "Metric",
+      title: "New wallets down 12%",
+      summary: "Most of the drop is in Brazil and Mexico.",
+      entity: "Robinhood Wallet",
+      time: "Mon 06:00",
+      when: "Mon 2 Nov at 06:00",
+      isUnread: false,
+      detail: {
+        headline: {
+          value: "21,900",
+          label: "new wallets in October",
+          delta: { text: "▼ 12% vs September", tone: "negative" },
+        },
+        outputs: [
+          markdown("**New wallets by country, change vs September**"),
+          rankedBars("Change", [
+            ["Brazil", -31],
+            ["Mexico", -23],
+            ["United States", -4],
+            ["Others", 2],
+          ]),
+        ],
+        what: "October had the fewest new wallets since May. Brazil and Mexico account for most of the drop.",
+        why: "Fewer new wallets now means fewer active wallets in three months, when 34% of them would still be trading.",
+      },
+      action: { label: "See Overview", route: "overview" },
+    }),
+    briefingItem({
+      group: "Last week",
+      kind: "Analysis",
+      title: "Updated: Phantom is gaining your Solana users",
+      summary: "Leavers going to Phantom rose from 11% to 17%.",
+      entity: "Phantom",
+      time: "Thu",
+      when: "Thu 29 Oct",
+      isUnread: false,
+      detail: {
+        headline: {
+          value: "17%",
+          label: "of your leavers now use Phantom next",
+          delta: { text: "up from 11% in July", tone: "negative" },
+        },
+        what: "We updated the report with October. Phantom took a larger share of the wallets that stopped using Robinhood Wallet.",
+        why: "Most of these users trade Solana tokens you do not list yet.",
+      },
+      action: { label: "Read report", route: "report" },
+    }),
+    briefingItem({
+      group: "Last week",
+      kind: "Metric",
+      title: "Bridging to Solana tripled this quarter",
+      summary: "$96M moved last month.",
+      entity: "Solana",
+      time: "Wed",
+      when: "Wed 28 Oct",
+      isUnread: false,
+      detail: {
+        headline: {
+          value: "$96M",
+          label: "bridged to Solana by your users in October",
+          delta: { text: "3× July", tone: "neutral" },
+        },
+        outputs: [
+          markdown("**Bridged to Solana by your users, $M a month**"),
+          line(
+            "Bridged",
+            [
+              ["Jul", 32],
+              ["Aug", 51],
+              ["Sep", 74],
+              ["Oct", 96],
+            ],
+            "$"
+          ),
+        ],
+        what: "24,500 of your wallets bridged to Solana in October, most of them to trade tokens you do not list.",
+        why: "Every bridge is a trade that happens somewhere else.",
+      },
+      action: { label: "Read analysis", route: "report" },
+    }),
+    briefingItem({
+      group: "Last week",
+      kind: "Analysis",
+      title: "Stablecoin yields: where your users earn",
+      summary: "New report. 38,000 of your wallets earn on Aave.",
+      entity: "Aave",
+      time: "Tue",
+      when: "Tue 27 Oct",
+      isUnread: false,
+      detail: {
+        headline: {
+          value: "$212M",
+          label: "your users keep in Aave to earn interest",
+          delta: { text: "38,000 wallets", tone: "neutral" },
+        },
+        what: "A new report on where your users earn interest on stablecoins and how much they keep there.",
+        why: "Robinhood Wallet has no way to earn on USDC, so this money sits elsewhere.",
+      },
+      action: { label: "Read report", route: "report" },
+    }),
+    briefingItem({
+      group: "Last week",
+      kind: "Analysis",
+      title: "Delivered: LatAm cash-out sizing",
+      summary: "The research Maya requested on 14 Oct.",
+      entity: "Your request",
+      time: "Mon",
+      when: "Mon 26 Oct",
+      isUnread: false,
+      detail: {
+        headline: {
+          value: "12 days",
+          label: "from request to delivery",
+          delta: { text: "Delivered", tone: "positive" },
+        },
+        what: "Sandworm delivered the research you asked for: how much your users cash out in Argentina, Brazil and Mexico, and what they pay.",
+        why: "It sizes the Argentina opportunity and two smaller ones in Brazil and Mexico.",
+      },
+      action: { label: "Read report", route: "report" },
+    }),
+  ],
+};

@@ -1,10 +1,9 @@
-import { Button } from "@sandworm/ui/kit/button";
 import { OptionDropdown } from "@sandworm/ui/kit/form/option-dropdown";
 import { TextField } from "@sandworm/ui/kit/form/text-field";
 import { ToggleChip } from "@sandworm/ui/kit/form/toggle-chip";
-import { UserAvatar } from "@sandworm/ui/kit/user-avatar";
 
 import { pluralise } from "@/lib/format";
+import { site } from "@/config/site";
 
 import { useSetup } from "../context";
 import { ACCESS_LEVELS } from "../options/access-levels";
@@ -16,7 +15,6 @@ import type { SetupStepDefinition } from "./types";
 function GoalsStep() {
   const {
     draft: { goals, team },
-    session: { client },
     patch,
   } = useSetup();
 
@@ -72,25 +70,9 @@ function GoalsStep() {
           ))}
         </div>
         <span className="text-xs text-ink-400">
-          People who can request may commission research. It uses your plan's
-          allowance.
+          People who can request may submit research requests. It uses your
+          plan's allowance.
         </span>
-      </div>
-      <div className="flex items-center justify-between gap-3 rounded-[14px] border border-hover-border bg-block-surface px-4 py-3.5">
-        <div className="flex items-center gap-2.5">
-          <UserAvatar name={client.analyst.name} />
-          <div className="flex flex-col">
-            <span className="font-semibold text-ink-100">
-              Kick-off call with {client.analyst.name}
-            </span>
-            <span className="text-xs text-ink-400">
-              {client.kickoffCall.when} · {client.kickoffCall.minutes} minutes
-            </span>
-          </div>
-        </div>
-        <Button variant="link" disabled>
-          Change
-        </Button>
       </div>
     </div>
   );
@@ -128,10 +110,10 @@ export const goalsStep: SetupStepDefinition = {
   id: "goals",
   label: "Goals and team",
   title: () => "What do you want from Terminal?",
-  description: ({ client }) =>
-    `${client.analyst.name} uses this to decide what to research for you first.`,
+  description: () =>
+    `${site.name} uses this to decide what to research for you first.`,
   Component: GoalsStep,
   canContinue: () => true,
   previewNote: ({ session: { client } }) =>
-    `Your first briefing is expected ${pluralise(client.firstBriefingDays, "day")} after ${client.analyst.name} approves your setup.`,
+    `Your first briefing is expected ${pluralise(client.firstBriefingDays, "day")} after ${site.name} checks your setup.`,
 };

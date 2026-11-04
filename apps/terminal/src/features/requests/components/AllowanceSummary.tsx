@@ -33,11 +33,10 @@ export function AllowanceSummary({ allowance }: { allowance: Allowance }) {
       className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] divide-border-secondary overflow-hidden md:divide-x"
     >
       <MeterCell
-        label="Commissioned research"
+        label="Research requests"
         meter={allowance.research}
         tone="brand"
       />
-      <MeterCell label="Analyst calls" meter={allowance.calls} tone="navy" />
       <div className="flex flex-col justify-center gap-0.5 px-6 py-[18px]">
         <span className="font-medium">Resets {allowance.resetsOn}</span>
         <span className="text-xs text-ink-400">

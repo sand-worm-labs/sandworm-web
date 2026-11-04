@@ -28,7 +28,7 @@ const FILTERS: readonly { id: OpportunityFilter; label: string }[] = [
 type OpportunitiesScreenProps = {
   feed: OpportunitiesFeed;
   counts: SectionCounts;
-  viewer: { clientName: string; analystName: string };
+  viewer: { clientName: string };
 };
 
 export function OpportunitiesScreen({
@@ -53,7 +53,7 @@ export function OpportunitiesScreen({
         counts={counts}
       />
       {feed.items.length === 0 ? (
-        <OpportunitiesEmpty analystName={viewer.analystName} />
+        <OpportunitiesEmpty />
       ) : (
         <Card aria-label="Opportunities" className="flex flex-col">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-secondary px-5 py-4">

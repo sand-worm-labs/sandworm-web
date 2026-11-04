@@ -18,11 +18,7 @@ export default async function OverviewRoute() {
       overview={overview}
       counts={counts}
       welcome={welcome}
-      viewer={{
-        clientName: session.client.name,
-        firstName,
-        analyst: session.client.analyst,
-      }}
+      viewer={{ clientName: session.client.name, firstName }}
     />
   );
 }

@@ -1,14 +1,10 @@
 import clsx from "clsx";
-import { Card } from "@sandworm/ui/kit/card";
+import { Card, cardRowDividerClassName } from "@sandworm/ui/kit/card";
 import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 
 import { AppLink } from "@/components/AppLink";
 
 import { BlockHeader } from "../components/BlockHeader";
-import {
-  LIST_ROW_DIVIDER_CLASSNAME,
-  TEXT_LINK_CLASSNAME,
-} from "../components/list-row";
 import type { GapsBlock } from "../types";
 
 export function GapsCard({ block }: { block: GapsBlock }) {
@@ -30,7 +26,7 @@ export function GapsCard({ block }: { block: GapsBlock }) {
           className={clsx(
             ROW_HOVER_CLASSNAME,
             "flex flex-wrap items-center gap-x-4 gap-y-2 px-3 py-3.5 md:grid md:grid-cols-[minmax(0,1fr)_150px_120px]",
-            LIST_ROW_DIVIDER_CLASSNAME
+            cardRowDividerClassName
           )}
         >
           <span className="flex min-w-0 flex-col gap-0.5">
@@ -45,7 +41,7 @@ export function GapsCard({ block }: { block: GapsBlock }) {
             </span>
             <span className="text-xs text-ink-400">{item.valueLabel}</span>
           </span>
-          <span className={clsx(TEXT_LINK_CLASSNAME, "md:justify-self-end")}>
+          <span className="whitespace-nowrap text-[13px] font-medium text-primary-700 hover:text-primary dark:text-primary-200 md:justify-self-end">
             {item.cta}
           </span>
         </AppLink>

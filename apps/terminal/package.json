@@ -10,10 +10,10 @@
     "eslint": "pnpm exec next lint --fix --dir src",
     "prettier": "pnpm exec prettier --write .",
     "lint": "pnpm eslint && pnpm prettier",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@sandworm/types": "workspace:*",
     "@sandworm/ui": "workspace:*",
     "clsx": "^2.1.1",
     "lucide-react": "^0.476.0",

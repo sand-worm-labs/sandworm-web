@@ -2,7 +2,7 @@ import type { RouteId } from "@/config/routes";
 
 export type WelcomeLead =
   | { _tag: "count"; value: string; tone: "brand" | "navy" }
-  | { _tag: "calendar" };
+  | { _tag: "chat" };
 
 export type WelcomeItem = {
   id: string;
