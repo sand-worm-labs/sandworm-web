@@ -8,6 +8,8 @@ export type AnalysisViewId = "projects" | "regions" | "sectors";
 
 export type AnalysisRow = {
   id: string;
+  slug: string;
+  hasPage: boolean;
   name: string;
   kind: string;
   reportCount: number;

@@ -57,12 +57,19 @@ export function AnalysisTable({ view, rows }: AnalysisTableProps) {
                 <span className="flex items-center gap-2.5">
                   <InitialsAvatar initials={row.name.charAt(0)} size="sm" />
                   <span className="flex min-w-0 flex-col">
-                    <AppLink
-                      route={view.rowRoute}
-                      className="truncate text-sm font-medium text-ink-100 after:absolute after:inset-0"
-                    >
-                      {row.name}
-                    </AppLink>
+                    {row.hasPage ? (
+                      <AppLink
+                        route={view.rowRoute}
+                        slug={row.slug}
+                        className="truncate text-sm font-medium text-ink-100 after:absolute after:inset-0"
+                      >
+                        {row.name}
+                      </AppLink>
+                    ) : (
+                      <span className="truncate text-sm font-medium text-ink-100">
+                        {row.name}
+                      </span>
+                    )}
                     <span className="truncate text-xs text-ink-400">
                       {row.kind}
                     </span>

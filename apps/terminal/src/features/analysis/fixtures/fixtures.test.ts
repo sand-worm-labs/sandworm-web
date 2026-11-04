@@ -40,3 +40,35 @@ describe("analysis fixtures", () => {
     expect(String(reports)).toBe(sectionCountsFixtures.exchange.analysis);
   });
 });
+
+describe("entity page links", () => {
+  it("only links rows that have a page", () => {
+    const projects = analysisFixtures.exchange.views.find(
+      view => view.id === "projects"
+    );
+    const linked = projects?.rows
+      .filter(row => row.hasPage)
+      .map(row => row.name);
+
+    expect(linked).toEqual(["Paycrest"]);
+  });
+
+  it("links the region and sector pages too", () => {
+    const names = (id: "regions" | "sectors") =>
+      analysisFixtures.exchange.views
+        .find(view => view.id === id)
+        ?.rows.filter(row => row.hasPage)
+        .map(row => row.name);
+
+    expect(names("regions")).toEqual(["Latin America"]);
+    expect(names("sectors")).toEqual(["Cash-out and off-ramps"]);
+  });
+
+  it("links nothing for a client with no entity pages", () => {
+    const anyLinked = analysisFixtures.vc.views.some(view =>
+      view.rows.some(row => row.hasPage)
+    );
+
+    expect(anyLinked).toBe(false);
+  });
+});

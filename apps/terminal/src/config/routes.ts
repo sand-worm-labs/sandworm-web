@@ -10,9 +10,9 @@ export const ROUTES = {
   },
   analysis: { path: "/analysis", label: "Analysis", isBuilt: true },
   report: { path: "/analysis/report", label: "Report", isBuilt: false },
-  project: { path: "/analysis/project", label: "Project", isBuilt: false },
-  region: { path: "/analysis/region", label: "Region", isBuilt: false },
-  sector: { path: "/analysis/sector", label: "Sector", isBuilt: false },
+  project: { path: "/analysis/project", label: "Project", isBuilt: true },
+  region: { path: "/analysis/region", label: "Region", isBuilt: true },
+  sector: { path: "/analysis/sector", label: "Sector", isBuilt: true },
   opportunities: {
     path: "/opportunities",
     label: "Opportunities",
@@ -40,6 +40,20 @@ export const ROUTES = {
 
 export type RouteId = keyof typeof ROUTES;
 
+export function routePath(route: RouteId, slug?: string): string {
+  const { path } = ROUTES[route];
+  return slug ? `${path}/${slug}` : path;
+}
+
 export function findRouteByPath(pathname: string) {
-  return Object.values(ROUTES).find(route => route.path === pathname);
+  const routes = Object.values<RouteDefinition>(ROUTES);
+
+  return (
+    routes.find(route => route.path === pathname) ??
+    routes
+      .filter(
+        route => route.path !== "/" && pathname.startsWith(`${route.path}/`)
+      )
+      .sort((a, b) => b.path.length - a.path.length)[0]
+  );
 }

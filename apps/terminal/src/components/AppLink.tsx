@@ -1,10 +1,11 @@
 import Link from "next/link";
 import type { AriaRole, ReactNode } from "react";
 
-import { ROUTES, type RouteId } from "@/config/routes";
+import { ROUTES, routePath, type RouteId } from "@/config/routes";
 
 type AppLinkProps = {
   route: RouteId;
+  slug?: string;
   isCurrent?: boolean;
   isSelected?: boolean;
   role?: AriaRole;
@@ -14,13 +15,14 @@ type AppLinkProps = {
 
 export function AppLink({
   route,
+  slug,
   isCurrent,
   isSelected,
   role,
   className,
   children,
 }: AppLinkProps) {
-  const { path, isBuilt } = ROUTES[route];
+  const { isBuilt } = ROUTES[route];
 
   if (!isBuilt) {
     return (
@@ -37,7 +39,7 @@ export function AppLink({
 
   return (
     <Link
-      href={path}
+      href={routePath(route, slug)}
       role={role}
       aria-selected={isSelected}
       aria-current={isCurrent ? "page" : undefined}

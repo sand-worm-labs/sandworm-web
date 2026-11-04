@@ -10,6 +10,8 @@ import type { AnalysisCatalog, AnalysisRow } from "./types";
 
 const row = (init: Partial<AnalysisRow> & { name: string }): AnalysisRow => ({
   id: init.name,
+  slug: init.name,
+  hasPage: false,
   kind: "Wallet",
   reportCount: 1,
   latest: "A report",

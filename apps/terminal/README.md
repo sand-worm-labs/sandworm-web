@@ -135,6 +135,19 @@ be grouped by project, region or sector, searched and sorted.
 - Rows are real `<table>` rows with a stretched link, so the whole row is clickable and the
   table stays readable by screen readers.
 
+### Project, region and sector pages (`/analysis/<kind>/<slug>`)
+
+One route and one screen serve all three kinds. A page is data (`EntityPage` in
+`features/analysis/entity/types.ts`): a header, a KPI strip, a "what this means for the client"
+banner, then rows of typed blocks (`columnChart`, `barList`, `lineChart`, `dataTable`,
+`reportList`, `opportunityList`). `BlockRenderer` ends in `exhaustiveCheck`, so a new block type
+fails to compile until it is drawn. A block fed by a notebook result will be one more `_tag`.
+
+- Charts are plain SVG and CSS, with the geometry in `chart-math.ts` (tested).
+- Only rows that have a page are links (`AnalysisRow.hasPage`, set in the analysis fixtures).
+  Robinhood has Paycrest, Latin America and Cash-out and off-ramps; every other row stays text.
+- `AppLink` takes a `slug`, and the header title falls back to the closest registered route.
+
 ## Opportunities (`/opportunities`)
 
 Ranked moves for the client, grouped by status (New, Reviewing, Pursuing) with a Passed bucket
