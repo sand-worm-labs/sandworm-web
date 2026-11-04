@@ -1,32 +1,55 @@
 import Link from "next/link";
+import {
+  AppHeaderActions,
+  AppHeaderFrame,
+  HelpMenu,
+} from "@sandworm/ui/kit/app-header";
 
-import { BrandBadge } from "@/components/BrandBadge";
-import { BrandMark } from "@/components/BrandMark";
+import { TerminalBrand } from "@/components/TerminalBrand";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ROUTES } from "@/config/routes";
+import { getCurrentUser } from "@/features/auth/user";
 
+import { AccountMenu } from "./AccountMenu";
 import { HeaderSearch } from "./HeaderSearch";
 
-// Same frame as the web app's header (ShowcaseHeader): logo and badge on the
-// left, search and controls on the right, 56px tall.
-export function AppHeader() {
+const DOCS_URL = "https://docs.sandwormlab.xyz";
+const GITHUB_URL = "https://github.com/sand-worm-labs";
+
+// The web app's header (ShowcaseHeader), built from the same shared pieces.
+// The only difference is the "terminal" badge.
+export async function AppHeader() {
+  const user = await getCurrentUser();
+  const name = user?.firstName || user?.username || "Account";
+
   return (
-    <header className="flex h-14 w-full shrink-0 items-center gap-3 border-b border-border-secondary bg-base-100 px-3 font-body sm:gap-5 sm:px-5 dark:border-border-tertiary dark:bg-header-surface">
+    <AppHeaderFrame>
       <Link
         href={ROUTES.overview.path}
         aria-label="Terminal home"
-        className="flex shrink-0 items-center gap-2"
+        className="flex items-center shrink-0"
       >
-        <BrandMark />
-        <BrandBadge>terminal</BrandBadge>
+        <TerminalBrand />
       </Link>
 
-      <div className="ml-auto flex min-w-0 items-center gap-2">
+      <AppHeaderActions>
         <div className="hidden md:block">
           <HeaderSearch />
         </div>
+        <HelpMenu docsUrl={DOCS_URL} githubUrl={GITHUB_URL} />
         <ThemeToggle />
-      </div>
-    </header>
+        <AccountMenu
+          user={
+            user && {
+              name,
+              fullName:
+                user.fullName ?? `${name} ${user.lastName ?? ""}`.trim(),
+              email: user.email,
+              avatarUrl: user.avater,
+            }
+          }
+        />
+      </AppHeaderActions>
+    </AppHeaderFrame>
   );
 }

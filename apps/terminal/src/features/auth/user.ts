@@ -5,11 +5,14 @@ export type CurrentUser = {
   username: string | null;
   email: string | null;
   fullName: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  avater: string | null;
 };
 
 const CURRENT_USER = `
   query TerminalCurrentUser {
-    currentUser { user { id username email fullName } }
+    currentUser { user { id username email fullName firstName lastName avater } }
   }
 `;
 
