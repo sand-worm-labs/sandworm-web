@@ -23,11 +23,11 @@ export const ROUTES = {
     label: "Opportunity",
     isBuilt: false,
   },
-  requests: { path: "/requests", label: "Requests", isBuilt: false },
+  requests: { path: "/requests", label: "Requests", isBuilt: true },
   commission: {
     path: "/requests/new",
     label: "Commission research",
-    isBuilt: false,
+    isBuilt: true,
   },
   bookCall: { path: "/book-call", label: "Book a call", isBuilt: false },
   setupTracking: {

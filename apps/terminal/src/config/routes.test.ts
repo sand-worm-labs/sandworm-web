@@ -23,6 +23,8 @@ describe("ROUTES", () => {
       "briefing",
       "analysis",
       "opportunities",
+      "requests",
+      "commission",
       "setupTracking",
       "setupGoals",
     ]);

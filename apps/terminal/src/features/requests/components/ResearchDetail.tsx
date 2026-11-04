@@ -1,0 +1,81 @@
+import { AppLink } from "@/components/AppLink";
+import { Button, buttonClassName } from "@/components/Button";
+import { Card } from "@/components/Card";
+import { InitialsAvatar } from "@/components/InitialsAvatar";
+import type { Analyst } from "@/features/session/types";
+
+import { canApprove } from "../requests-state";
+import type { Allowance, ResearchRequest } from "../types";
+
+import { StatusChip } from "./StatusChip";
+import { Timeline } from "./Timeline";
+
+type ResearchDetailProps = {
+  request: ResearchRequest;
+  analyst: Analyst;
+  allowance: Allowance;
+  onApprove: () => void;
+};
+
+export function ResearchDetail({
+  request,
+  analyst,
+  allowance,
+  onApprove,
+}: ResearchDetailProps) {
+  const titleId = `request-${request.id}-title`;
+
+  return (
+    <Card aria-labelledby={titleId} className="flex flex-col gap-[18px] p-6">
+      <div className="flex flex-col gap-2">
+        <StatusChip status={request.status} />
+        <h2
+          id={titleId}
+          className="text-lg font-medium leading-snug text-ink-100"
+        >
+          {request.title}
+        </h2>
+        <span className="text-xs text-ink-400">{request.by}</span>
+      </div>
+      <Timeline label="Progress" steps={request.steps} />
+      <div className="flex flex-col gap-2 rounded-[14px] bg-inputBg p-4 ring-1 ring-inset ring-border-secondary">
+        <span className="flex items-center gap-2">
+          <InitialsAvatar initials={analyst.initials} size="sm" />
+          <span className="font-medium text-ink-100">{analyst.fullName}</span>
+          <span className="text-xs text-ink-400">{request.note.when}</span>
+        </span>
+        <p className="whitespace-pre-line text-sm leading-[1.55] text-ink-500">
+          {request.note.text}
+        </p>
+      </div>
+      {canApprove(request) && (
+        <>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={onApprove}>Approve scope</Button>
+            <AppLink
+              route="bookCall"
+              className={buttonClassName({ variant: "secondary" })}
+            >
+              Suggest changes
+            </AppLink>
+          </div>
+          <span className="text-xs text-ink-400">
+            Approving uses 1 of your {allowance.research.total} studies this
+            quarter.
+          </span>
+        </>
+      )}
+      {request.reportLabel && (
+        <AppLink
+          route="report"
+          className={buttonClassName({
+            variant: "secondary",
+            className: "self-start",
+          })}
+        >
+          {request.reportLabel}
+        </AppLink>
+      )}
+    </Card>
+  );
+}

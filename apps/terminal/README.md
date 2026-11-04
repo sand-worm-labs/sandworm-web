@@ -146,9 +146,28 @@ behind its own filter.
   "when" column value. Values are fixtures labelled as Sandworm estimates.
 - The empty state ("No opportunities yet") takes the analyst's name from the session.
 
+## Requests and Commission research (`/requests`, `/requests/new`)
+
+Requests is what the client has asked Sandworm for: an allowance strip, commissioned research with
+a timeline and the analyst's note, and questions and calls. `/requests/new` is the Commission
+dialog, rendered over the Requests page (as in the design) rather than over whichever page linked
+to it, so closing it always lands on `/requests`.
+
+- `features/requests/types.ts` holds the data. Statuses are `as const` lists, and `StatusChip` is a
+  `Record` over them, so adding a status fails to compile until it has a style.
+- `requests-state.ts` is pure and tested: `approveScope` moves a timeline on and starts the work,
+  `withApprovedResearch` and `isResearchUsedUp` drive the allowance. Approving is local state for
+  now; nothing is saved.
+- The dialog (`commission/`) has three states: the form, "Request sent" and "You've used this
+  quarter's research". Which one shows follows the allowance, not a flag. `draft.ts` (tested) holds
+  the empty draft, validation (a question is required), the summary line and the sent timeline.
+- `submitCommission` in `commission/actions.ts` is a stub. A new request does not yet appear in the
+  list, and picked files are only named, not uploaded.
+- Robinhood has the design's data. The other client types share a small generic set.
+
 ### Previewing client types and states
 
-In dev only, `/dev/preview?client=<exchange|nft|protocol|chain|vc|accelerator>&status=<ready|settingUp|calculating>&briefing=<items|empty>&opportunities=<items|empty>`
+In dev only, `/dev/preview?client=<exchange|nft|protocol|chain|vc|accelerator>&status=<ready|settingUp|calculating>&briefing=<items|empty>&opportunities=<items|empty>&allowance=<available|used>`
 sets cookies and redirects to `/`. The session, the Overview and the Briefing follow them. The
 route returns 404 in production.
 

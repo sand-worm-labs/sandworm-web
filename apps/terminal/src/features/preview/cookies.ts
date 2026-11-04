@@ -14,6 +14,8 @@ export const PREVIEW_STATUS_COOKIE = "preview-status";
 export const PREVIEW_BRIEFING_COOKIE = "preview-briefing";
 export const PREVIEW_OPPORTUNITIES_COOKIE = "preview-opportunities";
 
+export const PREVIEW_ALLOWANCE_COOKIE = "preview-allowance";
+
 export const CONTENT_PREVIEW_MODES = ["items", "empty"] as const;
 
 export type ContentPreviewMode = (typeof CONTENT_PREVIEW_MODES)[number];
@@ -22,6 +24,16 @@ export function isContentPreviewMode(
   value: string
 ): value is ContentPreviewMode {
   return CONTENT_PREVIEW_MODES.some(mode => mode === value);
+}
+
+export const ALLOWANCE_PREVIEW_MODES = ["available", "used"] as const;
+
+export type AllowancePreviewMode = (typeof ALLOWANCE_PREVIEW_MODES)[number];
+
+export function isAllowancePreviewMode(
+  value: string
+): value is AllowancePreviewMode {
+  return ALLOWANCE_PREVIEW_MODES.some(mode => mode === value);
 }
 
 export function isClientKind(value: string): value is OrganisationTypeId {
@@ -38,15 +50,24 @@ export async function getPreviewStatus(): Promise<OverviewStatus> {
   return value && isOverviewStatus(value) ? value : "ready";
 }
 
-async function getContentPreviewMode(
-  cookieName: string
-): Promise<ContentPreviewMode> {
+async function readPreviewMode<Mode extends string>(
+  cookieName: string,
+  isMode: (value: string) => value is Mode,
+  fallback: Mode
+): Promise<Mode> {
   const value = (await cookies()).get(cookieName)?.value;
-  return value && isContentPreviewMode(value) ? value : "items";
+  return value && isMode(value) ? value : fallback;
 }
 
 export const getPreviewBriefing = () =>
-  getContentPreviewMode(PREVIEW_BRIEFING_COOKIE);
+  readPreviewMode(PREVIEW_BRIEFING_COOKIE, isContentPreviewMode, "items");
 
 export const getPreviewOpportunities = () =>
-  getContentPreviewMode(PREVIEW_OPPORTUNITIES_COOKIE);
+  readPreviewMode(PREVIEW_OPPORTUNITIES_COOKIE, isContentPreviewMode, "items");
+
+export const getPreviewAllowance = () =>
+  readPreviewMode(
+    PREVIEW_ALLOWANCE_COOKIE,
+    isAllowancePreviewMode,
+    "available"
+  );
