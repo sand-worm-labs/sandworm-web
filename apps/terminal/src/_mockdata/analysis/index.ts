@@ -7,9 +7,9 @@ import { analysisFromOverview } from "./from-overview";
 
 export const analysisMockData: Record<OrganisationTypeId, AnalysisCatalog> = {
   exchange: exchangeAnalysis,
-  nft: analysisFromOverview(overviewMockData.nft),
   protocol: analysisFromOverview(overviewMockData.protocol),
   chain: analysisFromOverview(overviewMockData.chain),
   vc: analysisFromOverview(overviewMockData.vc),
   accelerator: analysisFromOverview(overviewMockData.accelerator),
+  other: analysisFromOverview(overviewMockData.other),
 };

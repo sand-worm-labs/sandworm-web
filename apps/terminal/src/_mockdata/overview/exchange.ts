@@ -14,11 +14,10 @@ import { standardLayout } from "./standard-layout";
 export const exchangeOverview: OverviewData = {
   clientKind: "exchange",
   typeName: "Trading app",
-  subtitle: "Robinhood Wallet and Robinhood Chain. Data to 2 Nov, 23:59 UTC.",
-  loadingNote:
-    "Reading 1.2M transactions from Robinhood Wallet and Robinhood Chain.",
+  subtitle: "Acme Wallet and Acme Chain. Data to 2 Nov, 23:59 UTC.",
+  loadingNote: "Reading 1.2M transactions from Acme Wallet and Acme Chain.",
   setup: buildSetupProgress({
-    clientName: "Robinhood",
+    clientName: "Acme",
   }),
   library: [
     {
@@ -92,7 +91,7 @@ export const exchangeOverview: OverviewData = {
         kind: "Metric",
         title: "Swap volume fell 9% this month",
         summary: "7 of your top 50 wallets traded less.",
-        entity: "Robinhood Wallet",
+        entity: "Acme Wallet",
         time: "06:00",
         isUnread: true,
         route: "briefing",
@@ -182,7 +181,7 @@ export const exchangeOverview: OverviewData = {
     destinations: {
       title: "Where users go when they leave",
       summary:
-        "9,840 wallets stopped using Robinhood Wallet this month. The wallet app they used next:",
+        "9,840 wallets stopped using Acme Wallet this month. The wallet app they used next:",
       tone: "navy",
       rows: [
         destination("Coinbase Wallet", 31, "31%"),
@@ -198,7 +197,7 @@ export const exchangeOverview: OverviewData = {
         gapEntry({
           title:
             "38,000 of your wallets earn interest on stablecoins with Aave",
-          detail: "Robinhood Wallet has no way to earn on USDC.",
+          detail: "Acme Wallet has no way to earn on USDC.",
           value: "$212M",
           valueLabel: "deposited",
           cta: "See signal",

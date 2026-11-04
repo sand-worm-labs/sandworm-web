@@ -10,6 +10,7 @@ import {
   ShowcaseProtocolLogoEntity,
   ShowcaseTemplateEntity,
 } from '@sandworm/postgresql-typeorm';
+import { StaffModule } from '../staff/staff.module';
 import { WorkspaceModule } from '../workspace/workspace.module';
 import { ShowcaseAdminService } from './showcase-admin.service';
 import { ShowcaseLogoController } from './showcase-logo.controller';
@@ -27,7 +28,7 @@ import { ShowcaseService } from './showcase.service';
       ShowcaseProtocolEntity,
       ShowcaseProtocolLogoEntity,
       ShowcaseTemplateEntity,
-    ]), forwardRef(() => WorkspaceModule)],
+    ]), forwardRef(() => WorkspaceModule), StaffModule],
   controllers: [ShowcaseLogoController],
   providers: [ShowcaseResolver, ShowcaseService, ShowcaseAdminService, ShowcaseLogoService],
 })

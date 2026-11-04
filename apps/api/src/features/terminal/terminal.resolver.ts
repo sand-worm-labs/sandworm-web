@@ -1,11 +1,20 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
-import { TerminalSession, TerminalSetup } from './terminal.model';
+import {
+  TerminalSession,
+  TerminalSetup,
+  TerminalTeamClient,
+  TerminalTeamClientDraft,
+} from './terminal.model';
 import { TerminalService } from './terminal.service';
+import { TerminalTeamService } from './terminal-team.service';
 
 @Resolver(() => TerminalSetup)
 export class TerminalResolver {
-  constructor(private readonly terminalService: TerminalService) {}
+  constructor(
+    private readonly terminalService: TerminalService,
+    private readonly teamService: TerminalTeamService,
+  ) {}
 
   @Query(() => TerminalSetup, {
     name: 'terminalSetup',
@@ -36,5 +45,58 @@ export class TerminalResolver {
     @Args('input', { type: () => TerminalSetup }) input: TerminalSetup,
   ) {
     return this.terminalService.saveSetup(userId, input);
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'markTerminalWelcomed',
+    description:
+      'The current member has seen the welcome; it is not shown again.',
+  })
+  markTerminalWelcomed(@CurrentUser('id') userId: string) {
+    return this.terminalService.markWelcomed(userId);
+  }
+
+  // ── The Sandworm team's side. Staff only. ──
+
+  @Query(() => Boolean, {
+    name: 'terminalIsStaff',
+    description:
+      'Whether the current user is on the Sandworm team, for showing the terminal team tools.',
+  })
+  terminalIsStaff(@CurrentUser('id') userId: string) {
+    return this.teamService.isStaff(userId);
+  }
+
+  @Query(() => [TerminalTeamClient], {
+    name: 'terminalClients',
+    description: 'Every terminal client, newest first. Staff only.',
+  })
+  terminalClients(@CurrentUser('id') userId: string) {
+    return this.teamService.listClients(userId);
+  }
+
+  @Mutation(() => TerminalTeamClient, {
+    name: 'createTerminalClient',
+    description:
+      'Set a client up: its details, plan, what to track and an invite for its admin. Staff only.',
+  })
+  createTerminalClient(
+    @CurrentUser('id') userId: string,
+    @Args('input', { type: () => TerminalTeamClientDraft })
+    input: TerminalTeamClientDraft,
+  ) {
+    return this.teamService.createClient(userId, input);
+  }
+
+  @Mutation(() => TerminalTeamClient, {
+    name: 'sendTerminalInvite',
+    description:
+      "Mark a client's admin invite as sent (the admin joins by signing in with the invited email). Staff only.",
+  })
+  sendTerminalInvite(
+    @CurrentUser('id') userId: string,
+    @Args('clientId') clientId: string,
+  ) {
+    return this.teamService.sendInvite(userId, clientId);
   }
 }

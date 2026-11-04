@@ -1,1 +1,5 @@
-export type { SetupDraft, TeamInvite } from "@sandworm/types/terminal";
+export type {
+  SetupDraft,
+  SetupTracking,
+  TeamInvite,
+} from "@sandworm/types/terminal";

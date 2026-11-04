@@ -11,7 +11,7 @@ const exchangeContent: WelcomeContent = {
     "Including Argentina's off-ramps, worth about $43K a month",
   readyReports: 4,
   trackingSummary:
-    "Tracking Robinhood Wallet and Robinhood Chain, 4 competitors and 3 regions.",
+    "Tracking Acme Wallet and Acme Chain, 4 competitors and 3 regions.",
 };
 
 function contentFromOverview(kind: OrganisationTypeId): WelcomeContent {
@@ -31,9 +31,9 @@ function contentFromOverview(kind: OrganisationTypeId): WelcomeContent {
 
 export const welcomeMockData: Record<OrganisationTypeId, WelcomeContent> = {
   exchange: exchangeContent,
-  nft: contentFromOverview("nft"),
   protocol: contentFromOverview("protocol"),
   chain: contentFromOverview("chain"),
   vc: contentFromOverview("vc"),
   accelerator: contentFromOverview("accelerator"),
+  other: contentFromOverview("other"),
 };

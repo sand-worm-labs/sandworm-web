@@ -1,11 +1,6 @@
-import { OptionCard } from "@sandworm/ui/kit/form/option-card";
-import { TextField } from "@sandworm/ui/kit/form/text-field";
-
 import { useSetup } from "../context";
-import {
-  getOrganisationType,
-  ORGANISATION_TYPES,
-} from "../options/organisation-types";
+import { OrganisationFields } from "../components/OrganisationFields";
+import { getOrganisationType } from "../options/organisation-types";
 
 import type { SetupStepDefinition } from "./types";
 
@@ -16,44 +11,10 @@ function OrganisationStep() {
   } = useSetup();
 
   return (
-    <>
-      <fieldset className="min-w-0 border-0 p-0">
-        <legend className="sr-only">Organisation type</legend>
-        <div className="grid gap-2.5 sm:grid-cols-2">
-          {ORGANISATION_TYPES.map(type => (
-            <OptionCard
-              key={type.id}
-              name="organisation-type"
-              value={type.id}
-              checked={organisation.type === type.id}
-              title={type.label}
-              description={type.description}
-              onSelect={() => patch("organisation", { type: type.id })}
-            />
-          ))}
-        </div>
-      </fieldset>
-      <div className="flex flex-wrap gap-3">
-        <TextField
-          id="organisation-name"
-          label="Organisation name"
-          className="min-w-[240px] flex-1"
-          value={organisation.name}
-          onChange={event =>
-            patch("organisation", { name: event.target.value })
-          }
-        />
-        <TextField
-          id="organisation-website"
-          label="Website"
-          className="min-w-[240px] flex-1"
-          value={organisation.website}
-          onChange={event =>
-            patch("organisation", { website: event.target.value })
-          }
-        />
-      </div>
-    </>
+    <OrganisationFields
+      organisation={organisation}
+      onChange={values => patch("organisation", values)}
+    />
   );
 }
 

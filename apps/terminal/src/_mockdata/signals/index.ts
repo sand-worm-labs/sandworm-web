@@ -7,9 +7,9 @@ import { signalsFromOverview } from "./from-overview";
 
 export const signalMockData: Record<OrganisationTypeId, SignalsFeed> = {
   exchange: exchangeSignals,
-  nft: signalsFromOverview(overviewMockData.nft),
   protocol: signalsFromOverview(overviewMockData.protocol),
   chain: signalsFromOverview(overviewMockData.chain),
   vc: signalsFromOverview(overviewMockData.vc),
   accelerator: signalsFromOverview(overviewMockData.accelerator),
+  other: signalsFromOverview(overviewMockData.other),
 };

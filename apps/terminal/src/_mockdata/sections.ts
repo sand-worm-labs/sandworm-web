@@ -9,7 +9,6 @@ export const sectionCountsMockData: Record<OrganisationTypeId, SectionCounts> =
       signals: "6",
       requests: "2",
     },
-    nft: { briefing: "6", analysis: "17", signals: "5", requests: "1" },
     protocol: {
       briefing: "6",
       analysis: "19",
@@ -24,4 +23,5 @@ export const sectionCountsMockData: Record<OrganisationTypeId, SectionCounts> =
       signals: "4",
       requests: "1",
     },
+    other: { briefing: "6", analysis: "12", signals: "4", requests: "1" },
   };

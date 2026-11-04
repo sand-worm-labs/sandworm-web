@@ -5,7 +5,7 @@ on its own and reuses what Sandworm already has.
 
 ```bash
 pnpm install
-pnpm --filter @sandworm/terminal dev   # dev server on http://localhost:3001
+pnpm --filter @sandworm/terminal dev   # dev server on http://localhost:3002
 ```
 
 ### Dev ports
@@ -16,12 +16,25 @@ Like the other apps, the dev server sits behind a Caddy front door (`deployment/
 | ------------ | ----------- | ----------- |
 | Landing      | `:8080`     | `:4321`     |
 | Web app      | `:8081`     | `:3000`     |
-| **Terminal** | **`:8082`** | **`:3001`** |
+| **Terminal** | **`:8082`** | **`:3002`** |
 
-Use `http://localhost:8082` when running the whole stack with `scripts/start-dev.sh`. Port 3001 is
+Use `http://localhost:8082` when running the whole stack with `scripts/start-dev.sh`. Port 3002 is
 what Next.js listens on, and what you open if you run only the terminal without Caddy.
 
 Copy `.env.example` to `.env` if you need to change where the main app lives.
+
+### Starting it
+
+```bash
+scripts/start-dev.sh --terminal         # + what it needs: Postgres, Redis, Caddy, API, web app
+scripts/start-dev.sh --terminal --only  # the terminal alone, on mock data
+# --only: open http://localhost:3002/dev/preview?access=allowed once to skip sign-in
+```
+
+With `--only` nothing calls the API: the preview cookie makes you a member with a fixed preview
+user, and pages read from `src/_mockdata`. Add `&client=…&status=…` to switch client types and
+states (see "Previewing client types and states"). Without the cookie, every page asks the API who
+you are.
 
 ## Kept in step with `apps/web`
 
@@ -102,9 +115,44 @@ different code.
   `standardLayout()` is the shared template.
 - Three states: `ready`, `settingUp` (day one) and `calculating`.
 
+### Team side (`/team`)
+
+How the Sandworm team sets a client up, so the client logs in to a ready Terminal (the design's
+"Setup B"). It lives in the terminal, behind a staff check, and looks like the client setup on
+purpose: the same steps, header, fields and aurora preview.
+
+- **Who can see it:** staff, the same people the Showcase studio lets in (anyone who can edit a
+  workspace in `SHOWCASE_OFFICIAL_WORKSPACE_IDS`). The check is one shared API service
+  (`StaffService`), enforced on every team query and mutation. The terminal only hides the screens
+  (`getTeamAccess`, a 404 for non-staff). There is no shared password.
+- **`/team`:** the Clients list (search, filter by type, status, "Mark invite sent") and the
+  "New client" button.
+- **`/team/clients/new/[step]`:** step 1 is the details (type, name, website, plan, client admin),
+  step 2 is what to track, the research the client starts with, and when to send the invite.
+  "Create Terminal" saves the client with no owner and an invite for its admin.
+- **Joining:** the admin signs in to Sandworm with the invited email. The first `terminalSession`
+  call claims the invite (only for a verified email), makes them a member, and marks the client
+  live. No email is sent yet.
+- **Day-one research:** `getStarterResearch()` returns a fixed list per client type. It is the seam
+  where the notebooks run during setup will plug in.
+- `/dev/preview?access=allowed` shows the team screens with fixed data and creates nothing.
+
+### Access (`/access`)
+
+Every page in the `(app)` group asks `getAccess()` (`features/access/source.ts`) who is looking:
+
+- not signed in: sent to sign in on the main app, then back;
+- signed in but not a member of any client (the API's `terminalSession.client` is null): sent to
+  `/access`, which explains why and offers a request-access form;
+- a member: let through. An allowed visitor who opens `/access` is sent to the Overview.
+
+`resolveAccess` is the pure rule (tested). `/dev/preview?access=noClient` and `?access=allowed`
+override it in dev, so you can see the page, or get past it, without changing the database. The
+request form's action is a stub: nothing records a request yet. Setup (`/setup`) is not gated.
+
 ### Welcome (first login)
 
-`features/welcome/` renders the "Welcome to your Terminal" dialog over a ready Overview. Its copy is
+`features/welcome/` renders the "Welcome to your Terminal" dialog over a ready Overview, once per member: the API's `needsWelcome` says whether it is due, and dismissing it calls `markTerminalWelcomed`. Its copy is
 data (`WelcomeContent`, one per client type) and `buildWelcome` adds the parts that come from the
 session: the analyst and the kick-off call's time and length. `getWelcome()` returns `undefined`
 when there is nothing to show; for now it always returns the welcome, so every load behaves like a
@@ -123,7 +171,7 @@ the right. `inbox-state.ts` holds the pure logic (filter, unread, selection) wit
 
 - An item is data (`BriefingItem` in `features/briefing/types.ts`): its detail is an optional
   headline metric, bar breakdown and "what / why" text, so a notebook result can fill any of them.
-- `source.ts` returns `fixtures/`. Robinhood has hand-written detail; the other client types fall
+- `source.ts` returns `fixtures/`. The exchange client has hand-written detail; the other client types fall
   back to the Overview's briefing entries (`from-overview.ts`) with no detail.
 - With no items the page shows the "You're up to date" state.
 
@@ -137,7 +185,7 @@ be grouped by project, region or sector, searched and sorted.
   switcher disappears when a client has a single view.
 - Filtering, sorting and the subtitle (reports and projects, summed from the data) are pure
   functions in `catalog-state.ts` with tests. Sorting is a comparator table, not a switch.
-- `source.ts` returns `fixtures/`. Robinhood has the full set from the design (its projects add
+- `source.ts` returns `fixtures/`. The exchange client has the full set from the design (its projects add
   up to the Analysis tab count, which a test checks); the other client types build a projects-only
   view from the Overview's briefing entries (`from-overview.ts`), so their numbers are thin.
 - Rows are real `<table>` rows with a stretched link, so the whole row is clickable and the
@@ -153,7 +201,7 @@ fails to compile until it is drawn. A block fed by a notebook result will be one
 
 - Charts are plain SVG and CSS, with the geometry in `chart-math.ts` (tested).
 - Only rows that have a page are links (`AnalysisRow.hasPage`, set in the analysis fixtures).
-  Robinhood has Paycrest, Latin America and Cash-out and off-ramps; every other row stays text.
+  The exchange client has Paycrest, Latin America and Cash-out and off-ramps; every other row stays text.
 - `AppLink` takes a `slug`, and the header title falls back to the closest registered route.
 
 ## Opportunities (`/opportunities`)
@@ -165,7 +213,7 @@ behind its own filter.
   The Overview's Opportunities card imports them, so the two pages cannot drift apart.
 - Filtering and grouping are pure functions in `opportunity-state.ts` with tests. "All open" is
   derived from `OPEN_STATUSES`, and the counts on the filter chips are computed, not typed in.
-- `source.ts` returns `fixtures/`. Robinhood has the design's seven (its open ones match the tab
+- `source.ts` returns `fixtures/`. The exchange client has the design's seven (its open ones match the tab
   count, which a test checks); the other client types reuse the Overview's opportunities with no
   "when" column value. Values are fixtures labelled as Sandworm estimates.
 - The empty state ("No opportunities yet") takes the analyst's name from the session.
@@ -187,11 +235,11 @@ to it, so closing it always lands on `/requests`.
   the empty draft, validation (a question is required), the summary line and the sent timeline.
 - `submitCommission` in `commission/actions.ts` is a stub. A new request does not yet appear in the
   list, and picked files are only named, not uploaded.
-- Robinhood has the design's data. The other client types share a small generic set.
+- The exchange client has the design's data. The other client types share a small generic set.
 
 ### Previewing client types and states
 
-In dev only, `/dev/preview?client=<exchange|nft|protocol|chain|vc|accelerator>&status=<ready|settingUp|calculating>&briefing=<items|empty>&opportunities=<items|empty>&allowance=<available|used>`
+In dev only, `/dev/preview?client=<exchange|protocol|chain|vc|accelerator|other>&status=<ready|settingUp|calculating>&briefing=<items|empty>&opportunities=<items|empty>&allowance=<available|used>&access=<allowed|noClient>`
 sets cookies and redirects to `/`. The session, the Overview and the Briefing follow them. The
 route returns 404 in production.
 

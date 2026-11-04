@@ -391,6 +391,7 @@ type TerminalOrganisation {
   type: String!
   name: String!
   website: String!
+  description: String!
 }
 
 type TerminalTracking {
@@ -436,6 +437,27 @@ type TerminalSession {
   user: TerminalSessionUser!
   client: TerminalSessionClient
   firstBriefingDays: Int!
+  needsWelcome: Boolean!
+}
+
+type TerminalTeamDetails {
+  name: String!
+  website: String!
+  type: String!
+  description: String!
+  plan: String!
+  adminName: String!
+  adminEmail: String!
+}
+
+type TerminalTeamClient {
+  id: String!
+  name: String!
+  type: String!
+  plan: String!
+  status: String!
+  adminEmail: String
+  createdAt: String!
 }
 
 type ShowcaseNotebook {
@@ -649,6 +671,7 @@ input TerminalOrganisationInput {
   type: String!
   name: String!
   website: String!
+  description: String!
 }
 
 input TerminalTrackingInput {
@@ -678,6 +701,16 @@ input TerminalSetupInput {
   tracking: TerminalTrackingInput!
   goals: TerminalGoalsInput!
   team: TerminalTeamInput!
+}
+
+input TerminalTeamDetailsInput {
+  name: String!
+  website: String!
+  type: String!
+  description: String!
+  plan: String!
+  adminName: String!
+  adminEmail: String!
 }
 
 type Query {
@@ -913,6 +946,14 @@ type Query {
   The signed-in user and the terminal client they belong to (null before their first setup save).
   """
   terminalSession: TerminalSession!
+
+  """
+  Whether the current user is on the Sandworm team, for showing the terminal team tools.
+  """
+  terminalIsStaff: Boolean!
+
+  """Every terminal client, newest first. Staff only."""
+  terminalClients: [TerminalTeamClient!]!
 
   """
   The numbers on the terminal section tabs: unread briefing, reports, open signals and open requests.
@@ -1223,6 +1264,19 @@ type Mutation {
   Save the current user's terminal setup, as far as they have filled it in.
   """
   saveTerminalSetup(input: TerminalSetupInput!): TerminalSetup!
+
+  """The current member has seen the welcome; it is not shown again."""
+  markTerminalWelcomed: Boolean!
+
+  """
+  Set a client up: its details, plan, what to track and an invite for its admin. Staff only.
+  """
+  createTerminalClient(input: TerminalTeamClientDraftInput!): TerminalTeamClient!
+
+  """
+  Mark a client's admin invite as sent (the admin joins by signing in with the invited email). Staff only.
+  """
+  sendTerminalInvite(clientId: String!): TerminalTeamClient!
   markTerminalBriefingRead(itemIds: [ID!]!): Boolean!
 
   """
@@ -1466,6 +1520,13 @@ input DeleteScheduleInput {
   workspaceId: String!
   documentId: String!
   scheduleId: String!
+}
+
+input TerminalTeamClientDraftInput {
+  details: TerminalTeamDetailsInput!
+  tracking: TerminalTrackingInput!
+  starterIds: [String!]!
+  inviteTiming: String!
 }
 
 input TerminalRequestInput {

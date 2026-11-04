@@ -7,6 +7,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
+import { StaffService } from '../../staff/staff.service';
 import { ShowcaseAdminService } from '../showcase-admin.service';
 
 const OFFICIAL = 'ws-official';
@@ -72,7 +73,7 @@ function makeService({
     categoryRepository,
     chainRepository,
     protocolRepository,
-    membership,
+    new StaffService(config, membership),
     logoService,
     config,
     { emit: jest.fn() } as any,

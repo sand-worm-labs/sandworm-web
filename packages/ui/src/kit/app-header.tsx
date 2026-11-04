@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import {
   PiArrowSquareOut,
   PiBookOpen,
+  PiBuildings,
   PiGithubLogo,
   PiInfo,
   PiSignOut,
@@ -165,6 +166,7 @@ export function AccountMenu({
   signIn,
   onSignOut,
   workspaceHref,
+  workspaceName,
 }: {
   user: HeaderUser | null;
   loading?: boolean;
@@ -173,6 +175,8 @@ export function AccountMenu({
   signIn: ReactNode;
   onSignOut: () => void;
   workspaceHref: string;
+  // The workspace the visitor is in, shown under their name in the menu.
+  workspaceName?: string | null;
 }) {
   if (loading) {
     return (
@@ -217,6 +221,13 @@ export function AccountMenu({
             )}
           </div>
         </div>
+
+        {workspaceName && (
+          <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-ink-400">
+            <PiBuildings size={14} className="shrink-0" />
+            <span className="truncate">{workspaceName}</span>
+          </div>
+        )}
 
         <a href={workspaceHref} className={ITEM_CLASS}>
           <PiArrowSquareOut size={16} className={ICON_CLASS} />

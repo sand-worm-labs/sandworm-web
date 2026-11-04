@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 
+import type { HeaderAccount } from "@/features/auth/account";
 import type { Session } from "@/features/session/types";
 
 import type { SetupDraft } from "./types";
@@ -21,6 +22,7 @@ type PatchDraft = <Section extends keyof SetupDraft>(
 type SetupContextValue = {
   draft: SetupDraft;
   session: Session;
+  account: HeaderAccount;
   patch: PatchDraft;
 };
 
@@ -29,12 +31,14 @@ const SetupContext = createContext<SetupContextValue | null>(null);
 type SetupProviderProps = {
   initialDraft: SetupDraft;
   session: Session;
+  account: HeaderAccount;
   children: ReactNode;
 };
 
 export function SetupProvider({
   initialDraft,
   session,
+  account,
   children,
 }: SetupProviderProps) {
   const [draft, setDraft] = useState(initialDraft);
@@ -47,8 +51,8 @@ export function SetupProvider({
   }, []);
 
   const value = useMemo(
-    () => ({ draft, session, patch }),
-    [draft, session, patch]
+    () => ({ draft, session, account, patch }),
+    [draft, session, account, patch]
   );
 
   return (

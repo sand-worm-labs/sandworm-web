@@ -15,8 +15,9 @@ export class TerminalClientEntity extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'PK_terminal_client_id' })
   id!: string;
 
-  @Column({ name: 'owner_id', type: 'uuid' })
-  ownerId!: string;
+  // Null for a client the Sandworm team created, until its admin first logs in
+  @Column({ name: 'owner_id', type: 'uuid', nullable: true })
+  ownerId!: string | null;
 
   // An OrganisationTypeId (@sandworm/types/terminal)
   @Column({ type: 'varchar', length: 32 })
@@ -27,6 +28,30 @@ export class TerminalClientEntity extends AbstractEntity {
 
   @Column({ type: 'varchar', length: 255, default: '' })
   website!: string;
+
+  // A PlanId (@sandworm/types/terminal)
+  @Column({ type: 'varchar', length: 16, default: 'starter' })
+  plan!: string;
+
+  // A ClientStatusId (@sandworm/types/terminal)
+  @Column({ type: 'varchar', length: 16, default: 'live' })
+  status!: string;
+
+  // The team member who set the client up; null for a client that set itself up
+  @Column({ name: 'created_by', type: 'uuid', nullable: true })
+  createdBy!: string | null;
+
+  // Ids of the existing research the client starts with
+  @Column({ name: 'starter_ids', type: 'text', array: true, default: '{}' })
+  starterIds!: string[];
+
+  // An InviteTimingId (@sandworm/types/terminal)
+  @Column({ name: 'invite_timing', type: 'varchar', length: 16, default: 'manual' })
+  inviteTiming!: string;
+
+  // What the organisation does, in the client's words
+  @Column({ type: 'varchar', length: 500, default: '' })
+  description!: string;
 
   // A SetupTracking (@sandworm/types/terminal)
   @Column({ type: 'jsonb', default: '{}' })
@@ -50,5 +75,5 @@ export class TerminalClientEntity extends AbstractEntity {
     referencedColumnName: 'id',
     foreignKeyConstraintName: 'FK_terminal_client_owner',
   })
-  owner!: Relation<UserEntity>;
+  owner!: Relation<UserEntity> | null;
 }
