@@ -121,7 +121,9 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
   server.registerTool(
     'delete_notebook',
     {
-      description: 'Delete a notebook (moves it to trash, where it can be restored)',
+      description:
+        'Delete a notebook (moves it to trash, where it can be restored). ' +
+        'A notebook that holds others is a folder: deleting it moves the notebooks inside it to the trash too. Move them out first with move_notebook to keep them',
       inputSchema: { notebookId, workspaceId, confirm },
     },
     handle(async ({ notebookId, workspaceId }) => {

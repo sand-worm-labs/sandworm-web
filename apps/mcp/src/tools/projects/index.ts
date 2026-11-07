@@ -7,6 +7,7 @@ type Document = {
   id: string;
   title: string;
   parentId: string | null;
+  orderIndex: number;
   description: string | null;
   visibility: string;
   publishedAt: string | null;
@@ -18,14 +19,19 @@ type Document = {
 export function registerProjectTools(server: McpServer, ctx: ToolContext): void {
   server.registerTool(
     'list_projects',
-    { description: 'List projects (notebooks) in a workspace', inputSchema: { workspaceId } },
+    {
+      description:
+        'List projects (notebooks) in a workspace. parentId is the notebook one sits inside (null at the top level) and orderIndex its place among its siblings: ' +
+        'a notebook that others point to as their parentId works as a folder, and notebooks nest one level deep. create_notebook and move_notebook place them',
+      inputSchema: { workspaceId },
+    },
     handle(async ({ workspaceId }) => {
       const resolvedWorkspaceId = await resolveWorkspaceId(ctx, workspaceId);
       const data = await graphql<{ getWorkspaceDocuments: Document[] }>(
         ctx,
         `query ($workspaceId: String!) {
           getWorkspaceDocuments(workspaceId: $workspaceId) {
-            id title parentId description visibility publishedAt updatedAt deletedAt
+            id title parentId orderIndex description visibility publishedAt updatedAt deletedAt
           }
         }`,
         { workspaceId: resolvedWorkspaceId },
@@ -36,6 +42,7 @@ export function registerProjectTools(server: McpServer, ctx: ToolContext): void 
           id: d.id,
           title: d.title,
           parentId: d.parentId,
+          orderIndex: d.orderIndex,
           description: d.description,
           visibility: d.visibility,
           published: d.publishedAt !== null,
