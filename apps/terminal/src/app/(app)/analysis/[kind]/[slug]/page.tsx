@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 
 import { EntityScreen } from "@/components/Analysis/Entity/EntityScreen";
-import { getEntityPage } from "@/features/analysis/entity/source";
-import { isEntityKind } from "@/features/analysis/entity/types";
-import { getSession } from "@/features/session/source";
+import { getEntityPage } from "@/lib/analysis/entity/source";
+import { isEntityKind } from "@/lib/analysis/entity/types";
+import { getSession } from "@/lib/session/source";
 
 type EntityRouteProps = { params: Promise<{ kind: string; slug: string }> };
 

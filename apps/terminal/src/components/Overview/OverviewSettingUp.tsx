@@ -4,8 +4,8 @@ import { ProgressMeter } from "@sandworm/ui/kit/progress-meter";
 
 import { SectionHeader } from "@/components/Sections/SectionHeader";
 import { AppLink } from "@/components/AppLink";
-import { BLOCK_ABOUT } from "@/features/overview/blocks/catalogue";
-import type { OverviewData } from "@/features/overview/types";
+import { BLOCK_ABOUT } from "@/data/overview/catalogue";
+import type { OverviewData } from "@/lib/overview/types";
 
 import { SetupChecklist } from "./SetupChecklist";
 

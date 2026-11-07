@@ -3,7 +3,7 @@ import { InitialsAvatar } from "@sandworm/ui/kit/initials-avatar";
 import { Pill } from "@sandworm/ui/kit/pill";
 
 import { AppLink } from "@/components/AppLink";
-import type { AnalysisView } from "@/features/analysis/types";
+import type { AnalysisView } from "@/lib/analysis/types";
 
 type AnalysisTableProps = {
   view: AnalysisView;

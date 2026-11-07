@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-import type { Confidence } from "@/features/signals/types";
+import type { Confidence } from "@/lib/signals/types";
 
 const barClassNames: Record<Confidence, string> = {
   High: "w-full",

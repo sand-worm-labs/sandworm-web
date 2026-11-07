@@ -4,14 +4,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@sandworm/ui/kit/button";
 
-import { saveSetupDraft } from "@/features/setup/actions";
-import { useSetup } from "@/features/setup/context";
-import { getStepNeighbours } from "@/features/setup/steps/index";
-import {
-  SETUP_COMPLETE_PATH,
-  setupStepPath,
-} from "@/features/setup/steps/routes";
-import type { SetupStepDefinition } from "@/features/setup/steps/types";
+import { saveSetupDraft } from "@/lib/setup/actions";
+import { useSetup } from "@/providers/SetupProvider";
+import { getStepNeighbours } from "@/components/Setup/steps/index";
+import { SETUP_COMPLETE_PATH, setupStepPath } from "@/lib/setup/routes";
+import type { SetupStepDefinition } from "@/components/Setup/steps/types";
 
 export function StepFooter({ step }: { step: SetupStepDefinition }) {
   const router = useRouter();

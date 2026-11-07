@@ -14,17 +14,17 @@ import { KpiStrip } from "@/components/Analysis/Entity/KpiStrip";
 import {
   getOrganisationType,
   ORGANISATION_TYPES,
-} from "@/features/setup/options/organisation-types";
+} from "@/data/setup/organisation-types";
 import { formatShortDate, pluralise } from "@/lib/format";
-import { sendTeamInvite } from "@/features/team/actions";
+import { sendTeamInvite } from "@/lib/team/actions";
 import {
   countByStatus,
   countByType,
   filterClients,
   type ClientTypeFilter,
-} from "@/features/team/client-list-state";
-import { getPlan } from "@/features/team/options/plans";
-import type { TeamClientSummary } from "@/features/team/types";
+} from "@/lib/team/client-list-state";
+import { getPlan } from "@/data/team/plans";
+import type { TeamClientSummary } from "@/lib/team/types";
 
 import { ClientStatusChip } from "./ClientStatusChip";
 

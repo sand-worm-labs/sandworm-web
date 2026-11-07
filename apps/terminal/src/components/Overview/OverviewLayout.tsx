@@ -1,8 +1,8 @@
 import clsx from "clsx";
 
 import { BlockRenderer } from "@/components/Overview/blocks/BlockRenderer";
-import { columnSpanClassName } from "@/features/overview/placement";
-import type { LayoutRow, OverviewBlock } from "@/features/overview/types";
+import { columnSpanClassName } from "@/lib/overview/placement";
+import type { LayoutRow, OverviewBlock } from "@/lib/overview/types";
 
 type OverviewLayoutProps = {
   layout: readonly LayoutRow[];

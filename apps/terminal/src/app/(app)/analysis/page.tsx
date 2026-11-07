@@ -1,7 +1,7 @@
 import { AnalysisScreen } from "@/components/Analysis/AnalysisScreen";
-import { getAnalysis } from "@/features/analysis/source";
-import { getSectionCounts } from "@/features/sections/source";
-import { getSession } from "@/features/session/source";
+import { getAnalysis } from "@/lib/analysis/source";
+import { getSectionCounts } from "@/lib/sections/source";
+import { getSession } from "@/lib/session/source";
 
 export default async function AnalysisRoute() {
   const [catalog, counts, session] = await Promise.all([

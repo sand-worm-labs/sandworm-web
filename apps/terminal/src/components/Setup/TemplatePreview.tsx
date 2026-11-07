@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Pill } from "@sandworm/ui/kit/pill";
 
-import type { TemplateBlueprint } from "@/features/setup/options/organisation-types";
+import type { TemplateBlueprint } from "@/data/setup/organisation-types";
 
 function AuroraBackdrop() {
   return (

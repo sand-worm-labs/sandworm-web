@@ -6,7 +6,7 @@ import type {
   OverviewData,
   SignalEntry,
   OverviewBlock,
-} from "@/features/overview/types";
+} from "@/lib/overview/types";
 
 type StandardContent = {
   kpis: readonly Kpi[];

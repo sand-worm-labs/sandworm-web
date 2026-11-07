@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
-import { getHeaderAccount } from "@/features/auth/account";
-import { TeamClientProvider } from "@/features/team/context";
-import { getStarterResearch } from "@/features/team/source";
+import { getHeaderAccount } from "@/lib/auth/account";
+import { TeamClientProvider } from "@/providers/TeamProvider";
+import { getStarterResearch } from "@/lib/team/source";
 
 export default async function NewClientLayout({
   children,

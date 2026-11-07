@@ -1,4 +1,4 @@
-import type { OverviewData } from "@/features/overview/types";
+import type { OverviewData } from "@/lib/overview/types";
 
 import { briefingEntry, gapEntry, kpi, signalEntry } from "./builders";
 import { buildSetupProgress } from "./setup-progress";

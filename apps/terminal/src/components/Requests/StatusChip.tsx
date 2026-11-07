@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { TONE_BADGE_CLASSNAME } from "@sandworm/ui/kit/tone";
 
-import type { RequestStatus } from "@/features/requests/types";
+import type { RequestStatus } from "@/lib/requests/types";
 
 const chipClassNames: Record<RequestStatus, string> = {
   Submitted: "bg-hover-bg text-ink-500",

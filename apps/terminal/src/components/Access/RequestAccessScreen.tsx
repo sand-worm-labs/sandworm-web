@@ -10,12 +10,12 @@ import { TextField } from "@sandworm/ui/kit/form/text-field";
 import { AppLink } from "@/components/AppLink";
 import { env } from "@/config/env";
 import { site } from "@/config/site";
-import { requestAccess } from "@/features/access/actions";
+import { requestAccess } from "@/lib/access/actions";
 import {
   canSubmitAccessRequest,
   EMPTY_REQUEST_ACCESS_DRAFT,
   type RequestAccessDraft,
-} from "@/features/access/request-draft";
+} from "@/lib/access/request-draft";
 
 type RequestAccessScreenProps = { email: string | null };
 

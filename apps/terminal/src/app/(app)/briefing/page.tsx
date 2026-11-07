@@ -1,7 +1,7 @@
 import { BriefingScreen } from "@/components/Briefing/BriefingScreen";
-import { getBriefing } from "@/features/briefing/source";
-import { getSectionCounts } from "@/features/sections/source";
-import { getSession } from "@/features/session/source";
+import { getBriefing } from "@/lib/briefing/source";
+import { getSectionCounts } from "@/lib/sections/source";
+import { getSession } from "@/lib/session/source";
 
 type BriefingRouteProps = { searchParams: Promise<{ item?: string }> };
 

@@ -9,7 +9,7 @@ import type {
   EntityBlock,
   TableCell,
   TableColumn,
-} from "@/features/analysis/entity/types";
+} from "@/lib/analysis/entity/types";
 
 import { SectionCard } from "./SectionCard";
 

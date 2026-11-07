@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { PiCaretLeft } from "react-icons/pi";
 
 import { AppLink } from "@/components/AppLink";
-import type { EntityPage, RowSplit } from "@/features/analysis/entity/types";
+import type { EntityPage, RowSplit } from "@/lib/analysis/entity/types";
 
 import { BlockRenderer } from "./BlockRenderer";
 import { EntityHeader } from "./EntityHeader";

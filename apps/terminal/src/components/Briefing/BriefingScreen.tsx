@@ -4,13 +4,10 @@ import { PiChecks } from "react-icons/pi";
 import { Button } from "@sandworm/ui/kit/button";
 
 import { SectionHeader } from "@/components/Sections/SectionHeader";
-import type { SectionCounts } from "@/features/sections/types";
-import {
-  filterItems,
-  type BriefingFilter,
-} from "@/features/briefing/inbox-state";
-import type { BriefingFeed } from "@/features/briefing/types";
-import { useBriefingInbox } from "@/features/briefing/useBriefingInbox";
+import type { SectionCounts } from "@/lib/sections/types";
+import { filterItems, type BriefingFilter } from "@/lib/briefing/inbox-state";
+import type { BriefingFeed } from "@/lib/briefing/types";
+import { useBriefingInbox } from "@/hooks/useBriefingInbox";
 
 import { BriefingDetailPanel } from "./BriefingDetailPanel";
 import { BriefingList } from "./BriefingList";

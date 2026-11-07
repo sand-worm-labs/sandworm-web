@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-import type { StepState, TimelineStep } from "@/features/requests/types";
+import type { StepState, TimelineStep } from "@/lib/requests/types";
 
 const iconClassNames: Record<StepState, string> = {
   done: "border-[1.5px] border-emerald-700 bg-emerald-700 shadow-[inset_0_0_0_3px_white]",

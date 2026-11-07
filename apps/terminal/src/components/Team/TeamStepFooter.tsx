@@ -4,11 +4,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@sandworm/ui/kit/button";
 
-import { createTeamClient } from "@/features/team/actions";
-import { useTeamClient } from "@/features/team/context";
-import { TEAM_CLIENTS_PATH, teamStepPath } from "@/features/team/routes";
-import { getTeamStepNeighbours } from "@/features/team/steps/index";
-import type { TeamStepDefinition } from "@/features/team/steps/types";
+import { createTeamClient } from "@/lib/team/actions";
+import { useTeamClient } from "@/providers/TeamProvider";
+import { TEAM_CLIENTS_PATH, teamStepPath } from "@/lib/team/routes";
+import { getTeamStepNeighbours } from "@/components/Team/steps/index";
+import type { TeamStepDefinition } from "@/components/Team/steps/types";
 
 const CREATE_FAILED =
   "Couldn't create the client. Check you're on the Sandworm team and that the API is running, then try again.";

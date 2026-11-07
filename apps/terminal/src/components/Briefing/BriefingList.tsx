@@ -7,8 +7,8 @@ import {
 } from "@sandworm/ui/kit/interactive";
 
 import { groupInOrder } from "@/lib/group-in-order";
-import { isUnread, type BriefingFilter } from "@/features/briefing/inbox-state";
-import type { BriefingItem } from "@/features/briefing/types";
+import { isUnread, type BriefingFilter } from "@/lib/briefing/inbox-state";
+import type { BriefingItem } from "@/lib/briefing/types";
 
 import { BriefingKindTag } from "./BriefingKindTag";
 

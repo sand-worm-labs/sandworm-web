@@ -1,7 +1,7 @@
 import { AppShell } from "@/components/Shell/AppShell";
 import { ClientsScreen } from "@/components/Team/ClientsScreen";
-import { getHeaderAccount } from "@/features/auth/account";
-import { listTeamClients } from "@/features/team/source";
+import { getHeaderAccount } from "@/lib/auth/account";
+import { listTeamClients } from "@/lib/team/source";
 
 type TeamRouteProps = {
   searchParams: Promise<{ created?: string }>;

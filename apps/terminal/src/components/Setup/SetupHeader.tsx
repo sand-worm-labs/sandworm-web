@@ -2,8 +2,8 @@ import Link from "next/link";
 
 import { AccountMenu } from "@/components/Shell/AccountMenu";
 import { TerminalBrand } from "@/components/TerminalBrand";
-import type { HeaderAccount } from "@/features/auth/account";
-import { SETUP_COMPLETE_PATH } from "@/features/setup/steps/routes";
+import type { HeaderAccount } from "@/lib/auth/account";
+import { SETUP_COMPLETE_PATH } from "@/lib/setup/routes";
 
 type SetupHeaderProps = {
   account: HeaderAccount;

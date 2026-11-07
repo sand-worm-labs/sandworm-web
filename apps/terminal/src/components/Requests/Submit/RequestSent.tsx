@@ -4,11 +4,8 @@ import { buttonClassName } from "@sandworm/ui/kit/button";
 import { AppLink } from "@/components/AppLink";
 import { site } from "@/config/site";
 import { Timeline } from "@/components/Requests/Timeline";
-import {
-  describeDraft,
-  submittedTimeline,
-} from "@/features/requests/submit/draft";
-import type { RequestDraft } from "@/features/requests/submit/types";
+import { describeDraft, submittedTimeline } from "@/lib/requests/submit/draft";
+import type { RequestDraft } from "@/lib/requests/submit/types";
 
 type RequestSentProps = {
   draft: RequestDraft;

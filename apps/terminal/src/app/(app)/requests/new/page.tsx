@@ -1,5 +1,5 @@
 import { SubmitRequestDialog } from "@/components/Requests/Submit/SubmitRequestDialog";
-import { loadRequestsScreen } from "@/features/requests/load";
+import { loadRequestsScreen } from "@/lib/requests/load";
 import { RequestsScreen } from "@/components/Requests/RequestsScreen";
 
 export default async function NewRequestRoute() {

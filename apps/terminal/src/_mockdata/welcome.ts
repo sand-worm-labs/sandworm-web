@@ -2,8 +2,8 @@ import type { MockClientId } from "@/_mockdata/clients";
 import { analysisMockData } from "@/_mockdata/analysis";
 import { overviewMockData } from "@/_mockdata/overview";
 import { sessionMockData } from "@/_mockdata/session";
-import { findBlock } from "@/features/overview/types";
-import type { WelcomeContent } from "@/features/welcome/types";
+import { findBlock } from "@/lib/overview/types";
+import type { WelcomeContent } from "@/lib/welcome/types";
 
 const exchangeContent: WelcomeContent = {
   firstBriefingCount: 6,

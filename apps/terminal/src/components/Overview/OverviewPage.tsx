@@ -1,7 +1,7 @@
-import type { SectionCounts } from "@/features/sections/types";
-import type { WelcomeData } from "@/features/welcome/types";
+import type { SectionCounts } from "@/lib/sections/types";
+import type { WelcomeData } from "@/lib/welcome/types";
 import { exhaustiveCheck } from "@/lib/exhaustive";
-import type { Overview } from "@/features/overview/types";
+import type { Overview } from "@/lib/overview/types";
 
 import { OverviewCalculating } from "./OverviewCalculating";
 import { OverviewReady } from "./OverviewReady";

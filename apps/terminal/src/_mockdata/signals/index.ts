@@ -1,6 +1,6 @@
 import type { MockClientId } from "@/_mockdata/clients";
 import { overviewMockData } from "@/_mockdata/overview";
-import type { SignalsFeed } from "@/features/signals/types";
+import type { SignalsFeed } from "@/lib/signals/types";
 
 import { exchangeSignals } from "./exchange";
 import { signalsFromOverview } from "./from-overview";

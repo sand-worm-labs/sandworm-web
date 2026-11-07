@@ -1,7 +1,7 @@
 import { SignalsScreen } from "@/components/Signals/SignalsScreen";
-import { getSignals } from "@/features/signals/source";
-import { getSectionCounts } from "@/features/sections/source";
-import { getSession } from "@/features/session/source";
+import { getSignals } from "@/lib/signals/source";
+import { getSectionCounts } from "@/lib/sections/source";
+import { getSession } from "@/lib/session/source";
 
 export default async function SignalsRoute() {
   const [feed, counts, session] = await Promise.all([

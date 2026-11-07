@@ -1,9 +1,9 @@
 "use client";
 
-import { useSetup } from "@/features/setup/context";
-import { getSetupStep, SETUP_STEPS } from "@/features/setup/steps/index";
-import { setupStepPath, type SetupStepId } from "@/features/setup/steps/routes";
-import { getTemplatePreview } from "@/features/setup/template-preview";
+import { useSetup } from "@/providers/SetupProvider";
+import { getSetupStep, SETUP_STEPS } from "@/components/Setup/steps/index";
+import { setupStepPath, type SetupStepId } from "@/lib/setup/routes";
+import { getTemplatePreview } from "@/lib/setup/template-preview";
 
 import { SetupHeader } from "./SetupHeader";
 import { StepFooter } from "./StepFooter";

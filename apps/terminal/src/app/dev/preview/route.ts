@@ -11,8 +11,8 @@ import {
   PREVIEW_CLIENT_COOKIE,
   PREVIEW_SIGNALS_COOKIE,
   PREVIEW_STATUS_COOKIE,
-} from "@/features/preview/cookies";
-import { isOverviewStatus } from "@/features/overview/types";
+} from "@/lib/preview/cookies";
+import { isOverviewStatus } from "@/lib/overview/types";
 
 export function GET(request: NextRequest) {
   if (process.env.NODE_ENV === "production") {

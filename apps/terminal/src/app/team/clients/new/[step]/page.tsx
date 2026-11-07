@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { TeamStepScreen } from "@/components/Team/TeamStepScreen";
-import { isTeamStepId, TEAM_STEP_IDS } from "@/features/team/routes";
+import { isTeamStepId, TEAM_STEP_IDS } from "@/lib/team/routes";
 
 type NewClientStepProps = { params: Promise<{ step: string }> };
 

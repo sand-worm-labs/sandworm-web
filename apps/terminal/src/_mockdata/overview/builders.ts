@@ -4,7 +4,7 @@ import type {
   GapEntry,
   Kpi,
   SignalEntry,
-} from "@/features/overview/types";
+} from "@/lib/overview/types";
 
 type KpiInit = Omit<Kpi, "id" | "comparison"> & { comparison?: string };
 

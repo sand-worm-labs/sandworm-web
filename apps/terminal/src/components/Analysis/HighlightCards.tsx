@@ -1,7 +1,7 @@
 import { InitialsAvatar } from "@sandworm/ui/kit/initials-avatar";
 
 import { AppLink } from "@/components/AppLink";
-import type { AnalysisHighlight } from "@/features/analysis/types";
+import type { AnalysisHighlight } from "@/lib/analysis/types";
 
 import { HighlightTag } from "./HighlightTag";
 

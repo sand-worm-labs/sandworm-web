@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 
 import { AppLink } from "@/components/AppLink";
-import type { Signal } from "@/features/signals/types";
+import type { Signal } from "@/lib/signals/types";
 
 import { ConfidenceMeter } from "./ConfidenceMeter";
 import { SignalStatusIcon } from "./SignalStatusIcon";

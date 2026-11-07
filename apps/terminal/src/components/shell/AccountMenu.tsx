@@ -8,7 +8,7 @@ import {
 } from "@sandworm/ui/kit/app-header";
 
 import { env } from "@/config/env";
-import { signInUrl } from "@/features/auth/sign-in";
+import { signInUrl } from "@/lib/auth/sign-in";
 
 async function signOut() {
   try {

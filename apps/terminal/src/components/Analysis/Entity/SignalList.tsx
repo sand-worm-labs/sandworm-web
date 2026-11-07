@@ -3,7 +3,7 @@ import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 
 import { AppLink } from "@/components/AppLink";
 import { SignalStatusIcon } from "@/components/Signals/SignalStatusIcon";
-import type { EntityBlock } from "@/features/analysis/entity/types";
+import type { EntityBlock } from "@/lib/analysis/entity/types";
 
 type SignalListBlock = Extract<EntityBlock, { _tag: "signalList" }>;
 

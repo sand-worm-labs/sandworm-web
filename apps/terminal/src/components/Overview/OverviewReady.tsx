@@ -5,12 +5,12 @@ import { PiSlidersHorizontal } from "react-icons/pi";
 import { Button } from "@sandworm/ui/kit/button";
 
 import { WelcomeDialog } from "@/components/Welcome/WelcomeDialog";
-import { dismissWelcome } from "@/features/welcome/actions";
-import type { WelcomeData } from "@/features/welcome/types";
+import { dismissWelcome } from "@/lib/welcome/actions";
+import type { WelcomeData } from "@/lib/welcome/types";
 import { SectionHeader } from "@/components/Sections/SectionHeader";
-import type { SectionCounts } from "@/features/sections/types";
-import { useBlockVisibility } from "@/features/overview/customize/useBlockVisibility";
-import type { OverviewData } from "@/features/overview/types";
+import type { SectionCounts } from "@/lib/sections/types";
+import { useBlockVisibility } from "@/hooks/useBlockVisibility";
+import type { OverviewData } from "@/lib/overview/types";
 
 import { OverviewLayout } from "./OverviewLayout";
 import { CustomizeDrawer } from "./CustomizeDrawer";

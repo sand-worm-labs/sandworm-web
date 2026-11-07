@@ -8,7 +8,7 @@ import {
 import { TerminalBrand } from "@/components/TerminalBrand";
 import { ThemeToggle } from "@/components/Theme/ThemeToggle";
 import { ROUTES } from "@/config/routes";
-import type { HeaderAccount } from "@/features/auth/account";
+import type { HeaderAccount } from "@/lib/auth/account";
 
 import { AccountMenu } from "./AccountMenu";
 import { HeaderSearch } from "./HeaderSearch";

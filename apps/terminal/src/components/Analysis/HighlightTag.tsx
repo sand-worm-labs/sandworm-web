@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { TONE_BADGE_CLASSNAME } from "@sandworm/ui/kit/tone";
 
-import type { AnalysisHighlight } from "@/features/analysis/types";
+import type { AnalysisHighlight } from "@/lib/analysis/types";
 
 const tagClassNames: Record<AnalysisHighlight["tag"], string> = {
   "New report": "bg-info-tint dark:bg-base-600 text-ink-navy",

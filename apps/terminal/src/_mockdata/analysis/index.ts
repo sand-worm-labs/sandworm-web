@@ -1,6 +1,6 @@
 import type { MockClientId } from "@/_mockdata/clients";
 import { overviewMockData } from "@/_mockdata/overview";
-import type { AnalysisCatalog } from "@/features/analysis/types";
+import type { AnalysisCatalog } from "@/lib/analysis/types";
 
 import { exchangeAnalysis } from "./exchange";
 import { paycrestAnalysis } from "./paycrest";

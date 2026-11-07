@@ -1,5 +1,5 @@
 import { toId } from "@/lib/slug";
-import type { AnalysisHighlight, AnalysisRow } from "@/features/analysis/types";
+import type { AnalysisHighlight, AnalysisRow } from "@/lib/analysis/types";
 
 export function analysisRow(
   init: Omit<AnalysisRow, "id" | "slug" | "hasPage">

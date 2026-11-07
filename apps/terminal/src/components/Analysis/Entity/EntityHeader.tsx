@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { PiArrowsLeftRight, PiGlobeHemisphereWest } from "react-icons/pi";
 import { Tag } from "@sandworm/ui/kit/tag";
 
-import type { EntityKind } from "@/features/analysis/entity/types";
+import type { EntityKind } from "@/lib/analysis/entity/types";
 
 const tileContent: Record<EntityKind, (name: string) => ReactNode> = {
   project: name => (

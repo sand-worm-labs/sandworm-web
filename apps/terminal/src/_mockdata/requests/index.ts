@@ -1,6 +1,6 @@
 import type { MockClientId } from "@/_mockdata/clients";
 import { sessionMockData } from "@/_mockdata/session";
-import type { RequestsData } from "@/features/requests/types";
+import type { RequestsData } from "@/lib/requests/types";
 
 import { exchangeRequests } from "./exchange";
 import { genericRequests } from "./generic";

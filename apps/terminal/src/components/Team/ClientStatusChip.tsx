@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { TONE_BADGE_CLASSNAME } from "@sandworm/ui/kit/tone";
 
-import type { ClientStatusId } from "@/features/team/types";
+import type { ClientStatusId } from "@/lib/team/types";
 
 const STATUS: Record<ClientStatusId, { label: string; className: string }> = {
   setting_up: {

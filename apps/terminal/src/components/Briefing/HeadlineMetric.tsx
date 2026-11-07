@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { TONE_BADGE_CLASSNAME } from "@sandworm/ui/kit/tone";
 
-import type { BriefingDetail } from "@/features/briefing/types";
+import type { BriefingDetail } from "@/lib/briefing/types";
 
 type HeadlineMetricProps = {
   headline: NonNullable<BriefingDetail["headline"]>;

@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/Shell/AppShell";
-import { getAccess } from "@/features/access/source";
+import { getAccess } from "@/lib/access/source";
 import { RequestAccessScreen } from "@/components/Access/RequestAccessScreen";
-import { getHeaderAccount } from "@/features/auth/account";
-import { signInUrl } from "@/features/auth/sign-in";
+import { getHeaderAccount } from "@/lib/auth/account";
+import { signInUrl } from "@/lib/auth/sign-in";
 
 export default async function AccessRoute() {
   const access = await getAccess();

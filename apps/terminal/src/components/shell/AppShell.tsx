@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { HeaderAccount } from "@/features/auth/account";
+import type { HeaderAccount } from "@/lib/auth/account";
 
 import { AppHeader } from "./AppHeader";
 

@@ -2,7 +2,7 @@ import { buttonClassName } from "@sandworm/ui/kit/button";
 import { Card } from "@sandworm/ui/kit/card";
 
 import { AppLink } from "@/components/AppLink";
-import type { BriefingItem } from "@/features/briefing/types";
+import type { BriefingItem } from "@/lib/briefing/types";
 
 import { BriefingKindTag } from "./BriefingKindTag";
 import { CellOutputs } from "./CellOutputs";

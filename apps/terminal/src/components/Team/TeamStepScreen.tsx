@@ -4,14 +4,14 @@ import { SetupHeader } from "@/components/Setup/SetupHeader";
 import { StepIntro } from "@/components/Setup/StepIntro";
 import { StepProgress } from "@/components/Setup/StepProgress";
 import { TemplatePreview } from "@/components/Setup/TemplatePreview";
-import { getTemplatePreview } from "@/features/setup/template-preview";
-import { useTeamClient } from "@/features/team/context";
+import { getTemplatePreview } from "@/lib/setup/template-preview";
+import { useTeamClient } from "@/providers/TeamProvider";
 import {
   TEAM_CLIENTS_PATH,
   teamStepPath,
   type TeamStepId,
-} from "@/features/team/routes";
-import { getTeamStep, TEAM_STEPS } from "@/features/team/steps/index";
+} from "@/lib/team/routes";
+import { getTeamStep, TEAM_STEPS } from "@/components/Team/steps/index";
 
 import { TeamStepFooter } from "./TeamStepFooter";
 

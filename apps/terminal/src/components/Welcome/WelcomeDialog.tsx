@@ -15,7 +15,7 @@ import clsx from "clsx";
 
 import { AppLink } from "@/components/AppLink";
 import { site } from "@/config/site";
-import type { WelcomeData, WelcomeLead } from "@/features/welcome/types";
+import type { WelcomeData, WelcomeLead } from "@/lib/welcome/types";
 
 const countToneClassNames = {
   brand:

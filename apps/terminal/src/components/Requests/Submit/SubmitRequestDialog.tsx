@@ -12,14 +12,11 @@ import { MODAL_CLASSNAME } from "@sandworm/ui/kit/modal";
 
 import { ROUTES } from "@/config/routes";
 import { site } from "@/config/site";
-import { isResearchUsedUp } from "@/features/requests/requests-state";
-import type { Allowance } from "@/features/requests/types";
-import { submitRequest } from "@/features/requests/submit/actions";
-import {
-  emptyDraft,
-  formatSubmittedAt,
-} from "@/features/requests/submit/draft";
-import type { RequestDraft } from "@/features/requests/submit/types";
+import { isResearchUsedUp } from "@/lib/requests/requests-state";
+import type { Allowance } from "@/lib/requests/types";
+import { submitRequest } from "@/lib/requests/submit/actions";
+import { emptyDraft, formatSubmittedAt } from "@/lib/requests/submit/draft";
+import type { RequestDraft } from "@/lib/requests/submit/types";
 
 import { AllowanceUsed } from "./AllowanceUsed";
 import { RequestForm } from "./RequestForm";

@@ -6,7 +6,7 @@ import {
   findBlock,
   type KpisBlock,
   type OverviewData,
-} from "@/features/overview/types";
+} from "@/lib/overview/types";
 
 import { BlockHeader } from "./BlockHeader";
 

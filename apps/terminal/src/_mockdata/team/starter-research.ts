@@ -1,5 +1,5 @@
-import type { OrganisationTypeId } from "@/features/setup/options/organisation-types";
-import type { StarterResearch } from "@/features/team/types";
+import type { OrganisationTypeId } from "@/data/setup/organisation-types";
+import type { StarterResearch } from "@/lib/team/types";
 import { toId } from "@/lib/slug";
 
 function starter(

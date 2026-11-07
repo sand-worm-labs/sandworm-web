@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 
-import { getHeaderAccount } from "@/features/auth/account";
-import { getSession } from "@/features/session/source";
-import { SetupProvider } from "@/features/setup/context";
-import { loadSetupDraft } from "@/features/setup/source";
+import { getHeaderAccount } from "@/lib/auth/account";
+import { getSession } from "@/lib/session/source";
+import { SetupProvider } from "@/providers/SetupProvider";
+import { loadSetupDraft } from "@/lib/setup/source";
 
 export default async function SetupLayout({
   children,

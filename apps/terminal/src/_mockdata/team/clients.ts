@@ -1,4 +1,4 @@
-import type { TeamClientSummary } from "@/features/team/types";
+import type { TeamClientSummary } from "@/lib/team/types";
 
 const client = (
   init: Omit<TeamClientSummary, "id" | "createdAt"> & { daysAgo: number }
