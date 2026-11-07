@@ -1,6 +1,6 @@
 import type { OverviewData } from "@/features/overview/types";
 
-import { briefingEntry, gapEntry, kpi, opportunityEntry } from "./builders";
+import { briefingEntry, gapEntry, kpi, signalEntry } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
@@ -65,14 +65,14 @@ export const protocolOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Your borrowers take cbBTC on Morpho",
         summary:
           "3,400 of your users borrow it there. Worth about $1.2M a month in fees.",
         entity: "Morpho",
         time: "06:02",
         isUnread: true,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Today",
@@ -97,13 +97,13 @@ export const protocolOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "List USDe as collateral on Base",
         summary: "$640M of USDe sits idle in your users' wallets.",
         entity: "Ethena",
         time: "Mon 11:32",
         isUnread: false,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Last week",
@@ -126,8 +126,8 @@ export const protocolOverview: OverviewData = {
         route: "briefing",
       }),
     ],
-    opportunities: [
-      opportunityEntry({
+    signals: [
+      signalEntry({
         status: "New",
         title: "List cbBTC borrowing on more markets",
         summary: "3,400 of your users borrow it on Morpho.",
@@ -136,7 +136,7 @@ export const protocolOverview: OverviewData = {
         valueLabel: "fees",
         confidence: "High",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "List USDe as collateral on Base",
         summary: "$640M sits idle in your users' wallets.",
@@ -145,7 +145,7 @@ export const protocolOverview: OverviewData = {
         valueLabel: "possible deposits",
         confidence: "Medium",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "Reviewing",
         title: "Win back depositors from Spark",
         summary: "Two top-10 depositors moved there this month.",
@@ -163,16 +163,16 @@ export const protocolOverview: OverviewData = {
           detail: "Rates there are 0.8 points lower.",
           value: "$1.2M",
           valueLabel: "fees a month",
-          cta: "See opportunity",
-          route: "opportunities",
+          cta: "See signal",
+          route: "signals",
         }),
         gapEntry({
           title: "$640M of USDe sits idle in your users' wallets",
           detail: "You don't accept it as collateral on Base.",
           value: "$640M",
           valueLabel: "idle",
-          cta: "See opportunity",
-          route: "opportunity",
+          cta: "See signal",
+          route: "signal",
         }),
         gapEntry({
           title: "6,800 of your users loop stETH on Spark",

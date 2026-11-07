@@ -1,5 +1,6 @@
-import { AppShell } from "@/components/shell/AppShell";
-import { ClientsScreen } from "@/features/team/ClientsScreen";
+import { AppShell } from "@/components/Shell/AppShell";
+import { ClientsScreen } from "@/components/Team/ClientsScreen";
+import { getHeaderAccount } from "@/features/auth/account";
 import { listTeamClients } from "@/features/team/source";
 
 type TeamRouteProps = {
@@ -7,13 +8,14 @@ type TeamRouteProps = {
 };
 
 export default async function TeamRoute({ searchParams }: TeamRouteProps) {
-  const [clients, { created }] = await Promise.all([
+  const [clients, account, { created }] = await Promise.all([
     listTeamClients(),
+    getHeaderAccount(),
     searchParams,
   ]);
 
   return (
-    <AppShell>
+    <AppShell account={account}>
       <ClientsScreen clients={clients} createdName={created} />
     </AppShell>
   );

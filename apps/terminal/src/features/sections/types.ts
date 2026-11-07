@@ -1,6 +1,6 @@
 export type SectionCounts = {
   briefing: string;
   analysis: string;
-  opportunities: string;
+  signals: string;
   requests: string;
 };

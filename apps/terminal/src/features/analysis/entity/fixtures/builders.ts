@@ -4,7 +4,7 @@ import { toId } from "@/lib/slug";
 
 import type {
   EntityKpi,
-  OpportunityLink,
+  SignalLink,
   ReportLink,
   TableCell,
   TableRow,
@@ -50,8 +50,6 @@ export function reportLink(init: Omit<ReportLink, "id">): ReportLink {
   return { ...init, id: toId(init.title) };
 }
 
-export function opportunityLink(
-  init: Omit<OpportunityLink, "id">
-): OpportunityLink {
+export function signalLink(init: Omit<SignalLink, "id">): SignalLink {
   return { ...init, id: toId(init.title) };
 }

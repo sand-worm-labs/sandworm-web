@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 
-import { AppShell } from "@/components/shell/AppShell";
+import { AppShell } from "@/components/Shell/AppShell";
 import { getAccess } from "@/features/access/source";
-import { RequestAccessScreen } from "@/features/access/RequestAccessScreen";
+import { RequestAccessScreen } from "@/components/Access/RequestAccessScreen";
+import { getHeaderAccount } from "@/features/auth/account";
 import { signInUrl } from "@/features/auth/sign-in";
 
 export default async function AccessRoute() {
@@ -11,8 +12,10 @@ export default async function AccessRoute() {
   if (access._tag === "allowed") redirect("/");
   if (access._tag === "signedOut") redirect(signInUrl("/access"));
 
+  const account = await getHeaderAccount();
+
   return (
-    <AppShell>
+    <AppShell account={account}>
       <RequestAccessScreen email={access.email} />
     </AppShell>
   );

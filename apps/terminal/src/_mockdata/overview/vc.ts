@@ -1,6 +1,6 @@
 import type { OverviewData } from "@/features/overview/types";
 
-import { briefingEntry, gapEntry, kpi, opportunityEntry } from "./builders";
+import { briefingEntry, gapEntry, kpi, signalEntry } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
@@ -75,13 +75,13 @@ export const vcOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Today",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Stablecoin payments in Africa tripled",
         summary: "You hold no project in this sector.",
         entity: "Payments",
         time: "06:00",
         isUnread: true,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Yesterday",
@@ -95,13 +95,13 @@ export const vcOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Nimbus Pay is growing 40% a week",
         summary: "Not in your portfolio. 12,000 users and no token yet.",
         entity: "Nimbus Pay",
         time: "Mon 11:32",
         isUnread: false,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Last week",
@@ -124,8 +124,8 @@ export const vcOverview: OverviewData = {
         route: "briefing",
       }),
     ],
-    opportunities: [
-      opportunityEntry({
+    signals: [
+      signalEntry({
         status: "New",
         title: "Look at Nimbus Pay before its round",
         summary: "Growing 40% a week with no token.",
@@ -134,7 +134,7 @@ export const vcOverview: OverviewData = {
         valueLabel: "users, +40% a week",
         confidence: "Medium",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Find a stablecoin payments company in Africa",
         summary: "Users tripled in six months; you hold nothing there.",
@@ -143,7 +143,7 @@ export const vcOverview: OverviewData = {
         valueLabel: "user growth",
         confidence: "High",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "Reviewing",
         title: "Ask Lumen DEX to rethink rewards",
         summary: "68% of new users leave when rewards end.",
@@ -161,8 +161,8 @@ export const vcOverview: OverviewData = {
           detail: "Users tripled in six months across 14 projects.",
           value: "3.0×",
           valueLabel: "users in 6 months",
-          cta: "See opportunity",
-          route: "opportunities",
+          cta: "See signal",
+          route: "signals",
         }),
         gapEntry({
           title: "Prediction markets",

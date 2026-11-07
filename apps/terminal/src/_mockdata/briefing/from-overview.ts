@@ -5,7 +5,7 @@ import type { BriefingFeed, BriefingItem } from "@/features/briefing/types";
 type Action = BriefingItem["action"];
 
 const ACTION_BY_ROUTE: Partial<Record<RouteId, Action>> = {
-  opportunity: { label: "Open opportunity", route: "opportunity" },
+  signal: { label: "Open signal", route: "signal" },
   report: { label: "Read report", route: "report" },
   briefing: { label: "See Overview", route: "overview" },
 };
@@ -18,7 +18,7 @@ export function briefingFromOverview(data: OverviewData): BriefingFeed {
     upToDate: {
       subtitle: "Since your last visit, Sun 2 Nov",
       message:
-        "Nothing new since your last visit on Sun 2 Nov at 18:40. New analysis, new opportunities and big moves in your numbers show up here.",
+        "Nothing new since your last visit on Sun 2 Nov at 18:40. New analysis, new signals and big moves in your numbers show up here.",
       archivedCount: entries.length,
     },
     items: entries.map(entry => ({

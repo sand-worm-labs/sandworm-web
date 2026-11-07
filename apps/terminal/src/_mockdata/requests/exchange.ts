@@ -72,7 +72,7 @@ export const exchangeRequests: RequestsData = {
       ],
       note: {
         when: "Mon 26 Oct",
-        text: "Delivered. It also led to the Argentina opportunity in your list.",
+        text: "Delivered. It also led to the Argentina signal in your list.",
       },
       reportLabel: "Read the report",
     }),

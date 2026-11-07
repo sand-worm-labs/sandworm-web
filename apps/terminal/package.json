@@ -10,7 +10,8 @@
     "eslint": "pnpm exec next lint --fix --dir src",
     "prettier": "pnpm exec prettier --write .",
     "lint": "pnpm eslint && pnpm prettier",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@sandworm/types": "workspace:*",

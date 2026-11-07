@@ -13,14 +13,14 @@ export const ROUTES = {
   project: { path: "/analysis/project", label: "Project", isBuilt: true },
   region: { path: "/analysis/region", label: "Region", isBuilt: true },
   sector: { path: "/analysis/sector", label: "Sector", isBuilt: true },
-  opportunities: {
-    path: "/opportunities",
-    label: "Opportunities",
+  signals: {
+    path: "/signals",
+    label: "Signals",
     isBuilt: true,
   },
-  opportunity: {
-    path: "/opportunities/opportunity",
-    label: "Opportunity",
+  signal: {
+    path: "/signals/signal",
+    label: "Signal",
     isBuilt: false,
   },
   requests: { path: "/requests", label: "Requests", isBuilt: true },
@@ -69,7 +69,7 @@ const FALLBACK_ROUTES: Partial<Record<RouteId, RouteId>> = {
   project: "analysis",
   region: "analysis",
   sector: "analysis",
-  opportunity: "opportunities",
+  signal: "signals",
 };
 
 // The address a link to `route` goes to, or null when there is nowhere to go.

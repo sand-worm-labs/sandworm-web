@@ -1,7 +1,7 @@
 import { OptionCard } from "@sandworm/ui/kit/form/option-card";
 import { TextField } from "@sandworm/ui/kit/form/text-field";
 
-import { OrganisationFields } from "@/features/setup/components/OrganisationFields";
+import { OrganisationFields } from "@/components/Setup/OrganisationFields";
 
 import { useTeamClient } from "../context";
 import { canLeaveDetails } from "../draft";

@@ -1,4 +1,4 @@
-import { AnalysisScreen } from "@/features/analysis/AnalysisScreen";
+import { AnalysisScreen } from "@/components/Analysis/AnalysisScreen";
 import { getAnalysis } from "@/features/analysis/source";
 import { getSectionCounts } from "@/features/sections/source";
 import { getSession } from "@/features/session/source";

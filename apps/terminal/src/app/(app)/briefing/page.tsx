@@ -1,4 +1,4 @@
-import { BriefingScreen } from "@/features/briefing/BriefingScreen";
+import { BriefingScreen } from "@/components/Briefing/BriefingScreen";
 import { getBriefing } from "@/features/briefing/source";
 import { getSectionCounts } from "@/features/sections/source";
 import { getSession } from "@/features/session/source";

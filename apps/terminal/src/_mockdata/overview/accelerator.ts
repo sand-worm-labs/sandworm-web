@@ -1,6 +1,6 @@
 import type { OverviewData } from "@/features/overview/types";
 
-import { briefingEntry, gapEntry, kpi, opportunityEntry } from "./builders";
+import { briefingEntry, gapEntry, kpi, signalEntry } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
@@ -77,13 +77,13 @@ export const acceleratorOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Today",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Two companies serve the same Kenya corridor",
         summary: "Paylane and Kito could share liquidity.",
         entity: "Kenya",
         time: "06:00",
         isUnread: true,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Yesterday",
@@ -97,13 +97,13 @@ export const acceleratorOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Stablecoin payroll has no company in your batches",
         summary: "Users up 2.6× in six months.",
         entity: "Payroll",
         time: "Mon 11:32",
         isUnread: false,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Last week",
@@ -126,8 +126,8 @@ export const acceleratorOverview: OverviewData = {
         route: "briefing",
       }),
     ],
-    opportunities: [
-      opportunityEntry({
+    signals: [
+      signalEntry({
         status: "New",
         title: "Introduce Paylane and Kito",
         summary: "Both route payouts through the same Kenya corridor.",
@@ -136,7 +136,7 @@ export const acceleratorOverview: OverviewData = {
         valueLabel: "companies",
         confidence: "High",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Recruit a stablecoin payroll company",
         summary: "Users up 2.6× in six months; none in your batches.",
@@ -145,7 +145,7 @@ export const acceleratorOverview: OverviewData = {
         valueLabel: "user growth",
         confidence: "Medium",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "Reviewing",
         title: "Check in with three flat companies",
         summary: "No user growth for six weeks.",
@@ -163,8 +163,8 @@ export const acceleratorOverview: OverviewData = {
           detail: "Users up 2.6× in six months across 9 projects.",
           value: "2.6×",
           valueLabel: "users in 6 months",
-          cta: "See opportunity",
-          route: "opportunities",
+          cta: "See signal",
+          route: "signals",
         }),
         gapEntry({
           title: "Agent payments",

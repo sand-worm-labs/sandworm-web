@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { SetupStepScreen } from "@/features/setup/components/SetupStepScreen";
+import { SetupStepScreen } from "@/components/Setup/SetupStepScreen";
 import { isSetupStepId, SETUP_STEP_IDS } from "@/features/setup/steps/routes";
 
 type SetupStepPageProps = { params: Promise<{ step: string }> };

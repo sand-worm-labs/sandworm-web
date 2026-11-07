@@ -2,10 +2,7 @@ import type { Tone } from "@sandworm/ui/kit/tone";
 
 import type { RouteId } from "@/config/routes";
 import type { BriefingKind } from "@/features/briefing/types";
-import type {
-  Opportunity,
-  OpportunityStatus,
-} from "@/features/opportunities/types";
+import type { Signal, SignalStatus } from "@/features/signals/types";
 import type { MockClientId } from "@/_mockdata/clients";
 
 export const OVERVIEW_STATUSES = ["ready", "settingUp", "calculating"] as const;
@@ -63,14 +60,14 @@ export type BriefingBlock = BlockBase & {
   entries: readonly BriefingEntry[];
 };
 
-export type OpportunityEntry = Omit<Opportunity, "status" | "when"> & {
-  status: Exclude<OpportunityStatus, "Passed">;
+export type SignalEntry = Omit<Signal, "status" | "when"> & {
+  status: Exclude<SignalStatus, "Passed">;
 };
 
-export type OpportunitiesBlock = BlockBase & {
-  _tag: "opportunities";
+export type SignalsBlock = BlockBase & {
+  _tag: "signals";
   subtitle: string;
-  items: readonly OpportunityEntry[];
+  items: readonly SignalEntry[];
 };
 
 export type GapEntry = {
@@ -92,7 +89,7 @@ export type GapsBlock = BlockBase & {
 export type OverviewBlock =
   | KpisBlock
   | BriefingBlock
-  | OpportunitiesBlock
+  | SignalsBlock
   | GapsBlock;
 
 export type BlockTag = OverviewBlock["_tag"];

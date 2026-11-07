@@ -4,7 +4,7 @@ import {
   badge,
   change,
   kpi,
-  opportunityLink,
+  signalLink,
   reportLink,
   tableRow,
   text,
@@ -33,12 +33,12 @@ export const latinAmericaPage: EntityPage = {
       text: "Nigeria: 0.9%",
       tone: "neutral",
     }),
-    kpi("Opportunities here", "2", { text: "1 new", tone: "neutral" }),
+    kpi("Signals here", "2", { text: "1 new", tone: "neutral" }),
   ],
   insight: {
     heading: "Your users in Argentina pay the most in the region to cash out",
     text: "11,200 wallets cash out about $14.2M a month at 2.2%. Brazil pays 1.4% and Mexico 1.1%.",
-    action: { label: "See the opportunity", route: "opportunity" },
+    action: { label: "See the signal", route: "signal" },
   },
   rows: [
     {
@@ -97,7 +97,7 @@ export const latinAmericaPage: EntityPage = {
       ],
     },
     {
-      id: "reports-and-opportunities",
+      id: "reports-and-signals",
       split: "wide-narrow",
       blocks: [
         {
@@ -122,17 +122,17 @@ export const latinAmericaPage: EntityPage = {
           ],
         },
         {
-          _tag: "opportunityList",
-          id: "opportunities-list",
-          title: "Opportunities here",
+          _tag: "signalList",
+          id: "signals-list",
+          title: "Signals here",
           items: [
-            opportunityLink({
+            signalLink({
               title: "Argentina's off-ramps charge 2× Nigeria's fees",
               status: "New",
               confidence: "High",
               value: "$43K/mo",
             }),
-            opportunityLink({
+            signalLink({
               title: "Let Brazilian users buy with Pix",
               status: "Reviewing",
               confidence: "Medium",

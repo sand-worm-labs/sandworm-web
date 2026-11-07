@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { EntityScreen } from "@/features/analysis/entity/EntityScreen";
+import { EntityScreen } from "@/components/Analysis/Entity/EntityScreen";
 import { getEntityPage } from "@/features/analysis/entity/source";
 import { isEntityKind } from "@/features/analysis/entity/types";
 import { getSession } from "@/features/session/source";

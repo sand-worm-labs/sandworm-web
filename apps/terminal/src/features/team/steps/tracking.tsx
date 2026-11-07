@@ -3,7 +3,7 @@ import { NativeSelect } from "@sandworm/ui/kit/form/native-select";
 import { labelClassName } from "@sandworm/ui/kit/form/styles";
 import { Tag } from "@sandworm/ui/kit/tag";
 
-import { TrackingFields } from "@/features/setup/components/TrackingFields";
+import { TrackingFields } from "@/components/Setup/TrackingFields";
 import { pluralise } from "@/lib/format";
 
 import { useTeamClient } from "../context";

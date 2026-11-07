@@ -1,0 +1,26 @@
+export const SIGNAL_STATUSES = [
+  "New",
+  "Reviewing",
+  "Pursuing",
+  "Passed",
+] as const;
+
+export type SignalStatus = (typeof SIGNAL_STATUSES)[number];
+
+export type Confidence = "High" | "Medium" | "Low";
+
+export type Signal = {
+  id: string;
+  status: SignalStatus;
+  title: string;
+  summary: string;
+  kind: string;
+  value: string;
+  valueLabel: string;
+  confidence: Confidence;
+  when: string;
+};
+
+export type SignalsFeed = {
+  items: readonly Signal[];
+};

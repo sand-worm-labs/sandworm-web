@@ -1,4 +1,4 @@
-import { OverviewPage } from "@/features/overview/OverviewPage";
+import { OverviewPage } from "@/components/Overview/OverviewPage";
 import { getOverview } from "@/features/overview/source";
 import { getSectionCounts } from "@/features/sections/source";
 import { getSession } from "@/features/session/source";

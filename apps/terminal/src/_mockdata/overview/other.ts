@@ -1,6 +1,6 @@
 import type { OverviewData } from "@/features/overview/types";
 
-import { briefingEntry, gapEntry, kpi, opportunityEntry } from "./builders";
+import { briefingEntry, gapEntry, kpi, signalEntry } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
@@ -63,13 +63,13 @@ export const otherOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Users who leave go to the same two apps",
         summary: "1,900 of your lapsed wallets moved to them last month.",
         entity: "Churn",
         time: "06:02",
         isUnread: true,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Today",
@@ -93,13 +93,13 @@ export const otherOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "A rival launched a rewards programme",
         summary: "Its weekly signups doubled in five days.",
         entity: "Rivals",
         time: "Mon 11:32",
         isUnread: false,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Last week",
@@ -122,8 +122,8 @@ export const otherOverview: OverviewData = {
         route: "briefing",
       }),
     ],
-    opportunities: [
-      opportunityEntry({
+    signals: [
+      signalEntry({
         status: "New",
         title: "Win back lapsed users",
         summary: "1,900 wallets moved to two other apps last month.",
@@ -132,7 +132,7 @@ export const otherOverview: OverviewData = {
         valueLabel: "wallets",
         confidence: "High",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Match a rival's rewards programme",
         summary: "Its weekly signups doubled within five days.",
@@ -141,7 +141,7 @@ export const otherOverview: OverviewData = {
         valueLabel: "rival signups",
         confidence: "Medium",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "Reviewing",
         title: "Reach your most active 2%",
         summary: "They make 41% of all transactions.",
@@ -159,8 +159,8 @@ export const otherOverview: OverviewData = {
           detail: "Your users earn them on two rival apps instead.",
           value: "1,900",
           valueLabel: "wallets",
-          cta: "See opportunity",
-          route: "opportunities",
+          cta: "See signal",
+          route: "signals",
         }),
         gapEntry({
           title: "Cross-chain activity",

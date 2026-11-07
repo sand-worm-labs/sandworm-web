@@ -1,7 +1,7 @@
 import { pluralise } from "@/lib/format";
 import { site } from "@/config/site";
+import { TrackingFields } from "@/components/Setup/TrackingFields";
 
-import { TrackingFields } from "../components/TrackingFields";
 import { useSetup } from "../context";
 
 import type { SetupStepDefinition } from "./types";

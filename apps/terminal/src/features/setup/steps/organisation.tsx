@@ -1,5 +1,6 @@
+import { OrganisationFields } from "@/components/Setup/OrganisationFields";
+
 import { useSetup } from "../context";
-import { OrganisationFields } from "../components/OrganisationFields";
 import { getOrganisationType } from "../options/organisation-types";
 
 import type { SetupStepDefinition } from "./types";

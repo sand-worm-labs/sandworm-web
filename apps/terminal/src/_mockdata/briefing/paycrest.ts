@@ -8,13 +8,13 @@ export const paycrestBriefing: BriefingFeed = {
   upToDate: {
     subtitle: "Since your last visit, Wed 4 Nov",
     message:
-      "Nothing new since your last visit. New research, new opportunities and big moves in your numbers show up here.",
+      "Nothing new since your last visit. New research, new signals and big moves in your numbers show up here.",
     archivedCount: 6,
   },
   items: [
     briefingItem({
       group: "Today",
-      kind: "Opportunity",
+      kind: "Signal",
       title: "Lemon Cash pays out about $16M a week in stablecoins",
       summary:
         "Paycrest has no peso corridor yet. Lemon already holds the pesos.",
@@ -31,7 +31,7 @@ export const paycrestBriefing: BriefingFeed = {
         what: "Lemon Cash paid out $144M of USDC and USDT in two months, about $16M a week to some 9,400 receiving wallets. 83% of it was USDT. Paycrest does not support Argentine pesos today, and none of Lemon's labelled wallets has sent an order to a Paycrest gateway in 180 days.",
         why: "Lemon holds the pesos and the dollars, so it is the natural first liquidity provider for a peso corridor. That corridor has to take USDT on BNB Chain and Tron: USDC on Base reaches about 0.5% of Lemon's payouts. These totals include sweeps between Lemon's own wallets, so read them as an upper bound.",
       },
-      action: { label: "Open opportunity", route: "opportunity" },
+      action: { label: "Open signal", route: "signal" },
     }),
     briefingItem({
       group: "Today",
@@ -76,7 +76,7 @@ export const paycrestBriefing: BriefingFeed = {
     }),
     briefingItem({
       group: "Today",
-      kind: "Opportunity",
+      kind: "Signal",
       title: "Most of P2P.me's naira cash-outs come from one platform's users",
       summary:
         "Wallets funded by one contract made 82% of them. It has no name.",
@@ -97,7 +97,7 @@ export const paycrestBriefing: BriefingFeed = {
         what: "The contract 0x6fa5…5a1d has paid out $254M in USDC to 13,780 wallets since 7 September. Seventeen of those wallets are P2P.me naira users, and they made 82% of its naira cash-outs. They also buy USDC (46% of their volume), so they look like traders or agents, not one person. Dune holds no public name for the contract.",
         why: "If Paycrest can name the platform and offer it a built-in naira cash-out, that flow comes to you instead of P2P.me. Start with Arkham's entity lookup. A contract paying thousands of wallets usually matches a known exchange or wallet. The link shows a relationship, not ownership.",
       },
-      action: { label: "Open opportunity", route: "opportunity" },
+      action: { label: "Open signal", route: "signal" },
     }),
     briefingItem({
       group: "Yesterday",
@@ -121,7 +121,7 @@ export const paycrestBriefing: BriefingFeed = {
     }),
     briefingItem({
       group: "Yesterday",
-      kind: "Opportunity",
+      kind: "Signal",
       title: "Nexo bought Buenbit and opened a Latin American hub",
       summary: "About $1.3bn of USDC and USDT moved through Nexo in 2 months.",
       entity: "Nexo",
@@ -137,7 +137,7 @@ export const paycrestBriefing: BriefingFeed = {
         what: "Nexo agreed to buy Buenbit on 11 December 2025, moved its accounts over on 1 April, and opened a Latin American hub in Buenos Aires on 5 March covering Argentina, Peru and Mexico. About $1.8bn moved through its labelled wallets in two months, 81% of it stablecoins. Dune labels no Buenbit wallet, so Buenbit's Argentine flow cannot be separated.",
         why: "Nexo is strong on yield and credit, not payouts, so Paycrest can pitch itself as its fiat payout layer. It barely uses Base, so lead with Ethereum, BNB Chain, Polygon and Arbitrum. Buenbit's licensed peso desk is a candidate liquidity provider.",
       },
-      action: { label: "Open opportunity", route: "opportunity" },
+      action: { label: "Open signal", route: "signal" },
     }),
     briefingItem({
       group: "Yesterday",
@@ -161,7 +161,7 @@ export const paycrestBriefing: BriefingFeed = {
     }),
     briefingItem({
       group: "Yesterday",
-      kind: "Opportunity",
+      kind: "Signal",
       title: "Brazil and Mexico are where Latin America's stablecoins move",
       summary:
         "$1.2B of real stablecoins and $1.09B of Bitso payouts in 90 days.",
@@ -178,7 +178,7 @@ export const paycrestBriefing: BriefingFeed = {
         what: "Real-denominated stablecoins (BRZ, BRLA, BRL1) moved about $1.2B, around 400× P2P.me's whole Brazil book of $3.1M. Bitso paid out $1.09B in USDC and USDT to about 9,700 wallets, 94% of it on Polygon, and the peso stablecoin MXNB moved $132M. Colombia's COPM moved $51M. P2P.me barely serves Mexico.",
         why: "Paycrest already runs on Polygon, where almost all of this moves. BRLA Digital, Transfero and Bitso need bank off-ramps, which is what a Paycrest corridor is. P2P.me's Brazilian users also cash out about $500K a month, so retail demand is there too. Token volume includes DEX and bot hops, so it overstates real payments.",
       },
-      action: { label: "Open opportunity", route: "opportunity" },
+      action: { label: "Open signal", route: "signal" },
     }),
     briefingItem({
       group: "Last week",
@@ -221,7 +221,7 @@ export const paycrestBriefing: BriefingFeed = {
     }),
     briefingItem({
       group: "Last week",
-      kind: "Opportunity",
+      kind: "Signal",
       title: "P2P.me's 13 integrator apps complete only 1 in 3 orders",
       summary: "They already want an embedded ramp. Reliability is the pitch.",
       entity: "P2P.me",
@@ -237,7 +237,7 @@ export const paycrestBriefing: BriefingFeed = {
         what: "Since May 2026, 13 apps have sent orders to P2P.me through its business gateway. About one in three completes, and apps carry under 1% of P2P.me's volume. The largest, 0xa012…20a5, is Argentine and completed $40K since September. It may be Luca Money, which one known transaction would confirm. Five of the apps share one deployer, so one team built them.",
         why: "These apps have already decided they want an embedded ramp, so they are warm leads for Paycrest's sender API. Lead with reliability: Paycrest's median order settles in 0.7 minutes, and most corridors refund about 5%.",
       },
-      action: { label: "Open opportunity", route: "opportunity" },
+      action: { label: "Open signal", route: "signal" },
     }),
     briefingItem({
       group: "Last week",

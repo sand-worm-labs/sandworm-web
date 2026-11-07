@@ -1,6 +1,6 @@
 import type { OverviewData } from "@/features/overview/types";
 
-import { briefingEntry, gapEntry, kpi, opportunityEntry } from "./builders";
+import { briefingEntry, gapEntry, kpi, signalEntry } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
@@ -66,14 +66,14 @@ export const exchangeOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Argentina's off-ramps charge 2× Nigeria's fees",
         summary:
           "11,200 of your wallets cash out to pesos. Worth about $43K a month.",
         entity: "Argentina",
         time: "06:02",
         isUnread: true,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Today",
@@ -97,13 +97,13 @@ export const exchangeOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Let users send money home with Paycrest",
         summary: "$5.1M a month already leaves your app to do this.",
         entity: "Paycrest",
         time: "Mon 11:32",
         isUnread: false,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Last week",
@@ -126,8 +126,8 @@ export const exchangeOverview: OverviewData = {
         route: "briefing",
       }),
     ],
-    opportunities: [
-      opportunityEntry({
+    signals: [
+      signalEntry({
         status: "New",
         title: "Argentina's off-ramps charge 2× Nigeria's fees",
         summary: "Offer a cheaper cash-out to pesos inside Acme Wallet.",
@@ -136,7 +136,7 @@ export const exchangeOverview: OverviewData = {
         valueLabel: "possible revenue",
         confidence: "High",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "Reviewing",
         title: "Offer interest on stablecoins",
         summary: "38,000 of your wallets earn it on Aave instead.",
@@ -145,7 +145,7 @@ export const exchangeOverview: OverviewData = {
         valueLabel: "deposited elsewhere",
         confidence: "High",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Let users send money home with Paycrest",
         summary: "2,140 of your users already leave your app to do it.",
@@ -164,8 +164,8 @@ export const exchangeOverview: OverviewData = {
           detail: "Acme Wallet has no way to earn on USDC.",
           value: "$212M",
           valueLabel: "deposited",
-          cta: "See opportunity",
-          route: "opportunities",
+          cta: "See signal",
+          route: "signals",
         }),
         gapEntry({
           title:
@@ -173,8 +173,8 @@ export const exchangeOverview: OverviewData = {
           detail: "They pay 2.2% on average. Nigeria pays 0.9%.",
           value: "$14.2M",
           valueLabel: "a month",
-          cta: "See opportunity",
-          route: "opportunity",
+          cta: "See signal",
+          route: "signal",
         }),
         gapEntry({
           title:

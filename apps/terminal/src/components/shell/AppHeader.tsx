@@ -6,9 +6,9 @@ import {
 } from "@sandworm/ui/kit/app-header";
 
 import { TerminalBrand } from "@/components/TerminalBrand";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { ThemeToggle } from "@/components/Theme/ThemeToggle";
 import { ROUTES } from "@/config/routes";
-import { getHeaderAccount } from "@/features/auth/account";
+import type { HeaderAccount } from "@/features/auth/account";
 
 import { AccountMenu } from "./AccountMenu";
 import { HeaderSearch } from "./HeaderSearch";
@@ -18,8 +18,8 @@ const GITHUB_URL = "https://github.com/sand-worm-labs";
 
 // The web app's header (ShowcaseHeader), built from the same shared pieces.
 // The only difference is the "terminal" badge.
-export async function AppHeader() {
-  const { user, workspaceName } = await getHeaderAccount();
+export function AppHeader({ account }: { account: HeaderAccount }) {
+  const { user, workspaceName } = account;
 
   return (
     <AppHeaderFrame>

@@ -7,13 +7,13 @@ export const exchangeBriefing: BriefingFeed = {
   upToDate: {
     subtitle: "Since your last visit, Sun 2 Nov",
     message:
-      "Nothing new since your last visit on Sun 2 Nov at 18:40. New analysis, new opportunities and big moves in your numbers show up here.",
+      "Nothing new since your last visit on Sun 2 Nov at 18:40. New analysis, new signals and big moves in your numbers show up here.",
     archivedCount: 9,
   },
   items: [
     briefingItem({
       group: "Today",
-      kind: "Opportunity",
+      kind: "Signal",
       title: "Argentina's off-ramps charge 2× Nigeria's fees",
       summary:
         "11,200 of your wallets cash out to pesos. Worth about $43K a month.",
@@ -30,7 +30,7 @@ export const exchangeBriefing: BriefingFeed = {
         what: "Cashing out stablecoins to pesos costs 2.2% on average, more than twice what it costs in Nigeria. Argentina's ramps have stayed this expensive for six months while volume kept growing.",
         why: "11,200 of your wallets cash out to pesos every month, about $14.2M. A cheaper route inside Acme Wallet could keep that flow and earn about $43K a month.",
       },
-      action: { label: "Open opportunity", route: "opportunity" },
+      action: { label: "Open signal", route: "signal" },
     }),
     briefingItem({
       group: "Today",
@@ -74,7 +74,7 @@ export const exchangeBriefing: BriefingFeed = {
     }),
     briefingItem({
       group: "Yesterday",
-      kind: "Opportunity",
+      kind: "Signal",
       title: "Let users send money home with Paycrest",
       summary: "$5.1M a month already leaves your app to do this.",
       entity: "Paycrest",
@@ -90,7 +90,7 @@ export const exchangeBriefing: BriefingFeed = {
         what: "Your users move stablecoins out of Acme Wallet, then send them home through Paycrest.",
         why: "A partnership could keep that $5.1M a month inside Acme Wallet and earn a share of the fees.",
       },
-      action: { label: "Open opportunity", route: "opportunity" },
+      action: { label: "Open signal", route: "signal" },
     }),
     briefingItem({
       group: "Yesterday",
@@ -188,7 +188,7 @@ export const exchangeBriefing: BriefingFeed = {
           delta: { text: "Delivered", tone: "positive" },
         },
         what: "Sandworm delivered the research you asked for: how much your users cash out in Argentina, Brazil and Mexico, and what they pay.",
-        why: "It sizes the Argentina opportunity and two smaller ones in Brazil and Mexico.",
+        why: "It sizes the Argentina signal and two smaller ones in Brazil and Mexico.",
       },
       action: { label: "Read report", route: "report" },
     }),

@@ -1,6 +1,6 @@
 import type { OverviewData } from "@/features/overview/types";
 
-import { briefingEntry, gapEntry, kpi, opportunityEntry } from "./builders";
+import { briefingEntry, gapEntry, kpi, signalEntry } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
@@ -84,14 +84,14 @@ export const paycrestOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Lemon Cash pays out about $16M a week in stablecoins",
         summary:
           "Paycrest has no peso corridor yet. Lemon already holds the pesos.",
         entity: "Argentina",
         time: "06:02",
         isUnread: true,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Today",
@@ -125,14 +125,14 @@ export const paycrestOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Opportunity",
+        kind: "Signal",
         title: "Nexo bought Buenbit and opened a Latin American hub",
         summary:
           "About $1.3bn of USDC and USDT moved through Nexo in 2 months.",
         entity: "Nexo",
         time: "Mon 11:32",
         isUnread: false,
-        route: "opportunity",
+        route: "signal",
       }),
       briefingEntry({
         group: "Yesterday",
@@ -166,8 +166,8 @@ export const paycrestOverview: OverviewData = {
         route: "briefing",
       }),
     ],
-    opportunities: [
-      opportunityEntry({
+    signals: [
+      signalEntry({
         status: "New",
         title: "Open Argentina with Lemon Cash as the first peso provider",
         summary: "Lemon pays out about $16M a week and already holds pesos.",
@@ -176,7 +176,7 @@ export const paycrestOverview: OverviewData = {
         valueLabel: "paid out a week",
         confidence: "Medium",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Sign Nexo as a sender, and Buenbit's peso desk as a provider",
         summary: "Nexo's Buenos Aires hub needs payout rails in 3 countries.",
@@ -185,7 +185,7 @@ export const paycrestOverview: OverviewData = {
         valueLabel: "moved in 2 months",
         confidence: "Medium",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "Reviewing",
         title: "Use El Dorado's agents as liquidity for Latin America",
         summary: "Agents pay out in 12 countries through 70+ local methods.",
@@ -194,7 +194,7 @@ export const paycrestOverview: OverviewData = {
         valueLabel: "countries",
         confidence: "Medium",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Fix the Tanzania gap before opening more corridors",
         summary: "43% of Tanzanian orders were refunded in the last 90 days.",
@@ -203,7 +203,7 @@ export const paycrestOverview: OverviewData = {
         valueLabel: "refunded",
         confidence: "High",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Name the platform behind P2P.me's naira cash-outs",
         summary: "One contract funds the wallets that make 82% of them.",
@@ -212,7 +212,7 @@ export const paycrestOverview: OverviewData = {
         valueLabel: "of P2P.me cash-outs",
         confidence: "Low",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Talk to the merchant who fills P2P.me's naira orders",
         summary: "It runs a balanced book every day and already holds naira.",
@@ -221,7 +221,7 @@ export const paycrestOverview: OverviewData = {
         valueLabel: "of P2P.me naira volume",
         confidence: "Medium",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "Reviewing",
         title: "Quote closer to the street rate on naira sells",
         summary: "P2P.me's price comes from one merchant and can close fast.",
@@ -230,7 +230,7 @@ export const paycrestOverview: OverviewData = {
         valueLabel: "more naira per USDC",
         confidence: "Medium",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Open Brazil on Polygon with BRLA and Transfero",
         summary:
@@ -240,7 +240,7 @@ export const paycrestOverview: OverviewData = {
         valueLabel: "moved in 90 days",
         confidence: "Medium",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Open Mexico with Bitso and MXNB as liquidity",
         summary: "P2P.me barely serves pesos, so nobody competes there yet.",
@@ -249,7 +249,7 @@ export const paycrestOverview: OverviewData = {
         valueLabel: "Bitso paid out in 90 days",
         confidence: "Medium",
       }),
-      opportunityEntry({
+      signalEntry({
         status: "New",
         title: "Pitch P2P.me's integrator apps on reliability",
         summary: "13 apps want an embedded ramp and complete 1 in 3 orders.",
@@ -268,8 +268,8 @@ export const paycrestOverview: OverviewData = {
             "Paycrest pays out NGN, KES, UGX and TZS. Lemon alone paid out $144M in stablecoins in 2 months.",
           value: "$144M",
           valueLabel: "Lemon payouts, 2 months",
-          cta: "See opportunity",
-          route: "opportunities",
+          cta: "See signal",
+          route: "signals",
         }),
         gapEntry({
           title: "Most liquidity comes from one related group",
@@ -304,8 +304,8 @@ export const paycrestOverview: OverviewData = {
             "Real stablecoins in Brazil and Bitso payouts in Mexico moved $2.3B between them in 90 days, mostly on Polygon.",
           value: "$2.3B",
           valueLabel: "in 90 days",
-          cta: "See opportunities",
-          route: "opportunities",
+          cta: "See signals",
+          route: "signals",
         }),
       ],
     },

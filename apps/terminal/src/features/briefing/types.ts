@@ -3,7 +3,7 @@ import type { Tone } from "@sandworm/ui/kit/tone";
 
 import type { RouteId } from "@/config/routes";
 
-export type BriefingKind = "Analysis" | "Opportunity" | "Metric";
+export type BriefingKind = "Analysis" | "Signal" | "Metric";
 
 export type BriefingDetail = {
   headline?: {

@@ -4,14 +4,14 @@ import type {
   BriefingEntry,
   LayoutRow,
   OverviewData,
-  OpportunityEntry,
+  SignalEntry,
   OverviewBlock,
 } from "@/features/overview/types";
 
 type StandardContent = {
   kpis: readonly Kpi[];
   briefing: readonly BriefingEntry[];
-  opportunities: readonly OpportunityEntry[];
+  signals: readonly SignalEntry[];
   gaps: { subtitle: string; items: readonly GapEntry[] };
 };
 
@@ -23,7 +23,7 @@ const STANDARD_ROWS: readonly LayoutRow[] = [
     id: "briefing",
     columns: [{ span: 12, blockIds: ["briefing"] }],
   },
-  { id: "opportunities", columns: [{ span: 12, blockIds: ["opportunities"] }] },
+  { id: "signals", columns: [{ span: 12, blockIds: ["signals"] }] },
   { id: "gaps", columns: [{ span: 12, blockIds: ["gaps"] }] },
 ];
 
@@ -45,12 +45,12 @@ export function standardLayout(content: StandardContent): Composition {
       entries: content.briefing,
     },
     {
-      _tag: "opportunities",
-      id: "opportunities",
-      title: "Top opportunities",
+      _tag: "signals",
+      id: "signals",
+      title: "Top signals",
       subtitle: "Ranked by estimated value",
       isOptional: true,
-      items: content.opportunities,
+      items: content.signals,
     },
     {
       _tag: "gaps",

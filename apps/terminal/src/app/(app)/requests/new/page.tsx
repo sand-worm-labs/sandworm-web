@@ -1,6 +1,6 @@
-import { SubmitRequestDialog } from "@/features/requests/submit/SubmitRequestDialog";
+import { SubmitRequestDialog } from "@/components/Requests/Submit/SubmitRequestDialog";
 import { loadRequestsScreen } from "@/features/requests/load";
-import { RequestsScreen } from "@/features/requests/RequestsScreen";
+import { RequestsScreen } from "@/components/Requests/RequestsScreen";
 
 export default async function NewRequestRoute() {
   const { data, counts, session } = await loadRequestsScreen();
