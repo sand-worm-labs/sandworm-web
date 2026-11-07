@@ -1,11 +1,10 @@
-import type { MockClientId } from "@/_mockdata/clients";
+import type { ClientKind, RequestsData } from "@/types";
 import { sessionMockData } from "@/_mockdata/session";
-import type { RequestsData } from "@/types";
 
 import { exchangeRequests } from "./exchange";
 import { genericRequests } from "./generic";
 
-export const requestMockData: Record<MockClientId, RequestsData> = {
+export const requestMockData: Record<ClientKind, RequestsData> = {
   exchange: exchangeRequests,
   protocol: genericRequests(sessionMockData.protocol.user.name),
   chain: genericRequests(sessionMockData.chain.user.name),

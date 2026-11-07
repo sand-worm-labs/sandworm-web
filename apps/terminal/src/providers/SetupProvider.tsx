@@ -6,11 +6,10 @@ import {
   useContext,
   useMemo,
   useState,
-  type ReactNode,
 } from "react";
 
 import type { HeaderAccount } from "@/lib/auth/account";
-import type { Session, SetupDraft } from "@/types";
+import type { ChildrenProps, Session, SetupDraft } from "@/types";
 
 type PatchDraft = <Section extends keyof SetupDraft>(
   section: Section,
@@ -26,11 +25,10 @@ type SetupContextValue = {
 
 const SetupContext = createContext<SetupContextValue | null>(null);
 
-type SetupProviderProps = {
+type SetupProviderProps = ChildrenProps & {
   initialDraft: SetupDraft;
   session: Session;
   account: HeaderAccount;
-  children: ReactNode;
 };
 
 export function SetupProvider({

@@ -1,17 +1,22 @@
-import type { Tone } from "@sandworm/ui/kit/tone";
+import type { OrganisationTypeId } from "@sandworm/types/terminal";
 
 import type { RouteId } from "@/config/routes";
-import type { MockClientId } from "@/_mockdata/clients";
-import type { OVERVIEW_STATUSES } from "@/lib/overview/status";
+import type { OverviewStatus } from "@/lib/overview/status";
 
-import type { BriefingKind } from "./briefing";
+import type { Action } from "./common";
+import type { BriefingItem } from "./briefing";
+import type { Kpi } from "./kpi";
 import type { Signal, SignalStatus } from "./signals";
 
-export type OverviewStatus = (typeof OVERVIEW_STATUSES)[number];
+export type { OverviewStatus };
+
+// The demo clients the preview can show: one of each client type, and named
+// clients whose data comes from real research.
+export type ClientKind = OrganisationTypeId | "paycrest";
 
 export type ColumnSpan = 4 | 6 | 8 | 12;
 
-export type LayoutColumn = {
+type LayoutColumn = {
   span: ColumnSpan;
   blockIds: readonly string[];
 };
@@ -24,31 +29,16 @@ type BlockBase = {
   isOptional: boolean;
 };
 
-export type Kpi = {
-  id: string;
-  label: string;
-  value: string;
-  delta: string;
-  tone: Tone;
-  comparison: string;
-};
-
 export type KpisBlock = BlockBase & {
   _tag: "kpis";
   items: readonly Kpi[];
 };
 
-export type BriefingEntry = {
-  id: string;
-  group: string;
-  kind: BriefingKind;
-  title: string;
-  summary: string;
-  entity: string;
-  time: string;
-  isUnread: boolean;
-  route: RouteId;
-};
+// A briefing item as the overview lists it: no detail, and a plain route.
+export type BriefingEntry = Omit<
+  BriefingItem,
+  "when" | "detail" | "source" | "action"
+> & { route: RouteId };
 
 export type BriefingBlock = BlockBase & {
   _tag: "briefing";
@@ -97,7 +87,7 @@ export type SetupStep = {
   title: string;
   detail: string;
   isDone: boolean;
-  action?: { label: string; route: RouteId };
+  action?: Action;
 };
 
 export type SetupProgress = {
@@ -106,7 +96,7 @@ export type SetupProgress = {
 };
 
 export type OverviewData = {
-  clientKind: MockClientId;
+  clientKind: ClientKind;
   typeName: string;
   subtitle: string;
   loadingNote: string;

@@ -4,3 +4,5 @@ export const SIGNAL_STATUSES = [
   "Pursuing",
   "Passed",
 ] as const;
+
+export type SignalStatus = (typeof SIGNAL_STATUSES)[number];

@@ -1,9 +1,12 @@
-import type { TimingId, UseCaseId } from "@/data/requests/submit-options";
+import type {
+  RequestTimingId,
+  RequestUseCaseId,
+} from "@sandworm/types/terminal";
 
 export type RequestDraft = {
   question: string;
-  useCase: UseCaseId;
+  useCase: RequestUseCaseId;
   about: readonly string[];
-  timing: TimingId;
+  timing: RequestTimingId;
   files: readonly string[];
 };

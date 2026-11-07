@@ -2,7 +2,8 @@ import { buttonClassName } from "@sandworm/ui/kit/button";
 import { Card } from "@sandworm/ui/kit/card";
 
 import { AppLink } from "@/components/AppLink";
-import type { BriefingItem, BriefingSource } from "@/types";
+import { SourceNote } from "@/components/SourceNote";
+import type { BriefingItem } from "@/types";
 
 import { BriefingKindTag } from "./BriefingKindTag";
 import { CellOutputs } from "./CellOutputs";
@@ -19,24 +20,6 @@ function DetailSection({ title, text }: { title: string; text: string }) {
       <h3 className="text-[13px] font-medium text-ink-100">{title}</h3>
       <p className="text-sm leading-[1.55] text-ink-500">{text}</p>
     </div>
-  );
-}
-
-function SourceNote({ source }: { source: BriefingSource }) {
-  return (
-    <p className="flex flex-wrap items-center gap-x-2 text-xs text-ink-400">
-      <span>Snapshot from {source.ranOn}</span>
-      {source.notebookUrl && (
-        <a
-          href={source.notebookUrl}
-          target="_blank"
-          rel="noreferrer"
-          className={buttonClassName({ variant: "link", className: "text-xs" })}
-        >
-          Open the notebook
-        </a>
-      )}
-    </p>
   );
 }
 

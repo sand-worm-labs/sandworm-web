@@ -5,20 +5,22 @@ import { Pill } from "@sandworm/ui/kit/pill";
 import { TONE_BADGE_CLASSNAME } from "@sandworm/ui/kit/tone";
 
 import { exhaustiveCheck } from "@/lib/exhaustive";
-import type { EntityBlock, TableCell, TableColumn } from "@/types";
+import type {
+  DataTableBlock,
+  EntityTableCell,
+  EntityTableColumn,
+} from "@/types";
 
 import { SectionCard } from "./SectionCard";
 
-type DataTableBlock = Extract<EntityBlock, { _tag: "dataTable" }>;
-
-function rowHeaderIndex(cells: readonly TableCell[]): number {
+function rowHeaderIndex(cells: readonly EntityTableCell[]): number {
   const index = cells.findIndex(
     cell => cell._tag === "entity" || (cell._tag === "text" && cell.isStrong)
   );
   return Math.max(index, 0);
 }
 
-function renderCell(cell: TableCell): ReactNode {
+function renderCell(cell: EntityTableCell): ReactNode {
   switch (cell._tag) {
     case "text":
       return cell.text;
@@ -47,7 +49,7 @@ function renderCell(cell: TableCell): ReactNode {
   }
 }
 
-function cellClassName(column: TableColumn | undefined, edge: boolean) {
+function cellClassName(column: EntityTableColumn | undefined, edge: boolean) {
   return clsx(
     "py-3.5 align-middle",
     edge ? "px-6" : "px-3",

@@ -1,6 +1,6 @@
-import type { SIGNAL_STATUSES } from "@/lib/signals/statuses";
+import type { SignalStatus } from "@/lib/signals/statuses";
 
-export type SignalStatus = (typeof SIGNAL_STATUSES)[number];
+export type { SignalStatus };
 
 export type Confidence = "High" | "Medium" | "Low";
 

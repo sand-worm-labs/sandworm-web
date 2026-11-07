@@ -1,13 +1,22 @@
+import type { Tone } from "@sandworm/ui/kit/tone";
+
 import { toId } from "@/lib/slug";
 import type { BriefingEntry, GapEntry, Kpi, SignalEntry } from "@/types";
 
-type KpiInit = Omit<Kpi, "id" | "comparison"> & { comparison?: string };
+type KpiInit = {
+  label: string;
+  value: string;
+  delta: string;
+  tone: Tone;
+  comparison?: string;
+};
 
-export function kpi(init: KpiInit): Kpi {
+export function kpi({ delta, tone, comparison, ...init }: KpiInit): Kpi {
   return {
     ...init,
     id: toId(init.label),
-    comparison: init.comparison ?? "vs last 30 days",
+    delta: { text: delta, tone },
+    comparison: comparison ?? "vs last 30 days",
   };
 }
 

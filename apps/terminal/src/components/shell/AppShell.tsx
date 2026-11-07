@@ -1,10 +1,9 @@
-import type { ReactNode } from "react";
-
 import type { HeaderAccount } from "@/lib/auth/account";
+import type { ChildrenProps } from "@/types";
 
 import { AppHeader } from "./AppHeader";
 
-type AppShellProps = { account: HeaderAccount; children: ReactNode };
+type AppShellProps = ChildrenProps & { account: HeaderAccount };
 
 export function AppShell({ account, children }: AppShellProps) {
   return (

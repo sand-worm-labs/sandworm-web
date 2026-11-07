@@ -3,9 +3,7 @@ import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 
 import { AppLink } from "@/components/AppLink";
 import { SignalStatusIcon } from "@/components/Signals/SignalStatusIcon";
-import type { EntityBlock } from "@/types";
-
-type SignalListBlock = Extract<EntityBlock, { _tag: "signalList" }>;
+import type { SignalListBlock } from "@/types";
 
 export function SignalList({ block }: { block: SignalListBlock }) {
   const titleId = `${block.id}-title`;

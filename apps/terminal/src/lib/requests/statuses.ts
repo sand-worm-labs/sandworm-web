@@ -6,4 +6,8 @@ export const RESEARCH_STATUSES = [
   "Declined",
 ] as const;
 
+export type ResearchStatus = (typeof RESEARCH_STATUSES)[number];
+
 export const QUESTION_STATUSES = ["Upcoming", "Answered", "Done"] as const;
+
+export type QuestionStatus = (typeof QUESTION_STATUSES)[number];

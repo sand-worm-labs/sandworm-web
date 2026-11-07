@@ -1,12 +1,11 @@
-import type { MockClientId } from "@/_mockdata/clients";
+import type { AnalysisCatalog, ClientKind } from "@/types";
 import { overviewMockData } from "@/_mockdata/overview";
-import type { AnalysisCatalog } from "@/types";
 
 import { exchangeAnalysis } from "./exchange";
 import { paycrestAnalysis } from "./paycrest";
 import { analysisFromOverview } from "./from-overview";
 
-export const analysisMockData: Record<MockClientId, AnalysisCatalog> = {
+export const analysisMockData: Record<ClientKind, AnalysisCatalog> = {
   exchange: exchangeAnalysis,
   protocol: analysisFromOverview(overviewMockData.protocol),
   chain: analysisFromOverview(overviewMockData.chain),

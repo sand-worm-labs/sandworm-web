@@ -1,5 +1,4 @@
-import type { MockClientId } from "@/_mockdata/clients";
-import type { EntityKind, EntityPage } from "@/types";
+import type { ClientKind, EntityKind, EntityPage } from "@/types";
 
 import { cashOutPage } from "./cash-out";
 import { latinAmericaPage } from "./latin-america";
@@ -11,7 +10,7 @@ const exchangePages: readonly EntityPage[] = [
   cashOutPage,
 ];
 
-export const entityFixtures: Record<MockClientId, readonly EntityPage[]> = {
+export const entityFixtures: Record<ClientKind, readonly EntityPage[]> = {
   exchange: exchangePages,
   protocol: [],
   chain: [],

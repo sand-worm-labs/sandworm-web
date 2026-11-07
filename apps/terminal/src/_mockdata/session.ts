@@ -1,5 +1,4 @@
-import type { MockClientId } from "@/_mockdata/clients";
-import type { Session } from "@/types";
+import type { ClientKind, Session } from "@/types";
 
 type ClientSeed = { clientName: string; userName: string };
 
@@ -13,7 +12,7 @@ function buildSession(seed: ClientSeed): Session {
   };
 }
 
-export const sessionMockData: Record<MockClientId, Session> = {
+export const sessionMockData: Record<ClientKind, Session> = {
   exchange: buildSession({ clientName: "Acme", userName: "Alex Morgan" }),
   protocol: buildSession({ clientName: "Aave", userName: "Lena Ortiz" }),
   chain: buildSession({ clientName: "Base", userName: "Ama Mensah" }),

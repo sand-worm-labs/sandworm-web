@@ -7,14 +7,13 @@ import {
   useMemo,
   useRef,
   useState,
-  type ReactNode,
 } from "react";
 
 import type { HeaderAccount } from "@/lib/auth/account";
 import type { OrganisationTypeId } from "@/data/setup/organisation-types";
 import { EMPTY_TEAM_CLIENT_DRAFT } from "@/lib/team/defaults";
 import { toggleId } from "@/lib/team/draft";
-import type { StarterResearch, TeamClientDraft } from "@/types";
+import type { ChildrenProps, StarterResearch, TeamClientDraft } from "@/types";
 
 type Catalogue = Record<OrganisationTypeId, readonly StarterResearch[]>;
 
@@ -33,10 +32,9 @@ const TeamClientContext = createContext<TeamClientContextValue | null>(null);
 const idsFor = (catalogue: Catalogue, type: OrganisationTypeId) =>
   catalogue[type].map(starter => starter.id);
 
-type TeamClientProviderProps = {
+type TeamClientProviderProps = ChildrenProps & {
   catalogue: Catalogue;
   account: HeaderAccount;
-  children: ReactNode;
 };
 
 export function TeamClientProvider({

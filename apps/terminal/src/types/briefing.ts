@@ -1,7 +1,8 @@
 import type { Output } from "@sandworm/types";
 import type { Tone } from "@sandworm/ui/kit/tone";
 
-import type { RouteId } from "@/config/routes";
+import type { Action } from "./common";
+import type { NotebookSource } from "./notebook";
 
 export type BriefingKind = "Analysis" | "Signal" | "Metric";
 
@@ -11,19 +12,11 @@ export type BriefingDetail = {
     label: string;
     delta?: { text: string; tone: Tone };
   };
-  // A frozen copy of the source cell's outputs from the run the item was made
+  // A snapshot of the source cell's outputs from the run the item was made
   // from: whatever the notebook drew (chart, table, card, markdown).
   outputs?: readonly Output[];
   what?: string;
   why?: string;
-};
-
-// The notebook cell an item was made from. `ranOn` is when that cell last ran
-// for this item; `outputs` above is what it drew then.
-export type BriefingSource = {
-  // Null once the notebook is deleted: the snapshot stays, the link does not.
-  notebookUrl: string | null;
-  ranOn: string;
 };
 
 export type BriefingItem = {
@@ -37,8 +30,8 @@ export type BriefingItem = {
   when: string;
   isUnread: boolean;
   detail: BriefingDetail;
-  source?: BriefingSource;
-  action: { label: string; route: RouteId };
+  source?: NotebookSource;
+  action: Action;
 };
 
 export type BriefingFeed = {

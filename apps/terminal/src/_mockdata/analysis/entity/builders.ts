@@ -2,11 +2,11 @@ import type { Tone } from "@sandworm/ui/kit/tone";
 
 import { toId } from "@/lib/slug";
 import type {
-  EntityKpi,
-  ReportLink,
-  SignalLink,
-  TableCell,
-  TableRow,
+  Kpi,
+  EntityReportLink,
+  EntitySignalLink,
+  EntityTableCell,
+  EntityTableRow,
 } from "@/types";
 
 export function kpi(
@@ -14,7 +14,7 @@ export function kpi(
   value: string,
   delta?: { text: string; tone: Tone },
   comparison?: string
-): EntityKpi {
+): Kpi {
   return { id: toId(label), label, value, delta, comparison };
 }
 
@@ -24,31 +24,44 @@ export function changeTone(text: string): Tone {
   return "neutral";
 }
 
-export const text = (value: string, isStrong = false): TableCell => ({
+export const text = (value: string, isStrong = false): EntityTableCell => ({
   _tag: "text",
   text: value,
   isStrong,
 });
 
-export const badge = (value: string, tone: Tone | "brand"): TableCell => ({
+export const badge = (
+  value: string,
+  tone: Tone | "brand"
+): EntityTableCell => ({
   _tag: "badge",
   text: value,
   tone,
 });
 
-export const change = (value: string): TableCell =>
+export const change = (value: string): EntityTableCell =>
   badge(value, changeTone(value));
 
-export const entity = (name: string): TableCell => ({ _tag: "entity", name });
+export const entity = (name: string): EntityTableCell => ({
+  _tag: "entity",
+  name,
+});
 
-export function tableRow(cells: TableCell[], idSource: string): TableRow {
+export function tableRow(
+  cells: EntityTableCell[],
+  idSource: string
+): EntityTableRow {
   return { id: toId(idSource), cells };
 }
 
-export function reportLink(init: Omit<ReportLink, "id">): ReportLink {
+export function reportLink(
+  init: Omit<EntityReportLink, "id">
+): EntityReportLink {
   return { ...init, id: toId(init.title) };
 }
 
-export function signalLink(init: Omit<SignalLink, "id">): SignalLink {
+export function signalLink(
+  init: Omit<EntitySignalLink, "id">
+): EntitySignalLink {
   return { ...init, id: toId(init.title) };
 }

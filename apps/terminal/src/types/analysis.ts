@@ -1,9 +1,8 @@
 import type { RouteId } from "@/config/routes";
-import type { ANALYSIS_SORTS } from "@/lib/analysis/sorts";
 
-export type AnalysisSort = (typeof ANALYSIS_SORTS)[number];
+export type { AnalysisSort } from "@/lib/analysis/sorts";
 
-export type AnalysisViewId = "projects" | "regions" | "sectors";
+type AnalysisViewId = "projects" | "regions" | "sectors";
 
 export type AnalysisRow = {
   id: string;

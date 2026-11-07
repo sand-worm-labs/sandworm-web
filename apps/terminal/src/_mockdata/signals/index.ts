@@ -1,11 +1,10 @@
-import type { MockClientId } from "@/_mockdata/clients";
+import type { ClientKind, SignalsFeed } from "@/types";
 import { overviewMockData } from "@/_mockdata/overview";
-import type { SignalsFeed } from "@/types";
 
 import { exchangeSignals } from "./exchange";
 import { signalsFromOverview } from "./from-overview";
 
-export const signalMockData: Record<MockClientId, SignalsFeed> = {
+export const signalMockData: Record<ClientKind, SignalsFeed> = {
   exchange: exchangeSignals,
   protocol: signalsFromOverview(overviewMockData.protocol),
   chain: signalsFromOverview(overviewMockData.chain),

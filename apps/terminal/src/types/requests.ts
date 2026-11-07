@@ -1,11 +1,6 @@
-import type {
-  QUESTION_STATUSES,
-  RESEARCH_STATUSES,
-} from "@/lib/requests/statuses";
+import type { QuestionStatus, ResearchStatus } from "@/lib/requests/statuses";
 
-export type ResearchStatus = (typeof RESEARCH_STATUSES)[number];
-
-export type QuestionStatus = (typeof QUESTION_STATUSES)[number];
+export type { QuestionStatus, ResearchStatus };
 
 export type RequestStatus = ResearchStatus | QuestionStatus;
 
@@ -19,7 +14,7 @@ export type TimelineStep = {
   detail?: string;
 };
 
-export type ScopeApproval = { scopedOn: string; due: string };
+type ScopeApproval = { scopedOn: string; due: string };
 
 export type ResearchRequest = {
   id: string;

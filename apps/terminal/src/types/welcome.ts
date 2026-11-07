@@ -4,7 +4,7 @@ export type WelcomeLead =
   | { _tag: "count"; value: string; tone: "brand" | "navy" }
   | { _tag: "chat" };
 
-export type WelcomeItem = {
+type WelcomeItem = {
   id: string;
   route: RouteId;
   title: string;

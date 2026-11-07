@@ -1,8 +1,7 @@
-import type { MockClientId } from "@/_mockdata/clients";
+import type { ClientKind, WelcomeContent } from "@/types";
 import { analysisMockData } from "@/_mockdata/analysis";
 import { overviewMockData } from "@/_mockdata/overview";
 import { sessionMockData } from "@/_mockdata/session";
-import type { WelcomeContent } from "@/types";
 import { findBlock } from "@/lib/overview/blocks";
 
 const exchangeContent: WelcomeContent = {
@@ -14,7 +13,7 @@ const exchangeContent: WelcomeContent = {
     "Tracking Acme Wallet and Acme Chain, 4 competitors and 3 regions.",
 };
 
-function contentFromOverview(kind: MockClientId): WelcomeContent {
+function contentFromOverview(kind: ClientKind): WelcomeContent {
   const overview = overviewMockData[kind];
   const briefing = findBlock(overview.blocks, "briefing");
   const topSignal = findBlock(overview.blocks, "signals")?.items[0];
@@ -29,7 +28,7 @@ function contentFromOverview(kind: MockClientId): WelcomeContent {
   };
 }
 
-export const welcomeMockData: Record<MockClientId, WelcomeContent> = {
+export const welcomeMockData: Record<ClientKind, WelcomeContent> = {
   exchange: exchangeContent,
   protocol: contentFromOverview("protocol"),
   chain: contentFromOverview("chain"),

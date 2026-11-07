@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { PiCaretLeft } from "react-icons/pi";
 
 import { AppLink } from "@/components/AppLink";
+import { SourceNote } from "@/components/SourceNote";
 import type { EntityPage, RowSplit } from "@/types";
 
 import { BlockRenderer } from "./BlockRenderer";
@@ -47,6 +48,7 @@ export function EntityScreen({ page, clientName }: EntityScreenProps) {
           ))}
         </div>
       ))}
+      {page.source && <SourceNote source={page.source} />}
       <p className="text-xs text-ink-400">
         Sandworm analysis of onchain data. Estimates, not financial advice.
       </p>

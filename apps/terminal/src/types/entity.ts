@@ -1,40 +1,33 @@
 import type { Tone } from "@sandworm/ui/kit/tone";
 
-import type { RouteId } from "@/config/routes";
-import type { ENTITY_KINDS } from "@/lib/analysis/entity/kinds";
+import type { EntityKind } from "@/lib/analysis/entity/kinds";
 
-import type { Confidence, SignalStatus } from "./signals";
+import type { Action } from "./common";
+import type { Kpi } from "./kpi";
+import type { NotebookSource } from "./notebook";
+import type { Signal } from "./signals";
 
-export type EntityKind = (typeof ENTITY_KINDS)[number];
+export type { EntityKind };
 
-export type EntityKpi = {
-  id: string;
-  label: string;
-  value: string;
-  delta?: { text: string; tone: Tone };
-  comparison?: string;
-};
+export type EntityInsight = { heading: string; text: string; action: Action };
 
-export type EntityInsight = {
-  heading: string;
-  text: string;
-  action: { label: string; route: RouteId };
-};
-
-export type TableCell =
+export type EntityTableCell =
   | { _tag: "text"; text: string; isStrong?: boolean }
   | { _tag: "badge"; text: string; tone: Tone | "brand" }
   | { _tag: "entity"; name: string };
 
-export type TableColumn = {
+export type EntityTableColumn = {
   id: string;
   label: string;
   align: "left" | "right";
 };
 
-export type TableRow = { id: string; cells: readonly TableCell[] };
+export type EntityTableRow = {
+  id: string;
+  cells: readonly EntityTableCell[];
+};
 
-export type ReportLink = {
+export type EntityReportLink = {
   id: string;
   title: string;
   when: string;
@@ -42,32 +35,35 @@ export type ReportLink = {
   isNew?: boolean;
 };
 
-export type SignalLink = {
-  id: string;
-  title: string;
-  status: SignalStatus;
-  confidence: Confidence;
-  value: string;
-};
+export type EntitySignalLink = Pick<
+  Signal,
+  "id" | "title" | "status" | "confidence" | "value"
+>;
 
 type BlockBase = { id: string; title: string };
 
-export type EntityBlock =
-  | (BlockBase & {
-      _tag: "dataTable";
-      subtitle: string;
-      columns: readonly TableColumn[];
-      rows: readonly TableRow[];
-    })
-  | (BlockBase & { _tag: "reportList"; items: readonly ReportLink[] })
-  | (BlockBase & {
-      _tag: "signalList";
-      items: readonly SignalLink[];
-    });
+export type DataTableBlock = BlockBase & {
+  _tag: "dataTable";
+  subtitle: string;
+  columns: readonly EntityTableColumn[];
+  rows: readonly EntityTableRow[];
+};
+
+export type ReportListBlock = BlockBase & {
+  _tag: "reportList";
+  items: readonly EntityReportLink[];
+};
+
+export type SignalListBlock = BlockBase & {
+  _tag: "signalList";
+  items: readonly EntitySignalLink[];
+};
+
+export type EntityBlock = DataTableBlock | ReportListBlock | SignalListBlock;
 
 export type RowSplit = "full" | "wide-narrow";
 
-export type EntityRow = {
+type EntityRow = {
   id: string;
   split: RowSplit;
   blocks: readonly EntityBlock[];
@@ -79,7 +75,8 @@ export type EntityPage = {
   name: string;
   tags: readonly string[];
   summary: string;
-  kpis: readonly EntityKpi[];
+  kpis: readonly Kpi[];
   insight: EntityInsight;
   rows: readonly EntityRow[];
+  source?: NotebookSource;
 };

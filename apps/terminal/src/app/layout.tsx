@@ -1,13 +1,13 @@
 import "@/styles/globals.scss";
 
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 
 import { FontPreloads } from "@/components/FontPreloads";
 import { env } from "@/config/env";
 import { baseFont } from "@/config/fonts";
 import { site } from "@/config/site";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import type { ChildrenProps } from "@/types";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.terminalUrl),
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: ChildrenProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

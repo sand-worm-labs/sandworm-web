@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 
-import type { MockClientId } from "@/_mockdata/clients";
-import type { OverviewStatus } from "@/types";
+import type { ClientKind, OverviewStatus } from "@/types";
 import { isOverviewStatus } from "@/lib/overview/status";
 import { ORGANISATION_TYPES } from "@/data/setup/organisation-types";
 
@@ -41,16 +40,16 @@ export function isAllowancePreviewMode(
   return ALLOWANCE_PREVIEW_MODES.some(mode => mode === value);
 }
 
-export const MOCK_CLIENT_IDS: readonly MockClientId[] = [
+export const MOCK_CLIENT_IDS: readonly ClientKind[] = [
   ...ORGANISATION_TYPES.map(type => type.id),
   "paycrest",
 ];
 
-export function isClientKind(value: string): value is MockClientId {
+export function isClientKind(value: string): value is ClientKind {
   return MOCK_CLIENT_IDS.some(id => id === value);
 }
 
-export async function getPreviewClientKind(): Promise<MockClientId> {
+export async function getPreviewClientKind(): Promise<ClientKind> {
   const value = (await cookies()).get(PREVIEW_CLIENT_COOKIE)?.value;
   return value && isClientKind(value) ? value : "exchange";
 }
