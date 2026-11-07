@@ -7,5 +7,5 @@ export default defineConfig({
       "@sandworm/ui": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-  test: { include: ["src/**/*.test.ts"] },
+  test: { include: ["src/**/*.test.{ts,tsx}"] },
 });

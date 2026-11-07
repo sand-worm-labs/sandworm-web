@@ -1,4 +1,7 @@
-import type { SearchRequest, SearchResponse } from "./types";
+import type {
+  SearchRequest,
+  SearchResponse,
+} from "@sandworm/ui/kit/lib/search-types";
 
 export class SearchError extends Error {
   constructor(readonly status: number) {

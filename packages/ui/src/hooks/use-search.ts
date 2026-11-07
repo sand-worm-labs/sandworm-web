@@ -2,12 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { NEXT_PUBLIC_API_URL } from "@/utils/env";
-
-import { SearchClient } from "./searchClient";
-import type { SearchEntryType, SearchGroup, SearchRequest } from "./types";
-
-export const searchClient = new SearchClient(() => NEXT_PUBLIC_API_URL());
+import type { SearchClient } from "@sandworm/ui/kit/lib/search-client";
+import type {
+  SearchEntryType,
+  SearchGroup,
+  SearchRequest,
+} from "@sandworm/ui/kit/lib/search-types";
 
 // Wait this long after the last keystroke before asking. Long enough that typing a word
 // is one request, short enough to feel instant.
@@ -28,11 +28,12 @@ type State = {
 // - While the next answer loads, the last one stays on screen instead of flashing empty.
 // - With a `type`, one kind is shown in full, and `loadMore` fetches the next page.
 export function useSearch(options: {
+  client: SearchClient;
   query: string;
   type: SearchEntryType | null;
   enabled: boolean;
 }) {
-  const { query, type, enabled } = options;
+  const { client, query, type, enabled } = options;
   const [state, setState] = useState<State>({
     groups: [],
     loading: false,
@@ -53,7 +54,7 @@ export function useSearch(options: {
       ? { q: query, type, limit: PAGE_SIZE, offset }
       : { q: query };
     // Already known: show it at once, with no wait and no request.
-    const known = searchClient.peek(request);
+    const known = client.peek(request);
     if (known) {
       setState(previous => ({
         groups: mergeAnswer(
@@ -72,7 +73,7 @@ export function useSearch(options: {
     setState(previous => ({ ...previous, loading: true, failed: false }));
     const wait = query.trim() && offset === 0 ? DEBOUNCE_MS : 0;
     const timer = setTimeout(() => {
-      searchClient
+      client
         .search(request, controller.signal)
         .then(answer => {
           setState(previous => ({
@@ -96,7 +97,7 @@ export function useSearch(options: {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [enabled, query, type, offset, questionKey]);
+  }, [client, enabled, query, type, offset, questionKey]);
 
   const shown = type
     ? state.groups.filter(group => group.type === type)

@@ -13,9 +13,10 @@ const config: Config = {
     "./src/web3/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/styles/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/lib/**/*.{js,ts,jsx,tsx,mdx}",
-    // The header shared with the terminal keeps its class names in packages/ui.
+    // The header and search shared with the terminal keep their class names in packages/ui.
     "../../packages/ui/src/kit/app-header.tsx",
     "../../packages/ui/src/kit/user-avatar.tsx",
+    "../../packages/ui/src/kit/search-palette.tsx",
   ],
   // packages/ui is not scanned, so a class only it uses is never generated. The Avatar's
   // fallback and image need size-full: without it the fallback shrinks to its letter.

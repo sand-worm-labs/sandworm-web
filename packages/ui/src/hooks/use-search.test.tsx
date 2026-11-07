@@ -1,8 +1,16 @@
+// @vitest-environment jsdom
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { SearchGroup, SearchResponse } from "./types";
-import { searchClient, useSearch } from "./useSearch";
+import { SearchClient } from "@sandworm/ui/kit/lib/search-client";
+import type {
+  SearchGroup,
+  SearchResponse,
+} from "@sandworm/ui/kit/lib/search-types";
+
+import { useSearch } from "./use-search";
+
+const searchClient = new SearchClient(() => "http://api/api");
 
 const hit = (id: string) => ({
   type: "protocol" as const,
@@ -44,7 +52,8 @@ describe("useSearch", () => {
       .spyOn(searchClient, "search")
       .mockResolvedValue(response([group(["a"])]));
     const { rerender } = renderHook(
-      ({ query }) => useSearch({ query, type: null, enabled: true }),
+      ({ query }) =>
+        useSearch({ client: searchClient, query, type: null, enabled: true }),
       { initialProps: { query: "u" } }
     );
     rerender({ query: "un" });
@@ -61,7 +70,9 @@ describe("useSearch", () => {
     const search = vi
       .spyOn(searchClient, "search")
       .mockResolvedValue(response([]));
-    renderHook(() => useSearch({ query: "", type: null, enabled: true }));
+    renderHook(() =>
+      useSearch({ client: searchClient, query: "", type: null, enabled: true })
+    );
     await act(async () => {
       await vi.advanceTimersByTimeAsync(0);
     });
@@ -74,7 +85,8 @@ describe("useSearch", () => {
       .mockResolvedValueOnce(response([group(["first"])]))
       .mockReturnValueOnce(second.promise);
     const { result, rerender } = renderHook(
-      ({ query }) => useSearch({ query, type: null, enabled: true }),
+      ({ query }) =>
+        useSearch({ client: searchClient, query, type: null, enabled: true }),
       { initialProps: { query: "" } }
     );
     await act(async () => {
@@ -108,7 +120,8 @@ describe("useSearch", () => {
     search.mockResolvedValueOnce(response([group(["new"])]));
 
     const { result, rerender } = renderHook(
-      ({ query }) => useSearch({ query, type: null, enabled: true }),
+      ({ query }) =>
+        useSearch({ client: searchClient, query, type: null, enabled: true }),
       { initialProps: { query: "a" } }
     );
     await act(async () => {
@@ -127,7 +140,12 @@ describe("useSearch", () => {
       .mockResolvedValueOnce(response([group(["a", "b"], 3)]))
       .mockResolvedValueOnce(response([group(["c"], 3)]));
     const { result } = renderHook(() =>
-      useSearch({ query: "", type: "protocol", enabled: true })
+      useSearch({
+        client: searchClient,
+        query: "",
+        type: "protocol",
+        enabled: true,
+      })
     );
     await act(async () => {
       await vi.advanceTimersByTimeAsync(0);
@@ -165,7 +183,13 @@ describe("useSearch", () => {
       .mockResolvedValueOnce(response([group(["c", "d"], 5)]))
       .mockResolvedValue(response([group(["x"], 1)]));
     const { result, rerender } = renderHook(
-      ({ query }) => useSearch({ query, type: "protocol", enabled: true }),
+      ({ query }) =>
+        useSearch({
+          client: searchClient,
+          query,
+          type: "protocol",
+          enabled: true,
+        }),
       { initialProps: { query: "" } }
     );
     await act(async () => {
@@ -194,7 +218,7 @@ describe("useSearch", () => {
       .spyOn(searchClient, "search")
       .mockRejectedValue(new Error("down"));
     const { result } = renderHook(() =>
-      useSearch({ query: "x", type: null, enabled: true })
+      useSearch({ client: searchClient, query: "x", type: null, enabled: true })
     );
     await act(async () => {
       await vi.advanceTimersByTimeAsync(150);
@@ -202,7 +226,14 @@ describe("useSearch", () => {
     expect(result.current.failed).toBe(true);
 
     search.mockClear();
-    renderHook(() => useSearch({ query: "x", type: null, enabled: false }));
+    renderHook(() =>
+      useSearch({
+        client: searchClient,
+        query: "x",
+        type: null,
+        enabled: false,
+      })
+    );
     await act(async () => {
       await vi.advanceTimersByTimeAsync(500);
     });

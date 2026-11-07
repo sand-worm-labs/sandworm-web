@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { SearchClient, SearchError } from "./searchClient";
-import type { SearchResponse } from "./types";
+import { SearchClient, SearchError } from "./search-client";
+import type { SearchResponse } from "./search-types";
 
 const answer = (query: string): SearchResponse => ({
   query,
