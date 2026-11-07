@@ -46,7 +46,7 @@
     "postcss": "^8.5.23",
     "prettier": "^3.3.3",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.6"
+    "vitest": "^3.2.7"
   },
   "packageManager": "pnpm@10.17.0"
 }
