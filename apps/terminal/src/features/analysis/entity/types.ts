@@ -28,43 +28,6 @@ export type EntityInsight = {
   action: { label: string; route: RouteId };
 };
 
-export type BarTone = "primary" | "navy" | "slate" | "muted" | "positive";
-
-export type BarRow = {
-  id: string;
-  label: string;
-  share: number;
-  valueLabel: string;
-  tone: BarTone;
-  isHighlighted?: boolean;
-};
-
-export type ColumnBar = {
-  id: string;
-  label: string;
-  value: number;
-  valueLabel: string;
-};
-
-export type LineTone = "primary" | "navy" | "sky" | "positive";
-
-export type LineSeries = {
-  id: string;
-  label: string;
-  values: readonly number[];
-  tone: LineTone;
-  isDashed?: boolean;
-  isHighlighted?: boolean;
-};
-
-export type YAxis = {
-  min: number;
-  max: number;
-  ticks: readonly number[];
-  decimals: number;
-  suffix: string;
-};
-
 export type TableCell =
   | { _tag: "text"; text: string; isStrong?: boolean }
   | { _tag: "badge"; text: string; tone: Tone | "brand" }
@@ -97,26 +60,6 @@ export type OpportunityLink = {
 type BlockBase = { id: string; title: string };
 
 export type EntityBlock =
-  | (BlockBase & {
-      _tag: "columnChart";
-      subtitle: string;
-      bars: readonly ColumnBar[];
-    })
-  | (BlockBase & {
-      _tag: "barList";
-      subtitle: string;
-      rows: readonly BarRow[];
-      labelWidth: number;
-      valueWidth: number;
-    })
-  | (BlockBase & {
-      _tag: "lineChart";
-      subtitle: string;
-      xLabels: readonly string[];
-      series: readonly LineSeries[];
-      yAxis: YAxis;
-      summary: string;
-    })
   | (BlockBase & {
       _tag: "dataTable";
       subtitle: string;

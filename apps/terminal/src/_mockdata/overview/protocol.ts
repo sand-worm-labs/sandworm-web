@@ -1,13 +1,6 @@
 import type { OverviewData } from "@/features/overview/types";
 
-import {
-  briefingEntry,
-  destination,
-  gapEntry,
-  kpi,
-  opportunityEntry,
-  segment,
-} from "./builders";
+import { briefingEntry, gapEntry, kpi, opportunityEntry } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
@@ -49,28 +42,24 @@ export const protocolOverview: OverviewData = {
         value: "$28.4B",
         delta: "▲ 2%",
         tone: "positive",
-        series: [10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12],
       }),
       kpi({
         label: "Fees, 30 days",
         value: "$62M",
         delta: "▲ 5%",
         tone: "positive",
-        series: [9, 9, 10, 10, 10, 11, 10, 11, 11, 12, 12],
       }),
       kpi({
         label: "Revenue, 30 days",
         value: "$9.1M",
         delta: "▲ 4%",
         tone: "positive",
-        series: [9, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12],
       }),
       kpi({
         label: "Active users",
         value: "98,600",
         delta: "▼ 1%",
         tone: "negative",
-        series: [11, 11, 11, 11, 10, 11, 10, 10, 10, 10, 10],
       }),
     ],
     briefing: [
@@ -166,28 +155,6 @@ export const protocolOverview: OverviewData = {
         confidence: "High",
       }),
     ],
-    concentration: {
-      title: "Who carries your deposits",
-      summary: "20 wallets hold 31% of deposits. Two of them left this month.",
-      segments: [
-        segment("Top 20 wallets", "20", 31),
-        segment("Next 2,000 wallets", "2,000", 44),
-        segment("Everyone else", "96,580", 25),
-      ],
-    },
-    destinations: {
-      title: "Where withdrawn funds go",
-      summary:
-        "Funds that left Aave this month, by where they were deposited next:",
-      tone: "navy",
-      rows: [
-        destination("Morpho", 34, "34%"),
-        destination("Spark", 22, "22%"),
-        destination("Compound", 12, "12%"),
-        destination("Fluid", 9, "9%"),
-        destination("Others", 23, "23%"),
-      ],
-    },
     gaps: {
       subtitle: "Things your users do somewhere else.",
       items: [

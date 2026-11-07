@@ -7,12 +7,9 @@ import {
   kpi,
   opportunityLink,
   reportLink,
-  scaledBarRow,
   tableRow,
   text,
 } from "./builders";
-
-const FEE_SCALE = 2.4;
 
 export const cashOutPage: EntityPage = {
   slug: "cash-out-and-off-ramps",
@@ -49,36 +46,6 @@ export const cashOutPage: EntityPage = {
     action: { label: "See 2 opportunities", route: "opportunities" },
   },
   rows: [
-    {
-      id: "fees-by-country",
-      split: "full",
-      blocks: [
-        {
-          _tag: "barList",
-          id: "fees",
-          title: "Average fee to cash out stablecoins, by country",
-          subtitle: "October. Argentina costs 2.4× Nigeria.",
-          labelWidth: 100,
-          valueWidth: 96,
-          rows: [
-            scaledBarRow("Argentina", 2.2, FEE_SCALE, "2.2%", "primary", true),
-            scaledBarRow("Türkiye", 1.9, FEE_SCALE, "1.9%", "slate"),
-            scaledBarRow("Philippines", 1.6, FEE_SCALE, "1.6%", "slate"),
-            scaledBarRow("Brazil", 1.4, FEE_SCALE, "1.4%", "slate"),
-            scaledBarRow("Ghana", 1.3, FEE_SCALE, "1.3%", "slate"),
-            scaledBarRow("Kenya", 1.1, FEE_SCALE, "1.1%", "slate"),
-            scaledBarRow("Mexico", 1.1, FEE_SCALE, "1.1%", "slate"),
-            scaledBarRow(
-              "Nigeria",
-              0.9,
-              FEE_SCALE,
-              "0.9% · lowest",
-              "positive"
-            ),
-          ],
-        },
-      ],
-    },
     {
       id: "ramps",
       split: "full",

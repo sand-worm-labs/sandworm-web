@@ -1,4 +1,4 @@
-import type { OrganisationTypeId } from "@/features/setup/options/organisation-types";
+import type { MockClientId } from "@/_mockdata/clients";
 import type { Session } from "@/features/session/types";
 
 type ClientSeed = { clientName: string; userName: string };
@@ -13,7 +13,7 @@ function buildSession(seed: ClientSeed): Session {
   };
 }
 
-export const sessionMockData: Record<OrganisationTypeId, Session> = {
+export const sessionMockData: Record<MockClientId, Session> = {
   exchange: buildSession({ clientName: "Acme", userName: "Alex Morgan" }),
   protocol: buildSession({ clientName: "Aave", userName: "Lena Ortiz" }),
   chain: buildSession({ clientName: "Base", userName: "Ama Mensah" }),
@@ -23,4 +23,8 @@ export const sessionMockData: Record<OrganisationTypeId, Session> = {
     userName: "Sam Okafor",
   }),
   other: buildSession({ clientName: "Northwind", userName: "Alex Morgan" }),
+  paycrest: buildSession({
+    clientName: "Paycrest",
+    userName: "Paycrest team",
+  }),
 };

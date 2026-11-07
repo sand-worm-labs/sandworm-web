@@ -1,13 +1,6 @@
 import type { OverviewData } from "@/features/overview/types";
 
-import {
-  briefingEntry,
-  destination,
-  gapEntry,
-  kpi,
-  opportunityEntry,
-  segment,
-} from "./builders";
+import { briefingEntry, gapEntry, kpi, opportunityEntry } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
@@ -50,28 +43,24 @@ export const exchangeOverview: OverviewData = {
         value: "$1.84B",
         delta: "▼ 9%",
         tone: "negative",
-        series: [10, 11, 11, 12, 12, 11, 12, 11, 10, 10, 9],
       }),
       kpi({
         label: "Active wallets",
         value: "312,400",
         delta: "▲ 4%",
         tone: "positive",
-        series: [8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11],
       }),
       kpi({
         label: "New wallets",
         value: "21,900",
         delta: "▼ 12%",
         tone: "negative",
-        series: [12, 12, 11, 12, 11, 10, 10, 9, 9, 9, 8],
       }),
       kpi({
         label: "Still trading after 90 days",
         value: "34%",
         delta: "▼ 3 pts",
         tone: "negative",
-        series: [11, 11, 10, 11, 10, 10, 10, 9, 9, 9, 9],
       }),
     ],
     briefing: [
@@ -166,29 +155,6 @@ export const exchangeOverview: OverviewData = {
         confidence: "Medium",
       }),
     ],
-    concentration: {
-      title: "Who carries your volume",
-      summary:
-        "50 wallets make 38% of swap volume. If a few slow down, volume drops fast.",
-      segments: [
-        segment("Top 50 wallets", "50", 38),
-        segment("Next 5,000 wallets", "5,000", 41),
-        segment("Everyone else", "307,350", 21),
-      ],
-    },
-    destinations: {
-      title: "Where users go when they leave",
-      summary:
-        "9,840 wallets stopped using Acme Wallet this month. The wallet app they used next:",
-      tone: "navy",
-      rows: [
-        destination("Coinbase Wallet", 31, "31%"),
-        destination("MetaMask", 22, "22%"),
-        destination("Phantom", 17, "17%"),
-        destination("Uniswap Wallet", 9, "9%"),
-        destination("Others", 21, "21%"),
-      ],
-    },
     gaps: {
       subtitle: "Things your users do somewhere else.",
       items: [

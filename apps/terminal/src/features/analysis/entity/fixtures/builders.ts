@@ -2,11 +2,7 @@ import type { Tone } from "@sandworm/ui/kit/tone";
 
 import { toId } from "@/lib/slug";
 
-import { barShare } from "../chart-math";
 import type {
-  BarRow,
-  BarTone,
-  ColumnBar,
   EntityKpi,
   OpportunityLink,
   ReportLink,
@@ -48,35 +44,6 @@ export const entity = (name: string): TableCell => ({ _tag: "entity", name });
 
 export function tableRow(cells: TableCell[], idSource: string): TableRow {
   return { id: toId(idSource), cells };
-}
-
-export function barRow(
-  label: string,
-  share: number,
-  valueLabel: string,
-  tone: BarTone,
-  isHighlighted = false
-): BarRow {
-  return { id: toId(label), label, share, valueLabel, tone, isHighlighted };
-}
-
-export function scaledBarRow(
-  label: string,
-  value: number,
-  max: number,
-  valueLabel: string,
-  tone: BarTone,
-  isHighlighted = false
-): BarRow {
-  return barRow(label, barShare(value, max), valueLabel, tone, isHighlighted);
-}
-
-export function columnBar(
-  label: string,
-  value: number,
-  valueLabel: string
-): ColumnBar {
-  return { id: toId(label), label, value, valueLabel };
 }
 
 export function reportLink(init: Omit<ReportLink, "id">): ReportLink {

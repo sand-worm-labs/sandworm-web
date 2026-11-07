@@ -1,13 +1,6 @@
 import type { OverviewData } from "@/features/overview/types";
 
-import {
-  briefingEntry,
-  destination,
-  gapEntry,
-  kpi,
-  opportunityEntry,
-  segment,
-} from "./builders";
+import { briefingEntry, gapEntry, kpi, opportunityEntry } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
@@ -49,28 +42,24 @@ export const vcOverview: OverviewData = {
         value: "2.1M",
         delta: "▲ 6%",
         tone: "positive",
-        series: [9, 9, 10, 10, 10, 11, 11, 11, 12, 12, 12],
       }),
       kpi({
         label: "Portfolio fees, 30 days",
         value: "$18.4M",
         delta: "▲ 12%",
         tone: "positive",
-        series: [8, 8, 9, 9, 10, 10, 11, 11, 11, 12, 12],
       }),
       kpi({
         label: "Projects growing",
         value: "17 of 28",
         delta: "▲ 2",
         tone: "positive",
-        series: [9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11],
       }),
       kpi({
         label: "Red flags",
         value: "3",
         delta: "▲ 2 new",
         tone: "negative",
-        series: [8, 8, 8, 8, 9, 9, 9, 9, 10, 11, 12],
       }),
     ],
     briefing: [
@@ -164,27 +153,6 @@ export const vcOverview: OverviewData = {
         confidence: "High",
       }),
     ],
-    concentration: {
-      title: "Which holdings carry the portfolio",
-      summary: "4 of 28 projects have 71% of your portfolio's users.",
-      segments: [
-        segment("Top 4 projects", "4", 71),
-        segment("Next 9 projects", "9", 22),
-        segment("Other 15 projects", "15", 7),
-      ],
-    },
-    destinations: {
-      title: "Competitors gaining on your holdings",
-      summary: "Change in market share over the last 90 days:",
-      tone: "loss",
-      rows: [
-        destination("Lumen DEX vs Aerodrome", 100, "−4 pts"),
-        destination("Orbit Wallet vs Phantom", 75, "−3 pts"),
-        destination("Tidal Lend vs Morpho", 50, "−2 pts"),
-        destination("Arc Bridge vs Relay", 50, "−2 pts"),
-        destination("Quill vs Zora", 25, "−1 pt"),
-      ],
-    },
     gaps: {
       subtitle: "Sectors growing fast where you hold nothing.",
       items: [

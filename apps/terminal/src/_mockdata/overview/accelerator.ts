@@ -1,13 +1,6 @@
 import type { OverviewData } from "@/features/overview/types";
 
-import {
-  briefingEntry,
-  destination,
-  gapEntry,
-  kpi,
-  opportunityEntry,
-  segment,
-} from "./builders";
+import { briefingEntry, gapEntry, kpi, opportunityEntry } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
@@ -50,21 +43,18 @@ export const acceleratorOverview: OverviewData = {
         value: "41",
         delta: "▲ 6",
         tone: "positive",
-        series: [7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12],
       }),
       kpi({
         label: "Combined users",
         value: "486,000",
         delta: "▲ 14%",
         tone: "positive",
-        series: [7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12],
       }),
       kpi({
         label: "Median weekly growth",
         value: "6%",
         delta: "▲ 1 pt",
         tone: "positive",
-        series: [9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11],
       }),
       kpi({
         label: "Breakouts",
@@ -72,7 +62,6 @@ export const acceleratorOverview: OverviewData = {
         delta: "growing 20%+ a week",
         tone: "neutral",
         comparison: "",
-        series: [8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11],
       }),
     ],
     briefing: [
@@ -166,27 +155,6 @@ export const acceleratorOverview: OverviewData = {
         confidence: "High",
       }),
     ],
-    concentration: {
-      title: "Which companies drive the batch",
-      summary: "3 of 41 companies have 64% of the batches' users.",
-      segments: [
-        segment("Top 3 companies", "3", 64),
-        segment("Next 10 companies", "10", 27),
-        segment("Other 28 companies", "28", 9),
-      ],
-    },
-    destinations: {
-      title: "Your batches against others",
-      summary: "Median weekly user growth in the first 10 weeks after launch:",
-      tone: "brand",
-      rows: [
-        destination("S26", 100, "6.0%"),
-        destination("F26", 90, "5.4%"),
-        destination("S25", 68, "4.1%"),
-        destination("F25", 58, "3.5%"),
-        destination("Other accelerators", 47, "2.8%"),
-      ],
-    },
     gaps: {
       subtitle: "Sectors with traction and no company in your batches.",
       items: [

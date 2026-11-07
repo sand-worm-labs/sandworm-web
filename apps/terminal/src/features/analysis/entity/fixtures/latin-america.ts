@@ -42,56 +42,6 @@ export const latinAmericaPage: EntityPage = {
   },
   rows: [
     {
-      id: "fees-over-time",
-      split: "full",
-      blocks: [
-        {
-          _tag: "lineChart",
-          id: "fees",
-          title: "Average fee to cash out stablecoins",
-          subtitle: "By country, May to October. Nigeria shown for comparison.",
-          xLabels: ["May", "Jun", "Jul", "Aug", "Sep", "Oct"],
-          yAxis: {
-            min: 0.5,
-            max: 2.5,
-            ticks: [0.5, 1, 1.5, 2, 2.5],
-            decimals: 1,
-            suffix: "%",
-          },
-          series: [
-            {
-              id: "argentina",
-              label: "Argentina 2.2%",
-              values: [2.1, 2.3, 2.2, 2.4, 2.3, 2.2],
-              tone: "primary",
-              isHighlighted: true,
-            },
-            {
-              id: "brazil",
-              label: "Brazil 1.4%",
-              values: [1.6, 1.5, 1.5, 1.4, 1.4, 1.4],
-              tone: "navy",
-            },
-            {
-              id: "mexico",
-              label: "Mexico 1.1%",
-              values: [1.3, 1.2, 1.2, 1.1, 1.1, 1.1],
-              tone: "sky",
-            },
-            {
-              id: "nigeria",
-              label: "Nigeria 0.9%",
-              values: [0.9, 0.9, 0.9, 0.9, 0.9, 0.9],
-              tone: "positive",
-              isDashed: true,
-            },
-          ],
-          summary:
-            "Average fee to cash out in October: Argentina 2.2%, Brazil 1.4%, Mexico 1.1%, Nigeria 0.9%. Argentina has stayed above 2% since May.",
-        },
-      ],
-    },
-    {
       id: "countries",
       split: "full",
       blocks: [

@@ -6,7 +6,7 @@ import type {
   Opportunity,
   OpportunityStatus,
 } from "@/features/opportunities/types";
-import type { OrganisationTypeId } from "@/features/setup/options/organisation-types";
+import type { MockClientId } from "@/_mockdata/clients";
 
 export const OVERVIEW_STATUSES = ["ready", "settingUp", "calculating"] as const;
 
@@ -38,7 +38,6 @@ export type Kpi = {
   delta: string;
   tone: Tone;
   comparison: string;
-  series: readonly number[];
 };
 
 export type KpisBlock = BlockBase & {
@@ -74,33 +73,6 @@ export type OpportunitiesBlock = BlockBase & {
   items: readonly OpportunityEntry[];
 };
 
-export type ConcentrationSegment = {
-  id: string;
-  label: string;
-  count: string;
-  share: number;
-};
-
-export type ConcentrationBlock = BlockBase & {
-  _tag: "concentration";
-  summary: string;
-  segments: readonly ConcentrationSegment[];
-};
-
-export type DestinationRow = {
-  id: string;
-  name: string;
-  share: number;
-  label: string;
-};
-
-export type DestinationsBlock = BlockBase & {
-  _tag: "destinations";
-  summary: string;
-  tone: "navy" | "loss" | "brand";
-  rows: readonly DestinationRow[];
-};
-
 export type GapEntry = {
   id: string;
   title: string;
@@ -121,8 +93,6 @@ export type OverviewBlock =
   | KpisBlock
   | BriefingBlock
   | OpportunitiesBlock
-  | ConcentrationBlock
-  | DestinationsBlock
   | GapsBlock;
 
 export type BlockTag = OverviewBlock["_tag"];
@@ -153,7 +123,7 @@ export type SetupProgress = {
 };
 
 export type OverviewData = {
-  clientKind: OrganisationTypeId;
+  clientKind: MockClientId;
   typeName: string;
   subtitle: string;
   loadingNote: string;

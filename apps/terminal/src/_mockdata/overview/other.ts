@@ -1,13 +1,6 @@
 import type { OverviewData } from "@/features/overview/types";
 
-import {
-  briefingEntry,
-  destination,
-  gapEntry,
-  kpi,
-  opportunityEntry,
-  segment,
-} from "./builders";
+import { briefingEntry, gapEntry, kpi, opportunityEntry } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
@@ -47,28 +40,24 @@ export const otherOverview: OverviewData = {
         value: "58,400",
         delta: "▲ 5%",
         tone: "positive",
-        series: [8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11],
       }),
       kpi({
         label: "New users",
         value: "6,900",
         delta: "▼ 3%",
         tone: "negative",
-        series: [11, 11, 10, 10, 10, 9, 9, 9, 9, 8, 8],
       }),
       kpi({
         label: "Transactions",
         value: "412,000",
         delta: "▲ 8%",
         tone: "positive",
-        series: [7, 8, 8, 9, 9, 9, 10, 10, 11, 11, 12],
       }),
       kpi({
         label: "Still active after 90 days",
         value: "29%",
         delta: "▲ 1 pt",
         tone: "positive",
-        series: [9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11],
       }),
     ],
     briefing: [
@@ -162,27 +151,6 @@ export const otherOverview: OverviewData = {
         confidence: "High",
       }),
     ],
-    concentration: {
-      title: "Who carries your activity",
-      summary: "2% of wallets make 41% of your transactions.",
-      segments: [
-        segment("Top 2% of wallets", "1,170", 41),
-        segment("Next 18% of wallets", "10,500", 38),
-        segment("Other 80% of wallets", "46,700", 21),
-      ],
-    },
-    destinations: {
-      title: "Where users go next",
-      summary: "Where your lapsed wallets moved to last month:",
-      tone: "brand",
-      rows: [
-        destination("App A", 100, "21%"),
-        destination("App B", 78, "17%"),
-        destination("App C", 52, "11%"),
-        destination("App D", 35, "7%"),
-        destination("Other apps", 90, "19%"),
-      ],
-    },
     gaps: {
       subtitle: "Things your users do somewhere else.",
       items: [

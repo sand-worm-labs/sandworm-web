@@ -2,9 +2,6 @@ import clsx from "clsx";
 import { Card } from "@sandworm/ui/kit/card";
 import { TONE_TEXT_CLASSNAME } from "@sandworm/ui/kit/tone";
 
-import { Sparkline } from "@/components/Sparkline";
-
-import { SPARKLINE_CLASSNAME } from "../tone";
 import type { KpisBlock } from "../types";
 
 export function KpisCard({ block }: { block: KpisBlock }) {
@@ -32,10 +29,6 @@ export function KpisCard({ block }: { block: KpisBlock }) {
               <span className="text-ink-400"> {item.comparison}</span>
             )}
           </span>
-          <Sparkline
-            series={item.series}
-            className={clsx("mt-1.5", SPARKLINE_CLASSNAME[item.tone])}
-          />
         </div>
       ))}
     </Card>

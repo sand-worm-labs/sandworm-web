@@ -1,4 +1,4 @@
-import type { OrganisationTypeId } from "@/features/setup/options/organisation-types";
+import type { MockClientId } from "@/_mockdata/clients";
 
 import type { EntityKind, EntityPage } from "../types";
 
@@ -12,15 +12,15 @@ const exchangePages: readonly EntityPage[] = [
   cashOutPage,
 ];
 
-export const entityFixtures: Record<OrganisationTypeId, readonly EntityPage[]> =
-  {
-    exchange: exchangePages,
-    protocol: [],
-    chain: [],
-    vc: [],
-    accelerator: [],
-    other: [],
-  };
+export const entityFixtures: Record<MockClientId, readonly EntityPage[]> = {
+  exchange: exchangePages,
+  protocol: [],
+  chain: [],
+  vc: [],
+  accelerator: [],
+  other: [],
+  paycrest: exchangePages,
+};
 
 export function findEntityPage(
   pages: readonly EntityPage[],

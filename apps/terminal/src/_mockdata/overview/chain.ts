@@ -1,13 +1,6 @@
 import type { OverviewData } from "@/features/overview/types";
 
-import {
-  briefingEntry,
-  destination,
-  gapEntry,
-  kpi,
-  opportunityEntry,
-  segment,
-} from "./builders";
+import { briefingEntry, gapEntry, kpi, opportunityEntry } from "./builders";
 import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
@@ -49,28 +42,24 @@ export const chainOverview: OverviewData = {
         value: "1.42M",
         delta: "▲ 7%",
         tone: "positive",
-        series: [8, 9, 9, 9, 10, 10, 10, 11, 11, 12, 12],
       }),
       kpi({
         label: "Fees, 30 days",
         value: "$4.1M",
         delta: "▲ 9%",
         tone: "positive",
-        series: [8, 8, 9, 9, 10, 10, 10, 11, 11, 11, 12],
       }),
       kpi({
         label: "Stablecoin supply",
         value: "$4.6B",
         delta: "▲ 11%",
         tone: "positive",
-        series: [7, 8, 8, 9, 9, 10, 10, 10, 11, 11, 12],
       }),
       kpi({
         label: "Active developers",
         value: "2,310",
         delta: "▲ 3%",
         tone: "positive",
-        series: [10, 10, 10, 10, 11, 11, 11, 11, 11, 12, 12],
       }),
     ],
     briefing: [
@@ -164,27 +153,6 @@ export const chainOverview: OverviewData = {
         confidence: "Medium",
       }),
     ],
-    concentration: {
-      title: "Who carries your activity",
-      summary: "10 apps make 58% of transactions on Base.",
-      segments: [
-        segment("Top 10 apps", "10", 58),
-        segment("Next 90 apps", "90", 27),
-        segment("Every other app", "4,800", 15),
-      ],
-    },
-    destinations: {
-      title: "Where users bridge out to",
-      summary: "Value bridged out of Base this month, by destination:",
-      tone: "navy",
-      rows: [
-        destination("Arbitrum", 29, "29%"),
-        destination("Solana", 24, "24%"),
-        destination("Ethereum", 21, "21%"),
-        destination("Optimism", 11, "11%"),
-        destination("Others", 15, "15%"),
-      ],
-    },
     gaps: {
       subtitle: "Things your users do on other chains.",
       items: [

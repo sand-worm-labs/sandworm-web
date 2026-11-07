@@ -16,10 +16,6 @@ export function OverviewCalculating({
   clientName,
 }: OverviewCalculatingProps) {
   const kpis = findBlock(data.blocks, "kpis");
-  const panels = [
-    findBlock(data.blocks, "concentration"),
-    findBlock(data.blocks, "destinations"),
-  ].flatMap(block => (block ? [block] : []));
 
   return (
     <div className="flex flex-col gap-6">
@@ -31,11 +27,6 @@ export function OverviewCalculating({
       <CalculatingStatus clientName={clientName} note={data.loadingNote} />
       {kpis && <KpisSkeleton block={kpis} />}
       <BriefingSkeleton />
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        {panels.map(panel => (
-          <PanelSkeleton key={panel.id} id={panel.id} title={panel.title} />
-        ))}
-      </div>
     </div>
   );
 }
@@ -81,7 +72,6 @@ function KpisSkeleton({ block }: { block: KpisBlock }) {
           <span className="text-[13px] text-ink-400">{item.label}</span>
           <Skeleton className="mt-1 h-7 w-[62%] rounded-lg" />
           <Skeleton className="mt-1.5 h-3 w-[40%]" />
-          <Skeleton className="mt-2 h-7 w-full rounded-lg" />
         </div>
       ))}
     </Card>
@@ -114,23 +104,6 @@ function BriefingSkeleton() {
           <Skeleton className="h-3" />
         </div>
       ))}
-    </Card>
-  );
-}
-
-function PanelSkeleton({ id, title }: { id: string; title: string }) {
-  const titleId = `${id}-loading-title`;
-
-  return (
-    <Card
-      aria-labelledby={titleId}
-      className="flex flex-col gap-3.5 px-6 py-[22px]"
-    >
-      <BlockHeader id={titleId} title={title} />
-      <Skeleton className="h-7 rounded-lg" />
-      <Skeleton className="h-3 w-[80%]" />
-      <Skeleton className="h-3 w-[65%]" />
-      <Skeleton className="h-3 w-[72%]" />
     </Card>
   );
 }

@@ -1,8 +1,8 @@
+import type { MockClientId } from "@/_mockdata/clients";
 import { analysisMockData } from "@/_mockdata/analysis";
 import { overviewMockData } from "@/_mockdata/overview";
 import { sessionMockData } from "@/_mockdata/session";
 import { findBlock } from "@/features/overview/types";
-import type { OrganisationTypeId } from "@/features/setup/options/organisation-types";
 import type { WelcomeContent } from "@/features/welcome/types";
 
 const exchangeContent: WelcomeContent = {
@@ -14,7 +14,7 @@ const exchangeContent: WelcomeContent = {
     "Tracking Acme Wallet and Acme Chain, 4 competitors and 3 regions.",
 };
 
-function contentFromOverview(kind: OrganisationTypeId): WelcomeContent {
+function contentFromOverview(kind: MockClientId): WelcomeContent {
   const overview = overviewMockData[kind];
   const briefing = findBlock(overview.blocks, "briefing");
   const topOpportunity = findBlock(overview.blocks, "opportunities")?.items[0];
@@ -29,11 +29,19 @@ function contentFromOverview(kind: OrganisationTypeId): WelcomeContent {
   };
 }
 
-export const welcomeMockData: Record<OrganisationTypeId, WelcomeContent> = {
+export const welcomeMockData: Record<MockClientId, WelcomeContent> = {
   exchange: exchangeContent,
   protocol: contentFromOverview("protocol"),
   chain: contentFromOverview("chain"),
   vc: contentFromOverview("vc"),
   accelerator: contentFromOverview("accelerator"),
   other: contentFromOverview("other"),
+  paycrest: {
+    firstBriefingCount: 6,
+    briefingHighlight:
+      "Including Lemon Cash's $16M a week in stablecoin payouts",
+    readyReports: 5,
+    trackingSummary:
+      "Tracking Paycrest's gateways on 8 chains, plus Lemon Cash, Nexo, El Dorado, P2P.me, Resolva and PAJ Cash.",
+  },
 };

@@ -1,15 +1,6 @@
 import type { EntityPage } from "../types";
 
-import {
-  badge,
-  barRow,
-  change,
-  columnBar,
-  kpi,
-  reportLink,
-  tableRow,
-  text,
-} from "./builders";
+import { badge, change, kpi, reportLink, tableRow, text } from "./builders";
 
 export const paycrestPage: EntityPage = {
   slug: "paycrest",
@@ -45,40 +36,6 @@ export const paycrestPage: EntityPage = {
     action: { label: "See the opportunity", route: "opportunity" },
   },
   rows: [
-    {
-      id: "volume-and-destinations",
-      split: "wide-narrow",
-      blocks: [
-        {
-          _tag: "columnChart",
-          id: "volume",
-          title: "Monthly payout volume",
-          subtitle: "Up 75% since May",
-          bars: [
-            columnBar("May", 22.1, "$22.1M"),
-            columnBar("Jun", 25.4, "$25.4M"),
-            columnBar("Jul", 28, "$28.0M"),
-            columnBar("Aug", 31.2, "$31.2M"),
-            columnBar("Sep", 33.9, "$33.9M"),
-            columnBar("Oct", 38.6, "$38.6M"),
-          ],
-        },
-        {
-          _tag: "barList",
-          id: "destinations",
-          title: "Where your users send money",
-          subtitle: "Share of the $5.1M your users sent in October",
-          labelWidth: 76,
-          valueWidth: 44,
-          rows: [
-            barRow("Nigeria", 58, "58%", "navy", true),
-            barRow("Kenya", 24, "24%", "navy"),
-            barRow("Ghana", 12, "12%", "navy"),
-            barRow("Others", 6, "6%", "muted"),
-          ],
-        },
-      ],
-    },
     {
       id: "routes",
       split: "full",

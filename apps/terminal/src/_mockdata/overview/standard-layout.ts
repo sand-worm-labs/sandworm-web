@@ -1,6 +1,4 @@
 import type {
-  ConcentrationBlock,
-  DestinationsBlock,
   GapEntry,
   Kpi,
   BriefingEntry,
@@ -14,8 +12,6 @@ type StandardContent = {
   kpis: readonly Kpi[];
   briefing: readonly BriefingEntry[];
   opportunities: readonly OpportunityEntry[];
-  concentration: Pick<ConcentrationBlock, "title" | "summary" | "segments">;
-  destinations: Pick<DestinationsBlock, "title" | "summary" | "tone" | "rows">;
   gaps: { subtitle: string; items: readonly GapEntry[] };
 };
 
@@ -28,13 +24,6 @@ const STANDARD_ROWS: readonly LayoutRow[] = [
     columns: [{ span: 12, blockIds: ["briefing"] }],
   },
   { id: "opportunities", columns: [{ span: 12, blockIds: ["opportunities"] }] },
-  {
-    id: "signals",
-    columns: [
-      { span: 6, blockIds: ["concentration"] },
-      { span: 6, blockIds: ["destinations"] },
-    ],
-  },
   { id: "gaps", columns: [{ span: 12, blockIds: ["gaps"] }] },
 ];
 
@@ -62,18 +51,6 @@ export function standardLayout(content: StandardContent): Composition {
       subtitle: "Ranked by estimated value",
       isOptional: true,
       items: content.opportunities,
-    },
-    {
-      _tag: "concentration",
-      id: "concentration",
-      isOptional: true,
-      ...content.concentration,
-    },
-    {
-      _tag: "destinations",
-      id: "destinations",
-      isOptional: true,
-      ...content.destinations,
     },
     {
       _tag: "gaps",

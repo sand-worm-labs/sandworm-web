@@ -1,8 +1,6 @@
 import { toId } from "@/lib/slug";
 import type {
   BriefingEntry,
-  ConcentrationSegment,
-  DestinationRow,
   GapEntry,
   Kpi,
   OpportunityEntry,
@@ -30,20 +28,4 @@ export function opportunityEntry(
 
 export function gapEntry(init: Omit<GapEntry, "id">): GapEntry {
   return { ...init, id: toId(init.title) };
-}
-
-export function segment(
-  label: string,
-  count: string,
-  share: number
-): ConcentrationSegment {
-  return { id: toId(label), label, count, share };
-}
-
-export function destination(
-  name: string,
-  share: number,
-  label: string
-): DestinationRow {
-  return { id: toId(name), name, share, label };
 }
