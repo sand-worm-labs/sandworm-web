@@ -197,6 +197,40 @@ export function EditorAwarenessProvider(props: Props) {
     }
   }, [state.cursorBlockId, state.scrollIntoView, props.scrollViewRef]);
 
+  // `?block=<id>` opens the notebook at that cell, e.g. from a terminal
+  // briefing item. Cells render after the document loads, so wait for it.
+  useEffect(() => {
+    const blockId = new URLSearchParams(window.location.search).get("block");
+    if (!blockId) {
+      return undefined;
+    }
+
+    const selector = `[data-block-id="${CSS.escape(blockId)}"]`;
+    const open = () => {
+      if (!document.querySelector(selector)) {
+        return false;
+      }
+      focus(blockId, { scrollIntoView: true });
+      return true;
+    };
+    if (open()) {
+      return undefined;
+    }
+
+    const observer = new MutationObserver(() => {
+      if (open()) {
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    const giveUp = window.setTimeout(() => observer.disconnect(), 15000);
+
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(giveUp);
+    };
+  }, [focus]);
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (!props.scrollViewRef.current) {

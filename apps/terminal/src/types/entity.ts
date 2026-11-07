@@ -4,7 +4,6 @@ import type { EntityKind } from "@/lib/analysis/entity/kinds";
 
 import type { Action } from "./common";
 import type { Kpi } from "./kpi";
-import type { NotebookSource } from "./notebook";
 import type { Signal } from "./signals";
 
 export type { EntityKind };
@@ -37,7 +36,7 @@ export type EntityReportLink = {
 
 export type EntitySignalLink = Pick<
   Signal,
-  "id" | "title" | "status" | "confidence" | "value"
+  "id" | "title" | "status" | "evidence" | "size"
 >;
 
 type BlockBase = { id: string; title: string };
@@ -78,5 +77,4 @@ export type EntityPage = {
   kpis: readonly Kpi[];
   insight: EntityInsight;
   rows: readonly EntityRow[];
-  source?: NotebookSource;
 };

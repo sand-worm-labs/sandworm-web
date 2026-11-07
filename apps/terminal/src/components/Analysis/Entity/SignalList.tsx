@@ -2,6 +2,7 @@ import { Card } from "@sandworm/ui/kit/card";
 import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 
 import { AppLink } from "@/components/AppLink";
+import { EVIDENCE_LABELS } from "@/components/Signals/EvidenceMeter";
 import { SignalStatusIcon } from "@/components/Signals/SignalStatusIcon";
 import type { SignalListBlock } from "@/types";
 
@@ -28,11 +29,11 @@ export function SignalList({ block }: { block: SignalListBlock }) {
                 {item.title}
               </span>
               <span className="text-xs text-ink-400">
-                {item.status} · {item.confidence} confidence
+                {item.status} · {EVIDENCE_LABELS[item.evidence]}
               </span>
             </span>
             <span className="whitespace-nowrap text-sm font-medium text-ink-100">
-              {item.value}
+              {item.size}
             </span>
           </AppLink>
         </div>

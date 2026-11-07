@@ -250,6 +250,7 @@ describe('DocumentService', () => {
       const entity = makeDocumentEntity({ parentId: 'old-parent', orderIndex: 0 });
       documentRepository.findOne
         .mockResolvedValueOnce(entity)
+        .mockResolvedValueOnce({ id: 'new-parent', parentId: null })
         .mockResolvedValueOnce(makeDocumentEntity({ parentId: 'new-parent', orderIndex: 2 }));
 
       await service.updateDocument(DOCUMENT_ID, WORKSPACE_ID, {
@@ -265,26 +266,39 @@ describe('DocumentService', () => {
       );
     });
 
-    it('moves a nested document to the top level when parentId is null', async () => {
+    it('moves the document to the top level when parentId is null', async () => {
       const { service, documentRepository, documentTreeService } = makeService();
+      const entity = makeDocumentEntity({ parentId: 'old-parent', orderIndex: 0 });
       documentRepository.findOne
-        .mockResolvedValueOnce(makeDocumentEntity({ parentId: 'old-parent', orderIndex: 1 }))
-        .mockResolvedValueOnce(makeDocumentEntity({ parentId: null, orderIndex: 3 }));
+        .mockResolvedValueOnce(entity)
+        .mockResolvedValueOnce(makeDocumentEntity({ parentId: null, orderIndex: 0 }));
 
-      await service.updateDocument(DOCUMENT_ID, WORKSPACE_ID, { parentId: null, orderIndex: 3 } as any);
+      await service.updateDocument(DOCUMENT_ID, WORKSPACE_ID, { parentId: null, orderIndex: 0 } as any);
 
-      expect(documentTreeService.moveDocument).toHaveBeenCalledWith(DOCUMENT_ID, WORKSPACE_ID, null, 3);
+      expect(documentTreeService.moveDocument).toHaveBeenCalledWith(DOCUMENT_ID, WORKSPACE_ID, null, 0);
     });
 
-    it('keeps the current parent when parentId is left out', async () => {
+    it('refuses to nest a document under one of its own descendants', async () => {
       const { service, documentRepository, documentTreeService } = makeService();
+      const entity = makeDocumentEntity({ parentId: null, orderIndex: 0 });
       documentRepository.findOne
-        .mockResolvedValueOnce(makeDocumentEntity({ parentId: 'p', orderIndex: 0 }))
-        .mockResolvedValueOnce(makeDocumentEntity({ parentId: 'p', orderIndex: 2 }));
+        .mockResolvedValueOnce(entity)
+        .mockResolvedValueOnce({ id: 'child', parentId: DOCUMENT_ID });
 
-      await service.updateDocument(DOCUMENT_ID, WORKSPACE_ID, { orderIndex: 2 } as any);
+      await expect(
+        service.updateDocument(DOCUMENT_ID, WORKSPACE_ID, { parentId: 'child', orderIndex: 0 } as any),
+      ).rejects.toThrow();
+      expect(documentTreeService.moveDocument).not.toHaveBeenCalled();
+    });
 
-      expect(documentTreeService.moveDocument).toHaveBeenCalledWith(DOCUMENT_ID, WORKSPACE_ID, 'p', 2);
+    it('refuses a parent outside the workspace', async () => {
+      const { service, documentRepository, documentTreeService } = makeService();
+      documentRepository.findOne.mockResolvedValueOnce(null);
+
+      await expect(
+        service.createDocument(WORKSPACE_ID, 'user-1', { title: 't', parentId: 'elsewhere', version: 2, orderIndex: 0 } as any),
+      ).rejects.toThrow();
+      expect(documentTreeService.createDocument).not.toHaveBeenCalled();
     });
 
     it('does not move when parentId/orderIndex are unchanged', async () => {

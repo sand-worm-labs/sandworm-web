@@ -21,7 +21,7 @@ function contentFromOverview(kind: ClientKind): WelcomeContent {
   return {
     firstBriefingCount: briefing?.entries.length ?? 0,
     briefingHighlight: topSignal
-      ? `Including ${topSignal.title}: ${topSignal.value} ${topSignal.valueLabel}`
+      ? `Including ${topSignal.title}: ${topSignal.size} ${topSignal.sizeLabel}`
       : "Fresh findings for your first look",
     readyReports: analysisMockData[kind].highlights.length,
     trackingSummary: `Tracking the contracts, competitors and regions you added for ${sessionMockData[kind].client.name}.`,

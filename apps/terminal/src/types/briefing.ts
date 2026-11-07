@@ -2,7 +2,6 @@ import type { Output } from "@sandworm/types";
 import type { Tone } from "@sandworm/ui/kit/tone";
 
 import type { Action } from "./common";
-import type { NotebookSource } from "./notebook";
 
 export type BriefingKind = "Analysis" | "Signal" | "Metric";
 
@@ -30,7 +29,6 @@ export type BriefingItem = {
   when: string;
   isUnread: boolean;
   detail: BriefingDetail;
-  source?: NotebookSource;
   action: Action;
 };
 

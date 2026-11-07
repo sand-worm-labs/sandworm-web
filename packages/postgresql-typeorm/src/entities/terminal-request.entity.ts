@@ -7,6 +7,7 @@ import type {
 } from '@sandworm/types/terminal';
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from 'typeorm';
 import { AbstractEntity } from './abstract.entity';
+import { DocumentEntity } from './document.entity';
 import { TerminalClientEntity } from './terminal-client.entity';
 import { TerminalMemberEntity } from './terminal-member.entity';
 
@@ -71,7 +72,7 @@ export class TerminalRequestEntity extends AbstractEntity {
   @Column({ type: 'text', nullable: true })
   outcome!: string | null;
 
-  // The report it was delivered as (terminal_report, once that table exists)
+  // The report (a document) it was delivered as
   @Column({ name: 'report_id', type: 'uuid', nullable: true })
   reportId!: string | null;
 
@@ -103,4 +104,8 @@ export class TerminalRequestEntity extends AbstractEntity {
   @ManyToOne(() => TerminalMemberEntity, { onDelete: 'SET NULL', nullable: true })
   @JoinColumn({ name: 'approved_by', referencedColumnName: 'id', foreignKeyConstraintName: 'FK_terminal_request_approver' })
   approver!: Relation<TerminalMemberEntity> | null;
+
+  @ManyToOne(() => DocumentEntity, { onDelete: 'SET NULL', nullable: true })
+  @JoinColumn({ name: 'report_id', referencedColumnName: 'id', foreignKeyConstraintName: 'FK_terminal_request_report' })
+  report!: Relation<DocumentEntity> | null;
 }

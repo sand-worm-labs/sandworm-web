@@ -2,7 +2,6 @@ import { buttonClassName } from "@sandworm/ui/kit/button";
 import { Card } from "@sandworm/ui/kit/card";
 
 import { AppLink } from "@/components/AppLink";
-import { SourceNote } from "@/components/SourceNote";
 import type { BriefingItem } from "@/types";
 
 import { BriefingKindTag } from "./BriefingKindTag";
@@ -28,7 +27,6 @@ export function BriefingDetailPanel({
   clientName,
 }: BriefingDetailPanelProps) {
   const { headline, outputs, what, why } = item.detail;
-  const { source } = item;
   const titleId = `briefing-${item.id}-title`;
 
   return (
@@ -55,15 +53,25 @@ export function BriefingDetailPanel({
       {outputs && outputs.length > 0 && (
         <CellOutputs outputs={outputs} title={item.title} />
       )}
-      {source && <SourceNote source={source} />}
       {what && <DetailSection title="What happened" text={what} />}
       {why && (
         <DetailSection title={`Why it matters for ${clientName}`} text={why} />
       )}
       <div className="border-t border-border-secondary pt-4">
-        <AppLink route={item.action.route} className={buttonClassName()}>
-          {item.action.label}
-        </AppLink>
+        {item.action.url ? (
+          <a
+            href={item.action.url}
+            target="_blank"
+            rel="noreferrer"
+            className={buttonClassName()}
+          >
+            {item.action.label}
+          </a>
+        ) : (
+          <AppLink route={item.action.route} className={buttonClassName()}>
+            {item.action.label}
+          </AppLink>
+        )}
       </div>
     </Card>
   );

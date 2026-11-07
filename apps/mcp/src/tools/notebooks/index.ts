@@ -5,7 +5,6 @@ import { registerCellTools } from './cells.ts';
 import { registerCreateNotebookTool } from './create.ts';
 import { registerDashboardTools } from './dashboard.ts';
 import { registerNotebookManageTools } from './manage.ts';
-import { registerMoveNotebookTool } from './move.ts';
 import { registerPlanTool } from './plan.ts';
 import { registerReplyTool } from './reply.ts';
 import { registerRunTools } from './run.ts';
@@ -18,7 +17,6 @@ export function registerNotebookTools(server: McpServer, ctx: ToolContext): void
   registerPlanTool(server, ctx);
   registerToolSearchTool(server, ctx);
   registerNotebookManageTools(server, ctx);
-  registerMoveNotebookTool(server, ctx);
   registerCellTools(server, ctx);
   registerDashboardTools(server, ctx);
   registerRunTools(server, ctx);

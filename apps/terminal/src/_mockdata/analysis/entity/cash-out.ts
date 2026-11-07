@@ -189,14 +189,14 @@ export const cashOutPage: EntityPage = {
             signalLink({
               title: "Argentina's off-ramps charge 2× Nigeria's fees",
               status: "New",
-              confidence: "High",
-              value: "$43K/mo",
+              evidence: "Strong",
+              size: "$43K/mo",
             }),
             signalLink({
               title: "Let users send money home with Paycrest",
               status: "New",
-              confidence: "Medium",
-              value: "$5.1M/mo",
+              evidence: "Some",
+              size: "$5.1M/mo",
             }),
           ],
         },

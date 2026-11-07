@@ -4,7 +4,7 @@ import { Card, cardRowDividerClassName } from "@sandworm/ui/kit/card";
 import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 
 import { AppLink } from "@/components/AppLink";
-import { ConfidenceMeter } from "@/components/Signals/ConfidenceMeter";
+import { EvidenceMeter } from "@/components/Signals/EvidenceMeter";
 import { SignalStatusIcon } from "@/components/Signals/SignalStatusIcon";
 import { BlockHeader } from "@/components/Overview/BlockHeader";
 import type { SignalsBlock } from "@/types";
@@ -47,18 +47,18 @@ export function SignalsCard({ block }: { block: SignalsBlock }) {
             <span className="text-sm font-medium text-ink-100">
               {item.title}
             </span>
-            <span className="text-[13px] text-ink-400">{item.summary}</span>
+            <span className="text-[13px] text-ink-400">{item.observed}</span>
           </span>
           <span className="inline-flex h-[22px] items-center justify-self-start whitespace-nowrap rounded-md bg-hover-bg px-2 text-xs text-ink-400">
             {item.kind}
           </span>
           <span className="flex flex-col md:items-end">
             <span className="text-[15px] font-medium text-ink-100">
-              {item.value}
+              {item.size}
             </span>
-            <span className="text-xs text-ink-400">{item.valueLabel}</span>
+            <span className="text-xs text-ink-400">{item.sizeLabel}</span>
           </span>
-          <ConfidenceMeter confidence={item.confidence} />
+          <EvidenceMeter evidence={item.evidence} />
         </AppLink>
       ))}
     </Card>

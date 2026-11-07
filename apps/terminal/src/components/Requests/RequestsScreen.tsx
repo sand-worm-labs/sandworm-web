@@ -6,16 +6,16 @@ import { buttonClassName } from "@sandworm/ui/kit/button";
 import { AppLink } from "@/components/AppLink";
 import { SectionHeader } from "@/components/Sections/SectionHeader";
 import type { RequestsData, ResearchRequest, SectionCounts } from "@/types";
+import { AllowanceSummary } from "@/components/Requests/AllowanceSummary";
+import { QuestionsList } from "@/components/Requests/QuestionsList";
+import { ResearchDetail } from "@/components/Requests/ResearchDetail";
+import { ResearchList } from "@/components/Requests/ResearchList";
+import { approveRequestScope } from "@/lib/requests/submit/actions";
 import {
   approveScope,
   pickDefaultRequest,
   withApprovedResearch,
 } from "@/lib/requests/requests-state";
-
-import { AllowanceSummary } from "./AllowanceSummary";
-import { QuestionsList } from "./QuestionsList";
-import { ResearchDetail } from "./ResearchDetail";
-import { ResearchList } from "./ResearchList";
 
 type RequestsScreenProps = {
   data: RequestsData;
@@ -41,6 +41,7 @@ export function RequestsScreen({ data, counts }: RequestsScreenProps) {
       requests.map(r => (r.id === selected.id ? approveScope(r) : r))
     );
     setApprovedCount(count => count + 1);
+    approveRequestScope(selected.id);
   };
 
   return (

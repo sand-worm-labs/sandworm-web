@@ -1,10 +1,11 @@
-import type { Signal, SignalStatus } from "@/types";
-import { SIGNAL_STATUSES } from "@/lib/signals/statuses";
+import type { Signal } from "@/types";
+
+import { SIGNAL_STATUSES, type SignalStatus } from "./statuses";
 
 export const OPEN_STATUSES = [
   "New",
-  "Reviewing",
-  "Pursuing",
+  "Looking into it",
+  "Acting on it",
 ] as const satisfies readonly SignalStatus[];
 
 export type SignalFilter = "open" | SignalStatus;

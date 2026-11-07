@@ -4,7 +4,6 @@ export * from "./briefing";
 export * from "./common";
 export * from "./entity";
 export * from "./kpi";
-export * from "./notebook";
 export * from "./overview";
 export * from "./request-draft";
 export * from "./requests";

@@ -31,7 +31,6 @@ export const paycrestBriefing: BriefingFeed = {
         what: "Lemon Cash paid out $144M of USDC and USDT in two months, about $16M a week to some 9,400 receiving wallets. 83% of it was USDT. Paycrest does not support Argentine pesos today, and none of Lemon's labelled wallets has sent an order to a Paycrest gateway in 180 days.",
         why: "Lemon holds the pesos and the dollars, so it is the natural first liquidity provider for a peso corridor. That corridor has to take USDT on BNB Chain and Tron: USDC on Base reaches about 0.5% of Lemon's payouts. These totals include sweeps between Lemon's own wallets, so read them as an upper bound.",
       },
-      source: { notebookUrl: null, ranOn: "3 Nov" },
       action: { label: "Open signal", route: "signal" },
     }),
     briefingItem({

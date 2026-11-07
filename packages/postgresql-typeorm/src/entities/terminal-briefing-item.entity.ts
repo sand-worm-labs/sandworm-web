@@ -58,8 +58,8 @@ export class TerminalBriefingItemEntity extends AbstractEntity {
   // A snapshot of the cell's outputs from the run at ran_at (any chart, table or card
   // the cell drew): the briefing keeps saying what it said that day, and still reads well
   // for someone who cannot open the notebook. The live notebook is reached through
-  // document_id. Kept out of the feed query (select: false); load it with the item that
-  // is opened. The database holds an array of at most 2 MiB; assertOutputs parses it
+  // document_id. Not selected by default (select: false) because it can be large; callers that show
+  // the item load it explicitly. The database holds an array of at most 2 MiB; assertOutputs parses it
   // with the Output schema from @sandworm/types before every write.
   @Column({ type: 'jsonb', default: '[]', select: false })
   outputs!: Output[];

@@ -65,6 +65,10 @@ export class TerminalClientEntity extends AbstractEntity {
   @Column({ type: 'jsonb', default: '[]' })
   invites!: Record<string, unknown>[];
 
+  // Research requests a year; approving a scope uses one
+  @Column({ name: 'research_allowance', type: 'integer', default: 5 })
+  researchAllowance!: number;
+
   @OneToOne(() => UserEntity, { onDelete: 'CASCADE' })
   @JoinColumn({
     name: 'owner_id',

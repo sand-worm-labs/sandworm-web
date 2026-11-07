@@ -3,8 +3,8 @@ import type { OrganisationTypeId } from "@sandworm/types/terminal";
 import type { RouteId } from "@/config/routes";
 import type { OverviewStatus } from "@/lib/overview/status";
 
-import type { Action } from "./common";
 import type { BriefingItem } from "./briefing";
+import type { Action } from "./common";
 import type { Kpi } from "./kpi";
 import type { Signal, SignalStatus } from "./signals";
 
@@ -35,10 +35,9 @@ export type KpisBlock = BlockBase & {
 };
 
 // A briefing item as the overview lists it: no detail, and a plain route.
-export type BriefingEntry = Omit<
-  BriefingItem,
-  "when" | "detail" | "source" | "action"
-> & { route: RouteId };
+export type BriefingEntry = Omit<BriefingItem, "when" | "detail" | "action"> & {
+  route: RouteId;
+};
 
 export type BriefingBlock = BlockBase & {
   _tag: "briefing";
@@ -47,7 +46,7 @@ export type BriefingBlock = BlockBase & {
 };
 
 export type SignalEntry = Omit<Signal, "status" | "when"> & {
-  status: Exclude<SignalStatus, "Passed">;
+  status: Exclude<SignalStatus, "Not for us">;
 };
 
 export type SignalsBlock = BlockBase & {

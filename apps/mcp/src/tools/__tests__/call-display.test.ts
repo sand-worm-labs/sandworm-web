@@ -88,12 +88,3 @@ test('the user\'s request is the prompt; one that comes with the reply is marked
   });
   assert.equal(promptOf('add_cell', { content: 'select 1' }), undefined);
 });
-
-test('moving a notebook says where it went, or that it stayed', () => {
-  const step = (result: unknown) => describeCall('move_notebook', {}, json(result), false);
-  assert.deepEqual(step({ moved: true, parentId: 'p', parentTitle: 'Paycrest Signals' }), [
-    { kind: 'thinking', text: 'Moved the notebook into: Paycrest Signals' },
-  ]);
-  assert.deepEqual(step({ moved: true, parentId: null }), [{ kind: 'thinking', text: 'Moved the notebook to the top level' }]);
-  assert.deepEqual(step({ moved: false, parentId: 'p' }), [{ kind: 'thinking', text: 'Left the notebook where it was' }]);
-});

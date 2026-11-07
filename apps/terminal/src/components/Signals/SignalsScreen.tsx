@@ -4,24 +4,24 @@ import { useState } from "react";
 import { Card } from "@sandworm/ui/kit/card";
 import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
 
+import { site } from "@/config/site";
 import { SectionHeader } from "@/components/Sections/SectionHeader";
 import type { SectionCounts, SignalsFeed } from "@/types";
+import { SignalsEmpty } from "@/components/Signals/SignalsEmpty";
+import { SignalRow } from "@/components/Signals/SignalRow";
+import { SignalStatusIcon } from "@/components/Signals/SignalStatusIcon";
 import {
   filterSignals,
   groupByStatus,
   type SignalFilter,
 } from "@/lib/signals/signal-state";
 
-import { SignalsEmpty } from "./SignalsEmpty";
-import { SignalRow } from "./SignalRow";
-import { SignalStatusIcon } from "./SignalStatusIcon";
-
 const FILTERS: readonly { id: SignalFilter; label: string }[] = [
   { id: "open", label: "All open" },
   { id: "New", label: "New" },
-  { id: "Reviewing", label: "Reviewing" },
-  { id: "Pursuing", label: "Pursuing" },
-  { id: "Passed", label: "Passed" },
+  { id: "Looking into it", label: "Looking into it" },
+  { id: "Acting on it", label: "Acting on it" },
+  { id: "Not for us", label: "Not for us" },
 ];
 
 type SignalsScreenProps = {
@@ -44,7 +44,7 @@ export function SignalsScreen({ feed, counts, viewer }: SignalsScreenProps) {
       <SectionHeader
         current="signals"
         title="Signals"
-        subtitle={`Moves for ${viewer.clientName}, ranked by estimated value.`}
+        subtitle={`What ${site.name} saw in ${viewer.clientName}'s data, and what it could mean.`}
         counts={counts}
       />
       {feed.items.length === 0 ? (
@@ -59,7 +59,7 @@ export function SignalsScreen({ feed, counts, viewer }: SignalsScreenProps) {
               onChange={setFilter}
             />
             <span className="text-xs text-ink-400">
-              Values are Sandworm estimates
+              Sizes are what we measured, not forecasts
             </span>
           </div>
           <div className="px-2 pb-2.5 pt-1">

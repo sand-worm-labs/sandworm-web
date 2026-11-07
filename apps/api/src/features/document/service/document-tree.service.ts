@@ -104,20 +104,17 @@ export class DocumentTreeService {
     ): Promise<number> {
         const repo = this.docRepo(manager);
 
-        const childrenCount = await repo.count({
-            where: { workspaceId, parentId, deletedAt: null },
+        // TypeORM ignores a bare null in where, so the top level and live
+        // documents need IsNull(). Compare against the last index, not the
+        // count: trash and moves leave gaps, so indexes can run past the count.
+        const lastChild = await repo.findOne({
+            where: { workspaceId, parentId: parentId ?? IsNull(), deletedAt: IsNull() },
+            order: { orderIndex: 'DESC' },
+            select: ['orderIndex'],
         });
+        const lastIndex = lastChild?.orderIndex ?? -1;
 
-        if (requestedIndex === -1 || requestedIndex > childrenCount) {
-            const lastChild = await repo.findOne({
-                where: { workspaceId, parentId, deletedAt: null },
-                order: { orderIndex: 'DESC' },
-                select: ['orderIndex'],
-            });
-
-            return (lastChild?.orderIndex ?? childrenCount - 1) + 1;
-        }
-
+        if (requestedIndex === -1 || requestedIndex > lastIndex) return lastIndex + 1;
         return requestedIndex;
     }
 

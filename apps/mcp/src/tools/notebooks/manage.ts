@@ -8,6 +8,7 @@ import {
   notebookId,
   notebookType,
   notebookUrl,
+  parentNotebookId,
   setNotebookTitle,
   turnRequest,
   typeFromRuntime,
@@ -30,6 +31,9 @@ type Doc = {
 
 const DOC_FIELDS = 'id title slug workspaceId visibility publishedAt updatedAt orderIndex parentId description tags runtime';
 
+type Nested = { id: string; title: string };
+type DocWithTree = Doc & { parent: Nested | null; children: Nested[] };
+
 export function registerNotebookManageTools(server: McpServer, ctx: ToolContext): void {
   const links = (d: Pick<Doc, 'id' | 'workspaceId' | 'slug' | 'publishedAt'>) => ({
     url: notebookUrl(ctx, d.workspaceId, d.id),
@@ -44,8 +48,11 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
     visibility: d.visibility,
     published: d.publishedAt !== null,
     updatedAt: d.updatedAt,
+    parentId: d.parentId,
     ...links(d),
   });
+
+  const nested = (ws: string, n: Nested) => ({ notebookId: n.id, title: n.title, url: notebookUrl(ctx, ws, n.id) });
 
   const getDoc = async (documentId: string, workspaceId: string) =>
     (
@@ -58,15 +65,30 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
       )
     ).getDocument;
 
+  const getDocWithTree = async (documentId: string, workspaceId: string) =>
+    (
+      await graphql<{ getDocument: DocWithTree }>(
+        ctx,
+        `query ($documentId: String!, $workspaceId: String!) {
+          getDocument(documentId: $documentId, workspaceId: $workspaceId) {
+            ${DOC_FIELDS} parent { id title } children { id title }
+          }
+        }`,
+        { documentId, workspaceId },
+      )
+    ).getDocument;
+
   server.registerTool(
     'get_notebook',
     {
-      description: 'Fetch a notebook: its details, links, and its cells as markdown',
+      description:
+        'Fetch a notebook: its details, links, and its cells as markdown. ' +
+        'Also lists the notebook it is nested under (parent) and the notebooks nested under it (children); get_notebook on a child reads that one',
       inputSchema: { notebookId, workspaceId, request: turnRequest },
     },
     handle(async ({ notebookId, workspaceId }) => {
       const ws = await resolveWorkspaceId(ctx, workspaceId);
-      const doc = await getDoc(notebookId, ws);
+      const doc = await getDocWithTree(notebookId, ws);
       const res = await fetch(
         `${ctx.apiUrl}/api/yjs_documents/${encodeURIComponent(notebookId)}/ai-context?workspaceId=${encodeURIComponent(ws)}`,
         { headers: { Cookie: `access_token=${ctx.auth.token}` }, signal: AbortSignal.timeout(30_000) },
@@ -76,6 +98,8 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
         ...summary(doc),
         description: doc.description,
         tags: doc.tags,
+        parent: doc.parent ? nested(ws, doc.parent) : null,
+        children: doc.children.map(c => nested(ws, c)),
         content: await res.text(),
       };
     }),
@@ -84,21 +108,33 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
   server.registerTool(
     'edit_notebook',
     {
-      description: 'Rename a notebook and/or change its type. Use add_cell / update_cell / delete_cell to change its cells',
+      description:
+        'Rename a notebook, change its type, and/or move it. parentId nests it under another notebook in the same workspace ' +
+        '(as that notebook\'s last nested notebook, bringing its own nested notebooks along); parentId null moves it back to the top level. ' +
+        'A notebook cannot be nested under itself or one of its own nested notebooks. Use add_cell / update_cell / delete_cell to change its cells',
       inputSchema: {
         notebookId,
         title: z.string().min(1).optional(),
         type: notebookType.optional(),
+        parentId: parentNotebookId
+          .nullable()
+          .optional()
+          .describe('Notebook to nest this one under, or null to move it to the top level. Omit to leave it where it is'),
         workspaceId,
         request: turnRequest,
       },
     },
-    handle(async ({ notebookId, title, type, workspaceId }) => {
-      if (title === undefined && type === undefined) throw new Error('Give a new title, a new type, or both.');
+    handle(async ({ notebookId, title, type, parentId, workspaceId }) => {
+      if (title === undefined && type === undefined && parentId === undefined) {
+        throw new Error('Give a new title, a new type, a new parentId, or a combination.');
+      }
+      if (parentId === notebookId) throw new Error('A notebook cannot be nested under itself.');
       const ws = await resolveWorkspaceId(ctx, workspaceId);
       if (title !== undefined) await setNotebookTitle(ctx, ws, notebookId, title);
-      // UpdateDocumentInput requires orderIndex, so carry over the current one.
+      // UpdateDocumentInput requires orderIndex, so carry over the current one,
+      // or put it last among its new siblings when it moves.
       const current = await getDoc(notebookId, ws);
+      const moving = parentId !== undefined && parentId !== current.parentId;
       const data = await graphql<{ updateDocument: Doc }>(
         ctx,
         `mutation ($documentId: String!, $workspaceId: String!, $input: UpdateDocumentInput!) {
@@ -108,7 +144,8 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
           documentId: notebookId,
           workspaceId: ws,
           input: {
-            orderIndex: current.orderIndex,
+            orderIndex: moving ? -1 : current.orderIndex,
+            ...(moving ? { parentId } : {}),
             ...(title !== undefined ? { title } : {}),
             ...(type !== undefined ? { runtime: NOTEBOOK_TYPES[type] } : {}),
           },
@@ -121,9 +158,7 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
   server.registerTool(
     'delete_notebook',
     {
-      description:
-        'Delete a notebook (moves it to trash, where it can be restored). ' +
-        'A notebook that holds others is a folder: deleting it moves the notebooks inside it to the trash too. Move them out first with move_notebook to keep them',
+      description: 'Delete a notebook (moves it to trash, where it can be restored). The notebooks nested under it go to trash with it',
       inputSchema: { notebookId, workspaceId, confirm },
     },
     handle(async ({ notebookId, workspaceId }) => {

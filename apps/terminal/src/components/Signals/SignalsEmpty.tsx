@@ -22,8 +22,8 @@ export function SignalsEmpty() {
       </h2>
       <p className="max-w-[480px] text-sm leading-[1.55] text-ink-500">
         Signals usually appear 2 to 3 weeks after setup, once {site.name} has a
-        full picture of your numbers. Each one comes with an estimated value and
-        how sure we are.
+        full picture of your numbers. Each one says what we saw, what it could
+        mean and how strong the evidence is.
       </p>
       <div className="mt-1.5 flex flex-wrap justify-center gap-2">
         <AppLink
