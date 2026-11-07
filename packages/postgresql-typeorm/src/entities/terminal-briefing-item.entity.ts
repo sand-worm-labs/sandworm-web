@@ -6,15 +6,12 @@ import { TerminalClientEntity } from './terminal-client.entity';
 import { TerminalMemberEntity } from './terminal-member.entity';
 import { UserEntity } from './user.entity';
 
-export const TERMINAL_BRIEFING_KINDS = ['analysis', 'opportunity', 'metric'] as const;
+export const TERMINAL_BRIEFING_KINDS = ['analysis', 'signal', 'metric'] as const;
 export type TerminalBriefingKind = (typeof TERMINAL_BRIEFING_KINDS)[number];
 
-// What the item's detail panel shows. `outputs` is a frozen copy of the cell's
-// outputs from the run at ran_at (any chart, table or card the cell drew), so the
-// briefing still reads well for someone who cannot open the notebook.
+// What the item's detail panel shows besides the outputs, which have their own column.
 export type TerminalBriefingDetail = {
   headline?: { value: string; label: string; delta?: { text: string; tone: string } };
-  outputs?: Output[];
   what?: string;
   why?: string;
 };
@@ -57,6 +54,15 @@ export class TerminalBriefingItemEntity extends AbstractEntity {
 
   @Column({ type: 'jsonb', default: '{}' })
   detail!: TerminalBriefingDetail;
+
+  // A snapshot of the cell's outputs from the run at ran_at (any chart, table or card
+  // the cell drew): the briefing keeps saying what it said that day, and still reads well
+  // for someone who cannot open the notebook. The live notebook is reached through
+  // document_id. Kept out of the feed query (select: false); load it with the item that
+  // is opened. The database holds an array of at most 2 MiB; the writer parses it with
+  // the Output schema from @sandworm/types first.
+  @Column({ type: 'jsonb', default: '[]', select: false })
+  outputs!: Output[];
 
   // The source cell. The notebook may be deleted later; the copy above stays.
   @Column({ name: 'document_id', type: 'uuid', nullable: true })
