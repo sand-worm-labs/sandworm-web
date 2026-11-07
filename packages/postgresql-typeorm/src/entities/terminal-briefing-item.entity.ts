@@ -1,5 +1,5 @@
-import type { Output } from '@sandworm/types';
-import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from 'typeorm';
+import { Output } from '@sandworm/types';
+import { BeforeInsert, BeforeUpdate, Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from 'typeorm';
 import { AbstractEntity } from './abstract.entity';
 import { DocumentEntity } from './document.entity';
 import { TerminalClientEntity } from './terminal-client.entity';
@@ -59,8 +59,8 @@ export class TerminalBriefingItemEntity extends AbstractEntity {
   // the cell drew): the briefing keeps saying what it said that day, and still reads well
   // for someone who cannot open the notebook. The live notebook is reached through
   // document_id. Kept out of the feed query (select: false); load it with the item that
-  // is opened. The database holds an array of at most 2 MiB; the writer parses it with
-  // the Output schema from @sandworm/types first.
+  // is opened. The database holds an array of at most 2 MiB; assertOutputs parses it
+  // with the Output schema from @sandworm/types before every write.
   @Column({ type: 'jsonb', default: '[]', select: false })
   outputs!: Output[];
 
@@ -82,6 +82,14 @@ export class TerminalBriefingItemEntity extends AbstractEntity {
   // The user who made it; null when an agent made it, or once they are deleted
   @Column({ name: 'created_by', type: 'uuid', nullable: true })
   createdBy!: string | null;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  assertOutputs() {
+    // Not loaded on this instance (select: false): nothing is being written
+    if (this.outputs === undefined) return;
+    Output.array().parse(this.outputs);
+  }
 
   @ManyToOne(() => TerminalClientEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'client_id', referencedColumnName: 'id', foreignKeyConstraintName: 'FK_terminal_briefing_item_client' })
