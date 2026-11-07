@@ -1,5 +1,5 @@
 import type { MockClientId } from "@/_mockdata/clients";
-import type { SectionCounts } from "@/lib/sections/types";
+import type { SectionCounts } from "@/types";
 
 export const sectionCountsMockData: Record<MockClientId, SectionCounts> = {
   exchange: {

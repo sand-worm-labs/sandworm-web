@@ -1,7 +1,5 @@
-import type { Session } from "@/lib/session/types";
+import type { Session, WelcomeContent, WelcomeData } from "@/types";
 import { site } from "@/config/site";
-
-import type { WelcomeContent, WelcomeData } from "./types";
 
 export function buildWelcome(
   content: WelcomeContent,

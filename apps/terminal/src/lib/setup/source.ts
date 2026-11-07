@@ -1,8 +1,8 @@
 import { ApiUnauthenticatedError, gql } from "@/lib/api";
+import type { SetupDraft } from "@/types";
 
 import { SETUP_FIELDS } from "./api";
 import { EMPTY_SETUP_DRAFT } from "./defaults";
-import type { SetupDraft } from "./types";
 
 const TERMINAL_SETUP = `query TerminalSetup { terminalSetup { ${SETUP_FIELDS} } }`;
 

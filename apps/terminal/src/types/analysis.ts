@@ -1,6 +1,5 @@
 import type { RouteId } from "@/config/routes";
-
-export const ANALYSIS_SORTS = ["recent", "relevant", "alphabetical"] as const;
+import type { ANALYSIS_SORTS } from "@/lib/analysis/sorts";
 
 export type AnalysisSort = (typeof ANALYSIS_SORTS)[number];
 

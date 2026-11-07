@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 
 import type { TeamStepId } from "@/lib/team/routes";
-import type { TeamClientDraft } from "@/lib/team/types";
+import type { TeamClientDraft } from "@/types";
 
 export type TeamStepDefinition = {
   id: TeamStepId;

@@ -10,14 +10,13 @@ import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
 
 import { AppLink } from "@/components/AppLink";
 import { SectionHeader } from "@/components/Sections/SectionHeader";
-import type { SectionCounts } from "@/lib/sections/types";
+import type { AnalysisCatalog, AnalysisSort, SectionCounts } from "@/types";
 import {
   describeCatalog,
   filterRows,
   resolveView,
   sortRows,
 } from "@/lib/analysis/catalog-state";
-import type { AnalysisCatalog, AnalysisSort } from "@/lib/analysis/types";
 
 import { AnalysisNoResults } from "./AnalysisNoResults";
 import { AnalysisTable } from "./AnalysisTable";

@@ -1,4 +1,4 @@
-import type { EntityPage } from "@/lib/analysis/entity/types";
+import type { EntityPage } from "@/types";
 
 import {
   badge,

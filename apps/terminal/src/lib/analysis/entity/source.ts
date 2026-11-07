@@ -3,8 +3,7 @@ import {
   entityFixtures,
   findEntityPage,
 } from "@/_mockdata/analysis/entity/index";
-
-import type { EntityKind, EntityPage } from "./types";
+import type { EntityKind, EntityPage } from "@/types";
 
 export async function getEntityPage(
   kind: EntityKind,

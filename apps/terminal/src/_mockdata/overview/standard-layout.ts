@@ -1,12 +1,12 @@
 import type {
+  BriefingEntry,
   GapEntry,
   Kpi,
-  BriefingEntry,
   LayoutRow,
+  OverviewBlock,
   OverviewData,
   SignalEntry,
-  OverviewBlock,
-} from "@/lib/overview/types";
+} from "@/types";
 
 type StandardContent = {
   kpis: readonly Kpi[];

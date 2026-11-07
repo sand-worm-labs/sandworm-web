@@ -1,4 +1,4 @@
-import type { Access } from "./types";
+import type { Access } from "@/types";
 
 type Visitor = { email: string | null } | null;
 

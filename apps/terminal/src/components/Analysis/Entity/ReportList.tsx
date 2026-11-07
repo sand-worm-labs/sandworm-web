@@ -3,7 +3,7 @@ import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 import { Pill } from "@sandworm/ui/kit/pill";
 
 import { AppLink } from "@/components/AppLink";
-import type { EntityBlock } from "@/lib/analysis/entity/types";
+import type { EntityBlock } from "@/types";
 
 type ReportListBlock = Extract<EntityBlock, { _tag: "reportList" }>;
 

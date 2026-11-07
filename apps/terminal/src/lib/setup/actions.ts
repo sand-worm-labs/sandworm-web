@@ -4,10 +4,10 @@ import { redirect } from "next/navigation";
 
 import { signInUrl } from "@/lib/auth/sign-in";
 import { ApiUnauthenticatedError, gql } from "@/lib/api";
+import type { SetupDraft } from "@/types";
 
 import { SETUP_FIELDS } from "./api";
 import { SETUP_STEP_IDS, setupStepPath } from "./routes";
-import type { SetupDraft } from "./types";
 
 const SAVE_TERMINAL_SETUP = `
   mutation SaveTerminalSetup($input: TerminalSetupInput!) {

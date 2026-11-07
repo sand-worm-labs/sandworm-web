@@ -1,4 +1,4 @@
-import type { BlockTag } from "@/lib/overview/types";
+import type { BlockTag } from "@/types";
 
 type BlockAbout = { cadence: string; description: string };
 

@@ -3,8 +3,7 @@ import {
   getPreviewClientKind,
 } from "@/lib/preview/cookies";
 import { briefingMockData } from "@/_mockdata/briefing/index";
-
-import type { BriefingFeed } from "./types";
+import type { BriefingFeed } from "@/types";
 
 export async function getBriefing(): Promise<BriefingFeed> {
   const [clientKind, mode] = await Promise.all([

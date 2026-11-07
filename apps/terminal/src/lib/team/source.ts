@@ -2,9 +2,9 @@ import { starterResearchMockData } from "@/_mockdata/team/starter-research";
 import { teamClientsMockData } from "@/_mockdata/team/clients";
 import { getPreviewAccess } from "@/lib/preview/cookies";
 import { gql } from "@/lib/api";
+import type { StarterResearch, TeamClientSummary } from "@/types";
 
 import { TEAM_CLIENT_FIELDS } from "./api";
-import type { StarterResearch, TeamClientSummary } from "./types";
 
 const TERMINAL_CLIENTS = `query TerminalClients { terminalClients { ${TEAM_CLIENT_FIELDS} } }`;
 

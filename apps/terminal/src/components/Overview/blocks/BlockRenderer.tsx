@@ -1,5 +1,5 @@
 import { exhaustiveCheck } from "@/lib/exhaustive";
-import type { OverviewBlock } from "@/lib/overview/types";
+import type { OverviewBlock } from "@/types";
 
 import { BriefingCard } from "./BriefingCard";
 import { GapsCard } from "./GapsCard";

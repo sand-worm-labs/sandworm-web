@@ -4,7 +4,7 @@ import type {
   ResearchRequest,
   StepState,
   TimelineStep,
-} from "@/lib/requests/types";
+} from "@/types";
 
 export function step(
   label: string,

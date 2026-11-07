@@ -6,7 +6,7 @@ import {
   resolveSelected,
   type BriefingFilter,
 } from "@/lib/briefing/inbox-state";
-import type { BriefingItem } from "@/lib/briefing/types";
+import type { BriefingItem } from "@/types";
 
 // `initialId` is the item a link asked for, e.g. a row on the overview. It
 // opens selected, and counts as read.

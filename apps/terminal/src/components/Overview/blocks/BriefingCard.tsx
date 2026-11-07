@@ -6,10 +6,9 @@ import { Card } from "@sandworm/ui/kit/card";
 import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
 
 import { AppLink } from "@/components/AppLink";
-import type { BriefingKind } from "@/lib/briefing/types";
+import type { BriefingBlock, BriefingKind } from "@/types";
 import { groupInOrder } from "@/lib/group-in-order";
 import { BlockHeader } from "@/components/Overview/BlockHeader";
-import type { BriefingBlock } from "@/lib/overview/types";
 
 import { BriefingRow } from "./BriefingRow";
 

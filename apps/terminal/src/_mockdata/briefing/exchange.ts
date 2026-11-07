@@ -1,4 +1,4 @@
-import type { BriefingFeed } from "@/lib/briefing/types";
+import type { BriefingFeed } from "@/types";
 
 import { briefingItem } from "./builders";
 

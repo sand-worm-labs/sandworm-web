@@ -11,7 +11,7 @@ import {
 import { Switch } from "@sandworm/ui/components/switch";
 import { Button } from "@sandworm/ui/kit/button";
 
-import type { LibraryEntry, OverviewBlock } from "@/lib/overview/types";
+import type { LibraryEntry, OverviewBlock } from "@/types";
 
 type CustomizeDrawerProps = {
   isOpen: boolean;

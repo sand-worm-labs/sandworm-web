@@ -3,11 +3,11 @@ import type { Tone } from "@sandworm/ui/kit/tone";
 import { toId } from "@/lib/slug";
 import type {
   EntityKpi,
-  SignalLink,
   ReportLink,
+  SignalLink,
   TableCell,
   TableRow,
-} from "@/lib/analysis/entity/types";
+} from "@/types";
 
 export function kpi(
   label: string,

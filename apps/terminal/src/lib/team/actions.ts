@@ -5,10 +5,10 @@ import { redirect } from "next/navigation";
 import { signInUrl } from "@/lib/auth/sign-in";
 import { getPreviewAccess } from "@/lib/preview/cookies";
 import { ApiUnauthenticatedError, gql } from "@/lib/api";
+import type { TeamClientDraft, TeamClientSummary } from "@/types";
 
 import { TEAM_CLIENT_FIELDS } from "./api";
 import { TEAM_CLIENTS_PATH } from "./routes";
-import type { TeamClientDraft, TeamClientSummary } from "./types";
 
 const CREATE_TERMINAL_CLIENT = `
   mutation CreateTerminalClient($input: TerminalTeamClientDraftInput!) {

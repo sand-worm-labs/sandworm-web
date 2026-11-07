@@ -1,8 +1,6 @@
 import { site } from "@/config/site";
-import type { TimelineStep } from "@/lib/requests/types";
+import type { RequestDraft, TimelineStep } from "@/types";
 import { TIMINGS, USE_CASES } from "@/data/requests/submit-options";
-
-import type { RequestDraft } from "./types";
 
 export function emptyDraft(): RequestDraft {
   return {

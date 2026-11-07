@@ -1,6 +1,6 @@
 import { PageTabs, type PageTab } from "@/components/PageTabs";
 import { ROUTES, type RouteId } from "@/config/routes";
-import type { SectionCounts } from "@/lib/sections/types";
+import type { SectionCounts } from "@/types";
 
 type Section = { route: RouteId; countKey?: keyof SectionCounts };
 

@@ -1,6 +1,6 @@
-import { findBlock, type OverviewData } from "@/lib/overview/types";
+import type { AnalysisCatalog, OverviewData } from "@/types";
+import { findBlock } from "@/lib/overview/blocks";
 import { groupInOrder } from "@/lib/group-in-order";
-import type { AnalysisCatalog } from "@/lib/analysis/types";
 
 import { analysisRow, highlight } from "./builders";
 

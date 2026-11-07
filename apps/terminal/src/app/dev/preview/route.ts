@@ -12,7 +12,7 @@ import {
   PREVIEW_SIGNALS_COOKIE,
   PREVIEW_STATUS_COOKIE,
 } from "@/lib/preview/cookies";
-import { isOverviewStatus } from "@/lib/overview/types";
+import { isOverviewStatus } from "@/lib/overview/status";
 
 export function GET(request: NextRequest) {
   if (process.env.NODE_ENV === "production") {

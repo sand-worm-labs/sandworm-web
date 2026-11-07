@@ -1,4 +1,5 @@
-import { SIGNAL_STATUSES, type Signal, type SignalStatus } from "./types";
+import type { Signal, SignalStatus } from "@/types";
+import { SIGNAL_STATUSES } from "@/lib/signals/statuses";
 
 export const OPEN_STATUSES = [
   "New",

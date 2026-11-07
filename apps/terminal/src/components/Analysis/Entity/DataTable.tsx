@@ -5,11 +5,7 @@ import { Pill } from "@sandworm/ui/kit/pill";
 import { TONE_BADGE_CLASSNAME } from "@sandworm/ui/kit/tone";
 
 import { exhaustiveCheck } from "@/lib/exhaustive";
-import type {
-  EntityBlock,
-  TableCell,
-  TableColumn,
-} from "@/lib/analysis/entity/types";
+import type { EntityBlock, TableCell, TableColumn } from "@/types";
 
 import { SectionCard } from "./SectionCard";
 

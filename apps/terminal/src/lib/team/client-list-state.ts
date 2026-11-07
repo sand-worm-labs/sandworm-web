@@ -1,4 +1,4 @@
-import type { TeamClientSummary } from "./types";
+import type { TeamClientSummary } from "@/types";
 
 export type ClientTypeFilter = "all" | TeamClientSummary["type"];
 

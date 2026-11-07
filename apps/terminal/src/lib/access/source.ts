@@ -2,9 +2,9 @@ import { env } from "@/config/env";
 import { getCurrentUser } from "@/lib/auth/user";
 import { getPreviewAccess } from "@/lib/preview/cookies";
 import { gql } from "@/lib/api";
+import type { Access } from "@/types";
 
 import { resolveAccess } from "./resolve-access";
-import type { Access } from "./types";
 
 const TERMINAL_MEMBERSHIP = `query TerminalMembership { terminalSession { client { name } } }`;
 

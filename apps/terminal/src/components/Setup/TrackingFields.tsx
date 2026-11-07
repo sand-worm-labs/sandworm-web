@@ -3,7 +3,7 @@ import { ChipInput } from "@sandworm/ui/kit/form/chip-input";
 import { TextAreaField } from "@sandworm/ui/kit/form/text-area-field";
 
 import { site } from "@/config/site";
-import type { SetupTracking } from "@/lib/setup/types";
+import type { SetupTracking } from "@/types";
 
 // The client talks about "your" contracts; the team sets them up for someone else.
 const COPY = {

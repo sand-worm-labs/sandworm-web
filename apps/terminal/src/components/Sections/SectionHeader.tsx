@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { RouteId } from "@/config/routes";
-import type { SectionCounts } from "@/lib/sections/types";
+import type { SectionCounts } from "@/types";
 
 import { SectionTabs } from "./SectionTabs";
 

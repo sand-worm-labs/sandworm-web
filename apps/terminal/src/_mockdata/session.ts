@@ -1,5 +1,5 @@
 import type { MockClientId } from "@/_mockdata/clients";
-import type { Session } from "@/lib/session/types";
+import type { Session } from "@/types";
 
 type ClientSeed = { clientName: string; userName: string };
 

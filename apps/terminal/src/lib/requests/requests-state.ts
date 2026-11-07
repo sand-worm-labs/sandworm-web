@@ -1,4 +1,4 @@
-import type { Allowance, ResearchRequest } from "./types";
+import type { Allowance, ResearchRequest } from "@/types";
 
 export function canApprove(request: ResearchRequest): boolean {
   return request.status === "Scoping" && request.scopeApproval !== undefined;

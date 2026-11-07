@@ -5,13 +5,12 @@ import { Card } from "@sandworm/ui/kit/card";
 import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
 
 import { SectionHeader } from "@/components/Sections/SectionHeader";
-import type { SectionCounts } from "@/lib/sections/types";
+import type { SectionCounts, SignalsFeed } from "@/types";
 import {
   filterSignals,
   groupByStatus,
   type SignalFilter,
 } from "@/lib/signals/signal-state";
-import type { SignalsFeed } from "@/lib/signals/types";
 
 import { SignalsEmpty } from "./SignalsEmpty";
 import { SignalRow } from "./SignalRow";

@@ -10,10 +10,9 @@ import { labelClassName } from "@sandworm/ui/kit/form/styles";
 
 import { AppLink } from "@/components/AppLink";
 import { site } from "@/config/site";
-import type { Allowance } from "@/lib/requests/types";
+import type { Allowance, RequestDraft } from "@/types";
 import { canSubmit } from "@/lib/requests/submit/draft";
 import { TIMINGS, USE_CASES } from "@/data/requests/submit-options";
-import type { RequestDraft } from "@/lib/requests/submit/types";
 
 import { AllowancePips } from "./AllowancePips";
 

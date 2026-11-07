@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-import type { BriefingKind } from "@/lib/briefing/types";
+import type { BriefingKind } from "@/types";
 
 const kindClassNames: Record<BriefingKind, string> = {
   Analysis: "bg-info-tint dark:bg-base-600 text-ink-navy",

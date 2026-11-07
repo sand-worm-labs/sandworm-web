@@ -1,5 +1,5 @@
-import { findBlock, type OverviewData } from "@/lib/overview/types";
-import type { SignalsFeed } from "@/lib/signals/types";
+import type { OverviewData, SignalsFeed } from "@/types";
+import { findBlock } from "@/lib/overview/blocks";
 
 import { signal } from "./builders";
 

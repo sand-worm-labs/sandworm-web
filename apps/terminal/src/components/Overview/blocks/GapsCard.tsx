@@ -4,7 +4,7 @@ import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 
 import { AppLink } from "@/components/AppLink";
 import { BlockHeader } from "@/components/Overview/BlockHeader";
-import type { GapsBlock } from "@/lib/overview/types";
+import type { GapsBlock } from "@/types";
 
 export function GapsCard({ block }: { block: GapsBlock }) {
   const titleId = `${block.id}-title`;

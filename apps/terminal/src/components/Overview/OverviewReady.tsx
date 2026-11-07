@@ -6,11 +6,9 @@ import { Button } from "@sandworm/ui/kit/button";
 
 import { WelcomeDialog } from "@/components/Welcome/WelcomeDialog";
 import { dismissWelcome } from "@/lib/welcome/actions";
-import type { WelcomeData } from "@/lib/welcome/types";
+import type { OverviewData, SectionCounts, WelcomeData } from "@/types";
 import { SectionHeader } from "@/components/Sections/SectionHeader";
-import type { SectionCounts } from "@/lib/sections/types";
 import { useBlockVisibility } from "@/hooks/useBlockVisibility";
-import type { OverviewData } from "@/lib/overview/types";
 
 import { OverviewLayout } from "./OverviewLayout";
 import { CustomizeDrawer } from "./CustomizeDrawer";

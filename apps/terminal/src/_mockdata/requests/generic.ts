@@ -1,4 +1,4 @@
-import type { RequestsData } from "@/lib/requests/types";
+import type { RequestsData } from "@/types";
 
 import { exchangeRequests } from "./exchange";
 import { researchRequest, step } from "./builders";

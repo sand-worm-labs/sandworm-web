@@ -2,11 +2,8 @@ import { Card } from "@sandworm/ui/kit/card";
 import { Skeleton } from "@sandworm/ui/kit/skeleton";
 
 import { SectionHeader } from "@/components/Sections/SectionHeader";
-import {
-  findBlock,
-  type KpisBlock,
-  type OverviewData,
-} from "@/lib/overview/types";
+import type { KpisBlock, OverviewData } from "@/types";
+import { findBlock } from "@/lib/overview/blocks";
 
 import { BlockHeader } from "./BlockHeader";
 

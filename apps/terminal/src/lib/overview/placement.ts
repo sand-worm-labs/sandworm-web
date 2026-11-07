@@ -1,4 +1,4 @@
-import type { ColumnSpan } from "./types";
+import type { ColumnSpan } from "@/types";
 
 const columnSpanClassNames: Record<ColumnSpan, string> = {
   4: "lg:col-span-4",

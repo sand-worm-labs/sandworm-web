@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-import type { SignalStatus } from "@/lib/signals/types";
+import type { SignalStatus } from "@/types";
 
 const statusClassNames: Record<SignalStatus, string> = {
   New: "border-[1.5px] border-dashed border-primary",

@@ -3,7 +3,7 @@ import { TextAreaField } from "@sandworm/ui/kit/form/text-area-field";
 import { TextField } from "@sandworm/ui/kit/form/text-field";
 
 import { ORGANISATION_TYPES } from "@/data/setup/organisation-types";
-import type { SetupDraft } from "@/lib/setup/types";
+import type { SetupDraft } from "@/types";
 
 type Organisation = SetupDraft["organisation"];
 

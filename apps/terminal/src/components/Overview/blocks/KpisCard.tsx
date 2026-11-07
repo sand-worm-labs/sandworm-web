@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { Card } from "@sandworm/ui/kit/card";
 import { TONE_TEXT_CLASSNAME } from "@sandworm/ui/kit/tone";
 
-import type { KpisBlock } from "@/lib/overview/types";
+import type { KpisBlock } from "@/types";
 
 export function KpisCard({ block }: { block: KpisBlock }) {
   return (

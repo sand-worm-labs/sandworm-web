@@ -1,17 +1,13 @@
 import type { Tone } from "@sandworm/ui/kit/tone";
 
 import type { RouteId } from "@/config/routes";
-import type { BriefingKind } from "@/lib/briefing/types";
-import type { Signal, SignalStatus } from "@/lib/signals/types";
 import type { MockClientId } from "@/_mockdata/clients";
+import type { OVERVIEW_STATUSES } from "@/lib/overview/status";
 
-export const OVERVIEW_STATUSES = ["ready", "settingUp", "calculating"] as const;
+import type { BriefingKind } from "./briefing";
+import type { Signal, SignalStatus } from "./signals";
 
 export type OverviewStatus = (typeof OVERVIEW_STATUSES)[number];
-
-export function isOverviewStatus(value: string): value is OverviewStatus {
-  return OVERVIEW_STATUSES.some(status => status === value);
-}
 
 export type ColumnSpan = 4 | 6 | 8 | 12;
 
@@ -95,16 +91,6 @@ export type OverviewBlock =
 export type BlockTag = OverviewBlock["_tag"];
 
 export type LibraryEntry = { id: string; name: string; description: string };
-
-export function findBlock<Tag extends BlockTag>(
-  blocks: readonly OverviewBlock[],
-  tag: Tag
-): Extract<OverviewBlock, { _tag: Tag }> | undefined {
-  return blocks.find(
-    (block): block is Extract<OverviewBlock, { _tag: Tag }> =>
-      block._tag === tag
-  );
-}
 
 export type SetupStep = {
   id: string;

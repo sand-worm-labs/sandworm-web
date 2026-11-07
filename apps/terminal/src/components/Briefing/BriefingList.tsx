@@ -8,7 +8,7 @@ import {
 
 import { groupInOrder } from "@/lib/group-in-order";
 import { isUnread, type BriefingFilter } from "@/lib/briefing/inbox-state";
-import type { BriefingItem } from "@/lib/briefing/types";
+import type { BriefingItem } from "@/types";
 
 import { BriefingKindTag } from "./BriefingKindTag";
 

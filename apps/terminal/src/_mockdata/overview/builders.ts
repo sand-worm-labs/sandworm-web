@@ -1,10 +1,5 @@
 import { toId } from "@/lib/slug";
-import type {
-  BriefingEntry,
-  GapEntry,
-  Kpi,
-  SignalEntry,
-} from "@/lib/overview/types";
+import type { BriefingEntry, GapEntry, Kpi, SignalEntry } from "@/types";
 
 type KpiInit = Omit<Kpi, "id" | "comparison"> & { comparison?: string };
 

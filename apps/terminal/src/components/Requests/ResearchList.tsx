@@ -5,7 +5,7 @@ import {
   ROW_SELECTED_CLASSNAME,
 } from "@sandworm/ui/kit/interactive";
 
-import type { ResearchRequest } from "@/lib/requests/types";
+import type { ResearchRequest } from "@/types";
 
 import { StatusChip } from "./StatusChip";
 

@@ -5,7 +5,7 @@ import { buttonClassName } from "@sandworm/ui/kit/button";
 import { AppLink } from "@/components/AppLink";
 import type { RouteId } from "@/config/routes";
 import { site } from "@/config/site";
-import type { Allowance } from "@/lib/requests/types";
+import type { Allowance } from "@/types";
 
 import { AllowancePips } from "./AllowancePips";
 

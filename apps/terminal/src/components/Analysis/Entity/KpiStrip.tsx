@@ -1,7 +1,7 @@
 import { Card } from "@sandworm/ui/kit/card";
 import { TONE_TEXT_CLASSNAME } from "@sandworm/ui/kit/tone";
 
-import type { EntityKpi } from "@/lib/analysis/entity/types";
+import type { EntityKpi } from "@/types";
 
 export function KpiStrip({
   label,

@@ -1,7 +1,7 @@
 import { PiCaretRight } from "react-icons/pi";
 
 import { AppLink } from "@/components/AppLink";
-import type { EntityInsight } from "@/lib/analysis/entity/types";
+import type { EntityInsight } from "@/types";
 
 export function InsightBanner({
   insight,

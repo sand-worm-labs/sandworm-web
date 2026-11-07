@@ -7,7 +7,7 @@ import { AppLink } from "@/components/AppLink";
 import { ConfidenceMeter } from "@/components/Signals/ConfidenceMeter";
 import { SignalStatusIcon } from "@/components/Signals/SignalStatusIcon";
 import { BlockHeader } from "@/components/Overview/BlockHeader";
-import type { SignalsBlock } from "@/lib/overview/types";
+import type { SignalsBlock } from "@/types";
 
 export function SignalsCard({ block }: { block: SignalsBlock }) {
   const titleId = `${block.id}-title`;

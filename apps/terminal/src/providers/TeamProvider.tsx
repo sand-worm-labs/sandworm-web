@@ -14,7 +14,7 @@ import type { HeaderAccount } from "@/lib/auth/account";
 import type { OrganisationTypeId } from "@/data/setup/organisation-types";
 import { EMPTY_TEAM_CLIENT_DRAFT } from "@/lib/team/defaults";
 import { toggleId } from "@/lib/team/draft";
-import type { StarterResearch, TeamClientDraft } from "@/lib/team/types";
+import type { StarterResearch, TeamClientDraft } from "@/types";
 
 type Catalogue = Record<OrganisationTypeId, readonly StarterResearch[]>;
 

@@ -18,6 +18,14 @@ export type BriefingDetail = {
   why?: string;
 };
 
+// The notebook cell an item was made from. `ranOn` is when that cell last ran
+// for this item; `outputs` above is what it drew then.
+export type BriefingSource = {
+  // Null once the notebook is deleted: the snapshot stays, the link does not.
+  notebookUrl: string | null;
+  ranOn: string;
+};
+
 export type BriefingItem = {
   id: string;
   group: string;
@@ -29,6 +37,7 @@ export type BriefingItem = {
   when: string;
   isUnread: boolean;
   detail: BriefingDetail;
+  source?: BriefingSource;
   action: { label: string; route: RouteId };
 };
 

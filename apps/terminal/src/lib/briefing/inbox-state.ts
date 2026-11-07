@@ -1,4 +1,4 @@
-import type { BriefingItem, BriefingKind } from "./types";
+import type { BriefingItem, BriefingKind } from "@/types";
 
 export type BriefingFilter = "all" | BriefingKind;
 

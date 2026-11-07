@@ -1,5 +1,5 @@
 import type { MockClientId } from "@/_mockdata/clients";
-import type { OverviewData } from "@/lib/overview/types";
+import type { OverviewData } from "@/types";
 
 import { acceleratorOverview } from "./accelerator";
 import { chainOverview } from "./chain";

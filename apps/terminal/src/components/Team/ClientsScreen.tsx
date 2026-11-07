@@ -24,7 +24,7 @@ import {
   type ClientTypeFilter,
 } from "@/lib/team/client-list-state";
 import { getPlan } from "@/data/team/plans";
-import type { TeamClientSummary } from "@/lib/team/types";
+import type { TeamClientSummary } from "@/types";
 
 import { ClientStatusChip } from "./ClientStatusChip";
 

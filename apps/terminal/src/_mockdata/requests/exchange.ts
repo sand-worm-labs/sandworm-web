@@ -1,4 +1,4 @@
-import type { RequestsData } from "@/lib/requests/types";
+import type { RequestsData } from "@/types";
 
 import { questionEntry, researchRequest, step } from "./builders";
 

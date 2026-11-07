@@ -3,7 +3,7 @@ import type {
   AnalysisRow,
   AnalysisSort,
   AnalysisView,
-} from "./types";
+} from "@/types";
 
 export function filterRows(
   rows: readonly AnalysisRow[],

@@ -5,13 +5,12 @@ import { buttonClassName } from "@sandworm/ui/kit/button";
 
 import { AppLink } from "@/components/AppLink";
 import { SectionHeader } from "@/components/Sections/SectionHeader";
-import type { SectionCounts } from "@/lib/sections/types";
+import type { RequestsData, ResearchRequest, SectionCounts } from "@/types";
 import {
   approveScope,
   pickDefaultRequest,
   withApprovedResearch,
 } from "@/lib/requests/requests-state";
-import type { RequestsData, ResearchRequest } from "@/lib/requests/types";
 
 import { AllowanceSummary } from "./AllowanceSummary";
 import { QuestionsList } from "./QuestionsList";

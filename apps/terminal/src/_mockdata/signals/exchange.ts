@@ -1,4 +1,4 @@
-import type { SignalsFeed } from "@/lib/signals/types";
+import type { SignalsFeed } from "@/types";
 
 import { signal } from "./builders";
 

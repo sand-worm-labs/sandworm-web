@@ -1,15 +1,11 @@
 import type { Tone } from "@sandworm/ui/kit/tone";
 
 import type { RouteId } from "@/config/routes";
-import type { Confidence, SignalStatus } from "@/lib/signals/types";
+import type { ENTITY_KINDS } from "@/lib/analysis/entity/kinds";
 
-export const ENTITY_KINDS = ["project", "region", "sector"] as const;
+import type { Confidence, SignalStatus } from "./signals";
 
 export type EntityKind = (typeof ENTITY_KINDS)[number];
-
-export function isEntityKind(value: string): value is EntityKind {
-  return ENTITY_KINDS.some(kind => kind === value);
-}
 
 export type EntityKpi = {
   id: string;

@@ -4,7 +4,7 @@ import { buttonClassName } from "@sandworm/ui/kit/button";
 import { cardRowDividerClassName } from "@sandworm/ui/kit/card";
 
 import { AppLink } from "@/components/AppLink";
-import type { SetupStep } from "@/lib/overview/types";
+import type { SetupStep } from "@/types";
 
 function StepIcon({ isDone }: { isDone: boolean }) {
   if (!isDone) {

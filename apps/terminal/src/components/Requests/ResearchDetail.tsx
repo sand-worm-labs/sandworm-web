@@ -4,7 +4,7 @@ import { Card } from "@sandworm/ui/kit/card";
 import { AppLink } from "@/components/AppLink";
 import { site } from "@/config/site";
 import { canApprove } from "@/lib/requests/requests-state";
-import type { Allowance, ResearchRequest } from "@/lib/requests/types";
+import type { Allowance, ResearchRequest } from "@/types";
 
 import { StatusChip } from "./StatusChip";
 import { Timeline } from "./Timeline";

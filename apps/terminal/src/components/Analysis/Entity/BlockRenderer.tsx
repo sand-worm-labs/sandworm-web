@@ -1,5 +1,5 @@
 import { exhaustiveCheck } from "@/lib/exhaustive";
-import type { EntityBlock } from "@/lib/analysis/entity/types";
+import type { EntityBlock } from "@/types";
 
 import { DataTable } from "./DataTable";
 import { SignalList } from "./SignalList";

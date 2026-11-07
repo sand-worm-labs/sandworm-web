@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import type { TeamClientSummary } from "@/types";
+
 import { countByStatus, countByType, filterClients } from "./client-list-state";
-import type { TeamClientSummary } from "./types";
 
 const client = (
   init: Partial<TeamClientSummary> & { name: string }

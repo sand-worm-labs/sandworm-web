@@ -1,7 +1,7 @@
 import { Card } from "@sandworm/ui/kit/card";
 import { ProgressMeter } from "@sandworm/ui/kit/progress-meter";
 
-import type { Allowance, AllowanceMeter } from "@/lib/requests/types";
+import type { Allowance, AllowanceMeter } from "@/types";
 
 function MeterCell({
   label,

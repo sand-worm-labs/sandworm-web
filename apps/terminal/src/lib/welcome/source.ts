@@ -3,9 +3,9 @@ import { getSession } from "@/lib/session/source";
 import { env } from "@/config/env";
 import { gql } from "@/lib/api";
 import { welcomeMockData } from "@/_mockdata/welcome";
+import type { WelcomeData } from "@/types";
 
 import { buildWelcome } from "./build-welcome";
-import type { WelcomeData } from "./types";
 
 const NEEDS_WELCOME = `query TerminalNeedsWelcome { terminalSession { needsWelcome } }`;
 

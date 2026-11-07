@@ -10,8 +10,7 @@ import {
 } from "react";
 
 import type { HeaderAccount } from "@/lib/auth/account";
-import type { Session } from "@/lib/session/types";
-import type { SetupDraft } from "@/lib/setup/types";
+import type { Session, SetupDraft } from "@/types";
 
 type PatchDraft = <Section extends keyof SetupDraft>(
   section: Section,

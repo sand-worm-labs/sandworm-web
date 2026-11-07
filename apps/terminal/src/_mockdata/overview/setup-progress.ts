@@ -1,5 +1,5 @@
 import { site } from "@/config/site";
-import type { SetupProgress } from "@/lib/overview/types";
+import type { SetupProgress } from "@/types";
 
 type SetupProgressInit = { clientName: string };
 

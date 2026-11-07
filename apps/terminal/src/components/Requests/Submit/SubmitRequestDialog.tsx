@@ -13,10 +13,9 @@ import { MODAL_CLASSNAME } from "@sandworm/ui/kit/modal";
 import { ROUTES } from "@/config/routes";
 import { site } from "@/config/site";
 import { isResearchUsedUp } from "@/lib/requests/requests-state";
-import type { Allowance } from "@/lib/requests/types";
+import type { Allowance, RequestDraft } from "@/types";
 import { submitRequest } from "@/lib/requests/submit/actions";
 import { emptyDraft, formatSubmittedAt } from "@/lib/requests/submit/draft";
-import type { RequestDraft } from "@/lib/requests/submit/types";
 
 import { AllowanceUsed } from "./AllowanceUsed";
 import { RequestForm } from "./RequestForm";

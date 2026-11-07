@@ -7,7 +7,7 @@ import { site } from "@/config/site";
 import { useSetup } from "@/providers/SetupProvider";
 import { ACCESS_LEVELS } from "@/data/setup/access-levels";
 import { GOALS, MAX_GOALS, type GoalId } from "@/data/setup/goals";
-import type { TeamInvite } from "@/lib/setup/types";
+import type { TeamInvite } from "@/types";
 
 import type { SetupStepDefinition } from "./types";
 

@@ -1,4 +1,4 @@
-import type { TeamClientDraft } from "./types";
+import type { TeamClientDraft } from "@/types";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

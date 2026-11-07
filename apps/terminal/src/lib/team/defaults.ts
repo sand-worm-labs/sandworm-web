@@ -1,6 +1,5 @@
 import { ORGANISATION_TYPES } from "@/data/setup/organisation-types";
-
-import type { TeamClientDraft } from "./types";
+import type { TeamClientDraft } from "@/types";
 
 export const EMPTY_TEAM_CLIENT_DRAFT: TeamClientDraft = {
   details: {

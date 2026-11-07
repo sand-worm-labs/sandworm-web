@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 
 import { EntityScreen } from "@/components/Analysis/Entity/EntityScreen";
 import { getEntityPage } from "@/lib/analysis/entity/source";
-import { isEntityKind } from "@/lib/analysis/entity/types";
+import { isEntityKind } from "@/lib/analysis/entity/kinds";
 import { getSession } from "@/lib/session/source";
 
 type EntityRouteProps = { params: Promise<{ kind: string; slug: string }> };

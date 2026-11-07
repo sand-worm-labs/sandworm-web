@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 
+import type { TeamClientDraft } from "@/types";
+
 import {
   canLeaveDetails,
   describeInvite,
   isValidEmail,
   toggleId,
 } from "./draft";
-import type { TeamClientDraft } from "./types";
 
 const draft = (
   details: Partial<TeamClientDraft["details"]>

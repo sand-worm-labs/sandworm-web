@@ -1,9 +1,4 @@
-export const SIGNAL_STATUSES = [
-  "New",
-  "Reviewing",
-  "Pursuing",
-  "Passed",
-] as const;
+import type { SIGNAL_STATUSES } from "@/lib/signals/statuses";
 
 export type SignalStatus = (typeof SIGNAL_STATUSES)[number];
 

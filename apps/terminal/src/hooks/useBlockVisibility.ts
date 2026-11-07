@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 
-import type { OverviewBlock } from "@/lib/overview/types";
+import type { OverviewBlock } from "@/types";
 import { toggleId } from "@/lib/overview/visibility";
 
 export function useBlockVisibility(blocks: readonly OverviewBlock[]) {

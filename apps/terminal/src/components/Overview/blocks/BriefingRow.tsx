@@ -3,7 +3,7 @@ import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 
 import { AppLink } from "@/components/AppLink";
 import { BriefingKindTag } from "@/components/Briefing/BriefingKindTag";
-import type { BriefingEntry } from "@/lib/overview/types";
+import type { BriefingEntry } from "@/types";
 
 export function BriefingRow({ entry }: { entry: BriefingEntry }) {
   return (

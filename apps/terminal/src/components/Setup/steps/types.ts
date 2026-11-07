@@ -1,7 +1,6 @@
 import type { ComponentType } from "react";
 
-import type { Session } from "@/lib/session/types";
-import type { SetupDraft } from "@/lib/setup/types";
+import type { Session, SetupDraft } from "@/types";
 import type { SetupStepId } from "@/lib/setup/routes";
 
 export type SetupStepDefinition = {

@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 
 import type { MockClientId } from "@/_mockdata/clients";
-import { isOverviewStatus, type OverviewStatus } from "@/lib/overview/types";
+import type { OverviewStatus } from "@/types";
+import { isOverviewStatus } from "@/lib/overview/status";
 import { ORGANISATION_TYPES } from "@/data/setup/organisation-types";
 
 export const PREVIEW_CLIENT_COOKIE = "preview-client";

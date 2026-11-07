@@ -1,5 +1,5 @@
 import type { MockClientId } from "@/_mockdata/clients";
-import type { EntityKind, EntityPage } from "@/lib/analysis/entity/types";
+import type { EntityKind, EntityPage } from "@/types";
 
 import { cashOutPage } from "./cash-out";
 import { latinAmericaPage } from "./latin-america";

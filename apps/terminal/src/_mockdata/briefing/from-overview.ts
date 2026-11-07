@@ -1,6 +1,6 @@
 import type { RouteId } from "@/config/routes";
-import { findBlock, type OverviewData } from "@/lib/overview/types";
-import type { BriefingFeed, BriefingItem } from "@/lib/briefing/types";
+import type { BriefingFeed, BriefingItem, OverviewData } from "@/types";
+import { findBlock } from "@/lib/overview/blocks";
 
 type Action = BriefingItem["action"];
 

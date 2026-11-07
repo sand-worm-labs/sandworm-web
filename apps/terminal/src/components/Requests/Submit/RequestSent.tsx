@@ -5,7 +5,7 @@ import { AppLink } from "@/components/AppLink";
 import { site } from "@/config/site";
 import { Timeline } from "@/components/Requests/Timeline";
 import { describeDraft, submittedTimeline } from "@/lib/requests/submit/draft";
-import type { RequestDraft } from "@/lib/requests/submit/types";
+import type { RequestDraft } from "@/types";
 
 type RequestSentProps = {
   draft: RequestDraft;

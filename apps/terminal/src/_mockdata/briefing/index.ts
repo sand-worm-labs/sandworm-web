@@ -1,6 +1,6 @@
 import type { MockClientId } from "@/_mockdata/clients";
 import { overviewMockData } from "@/_mockdata/overview";
-import type { BriefingFeed } from "@/lib/briefing/types";
+import type { BriefingFeed } from "@/types";
 
 import { exchangeBriefing } from "./exchange";
 import { paycrestBriefing } from "./paycrest";

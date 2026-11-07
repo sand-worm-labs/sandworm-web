@@ -2,7 +2,7 @@ import { buttonClassName } from "@sandworm/ui/kit/button";
 import { Card } from "@sandworm/ui/kit/card";
 
 import { AppLink } from "@/components/AppLink";
-import type { BriefingItem } from "@/lib/briefing/types";
+import type { BriefingItem, BriefingSource } from "@/types";
 
 import { BriefingKindTag } from "./BriefingKindTag";
 import { CellOutputs } from "./CellOutputs";
@@ -22,11 +22,30 @@ function DetailSection({ title, text }: { title: string; text: string }) {
   );
 }
 
+function SourceNote({ source }: { source: BriefingSource }) {
+  return (
+    <p className="flex flex-wrap items-center gap-x-2 text-xs text-ink-400">
+      <span>Snapshot from {source.ranOn}</span>
+      {source.notebookUrl && (
+        <a
+          href={source.notebookUrl}
+          target="_blank"
+          rel="noreferrer"
+          className={buttonClassName({ variant: "link", className: "text-xs" })}
+        >
+          Open the notebook
+        </a>
+      )}
+    </p>
+  );
+}
+
 export function BriefingDetailPanel({
   item,
   clientName,
 }: BriefingDetailPanelProps) {
   const { headline, outputs, what, why } = item.detail;
+  const { source } = item;
   const titleId = `briefing-${item.id}-title`;
 
   return (
@@ -53,6 +72,7 @@ export function BriefingDetailPanel({
       {outputs && outputs.length > 0 && (
         <CellOutputs outputs={outputs} title={item.title} />
       )}
+      {source && <SourceNote source={source} />}
       {what && <DetailSection title="What happened" text={what} />}
       {why && (
         <DetailSection title={`Why it matters for ${clientName}`} text={why} />

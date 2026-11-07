@@ -3,8 +3,7 @@ import {
   getPreviewClientKind,
 } from "@/lib/preview/cookies";
 import { requestMockData } from "@/_mockdata/requests/index";
-
-import type { RequestsData } from "./types";
+import type { RequestsData } from "@/types";
 
 export async function getRequests(): Promise<RequestsData> {
   const [clientKind, allowanceMode] = await Promise.all([
