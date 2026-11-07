@@ -172,7 +172,8 @@ export class DocumentService {
     }
 
     if (input.parentId !== undefined || input.orderIndex !== undefined) {
-      const newParentId = input.parentId ?? document.parentId;
+      // null is a real answer (move to the top level); only a missing parentId keeps the current one.
+      const newParentId = input.parentId !== undefined ? input.parentId : document.parentId;
       const newOrderIndex = input.orderIndex ?? document.orderIndex;
 
       if (newParentId !== document.parentId || newOrderIndex !== document.orderIndex) {

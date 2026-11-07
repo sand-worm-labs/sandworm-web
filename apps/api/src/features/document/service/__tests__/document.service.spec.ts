@@ -265,6 +265,28 @@ describe('DocumentService', () => {
       );
     });
 
+    it('moves a nested document to the top level when parentId is null', async () => {
+      const { service, documentRepository, documentTreeService } = makeService();
+      documentRepository.findOne
+        .mockResolvedValueOnce(makeDocumentEntity({ parentId: 'old-parent', orderIndex: 1 }))
+        .mockResolvedValueOnce(makeDocumentEntity({ parentId: null, orderIndex: 3 }));
+
+      await service.updateDocument(DOCUMENT_ID, WORKSPACE_ID, { parentId: null, orderIndex: 3 } as any);
+
+      expect(documentTreeService.moveDocument).toHaveBeenCalledWith(DOCUMENT_ID, WORKSPACE_ID, null, 3);
+    });
+
+    it('keeps the current parent when parentId is left out', async () => {
+      const { service, documentRepository, documentTreeService } = makeService();
+      documentRepository.findOne
+        .mockResolvedValueOnce(makeDocumentEntity({ parentId: 'p', orderIndex: 0 }))
+        .mockResolvedValueOnce(makeDocumentEntity({ parentId: 'p', orderIndex: 2 }));
+
+      await service.updateDocument(DOCUMENT_ID, WORKSPACE_ID, { orderIndex: 2 } as any);
+
+      expect(documentTreeService.moveDocument).toHaveBeenCalledWith(DOCUMENT_ID, WORKSPACE_ID, 'p', 2);
+    });
+
     it('does not move when parentId/orderIndex are unchanged', async () => {
       const { service, documentRepository, documentTreeService } = makeService();
       const entity = makeDocumentEntity({ parentId: 'p', orderIndex: 0 });
