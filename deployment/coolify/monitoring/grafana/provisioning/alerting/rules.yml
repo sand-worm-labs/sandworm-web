@@ -1,0 +1,203 @@
+# Alert rules, loaded by Grafana at start. Where they go (Discord, Slack,
+# email...) is a contact point you set once in Grafana: Alerting > Contact
+# points, then make it the default in Notification policies.
+#
+# Each rule: A is the PromQL query, C the threshold on it.
+
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: sandworm-server
+    folder: Sandworm
+    interval: 1m
+    rules:
+      - uid: sw-disk-full
+        title: Disk above 80%
+        condition: C
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "Disk {{ $labels.mountpoint }} is {{ humanize $values.A.Value }}% full"
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            relativeTimeRange: { from: 600, to: 0 }
+            model:
+              refId: A
+              instant: true
+              expr: >-
+                100 * (1 - node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs"}
+                / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs"})
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [80] }
+
+      - uid: sw-memory-high
+        title: Memory above 90%
+        condition: C
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "Memory is {{ humanize $values.A.Value }}% used"
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            relativeTimeRange: { from: 600, to: 0 }
+            model:
+              refId: A
+              instant: true
+              expr: 100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [90] }
+
+      - uid: sw-cpu-high
+        title: CPU above 90% for 15 minutes
+        condition: C
+        for: 15m
+        labels: { severity: warning }
+        annotations:
+          summary: "CPU is {{ humanize $values.A.Value }}% busy"
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            relativeTimeRange: { from: 600, to: 0 }
+            model:
+              refId: A
+              instant: true
+              expr: 100 * (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])))
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [90] }
+
+      - uid: sw-container-restarting
+        title: Container restarting
+        condition: C
+        for: 0s
+        labels: { severity: critical }
+        annotations:
+          summary: "{{ $labels.name }} restarted {{ humanize $values.A.Value }} times in 15 minutes"
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            relativeTimeRange: { from: 900, to: 0 }
+            model:
+              refId: A
+              instant: true
+              expr: changes(container_start_time_seconds{name!=""}[15m])
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [2] }
+
+  - orgId: 1
+    name: sandworm-data
+    folder: Sandworm
+    interval: 1m
+    rules:
+      - uid: sw-postgres-down
+        title: Postgres down
+        condition: C
+        for: 2m
+        labels: { severity: critical }
+        annotations:
+          summary: Postgres is not answering the exporter
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            relativeTimeRange: { from: 300, to: 0 }
+            model: { refId: A, instant: true, expr: min(pg_up) }
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: lt, params: [1] }
+
+      - uid: sw-postgres-connections
+        title: Postgres connections above 80% of max
+        condition: C
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Postgres is at {{ humanize $values.A.Value }}% of max_connections"
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            relativeTimeRange: { from: 300, to: 0 }
+            model:
+              refId: A
+              instant: true
+              expr: 100 * sum(pg_stat_activity_count) / max(pg_settings_max_connections)
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [80] }
+
+      - uid: sw-redis-down
+        title: Redis down
+        condition: C
+        for: 2m
+        labels: { severity: critical }
+        annotations:
+          summary: Redis is not answering the exporter
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            relativeTimeRange: { from: 300, to: 0 }
+            model: { refId: A, instant: true, expr: min(redis_up) }
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: lt, params: [1] }
+
+      - uid: sw-scrape-target-down
+        title: A metrics target is down
+        condition: C
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Prometheus can't scrape {{ $labels.job }}"
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            relativeTimeRange: { from: 300, to: 0 }
+            model: { refId: A, instant: true, expr: up }
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: lt, params: [1] }

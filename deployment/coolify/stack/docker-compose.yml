@@ -1,0 +1,354 @@
+# Sandworm on Coolify: the whole product as one Docker Compose resource.
+#
+# Coolify deploys this file from git. Images are built by CI
+# (.github/workflows/images.yml) and pulled from GHCR; IMAGE_TAG picks the
+# environment ("staging" or "production"). Settings live in Coolify (set by
+# deploy.sh envs), never in git: .env.example lists them.
+#
+# The apps read Coolify's settings through env_file, so an unset one stays unset
+# and the app's default applies (`${X:-}` would pass "" instead). `environment:`
+# pins what must point inside the stack, and ${X:?} marks what's required.
+#
+# Routing is Traefik labels, not Coolify's domain field: app.<domain> splits by
+# path between the api and web, which the domain field can't express. Leave the
+# domain field empty on every service.
+#
+# One stack per server: router names are fixed.
+
+x-pull: &pull
+  pull_policy: always
+  restart: unless-stopped
+
+x-tls: &tls
+  traefik.enable: "true"
+
+services:
+  ###########################################################################
+  # Data
+  ###########################################################################
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME:?}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?}
+      POSTGRES_DB: ${DATABASE_NAME:?}
+      TZ: UTC
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  qdrant:
+    image: qdrant/qdrant:v1.17.0
+    restart: unless-stopped
+    environment:
+      QDRANT__SERVICE__API_KEY: ${QDRANT_API_KEY:-}
+    volumes:
+      - qdrant-data:/qdrant/storage
+
+  jupyter:
+    <<: *pull
+    image: ghcr.io/sand-worm-labs/sandworm-jupyter:${IMAGE_TAG:?}
+    platform: linux/amd64
+    environment:
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:?}
+    volumes:
+      - jupyter-work:/home/sandwormuser/work
+    command: >
+      jupyter server --ip=0.0.0.0
+      --ZMQChannelsWebsocketConnection.iopub_data_rate_limit=1.0e10
+      --ZMQChannelsWebsocketConnection.iopub_msg_rate_limit=1.0e6
+      --ServerApp.max_body_size=107374182400
+      --no-browser
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8888/api || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  ###########################################################################
+  # Migrations: run once per deploy, before the api starts.
+  ###########################################################################
+  migrate:
+    image: ghcr.io/sand-worm-labs/sandworm-api:${IMAGE_TAG:?}
+    pull_policy: always
+    restart: "no"
+    exclude_from_hc: true
+    working_dir: /repo/packages/postgresql-typeorm
+    # Not `pnpm migration:up`: that script deletes the package's dist/ first,
+    # which the api runs from.
+    command: ["./node_modules/.bin/typeorm-ts-node-commonjs", "-d", "src/data-source.ts", "migration:run"]
+    env_file: .env
+    environment: &db
+      NODE_ENV: production
+      DATABASE_TYPE: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: "5432"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  ###########################################################################
+  # Apps
+  ###########################################################################
+  api:
+    <<: *pull
+    image: ghcr.io/sand-worm-labs/sandworm-api:${IMAGE_TAG:?}
+    working_dir: /repo/apps/api
+    command: ["node", "dist/main.js"]
+    env_file: .env
+    environment:
+      <<: *db
+      APP_PORT: "8003"
+      JUPYTER_HOST: jupyter
+      JUPYTER_PORT: "8888"
+      AI_SERVICE_URL: http://ai:8000
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      jupyter:
+        condition: service_healthy
+    healthcheck:
+      # No health route yet: healthy once the port accepts connections.
+      test: ["CMD", "node", "-e", "require('net').connect(8003,'127.0.0.1').on('connect',()=>process.exit(0)).on('error',()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+    labels:
+      <<: *tls
+      # REST and GraphQL, chat streaming (SSE), Socket.IO, and the MCP OAuth
+      # discovery document (RFC 8414 wants it at the root, outside /api).
+      traefik.http.routers.sandworm-api.rule: >-
+        Host(`${APP_HOST:?}`) && (PathPrefix(`/api`) || PathPrefix(`/socket.io`)
+        || Path(`/.well-known/oauth-authorization-server`))
+      traefik.http.routers.sandworm-api.priority: "100"
+      traefik.http.routers.sandworm-api.entrypoints: https
+      traefik.http.routers.sandworm-api.tls: "true"
+      traefik.http.routers.sandworm-api.tls.certresolver: letsencrypt
+      traefik.http.routers.sandworm-api.service: sandworm-api
+      traefik.http.services.sandworm-api.loadbalancer.server.port: "8003"
+
+      # MCP clients that can't read the discovery document fall back to these
+      # default paths on the issuer (MCP spec): map them onto the real ones.
+      traefik.http.routers.sandworm-oauth.rule: >-
+        Host(`${APP_HOST:?}`) && (Path(`/authorize`) || Path(`/token`) || Path(`/register`))
+      traefik.http.routers.sandworm-oauth.priority: "100"
+      traefik.http.routers.sandworm-oauth.entrypoints: https
+      traefik.http.routers.sandworm-oauth.tls: "true"
+      traefik.http.routers.sandworm-oauth.tls.certresolver: letsencrypt
+      traefik.http.routers.sandworm-oauth.middlewares: sandworm-oauth-path
+      traefik.http.routers.sandworm-oauth.service: sandworm-api
+      traefik.http.middlewares.sandworm-oauth-path.replacepathregex.regex: ^/(authorize|token|register)$$
+      traefik.http.middlewares.sandworm-oauth-path.replacepathregex.replacement: /api/oauth/$${1}
+
+      # Live notebook editing (Yjs): its own WebSocket server on the api port + 2.
+      traefik.http.routers.sandworm-yjs.rule: Host(`${APP_HOST:?}`) && PathPrefix(`/yjs`)
+      traefik.http.routers.sandworm-yjs.priority: "100"
+      traefik.http.routers.sandworm-yjs.entrypoints: https
+      traefik.http.routers.sandworm-yjs.tls: "true"
+      traefik.http.routers.sandworm-yjs.tls.certresolver: letsencrypt
+      traefik.http.routers.sandworm-yjs.service: sandworm-yjs
+      traefik.http.services.sandworm-yjs.loadbalancer.server.port: "8005"
+
+      # The api on the terminal's own origin, so the browser sends the session
+      # cookies without CORS.
+      traefik.http.routers.sandworm-terminal-api.rule: Host(`${TERMINAL_HOST:?}`) && PathPrefix(`/api`)
+      traefik.http.routers.sandworm-terminal-api.priority: "100"
+      traefik.http.routers.sandworm-terminal-api.entrypoints: https
+      traefik.http.routers.sandworm-terminal-api.tls: "true"
+      traefik.http.routers.sandworm-terminal-api.tls.certresolver: letsencrypt
+      traefik.http.routers.sandworm-terminal-api.service: sandworm-api
+
+  web:
+    <<: *pull
+    image: ghcr.io/sand-worm-labs/sandworm-web:${IMAGE_TAG:?}
+    working_dir: /repo/apps/web
+    command: ["./node_modules/.bin/next", "start", "-p", "3000", "-H", "0.0.0.0"]
+    env_file: .env
+    environment:
+      INTERNAL_API_URL: http://api:8003
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck: &next-health
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:'+(process.env.PORT||3000)+'/',{redirect:'manual'}).then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    labels:
+      <<: *tls
+      # Everything on app.<domain> the api routes above don't claim.
+      traefik.http.routers.sandworm-web.rule: Host(`${APP_HOST:?}`)
+      traefik.http.routers.sandworm-web.priority: "1"
+      traefik.http.routers.sandworm-web.entrypoints: https
+      traefik.http.routers.sandworm-web.tls: "true"
+      traefik.http.routers.sandworm-web.tls.certresolver: letsencrypt
+      traefik.http.routers.sandworm-web.service: sandworm-web
+      traefik.http.services.sandworm-web.loadbalancer.server.port: "3000"
+
+      # Plain HTTP on any of our hosts goes to HTTPS.
+      traefik.http.routers.sandworm-http.rule: >-
+        Host(`${APP_HOST:?}`) || Host(`${TERMINAL_HOST:?}`) || Host(`${MCP_HOST:?}`)
+        || Host(`${LANDING_HOST:?}`) || Host(`${LANDING_WWW_HOST:?}`)
+      traefik.http.routers.sandworm-http.entrypoints: http
+      traefik.http.routers.sandworm-http.middlewares: sandworm-https
+      traefik.http.routers.sandworm-http.service: noop@internal
+      traefik.http.middlewares.sandworm-https.redirectscheme.scheme: https
+      traefik.http.middlewares.sandworm-https.redirectscheme.permanent: "true"
+
+  terminal:
+    <<: *pull
+    image: ghcr.io/sand-worm-labs/sandworm-terminal:${IMAGE_TAG:?}
+    working_dir: /repo/apps/terminal
+    command: ["./node_modules/.bin/next", "start", "-p", "3002", "-H", "0.0.0.0"]
+    environment:
+      PORT: "3002"
+      INTERNAL_API_URL: http://api:8003
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck: *next-health
+    labels:
+      <<: *tls
+      traefik.http.routers.sandworm-terminal.rule: Host(`${TERMINAL_HOST:?}`)
+      traefik.http.routers.sandworm-terminal.priority: "1"
+      traefik.http.routers.sandworm-terminal.entrypoints: https
+      traefik.http.routers.sandworm-terminal.tls: "true"
+      traefik.http.routers.sandworm-terminal.tls.certresolver: letsencrypt
+      traefik.http.routers.sandworm-terminal.service: sandworm-terminal
+      traefik.http.services.sandworm-terminal.loadbalancer.server.port: "3002"
+
+  mcp:
+    <<: *pull
+    image: ghcr.io/sand-worm-labs/sandworm-mcp:${IMAGE_TAG:?}
+    working_dir: /repo/apps/mcp
+    # Not `pnpm start`: that needs a .env file in the image.
+    command: ["node", "dist/index.js"]
+    # Exactly one replica: it runs the notebook scheduler.
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      PORT: "6789"
+      API_URL: http://api:8003
+      REDIS_URL: redis://redis:6379
+      # Required: refuse to deploy without them.
+      MCP_PUBLIC_URL: ${MCP_PUBLIC_URL:?}
+      AUTH_SERVER_URL: ${AUTH_SERVER_URL:?}
+      WEB_URL: ${WEB_URL:?}
+      MCP_OAUTH_INTROSPECT_KEY: ${MCP_OAUTH_INTROSPECT_KEY:?}
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:6789/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    labels:
+      <<: *tls
+      # Responses stream: Traefik passes them through unbuffered (no compress
+      # middleware on any Sandworm router, so SSE is never held back).
+      traefik.http.routers.sandworm-mcp.rule: Host(`${MCP_HOST:?}`)
+      traefik.http.routers.sandworm-mcp.entrypoints: https
+      traefik.http.routers.sandworm-mcp.tls: "true"
+      traefik.http.routers.sandworm-mcp.tls.certresolver: letsencrypt
+      traefik.http.routers.sandworm-mcp.service: sandworm-mcp
+      traefik.http.services.sandworm-mcp.loadbalancer.server.port: "6789"
+
+  landing:
+    <<: *pull
+    image: ghcr.io/sand-worm-labs/sandworm-landing:${IMAGE_TAG:?}
+    working_dir: /repo/apps/landing-page
+    command: ["./node_modules/.bin/astro", "preview", "--host", "0.0.0.0", "--port", "4321"]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4321/',{redirect:'manual'}).then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+    labels:
+      <<: *tls
+      traefik.http.routers.sandworm-landing.rule: Host(`${LANDING_HOST:?}`) || Host(`${LANDING_WWW_HOST:?}`)
+      traefik.http.routers.sandworm-landing.entrypoints: https
+      traefik.http.routers.sandworm-landing.tls: "true"
+      traefik.http.routers.sandworm-landing.tls.certresolver: letsencrypt
+      traefik.http.routers.sandworm-landing.service: sandworm-landing
+      traefik.http.services.sandworm-landing.loadbalancer.server.port: "4321"
+
+  ai:
+    <<: *pull
+    image: ghcr.io/sand-worm-labs/sandworm-ai:${IMAGE_TAG:?}
+    env_file: .env
+    environment:
+      NEST_BASE_URL: http://api:8003
+      REDIS_URL: redis://redis:6379
+      QDRANT_URL: http://qdrant:6333
+      # Chat is a tool loop over the MCP server.
+      MCP_URL: http://mcp:6789/mcp
+      AI_HANDSHAKE_TOKEN: ${AI_HANDSHAKE_TOKEN:?}
+      OPENROUTER_EMBEDDING_KEY: ${OPENROUTER_EMBEDDING_KEY:?}
+    depends_on:
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+
+  ###########################################################################
+  # Metrics for the monitoring stack (deployment/coolify/monitoring), which
+  # reaches these over the shared sandworm-monitoring network.
+  ###########################################################################
+  sandworm-pg-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.15.0
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_URI: postgres:5432/${DATABASE_NAME:?}?sslmode=disable
+      DATA_SOURCE_USER: ${DATABASE_USERNAME:?}
+      DATA_SOURCE_PASS: ${DATABASE_PASSWORD:?}
+    networks: [default, monitoring]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  sandworm-redis-exporter:
+    image: oliver006/redis_exporter:v1.66.0
+    restart: unless-stopped
+    environment:
+      REDIS_ADDR: redis://redis:6379
+    networks: [default, monitoring]
+    depends_on:
+      redis:
+        condition: service_healthy
+
+networks:
+  # Created once per server by server/bootstrap.sh.
+  monitoring:
+    external: true
+    name: sandworm-monitoring
+
+volumes:
+  postgres-data:
+  redis-data:
+  qdrant-data:
+  jupyter-work:
