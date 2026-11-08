@@ -3,8 +3,10 @@
 ## Stack
 
 - **Apps** — PM2 (api, web, landing, ai)
-- **Infra** — Docker Compose (Postgres, Redis, Qdrant, Caddy, Portainer, Logdy, Jupyter)
-- **Proxy** — Caddy (auto HTTPS via Let's Encrypt)
+- **Infra** — Docker Compose (Postgres, Redis, Qdrant, Portainer, Logdy, Jupyter)
+- **Proxy** — Traefik, run by Coolify (auto HTTPS via Let's Encrypt)
+
+> Staging and production are moving to Coolify: see [deployment/coolify/README.md](../deployment/coolify/README.md).
 
 ---
 
@@ -50,24 +52,12 @@ The start script handles everything in order: env setup → domain config → Do
 
 ---
 
-## Caddy (Proxy)
+## Proxy
 
-Caddy runs as a Docker container and handles routing and automatic SSL.
+Production and staging: Traefik, run by Coolify. Routes are labels in
+`deployment/coolify/stack/docker-compose.yml`; see `deployment/coolify/README.md`.
 
-| Config | Used for |
-|---|---|
-| `deployment/caddy/Caddyfile.dev` | Local dev — plain HTTP, `localhost` upstreams |
-| `deployment/caddy/Caddyfile.staging` | Staging — HTTPS, basic auth, `host.docker.internal` upstreams |
-| `deployment/caddy/Caddyfile.prod` | Production — HTTPS, `localhost` upstreams |
-
-SSL certs are stored in the `sandworm-caddy-data` Docker volume and auto-renewed.
-
-### Requirements for HTTPS
-- DNS A records pointing to the server IP
-- Ports 80 and 443 open:
-```bash
-sudo ufw allow 80 && sudo ufw allow 443
-```
+Local dev only: Caddy with `deployment/caddy/Caddyfile.dev` (plain HTTP, `localhost` upstreams).
 
 ---
 

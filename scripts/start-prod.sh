@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# The OLD server's deploy (PM2 on the host). Replaced by
+# deployment/coolify/deploy.sh; kept only until production moves to Coolify,
+# then deleted along with ecosystem.config.js.
 set -e
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
@@ -13,10 +16,10 @@ case "$ENV" in
 esac
 
 if [ "$ENV" = "staging" ]; then
-  COMPOSE_BASE="$ROOT_DIR/deployment/docker/docker-compose.staging.yml"
-else
-  COMPOSE_BASE="$ROOT_DIR/deployment/docker/docker-compose.yml"
+  echo "Staging runs on Coolify now: see deployment/coolify/README.md"
+  exit 1
 fi
+COMPOSE_BASE="$ROOT_DIR/deployment/docker/docker-compose.yml"
 
 # ─── ENV SETUP ───────────────────────────────────────────────────────────────
 echo "▶ Running env setup..."
