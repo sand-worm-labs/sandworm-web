@@ -1,8 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
 import {
+  TerminalClientDetail,
   TerminalSession,
   TerminalSetup,
+  TerminalSourceRun,
   TerminalTeamClient,
   TerminalTeamClientDraft,
 } from './terminal.model';
@@ -73,6 +75,31 @@ export class TerminalResolver {
   })
   terminalClients(@CurrentUser('id') userId: string) {
     return this.teamService.listClients(userId);
+  }
+
+  @Query(() => TerminalClientDetail, {
+    name: 'terminalClient',
+    description:
+      "One client with who reads it, what is open and the notebooks its terminal is built from. Staff only.",
+  })
+  terminalClient(
+    @CurrentUser('id') userId: string,
+    @Args('clientId') clientId: string,
+  ) {
+    return this.teamService.getClient(userId, clientId);
+  }
+
+  @Mutation(() => TerminalSourceRun, {
+    name: 'runTerminalSource',
+    description:
+      "Run one of a client's notebooks on their behalf, as the staff member (who needs edit access to it). Staff only.",
+  })
+  runTerminalSource(
+    @CurrentUser('id') userId: string,
+    @Args('clientId') clientId: string,
+    @Args('documentId') documentId: string,
+  ) {
+    return this.teamService.runSource(userId, clientId, documentId);
   }
 
   @Mutation(() => TerminalTeamClient, {

@@ -5,6 +5,9 @@ import { getAccess } from "@/lib/access/source";
 import { RequestAccessScreen } from "@/components/Access/RequestAccessScreen";
 import { getHeaderAccount } from "@/lib/auth/account";
 import { signInUrl } from "@/lib/auth/sign-in";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata("Request access");
 
 export default async function AccessRoute() {
   const access = await getAccess();

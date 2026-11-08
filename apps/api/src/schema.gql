@@ -460,6 +460,87 @@ type TerminalTeamClient {
   createdAt: String!
 }
 
+type TerminalSourceSchedule {
+  isActive: Boolean!
+  nextRunAt: String
+  lastRunAt: String
+}
+
+type TerminalClientSource {
+  documentId: String!
+  title: String!
+  path: String!
+  cells: Int!
+  items: Int!
+  lastRanAt: String
+  schedule: TerminalSourceSchedule
+}
+
+type TerminalClientDetail {
+  id: String!
+  name: String!
+  type: String!
+  plan: String!
+  status: String!
+  adminEmail: String
+  createdAt: String!
+  website: String!
+  description: String!
+  members: Int!
+  lastReadAt: String
+  openRequests: Int!
+  newSignals: Int!
+  researchAllowance: Int!
+  sources: [TerminalClientSource!]!
+}
+
+type TerminalSourceRunFailure {
+  title: String!
+  message: String!
+}
+
+type TerminalSourceRun {
+  status: String!
+  cells: Int!
+  failed: [TerminalSourceRunFailure!]!
+}
+
+type TerminalKpiDelta {
+  text: String!
+  tone: String!
+}
+
+type TerminalKpi {
+  id: String!
+  label: String!
+  value: String!
+  delta: TerminalKpiDelta
+  comparison: String
+}
+
+type TerminalOverviewKpis {
+  clientType: String!
+  clientStatus: String!
+  kpis: [TerminalKpi!]!
+}
+
+type TerminalKpiDefinition {
+  id: String!
+  subjectId: String
+  key: String!
+  label: String!
+  description: String!
+  position: Int!
+  isVisible: Boolean!
+  format: JSON!
+  direction: String!
+  comparison: JSON!
+  source: JSON!
+  settings: JSON!
+  display: TerminalKpi!
+  lastReadingAt: String
+}
+
 type ShowcaseNotebook {
   id: String!
   slug: String!
@@ -956,6 +1037,11 @@ type Query {
   terminalClients: [TerminalTeamClient!]!
 
   """
+  One client with who reads it, what is open and the notebooks its terminal is built from. Staff only.
+  """
+  terminalClient(clientId: String!): TerminalClientDetail!
+
+  """
   The numbers on the terminal section tabs: unread briefing, reports, open signals and open requests.
   """
   terminalCounts: TerminalCounts!
@@ -979,6 +1065,16 @@ type Query {
   The client's research requests and questions, with this year's research allowance.
   """
   terminalRequests: TerminalRequests!
+
+  """
+  The key numbers on the Overview of the user's client, null before they belong to one.
+  """
+  terminalOverviewKpis: TerminalOverviewKpis
+
+  """
+  Every key number of a client, hidden ones too, with how each reads now. Staff only.
+  """
+  terminalClientKpis(clientId: String!): [TerminalKpiDefinition!]!
 }
 
 input ListFilesInput {
@@ -1269,6 +1365,11 @@ type Mutation {
   markTerminalWelcomed: Boolean!
 
   """
+  Run one of a client's notebooks on their behalf, as the staff member (who needs edit access to it). Staff only.
+  """
+  runTerminalSource(clientId: String!, documentId: String!): TerminalSourceRun!
+
+  """
   Set a client up: its details, plan, what to track and an invite for its admin. Staff only.
   """
   createTerminalClient(input: TerminalTeamClientDraftInput!): TerminalTeamClient!
@@ -1290,6 +1391,19 @@ type Mutation {
   Approves the scope of a research request: the work starts and it counts toward the allowance.
   """
   approveTerminalRequestScope(requestId: ID!): TerminalRequest!
+
+  """
+  Create a key number, or change the one with this key. What is not sent stays. Staff only.
+  """
+  saveTerminalKpi(clientId: String!, input: TerminalKpiInput!): TerminalKpiDefinition!
+
+  """Remove a key number and its readings. Staff only."""
+  deleteTerminalKpi(kpiId: String!): Boolean!
+
+  """
+  Record a reading by hand; one for the same date is replaced. Staff only.
+  """
+  recordTerminalKpiValue(kpiId: String!, input: TerminalKpiValueInput!): TerminalKpiDefinition!
 }
 
 input CreateChatInput {
@@ -1536,4 +1650,25 @@ input TerminalRequestInput {
   about: [String!]!
   timing: String
   files: [String!]!
+}
+
+input TerminalKpiInput {
+  subjectId: String
+  key: String!
+  label: String
+  description: String
+  position: Int
+  isVisible: Boolean
+  format: JSON
+  direction: String
+  comparison: JSON
+  source: JSON
+  settings: JSON
+}
+
+input TerminalKpiValueInput {
+  asOf: String
+  value: Float
+  textValue: String
+  previous: Float
 }

@@ -84,6 +84,37 @@ export type TeamClientSummary = {
   createdAt: string; // ISO date
 };
 
+// A notebook that feeds a client's terminal: the briefing items, signals and
+// analysis the client sees come from its cells.
+export type TeamClientSource = {
+  documentId: string;
+  title: string;
+  path: string; // the notebook's address in the web app
+  cells: number; // distinct cells the client's briefing items read from
+  items: number; // briefing items, signals and analysis subjects it feeds
+  lastRanAt: string | null; // ISO date of the newest run a briefing item froze
+  schedule: { isActive: boolean; nextRunAt: string | null; lastRunAt: string | null } | null;
+};
+
+// One client as the team's client page shows it.
+export type TeamClientDetail = TeamClientSummary & {
+  website: string;
+  description: string;
+  members: number;
+  lastReadAt: string | null; // ISO date a member last opened the briefing
+  openRequests: number;
+  newSignals: number;
+  researchAllowance: number;
+  sources: TeamClientSource[];
+};
+
+// What running a source on a client's behalf did.
+export type TeamSourceRun = {
+  status: 'idle' | 'running';
+  cells: number; // cells that were run
+  failed: { title: string; message: string }[];
+};
+
 // A request a client submits: research (scoped, approved, then worked on by
 // Sandworm's agents into a report) or a question (answered without a scope).
 export const REQUEST_KIND_IDS = ['research', 'question'] as const;
@@ -245,3 +276,6 @@ export type RequestInput = {
 
 // The numbers on the section tabs
 export type TerminalCounts = { briefing: number; analysis: number; signals: number; requests: number };
+
+// Key numbers: the KPI schemas and how a KPI is built from its readings
+export * from "./terminal-kpi";

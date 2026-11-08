@@ -33,6 +33,7 @@ export const ROUTES = {
   access: { path: "/access", label: "Request access", isBuilt: true },
   team: { path: "/team", label: "Clients", isBuilt: true },
   newClient: { path: "/team/clients/new", label: "New client", isBuilt: true },
+  teamClient: { path: "/team/clients", label: "Client", isBuilt: true },
   setupTracking: {
     path: "/setup/tracking",
     label: "What to track",

@@ -6,8 +6,8 @@ import { PiPlus } from "react-icons/pi";
 import { Button, buttonClassName } from "@sandworm/ui/kit/button";
 import { Card } from "@sandworm/ui/kit/card";
 import { SearchField } from "@sandworm/ui/kit/form/search-field";
-import { InitialsAvatar } from "@sandworm/ui/kit/initials-avatar";
 import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
+import { UserAvatar } from "@sandworm/ui/kit/user-avatar";
 
 import { AppLink } from "@/components/AppLink";
 import { KpiStrip } from "@/components/Analysis/Entity/KpiStrip";
@@ -29,7 +29,8 @@ import type { TeamClientSummary } from "@/types";
 import { ClientStatusChip } from "./ClientStatusChip";
 
 const headerCellClassName = "px-3 py-2.5 text-xs font-medium text-ink-400";
-const cellClassName = "border-t border-border-secondary px-3 py-3 align-middle";
+const cellClassName =
+  "border-t border-border-secondary px-3 py-3 align-middle group-hover:bg-hover-bg dark:group-hover:bg-sidebar-hover";
 
 type ClientsScreenProps = {
   clients: readonly TeamClientSummary[];
@@ -47,6 +48,9 @@ export function ClientsScreen({ clients, createdName }: ClientsScreenProps) {
     ...ORGANISATION_TYPES.map(({ id, label }) => ({ id, label })),
   ].map(option => ({ ...option, count: countByType(clients, option.id) }));
   const visible = filterClients(clients, { type, query });
+  const typesInUse = typeOptions.filter(
+    option => option.id !== "all" && option.count > 0
+  ).length;
 
   const markInviteSent = async (clientId: string) => {
     setSendingId(clientId);
@@ -66,7 +70,8 @@ export function ClientsScreen({ clients, createdName }: ClientsScreenProps) {
             Clients
           </h1>
           <p className="mt-1.5 text-sm text-ink-400">
-            {pluralise(clients.length, "client")} set up for Terminal.
+            {pluralise(clients.length, "client")} across{" "}
+            {pluralise(typesInUse, "type")}.
           </p>
         </div>
         <AppLink
@@ -93,16 +98,19 @@ export function ClientsScreen({ clients, createdName }: ClientsScreenProps) {
             id: "live",
             label: "Live clients",
             value: String(countByStatus(clients, "live")),
+            comparison: `of ${pluralise(clients.length, "client")}`,
           },
           {
             id: "invited",
             label: "Invite sent",
             value: String(countByStatus(clients, "invite_sent")),
+            comparison: "waiting for their admin to sign in",
           },
           {
             id: "setting-up",
             label: "Setting up",
             value: String(countByStatus(clients, "setting_up")),
+            comparison: "not invited yet",
           },
         ]}
       />
@@ -158,17 +166,20 @@ export function ClientsScreen({ clients, createdName }: ClientsScreenProps) {
               </thead>
               <tbody>
                 {visible.map(client => (
-                  <tr key={client.id}>
+                  <tr key={client.id} className="group relative">
                     <th
                       scope="row"
                       className={`${cellClassName} font-medium text-ink-100`}
                     >
                       <span className="inline-flex items-center gap-2.5">
-                        <InitialsAvatar
-                          initials={client.name.charAt(0)}
-                          size="sm"
-                        />
-                        {client.name}
+                        <UserAvatar name={client.name} size="sm" />
+                        <AppLink
+                          route="teamClient"
+                          slug={client.id}
+                          className="after:absolute after:inset-0"
+                        >
+                          {client.name}
+                        </AppLink>
                       </span>
                     </th>
                     <td className={`${cellClassName} text-ink-500`}>
@@ -204,6 +215,9 @@ export function ClientsScreen({ clients, createdName }: ClientsScreenProps) {
             </table>
           </div>
         )}
+        <p className="border-t border-border-secondary px-5 pb-4 pt-3 text-xs text-ink-400">
+          Showing {visible.length} of {clients.length}
+        </p>
       </Card>
     </div>
   );

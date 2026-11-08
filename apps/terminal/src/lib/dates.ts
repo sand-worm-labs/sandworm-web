@@ -60,6 +60,15 @@ export function fullWhen(iso: string, now = new Date()): string {
   return `${day} at ${clockTime(date)}`;
 }
 
+// "Today at 06:00", "Tomorrow at 06:00", "Mon 9 Nov at 06:00": a time to come
+export function upcomingWhen(iso: string, now = new Date()): string {
+  const date = new Date(iso);
+  const ahead = -daysAgo(date, now);
+  if (ahead <= 0) return `Today at ${clockTime(date)}`;
+  if (ahead === 1) return `Tomorrow at ${clockTime(date)}`;
+  return `${fullDay(date)} at ${clockTime(date)}`;
+}
+
 // "Tue 28 Oct", "Fri 20 Nov"
 export function longDay(iso: string): string {
   return fullDay(new Date(iso));

@@ -6,12 +6,13 @@ import { FontPreloads } from "@/components/FontPreloads";
 import { env } from "@/config/env";
 import { baseFont } from "@/config/fonts";
 import { site } from "@/config/site";
+import { TITLE_TEMPLATE } from "@/lib/metadata";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import type { ChildrenProps } from "@/types";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.terminalUrl),
-  title: site.title,
+  title: { default: site.title, template: TITLE_TEMPLATE },
   description: site.description,
   icons: { icon: site.logoPath },
   openGraph: {

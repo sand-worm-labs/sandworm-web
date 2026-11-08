@@ -1,6 +1,9 @@
 import { SubmitRequestDialog } from "@/components/Requests/Submit/SubmitRequestDialog";
 import { loadRequestsScreen } from "@/lib/requests/load";
 import { RequestsScreen } from "@/components/Requests/RequestsScreen";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata("Submit a request");
 
 export default async function NewRequestRoute() {
   const { data, counts, session } = await loadRequestsScreen();

@@ -2,6 +2,9 @@ import { BriefingScreen } from "@/components/Briefing/BriefingScreen";
 import { getBriefing } from "@/lib/briefing/source";
 import { getSectionCounts } from "@/lib/sections/source";
 import { getSession } from "@/lib/session/source";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata("Briefing");
 
 type BriefingRouteProps = { searchParams: Promise<{ item?: string }> };
 

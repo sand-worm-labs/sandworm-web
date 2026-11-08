@@ -1,8 +1,11 @@
+import { pageMetadata } from "@/lib/metadata";
 import { OverviewPage } from "@/components/Overview/OverviewPage";
 import { getOverview } from "@/lib/overview/source";
 import { getSectionCounts } from "@/lib/sections/source";
 import { getSession } from "@/lib/session/source";
 import { getWelcome } from "@/lib/welcome/source";
+
+export const metadata = pageMetadata("Overview");
 
 export default async function OverviewRoute() {
   const [overview, counts, session, welcome] = await Promise.all([
