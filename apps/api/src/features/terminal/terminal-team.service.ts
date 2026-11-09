@@ -11,10 +11,14 @@ import {
   TerminalRequestEntity,
   TerminalSignalEntity,
 } from '@sandworm/postgresql-typeorm';
-import { documentPath } from '@sandworm/types/terminal';
-import type {
+import {
   ClientStatusId,
   InviteStatusId,
+  OPEN_REQUEST_STATUSES,
+  SignalStatusId,
+  documentPath,
+} from '@sandworm/types/terminal';
+import type {
   OrganisationTypeId,
   PlanId,
   TeamClientDetail,
@@ -30,7 +34,6 @@ import { normaliseEmail } from './terminal-invite';
 
 const TEAM_ONLY = 'The terminal team tools are for the Sandworm team';
 const MAX_CLIENTS = 500;
-const OPEN_REQUEST_STATUSES = ['submitted', 'scoping', 'awaiting_approval', 'in_progress'] as const;
 // Under the HTTP timeout; a longer run carries on and the next read shows it.
 const SOURCE_RUN_WAIT_SECONDS = 40;
 
@@ -108,7 +111,7 @@ export class TerminalTeamService {
         .where('member.clientId = :clientId', { clientId })
         .getRawOne<{ at: Date | string | null }>(),
       this.requests.count({ where: { clientId, status: In([...OPEN_REQUEST_STATUSES]) } }),
-      this.signals.count({ where: { clientId, status: 'new' } }),
+      this.signals.count({ where: { clientId, status: SignalStatusId.NEW } }),
       this.sourceUses(clientId),
     ]);
 
@@ -246,7 +249,7 @@ export class TerminalTeamService {
           website: details.website,
           description: details.description,
           plan: details.plan,
-          status: isSendingNow ? 'invite_sent' : 'setting_up',
+          status: isSendingNow ? ClientStatusId.INVITE_SENT : ClientStatusId.SETTING_UP,
           createdBy: staffId,
           tracking: draft.tracking,
           goals: [],
@@ -261,7 +264,7 @@ export class TerminalTeamService {
           email,
           name: details.adminName,
           access: 'admin',
-          status: isSendingNow ? 'sent' : 'pending',
+          status: isSendingNow ? InviteStatusId.SENT : InviteStatusId.PENDING,
           sentAt: isSendingNow ? new Date() : null,
         }),
       );
@@ -283,11 +286,11 @@ export class TerminalTeamService {
     if (!client) throw new NotFoundException('No such client');
 
     await this.invites.update(
-      { clientId, status: 'pending' satisfies InviteStatusId },
-      { status: 'sent' satisfies InviteStatusId, sentAt: new Date() },
+      { clientId, status: InviteStatusId.PENDING },
+      { status: InviteStatusId.SENT, sentAt: new Date() },
     );
-    if (client.status === 'setting_up') {
-      client.status = 'invite_sent' satisfies ClientStatusId;
+    if (client.status === ClientStatusId.SETTING_UP) {
+      client.status = ClientStatusId.INVITE_SENT;
       await this.clients.save(client);
     }
 

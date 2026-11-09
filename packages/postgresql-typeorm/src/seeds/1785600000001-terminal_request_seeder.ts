@@ -1,6 +1,13 @@
 import { DataSource, In } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
-import type { RequestKindId, RequestScope, RequestStatusId, RequestTimingId, RequestUseCaseId } from '@sandworm/types/terminal';
+import {
+    RequestKindId,
+    RequestStatusId,
+    RequestTimingId,
+    RequestUseCaseId,
+    AnalysisViewKind,
+    type RequestScope,
+} from '@sandworm/types/terminal';
 import {
     DocumentEntity,
     TerminalAnalysisSubjectEntity,
@@ -35,13 +42,13 @@ type Seed = {
 
 const REQUESTS: Seed[] = [
     {
-        kind: 'research', question: 'Brazil cash-out: users, apps and fees', status: 'submitted',
-        useCase: 'plan-launch', about: ['Brazil'], timing: 'two-weeks', submitted: 3 * HOUR,
+        kind: RequestKindId.RESEARCH, question: 'Brazil cash-out: users, apps and fees', status: RequestStatusId.SUBMITTED,
+        useCase: RequestUseCaseId.PLAN_LAUNCH, about: ['Brazil'], timing: RequestTimingId.TWO_WEEKS, submitted: 3 * HOUR,
         progressNote: 'Got it. I will send a scope after I check how much Brazil data we have for your users.',
     },
     {
-        kind: 'research', question: 'Solana token demand among our users', status: 'awaiting_approval',
-        useCase: 'pick-partner', about: ['Solana'], timing: 'two-weeks', submitted: 2 * DAY, scoped: 4 * HOUR,
+        kind: RequestKindId.RESEARCH, question: 'Solana token demand among our users', status: RequestStatusId.AWAITING_APPROVAL,
+        useCase: RequestUseCaseId.PICK_PARTNER, about: ['Solana'], timing: RequestTimingId.TWO_WEEKS, submitted: 2 * DAY, scoped: 4 * HOUR,
         scope: {
             summary: 'Which Solana tokens your users hold and trade that you do not list.',
             questions: [
@@ -54,8 +61,8 @@ const REQUESTS: Seed[] = [
         },
     },
     {
-        kind: 'research', question: 'Stablecoin yield: what would it take?', status: 'in_progress',
-        useCase: 'plan-launch', about: ['Aave', 'Morpho'], timing: 'no-rush', submitted: 15 * DAY, scoped: 13 * DAY, approved: 12 * DAY,
+        kind: RequestKindId.RESEARCH, question: 'Stablecoin yield: what would it take?', status: RequestStatusId.IN_PROGRESS,
+        useCase: RequestUseCaseId.PLAN_LAUNCH, about: ['Aave', 'Morpho'], timing: RequestTimingId.NO_RUSH, submitted: 15 * DAY, scoped: 13 * DAY, approved: 12 * DAY,
         scope: {
             summary: 'Where your users earn on stablecoins today, and at what rate they would move.',
             questions: ['Where your users hold stablecoins that earn.', 'What rates they get.', 'How many would move for 4% or more.'],
@@ -65,19 +72,19 @@ const REQUESTS: Seed[] = [
         progressNote: 'On track. First finding: 38,000 of your wallets earn on Aave, and most would accept 4% or more.',
     },
     {
-        kind: 'research', question: 'LatAm cash-out sizing', status: 'delivered',
-        useCase: 'investor-update', about: ['Argentina', 'Mexico', 'Brazil'], timing: 'two-weeks',
+        kind: RequestKindId.RESEARCH, question: 'LatAm cash-out sizing', status: RequestStatusId.DELIVERED,
+        useCase: RequestUseCaseId.INVESTOR_UPDATE, about: ['Argentina', 'Mexico', 'Brazil'], timing: RequestTimingId.TWO_WEEKS,
         submitted: 21 * DAY, scoped: 20 * DAY, approved: 19 * DAY, closed: 2 * HOUR,
         progressNote: 'Delivered. It also turned up the Argentina fee signal in your list.',
         report: "Argentina's off-ramps, ranked by fees",
     },
     {
-        kind: 'research', question: 'NFT trading among our users', status: 'declined',
+        kind: RequestKindId.RESEARCH, question: 'NFT trading among our users', status: RequestStatusId.DECLINED,
         about: ['NFTs'], submitted: 34 * DAY, closed: 33 * DAY,
         outcome: 'Too few of your users trade NFTs for a useful answer. This did not use your allowance.',
     },
     {
-        kind: 'question', question: 'Does the 2.2% include the exchange-rate spread?', status: 'delivered',
+        kind: RequestKindId.QUESTION, question: 'Does the 2.2% include the exchange-rate spread?', status: RequestStatusId.DELIVERED,
         submitted: 2 * DAY, closed: 2 * DAY - 2 * HOUR,
         outcome: 'Yes. It is the full cost of cashing out, spread included.',
     },
@@ -97,7 +104,7 @@ export class TerminalRequestSeeder1785600000001 implements Seeder {
         }
         const member = await dataSource.getRepository(TerminalMemberEntity).findOneBy({ clientId: client.id, userId: client.ownerId });
 
-        const subjects = await dataSource.getRepository(TerminalAnalysisSubjectEntity).find({ where: { clientId: client.id, view: 'project' } });
+        const subjects = await dataSource.getRepository(TerminalAnalysisSubjectEntity).find({ where: { clientId: client.id, view: AnalysisViewKind.PROJECT } });
         const parentIds = subjects.flatMap(s => (s.documentId ? [s.documentId] : []));
         const reports = parentIds.length
             ? await dataSource.getRepository(DocumentEntity).find({ where: { parentId: In(parentIds) } })

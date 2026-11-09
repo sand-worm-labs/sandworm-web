@@ -8,7 +8,8 @@ import {
 } from '@sandworm/postgresql-typeorm';
 import {
   FIRST_BRIEFING_DAYS,
-  type AccessLevelId,
+  AccessLevelId,
+  InviteStatusId,
   type OrganisationTypeId,
   type SetupDraft,
   type TerminalSession,
@@ -80,7 +81,7 @@ export class TerminalService {
 
     const clientId = await this.dataSource.transaction(async (manager) => {
       const invite = await manager.findOne(TerminalInviteEntity, {
-        where: { email, status: In(['pending', 'sent']) },
+        where: { email, status: In([InviteStatusId.PENDING, InviteStatusId.SENT]) },
         order: { createdAt: 'ASC' },
       });
       if (!invite) return null;
@@ -99,14 +100,14 @@ export class TerminalService {
       await manager.update(
         TerminalInviteEntity,
         { id: invite.id },
-        { status: 'claimed', claimedAt: new Date() },
+        { status: InviteStatusId.CLAIMED, claimedAt: new Date() },
       );
       await manager.update(
         TerminalClientEntity,
         { id: invite.clientId },
         { status: 'live' },
       );
-      if (invite.access === 'admin') {
+      if (invite.access === AccessLevelId.ADMIN) {
         await manager.update(
           TerminalClientEntity,
           { id: invite.clientId, ownerId: IsNull() },
@@ -146,7 +147,7 @@ export class TerminalService {
         .values({
           clientId: client.id,
           userId: ownerId,
-          access: 'admin' satisfies AccessLevelId,
+          access: AccessLevelId.ADMIN,
         })
         .orIgnore()
         .execute();

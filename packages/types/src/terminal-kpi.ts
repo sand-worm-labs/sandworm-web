@@ -5,12 +5,16 @@ import { z } from 'zod';
 // terminal draws is worked out from both by `buildKpi`, so tone, delta and the
 // comparison text are never stored.
 
-export const KPI_FORMAT_KINDS = ['number', 'currency', 'percent', 'text'] as const;
-export type KpiFormatKind = (typeof KPI_FORMAT_KINDS)[number];
+export enum KpiFormatKind {
+  NUMBER = 'number',
+  CURRENCY = 'currency',
+  PERCENT = 'percent',
+  TEXT = 'text',
+}
 
 // How a reading is written. A percent reading is in percentage points (34 is 34%).
 export const KpiFormat = z.object({
-  kind: z.enum(KPI_FORMAT_KINDS).default('number'),
+  kind: z.enum(KpiFormatKind).default(KpiFormatKind.NUMBER),
   // ISO 4217, for kind "currency"
   currency: z.string().length(3).optional(),
   // A suffix, e.g. "wallets"
@@ -22,8 +26,11 @@ export const KpiFormat = z.object({
 export type KpiFormat = z.infer<typeof KpiFormat>;
 
 // Which way is good: decides whether a change reads as positive or negative.
-export const KPI_DIRECTIONS = ['up_good', 'down_good', 'neutral'] as const;
-export type KpiDirection = (typeof KPI_DIRECTIONS)[number];
+export enum KpiDirection {
+  UP_GOOD = 'up_good',
+  DOWN_GOOD = 'down_good',
+  NEUTRAL = 'neutral',
+}
 
 // What the latest reading is compared with. `label` replaces the generated
 // "vs last month" text.
@@ -48,7 +55,7 @@ export type KpiSource = z.infer<typeof KpiSource>;
 export const KpiSettings = z.record(z.string(), z.unknown());
 export type KpiSettings = z.infer<typeof KpiSettings>;
 
-export const DEFAULT_KPI_FORMAT: KpiFormat = { kind: 'number' };
+export const DEFAULT_KPI_FORMAT: KpiFormat = { kind: KpiFormatKind.NUMBER };
 export const DEFAULT_KPI_COMPARISON: KpiComparison = { kind: 'previous' };
 export const DEFAULT_KPI_SOURCE: KpiSource = { kind: 'manual' };
 
@@ -96,7 +103,7 @@ function number(value: number, { decimals, compact }: Pick<KpiFormat, 'decimals'
 export function formatKpiValue(format: KpiFormat, value: number): string {
   const unit = format.unit ? ` ${format.unit}` : '';
   switch (format.kind) {
-    case 'currency':
+    case KpiFormatKind.CURRENCY:
       return (
         number(value, format, {
           style: 'currency',
@@ -105,24 +112,24 @@ export function formatKpiValue(format: KpiFormat, value: number): string {
           ...(format.compact ? {} : { minimumFractionDigits: format.decimals ?? 0 }),
         }) + unit
       );
-    case 'percent':
+    case KpiFormatKind.PERCENT:
       return `${number(value, format)}%${unit}`;
-    case 'text':
-    case 'number':
+    case KpiFormatKind.TEXT:
+    case KpiFormatKind.NUMBER:
     default:
       return number(value, format) + unit;
   }
 }
 
 function readingText(format: KpiFormat, reading: KpiReading): string {
-  if (format.kind === 'text') return reading.textValue ?? (reading.value !== null ? String(reading.value) : NO_VALUE);
+  if (format.kind === KpiFormatKind.TEXT) return reading.textValue ?? (reading.value !== null ? String(reading.value) : NO_VALUE);
   if (reading.value === null) return reading.textValue ?? NO_VALUE;
   return formatKpiValue(format, reading.value);
 }
 
 const toneOf = (direction: KpiDirection, change: number): KpiTone => {
-  if (direction === 'neutral' || change === 0) return 'neutral';
-  return (change > 0) === (direction === 'up_good') ? 'positive' : 'negative';
+  if (direction === KpiDirection.NEUTRAL || change === 0) return 'neutral';
+  return (change > 0) === (direction === KpiDirection.UP_GOOD) ? 'positive' : 'negative';
 };
 
 // "last month", "last week", "yesterday", or the date it was
@@ -170,7 +177,7 @@ const rounded = (value: number) =>
 function deltaText(format: KpiFormat, latest: number, base: number): string | null {
   if (latest === base) return 'No change';
   const arrow = latest > base ? '▲' : '▼';
-  if (format.kind === 'percent') return `${arrow} ${rounded(Math.abs(latest - base))} pts`;
+  if (format.kind === KpiFormatKind.PERCENT) return `${arrow} ${rounded(Math.abs(latest - base))} pts`;
   if (base === 0) return null;
   return `${arrow} ${rounded(Math.abs(((latest - base) / base) * 100))}%`;
 }
@@ -185,7 +192,7 @@ export function buildKpi(definition: KpiDefinition, readings: readonly KpiReadin
 
   const display: KpiDisplay = { id: key, label, value: readingText(format, latest) };
 
-  const base = latest.value !== null && format.kind !== 'text' ? baseOf(comparison, latest, older) : null;
+  const base = latest.value !== null && format.kind !== KpiFormatKind.TEXT ? baseOf(comparison, latest, older) : null;
   if (base && latest.value !== null) {
     const text = deltaText(format, latest.value, base.value);
     if (text) {

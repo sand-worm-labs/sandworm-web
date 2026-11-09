@@ -2,18 +2,13 @@ import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { GraphQLJSON } from 'graphql-type-json';
 import { BooleanField, StringField } from '@sandworm/graphql';
 import {
-  ACCESS_LEVEL_IDS,
-  GOAL_IDS,
-  INVITE_TIMING_IDS,
+  AccessLevelId,
+  GoalId,
+  InviteTimingId,
   MAX_GOALS,
-  ORGANISATION_TYPE_IDS,
-  PLAN_IDS,
-  type AccessLevelId,
+  OrganisationTypeId,
+  PlanId,
   type ClientStatusId,
-  type GoalId,
-  type InviteTimingId,
-  type OrganisationTypeId,
-  type PlanId,
   type SetupDraft,
   type TeamClientDetail,
   type TeamClientDraft,
@@ -26,7 +21,7 @@ import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsEmail,
-  IsIn,
+  IsEnum,
   IsString,
   MaxLength,
   ValidateNested,
@@ -42,7 +37,7 @@ const MAX_LIST = 50;
 @InputType('TerminalOrganisationInput')
 export class TerminalOrganisation {
   @StringField()
-  @IsIn(ORGANISATION_TYPE_IDS)
+  @IsEnum(OrganisationTypeId)
   type!: OrganisationTypeId;
 
   @StringField({ minLength: 0, maxLength: 120 })
@@ -84,7 +79,7 @@ export class TerminalTracking {
 @InputType('TerminalGoalsInput')
 export class TerminalGoals {
   @Field(() => [String])
-  @IsIn(GOAL_IDS, { each: true })
+  @IsEnum(GoalId, { each: true })
   @ArrayMaxSize(MAX_GOALS)
   selected!: GoalId[];
 }
@@ -100,7 +95,7 @@ export class TerminalInvite {
   email!: string;
 
   @StringField()
-  @IsIn(ACCESS_LEVEL_IDS)
+  @IsEnum(AccessLevelId)
   access!: AccessLevelId;
 }
 
@@ -185,14 +180,14 @@ export class TerminalTeamDetails {
   website!: string;
 
   @StringField()
-  @IsIn(ORGANISATION_TYPE_IDS)
+  @IsEnum(OrganisationTypeId)
   type!: OrganisationTypeId;
 
   @StringField({ minLength: 0, maxLength: 500 })
   description!: string;
 
   @StringField()
-  @IsIn(PLAN_IDS)
+  @IsEnum(PlanId)
   plan!: PlanId;
 
   @StringField({ minLength: 0, maxLength: 120 })
@@ -223,7 +218,7 @@ export class TerminalTeamClientDraft implements TeamClientDraft {
   starterIds!: string[];
 
   @StringField()
-  @IsIn(INVITE_TIMING_IDS)
+  @IsEnum(InviteTimingId)
   inviteTiming!: InviteTimingId;
 }
 

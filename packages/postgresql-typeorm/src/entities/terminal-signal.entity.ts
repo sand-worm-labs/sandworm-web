@@ -1,15 +1,8 @@
+import { EvidenceId, SignalStatusId } from '@sandworm/types/terminal';
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from 'typeorm';
 import { AbstractEntity } from './abstract.entity';
 import { DocumentEntity } from './document.entity';
 import { TerminalClientEntity } from './terminal-client.entity';
-
-// The client's own triage of a signal: we never call it an opportunity for them.
-export const TERMINAL_SIGNAL_STATUSES = ['new', 'looking', 'acting', 'dismissed'] as const;
-export type TerminalSignalStatus = (typeof TERMINAL_SIGNAL_STATUSES)[number];
-
-// How strong the evidence behind it is
-export const TERMINAL_EVIDENCE_LEVELS = ['strong', 'some', 'early'] as const;
-export type TerminalEvidence = (typeof TERMINAL_EVIDENCE_LEVELS)[number];
 
 // A pattern Sandworm's agents saw in a client's onchain data, and what it could
 // mean for them. It says what was observed and leaves the call to the client.
@@ -30,7 +23,8 @@ export class TerminalSignalEntity extends AbstractEntity {
   clientId!: string;
 
   @Column({ type: 'varchar', length: 16, default: 'new' })
-  status!: TerminalSignalStatus;
+  // The client's own triage of it: we never call a signal an opportunity for them
+  status!: SignalStatusId;
 
   // What was seen, as a fact ("Argentina's off-ramps charge 2× Nigeria's fees")
   @Column({ type: 'varchar', length: 200 })
@@ -56,7 +50,8 @@ export class TerminalSignalEntity extends AbstractEntity {
   sizeLabel!: string;
 
   @Column({ type: 'varchar', length: 8 })
-  evidence!: TerminalEvidence;
+  // How strong the evidence behind it is
+  evidence!: EvidenceId;
 
   // What it is about ("Argentina", "Paycrest")
   @Column({ type: 'varchar', length: 120, default: '' })

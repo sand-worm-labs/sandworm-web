@@ -2,19 +2,16 @@ import {
   DEFAULT_KPI_COMPARISON,
   DEFAULT_KPI_FORMAT,
   DEFAULT_KPI_SOURCE,
-  KPI_DIRECTIONS,
   KpiComparison,
   KpiFormat,
   KpiSettings,
   KpiSource,
-  type KpiDirection,
+  KpiDirection,
 } from '@sandworm/types/terminal';
 import { BeforeInsert, BeforeUpdate, Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from 'typeorm';
 import { AbstractEntity } from './abstract.entity';
 import { TerminalAnalysisSubjectEntity } from './terminal-analysis-subject.entity';
 import { TerminalClientEntity } from './terminal-client.entity';
-
-export { KPI_DIRECTIONS };
 
 // A key number on a terminal client's Overview, or on one of its project, region
 // or sector pages when it has a subject. This is the definition: what it is
@@ -98,7 +95,7 @@ export class TerminalKpiEntity extends AbstractEntity {
     if (this.comparison !== undefined) KpiComparison.parse(this.comparison);
     if (this.source !== undefined) KpiSource.parse(this.source);
     if (this.settings !== undefined) KpiSettings.parse(this.settings);
-    if (this.direction !== undefined && !KPI_DIRECTIONS.includes(this.direction)) {
+    if (this.direction !== undefined && !Object.values(KpiDirection).includes(this.direction)) {
       throw new Error(`Unknown KPI direction "${this.direction}"`);
     }
   }

@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
-import type { KpiComparison, KpiDirection, KpiFormat } from '@sandworm/types/terminal';
+import { KpiDirection, KpiFormatKind, type KpiComparison, type KpiFormat } from '@sandworm/types/terminal';
 import { TerminalClientEntity, TerminalKpiEntity, TerminalKpiValueEntity } from '../entities';
 
 // The key numbers on the Acme exchange Overview (what the terminal's preview
@@ -24,29 +24,29 @@ const KPIS: Seed[] = [
     {
         key: 'swap-volume',
         label: 'Swap volume',
-        format: { kind: 'currency', currency: 'USD', compact: true },
-        direction: 'up_good',
+        format: { kind: KpiFormatKind.CURRENCY, currency: 'USD', compact: true },
+        direction: KpiDirection.UP_GOOD,
         readings: [1_840_000_000, 2_022_000_000, 1_960_000_000],
     },
     {
         key: 'active-wallets',
         label: 'Active wallets',
-        format: { kind: 'number' },
-        direction: 'up_good',
+        format: { kind: KpiFormatKind.NUMBER },
+        direction: KpiDirection.UP_GOOD,
         readings: [312_400, 300_400, 288_900],
     },
     {
         key: 'new-wallets',
         label: 'New wallets',
-        format: { kind: 'number' },
-        direction: 'up_good',
+        format: { kind: KpiFormatKind.NUMBER },
+        direction: KpiDirection.UP_GOOD,
         readings: [21_900, 24_900, 23_100],
     },
     {
         key: 'retention-90',
         label: 'Still trading after 90 days',
-        format: { kind: 'percent' },
-        direction: 'up_good',
+        format: { kind: KpiFormatKind.PERCENT },
+        direction: KpiDirection.UP_GOOD,
         readings: [34, 37, 36],
     },
 ];

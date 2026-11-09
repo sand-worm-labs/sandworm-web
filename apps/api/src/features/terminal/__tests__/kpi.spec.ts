@@ -1,6 +1,8 @@
 import {
   KpiComparison,
   KpiFormat,
+  KpiDirection,
+  KpiFormatKind,
   KpiSource,
   buildKpi,
   formatKpiValue,
@@ -23,28 +25,28 @@ const reading = (daysBefore: number, value: number | null, extra: Partial<KpiRea
 const definition = (init: Partial<KpiDefinition> = {}): KpiDefinition => ({
   key: 'swap-volume',
   label: 'Swap volume',
-  format: { kind: 'number' },
-  direction: 'up_good',
+  format: { kind: KpiFormatKind.NUMBER },
+  direction: KpiDirection.UP_GOOD,
   comparison: { kind: 'previous' },
   ...init,
 });
 
 describe('formatKpiValue', () => {
   it('writes numbers with separators, and compactly when asked', () => {
-    expect(formatKpiValue({ kind: 'number' }, 312400)).toBe('312,400');
-    expect(formatKpiValue({ kind: 'number', compact: true }, 21900)).toBe('21.9K');
-    expect(formatKpiValue({ kind: 'number', decimals: 1 }, 2)).toBe('2.0');
+    expect(formatKpiValue({ kind: KpiFormatKind.NUMBER }, 312400)).toBe('312,400');
+    expect(formatKpiValue({ kind: KpiFormatKind.NUMBER, compact: true }, 21900)).toBe('21.9K');
+    expect(formatKpiValue({ kind: KpiFormatKind.NUMBER, decimals: 1 }, 2)).toBe('2.0');
   });
 
   it('writes currency in the currency asked for, defaulting to dollars', () => {
-    expect(formatKpiValue({ kind: 'currency', currency: 'USD', compact: true }, 1_840_000_000)).toBe('$1.84B');
-    expect(formatKpiValue({ kind: 'currency' }, 1200)).toBe('$1,200');
-    expect(formatKpiValue({ kind: 'currency', currency: 'EUR' }, 1200)).toBe('€1,200');
+    expect(formatKpiValue({ kind: KpiFormatKind.CURRENCY, currency: 'USD', compact: true }, 1_840_000_000)).toBe('$1.84B');
+    expect(formatKpiValue({ kind: KpiFormatKind.CURRENCY }, 1200)).toBe('$1,200');
+    expect(formatKpiValue({ kind: KpiFormatKind.CURRENCY, currency: 'EUR' }, 1200)).toBe('€1,200');
   });
 
   it('writes percentages from points, and adds a unit', () => {
-    expect(formatKpiValue({ kind: 'percent' }, 34)).toBe('34%');
-    expect(formatKpiValue({ kind: 'number', unit: 'wallets' }, 9840)).toBe('9,840 wallets');
+    expect(formatKpiValue({ kind: KpiFormatKind.PERCENT }, 34)).toBe('34%');
+    expect(formatKpiValue({ kind: KpiFormatKind.NUMBER, unit: 'wallets' }, 9840)).toBe('9,840 wallets');
   });
 });
 
@@ -60,7 +62,7 @@ describe('buildKpi', () => {
   });
 
   it('compares with the reading before it and says how long ago that was', () => {
-    const kpi = buildKpi(definition({ format: { kind: 'currency', compact: true } }), [
+    const kpi = buildKpi(definition({ format: { kind: KpiFormatKind.CURRENCY, compact: true } }), [
       reading(0, 1_820_000_000),
       reading(30, 2_000_000_000),
     ]);
@@ -90,13 +92,13 @@ describe('buildKpi', () => {
   it('lets the KPI decide which way is good', () => {
     const readings = [reading(0, 80), reading(30, 100)];
 
-    expect(buildKpi(definition({ direction: 'up_good' }), readings).delta?.tone).toBe('negative');
-    expect(buildKpi(definition({ direction: 'down_good' }), readings).delta?.tone).toBe('positive');
-    expect(buildKpi(definition({ direction: 'neutral' }), readings).delta?.tone).toBe('neutral');
+    expect(buildKpi(definition({ direction: KpiDirection.UP_GOOD }), readings).delta?.tone).toBe('negative');
+    expect(buildKpi(definition({ direction: KpiDirection.DOWN_GOOD }), readings).delta?.tone).toBe('positive');
+    expect(buildKpi(definition({ direction: KpiDirection.NEUTRAL }), readings).delta?.tone).toBe('neutral');
   });
 
   it('moves a percent KPI in points, not percent', () => {
-    const kpi = buildKpi(definition({ format: { kind: 'percent' } }), [reading(0, 34), reading(30, 37)]);
+    const kpi = buildKpi(definition({ format: { kind: KpiFormatKind.PERCENT } }), [reading(0, 34), reading(30, 37)]);
 
     expect(kpi.value).toBe('34%');
     expect(kpi.delta).toEqual({ text: '▼ 3 pts', tone: 'negative' });
@@ -134,7 +136,7 @@ describe('buildKpi', () => {
   });
 
   it('shows the words of a text KPI, with no change', () => {
-    const kpi = buildKpi(definition({ format: { kind: 'text' } }), [
+    const kpi = buildKpi(definition({ format: { kind: KpiFormatKind.TEXT } }), [
       reading(0, null, { textValue: 'Strong' }),
       reading(30, null, { textValue: 'Early' }),
     ]);
@@ -145,9 +147,9 @@ describe('buildKpi', () => {
 
 describe('KPI configuration schemas', () => {
   it('fills in the defaults of a format', () => {
-    expect(KpiFormat.parse({})).toEqual({ kind: 'number' });
+    expect(KpiFormat.parse({})).toEqual({ kind: KpiFormatKind.NUMBER });
     expect(() => KpiFormat.parse({ kind: 'emoji' })).toThrow();
-    expect(() => KpiFormat.parse({ kind: 'currency', currency: 'DOLLARS' })).toThrow();
+    expect(() => KpiFormat.parse({ kind: KpiFormatKind.CURRENCY, currency: 'DOLLARS' })).toThrow();
   });
 
   it('knows the comparisons, and needs a value for a target', () => {

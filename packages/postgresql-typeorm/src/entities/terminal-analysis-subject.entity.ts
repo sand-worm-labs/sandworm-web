@@ -1,10 +1,8 @@
+import { AnalysisViewKind } from '@sandworm/types/terminal';
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from 'typeorm';
 import { AbstractEntity } from './abstract.entity';
 import { DocumentEntity } from './document.entity';
 import { TerminalClientEntity } from './terminal-client.entity';
-
-export const TERMINAL_ANALYSIS_VIEWS = ['project', 'region', 'sector'] as const;
-export type TerminalAnalysisView = (typeof TERMINAL_ANALYSIS_VIEWS)[number];
 
 // One row of a client's Analysis catalog: a project, region or sector Sandworm
 // has researched for them. A project points at a parent document; its reports
@@ -26,7 +24,7 @@ export class TerminalAnalysisSubjectEntity extends AbstractEntity {
   clientId!: string;
 
   @Column({ type: 'varchar', length: 16 })
-  view!: TerminalAnalysisView;
+  view!: AnalysisViewKind;
 
   @Column({ type: 'varchar', length: 120 })
   slug!: string;

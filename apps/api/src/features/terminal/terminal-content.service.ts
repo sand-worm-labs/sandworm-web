@@ -17,7 +17,12 @@ import {
 } from '@sandworm/postgresql-typeorm';
 import {
   BRIEFING_WINDOW_DAYS,
-  SIGNAL_STATUS_IDS,
+  OPEN_REQUEST_STATUSES,
+  AccessLevelId,
+  AnalysisViewKind,
+  RequestKindId,
+  RequestStatusId,
+  SignalStatusId,
   analysisTag,
   documentPath,
   type AnalysisReport,
@@ -25,7 +30,6 @@ import {
   type RequestData,
   type RequestInput,
   type SignalData,
-  type SignalStatusId,
   type TerminalAnalysis,
   type TerminalBriefing,
   type TerminalCounts,
@@ -43,7 +47,6 @@ import {
 } from 'typeorm';
 
 const DAY = 24 * 60 * 60 * 1000;
-const OPEN_REQUEST_STATUSES = ['submitted', 'scoping', 'awaiting_approval', 'in_progress'] as const;
 
 type DocRef = Pick<DocumentEntity, 'id' | 'workspaceId' | 'slug'>;
 
@@ -79,7 +82,7 @@ export class TerminalContentService {
   private async writerOf(userId: string): Promise<TerminalMemberEntity> {
     const member = await this.memberOf(userId);
     if (!member) throw new ForbiddenException('You are not part of a terminal client');
-    if (member.access === 'view') throw new ForbiddenException('Your access is view only');
+    if (member.access === AccessLevelId.VIEW) throw new ForbiddenException('Your access is view only');
     return member;
   }
 
@@ -147,7 +150,7 @@ export class TerminalContentService {
   private async reportsOf(clientId: string): Promise<DocumentEntity[]> {
     const projects = await this.subjects.find({
       select: { documentId: true },
-      where: { clientId, view: 'project', documentId: Not(IsNull()) },
+      where: { clientId, view: AnalysisViewKind.PROJECT, documentId: Not(IsNull()) },
     });
     const parentIds = projects.map((p) => p.documentId!);
     if (!parentIds.length) return [];
@@ -261,7 +264,7 @@ export class TerminalContentService {
   }
 
   async setSignalStatus(userId: string, signalId: string, status: SignalStatusId): Promise<SignalData> {
-    if (!SIGNAL_STATUS_IDS.includes(status)) throw new BadRequestException('Unknown status');
+    if (!Object.values(SignalStatusId).includes(status)) throw new BadRequestException('Unknown status');
     const member = await this.writerOf(userId);
     const row = await this.signals.findOneBy({ id: signalId, clientId: member.clientId });
     if (!row) throw new NotFoundException('Signal not found');
@@ -299,9 +302,9 @@ export class TerminalContentService {
     return this.requests.count({
       where: {
         clientId,
-        kind: 'research',
+        kind: RequestKindId.RESEARCH,
         approvedAt: MoreThanOrEqual(yearStart(0)),
-        status: Not('declined'),
+        status: Not(RequestStatusId.DECLINED),
       },
     });
   }
@@ -315,11 +318,11 @@ export class TerminalContentService {
         kind: input.kind,
         requestedBy: member.id,
         question: input.question.trim(),
-        useCase: input.kind === 'research' ? input.useCase : null,
+        useCase: input.kind === RequestKindId.RESEARCH ? input.useCase : null,
         about: input.about,
-        timing: input.kind === 'research' ? input.timing : null,
+        timing: input.kind === RequestKindId.RESEARCH ? input.timing : null,
         files: input.files,
-        status: 'submitted',
+        status: RequestStatusId.SUBMITTED,
       }),
     );
     const saved = await this.requests.findOneOrFail({
@@ -337,7 +340,7 @@ export class TerminalContentService {
       relations: { requester: { user: true } },
     });
     if (!row) throw new NotFoundException('Request not found');
-    if (row.kind !== 'research' || row.status !== 'awaiting_approval' || !row.scope) {
+    if (row.kind !== RequestKindId.RESEARCH || row.status !== RequestStatusId.AWAITING_APPROVAL || !row.scope) {
       throw new BadRequestException('This request has no scope waiting for approval');
     }
     const [client, used] = await Promise.all([
@@ -347,7 +350,7 @@ export class TerminalContentService {
     if (used >= client.researchAllowance) {
       throw new BadRequestException("This year's research allowance is used up");
     }
-    row.status = 'in_progress';
+    row.status = RequestStatusId.IN_PROGRESS;
     row.approvedAt = new Date();
     row.approvedBy = member.id;
     await this.requests.save(row);
@@ -372,7 +375,7 @@ export class TerminalContentService {
         .getCount(),
       this.reportsOf(member.clientId),
       this.signals.count({
-        where: { clientId: member.clientId, publishedAt: Not(IsNull()), status: In(['new', 'looking', 'acting']) },
+        where: { clientId: member.clientId, publishedAt: Not(IsNull()), status: In([SignalStatusId.NEW, SignalStatusId.LOOKING, SignalStatusId.ACTING]) },
       }),
       this.requests.count({ where: { clientId: member.clientId, status: In([...OPEN_REQUEST_STATUSES]) } }),
     ]);

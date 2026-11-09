@@ -3,6 +3,7 @@ import { Seeder } from 'typeorm-extension';
 import * as Y from 'yjs';
 import { getBlocks, getPythonBlockResult, isPythonBlock } from '@sandworm/editor';
 import type { Output } from '@sandworm/types';
+import { BriefingKindId } from '@sandworm/types/terminal';
 import {
     DocumentEntity,
     TerminalBriefingItemEntity,
@@ -12,7 +13,6 @@ import {
     UserEntity,
     YjsDocumentEntity,
     type TerminalBriefingDetail,
-    type TerminalBriefingKind,
 } from '../entities';
 
 // A briefing for one terminal client (the Acme exchange story the terminal's
@@ -25,7 +25,7 @@ const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
 
 type Seed = {
-    kind: TerminalBriefingKind;
+    kind: BriefingKindId;
     title: string;
     summary: string;
     subject: string;
@@ -37,7 +37,7 @@ type Seed = {
 
 const ITEMS: Seed[] = [
     {
-        kind: 'signal',
+        kind: BriefingKindId.SIGNAL,
         title: "Argentina's off-ramps charge 2× Nigeria's fees",
         summary: '11,200 of your wallets cash out to pesos. Worth about $43K a month.',
         subject: 'Argentina',
@@ -50,7 +50,7 @@ const ITEMS: Seed[] = [
         },
     },
     {
-        kind: 'metric',
+        kind: BriefingKindId.METRIC,
         title: 'Swap volume fell 9% this month',
         summary: '7 of your top 50 wallets traded less.',
         subject: 'Acme Wallet',
@@ -63,7 +63,7 @@ const ITEMS: Seed[] = [
         },
     },
     {
-        kind: 'analysis',
+        kind: BriefingKindId.ANALYSIS,
         title: 'Paycrest: who actually cashes out in Africa',
         summary: 'New report. 2,140 of your users sent money through Paycrest.',
         subject: 'Paycrest',
@@ -71,7 +71,7 @@ const ITEMS: Seed[] = [
         isRead: false,
     },
     {
-        kind: 'metric',
+        kind: BriefingKindId.METRIC,
         title: 'Your notebook: active wallets up 4%',
         summary: 'From your own notebook. 312,400 wallets were active in October.',
         subject: 'Acme Wallet',
@@ -80,7 +80,7 @@ const ITEMS: Seed[] = [
         isPersonal: true,
     },
     {
-        kind: 'signal',
+        kind: BriefingKindId.SIGNAL,
         title: 'Let users send money home with Paycrest',
         summary: '$5.1M a month already leaves your app to do this.',
         subject: 'Paycrest',
@@ -88,7 +88,7 @@ const ITEMS: Seed[] = [
         isRead: true,
     },
     {
-        kind: 'analysis',
+        kind: BriefingKindId.ANALYSIS,
         title: 'Updated: Phantom is gaining your Solana users',
         summary: 'Leavers going to Phantom rose from 11% to 17%.',
         subject: 'Phantom',
@@ -96,7 +96,7 @@ const ITEMS: Seed[] = [
         isRead: true,
     },
     {
-        kind: 'metric',
+        kind: BriefingKindId.METRIC,
         title: 'Bridging to Solana tripled this quarter',
         summary: '$96M moved last month.',
         subject: 'Solana',

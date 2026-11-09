@@ -10,14 +10,13 @@ import {
   DEFAULT_KPI_COMPARISON,
   DEFAULT_KPI_FORMAT,
   DEFAULT_KPI_SOURCE,
-  KPI_DIRECTIONS,
+  KpiDirection,
   KpiComparison,
   KpiFormat,
   KpiSettings,
   KpiSource,
   buildKpi,
   type ClientStatusId,
-  type KpiDirection,
   type KpiDisplay,
   type KpiReading,
   type OrganisationTypeId,
@@ -127,8 +126,8 @@ export class TerminalKpiService {
     if (input.position !== undefined) kpi.position = input.position;
     if (input.isVisible !== undefined) kpi.isVisible = input.isVisible;
     if (input.direction !== undefined) {
-      if (!KPI_DIRECTIONS.includes(input.direction as KpiDirection)) {
-        throw new BadRequestException(`direction is one of ${KPI_DIRECTIONS.join(', ')}`);
+      if (!Object.values(KpiDirection).includes(input.direction as KpiDirection)) {
+        throw new BadRequestException(`direction is one of ${Object.values(KpiDirection).join(', ')}`);
       }
       kpi.direction = input.direction as KpiDirection;
     }

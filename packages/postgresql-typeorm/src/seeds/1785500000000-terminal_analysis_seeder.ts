@@ -1,11 +1,11 @@
 import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
+import { AnalysisViewKind } from '@sandworm/types/terminal';
 import {
     DocumentEntity,
     TerminalAnalysisSubjectEntity,
     TerminalClientEntity,
     WorkspaceEntity,
-    type TerminalAnalysisView,
 } from '../entities';
 
 // The Analysis catalog for the first terminal client (the exchange story the
@@ -18,7 +18,7 @@ import {
 const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
 
-type SubjectSeed = { view: TerminalAnalysisView; slug: string; name: string; kind: string; impact: string; impactSize: number };
+type SubjectSeed = { view: AnalysisViewKind; slug: string; name: string; kind: string; impact: string; impactSize: number };
 type ReportSeed = { title: string; line: string; ago: number; regions?: string[]; sectors?: string[] };
 type ProjectSeed = Omit<SubjectSeed, 'view'> & { reports: ReportSeed[] };
 
@@ -175,9 +175,9 @@ export class TerminalAnalysisSeeder1785500000000 implements Seeder {
             await manager.save(reports);
 
             await manager.save([
-                ...PROJECTS.map(({ reports: _, ...project }, p) => new TerminalAnalysisSubjectEntity({ ...project, view: 'project', clientId: client.id, documentId: parents[p]!.id })),
-                ...REGIONS.map(region => new TerminalAnalysisSubjectEntity({ ...region, view: 'region', clientId: client.id, documentId: null })),
-                ...SECTORS.map(sector => new TerminalAnalysisSubjectEntity({ ...sector, view: 'sector', clientId: client.id, documentId: null })),
+                ...PROJECTS.map(({ reports: _, ...project }, p) => new TerminalAnalysisSubjectEntity({ ...project, view: AnalysisViewKind.PROJECT, clientId: client.id, documentId: parents[p]!.id })),
+                ...REGIONS.map(region => new TerminalAnalysisSubjectEntity({ ...region, view: AnalysisViewKind.REGION, clientId: client.id, documentId: null })),
+                ...SECTORS.map(sector => new TerminalAnalysisSubjectEntity({ ...sector, view: AnalysisViewKind.SECTOR, clientId: client.id, documentId: null })),
             ]);
         });
 

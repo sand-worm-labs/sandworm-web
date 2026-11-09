@@ -1,8 +1,4 @@
-/* ╔════════════════════════════════════════════╗
-   ║ FILE: index.ts                     
-   ║ DESC: TypeScript Types for Sandworm Project  
-   ║ AUTHOR: Sandworm Dev Team                             
-   ╚════════════════════════════════════════════╝ */
+
 
 import { isValid, parse, parseISO, parseJSON } from 'date-fns';
 import { validate as validateUUID } from 'uuid';

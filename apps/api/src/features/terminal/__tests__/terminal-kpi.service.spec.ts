@@ -1,6 +1,7 @@
 jest.mock('../../staff/staff.service', () => ({ StaffService: jest.fn() }));
 
 import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { KpiDirection, KpiFormatKind } from '@sandworm/types/terminal';
 import { TerminalKpiService } from '../terminal-kpi.service';
 
 const STAFF = 'staff-1';
@@ -17,8 +18,8 @@ const definition = (init: Record<string, unknown> = {}) => ({
   description: '',
   position: 0,
   isVisible: true,
-  format: { kind: 'currency', currency: 'USD', compact: true },
-  direction: 'up_good',
+  format: { kind: KpiFormatKind.CURRENCY, currency: 'USD', compact: true },
+  direction: KpiDirection.UP_GOOD,
   comparison: { kind: 'previous' },
   source: { kind: 'manual' },
   settings: {},
@@ -244,7 +245,7 @@ describe('TerminalKpiService.recordValue', () => {
 
     await service.recordValue(STAFF, 'kpi-1', { textValue: '  Strong ', asOf: '2026-11-02T00:00:00Z' });
 
-    expect(repos.values.upsert.mock.calls[0]?.[0]).toMatchObject({ value: null, textValue: 'Strong', asOf: new Date('2026-11-02T00:00:00Z') });
+    expect((repos.values.upsert.mock.calls as unknown as unknown[][])[0]?.[0]).toMatchObject({ value: null, textValue: 'Strong', asOf: new Date('2026-11-02T00:00:00Z') });
   });
 });
 

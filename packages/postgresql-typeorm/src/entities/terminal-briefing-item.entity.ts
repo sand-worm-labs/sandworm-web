@@ -1,13 +1,11 @@
 import { Output } from '@sandworm/types';
+import { BriefingKindId } from '@sandworm/types/terminal';
 import { BeforeInsert, BeforeUpdate, Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from 'typeorm';
 import { AbstractEntity } from './abstract.entity';
 import { DocumentEntity } from './document.entity';
 import { TerminalClientEntity } from './terminal-client.entity';
 import { TerminalMemberEntity } from './terminal-member.entity';
 import { UserEntity } from './user.entity';
-
-export const TERMINAL_BRIEFING_KINDS = ['analysis', 'signal', 'metric'] as const;
-export type TerminalBriefingKind = (typeof TERMINAL_BRIEFING_KINDS)[number];
 
 // What the item's detail panel shows besides the outputs, which have their own column.
 export type TerminalBriefingDetail = {
@@ -40,7 +38,7 @@ export class TerminalBriefingItemEntity extends AbstractEntity {
   memberId!: string | null;
 
   @Column({ type: 'varchar', length: 16 })
-  kind!: TerminalBriefingKind;
+  kind!: BriefingKindId;
 
   @Column({ type: 'varchar', length: 200 })
   title!: string;

@@ -1,8 +1,8 @@
 import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import {
-  REQUEST_KIND_IDS,
-  REQUEST_TIMING_IDS,
-  REQUEST_USE_CASE_IDS,
+  RequestKindId,
+  RequestTimingId,
+  RequestUseCaseId,
   type AnalysisReport,
   type AnalysisSubject,
   type AnalysisViewKind,
@@ -11,11 +11,8 @@ import {
   type EvidenceId,
   type RequestData,
   type RequestInput,
-  type RequestKindId,
   type RequestScope,
   type RequestStatusId,
-  type RequestTimingId,
-  type RequestUseCaseId,
   type SignalData,
   type SignalStatusId,
   type TerminalAnalysis as TerminalAnalysisShape,
@@ -26,7 +23,7 @@ import {
 } from '@sandworm/types/terminal';
 import {
   ArrayMaxSize,
-  IsIn,
+  IsEnum,
   IsOptional,
   IsString,
   MaxLength,
@@ -151,7 +148,7 @@ const MAX_LIST = 20;
 @InputType('TerminalRequestInput')
 export class TerminalRequestInput implements RequestInput {
   @Field(() => String)
-  @IsIn(REQUEST_KIND_IDS)
+  @IsEnum(RequestKindId)
   kind!: RequestKindId;
 
   @Field()
@@ -162,7 +159,7 @@ export class TerminalRequestInput implements RequestInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @IsIn(REQUEST_USE_CASE_IDS)
+  @IsEnum(RequestUseCaseId)
   useCase!: RequestUseCaseId | null;
 
   @Field(() => [String])
@@ -173,7 +170,7 @@ export class TerminalRequestInput implements RequestInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @IsIn(REQUEST_TIMING_IDS)
+  @IsEnum(RequestTimingId)
   timing!: RequestTimingId | null;
 
   @Field(() => [String])

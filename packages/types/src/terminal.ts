@@ -2,15 +2,30 @@
 // shape the API stores. Labels and templates live with the terminal's UI; the
 // API only needs to know which ids are valid.
 
-export const ORGANISATION_TYPE_IDS = ['exchange', 'protocol', 'chain', 'vc', 'accelerator', 'other'] as const;
-export type OrganisationTypeId = (typeof ORGANISATION_TYPE_IDS)[number];
+export enum OrganisationTypeId {
+  EXCHANGE = 'exchange',
+  PROTOCOL = 'protocol',
+  CHAIN = 'chain',
+  VC = 'vc',
+  ACCELERATOR = 'accelerator',
+  OTHER = 'other',
+}
 
-export const GOAL_IDS = ['markets', 'retain', 'rivals', 'partners', 'board', 'product'] as const;
-export type GoalId = (typeof GOAL_IDS)[number];
+export enum GoalId {
+  MARKETS = 'markets',
+  RETAIN = 'retain',
+  RIVALS = 'rivals',
+  PARTNERS = 'partners',
+  BOARD = 'board',
+  PRODUCT = 'product',
+}
 export const MAX_GOALS = 3;
 
-export const ACCESS_LEVEL_IDS = ['view', 'request', 'admin'] as const;
-export type AccessLevelId = (typeof ACCESS_LEVEL_IDS)[number];
+export enum AccessLevelId {
+  VIEW = 'view',
+  REQUEST = 'request',
+  ADMIN = 'admin',
+}
 
 export type TeamInvite = { id: string; email: string; access: AccessLevelId };
 
@@ -44,19 +59,31 @@ export type TerminalSession = {
 
 // ── The Sandworm team's side: setting a client up for them ──
 
-export const PLAN_IDS = ['starter', 'pro', 'enterprise'] as const;
-export type PlanId = (typeof PLAN_IDS)[number];
+export enum PlanId {
+  STARTER = 'starter',
+  PRO = 'pro',
+  ENTERPRISE = 'enterprise',
+}
 
 // A client the team created waits for its admin's first login: setting_up while the
 // team is still working, invite_sent once the admin has been asked, live after they log in.
-export const CLIENT_STATUS_IDS = ['setting_up', 'invite_sent', 'live'] as const;
-export type ClientStatusId = (typeof CLIENT_STATUS_IDS)[number];
+export enum ClientStatusId {
+  SETTING_UP = 'setting_up',
+  INVITE_SENT = 'invite_sent',
+  LIVE = 'live',
+}
 
-export const INVITE_TIMING_IDS = ['when_ready', 'now', 'manual'] as const;
-export type InviteTimingId = (typeof INVITE_TIMING_IDS)[number];
+export enum InviteTimingId {
+  WHEN_READY = 'when_ready',
+  NOW = 'now',
+  MANUAL = 'manual',
+}
 
-export const INVITE_STATUS_IDS = ['pending', 'sent', 'claimed'] as const;
-export type InviteStatusId = (typeof INVITE_STATUS_IDS)[number];
+export enum InviteStatusId {
+  PENDING = 'pending',
+  SENT = 'sent',
+  CLAIMED = 'claimed',
+}
 
 export type TeamClientDraft = {
   details: {
@@ -117,26 +144,42 @@ export type TeamSourceRun = {
 
 // A request a client submits: research (scoped, approved, then worked on by
 // Sandworm's agents into a report) or a question (answered without a scope).
-export const REQUEST_KIND_IDS = ['research', 'question'] as const;
-export type RequestKindId = (typeof REQUEST_KIND_IDS)[number];
+export enum RequestKindId {
+  RESEARCH = 'research',
+  QUESTION = 'question',
+}
 
 // A question goes submitted → in_progress → delivered and skips the scope steps.
-export const REQUEST_STATUS_IDS = [
-  'submitted',
-  'scoping',
-  'awaiting_approval',
-  'in_progress',
-  'delivered',
-  'declined',
-  'failed',
-] as const;
-export type RequestStatusId = (typeof REQUEST_STATUS_IDS)[number];
+export enum RequestStatusId {
+  SUBMITTED = 'submitted',
+  SCOPING = 'scoping',
+  AWAITING_APPROVAL = 'awaiting_approval',
+  IN_PROGRESS = 'in_progress',
+  DELIVERED = 'delivered',
+  DECLINED = 'declined',
+  FAILED = 'failed',
+}
 
-export const REQUEST_USE_CASE_IDS = ['plan-launch', 'pick-partner', 'investor-update', 'other'] as const;
-export type RequestUseCaseId = (typeof REQUEST_USE_CASE_IDS)[number];
+// The statuses of a request that is still being worked on
+export const OPEN_REQUEST_STATUSES: readonly RequestStatusId[] = [
+  RequestStatusId.SUBMITTED,
+  RequestStatusId.SCOPING,
+  RequestStatusId.AWAITING_APPROVAL,
+  RequestStatusId.IN_PROGRESS,
+];
 
-export const REQUEST_TIMING_IDS = ['two-weeks', 'one-week', 'no-rush'] as const;
-export type RequestTimingId = (typeof REQUEST_TIMING_IDS)[number];
+export enum RequestUseCaseId {
+  PLAN_LAUNCH = 'plan-launch',
+  PICK_PARTNER = 'pick-partner',
+  INVESTOR_UPDATE = 'investor-update',
+  OTHER = 'other',
+}
+
+export enum RequestTimingId {
+  TWO_WEEKS = 'two-weeks',
+  ONE_WEEK = 'one-week',
+  NO_RUSH = 'no-rush',
+}
 
 // What the agent proposes after reading the request, for the client to approve.
 export type RequestScope = {
@@ -150,8 +193,11 @@ export type RequestScope = {
 // about. A project subject is a parent document and its reports are that
 // document's children. Regions and sectors hold no documents of their own: a
 // report shows under one when its tags carry `region:<slug>` or `sector:<slug>`.
-export const ANALYSIS_VIEW_IDS = ['project', 'region', 'sector'] as const;
-export type AnalysisViewKind = (typeof ANALYSIS_VIEW_IDS)[number];
+export enum AnalysisViewKind {
+  PROJECT = 'project',
+  REGION = 'region',
+  SECTOR = 'sector',
+}
 
 export type AnalysisReport = {
   id: string; // the report's document id
@@ -192,8 +238,11 @@ export function documentPath(
 
 // Briefing: what changed for the client, newest first. `detail` holds the
 // headline, frozen cell outputs and the what/why text.
-export const BRIEFING_KIND_IDS = ['analysis', 'signal', 'metric'] as const;
-export type BriefingKindId = (typeof BRIEFING_KIND_IDS)[number];
+export enum BriefingKindId {
+  ANALYSIS = 'analysis',
+  SIGNAL = 'signal',
+  METRIC = 'metric',
+}
 
 export type BriefingItemData = {
   id: string;
@@ -217,11 +266,18 @@ export const BRIEFING_WINDOW_DAYS = 14;
 
 // Signals: what Sandworm saw in the client's data and what it could mean.
 // The client triages them; Sandworm never calls one an opportunity.
-export const SIGNAL_STATUS_IDS = ['new', 'looking', 'acting', 'dismissed'] as const;
-export type SignalStatusId = (typeof SIGNAL_STATUS_IDS)[number];
+export enum SignalStatusId {
+  NEW = 'new',
+  LOOKING = 'looking',
+  ACTING = 'acting',
+  DISMISSED = 'dismissed',
+}
 
-export const EVIDENCE_IDS = ['strong', 'some', 'early'] as const;
-export type EvidenceId = (typeof EVIDENCE_IDS)[number];
+export enum EvidenceId {
+  STRONG = 'strong',
+  SOME = 'some',
+  EARLY = 'early',
+}
 
 export type SignalData = {
   id: string;
