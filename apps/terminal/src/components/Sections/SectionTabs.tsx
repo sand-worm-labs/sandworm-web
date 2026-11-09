@@ -1,5 +1,6 @@
 import { PageTabs, type PageTab } from "@/components/PageTabs";
 import { ROUTES, type RouteId } from "@/config/routes";
+import { tabCount } from "@/lib/sections/tab-count";
 import type { SectionCounts } from "@/types";
 
 type Section = { route: RouteId; countKey?: keyof SectionCounts };
@@ -19,7 +20,7 @@ export function SectionTabs({ current, counts }: SectionTabsProps) {
     id: route,
     route,
     label: ROUTES[route].label,
-    count: counts && countKey ? counts[countKey] : undefined,
+    count: tabCount(countKey && counts?.[countKey]),
   }));
 
   return <PageTabs label="Terminal sections" tabs={tabs} currentId={current} />;
