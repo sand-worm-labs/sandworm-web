@@ -51,6 +51,29 @@ export class TerminalContentResolver {
   }
 
   @Mutation(() => Boolean, {
+    name: 'markTerminalBriefingUnread',
+    description: 'Puts briefing items back to unread, and out of the archive.',
+  })
+  markTerminalBriefingUnread(
+    @CurrentUser('id') userId: string,
+    @Args('itemIds', { type: () => [ID] }) itemIds: string[],
+  ) {
+    return this.content.markBriefingUnread(userId, itemIds.slice(0, 200));
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'archiveTerminalBriefing',
+    description: 'Puts briefing items away for this member, or back. Archiving reads them too.',
+  })
+  archiveTerminalBriefing(
+    @CurrentUser('id') userId: string,
+    @Args('itemIds', { type: () => [ID] }) itemIds: string[],
+    @Args('isArchived') isArchived: boolean,
+  ) {
+    return this.content.setBriefingArchived(userId, itemIds.slice(0, 200), isArchived);
+  }
+
+  @Mutation(() => Boolean, {
     name: 'markTerminalBriefingSeen',
     description: 'Records that the user opened Briefing now: the start of their next "since your last visit".',
   })
@@ -73,6 +96,15 @@ export class TerminalContentResolver {
     @Args('status') status: string,
   ) {
     return this.content.setSignalStatus(userId, signalId, status as SignalStatusId);
+  }
+
+  @Mutation(() => TerminalSignal, { name: 'setTerminalSignalFeedback' })
+  setTerminalSignalFeedback(
+    @CurrentUser('id') userId: string,
+    @Args('signalId', { type: () => ID }) signalId: string,
+    @Args('feedback') feedback: string,
+  ) {
+    return this.content.setSignalFeedback(userId, signalId, feedback);
   }
 
   @Query(() => TerminalRequests, {

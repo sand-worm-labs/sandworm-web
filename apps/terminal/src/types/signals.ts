@@ -1,3 +1,5 @@
+import type { Output } from "@sandworm/types";
+
 import type { SignalStatus } from "@/lib/signals/statuses";
 
 export type { SignalStatus };
@@ -26,6 +28,10 @@ export type Signal = {
   when: string;
   // The report it came from, in the web app; fixtures have none
   reportUrl?: string;
+  // The client's open feedback: how it applies to them, in their words
+  feedback?: string;
+  // A snapshot of the source cell's outputs, when the API sends one
+  outputs?: readonly Output[];
 };
 
 export type SignalsFeed = {

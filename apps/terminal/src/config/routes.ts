@@ -10,9 +10,6 @@ export const ROUTES = {
   },
   analysis: { path: "/analysis", label: "Analysis", isBuilt: true },
   report: { path: "/analysis/report", label: "Report", isBuilt: false },
-  project: { path: "/analysis/project", label: "Project", isBuilt: true },
-  region: { path: "/analysis/region", label: "Region", isBuilt: true },
-  sector: { path: "/analysis/sector", label: "Sector", isBuilt: true },
   signals: {
     path: "/signals",
     label: "Signals",
@@ -67,9 +64,6 @@ export function findRouteByPath(pathname: string) {
 const FALLBACK_ROUTES: Partial<Record<RouteId, RouteId>> = {
   briefingArchive: "briefing",
   report: "analysis",
-  project: "analysis",
-  region: "analysis",
-  sector: "analysis",
   signal: "signals",
 };
 

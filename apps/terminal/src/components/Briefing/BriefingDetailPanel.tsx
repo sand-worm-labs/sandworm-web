@@ -1,18 +1,32 @@
+import {
+  PiArchive,
+  PiArrowLeft,
+  PiArrowUUpLeft,
+  PiEnvelopeSimple,
+} from "react-icons/pi";
 import { buttonClassName } from "@sandworm/ui/kit/button";
 import { Card } from "@sandworm/ui/kit/card";
 import type { BriefingItemData } from "@sandworm/types/terminal";
 
-import { AppLink } from "@/components/AppLink";
-import { actionOf, detailOf } from "@/lib/briefing/display";
+import { CellView } from "@/components/Cells/CellView";
+import { ReportLink } from "@/components/ReportLink";
+import { detailOf } from "@/lib/briefing/display";
 import { fullWhen } from "@/lib/dates";
+import { webAppUrl } from "@/lib/web-app";
 
+import { BriefingActionButton } from "./BriefingActionButton";
 import { BriefingKindTag } from "./BriefingKindTag";
-import { CellOutputs } from "./CellOutputs";
 import { HeadlineMetric } from "./HeadlineMetric";
 
 type BriefingDetailPanelProps = {
   item: BriefingItemData;
   clientName: string;
+  isArchived: boolean;
+  // Back to the list, on a phone where the item has the screen to itself
+  onBack: () => void;
+  onMarkUnread: () => void;
+  onArchive: () => void;
+  onRestore: () => void;
 };
 
 function DetailSection({ title, text }: { title: string; text: string }) {
@@ -27,16 +41,53 @@ function DetailSection({ title, text }: { title: string; text: string }) {
 export function BriefingDetailPanel({
   item,
   clientName,
+  isArchived,
+  onBack,
+  onMarkUnread,
+  onArchive,
+  onRestore,
 }: BriefingDetailPanelProps) {
   const { headline, outputs, what, why } = detailOf(item);
-  const action = actionOf(item);
   const titleId = `briefing-${item.id}-title`;
 
   return (
     <Card
       aria-labelledby={titleId}
-      className="flex flex-col gap-5 px-7 pb-[22px] pt-7"
+      className="flex flex-col gap-5 px-5 pb-[22px] pt-3 sm:px-7 lg:pt-7"
     >
+      <div className="-mx-2 flex items-center justify-between gap-2 lg:mx-0 lg:justify-end">
+        <div className="lg:hidden">
+          <BriefingActionButton
+            label="Briefing"
+            icon={PiArrowLeft}
+            onClick={onBack}
+            isLabelled
+          />
+        </div>
+        <div className="flex items-center gap-0.5">
+          <BriefingActionButton
+            label="Mark as unread"
+            icon={PiEnvelopeSimple}
+            onClick={onMarkUnread}
+            isLabelled
+          />
+          {isArchived ? (
+            <BriefingActionButton
+              label="Restore"
+              icon={PiArrowUUpLeft}
+              onClick={onRestore}
+              isLabelled
+            />
+          ) : (
+            <BriefingActionButton
+              label="Archive"
+              icon={PiArchive}
+              onClick={onArchive}
+              isLabelled
+            />
+          )}
+        </div>
+      </div>
       <div className="flex flex-col gap-2.5">
         <div className="flex flex-wrap items-center gap-2">
           <BriefingKindTag kind={item.kind} />
@@ -49,34 +100,26 @@ export function BriefingDetailPanel({
         </div>
         <h2
           id={titleId}
-          className="text-[22px] font-medium leading-tight text-ink-100"
+          className="text-xl font-medium leading-tight text-ink-100 sm:text-[22px]"
         >
           {item.title}
         </h2>
       </div>
       {headline && <HeadlineMetric headline={headline} />}
       {outputs && outputs.length > 0 && (
-        <CellOutputs outputs={outputs} title={item.title} />
+        <CellView outputs={outputs} title={item.title} />
       )}
       {what && <DetailSection title="What happened" text={what} />}
       {why && (
         <DetailSection title={`Why it matters for ${clientName}`} text={why} />
       )}
       <div className="border-t border-border-secondary pt-4">
-        {action.url ? (
-          <a
-            href={action.url}
-            target="_blank"
-            rel="noreferrer"
-            className={buttonClassName()}
-          >
-            {action.label}
-          </a>
-        ) : (
-          <AppLink route={action.route} className={buttonClassName()}>
-            {action.label}
-          </AppLink>
-        )}
+        <ReportLink
+          url={item.sourcePath ? webAppUrl(item.sourcePath) : undefined}
+          className={buttonClassName()}
+        >
+          Open the notebook
+        </ReportLink>
       </div>
     </Card>
   );

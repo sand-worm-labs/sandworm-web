@@ -5,7 +5,7 @@ import { routeHref, type RouteId } from "@/config/routes";
 
 type AppLinkProps = {
   route: RouteId;
-  // An entity page under the route, e.g. /analysis/project/<slug>
+  // An entity page under the route, e.g. /analysis/<id>
   slug?: string;
   // Search params, e.g. which item a list opens on
   query?: Record<string, string>;

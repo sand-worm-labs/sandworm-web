@@ -1,11 +1,10 @@
-import {
+import type {
+  BriefingItemData,
   BriefingKindId,
-  type BriefingItemData,
 } from "@sandworm/types/terminal";
 
 import { fullWhen, longDay } from "@/lib/dates";
-import { webAppUrl } from "@/lib/web-app";
-import type { Action, BriefingDetail } from "@/types";
+import type { BriefingDetail } from "@/types";
 
 export const KIND_LABEL: Record<BriefingKindId, string> = {
   analysis: "Analysis",
@@ -13,23 +12,15 @@ export const KIND_LABEL: Record<BriefingKindId, string> = {
   metric: "Metric",
 };
 
+// The filters by kind, in the words a reader looks for
+export const KIND_FILTER_LABEL: Record<BriefingKindId, string> = {
+  analysis: "Analysis",
+  signal: "Signals",
+  metric: "Metrics",
+};
+
 export const detailOf = (item: BriefingItemData) =>
   item.detail as BriefingDetail;
-
-// An analysis item opens its report; signals and metrics open their section.
-export function actionOf(item: BriefingItemData): Action {
-  if (item.kind === BriefingKindId.ANALYSIS) {
-    return {
-      label: "Read report",
-      route: "report",
-      url: item.sourcePath ? webAppUrl(item.sourcePath) : undefined,
-    };
-  }
-  if (item.kind === BriefingKindId.SIGNAL) {
-    return { label: "Open signal", route: "signals" };
-  }
-  return { label: "See Overview", route: "overview" };
-}
 
 export const sinceLabel = (lastSeenAt: string | null) =>
   lastSeenAt

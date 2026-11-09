@@ -425,6 +425,8 @@ export type Mutation = {
   approveShowcaseClaim: Scalars['Boolean']['output'];
   /** Approves the scope of a research request: the work starts and it counts toward the allowance. */
   approveTerminalRequestScope: TerminalRequest;
+  /** Puts briefing items away for this member, or back. Archiving reads them too. */
+  archiveTerminalBriefing: Scalars['Boolean']['output'];
   /** Start committing a cloud notebook's inputs (its code, data sources, parameters and when it ran) onchain, with a validator re-checking them. Returns at once with pending set: follow it with getNotebookTrust. Run the notebook first. Bounties accept only attested notebooks. */
   attestNotebook: NotebookTrust;
   /** Remove multiple users from workspaces */
@@ -496,6 +498,8 @@ export type Mutation = {
   markTerminalBriefingRead: Scalars['Boolean']['output'];
   /** Records that the user opened Briefing now: the start of their next "since your last visit". */
   markTerminalBriefingSeen: Scalars['Boolean']['output'];
+  /** Puts briefing items back to unread, and out of the archive. */
+  markTerminalBriefingUnread: Scalars['Boolean']['output'];
   /** The current member has seen the welcome; it is not shown again. */
   markTerminalWelcomed: Scalars['Boolean']['output'];
   /** Pin or unpin a chat */
@@ -548,6 +552,7 @@ export type Mutation = {
   setDocumentUnlisted: Document;
   /** Add or remove environment variables */
   setEnvironmentVariables: Array<EnvironmentVariable>;
+  setTerminalSignalFeedback: TerminalSignal;
   setTerminalSignalStatus: TerminalSignal;
   setWorkspaceDefaultAiModel: Scalars['Boolean']['output'];
   /** Dev only: simulate a payment and set the workspace plan */
@@ -623,6 +628,12 @@ export type MutationApproveShowcaseClaimArgs = {
 
 export type MutationApproveTerminalRequestScopeArgs = {
   requestId: Scalars['ID']['input'];
+};
+
+
+export type MutationArchiveTerminalBriefingArgs = {
+  isArchived: Scalars['Boolean']['input'];
+  itemIds: Array<Scalars['ID']['input']>;
 };
 
 
@@ -847,6 +858,11 @@ export type MutationMarkTerminalBriefingReadArgs = {
 };
 
 
+export type MutationMarkTerminalBriefingUnreadArgs = {
+  itemIds: Array<Scalars['ID']['input']>;
+};
+
+
 export type MutationPinChatArgs = {
   chatId: Scalars['String']['input'];
 };
@@ -992,6 +1008,12 @@ export type MutationSetDocumentUnlistedArgs = {
 export type MutationSetEnvironmentVariablesArgs = {
   input: SetEnvironmentVariablesInput;
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationSetTerminalSignalFeedbackArgs = {
+  feedback: Scalars['String']['input'];
+  signalId: Scalars['ID']['input'];
 };
 
 
@@ -1771,13 +1793,13 @@ export type TerminalAnalysisReport = {
 
 export type TerminalAnalysisSubject = {
   __typename?: 'TerminalAnalysisSubject';
+  icon?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['String']['output'];
   impact: Scalars['String']['output'];
   impactSize: Scalars['Int']['output'];
   kind: Scalars['String']['output'];
   name: Scalars['String']['output'];
   reports: Array<TerminalAnalysisReport>;
-  slug: Scalars['String']['output'];
   view: Scalars['String']['output'];
 };
 
@@ -1792,6 +1814,7 @@ export type TerminalBriefingItem = {
   __typename?: 'TerminalBriefingItem';
   detail: Scalars['JSON']['output'];
   id: Scalars['String']['output'];
+  isArchived: Scalars['Boolean']['output'];
   isRead: Scalars['Boolean']['output'];
   kind: Scalars['String']['output'];
   publishedAt: Scalars['String']['output'];
@@ -2011,6 +2034,7 @@ export type TerminalSignal = {
   __typename?: 'TerminalSignal';
   couldMean: Scalars['String']['output'];
   evidence: Scalars['String']['output'];
+  feedback: Scalars['String']['output'];
   id: Scalars['String']['output'];
   kind: Scalars['String']['output'];
   observed: Scalars['String']['output'];
@@ -2306,6 +2330,21 @@ export type MarkTerminalBriefingSeenMutationVariables = Exact<{ [key: string]: n
 
 export type MarkTerminalBriefingSeenMutation = { __typename?: 'Mutation', markTerminalBriefingSeen: boolean };
 
+export type MarkTerminalBriefingUnreadMutationVariables = Exact<{
+  itemIds: Array<Scalars['ID']['input']> | Scalars['ID']['input'];
+}>;
+
+
+export type MarkTerminalBriefingUnreadMutation = { __typename?: 'Mutation', markTerminalBriefingUnread: boolean };
+
+export type ArchiveTerminalBriefingMutationVariables = Exact<{
+  itemIds: Array<Scalars['ID']['input']> | Scalars['ID']['input'];
+  isArchived: Scalars['Boolean']['input'];
+}>;
+
+
+export type ArchiveTerminalBriefingMutation = { __typename?: 'Mutation', archiveTerminalBriefing: boolean };
+
 export type SubmitTerminalRequestMutationVariables = Exact<{
   input: TerminalRequestInput;
 }>;
@@ -2320,15 +2359,31 @@ export type ApproveTerminalRequestScopeMutationVariables = Exact<{
 
 export type ApproveTerminalRequestScopeMutation = { __typename?: 'Mutation', approveTerminalRequestScope: { __typename?: 'TerminalRequest', id: string } };
 
+export type SetTerminalSignalStatusMutationVariables = Exact<{
+  signalId: Scalars['ID']['input'];
+  status: Scalars['String']['input'];
+}>;
+
+
+export type SetTerminalSignalStatusMutation = { __typename?: 'Mutation', setTerminalSignalStatus: { __typename?: 'TerminalSignal', id: string, status: string } };
+
+export type SetTerminalSignalFeedbackMutationVariables = Exact<{
+  signalId: Scalars['ID']['input'];
+  feedback: Scalars['String']['input'];
+}>;
+
+
+export type SetTerminalSignalFeedbackMutation = { __typename?: 'Mutation', setTerminalSignalFeedback: { __typename?: 'TerminalSignal', id: string, feedback: string } };
+
 export type TerminalAnalysisQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TerminalAnalysisQuery = { __typename?: 'Query', terminalAnalysis: { __typename?: 'TerminalAnalysis', subjects: Array<{ __typename?: 'TerminalAnalysisSubject', id: string, view: string, slug: string, name: string, kind: string, impact: string, impactSize: number, reports: Array<{ __typename?: 'TerminalAnalysisReport', id: string, title: string, line: string, publishedAt: string, isNew: boolean, path: string }> }> } };
+export type TerminalAnalysisQuery = { __typename?: 'Query', terminalAnalysis: { __typename?: 'TerminalAnalysis', subjects: Array<{ __typename?: 'TerminalAnalysisSubject', id: string, view: string, name: string, icon?: any | null, kind: string, impact: string, impactSize: number, reports: Array<{ __typename?: 'TerminalAnalysisReport', id: string, title: string, line: string, publishedAt: string, isNew: boolean, path: string }> }> } };
 
 export type TerminalBriefingQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TerminalBriefingQuery = { __typename?: 'Query', terminalBriefing: { __typename?: 'TerminalBriefing', lastSeenAt?: string | null, archivedCount: number, items: Array<{ __typename?: 'TerminalBriefingItem', id: string, kind: string, title: string, summary: string, subject: string, detail: any, publishedAt: string, isRead: boolean, sourcePath?: string | null }> } };
+export type TerminalBriefingQuery = { __typename?: 'Query', terminalBriefing: { __typename?: 'TerminalBriefing', lastSeenAt?: string | null, archivedCount: number, items: Array<{ __typename?: 'TerminalBriefingItem', id: string, kind: string, title: string, summary: string, subject: string, detail: any, publishedAt: string, isRead: boolean, isArchived: boolean, sourcePath?: string | null }> } };
 
 export type TerminalOverviewKpisQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2353,7 +2408,7 @@ export type TerminalSessionQuery = { __typename?: 'Query', terminalSession: { __
 export type TerminalSignalsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TerminalSignalsQuery = { __typename?: 'Query', terminalSignals: { __typename?: 'TerminalSignals', items: Array<{ __typename?: 'TerminalSignal', id: string, status: string, title: string, observed: string, couldMean: string, kind: string, size: string, sizeLabel: string, evidence: string, subject: string, publishedAt: string, reportPath?: string | null }> } };
+export type TerminalSignalsQuery = { __typename?: 'Query', terminalSignals: { __typename?: 'TerminalSignals', items: Array<{ __typename?: 'TerminalSignal', id: string, status: string, title: string, observed: string, couldMean: string, kind: string, size: string, sizeLabel: string, evidence: string, feedback: string, subject: string, publishedAt: string, reportPath?: string | null }> } };
 
 export const TerminalRequestFieldsFragmentDoc = gql`
     fragment TerminalRequestFields on TerminalRequest {
@@ -2436,6 +2491,69 @@ export function useMarkTerminalBriefingSeenMutation(baseOptions?: Apollo.Mutatio
 export type MarkTerminalBriefingSeenMutationHookResult = ReturnType<typeof useMarkTerminalBriefingSeenMutation>;
 export type MarkTerminalBriefingSeenMutationResult = Apollo.MutationResult<MarkTerminalBriefingSeenMutation>;
 export type MarkTerminalBriefingSeenMutationOptions = Apollo.BaseMutationOptions<MarkTerminalBriefingSeenMutation, MarkTerminalBriefingSeenMutationVariables>;
+export const MarkTerminalBriefingUnreadDocument = gql`
+    mutation MarkTerminalBriefingUnread($itemIds: [ID!]!) {
+  markTerminalBriefingUnread(itemIds: $itemIds)
+}
+    `;
+export type MarkTerminalBriefingUnreadMutationFn = Apollo.MutationFunction<MarkTerminalBriefingUnreadMutation, MarkTerminalBriefingUnreadMutationVariables>;
+
+/**
+ * __useMarkTerminalBriefingUnreadMutation__
+ *
+ * To run a mutation, you first call `useMarkTerminalBriefingUnreadMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMarkTerminalBriefingUnreadMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [markTerminalBriefingUnreadMutation, { data, loading, error }] = useMarkTerminalBriefingUnreadMutation({
+ *   variables: {
+ *      itemIds: // value for 'itemIds'
+ *   },
+ * });
+ */
+export function useMarkTerminalBriefingUnreadMutation(baseOptions?: Apollo.MutationHookOptions<MarkTerminalBriefingUnreadMutation, MarkTerminalBriefingUnreadMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<MarkTerminalBriefingUnreadMutation, MarkTerminalBriefingUnreadMutationVariables>(MarkTerminalBriefingUnreadDocument, options);
+      }
+export type MarkTerminalBriefingUnreadMutationHookResult = ReturnType<typeof useMarkTerminalBriefingUnreadMutation>;
+export type MarkTerminalBriefingUnreadMutationResult = Apollo.MutationResult<MarkTerminalBriefingUnreadMutation>;
+export type MarkTerminalBriefingUnreadMutationOptions = Apollo.BaseMutationOptions<MarkTerminalBriefingUnreadMutation, MarkTerminalBriefingUnreadMutationVariables>;
+export const ArchiveTerminalBriefingDocument = gql`
+    mutation ArchiveTerminalBriefing($itemIds: [ID!]!, $isArchived: Boolean!) {
+  archiveTerminalBriefing(itemIds: $itemIds, isArchived: $isArchived)
+}
+    `;
+export type ArchiveTerminalBriefingMutationFn = Apollo.MutationFunction<ArchiveTerminalBriefingMutation, ArchiveTerminalBriefingMutationVariables>;
+
+/**
+ * __useArchiveTerminalBriefingMutation__
+ *
+ * To run a mutation, you first call `useArchiveTerminalBriefingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useArchiveTerminalBriefingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [archiveTerminalBriefingMutation, { data, loading, error }] = useArchiveTerminalBriefingMutation({
+ *   variables: {
+ *      itemIds: // value for 'itemIds'
+ *      isArchived: // value for 'isArchived'
+ *   },
+ * });
+ */
+export function useArchiveTerminalBriefingMutation(baseOptions?: Apollo.MutationHookOptions<ArchiveTerminalBriefingMutation, ArchiveTerminalBriefingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ArchiveTerminalBriefingMutation, ArchiveTerminalBriefingMutationVariables>(ArchiveTerminalBriefingDocument, options);
+      }
+export type ArchiveTerminalBriefingMutationHookResult = ReturnType<typeof useArchiveTerminalBriefingMutation>;
+export type ArchiveTerminalBriefingMutationResult = Apollo.MutationResult<ArchiveTerminalBriefingMutation>;
+export type ArchiveTerminalBriefingMutationOptions = Apollo.BaseMutationOptions<ArchiveTerminalBriefingMutation, ArchiveTerminalBriefingMutationVariables>;
 export const SubmitTerminalRequestDocument = gql`
     mutation SubmitTerminalRequest($input: TerminalRequestInput!) {
   submitTerminalRequest(input: $input) {
@@ -2502,14 +2620,84 @@ export function useApproveTerminalRequestScopeMutation(baseOptions?: Apollo.Muta
 export type ApproveTerminalRequestScopeMutationHookResult = ReturnType<typeof useApproveTerminalRequestScopeMutation>;
 export type ApproveTerminalRequestScopeMutationResult = Apollo.MutationResult<ApproveTerminalRequestScopeMutation>;
 export type ApproveTerminalRequestScopeMutationOptions = Apollo.BaseMutationOptions<ApproveTerminalRequestScopeMutation, ApproveTerminalRequestScopeMutationVariables>;
+export const SetTerminalSignalStatusDocument = gql`
+    mutation SetTerminalSignalStatus($signalId: ID!, $status: String!) {
+  setTerminalSignalStatus(signalId: $signalId, status: $status) {
+    id
+    status
+  }
+}
+    `;
+export type SetTerminalSignalStatusMutationFn = Apollo.MutationFunction<SetTerminalSignalStatusMutation, SetTerminalSignalStatusMutationVariables>;
+
+/**
+ * __useSetTerminalSignalStatusMutation__
+ *
+ * To run a mutation, you first call `useSetTerminalSignalStatusMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetTerminalSignalStatusMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setTerminalSignalStatusMutation, { data, loading, error }] = useSetTerminalSignalStatusMutation({
+ *   variables: {
+ *      signalId: // value for 'signalId'
+ *      status: // value for 'status'
+ *   },
+ * });
+ */
+export function useSetTerminalSignalStatusMutation(baseOptions?: Apollo.MutationHookOptions<SetTerminalSignalStatusMutation, SetTerminalSignalStatusMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SetTerminalSignalStatusMutation, SetTerminalSignalStatusMutationVariables>(SetTerminalSignalStatusDocument, options);
+      }
+export type SetTerminalSignalStatusMutationHookResult = ReturnType<typeof useSetTerminalSignalStatusMutation>;
+export type SetTerminalSignalStatusMutationResult = Apollo.MutationResult<SetTerminalSignalStatusMutation>;
+export type SetTerminalSignalStatusMutationOptions = Apollo.BaseMutationOptions<SetTerminalSignalStatusMutation, SetTerminalSignalStatusMutationVariables>;
+export const SetTerminalSignalFeedbackDocument = gql`
+    mutation SetTerminalSignalFeedback($signalId: ID!, $feedback: String!) {
+  setTerminalSignalFeedback(signalId: $signalId, feedback: $feedback) {
+    id
+    feedback
+  }
+}
+    `;
+export type SetTerminalSignalFeedbackMutationFn = Apollo.MutationFunction<SetTerminalSignalFeedbackMutation, SetTerminalSignalFeedbackMutationVariables>;
+
+/**
+ * __useSetTerminalSignalFeedbackMutation__
+ *
+ * To run a mutation, you first call `useSetTerminalSignalFeedbackMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetTerminalSignalFeedbackMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setTerminalSignalFeedbackMutation, { data, loading, error }] = useSetTerminalSignalFeedbackMutation({
+ *   variables: {
+ *      signalId: // value for 'signalId'
+ *      feedback: // value for 'feedback'
+ *   },
+ * });
+ */
+export function useSetTerminalSignalFeedbackMutation(baseOptions?: Apollo.MutationHookOptions<SetTerminalSignalFeedbackMutation, SetTerminalSignalFeedbackMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SetTerminalSignalFeedbackMutation, SetTerminalSignalFeedbackMutationVariables>(SetTerminalSignalFeedbackDocument, options);
+      }
+export type SetTerminalSignalFeedbackMutationHookResult = ReturnType<typeof useSetTerminalSignalFeedbackMutation>;
+export type SetTerminalSignalFeedbackMutationResult = Apollo.MutationResult<SetTerminalSignalFeedbackMutation>;
+export type SetTerminalSignalFeedbackMutationOptions = Apollo.BaseMutationOptions<SetTerminalSignalFeedbackMutation, SetTerminalSignalFeedbackMutationVariables>;
 export const TerminalAnalysisDocument = gql`
     query TerminalAnalysis {
   terminalAnalysis {
     subjects {
       id
       view
-      slug
       name
+      icon
       kind
       impact
       impactSize
@@ -2571,6 +2759,7 @@ export const TerminalBriefingDocument = gql`
       detail
       publishedAt
       isRead
+      isArchived
       sourcePath
     }
   }
@@ -2806,6 +2995,7 @@ export const TerminalSignalsDocument = gql`
       size
       sizeLabel
       evidence
+      feedback
       subject
       publishedAt
       reportPath

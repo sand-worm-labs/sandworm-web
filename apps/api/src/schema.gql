@@ -301,8 +301,8 @@ type TerminalAnalysisReport {
 type TerminalAnalysisSubject {
   id: String!
   view: String!
-  slug: String!
   name: String!
+  icon: JSON
   kind: String!
   impact: String!
   impactSize: Int!
@@ -322,6 +322,7 @@ type TerminalBriefingItem {
   detail: JSON!
   publishedAt: String!
   isRead: Boolean!
+  isArchived: Boolean!
   sourcePath: String
 }
 
@@ -341,6 +342,7 @@ type TerminalSignal {
   size: String!
   sizeLabel: String!
   evidence: String!
+  feedback: String!
   subject: String!
   publishedAt: String!
   reportPath: String
@@ -1380,11 +1382,20 @@ type Mutation {
   sendTerminalInvite(clientId: String!): TerminalTeamClient!
   markTerminalBriefingRead(itemIds: [ID!]!): Boolean!
 
+  """Puts briefing items back to unread, and out of the archive."""
+  markTerminalBriefingUnread(itemIds: [ID!]!): Boolean!
+
+  """
+  Puts briefing items away for this member, or back. Archiving reads them too.
+  """
+  archiveTerminalBriefing(itemIds: [ID!]!, isArchived: Boolean!): Boolean!
+
   """
   Records that the user opened Briefing now: the start of their next "since your last visit".
   """
   markTerminalBriefingSeen: Boolean!
   setTerminalSignalStatus(signalId: ID!, status: String!): TerminalSignal!
+  setTerminalSignalFeedback(signalId: ID!, feedback: String!): TerminalSignal!
   submitTerminalRequest(input: TerminalRequestInput!): TerminalRequest!
 
   """

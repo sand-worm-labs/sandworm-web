@@ -17,7 +17,7 @@ NEG = "#B42318"
 # too dark to read on a dark surface. The web app does not receive these from
 # Python: it injects them as --sw-* CSS variables for HTML results, and swaps the
 # same colors into stored Plotly figures when the reader is in dark mode (see
-# apps/web .../python/PythonOutput.tsx and plotlyDark.ts). Keep the three in step.
+# apps/web .../python/PythonOutput.tsx and packages/ui/src/lib/plotly-dark.ts). Keep the three in step.
 DARK = {
     "ink": "#F3F0F5",
     "ink-2": "#CFC8D6",
@@ -87,7 +87,7 @@ CHAIN_COLORS = {
 # Heatmaps and other continuous scales: pale pink, brand magenta, deep indigo. Plotly's own
 # default (navy to yellow) must never reach a chart; the template sets this one on every
 # heatmap-like trace (plotly_theme.build_template) and the web renderer repeats it for
-# figures a notebook stored with the old default (apps/web plotlyDefaults.ts).
+# figures a notebook stored with the old default (packages/ui/src/lib/plotly-defaults.ts).
 SEQUENTIAL = ("#FDE7F4", "#EE149E", "#4B2E83")
 HEATMAP_SCALE = [[i / (len(SEQUENTIAL) - 1), c] for i, c in enumerate(SEQUENTIAL)]
 

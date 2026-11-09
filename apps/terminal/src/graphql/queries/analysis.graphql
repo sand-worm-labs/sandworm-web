@@ -3,8 +3,8 @@ query TerminalAnalysis {
     subjects {
       id
       view
-      slug
       name
+      icon
       kind
       impact
       impactSize

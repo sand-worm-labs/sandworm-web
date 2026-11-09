@@ -1,10 +1,5 @@
-"use client";
-
-import { useState } from "react";
 import { buttonClassName } from "@sandworm/ui/kit/button";
 import { Card } from "@sandworm/ui/kit/card";
-import { BriefingKindId } from "@sandworm/types/terminal";
-import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
 
 import { AppLink } from "@/components/AppLink";
 import type { BriefingBlock } from "@/types";
@@ -13,30 +8,8 @@ import { BlockHeader } from "@/components/Overview/BlockHeader";
 
 import { BriefingRow } from "./BriefingRow";
 
-type BriefingFilter = "all" | BriefingKindId;
-
-const FILTERS: readonly { id: BriefingFilter; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: BriefingKindId.ANALYSIS, label: "Analysis" },
-  { id: BriefingKindId.SIGNAL, label: "Signals" },
-  { id: BriefingKindId.METRIC, label: "Metrics" },
-];
-
 export function BriefingCard({ block }: { block: BriefingBlock }) {
-  const [filter, setFilter] = useState<BriefingFilter>("all");
   const titleId = `${block.id}-title`;
-
-  const options = FILTERS.map(option => ({
-    ...option,
-    count:
-      option.id === "all"
-        ? block.entries.length
-        : block.entries.filter(entry => entry.kind === option.id).length,
-  }));
-  const visibleEntries =
-    filter === "all"
-      ? block.entries
-      : block.entries.filter(entry => entry.kind === filter);
 
   return (
     <Card
@@ -61,16 +34,8 @@ export function BriefingCard({ block }: { block: BriefingBlock }) {
           }
         />
       </div>
-      <div className="px-3">
-        <SegmentedControl
-          label="Filter briefing"
-          options={options}
-          value={filter}
-          onChange={setFilter}
-        />
-      </div>
       <div className="flex flex-col">
-        {groupInOrder(visibleEntries, entry => entry.group).map(group => (
+        {groupInOrder(block.entries, entry => entry.group).map(group => (
           <div key={group.key} className="flex flex-col">
             <div className="flex items-center gap-1.5 px-3 pb-1 pt-2.5 text-xs font-medium text-ink-400">
               {group.key}

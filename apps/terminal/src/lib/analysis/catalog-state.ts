@@ -1,6 +1,8 @@
 import {
   AnalysisViewKind,
+  type AnalysisReport,
   type AnalysisSubject,
+  type SubjectIcon,
 } from "@sandworm/types/terminal";
 
 import { shortDay } from "@/lib/dates";
@@ -65,7 +67,7 @@ function plural(count: number, noun: string) {
   return count === 1 ? noun : `${noun}s`;
 }
 
-const VIEWS: readonly (Omit<AnalysisView, "rows" | "impactColumnName"> & {
+const VIEWS: readonly (Omit<AnalysisView, "rows"> & {
   kind: AnalysisViewKind;
 })[] = [
   {
@@ -73,21 +75,18 @@ const VIEWS: readonly (Omit<AnalysisView, "rows" | "impactColumnName"> & {
     id: "projects",
     label: "Projects",
     columnName: "Project",
-    rowRoute: "project",
   },
   {
     kind: AnalysisViewKind.REGION,
     id: "regions",
     label: "Regions",
     columnName: "Region",
-    rowRoute: "region",
   },
   {
     kind: AnalysisViewKind.SECTOR,
     id: "sectors",
     label: "Sectors",
     columnName: "Sector",
-    rowRoute: "sector",
   },
 ];
 
@@ -99,14 +98,13 @@ function toRow(subject: AnalysisSubject): AnalysisRow {
   const [latest] = subject.reports;
   return {
     id: subject.id,
-    slug: subject.slug,
-    hasPage: false,
+    hasPage: true,
     name: subject.name,
+    icon: subject.icon,
     kind: subject.kind,
     reportCount: subject.reports.length,
     latest: latest?.title ?? "",
     isNew: subject.reports.some(report => report.isNew),
-    impact: subject.impact,
     impactSize: subject.impactSize,
     updated: latest ? shortDay(latest.publishedAt) : "",
   };
@@ -120,25 +118,42 @@ function rowsOf(subjects: readonly AnalysisSubject[], kind: AnalysisViewKind) {
     .map(toRow);
 }
 
-// The three newest reports the member has not seen, each under the project it
-// is on (a report has one project, so none repeats)
+// The three newest new reports. A report shows under its project when it has
+// one, else under the region or sector it is tagged with, so none repeats.
 function highlightsOf(subjects: readonly AnalysisSubject[]) {
-  return subjects
-    .filter(subject => subject.view === AnalysisViewKind.PROJECT)
-    .flatMap(subject =>
-      subject.reports.map(report => ({ report, entity: subject.name }))
-    )
+  const projectFirst = [
+    ...subjects.filter(subject => subject.view === AnalysisViewKind.PROJECT),
+    ...subjects.filter(subject => subject.view !== AnalysisViewKind.PROJECT),
+  ];
+  const byReport = new Map<
+    string,
+    { report: AnalysisReport; entity: string; icon: SubjectIcon | null }
+  >();
+  projectFirst.forEach(subject =>
+    subject.reports.forEach(report => {
+      if (!byReport.has(report.id)) {
+        byReport.set(report.id, {
+          report,
+          entity: subject.name,
+          icon: subject.icon,
+        });
+      }
+    })
+  );
+
+  return Array.from(byReport.values())
     .filter(({ report }) => report.isNew)
     .sort((a, b) => b.report.publishedAt.localeCompare(a.report.publishedAt))
     .slice(0, 3)
     .map(
-      ({ report, entity }): AnalysisHighlight => ({
+      ({ report, entity, icon }): AnalysisHighlight => ({
         id: report.id,
         tag: "New report",
         when: shortDay(report.publishedAt),
         title: report.title,
         line: report.line,
         entity,
+        icon,
         url: webAppUrl(report.path),
       })
     );
@@ -151,7 +166,6 @@ export function catalogOf(
     highlights: highlightsOf(subjects),
     views: VIEWS.map(({ kind, ...view }) => ({
       ...view,
-      impactColumnName: "Your users there",
       rows: rowsOf(subjects, kind),
     })).filter(view => view.rows.length > 0),
   };

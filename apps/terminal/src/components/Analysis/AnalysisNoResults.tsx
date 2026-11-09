@@ -42,7 +42,7 @@ export function AnalysisNoResults({
         <p className="mt-2.5 text-[13px] text-ink-400">
           Close to it:{" "}
           <AppLink
-            route="sector"
+            route="analysis"
             className="font-medium text-primary-700 dark:text-primary-200"
           >
             {suggestion}

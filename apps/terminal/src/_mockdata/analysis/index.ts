@@ -1,8 +1,7 @@
-import { isEntityKind } from "@/lib/analysis/entity/kinds";
 import type { AnalysisCatalog, ClientKind } from "@/types";
 import { overviewMockData } from "@/_mockdata/overview";
 
-import { entityFixtures, findEntityPage } from "./entity";
+import { entityFixtures, findEntity } from "./entity";
 import { exchangeAnalysis } from "./exchange";
 import { paycrestAnalysis } from "./paycrest";
 import { analysisFromOverview } from "./from-overview";
@@ -22,7 +21,7 @@ function linkEntityPages(
   catalog: AnalysisCatalog,
   clientKind: ClientKind
 ): AnalysisCatalog {
-  const pages = entityFixtures[clientKind];
+  const pages = entityFixtures(clientKind);
 
   return {
     ...catalog,
@@ -30,9 +29,7 @@ function linkEntityPages(
       ...view,
       rows: view.rows.map(row => ({
         ...row,
-        hasPage:
-          isEntityKind(view.rowRoute) &&
-          findEntityPage(pages, view.rowRoute, row.slug) !== undefined,
+        hasPage: findEntity(pages, row.id) !== undefined,
       })),
     })),
   };

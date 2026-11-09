@@ -11,6 +11,7 @@ query TerminalBriefing {
       detail
       publishedAt
       isRead
+      isArchived
       sourcePath
     }
   }

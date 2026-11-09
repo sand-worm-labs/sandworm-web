@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@sandworm/ui/lib/utils";
 
 import type { SignalStatus } from "@/types";
 
@@ -12,14 +12,21 @@ const statusClassNames: Record<SignalStatus, string> = {
     "border-[1.5px] border-current text-ink-400 bg-[linear-gradient(135deg,transparent_45%,currentColor_45%,currentColor_55%,transparent_55%)]",
 };
 
-export function SignalStatusIcon({ status }: { status: SignalStatus }) {
+export function SignalStatusIcon({
+  status,
+  className,
+}: {
+  status: SignalStatus;
+  className?: string;
+}) {
   return (
     <span
       role="img"
       aria-label={status}
-      className={clsx(
+      className={cn(
         "mt-[3px] size-3.5 shrink-0 rounded-full",
-        statusClassNames[status]
+        statusClassNames[status],
+        className
       )}
     />
   );

@@ -1,3 +1,4 @@
+import type { Output } from "@sandworm/types";
 import type {
   BriefingKindId,
   OrganisationTypeId,
@@ -65,6 +66,19 @@ export type SignalsBlock = BlockBase & {
   items: readonly SignalEntry[];
 };
 
+// A notebook cell the client follows: a snapshot of what it drew
+export type CellEntry = {
+  id: string;
+  title: string;
+  outputs: readonly Output[];
+};
+
+export type CellsBlock = BlockBase & {
+  _tag: "cells";
+  subtitle: string;
+  items: readonly CellEntry[];
+};
+
 export type GapEntry = {
   id: string;
   title: string;
@@ -85,6 +99,7 @@ export type OverviewBlock =
   | KpisBlock
   | BriefingBlock
   | SignalsBlock
+  | CellsBlock
   | GapsBlock;
 
 export type BlockTag = OverviewBlock["_tag"];

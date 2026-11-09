@@ -1,22 +1,35 @@
-import clsx from "clsx";
+"use client";
+
 import { PiCaretLeft } from "react-icons/pi";
+import { BarLoader } from "@sandworm/ui/kit/bar-loader";
 
 import { AppLink } from "@/components/AppLink";
-import type { EntityPage, RowSplit } from "@/types";
+import { useEntityPage } from "@/hooks/useEntityPage";
 
-import { BlockRenderer } from "./BlockRenderer";
 import { EntityHeader } from "./EntityHeader";
-import { InsightBanner } from "./InsightBanner";
-import { KpiStrip } from "./KpiStrip";
+import { ReportList } from "./ReportList";
 
-const splitClassNames: Record<RowSplit, string> = {
-  full: "grid-cols-1",
-  "wide-narrow": "grid-cols-1 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]",
-};
+export function EntityScreen({ id }: { id: string }) {
+  const { data, error } = useEntityPage(id);
+  if (error) {
+    return (
+      <p className="text-sm text-ink-400">
+        Could not load this page. Please try again.
+      </p>
+    );
+  }
+  if (!data) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <BarLoader />
+      </div>
+    );
+  }
+  const { subject } = data;
+  if (!subject) {
+    return <p className="text-sm text-ink-400">This page does not exist.</p>;
+  }
 
-type EntityScreenProps = { page: EntityPage; clientName: string };
-
-export function EntityScreen({ page, clientName }: EntityScreenProps) {
   return (
     <div className="flex flex-col gap-6">
       <AppLink
@@ -27,29 +40,12 @@ export function EntityScreen({ page, clientName }: EntityScreenProps) {
         Analysis
       </AppLink>
       <EntityHeader
-        kind={page.kind}
-        name={page.name}
-        tags={page.tags}
-        summary={page.summary}
+        kind={subject.view}
+        name={subject.name}
+        icon={subject.icon}
+        description={subject.kind}
       />
-      <KpiStrip label={`${page.name} at a glance`} kpis={page.kpis} />
-      <InsightBanner insight={page.insight} clientName={clientName} />
-      {page.rows.map(row => (
-        <div
-          key={row.id}
-          className={clsx(
-            "grid items-stretch gap-5",
-            splitClassNames[row.split]
-          )}
-        >
-          {row.blocks.map(block => (
-            <BlockRenderer key={block.id} block={block} />
-          ))}
-        </div>
-      ))}
-      <p className="text-xs text-ink-400">
-        Sandworm analysis of onchain data. Estimates, not financial advice.
-      </p>
+      <ReportList reports={subject.reports} />
     </div>
   );
 }

@@ -10,6 +10,7 @@ query TerminalSignals {
       size
       sizeLabel
       evidence
+      feedback
       subject
       publishedAt
       reportPath

@@ -40,10 +40,11 @@ export function upcomingWhen(iso: string, now = new Date()): string {
 // "Tue 28 Oct", "Fri 20 Nov"
 export const longDay = (iso: string) => at(iso, "EEE d MMM");
 
-// "Today", "Yesterday", "Last week", "Earlier": a feed's group headings
+// "Today", "Yesterday", "Earlier this week", "Last week", "Earlier": a feed's group headings
 export function feedGroup(iso: string, now = new Date()): string {
   const ago = daysAgo(iso, now);
   if (ago <= 0) return "Today";
   if (ago === 1) return "Yesterday";
-  return ago < 8 ? "Last week" : "Earlier";
+  if (ago < 7) return "Earlier this week";
+  return ago < 14 ? "Last week" : "Earlier";
 }

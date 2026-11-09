@@ -15,6 +15,7 @@ import {
   type RequestStatusId,
   type SignalData,
   type SignalStatusId,
+  type SubjectIcon,
   type TerminalAnalysis as TerminalAnalysisShape,
   type TerminalBriefing as TerminalBriefingShape,
   type TerminalCounts as TerminalCountsShape,
@@ -48,8 +49,8 @@ export class TerminalAnalysisReport implements AnalysisReport {
 export class TerminalAnalysisSubject implements AnalysisSubject {
   @Field() id!: string;
   @Field(() => String) view!: AnalysisViewKind;
-  @Field() slug!: string;
   @Field() name!: string;
+  @Field(() => GraphQLJSON, { nullable: true }) icon!: SubjectIcon | null;
   @Field() kind!: string;
   @Field() impact!: string;
   @Field(() => Int) impactSize!: number;
@@ -71,6 +72,7 @@ export class TerminalBriefingItem implements BriefingItemData {
   @Field(() => GraphQLJSON) detail!: Record<string, unknown>;
   @Field() publishedAt!: string;
   @Field() isRead!: boolean;
+  @Field() isArchived!: boolean;
   @Field(() => String, { nullable: true }) sourcePath!: string | null;
 }
 
@@ -92,6 +94,7 @@ export class TerminalSignal implements SignalData {
   @Field() size!: string;
   @Field() sizeLabel!: string;
   @Field(() => String) evidence!: EvidenceId;
+  @Field() feedback!: string;
   @Field() subject!: string;
   @Field() publishedAt!: string;
   @Field(() => String, { nullable: true }) reportPath!: string | null;

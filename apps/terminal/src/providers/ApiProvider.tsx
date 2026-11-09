@@ -4,7 +4,7 @@ import { env } from "@/config/env";
 import { GraphQLProvider } from "@/graphql/provider";
 import type { ChildrenProps } from "@/types";
 
-const API_URL = env.publicApiUrl ?? "/api";
+const API_URL = env.apiUrl;
 
 const refreshAccessToken = async (): Promise<void> => {
   const response = await fetch(`${API_URL}/auth/refresh`, {

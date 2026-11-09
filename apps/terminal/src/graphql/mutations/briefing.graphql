@@ -5,3 +5,11 @@ mutation MarkTerminalBriefingRead($itemIds: [ID!]!) {
 mutation MarkTerminalBriefingSeen {
   markTerminalBriefingSeen
 }
+
+mutation MarkTerminalBriefingUnread($itemIds: [ID!]!) {
+  markTerminalBriefingUnread(itemIds: $itemIds)
+}
+
+mutation ArchiveTerminalBriefing($itemIds: [ID!]!, $isArchived: Boolean!) {
+  archiveTerminalBriefing(itemIds: $itemIds, isArchived: $isArchived)
+}

@@ -17,13 +17,13 @@ import {
 } from '@sandworm/postgresql-typeorm';
 import {
   BRIEFING_WINDOW_DAYS,
+  NEW_REPORT_DAYS,
   OPEN_REQUEST_STATUSES,
   AccessLevelId,
   AnalysisViewKind,
   RequestKindId,
   RequestStatusId,
   SignalStatusId,
-  analysisTag,
   documentPath,
   type AnalysisReport,
   type AnalysisSubject,
@@ -104,8 +104,8 @@ export class TerminalContentService {
   // ── Analysis ────────────────────────────────────────────────────────────
 
   // A project's reports are the children of its document; a region or sector
-  // collects the client's reports tagged with it. "New" means published since
-  // the member last opened Briefing.
+  // collects the client's reports tagged with it, under a project or not. "New" means published in the
+  // last NEW_REPORT_DAYS days, whatever the member has opened since.
   async getAnalysis(userId: string): Promise<TerminalAnalysis> {
     const member = await this.memberOf(userId);
     if (!member) return { subjects: [] };
@@ -115,13 +115,13 @@ export class TerminalContentService {
       this.reportsOf(member.clientId),
     ]);
 
-    const lastSeen = member.lastSeenBriefingAt;
+    const newSince = new Date(Date.now() - NEW_REPORT_DAYS * DAY);
     const toReport = (doc: DocumentEntity): AnalysisReport => ({
       id: doc.id,
       title: doc.title,
       line: doc.description ?? '',
       publishedAt: doc.createdAt.toISOString(),
-      isNew: !lastSeen || doc.createdAt > lastSeen,
+      isNew: doc.createdAt > newSince,
       path: documentPath(doc),
     });
 
@@ -131,12 +131,12 @@ export class TerminalContentService {
         const own =
           view === 'project'
             ? docs.filter((doc) => doc.parentId === subject.documentId)
-            : docs.filter((doc) => doc.tags.includes(analysisTag(view, subject.slug)));
+            : docs.filter((doc) => doc.tags.includes(subject.id));
         return {
           id: subject.id,
           view,
-          slug: subject.slug,
           name: subject.name,
+          icon: subject.icon,
           kind: subject.kind,
           impact: subject.impact,
           impactSize: subject.impactSize,
@@ -146,18 +146,20 @@ export class TerminalContentService {
     };
   }
 
-  // Every report of the client: the children of its project documents, newest first
+  // Every report of the client, newest first: the children of its project documents,
+  // and any document tagged with one of its regions or sectors, so a report about a
+  // region needs no project to live under
   private async reportsOf(clientId: string): Promise<DocumentEntity[]> {
-    const projects = await this.subjects.find({
-      select: { documentId: true },
-      where: { clientId, view: AnalysisViewKind.PROJECT, documentId: Not(IsNull()) },
-    });
-    const parentIds = projects.map((p) => p.documentId!);
-    if (!parentIds.length) return [];
-    return this.documents.find({
-      where: { parentId: In(parentIds), deletedAt: IsNull() },
-      order: { createdAt: 'DESC' },
-    });
+    const subjects = await this.subjects.find({ select: { id: true, view: true, documentId: true }, where: { clientId } });
+    const parentIds = subjects.filter((s) => s.view === AnalysisViewKind.PROJECT && s.documentId).map((s) => s.documentId!);
+    const groupIds = subjects.filter((s) => s.view !== AnalysisViewKind.PROJECT).map((s) => s.id);
+    if (!parentIds.length && !groupIds.length) return [];
+    return this.documents
+      .createQueryBuilder('doc')
+      .where('doc.deletedAt IS NULL')
+      .andWhere('(doc.parentId = ANY(:parentIds::uuid[]) OR doc.tags && :groupIds::text[])', { parentIds, groupIds })
+      .orderBy('doc.createdAt', 'DESC')
+      .getMany();
   }
 
   // ── Briefing ────────────────────────────────────────────────────────────
@@ -190,7 +192,7 @@ export class TerminalContentService {
       this.docs(items.map((i) => i.documentId)),
       this.briefingOutputs(items.map((i) => i.id)),
     ]);
-    const readIds = new Set(reads.map((r) => r.itemId));
+    const states = new Map(reads.map((r) => [r.itemId, r]));
 
     return {
       lastSeenAt: member.lastSeenBriefingAt?.toISOString() ?? null,
@@ -204,7 +206,8 @@ export class TerminalContentService {
         // The snapshot of the cell's outputs sits in its own column; the client reads it from detail
         detail: { ...item.detail, ...(outputs.get(item.id)?.length ? { outputs: outputs.get(item.id) } : {}) } as Record<string, unknown>,
         publishedAt: item.publishedAt!.toISOString(),
-        isRead: readIds.has(item.id),
+        isRead: states.has(item.id),
+        isArchived: !!states.get(item.id)?.archivedAt,
         // The cell the item was made from, inside its notebook
         sourcePath: sourceOf(docs, item.documentId, item.blockId),
       })),
@@ -223,9 +226,8 @@ export class TerminalContentService {
     return new Map(rows.map((row) => [row.id, row.outputs]));
   }
 
-  async markBriefingRead(userId: string, itemIds: string[]): Promise<boolean> {
-    const member = await this.memberOf(userId);
-    if (!member || !itemIds.length) return false;
+  // The briefing items among `itemIds` that are the member's to act on: their client's, or theirs alone
+  private async ownBriefingItemIds(member: TerminalMemberEntity, itemIds: string[]): Promise<string[]> {
     const items = await this.briefingItems.find({
       select: { id: true },
       where: [
@@ -233,13 +235,48 @@ export class TerminalContentService {
         { id: In(itemIds), clientId: member.clientId, memberId: member.id },
       ],
     });
-    if (!items.length) return false;
+    return items.map((item) => item.id);
+  }
+
+  async markBriefingRead(userId: string, itemIds: string[]): Promise<boolean> {
+    const member = await this.memberOf(userId);
+    if (!member || !itemIds.length) return false;
+    const ids = await this.ownBriefingItemIds(member, itemIds);
+    if (!ids.length) return false;
     await this.briefingReads
       .createQueryBuilder()
       .insert()
-      .values(items.map((item) => ({ itemId: item.id, memberId: member.id })))
+      .values(ids.map((itemId) => ({ itemId, memberId: member.id })))
       .orIgnore()
       .execute();
+    return true;
+  }
+
+  // Unread again, and out of the archive: the read row is what makes an item either
+  async markBriefingUnread(userId: string, itemIds: string[]): Promise<boolean> {
+    const member = await this.memberOf(userId);
+    if (!member || !itemIds.length) return false;
+    await this.briefingReads.delete({ memberId: member.id, itemId: In(itemIds) });
+    return true;
+  }
+
+  // Archiving reads the item too; taking it out of the archive leaves it read
+  async setBriefingArchived(userId: string, itemIds: string[], isArchived: boolean): Promise<boolean> {
+    const member = await this.memberOf(userId);
+    if (!member || !itemIds.length) return false;
+    const ids = await this.ownBriefingItemIds(member, itemIds);
+    if (!ids.length) return false;
+    if (isArchived) {
+      const archivedAt = new Date();
+      await this.briefingReads
+        .createQueryBuilder()
+        .insert()
+        .values(ids.map((itemId) => ({ itemId, memberId: member.id, archivedAt })))
+        .orUpdate(['archived_at'], ['item_id', 'member_id'])
+        .execute();
+    } else {
+      await this.briefingReads.update({ memberId: member.id, itemId: In(ids) }, { archivedAt: null });
+    }
     return true;
   }
 
@@ -265,10 +302,22 @@ export class TerminalContentService {
 
   async setSignalStatus(userId: string, signalId: string, status: SignalStatusId): Promise<SignalData> {
     if (!Object.values(SignalStatusId).includes(status)) throw new BadRequestException('Unknown status');
+    if (status === SignalStatusId.NEW) throw new BadRequestException('A signal starts as new');
     const member = await this.writerOf(userId);
     const row = await this.signals.findOneBy({ id: signalId, clientId: member.clientId });
     if (!row) throw new NotFoundException('Signal not found');
     row.status = status;
+    await this.signals.save(row);
+    return toSignal(row, await this.paths([row.documentId]));
+  }
+
+  async setSignalFeedback(userId: string, signalId: string, feedback: string): Promise<SignalData> {
+    const text = feedback.trim();
+    if (text.length > 2000) throw new BadRequestException('Feedback is too long');
+    const member = await this.writerOf(userId);
+    const row = await this.signals.findOneBy({ id: signalId, clientId: member.clientId });
+    if (!row) throw new NotFoundException('Signal not found');
+    row.feedback = text;
     await this.signals.save(row);
     return toSignal(row, await this.paths([row.documentId]));
   }
@@ -405,6 +454,7 @@ function toSignal(row: TerminalSignalEntity, paths: Map<string, string>): Signal
     size: row.size,
     sizeLabel: row.sizeLabel,
     evidence: row.evidence,
+    feedback: row.feedback,
     subject: row.subject,
     publishedAt: (row.publishedAt ?? row.createdAt).toISOString(),
     reportPath: (row.documentId && paths.get(row.documentId)) || null,

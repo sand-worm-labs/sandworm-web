@@ -1,42 +1,59 @@
+import { PiPlus } from "react-icons/pi";
+import type { AnalysisReport } from "@sandworm/types/terminal";
+import { buttonClassName } from "@sandworm/ui/kit/button";
 import { Card } from "@sandworm/ui/kit/card";
 import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 import { Pill } from "@sandworm/ui/kit/pill";
 
 import { AppLink } from "@/components/AppLink";
-import type { ReportListBlock } from "@/types";
+import { ReportLink } from "@/components/ReportLink";
+import { shortDay } from "@/lib/dates";
+import { webAppUrl } from "@/lib/web-app";
 
-export function ReportList({ block }: { block: ReportListBlock }) {
-  const titleId = `${block.id}-title`;
-
+// A collection of analysis: each report is a notebook, with a line about it
+export function ReportList({
+  reports,
+}: {
+  reports: readonly AnalysisReport[];
+}) {
   return (
-    <Card aria-labelledby={titleId} className="px-2 pb-2.5 pt-[22px]">
-      <h2 id={titleId} className="px-3 pb-2 text-base font-medium text-ink-100">
-        {block.title}
-      </h2>
-      {block.items.map((item, index) => (
+    <Card aria-labelledby="reports-title" className="px-2 pb-2.5 pt-[22px]">
+      <div className="flex items-center justify-between gap-4 px-3 pb-2">
+        <h2 id="reports-title" className="text-base font-medium text-ink-100">
+          Analysis
+        </h2>
+        <AppLink
+          route="newRequest"
+          className={buttonClassName({ className: "gap-2" })}
+        >
+          <PiPlus size={14} />
+          Request a notebook
+        </AppLink>
+      </div>
+      {reports.map((report, index) => (
         <div
-          key={item.id}
+          key={report.id}
           className={index > 0 ? "border-t border-border-secondary" : undefined}
         >
-          <AppLink
-            route="report"
+          <ReportLink
+            url={report.path ? webAppUrl(report.path) : undefined}
             className={`${ROW_HOVER_CLASSNAME} grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-3 py-3.5`}
           >
             <span className="flex min-w-0 flex-col gap-0.5">
               <span className="flex items-center gap-2">
                 <span className="text-sm font-medium text-ink-100">
-                  {item.title}
+                  {report.title}
                 </span>
-                {item.isNew && <Pill>New</Pill>}
+                {report.isNew && <Pill>New</Pill>}
               </span>
-              {item.line && (
-                <span className="text-[13px] text-ink-400">{item.line}</span>
+              {report.line && (
+                <span className="text-[13px] text-ink-400">{report.line}</span>
               )}
             </span>
             <span className="whitespace-nowrap text-xs text-ink-400">
-              {item.when}
+              {shortDay(report.publishedAt)}
             </span>
-          </AppLink>
+          </ReportLink>
         </div>
       ))}
     </Card>

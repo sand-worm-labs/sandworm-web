@@ -1,14 +1,21 @@
 import clsx from "clsx";
-import { InitialsAvatar } from "@sandworm/ui/kit/initials-avatar";
+import { AnalysisViewKind } from "@sandworm/types/terminal";
 import { Pill } from "@sandworm/ui/kit/pill";
 
 import { AppLink } from "@/components/AppLink";
+import { SubjectAvatar } from "@/components/Subject/SubjectAvatar";
 import type { AnalysisView } from "@/types";
 
 type AnalysisTableProps = {
   view: AnalysisView;
   rows: AnalysisView["rows"];
 };
+
+const KIND_OF_VIEW = {
+  projects: AnalysisViewKind.PROJECT,
+  regions: AnalysisViewKind.REGION,
+  sectors: AnalysisViewKind.SECTOR,
+} as const;
 
 const headerCellClassName = "px-3 py-2.5 text-xs font-medium text-ink-400";
 
@@ -39,7 +46,7 @@ export function AnalysisTable({ view, rows }: AnalysisTableProps) {
               Latest
             </th>
             <th scope="col" className={clsx(headerCellClassName, "w-[22%]")}>
-              {view.impactColumnName}
+              Description
             </th>
             <th
               scope="col"
@@ -54,12 +61,17 @@ export function AnalysisTable({ view, rows }: AnalysisTableProps) {
             <tr key={row.id} className="group relative">
               <td className={cellClassName(index)}>
                 <span className="flex items-center gap-2.5">
-                  <InitialsAvatar initials={row.name.charAt(0)} size="sm" />
+                  <SubjectAvatar
+                    name={row.name}
+                    icon={row.icon}
+                    size="md"
+                    view={KIND_OF_VIEW[view.id]}
+                  />
                   <span className="flex min-w-0 flex-col">
                     {row.hasPage ? (
                       <AppLink
-                        route={view.rowRoute}
-                        slug={row.slug}
+                        route="analysis"
+                        slug={row.id}
                         className="truncate text-sm font-medium text-ink-100 after:absolute after:inset-0"
                       >
                         {row.name}
@@ -69,9 +81,6 @@ export function AnalysisTable({ view, rows }: AnalysisTableProps) {
                         {row.name}
                       </span>
                     )}
-                    <span className="truncate text-xs text-ink-400">
-                      {row.kind}
-                    </span>
                   </span>
                 </span>
               </td>
@@ -90,7 +99,7 @@ export function AnalysisTable({ view, rows }: AnalysisTableProps) {
                 </span>
               </td>
               <td className={cellClassName(index, "truncate text-ink-500")}>
-                {row.impact}
+                {row.kind}
               </td>
               <td className={cellClassName(index, "text-right text-ink-400")}>
                 {row.updated}

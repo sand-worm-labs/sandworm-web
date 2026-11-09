@@ -419,3 +419,13 @@
   --bg-input: 0 0% 10.2%;
   --ink-500: #adb5bd;
 }
+
+/* Rounded, roomy Plotly tooltips for the charts the terminal draws itself. Copied from
+   apps/web/src/styles/globals.scss: keep in step. Plotly writes the stroke width inline, so
+   it takes !important; a thick round-joined stroke in the box's own colour rounds the corners
+   and pads the text. The second rule is the one box a multi-series chart shows for the hovered x. */
+.hoverlayer .hovertext path,
+.hoverlayer .legend .bg {
+  stroke-linejoin: round !important;
+  stroke-width: 22px !important;
+}

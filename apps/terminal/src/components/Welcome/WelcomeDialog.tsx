@@ -70,6 +70,7 @@ export function WelcomeDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
+        onOpenAutoFocus={event => event.preventDefault()}
         className={clsx(MODAL_CLASSNAME, "rounded-3xl sm:max-w-[560px]")}
       >
         <div className="flex flex-col gap-4 px-8 pt-7">
@@ -121,10 +122,7 @@ export function WelcomeDialog({
           <button
             type="button"
             onClick={onCustomize}
-            className={buttonClassName({
-              variant: "link",
-              className: "text-[13px] font-medium",
-            })}
+            className="text-[13px] text-accent underline-offset-2 hover:underline dark:text-primary"
           >
             See what&apos;s on your Overview
           </button>

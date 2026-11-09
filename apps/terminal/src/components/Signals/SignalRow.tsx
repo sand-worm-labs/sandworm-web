@@ -1,19 +1,21 @@
 import clsx from "clsx";
 import { ROW_HOVER_CLASSNAME } from "@sandworm/ui/kit/interactive";
 
-import { ReportLink } from "@/components/ReportLink";
 import type { Signal } from "@/types";
 
 import { EvidenceMeter } from "./EvidenceMeter";
 import { SignalStatusIcon } from "./SignalStatusIcon";
 
-export function SignalRow({ item }: { item: Signal }) {
+type SignalRowProps = { item: Signal; onSelect: (item: Signal) => void };
+
+export function SignalRow({ item, onSelect }: SignalRowProps) {
   return (
-    <ReportLink
-      url={item.reportUrl}
+    <button
+      type="button"
+      onClick={() => onSelect(item)}
       className={clsx(
         ROW_HOVER_CLASSNAME,
-        "flex flex-wrap items-start gap-x-4 gap-y-2 px-3 py-3.5 md:grid md:grid-cols-[14px_minmax(0,1fr)_120px_140px_84px_60px]",
+        "flex w-full flex-wrap text-left items-start gap-x-4 gap-y-2 px-3 py-3.5 md:grid md:grid-cols-[14px_minmax(0,1fr)_120px_140px_84px_60px]",
         item.status === "Not for us" && "opacity-75"
       )}
     >
@@ -38,6 +40,6 @@ export function SignalRow({ item }: { item: Signal }) {
       </span>
       <EvidenceMeter evidence={item.evidence} />
       <span className="text-xs text-ink-400 md:text-right">{item.when}</span>
-    </ReportLink>
+    </button>
   );
 }

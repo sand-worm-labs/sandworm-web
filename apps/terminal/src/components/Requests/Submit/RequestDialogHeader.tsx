@@ -1,5 +1,4 @@
-import { PiX } from "react-icons/pi";
-import { DialogClose } from "@sandworm/ui/components/dialog";
+import { ModalClose } from "@/components/ModalClose";
 
 export function RequestDialogHeader() {
   return (
@@ -7,12 +6,7 @@ export function RequestDialogHeader() {
       <span className="text-base font-medium text-ink-100">
         Submit a request
       </span>
-      <DialogClose
-        aria-label="Close"
-        className="flex size-[30px] items-center justify-center rounded-lg text-ink-500 transition-colors hover:bg-hover-bg"
-      >
-        <PiX size={14} aria-hidden="true" />
-      </DialogClose>
+      <ModalClose />
     </div>
   );
 }

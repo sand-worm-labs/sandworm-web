@@ -29,8 +29,6 @@ export function analysisFromOverview(data: OverviewData): AnalysisCatalog {
         id: "projects",
         label: "Projects",
         columnName: "Project",
-        impactColumnName: "Your users there",
-        rowRoute: "project",
         rows: groupInOrder(reports, entry => entry.entity).map(
           ({ key, items }) =>
             analysisRow({
@@ -39,7 +37,6 @@ export function analysisFromOverview(data: OverviewData): AnalysisCatalog {
               reportCount: items.length,
               latest: items[0]?.title ?? "",
               isNew: items.some(entry => entry.isUnread),
-              impact: "—",
               impactSize: 0,
               updated: items[0]?.time ?? "",
             })

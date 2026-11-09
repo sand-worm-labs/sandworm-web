@@ -1,6 +1,5 @@
-import { InitialsAvatar } from "@sandworm/ui/kit/initials-avatar";
-
 import { ReportLink } from "@/components/ReportLink";
+import { SubjectAvatar } from "@/components/Subject/SubjectAvatar";
 import type { AnalysisHighlight } from "@/types";
 
 import { HighlightTag } from "./HighlightTag";
@@ -36,7 +35,7 @@ export function HighlightCards({
             </span>
             <span className="text-[13px] text-ink-400">{item.line}</span>
             <span className="mt-auto flex items-center gap-2 text-[13px] font-medium text-ink-100">
-              <InitialsAvatar initials={item.entity.charAt(0)} size="sm" />
+              <SubjectAvatar name={item.entity} icon={item.icon} size="sm" />
               {item.entity}
             </span>
           </ReportLink>

@@ -1,13 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "@sandworm/ui/kit/card";
 import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
 
 import { site } from "@/config/site";
 import { SectionHeader } from "@/components/Sections/SectionHeader";
-import type { SectionCounts, SignalsFeed } from "@/types";
+import {
+  useSetTerminalSignalFeedbackMutation,
+  useSetTerminalSignalStatusMutation,
+} from "@/generated/graphql";
+import { SIGNAL_STATUS_ID } from "@/lib/signals/statuses";
+import { usePreview } from "@/providers/PreviewProvider";
+import type { SectionCounts, SignalStatus, SignalsFeed } from "@/types";
 import { SignalsEmpty } from "@/components/Signals/SignalsEmpty";
+import { SignalDetailDialog } from "@/components/Signals/SignalDetailDialog";
 import { SignalRow } from "@/components/Signals/SignalRow";
 import { SignalStatusIcon } from "@/components/Signals/SignalStatusIcon";
 import {
@@ -32,12 +40,51 @@ type SignalsScreenProps = {
 
 export function SignalsScreen({ feed, counts, viewer }: SignalsScreenProps) {
   const [filter, setFilter] = useState<SignalFilter>("open");
+  const { isForced } = usePreview();
+  const router = useRouter();
+  // The tab counts come from the server, so they are fetched again once saved
+  const [setStatus] = useSetTerminalSignalStatusMutation({
+    onCompleted: () => router.refresh(),
+  });
+  // The client's own status choices, on top of what the feed says
+  const [chosen, setChosen] = useState<Record<string, SignalStatus>>({});
+  const [setFeedback] = useSetTerminalSignalFeedbackMutation();
+  const [written, setWritten] = useState<Record<string, string>>({});
+  const [selectedId, setSelectedId] = useState<string>();
+
+  const items = feed.items.map(item => ({
+    ...item,
+    status: chosen[item.id] ?? item.status,
+    feedback: written[item.id] ?? item.feedback,
+  }));
+  const selected = items.find(item => item.id === selectedId);
+
+  const changeStatus = (id: string, status: SignalStatus) => {
+    setChosen(current => ({ ...current, [id]: status }));
+    // A preview visitor has no session, so their choice stays in the page only
+    if (!isForced) {
+      setStatus({
+        variables: { signalId: id, status: SIGNAL_STATUS_ID[status] },
+        onError: () => setChosen(({ [id]: _unsaved, ...saved }) => saved),
+      });
+    }
+  };
+
+  const saveFeedback = (id: string, feedback: string) => {
+    setWritten(current => ({ ...current, [id]: feedback }));
+    if (!isForced) {
+      setFeedback({
+        variables: { signalId: id, feedback },
+        onError: () => setWritten(({ [id]: _unsaved, ...saved }) => saved),
+      });
+    }
+  };
 
   const filterOptions = FILTERS.map(option => ({
     ...option,
-    count: filterSignals(feed.items, option.id).length,
+    count: filterSignals(items, option.id).length,
   }));
-  const groups = groupByStatus(filterSignals(feed.items, filter));
+  const groups = groupByStatus(filterSignals(items, filter));
 
   return (
     <div className="flex flex-col gap-6">
@@ -58,9 +105,6 @@ export function SignalsScreen({ feed, counts, viewer }: SignalsScreenProps) {
               value={filter}
               onChange={setFilter}
             />
-            <span className="text-xs text-ink-400">
-              Sizes are what we measured, not forecasts
-            </span>
           </div>
           <div className="px-2 pb-2.5 pt-1">
             {groups.length === 0 && (
@@ -88,13 +132,24 @@ export function SignalsScreen({ feed, counts, viewer }: SignalsScreenProps) {
                       index > 0 ? "border-t border-border-secondary" : undefined
                     }
                   >
-                    <SignalRow item={item} />
+                    <SignalRow
+                      item={item}
+                      onSelect={signal => setSelectedId(signal.id)}
+                    />
                   </div>
                 ))}
               </section>
             ))}
           </div>
         </Card>
+      )}
+      {selected && (
+        <SignalDetailDialog
+          signal={selected}
+          onStatusChange={status => changeStatus(selected.id, status)}
+          onFeedbackSave={feedback => saveFeedback(selected.id, feedback)}
+          onClose={() => setSelectedId(undefined)}
+        />
       )}
     </div>
   );

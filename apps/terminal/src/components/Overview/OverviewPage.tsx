@@ -18,7 +18,7 @@ type OverviewPageProps = {
 };
 
 export function OverviewPage({ counts, viewer, welcome }: OverviewPageProps) {
-  const { data: overview, error } = useOverview();
+  const { data: overview, error } = useOverview(viewer.clientName);
   if (error) {
     return (
       <p className="text-sm text-ink-400">

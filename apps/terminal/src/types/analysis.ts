@@ -1,17 +1,16 @@
-import type { RouteId } from "@/config/routes";
+import type { SubjectIcon } from "@sandworm/types/terminal";
 
 type AnalysisViewId = "projects" | "regions" | "sectors";
 
 export type AnalysisRow = {
   id: string;
-  slug: string;
   hasPage: boolean;
   name: string;
+  icon: SubjectIcon | null;
   kind: string;
   reportCount: number;
   latest: string;
   isNew: boolean;
-  impact: string;
   impactSize: number;
   updated: string;
 };
@@ -20,8 +19,6 @@ export type AnalysisView = {
   id: AnalysisViewId;
   label: string;
   columnName: string;
-  impactColumnName: string;
-  rowRoute: RouteId;
   rows: readonly AnalysisRow[];
 };
 
@@ -32,6 +29,7 @@ export type AnalysisHighlight = {
   title: string;
   line: string;
   entity: string;
+  icon: SubjectIcon | null;
   // The report in the web app; fixtures have none
   url?: string;
 };
