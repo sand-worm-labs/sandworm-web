@@ -1,3 +1,5 @@
+import { KpiDirection, KpiFormatKind } from "@sandworm/types/terminal";
+
 import type { TeamKpi } from "@/types";
 
 const DAY = 86_400_000;
@@ -18,7 +20,7 @@ const kpi = (
   position,
   isVisible: true,
   format: init.format,
-  direction: "up_good",
+  direction: KpiDirection.UP_GOOD,
   comparison: { kind: "previous" },
   source: { kind: "manual" },
   lastReadingAt: ago(1),
@@ -37,7 +39,7 @@ export const teamKpisMockData: readonly TeamKpi[] = [
     {
       key: "swap-volume",
       label: "Swap volume",
-      format: { kind: "currency", currency: "USD", compact: true },
+      format: { kind: KpiFormatKind.CURRENCY, currency: "USD", compact: true },
       value: "$1.84B",
       delta: { text: "▼ 9%", tone: "negative" },
     },
@@ -47,7 +49,7 @@ export const teamKpisMockData: readonly TeamKpi[] = [
     {
       key: "active-wallets",
       label: "Active wallets",
-      format: { kind: "number" },
+      format: { kind: KpiFormatKind.NUMBER },
       value: "312,400",
       delta: { text: "▲ 4%", tone: "positive" },
     },
@@ -57,7 +59,7 @@ export const teamKpisMockData: readonly TeamKpi[] = [
     {
       key: "retention-90",
       label: "Still trading after 90 days",
-      format: { kind: "percent" },
+      format: { kind: KpiFormatKind.PERCENT },
       value: "34%",
       delta: { text: "▼ 3 pts", tone: "negative" },
     },

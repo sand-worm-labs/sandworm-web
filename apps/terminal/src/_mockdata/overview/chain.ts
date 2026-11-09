@@ -1,3 +1,5 @@
+import { BriefingKindId, OrganisationTypeId } from "@sandworm/types/terminal";
+
 import type { OverviewData } from "@/types";
 
 import { briefingEntry, gapEntry, kpi, signalEntry } from "./builders";
@@ -5,7 +7,7 @@ import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
 export const chainOverview: OverviewData = {
-  clientKind: "chain",
+  clientKind: OrganisationTypeId.CHAIN,
   typeName: "Blockchain",
   subtitle: "Base mainnet. Data to 2 Nov, 23:59 UTC.",
   loadingNote: "Reading 312M transactions on Base mainnet.",
@@ -65,7 +67,7 @@ export const chainOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Signal",
+        kind: BriefingKindId.SIGNAL,
         title: "Payment apps your users love only exist on Solana",
         summary: "180,000 of your users pay with them there.",
         entity: "Solana",
@@ -75,7 +77,7 @@ export const chainOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Today",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "Stablecoin supply passed $4.6B",
         summary: "Up 11% in 30 days, mostly USDC.",
         entity: "Base",
@@ -85,7 +87,7 @@ export const chainOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Analysis",
+        kind: BriefingKindId.ANALYSIS,
         title: "Where Base users bridge out to",
         summary: "New report. Arbitrum and Solana take 53% of outflows.",
         entity: "Bridges",
@@ -95,7 +97,7 @@ export const chainOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Signal",
+        kind: BriefingKindId.SIGNAL,
         title: "Back a Base-native NFT lending app",
         summary: "Base NFT traders borrow $14M a month on Ethereum.",
         entity: "NFT lending",
@@ -105,7 +107,7 @@ export const chainOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Last week",
-        kind: "Analysis",
+        kind: BriefingKindId.ANALYSIS,
         title: "Updated: top apps by users who stay",
         summary: "3 of the top 10 apps keep under 20% of users after 30 days.",
         entity: "Apps",
@@ -115,7 +117,7 @@ export const chainOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Last week",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "Active developers up 3%",
         summary: "2,310 developers shipped contracts in October.",
         entity: "Base",

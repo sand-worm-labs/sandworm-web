@@ -1,15 +1,16 @@
 import clsx from "clsx";
+import type { BriefingKindId } from "@sandworm/types/terminal";
 
-import type { BriefingKind } from "@/types";
+import { KIND_LABEL } from "@/lib/briefing/display";
 
-const kindClassNames: Record<BriefingKind, string> = {
-  Analysis: "bg-info-tint dark:bg-base-600 text-ink-navy",
-  Signal:
+const kindClassNames: Record<BriefingKindId, string> = {
+  analysis: "bg-info-tint dark:bg-base-600 text-ink-navy",
+  signal:
     "bg-primary-tint-75 dark:bg-primary-910 text-primary-700 dark:text-primary-200",
-  Metric: "bg-base-600 text-ink-500",
+  metric: "bg-base-600 text-ink-500",
 };
 
-export function BriefingKindTag({ kind }: { kind: BriefingKind }) {
+export function BriefingKindTag({ kind }: { kind: BriefingKindId }) {
   return (
     <span
       className={clsx(
@@ -17,7 +18,7 @@ export function BriefingKindTag({ kind }: { kind: BriefingKind }) {
         kindClassNames[kind]
       )}
     >
-      {kind}
+      {KIND_LABEL[kind]}
     </span>
   );
 }

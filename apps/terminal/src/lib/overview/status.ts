@@ -1,7 +1,22 @@
-export const OVERVIEW_STATUSES = ["ready", "settingUp", "calculating"] as const;
+import { ClientStatusId } from "@sandworm/types/terminal";
 
-export type OverviewStatus = (typeof OVERVIEW_STATUSES)[number];
+import { isEnumValue } from "@/lib/enum";
+import type { Kpi } from "@/types";
 
-export function isOverviewStatus(value: string): value is OverviewStatus {
-  return OVERVIEW_STATUSES.some(status => status === value);
+export enum OverviewStatus {
+  READY = "ready",
+  SETTING_UP = "settingUp",
+  CALCULATING = "calculating",
+}
+
+export const isOverviewStatus = isEnumValue(OverviewStatus);
+
+// How the Overview opens, from where the client is: still being set up, live
+// with numbers, or live and waiting for its first numbers
+export function overviewStatusOf(
+  clientStatus: ClientStatusId,
+  kpis: readonly Kpi[]
+): OverviewStatus {
+  if (clientStatus !== ClientStatusId.LIVE) return OverviewStatus.SETTING_UP;
+  return kpis.length > 0 ? OverviewStatus.READY : OverviewStatus.CALCULATING;
 }

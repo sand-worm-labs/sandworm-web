@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
+import { AnalysisViewKind } from "@sandworm/types/terminal";
 
-import { ENTITY_KINDS, isEntityKind } from "./kinds";
+import { isEntityKind } from "./kinds";
 
 describe("isEntityKind", () => {
-  it.each(ENTITY_KINDS)("accepts %s", kind => {
+  it.each(Object.values(AnalysisViewKind))("accepts %s", kind => {
     expect(isEntityKind(kind)).toBe(true);
   });
 

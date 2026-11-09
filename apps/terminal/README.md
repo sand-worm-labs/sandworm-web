@@ -38,15 +38,17 @@ you are.
 
 ## Kept in step with `apps/web`
 
-| What                                | Same as web                                         |
-| ----------------------------------- | --------------------------------------------------- |
-| Next.js, React, `next-themes`       | the `react` pnpm catalog (`pnpm-workspace.yaml`)    |
-| Tailwind                            | the `ui` catalog, 3.4.x, with `tailwindcss-animate` |
-| `tailwind.config.ts`                | web's `theme.extend`, copied                        |
-| `tsconfig.json`, PostCSS, ESLint    | web's, with the paths adjusted                      |
-| Design tokens (`:root` and `.dark`) | copied from `apps/web/src/styles/globals.scss`      |
+| What                                | Same as web                                                        |
+| ----------------------------------- | ------------------------------------------------------------------ |
+| Next.js, React, `next-themes`       | the `react` pnpm catalog (`pnpm-workspace.yaml`)                   |
+| Tailwind                            | the `ui` catalog, 3.4.x, with `tailwindcss-animate`                |
+| `tailwind.config.ts`                | web's `theme.extend`, copied                                       |
+| `tsconfig.json`, PostCSS, ESLint    | web's, with the paths adjusted                                     |
+| Design tokens (`:root` and `.dark`) | copied from `apps/web/src/styles/globals.scss`                     |
+| Data fetching                       | `.graphql` files in `src/graphql`, `graphql-codegen` hooks, Apollo |
 
-The last two are **copies**. If you change a token or the Tailwind theme in web, change it here
+The last two, and `src/graphql/client.ts` and `provider.tsx`, are **copies** (the Apollo client differs only in
+its sign-in redirect and `ssrMode`). If you change a token or the Tailwind theme in web, change it here
 too, or the two apps drift apart. When this gets tiresome, move the tokens and the theme into a
 shared package.
 

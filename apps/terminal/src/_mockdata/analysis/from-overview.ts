@@ -1,3 +1,5 @@
+import { BriefingKindId } from "@sandworm/types/terminal";
+
 import type { AnalysisCatalog, OverviewData } from "@/types";
 import { findBlock } from "@/lib/overview/blocks";
 import { groupInOrder } from "@/lib/group-in-order";
@@ -6,7 +8,9 @@ import { analysisRow, highlight } from "./builders";
 
 export function analysisFromOverview(data: OverviewData): AnalysisCatalog {
   const entries = findBlock(data.blocks, "briefing")?.entries ?? [];
-  const reports = entries.filter(entry => entry.kind === "Analysis");
+  const reports = entries.filter(
+    entry => entry.kind === BriefingKindId.ANALYSIS
+  );
 
   return {
     highlights: reports

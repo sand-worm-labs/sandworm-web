@@ -3,22 +3,23 @@
 import { useState } from "react";
 import { buttonClassName } from "@sandworm/ui/kit/button";
 import { Card } from "@sandworm/ui/kit/card";
+import { BriefingKindId } from "@sandworm/types/terminal";
 import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
 
 import { AppLink } from "@/components/AppLink";
-import type { BriefingBlock, BriefingKind } from "@/types";
+import type { BriefingBlock } from "@/types";
 import { groupInOrder } from "@/lib/group-in-order";
 import { BlockHeader } from "@/components/Overview/BlockHeader";
 
 import { BriefingRow } from "./BriefingRow";
 
-type BriefingFilter = "all" | BriefingKind;
+type BriefingFilter = "all" | BriefingKindId;
 
 const FILTERS: readonly { id: BriefingFilter; label: string }[] = [
   { id: "all", label: "All" },
-  { id: "Analysis", label: "Analysis" },
-  { id: "Signal", label: "Signals" },
-  { id: "Metric", label: "Metrics" },
+  { id: BriefingKindId.ANALYSIS, label: "Analysis" },
+  { id: BriefingKindId.SIGNAL, label: "Signals" },
+  { id: BriefingKindId.METRIC, label: "Metrics" },
 ];
 
 export function BriefingCard({ block }: { block: BriefingBlock }) {

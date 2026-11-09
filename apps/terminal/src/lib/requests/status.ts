@@ -1,12 +1,9 @@
-import type { RequestData, TerminalRequests } from "@sandworm/types/terminal";
+import { RequestStatusId, type RequestData } from "@sandworm/types/terminal";
 
 import { site } from "@/config/site";
 import { fullWhen, longDay, shortDay } from "@/lib/dates";
-import { webAppUrl } from "@/lib/web-app";
 import type {
-  QuestionEntry,
-  RequestsData,
-  ResearchRequest,
+  QuestionStatus,
   ResearchStatus,
   StepState,
   TimelineStep,
@@ -15,7 +12,7 @@ import type {
 // How a research request reads at each status: its label, the "next" line
 // and the timeline, all from the dates the API sends.
 
-const STATUS: Record<RequestData["status"], ResearchStatus> = {
+const STATUS: Record<RequestStatusId, ResearchStatus> = {
   submitted: "Submitted",
   scoping: "Scoping",
   awaiting_approval: "Scoping",
@@ -24,6 +21,8 @@ const STATUS: Record<RequestData["status"], ResearchStatus> = {
   declined: "Declined",
   failed: "Declined",
 };
+
+export const researchStatus = (r: RequestData) => STATUS[r.status];
 
 const step = (
   id: string,
@@ -36,13 +35,19 @@ const day = (iso: string | null) => (iso ? shortDay(iso) : undefined);
 const due = (r: RequestData) =>
   r.scope ? `Due ${longDay(r.scope.dueAt)}` : undefined;
 
-function stepsOf(r: RequestData): TimelineStep[] {
-  if (r.status === "declined" || r.status === "failed") {
+export const canApprove = (r: RequestData) =>
+  r.status === RequestStatusId.AWAITING_APPROVAL && !!r.scope && !!r.scopedAt;
+
+export function stepsOf(r: RequestData): TimelineStep[] {
+  if (
+    r.status === RequestStatusId.DECLINED ||
+    r.status === RequestStatusId.FAILED
+  ) {
     return [
       step("submitted", "Submitted", "done", day(r.submittedAt)),
       step(
         "declined",
-        r.status === "failed" ? "Stopped" : "Declined",
+        r.status === RequestStatusId.FAILED ? "Stopped" : "Declined",
         "declined",
         day(r.closedAt)
       ),
@@ -58,7 +63,7 @@ function stepsOf(r: RequestData): TimelineStep[] {
   const state = (index: number): StepState =>
     index < reached ? "done" : index === reached ? "next" : "later";
   const scoping =
-    r.status === "awaiting_approval" && r.scopedAt
+    r.status === RequestStatusId.AWAITING_APPROVAL && r.scopedAt
       ? `Scope sent ${shortDay(r.scopedAt).toLowerCase()}`
       : day(r.scopedAt);
 
@@ -69,7 +74,7 @@ function stepsOf(r: RequestData): TimelineStep[] {
       "in-progress",
       "In progress",
       state(2),
-      r.approvedAt && r.status === "in_progress"
+      r.approvedAt && r.status === RequestStatusId.IN_PROGRESS
         ? `Since ${shortDay(r.approvedAt)}`
         : day(r.approvedAt)
     ),
@@ -77,26 +82,32 @@ function stepsOf(r: RequestData): TimelineStep[] {
   ];
 }
 
-function nextOf(r: RequestData): string {
+export function nextOf(r: RequestData): string {
   switch (r.status) {
-    case "submitted":
-    case "scoping":
+    case RequestStatusId.SUBMITTED:
+    case RequestStatusId.SCOPING:
       return "Waiting for scope";
-    case "awaiting_approval":
+    case RequestStatusId.AWAITING_APPROVAL:
       return "Scope ready for you";
-    case "in_progress":
+    case RequestStatusId.IN_PROGRESS:
       return due(r) ?? "In progress";
-    case "delivered":
+    case RequestStatusId.DELIVERED:
       return r.closedAt ? longDay(r.closedAt) : "Delivered";
     default:
       return "Didn't count";
   }
 }
 
+export const byLine = (r: RequestData) =>
+  [r.requestedBy, shortDay(r.submittedAt)].filter(Boolean).join(" · ");
+
 // The latest thing Sandworm said about it
-function noteOf(r: RequestData): ResearchRequest["note"] {
+export function noteOf(r: RequestData): { when: string; text: string } {
   const when = fullWhen(r.closedAt ?? r.scopedAt ?? r.submittedAt);
-  if (r.status === "awaiting_approval" && r.scope) {
+  const isScoped =
+    r.status === RequestStatusId.AWAITING_APPROVAL ||
+    (!r.outcome && !r.progressNote);
+  if (r.scope && isScoped) {
     const questions = r.scope.questions
       .map((question, index) => `${index + 1}. ${question}`)
       .join("\n");
@@ -114,59 +125,15 @@ function noteOf(r: RequestData): ResearchRequest["note"] {
   };
 }
 
-function toResearch(r: RequestData): ResearchRequest {
-  const by = [r.requestedBy, shortDay(r.submittedAt)]
-    .filter(Boolean)
-    .join(" · ");
+export function questionOf(r: RequestData) {
+  const status: QuestionStatus =
+    r.status === RequestStatusId.DELIVERED ? "Answered" : "Upcoming";
   return {
-    id: r.id,
-    title: r.question,
-    by,
-    status: STATUS[r.status],
-    next: nextOf(r),
-    steps: stepsOf(r),
-    note: noteOf(r),
-    scopeApproval:
-      r.status === "awaiting_approval" && r.scope && r.scopedAt
-        ? { scopedOn: longDay(r.scopedAt), due: due(r)! }
-        : undefined,
-    reportLabel: r.reportPath ? "Read the report" : undefined,
-    reportUrl: r.reportPath ? webAppUrl(r.reportPath) : undefined,
-  };
-}
-
-function toQuestion(r: RequestData): QuestionEntry {
-  return {
-    id: r.id,
     title: r.question,
     detail: r.outcome
       ? `${site.name}: ${r.outcome}`
       : `${site.name} will answer soon.`,
-    status: r.status === "delivered" ? "Answered" : "Upcoming",
+    status,
     when: shortDay(r.closedAt ?? r.submittedAt),
-  };
-}
-
-export function requestsFromApi({
-  allowance,
-  requests,
-}: TerminalRequests): RequestsData {
-  const resets = new Date(allowance.resetsAt);
-  return {
-    allowance: {
-      research: { used: allowance.used, total: allowance.total },
-      resetsOn: resets.toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      }),
-      resetsShort: resets.toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
-      }),
-      resetsMonth: resets.toLocaleDateString("en-GB", { month: "long" }),
-    },
-    research: requests.filter(r => r.kind === "research").map(toResearch),
-    questions: requests.filter(r => r.kind === "question").map(toQuestion),
   };
 }

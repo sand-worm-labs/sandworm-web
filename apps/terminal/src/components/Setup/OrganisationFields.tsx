@@ -1,3 +1,4 @@
+import { OrganisationTypeId } from "@sandworm/types/terminal";
 import { OptionCard } from "@sandworm/ui/kit/form/option-card";
 import { TextAreaField } from "@sandworm/ui/kit/form/text-area-field";
 import { TextField } from "@sandworm/ui/kit/form/text-field";
@@ -34,7 +35,7 @@ export function OrganisationFields({
           ))}
         </div>
       </fieldset>
-      {organisation.type === "other" && (
+      {organisation.type === OrganisationTypeId.OTHER && (
         <TextAreaField
           id="organisation-description"
           label="What does your organisation do?"

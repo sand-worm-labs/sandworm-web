@@ -1,10 +1,12 @@
+import { AnalysisViewKind } from "@sandworm/types/terminal";
+
 import type { EntityPage } from "@/types";
 
 import { badge, change, kpi, reportLink, tableRow, text } from "./builders";
 
 export const paycrestPage: EntityPage = {
   slug: "paycrest",
-  kind: "project",
+  kind: AnalysisViewKind.PROJECT,
   name: "Paycrest",
   tags: ["Payments", "Africa"],
   summary:

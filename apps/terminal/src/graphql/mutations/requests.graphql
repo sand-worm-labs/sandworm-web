@@ -1,0 +1,11 @@
+mutation SubmitTerminalRequest($input: TerminalRequestInput!) {
+  submitTerminalRequest(input: $input) {
+    id
+  }
+}
+
+mutation ApproveTerminalRequestScope($requestId: ID!) {
+  approveTerminalRequestScope(requestId: $requestId) {
+    id
+  }
+}

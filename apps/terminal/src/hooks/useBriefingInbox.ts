@@ -1,20 +1,34 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { BriefingItemData } from "@sandworm/types/terminal";
 
-import { markBriefingRead, markBriefingSeen } from "@/lib/briefing/actions";
+import {
+  useMarkTerminalBriefingReadMutation,
+  useMarkTerminalBriefingSeenMutation,
+} from "@/generated/graphql";
+import { usePreview } from "@/providers/PreviewProvider";
 import {
   countUnread,
   filterItems,
   resolveSelected,
   type BriefingFilter,
 } from "@/lib/briefing/inbox-state";
-import type { BriefingItem } from "@/types";
 
 // `initialId` is the item a link asked for, e.g. a row on the overview. It
 // opens selected, and counts as read.
 export function useBriefingInbox(
-  items: readonly BriefingItem[],
+  items: readonly BriefingItemData[],
   initialId?: string
 ) {
+  const { isForced } = usePreview();
+  const [markRead] = useMarkTerminalBriefingReadMutation();
+  const [markSeen] = useMarkTerminalBriefingSeenMutation();
+  // A preview visitor has no session, so their reads stay in the page only
+  const markBriefingRead = useCallback(
+    (itemIds: string[]) => {
+      if (!isForced && itemIds.length) markRead({ variables: { itemIds } });
+    },
+    [isForced, markRead]
+  );
   const opened = items.find(item => item.id === initialId)?.id;
   const [filter, setFilter] = useState<BriefingFilter>("all");
   const [selectedId, setSelectedId] = useState(opened ?? items[0]?.id);
@@ -24,9 +38,9 @@ export function useBriefingInbox(
 
   // Opening Briefing is a visit; an item opened from a link counts as read
   useEffect(() => {
-    markBriefingSeen();
+    if (!isForced) markSeen();
     if (opened) markBriefingRead([opened]);
-  }, [opened]);
+  }, [opened, isForced, markSeen, markBriefingRead]);
 
   const visibleItems = useMemo(
     () => filterItems(items, filter),
@@ -38,16 +52,16 @@ export function useBriefingInbox(
       setReadIds(current =>
         current.includes(id) ? current : [...current, id]
       );
-      if (items.find(item => item.id === id)?.isUnread) {
+      if (items.find(item => item.id === id)?.isRead === false) {
         markBriefingRead([id]);
       }
     },
-    [items]
+    [items, markBriefingRead]
   );
   const markAllRead = useCallback(() => {
     setReadIds(items.map(item => item.id));
-    markBriefingRead(items.filter(item => item.isUnread).map(item => item.id));
-  }, [items]);
+    markBriefingRead(items.filter(item => !item.isRead).map(item => item.id));
+  }, [items, markBriefingRead]);
 
   return {
     filter,

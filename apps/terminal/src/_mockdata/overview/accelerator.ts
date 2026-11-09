@@ -1,3 +1,5 @@
+import { BriefingKindId, OrganisationTypeId } from "@sandworm/types/terminal";
+
 import type { OverviewData } from "@/types";
 
 import { briefingEntry, gapEntry, kpi, signalEntry } from "./builders";
@@ -5,7 +7,7 @@ import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
 export const acceleratorOverview: OverviewData = {
-  clientKind: "accelerator",
+  clientKind: OrganisationTypeId.ACCELERATOR,
   typeName: "Accelerator",
   subtitle:
     "41 companies from the S26 and F26 batches tracked onchain. Data to 2 Nov, 23:59 UTC.",
@@ -67,7 +69,7 @@ export const acceleratorOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "Ferrite passed 50,000 users",
         summary: "Fastest in the batch, 9 weeks after launch.",
         entity: "Ferrite",
@@ -77,7 +79,7 @@ export const acceleratorOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Today",
-        kind: "Signal",
+        kind: BriefingKindId.SIGNAL,
         title: "Two companies serve the same Kenya corridor",
         summary: "Paylane and Kito could share liquidity.",
         entity: "Kenya",
@@ -87,7 +89,7 @@ export const acceleratorOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Analysis",
+        kind: BriefingKindId.ANALYSIS,
         title: "F26 onchain traction, week 8",
         summary: "New report. 9 companies are above 10% weekly growth.",
         entity: "F26",
@@ -97,7 +99,7 @@ export const acceleratorOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Signal",
+        kind: BriefingKindId.SIGNAL,
         title: "Stablecoin payroll has no company in your batches",
         summary: "Users up 2.6× in six months.",
         entity: "Payroll",
@@ -107,7 +109,7 @@ export const acceleratorOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Last week",
-        kind: "Analysis",
+        kind: BriefingKindId.ANALYSIS,
         title: "S26 against the last three batches",
         summary: "Median growth 6% a week, up from 4%.",
         entity: "S26",
@@ -117,7 +119,7 @@ export const acceleratorOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Last week",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "3 companies flat for 6 weeks",
         summary: "Driftwood, Lumo and Atlas Pay.",
         entity: "S26",

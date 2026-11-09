@@ -7,7 +7,7 @@ import { ApiUnauthenticatedError, gql } from "@/lib/api";
 import type { SetupDraft } from "@/types";
 
 import { SETUP_FIELDS } from "./api";
-import { SETUP_STEP_IDS, setupStepPath } from "./routes";
+import { SetupStepId, setupStepPath } from "./routes";
 
 const SAVE_TERMINAL_SETUP = `
   mutation SaveTerminalSetup($input: TerminalSetupInput!) {
@@ -21,7 +21,7 @@ export async function saveSetupDraft(draft: SetupDraft): Promise<void> {
     await gql(SAVE_TERMINAL_SETUP, { input: draft });
   } catch (err) {
     if (err instanceof ApiUnauthenticatedError) {
-      redirect(signInUrl(setupStepPath(SETUP_STEP_IDS[0])));
+      redirect(signInUrl(setupStepPath(SetupStepId.ORGANISATION)));
     }
     throw err;
   }

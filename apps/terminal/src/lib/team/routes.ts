@@ -1,13 +1,16 @@
+import { isEnumValue } from "../enum";
+
 export const TEAM_CLIENTS_PATH = "/team";
 
-export const TEAM_STEP_IDS = ["details", "tracking"] as const;
+export enum TeamStepId {
+  DETAILS = "details",
+  TRACKING = "tracking",
+}
 
-export type TeamStepId = (typeof TEAM_STEP_IDS)[number];
+export const TEAM_STEP_IDS = Object.values(TeamStepId);
 
 export function teamStepPath(id: TeamStepId): string {
   return `/team/clients/new/${id}`;
 }
 
-export function isTeamStepId(value: string): value is TeamStepId {
-  return TEAM_STEP_IDS.some(id => id === value);
-}
+export const isTeamStepId = isEnumValue(TeamStepId);

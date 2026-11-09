@@ -1,103 +1,89 @@
-import type { RequestsData } from "@/types";
+import {
+  RequestKindId,
+  RequestStatusId,
+  type TerminalRequests,
+} from "@sandworm/types/terminal";
+import { addQuarters, startOfQuarter } from "date-fns";
 
-import { questionEntry, researchRequest, step } from "./builders";
+import { ago } from "../ago";
 
-export const exchangeRequests: RequestsData = {
+import { request } from "./builders";
+
+export const exchangeRequests = (): TerminalRequests => ({
   allowance: {
-    research: { used: 2, total: 5 },
-    resetsOn: "1 Jan 2027",
-    resetsShort: "1 Jan",
-    resetsMonth: "January",
+    used: 2,
+    total: 5,
+    resetsAt: addQuarters(startOfQuarter(new Date()), 1).toISOString(),
   },
-  research: [
-    researchRequest({
-      title: "Brazil cash-out: users, apps and fees",
-      by: "Alex Morgan · today",
-      status: "Submitted",
-      next: "Waiting for scope",
-      steps: [
-        step("Submitted", "done", "Today, 10:42"),
-        step("Scoping", "next"),
-        step("In progress", "later"),
-        step("Delivered", "later"),
-      ],
-      note: {
-        when: "Today, 11:05",
-        text: "Got it. I will send a scope after I check how much Brazil data we have for your users.",
+  requests: [
+    request({
+      question: "Brazil cash-out: users, apps and fees",
+      requestedBy: "Alex Morgan",
+      status: RequestStatusId.SUBMITTED,
+      submittedAt: ago(0, "10:42"),
+      progressNote:
+        "Got it. I will send a scope after I check how much Brazil data we have for your users.",
+    }),
+    request({
+      question: "Solana token demand among our users",
+      requestedBy: "Diego Ruiz",
+      status: RequestStatusId.AWAITING_APPROVAL,
+      submittedAt: ago(1, "09:00"),
+      scopedAt: ago(0, "08:30"),
+      scope: {
+        summary:
+          "It sizes the Solana tokens your users hold that you do not list.",
+        questions: [
+          "How many of your users hold Solana tokens you do not list.",
+          "Which tokens, ranked by how much they hold.",
+          "How much they trade each month.",
+        ],
+        sources: [],
+        dueAt: ago(-17),
       },
     }),
-    researchRequest({
-      title: "Solana token demand among our users",
-      by: "Diego Ruiz · Mon 2 Nov",
-      status: "Scoping",
-      next: "Scope ready for you",
-      steps: [
-        step("Submitted", "done", "Mon 2 Nov"),
-        step("Scoping", "next", "Scope sent today"),
-        step("In progress", "later"),
-        step("Delivered", "later"),
-      ],
-      note: {
-        when: "Today, 08:30",
-        text: "Here is the scope. I will answer three questions:\n1. How many of your users hold Solana tokens you do not list.\n2. Which tokens, ranked by how much they hold.\n3. How much they trade each month.\nAbout 2 weeks from approval.",
+    request({
+      question: "Stablecoin yield: what would it take?",
+      requestedBy: "Alex Morgan",
+      status: RequestStatusId.IN_PROGRESS,
+      submittedAt: ago(14),
+      scopedAt: ago(12),
+      approvedAt: ago(11),
+      scope: {
+        summary: "It tests what yield would keep stablecoins in your app.",
+        questions: ["What yield would your users accept."],
+        sources: [],
+        dueAt: ago(-10),
       },
-      scopeApproval: { scopedOn: "Tue 3 Nov", due: "Due Fri 20 Nov" },
+      progressNote:
+        "On track. First finding: 38,000 of your wallets earn on Aave, and most would accept 4% or more.",
     }),
-    researchRequest({
-      title: "Stablecoin yield: what would it take?",
-      by: "Alex Morgan · 20 Oct",
-      status: "In progress",
-      next: "Due Fri 13 Nov",
-      steps: [
-        step("Submitted", "done", "20 Oct"),
-        step("Scoping", "done", "22 Oct"),
-        step("In progress", "next", "Since 23 Oct"),
-        step("Delivered", "later", "Due Fri 13 Nov"),
-      ],
-      note: {
-        when: "Fri 30 Oct",
-        text: "On track. First finding: 38,000 of your wallets earn on Aave, and most would accept 4% or more.",
-      },
+    request({
+      question: "LatAm cash-out sizing",
+      requestedBy: "Alex Morgan",
+      status: RequestStatusId.DELIVERED,
+      submittedAt: ago(20),
+      scopedAt: ago(19),
+      approvedAt: ago(18),
+      closedAt: ago(8),
+      outcome: "Delivered. It also led to the Argentina signal in your list.",
     }),
-    researchRequest({
-      title: "LatAm cash-out sizing",
-      by: "Alex Morgan · 14 Oct",
-      status: "Delivered",
-      next: "Mon 26 Oct",
-      steps: [
-        step("Submitted", "done", "14 Oct"),
-        step("Scoping", "done", "15 Oct"),
-        step("In progress", "done", "16 Oct"),
-        step("Delivered", "done", "Mon 26 Oct"),
-      ],
-      note: {
-        when: "Mon 26 Oct",
-        text: "Delivered. It also led to the Argentina signal in your list.",
-      },
-      reportLabel: "Read the report",
+    request({
+      question: "NFT trading among our users",
+      requestedBy: "Diego Ruiz",
+      status: RequestStatusId.DECLINED,
+      submittedAt: ago(33),
+      closedAt: ago(32),
+      outcome:
+        "Too few of your users trade NFTs for a useful answer. This did not use your allowance.",
     }),
-    researchRequest({
-      title: "NFT trading among our users",
-      by: "Diego Ruiz · 1 Oct",
-      status: "Declined",
-      next: "Didn't count",
-      steps: [
-        step("Submitted", "done", "1 Oct"),
-        step("Declined", "declined", "2 Oct"),
-      ],
-      note: {
-        when: "2 Oct",
-        text: "Too few of your users trade NFTs for a useful answer. This did not use your allowance.",
-      },
+    request({
+      question: "Does the 2.2% include the exchange-rate spread?",
+      kind: RequestKindId.QUESTION,
+      status: RequestStatusId.DELIVERED,
+      submittedAt: ago(1, "10:00"),
+      closedAt: ago(1, "14:00"),
+      outcome: "Yes. It is the full cost of cashing out, spread included.",
     }),
   ],
-  questions: [
-    questionEntry({
-      title: "Does the 2.2% include the exchange-rate spread?",
-      detail:
-        "Sandworm: Yes. It is the full cost of cashing out, spread included.",
-      status: "Answered",
-      when: "Mon 2 Nov",
-    }),
-  ],
-};
+});

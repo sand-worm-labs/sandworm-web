@@ -1,4 +1,4 @@
-import type { PlanId } from "@sandworm/types/terminal";
+import { PlanId } from "@sandworm/types/terminal";
 
 type PlanDefinition = {
   id: PlanId;
@@ -10,21 +10,21 @@ type PlanDefinition = {
 
 export const PLANS = [
   {
-    id: "starter",
+    id: PlanId.STARTER,
     label: "Starter",
     description: "2 studies and 1 call a quarter",
     research: "2 a quarter",
     calls: "1 a quarter",
   },
   {
-    id: "pro",
+    id: PlanId.PRO,
     label: "Pro",
     description: "5 studies and 4 calls a quarter",
     research: "5 a quarter",
     calls: "4 a quarter",
   },
   {
-    id: "enterprise",
+    id: PlanId.ENTERPRISE,
     label: "Enterprise",
     description: "Custom work and a dedicated analyst",
     research: "Custom",

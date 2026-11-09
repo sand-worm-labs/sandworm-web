@@ -1,7 +1,8 @@
 import { Card } from "@sandworm/ui/kit/card";
 import { ProgressMeter } from "@sandworm/ui/kit/progress-meter";
 
-import type { Allowance, AllowanceMeter } from "@/types";
+import { resetsOn } from "@/lib/requests/requests-state";
+import type { Allowance } from "@/types";
 
 function MeterCell({
   label,
@@ -9,7 +10,7 @@ function MeterCell({
   tone,
 }: {
   label: string;
-  meter: AllowanceMeter;
+  meter: Pick<Allowance, "used" | "total">;
   tone: "brand" | "navy";
 }) {
   return (
@@ -32,13 +33,9 @@ export function AllowanceSummary({ allowance }: { allowance: Allowance }) {
       aria-label="This quarter's allowance"
       className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] divide-border-secondary overflow-hidden md:divide-x"
     >
-      <MeterCell
-        label="Research requests"
-        meter={allowance.research}
-        tone="brand"
-      />
+      <MeterCell label="Research requests" meter={allowance} tone="brand" />
       <div className="flex flex-col justify-center gap-0.5 px-6 py-[18px]">
-        <span className="font-medium">Resets {allowance.resetsOn}</span>
+        <span className="font-medium">Resets {resetsOn(allowance)}</span>
         <span className="text-xs text-ink-400">
           Research counts once you approve its scope. Written questions
           don&apos;t use your allowance.

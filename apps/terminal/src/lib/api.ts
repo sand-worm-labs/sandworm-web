@@ -1,21 +1,13 @@
 import { cookies } from "next/headers";
 
 import { env } from "@/config/env";
+import { isUnauthenticated, type GraphQLError } from "@/lib/graphql-errors";
 
 export class ApiUnauthenticatedError extends Error {
   constructor() {
     super("Not signed in");
     this.name = "ApiUnauthenticatedError";
   }
-}
-
-type GraphQLError = { message: string; extensions?: { code?: string } };
-
-function isUnauthenticated(error: GraphQLError): boolean {
-  return (
-    error.extensions?.code === "UNAUTHENTICATED" ||
-    /unauthori[sz]ed/i.test(error.message)
-  );
 }
 
 type GqlOptions = {

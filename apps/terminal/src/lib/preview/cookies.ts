@@ -1,8 +1,19 @@
+import { OrganisationTypeId } from "@sandworm/types/terminal";
 import { cookies } from "next/headers";
 
-import type { ClientKind, OverviewStatus } from "@/types";
-import { isOverviewStatus } from "@/lib/overview/status";
+import { env } from "@/config/env";
+import type { ClientKind } from "@/types";
+import { OverviewStatus, isOverviewStatus } from "@/lib/overview/status";
 import { ORGANISATION_TYPES } from "@/data/setup/organisation-types";
+
+import type { AccessPreviewMode } from "./modes";
+import {
+  AllowancePreviewMode,
+  ContentPreviewMode,
+  isAccessPreviewMode,
+  isAllowancePreviewMode,
+  isContentPreviewMode,
+} from "./modes";
 
 export const PREVIEW_CLIENT_COOKIE = "preview-client";
 export const PREVIEW_STATUS_COOKIE = "preview-status";
@@ -11,34 +22,6 @@ export const PREVIEW_SIGNALS_COOKIE = "preview-signals";
 
 export const PREVIEW_ALLOWANCE_COOKIE = "preview-allowance";
 export const PREVIEW_ACCESS_COOKIE = "preview-access";
-
-export const ACCESS_PREVIEW_MODES = ["allowed", "noClient"] as const;
-
-export type AccessPreviewMode = (typeof ACCESS_PREVIEW_MODES)[number];
-
-export function isAccessPreviewMode(value: string): value is AccessPreviewMode {
-  return ACCESS_PREVIEW_MODES.some(mode => mode === value);
-}
-
-export const CONTENT_PREVIEW_MODES = ["items", "empty"] as const;
-
-export type ContentPreviewMode = (typeof CONTENT_PREVIEW_MODES)[number];
-
-export function isContentPreviewMode(
-  value: string
-): value is ContentPreviewMode {
-  return CONTENT_PREVIEW_MODES.some(mode => mode === value);
-}
-
-export const ALLOWANCE_PREVIEW_MODES = ["available", "used"] as const;
-
-export type AllowancePreviewMode = (typeof ALLOWANCE_PREVIEW_MODES)[number];
-
-export function isAllowancePreviewMode(
-  value: string
-): value is AllowancePreviewMode {
-  return ALLOWANCE_PREVIEW_MODES.some(mode => mode === value);
-}
 
 export const MOCK_CLIENT_IDS: readonly ClientKind[] = [
   ...ORGANISATION_TYPES.map(type => type.id),
@@ -51,12 +34,12 @@ export function isClientKind(value: string): value is ClientKind {
 
 export async function getPreviewClientKind(): Promise<ClientKind> {
   const value = (await cookies()).get(PREVIEW_CLIENT_COOKIE)?.value;
-  return value && isClientKind(value) ? value : "exchange";
+  return value && isClientKind(value) ? value : OrganisationTypeId.EXCHANGE;
 }
 
 export async function getPreviewStatus(): Promise<OverviewStatus> {
   const value = (await cookies()).get(PREVIEW_STATUS_COOKIE)?.value;
-  return value && isOverviewStatus(value) ? value : "ready";
+  return value && isOverviewStatus(value) ? value : OverviewStatus.READY;
 }
 
 async function readPreviewMode<Mode extends string>(
@@ -69,16 +52,24 @@ async function readPreviewMode<Mode extends string>(
 }
 
 export const getPreviewBriefing = () =>
-  readPreviewMode(PREVIEW_BRIEFING_COOKIE, isContentPreviewMode, "items");
+  readPreviewMode(
+    PREVIEW_BRIEFING_COOKIE,
+    isContentPreviewMode,
+    ContentPreviewMode.ITEMS
+  );
 
 export const getPreviewSignals = () =>
-  readPreviewMode(PREVIEW_SIGNALS_COOKIE, isContentPreviewMode, "items");
+  readPreviewMode(
+    PREVIEW_SIGNALS_COOKIE,
+    isContentPreviewMode,
+    ContentPreviewMode.ITEMS
+  );
 
 export const getPreviewAllowance = () =>
   readPreviewMode(
     PREVIEW_ALLOWANCE_COOKIE,
     isAllowancePreviewMode,
-    "available"
+    AllowancePreviewMode.AVAILABLE
   );
 
 export async function getPreviewAccess(): Promise<
@@ -86,4 +77,28 @@ export async function getPreviewAccess(): Promise<
 > {
   const value = (await cookies()).get(PREVIEW_ACCESS_COOKIE)?.value;
   return value && isAccessPreviewMode(value) ? value : undefined;
+}
+
+// What the browser needs to choose between live data and the preview fixtures
+export type Preview = {
+  isForced: boolean;
+  clientKind: ClientKind;
+  status: OverviewStatus;
+  briefing: ContentPreviewMode;
+  allowance: AllowancePreviewMode;
+};
+
+export async function getPreview(): Promise<Preview> {
+  const [isForced, clientKind, status, briefing, allowance] = await Promise.all(
+    [
+      cookies().then(
+        store => store.has(PREVIEW_CLIENT_COOKIE) || env.devBypassAuth
+      ),
+      getPreviewClientKind(),
+      getPreviewStatus(),
+      getPreviewBriefing(),
+      getPreviewAllowance(),
+    ]
+  );
+  return { isForced, clientKind, status, briefing, allowance };
 }

@@ -1,15 +1,17 @@
 import { buttonClassName } from "@sandworm/ui/kit/button";
 import { Card } from "@sandworm/ui/kit/card";
+import type { BriefingItemData } from "@sandworm/types/terminal";
 
 import { AppLink } from "@/components/AppLink";
-import type { BriefingItem } from "@/types";
+import { actionOf, detailOf } from "@/lib/briefing/display";
+import { fullWhen } from "@/lib/dates";
 
 import { BriefingKindTag } from "./BriefingKindTag";
 import { CellOutputs } from "./CellOutputs";
 import { HeadlineMetric } from "./HeadlineMetric";
 
 type BriefingDetailPanelProps = {
-  item: BriefingItem;
+  item: BriefingItemData;
   clientName: string;
 };
 
@@ -26,7 +28,8 @@ export function BriefingDetailPanel({
   item,
   clientName,
 }: BriefingDetailPanelProps) {
-  const { headline, outputs, what, why } = item.detail;
+  const { headline, outputs, what, why } = detailOf(item);
+  const action = actionOf(item);
   const titleId = `briefing-${item.id}-title`;
 
   return (
@@ -38,9 +41,11 @@ export function BriefingDetailPanel({
         <div className="flex flex-wrap items-center gap-2">
           <BriefingKindTag kind={item.kind} />
           <span className="inline-flex h-[22px] items-center rounded-md bg-hover-bg px-2 text-xs text-ink-400">
-            {item.entity}
+            {item.subject}
           </span>
-          <span className="text-xs text-ink-400">{item.when}</span>
+          <span className="text-xs text-ink-400">
+            {fullWhen(item.publishedAt)}
+          </span>
         </div>
         <h2
           id={titleId}
@@ -58,18 +63,18 @@ export function BriefingDetailPanel({
         <DetailSection title={`Why it matters for ${clientName}`} text={why} />
       )}
       <div className="border-t border-border-secondary pt-4">
-        {item.action.url ? (
+        {action.url ? (
           <a
-            href={item.action.url}
+            href={action.url}
             target="_blank"
             rel="noreferrer"
             className={buttonClassName()}
           >
-            {item.action.label}
+            {action.label}
           </a>
         ) : (
-          <AppLink route={item.action.route} className={buttonClassName()}>
-            {item.action.label}
+          <AppLink route={action.route} className={buttonClassName()}>
+            {action.label}
           </AppLink>
         )}
       </div>

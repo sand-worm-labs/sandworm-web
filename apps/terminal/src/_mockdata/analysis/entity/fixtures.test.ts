@@ -1,3 +1,4 @@
+import { AnalysisViewKind } from "@sandworm/types/terminal";
 import { describe, expect, it } from "vitest";
 
 import { entityFixtures, findEntityPage } from "./index";
@@ -33,8 +34,14 @@ describe("entity fixtures", () => {
   it("finds a page by kind and slug, and not by slug alone", () => {
     const list = entityFixtures.exchange;
 
-    expect(findEntityPage(list, "project", "paycrest")?.name).toBe("Paycrest");
-    expect(findEntityPage(list, "region", "paycrest")).toBeUndefined();
-    expect(findEntityPage(list, "sector", "nowhere")).toBeUndefined();
+    expect(
+      findEntityPage(list, AnalysisViewKind.PROJECT, "paycrest")?.name
+    ).toBe("Paycrest");
+    expect(
+      findEntityPage(list, AnalysisViewKind.REGION, "paycrest")
+    ).toBeUndefined();
+    expect(
+      findEntityPage(list, AnalysisViewKind.SECTOR, "nowhere")
+    ).toBeUndefined();
   });
 });

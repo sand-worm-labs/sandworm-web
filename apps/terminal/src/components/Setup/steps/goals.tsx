@@ -8,6 +8,7 @@ import { useSetup } from "@/providers/SetupProvider";
 import { ACCESS_LEVELS } from "@/data/setup/access-levels";
 import { GOALS, MAX_GOALS, type GoalId } from "@/data/setup/goals";
 import type { TeamInvite } from "@/types";
+import { SetupStepId } from "@/lib/setup/routes";
 
 import type { SetupStepDefinition } from "./types";
 
@@ -106,7 +107,7 @@ function InviteRow({ invite, onChange }: InviteRowProps) {
 }
 
 export const goalsStep: SetupStepDefinition = {
-  id: "goals",
+  id: SetupStepId.GOALS,
   label: "Goals and team",
   title: () => "What do you want from Terminal?",
   description: () =>

@@ -1,0 +1,17 @@
+query TerminalBriefing {
+  terminalBriefing {
+    lastSeenAt
+    archivedCount
+    items {
+      id
+      kind
+      title
+      summary
+      subject
+      detail
+      publishedAt
+      isRead
+      sourcePath
+    }
+  }
+}

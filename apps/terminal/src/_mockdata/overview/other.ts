@@ -1,3 +1,5 @@
+import { BriefingKindId, OrganisationTypeId } from "@sandworm/types/terminal";
+
 import type { OverviewData } from "@/types";
 
 import { briefingEntry, gapEntry, kpi, signalEntry } from "./builders";
@@ -5,7 +7,7 @@ import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
 export const otherOverview: OverviewData = {
-  clientKind: "other",
+  clientKind: OrganisationTypeId.OTHER,
   typeName: "General",
   subtitle: "Northwind's users and activity onchain. Data to 2 Nov, 23:59 UTC.",
   loadingNote:
@@ -63,7 +65,7 @@ export const otherOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Signal",
+        kind: BriefingKindId.SIGNAL,
         title: "Users who leave go to the same two apps",
         summary: "1,900 of your lapsed wallets moved to them last month.",
         entity: "Churn",
@@ -73,7 +75,7 @@ export const otherOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Today",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "New users down 3% this week",
         summary: "Most of the drop came from referrals.",
         entity: "Northwind",
@@ -83,7 +85,7 @@ export const otherOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Analysis",
+        kind: BriefingKindId.ANALYSIS,
         title: "Who your most active users are",
         summary: "New report. 2% of wallets make 41% of transactions.",
         entity: "Northwind",
@@ -93,7 +95,7 @@ export const otherOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Signal",
+        kind: BriefingKindId.SIGNAL,
         title: "A rival launched a rewards programme",
         summary: "Its weekly signups doubled in five days.",
         entity: "Rivals",
@@ -103,7 +105,7 @@ export const otherOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Last week",
-        kind: "Analysis",
+        kind: BriefingKindId.ANALYSIS,
         title: "Retention by signup month",
         summary: "Users who arrive in the first week of a month stay longer.",
         entity: "Retention",
@@ -113,7 +115,7 @@ export const otherOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Last week",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "Transactions per user up 6%",
         summary: "Driven by a small group of repeat users.",
         entity: "Northwind",

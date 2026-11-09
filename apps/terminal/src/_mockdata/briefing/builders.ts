@@ -1,6 +1,9 @@
-import { toId } from "@/lib/slug";
-import type { BriefingItem } from "@/types";
+import type { BriefingItemData } from "@sandworm/types/terminal";
 
-export function briefingItem(init: Omit<BriefingItem, "id">): BriefingItem {
-  return { ...init, id: toId(init.title) };
+import { toId } from "@/lib/slug";
+
+export function briefingItem(
+  init: Omit<BriefingItemData, "id" | "sourcePath">
+): BriefingItemData {
+  return { ...init, id: toId(init.title), sourcePath: null };
 }

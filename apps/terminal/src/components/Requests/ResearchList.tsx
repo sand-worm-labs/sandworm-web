@@ -4,13 +4,14 @@ import {
   ROW_HOVER_CLASSNAME,
   ROW_SELECTED_CLASSNAME,
 } from "@sandworm/ui/kit/interactive";
+import type { RequestData } from "@sandworm/types/terminal";
 
-import type { ResearchRequest } from "@/types";
+import { byLine, nextOf, researchStatus } from "@/lib/requests/status";
 
 import { StatusChip } from "./StatusChip";
 
 type ResearchListProps = {
-  requests: readonly ResearchRequest[];
+  requests: readonly RequestData[];
   selectedId: string | undefined;
   onSelect: (id: string) => void;
 };
@@ -51,13 +52,13 @@ export function ResearchList({
             >
               <span className="flex min-w-0 flex-col gap-0.5">
                 <span className="text-sm font-medium text-ink-100">
-                  {request.title}
+                  {request.question}
                 </span>
-                <span className="text-xs text-ink-400">{request.by}</span>
+                <span className="text-xs text-ink-400">{byLine(request)}</span>
               </span>
-              <StatusChip status={request.status} />
+              <StatusChip status={researchStatus(request)} />
               <span className="text-xs text-ink-500 md:text-right">
-                {request.next}
+                {nextOf(request)}
               </span>
             </button>
           </div>

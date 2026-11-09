@@ -1,41 +1,36 @@
-import type { RouteId } from "@/config/routes";
-import type { BriefingFeed, BriefingItem, OverviewData } from "@/types";
+import type { TerminalBriefing } from "@sandworm/types/terminal";
+
+import { ago } from "@/_mockdata/ago";
+import type { OverviewData } from "@/types";
 import { findBlock } from "@/lib/overview/blocks";
 
-type Action = BriefingItem["action"];
+import { briefingItem } from "./builders";
 
-const ACTION_BY_ROUTE: Partial<Record<RouteId, Action>> = {
-  signal: { label: "Open signal", route: "signal" },
-  report: { label: "Read report", route: "report" },
-  briefing: { label: "See Overview", route: "overview" },
+const DAYS_AGO: Record<string, number> = {
+  Today: 0,
+  Yesterday: 1,
+  "Last week": 5,
 };
 
-export function briefingFromOverview(data: OverviewData): BriefingFeed {
+export function briefingFromOverview(data: OverviewData): TerminalBriefing {
   const entries = findBlock(data.blocks, "briefing")?.entries ?? [];
 
   return {
-    subtitle: "Since your last visit, Tue 28 Oct",
-    upToDate: {
-      subtitle: "Since your last visit, Sun 2 Nov",
-      message:
-        "Nothing new since your last visit on Sun 2 Nov at 18:40. New analysis, new signals and big moves in your numbers show up here.",
-      archivedCount: entries.length,
-    },
-    items: entries.map(entry => ({
-      id: entry.id,
-      group: entry.group,
-      kind: entry.kind,
-      title: entry.title,
-      summary: entry.summary,
-      entity: entry.entity,
-      time: entry.time,
-      when: entry.time,
-      isUnread: entry.isUnread,
-      detail: {},
-      action: ACTION_BY_ROUTE[entry.route] ?? {
-        label: "Open",
-        route: entry.route,
-      },
-    })),
+    lastSeenAt: ago(1, "18:40"),
+    archivedCount: entries.length,
+    items: entries.map(entry =>
+      briefingItem({
+        kind: entry.kind,
+        title: entry.title,
+        summary: entry.summary,
+        subject: entry.entity,
+        publishedAt: ago(
+          DAYS_AGO[entry.group] ?? 8,
+          /\d\d:\d\d/.exec(entry.time)?.[0]
+        ),
+        isRead: !entry.isUnread,
+        detail: {},
+      })
+    ),
   };
 }

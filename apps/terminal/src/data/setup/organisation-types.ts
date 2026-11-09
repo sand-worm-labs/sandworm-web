@@ -1,4 +1,4 @@
-import type { OrganisationTypeId } from "@sandworm/types/terminal";
+import { OrganisationTypeId } from "@sandworm/types/terminal";
 
 export type { OrganisationTypeId } from "@sandworm/types/terminal";
 
@@ -19,7 +19,7 @@ type OrganisationTypeDefinition = {
 
 export const ORGANISATION_TYPES = [
   {
-    id: "exchange",
+    id: OrganisationTypeId.EXCHANGE,
     label: "Trading app or wallet",
     description: "Your users, their wallets and where they go",
     template: {
@@ -44,7 +44,7 @@ export const ORGANISATION_TYPES = [
     },
   },
   {
-    id: "protocol",
+    id: OrganisationTypeId.PROTOCOL,
     label: "DeFi protocol",
     description: "Deposits, borrowers and competing protocols",
     template: {
@@ -64,7 +64,7 @@ export const ORGANISATION_TYPES = [
     },
   },
   {
-    id: "chain",
+    id: OrganisationTypeId.CHAIN,
     label: "Blockchain or L2",
     description: "Apps, developers and bridges on your chain",
     template: {
@@ -89,7 +89,7 @@ export const ORGANISATION_TYPES = [
     },
   },
   {
-    id: "vc",
+    id: OrganisationTypeId.VC,
     label: "Investor or fund",
     description: "Your portfolio, its rivals and deals you might miss",
     template: {
@@ -114,7 +114,7 @@ export const ORGANISATION_TYPES = [
     },
   },
   {
-    id: "accelerator",
+    id: OrganisationTypeId.ACCELERATOR,
     label: "Accelerator",
     description: "Every company in your batches, side by side",
     template: {
@@ -139,7 +139,7 @@ export const ORGANISATION_TYPES = [
     },
   },
   {
-    id: "other",
+    id: OrganisationTypeId.OTHER,
     label: "Something else",
     description: "Tell us what you do and we'll shape the layout with you",
     template: {

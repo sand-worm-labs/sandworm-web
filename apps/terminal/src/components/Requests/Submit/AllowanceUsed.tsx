@@ -5,6 +5,11 @@ import { buttonClassName } from "@sandworm/ui/kit/button";
 import { AppLink } from "@/components/AppLink";
 import type { RouteId } from "@/config/routes";
 import { site } from "@/config/site";
+import {
+  resetsMonth,
+  resetsOn,
+  resetsShort,
+} from "@/lib/requests/requests-state";
 import type { Allowance } from "@/types";
 
 import { AllowancePips } from "./AllowancePips";
@@ -34,8 +39,8 @@ function options(allowance: Allowance): Option[] {
       route: "requests",
       Icon: PiNotePencil,
       iconClassName: "bg-hover-bg text-ink-500",
-      title: `Save it for ${allowance.resetsMonth}`,
-      detail: `We'll keep your draft and send it to ${site.name} on ${allowance.resetsShort}.`,
+      title: `Save it for ${resetsMonth(allowance)}`,
+      detail: `We'll keep your draft and send it to ${site.name} on ${resetsShort(allowance)}.`,
     },
   ];
 }
@@ -48,15 +53,15 @@ export function AllowanceUsed({ allowance }: { allowance: Allowance }) {
           You&apos;ve used this quarter&apos;s research
         </h2>
         <p className="text-sm leading-[1.55] text-ink-500">
-          All {allowance.research.total} research requests in your plan are in
-          progress or delivered. Your allowance resets on {allowance.resetsOn}.
+          All {allowance.total} research requests in your plan are in progress
+          or delivered. Your allowance resets on {resetsOn(allowance)}.
         </p>
       </div>
       <div className="mx-8 mt-2">
         <AllowancePips
-          used={allowance.research.used}
-          total={allowance.research.total}
-          note={`Resets ${allowance.resetsShort}`}
+          used={allowance.used}
+          total={allowance.total}
+          note={`Resets ${resetsShort(allowance)}`}
         />
       </div>
       <div className="flex flex-col gap-2.5 px-8 pb-2 pt-5">

@@ -1,6 +1,12 @@
-export const SETUP_STEP_IDS = ["organisation", "tracking", "goals"] as const;
+import { isEnumValue } from "../enum";
 
-export type SetupStepId = (typeof SETUP_STEP_IDS)[number];
+export enum SetupStepId {
+  ORGANISATION = "organisation",
+  TRACKING = "tracking",
+  GOALS = "goals",
+}
+
+export const SETUP_STEP_IDS = Object.values(SetupStepId);
 
 export const SETUP_COMPLETE_PATH = "/";
 
@@ -8,6 +14,4 @@ export function setupStepPath(id: SetupStepId): string {
   return `/setup/${id}`;
 }
 
-export function isSetupStepId(value: string): value is SetupStepId {
-  return SETUP_STEP_IDS.some(id => id === value);
-}
+export const isSetupStepId = isEnumValue(SetupStepId);

@@ -1,13 +1,21 @@
+import {
+  RequestKindId,
+  RequestTimingId,
+  RequestUseCaseId,
+  type RequestInput,
+} from "@sandworm/types/terminal";
+
 import { site } from "@/config/site";
+import { fullWhen } from "@/lib/dates";
 import type { RequestDraft, TimelineStep } from "@/types";
 import { TIMINGS, USE_CASES } from "@/data/requests/submit-options";
 
 export function emptyDraft(): RequestDraft {
   return {
     question: "",
-    useCase: "plan-launch",
+    useCase: RequestUseCaseId.PLAN_LAUNCH,
     about: [],
-    timing: "two-weeks",
+    timing: RequestTimingId.TWO_WEEKS,
     files: [],
   };
 }
@@ -29,15 +37,14 @@ export function describeDraft(draft: RequestDraft): string {
     .join(" · ");
 }
 
-export function formatSubmittedAt(date: Date): string {
-  const pad = (value: number) => String(value).padStart(2, "0");
-
-  return `Today, ${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
 export function submittedTimeline(submittedAt: string): TimelineStep[] {
   return [
-    { id: "submitted", label: "Submitted", state: "done", detail: submittedAt },
+    {
+      id: "submitted",
+      label: "Submitted",
+      state: "done",
+      detail: fullWhen(submittedAt),
+    },
     {
       id: "scoping",
       label: "Scoping",
@@ -58,3 +65,13 @@ export function submittedTimeline(submittedAt: string): TimelineStep[] {
     },
   ];
 }
+
+// The submit form asks for research; questions are asked elsewhere.
+export const requestInputOf = (draft: RequestDraft): RequestInput => ({
+  kind: RequestKindId.RESEARCH,
+  question: draft.question,
+  useCase: draft.useCase,
+  about: [...draft.about],
+  timing: draft.timing,
+  files: [...draft.files],
+});

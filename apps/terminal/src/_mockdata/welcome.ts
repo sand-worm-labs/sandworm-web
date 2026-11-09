@@ -1,3 +1,5 @@
+import { OrganisationTypeId } from "@sandworm/types/terminal";
+
 import type { ClientKind, WelcomeContent } from "@/types";
 import { analysisMockData } from "@/_mockdata/analysis";
 import { overviewMockData } from "@/_mockdata/overview";
@@ -30,11 +32,11 @@ function contentFromOverview(kind: ClientKind): WelcomeContent {
 
 export const welcomeMockData: Record<ClientKind, WelcomeContent> = {
   exchange: exchangeContent,
-  protocol: contentFromOverview("protocol"),
-  chain: contentFromOverview("chain"),
-  vc: contentFromOverview("vc"),
-  accelerator: contentFromOverview("accelerator"),
-  other: contentFromOverview("other"),
+  protocol: contentFromOverview(OrganisationTypeId.PROTOCOL),
+  chain: contentFromOverview(OrganisationTypeId.CHAIN),
+  vc: contentFromOverview(OrganisationTypeId.VC),
+  accelerator: contentFromOverview(OrganisationTypeId.ACCELERATOR),
+  other: contentFromOverview(OrganisationTypeId.OTHER),
   paycrest: {
     firstBriefingCount: 6,
     briefingHighlight:

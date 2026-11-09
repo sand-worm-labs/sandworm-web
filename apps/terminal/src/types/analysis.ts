@@ -1,7 +1,5 @@
 import type { RouteId } from "@/config/routes";
 
-export type { AnalysisSort } from "@/lib/analysis/sorts";
-
 type AnalysisViewId = "projects" | "regions" | "sectors";
 
 export type AnalysisRow = {

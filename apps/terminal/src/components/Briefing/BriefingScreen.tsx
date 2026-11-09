@@ -1,11 +1,18 @@
 "use client";
 
 import { PiChecks } from "react-icons/pi";
+import {
+  BriefingKindId,
+  type TerminalBriefing,
+} from "@sandworm/types/terminal";
+import { BarLoader } from "@sandworm/ui/kit/bar-loader";
 import { Button } from "@sandworm/ui/kit/button";
 
 import { SectionHeader } from "@/components/Sections/SectionHeader";
-import type { BriefingFeed, SectionCounts } from "@/types";
+import { sinceLabel, upToDateMessage } from "@/lib/briefing/display";
+import type { SectionCounts } from "@/types";
 import { filterItems, type BriefingFilter } from "@/lib/briefing/inbox-state";
+import { useBriefing } from "@/hooks/useBriefing";
 import { useBriefingInbox } from "@/hooks/useBriefingInbox";
 
 import { BriefingDetailPanel } from "./BriefingDetailPanel";
@@ -14,27 +21,45 @@ import { BriefingUpToDate } from "./BriefingUpToDate";
 
 const FILTERS: readonly { id: BriefingFilter; label: string }[] = [
   { id: "all", label: "All" },
-  { id: "Analysis", label: "Analysis" },
-  { id: "Signal", label: "Signals" },
-  { id: "Metric", label: "Metrics" },
+  { id: BriefingKindId.ANALYSIS, label: "Analysis" },
+  { id: BriefingKindId.SIGNAL, label: "Signals" },
+  { id: BriefingKindId.METRIC, label: "Metrics" },
 ];
 
 type BriefingScreenProps = {
-  feed: BriefingFeed;
   counts: SectionCounts;
   viewer: { clientName: string };
   // The item to open on, from ?item=
   initialItemId?: string;
 };
 
-export function BriefingScreen({
+export function BriefingScreen(props: BriefingScreenProps) {
+  const { data: feed, error } = useBriefing();
+  if (error) {
+    return (
+      <p className="text-sm text-ink-400">
+        Could not load the briefing. Please try again.
+      </p>
+    );
+  }
+  return feed ? (
+    <BriefingInbox feed={feed} {...props} />
+  ) : (
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <BarLoader />
+    </div>
+  );
+}
+
+function BriefingInbox({
   feed,
   counts,
   viewer,
   initialItemId,
-}: BriefingScreenProps) {
+}: BriefingScreenProps & { feed: TerminalBriefing }) {
   const inbox = useBriefingInbox(feed.items, initialItemId);
   const hasItems = feed.items.length > 0;
+  const since = sinceLabel(feed.lastSeenAt);
 
   const filterOptions = FILTERS.map(option => ({
     ...option,
@@ -46,7 +71,7 @@ export function BriefingScreen({
       <SectionHeader
         current="briefing"
         title="Briefing"
-        subtitle={hasItems ? feed.subtitle : feed.upToDate.subtitle}
+        subtitle={since}
         counts={counts}
         actions={
           hasItems && (
@@ -81,8 +106,8 @@ export function BriefingScreen({
         </div>
       ) : (
         <BriefingUpToDate
-          message={feed.upToDate.message}
-          archivedCount={feed.upToDate.archivedCount}
+          message={upToDateMessage(feed.lastSeenAt)}
+          archivedCount={feed.archivedCount}
         />
       )}
     </div>

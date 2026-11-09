@@ -1,3 +1,8 @@
+import {
+  InviteTimingId,
+  OrganisationTypeId,
+  PlanId,
+} from "@sandworm/types/terminal";
 import { describe, expect, it } from "vitest";
 
 import type { TeamClientDraft } from "@/types";
@@ -15,9 +20,9 @@ const draft = (
   details: {
     name: "Robinhood",
     website: "robinhood.com",
-    type: "exchange",
+    type: OrganisationTypeId.EXCHANGE,
     description: "",
-    plan: "pro",
+    plan: PlanId.PRO,
     adminName: "Maya Chen",
     adminEmail: "maya@robinhood.com",
     ...details,
@@ -30,7 +35,7 @@ const draft = (
     shareInternalData: false,
   },
   starterIds: [],
-  inviteTiming: "when_ready",
+  inviteTiming: InviteTimingId.WHEN_READY,
 });
 
 describe("isValidEmail", () => {

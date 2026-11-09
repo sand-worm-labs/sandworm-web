@@ -1,20 +1,21 @@
 import { SubmitRequestDialog } from "@/components/Requests/Submit/SubmitRequestDialog";
-import { loadRequestsScreen } from "@/lib/requests/load";
+import { getSectionCounts } from "@/lib/sections/source";
+import { getSession } from "@/lib/session/source";
 import { RequestsScreen } from "@/components/Requests/RequestsScreen";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata("Submit a request");
 
 export default async function NewRequestRoute() {
-  const { data, counts, session } = await loadRequestsScreen();
+  const [counts, session] = await Promise.all([
+    getSectionCounts(),
+    getSession(),
+  ]);
 
   return (
     <>
-      <RequestsScreen data={data} counts={counts} />
-      <SubmitRequestDialog
-        allowance={data.allowance}
-        clientName={session.client.name}
-      />
+      <RequestsScreen counts={counts} />
+      <SubmitRequestDialog clientName={session.client.name} />
     </>
   );
 }

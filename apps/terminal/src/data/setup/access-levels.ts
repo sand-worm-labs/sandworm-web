@@ -1,9 +1,9 @@
-import type { AccessLevelId } from "@sandworm/types/terminal";
+import { AccessLevelId } from "@sandworm/types/terminal";
 
 export type { AccessLevelId } from "@sandworm/types/terminal";
 
 export const ACCESS_LEVELS = [
-  { id: "view", label: "Can view" },
-  { id: "request", label: "Can request" },
-  { id: "admin", label: "Admin" },
+  { id: AccessLevelId.VIEW, label: "Can view" },
+  { id: AccessLevelId.REQUEST, label: "Can request" },
+  { id: AccessLevelId.ADMIN, label: "Admin" },
 ] as const satisfies readonly { id: AccessLevelId; label: string }[];

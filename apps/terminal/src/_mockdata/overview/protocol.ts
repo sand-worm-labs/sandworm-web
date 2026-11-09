@@ -1,3 +1,5 @@
+import { BriefingKindId, OrganisationTypeId } from "@sandworm/types/terminal";
+
 import type { OverviewData } from "@/types";
 
 import { briefingEntry, gapEntry, kpi, signalEntry } from "./builders";
@@ -5,7 +7,7 @@ import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
 export const protocolOverview: OverviewData = {
-  clientKind: "protocol",
+  clientKind: OrganisationTypeId.PROTOCOL,
   typeName: "DeFi protocol",
   subtitle: "Aave v3 on Ethereum, Base and Arbitrum. Data to 2 Nov, 23:59 UTC.",
   loadingNote: "Reading 2.6M deposits, borrows and withdrawals on Aave v3.",
@@ -65,7 +67,7 @@ export const protocolOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Signal",
+        kind: BriefingKindId.SIGNAL,
         title: "Your borrowers take cbBTC on Morpho",
         summary:
           "3,400 of your users borrow it there. Worth about $1.2M a month in fees.",
@@ -76,7 +78,7 @@ export const protocolOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Today",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "Top 10 depositors withdrew $410M",
         summary: "Two of them moved to Spark.",
         entity: "Aave v3",
@@ -86,7 +88,7 @@ export const protocolOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Analysis",
+        kind: BriefingKindId.ANALYSIS,
         title: "Spark's deposit rewards, sized",
         summary:
           "New report. Rewards cost Spark $3.10 for every $100 kept 90 days.",
@@ -97,7 +99,7 @@ export const protocolOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Signal",
+        kind: BriefingKindId.SIGNAL,
         title: "List USDe as collateral on Base",
         summary: "$640M of USDe sits idle in your users' wallets.",
         entity: "Ethena",
@@ -107,7 +109,7 @@ export const protocolOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Last week",
-        kind: "Analysis",
+        kind: BriefingKindId.ANALYSIS,
         title: "Updated: who borrows on Base",
         summary: "Loopers now make 44% of Base borrowing.",
         entity: "Base",
@@ -117,7 +119,7 @@ export const protocolOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Last week",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "Active users down 1%",
         summary: "Accounts under $1K left first.",
         entity: "Aave v3",

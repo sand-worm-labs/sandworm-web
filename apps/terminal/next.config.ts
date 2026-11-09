@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-import { SETUP_STEP_IDS, setupStepPath } from "./src/lib/setup/routes";
+import { SetupStepId, setupStepPath } from "./src/lib/setup/routes";
 
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/setup",
-        destination: setupStepPath(SETUP_STEP_IDS[0]),
+        destination: setupStepPath(SetupStepId.ORGANISATION),
         permanent: false,
       },
     ];

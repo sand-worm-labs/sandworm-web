@@ -1,3 +1,5 @@
+import { InviteTimingId, PlanId } from "@sandworm/types/terminal";
+
 import { ORGANISATION_TYPES } from "@/data/setup/organisation-types";
 import type { TeamClientDraft } from "@/types";
 
@@ -7,7 +9,7 @@ export const EMPTY_TEAM_CLIENT_DRAFT: TeamClientDraft = {
     website: "",
     type: ORGANISATION_TYPES[0].id,
     description: "",
-    plan: "pro",
+    plan: PlanId.PRO,
     adminName: "",
     adminEmail: "",
   },
@@ -19,5 +21,5 @@ export const EMPTY_TEAM_CLIENT_DRAFT: TeamClientDraft = {
     shareInternalData: false,
   },
   starterIds: [],
-  inviteTiming: "when_ready",
+  inviteTiming: InviteTimingId.WHEN_READY,
 };

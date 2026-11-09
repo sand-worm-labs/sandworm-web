@@ -1,10 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import {
-  isAccessPreviewMode,
-  isAllowancePreviewMode,
   isClientKind,
-  isContentPreviewMode,
   PREVIEW_ACCESS_COOKIE,
   PREVIEW_ALLOWANCE_COOKIE,
   PREVIEW_BRIEFING_COOKIE,
@@ -12,6 +9,11 @@ import {
   PREVIEW_SIGNALS_COOKIE,
   PREVIEW_STATUS_COOKIE,
 } from "@/lib/preview/cookies";
+import {
+  isAccessPreviewMode,
+  isAllowancePreviewMode,
+  isContentPreviewMode,
+} from "@/lib/preview/modes";
 import { isOverviewStatus } from "@/lib/overview/status";
 
 export function GET(request: NextRequest) {

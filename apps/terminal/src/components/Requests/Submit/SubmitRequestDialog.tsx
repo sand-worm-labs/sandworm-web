@@ -13,26 +13,25 @@ import { MODAL_CLASSNAME } from "@sandworm/ui/kit/modal";
 import { ROUTES } from "@/config/routes";
 import { site } from "@/config/site";
 import { isResearchUsedUp } from "@/lib/requests/requests-state";
-import type { Allowance, RequestDraft } from "@/types";
-import { submitRequest } from "@/lib/requests/submit/actions";
-import { emptyDraft, formatSubmittedAt } from "@/lib/requests/submit/draft";
+import type { RequestDraft } from "@/types";
+import { useRequests } from "@/hooks/useRequests";
+import { emptyDraft, requestInputOf } from "@/lib/requests/submit/draft";
+import { useSubmitTerminalRequestMutation } from "@/generated/graphql";
+import { usePreview } from "@/providers/PreviewProvider";
 
 import { AllowanceUsed } from "./AllowanceUsed";
 import { RequestForm } from "./RequestForm";
 import { RequestSent } from "./RequestSent";
 import { RequestDialogHeader } from "./RequestDialogHeader";
 
-type SubmitRequestDialogProps = {
-  allowance: Allowance;
-  clientName: string;
-};
+type SubmitRequestDialogProps = { clientName: string };
 
 type Phase = { _tag: "editing" } | { _tag: "sent"; submittedAt: string };
 
-export function SubmitRequestDialog({
-  allowance,
-  clientName,
-}: SubmitRequestDialogProps) {
+export function SubmitRequestDialog({ clientName }: SubmitRequestDialogProps) {
+  const { data } = useRequests();
+  const { isForced } = usePreview();
+  const [submit] = useSubmitTerminalRequestMutation();
   const router = useRouter();
   const [draft, setDraft] = useState<RequestDraft>(emptyDraft);
   const [phase, setPhase] = useState<Phase>({ _tag: "editing" });
@@ -41,12 +40,18 @@ export function SubmitRequestDialog({
   const send = async () => {
     setIsSending(true);
     try {
-      await submitRequest(draft);
-      setPhase({ _tag: "sent", submittedAt: formatSubmittedAt(new Date()) });
+      // A preview visitor has no session: their request stays in the page only
+      if (!isForced) {
+        await submit({ variables: { input: requestInputOf(draft) } });
+      }
+      setPhase({ _tag: "sent", submittedAt: new Date().toISOString() });
     } finally {
       setIsSending(false);
     }
   };
+
+  if (!data) return null;
+  const { allowance } = data;
 
   return (
     <Dialog

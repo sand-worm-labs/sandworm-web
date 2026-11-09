@@ -1,3 +1,5 @@
+import { BriefingKindId } from "@sandworm/types/terminal";
+
 import type { OverviewData } from "@/types";
 
 import { briefingEntry, gapEntry, kpi, signalEntry } from "./builders";
@@ -84,7 +86,7 @@ export const paycrestOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Signal",
+        kind: BriefingKindId.SIGNAL,
         title: "Lemon Cash pays out about $16M a week in stablecoins",
         summary:
           "Paycrest has no peso corridor yet. Lemon already holds the pesos.",
@@ -95,7 +97,7 @@ export const paycrestOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Today",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "P2P.me pays naira sellers 2.4% more than Paycrest's quote",
         summary: "Since 17 Sep, and from one merchant. It can close quickly.",
         entity: "Nigeria",
@@ -105,7 +107,7 @@ export const paycrestOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Today",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "P2P.me's naira business rests on one merchant",
         summary: "About three-quarters of its naira orders.",
         entity: "Nigeria",
@@ -115,7 +117,7 @@ export const paycrestOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Analysis",
+        kind: BriefingKindId.ANALYSIS,
         title: "Paycrest: the onchain inside story",
         summary: "New report. 59.8k orders on 8 chains, $10.2M in volume.",
         entity: "Paycrest",
@@ -125,7 +127,7 @@ export const paycrestOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Signal",
+        kind: BriefingKindId.SIGNAL,
         title: "Nexo bought Buenbit and opened a Latin American hub",
         summary:
           "About $1.3bn of USDC and USDT moved through Nexo in 2 months.",
@@ -136,7 +138,7 @@ export const paycrestOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "Three more naira off-ramps are growing next to Paycrest",
         summary:
           "P2P.me, Resolva and PAJ Cash each move $80K to $330K a month.",
@@ -147,7 +149,7 @@ export const paycrestOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Last week",
-        kind: "Analysis",
+        kind: BriefingKindId.ANALYSIS,
         title: "Argentina: who should integrate Paycrest",
         summary: "29 companies scored. Belo is the safest first audit.",
         entity: "Argentina",
@@ -157,7 +159,7 @@ export const paycrestOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Last week",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "Kenya volume grew about 90× in six months",
         summary: "One payout account drives most of it.",
         entity: "Kenya",

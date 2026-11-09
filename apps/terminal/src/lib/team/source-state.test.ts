@@ -1,3 +1,8 @@
+import {
+  ClientStatusId,
+  OrganisationTypeId,
+  PlanId,
+} from "@sandworm/types/terminal";
 import { describe, expect, it } from "vitest";
 
 import type { TeamClientDetail, TeamClientSource } from "@/types";
@@ -26,9 +31,9 @@ const source = (init: Partial<TeamClientSource> = {}): TeamClientSource => ({
 const client = (init: Partial<TeamClientDetail> = {}): TeamClientDetail => ({
   id: "c",
   name: "Acme",
-  type: "exchange",
-  plan: "pro",
-  status: "live",
+  type: OrganisationTypeId.EXCHANGE,
+  plan: PlanId.PRO,
+  status: ClientStatusId.LIVE,
   adminEmail: "admin@acme.test",
   createdAt: daysAgo(90),
   website: "",
@@ -84,11 +89,13 @@ describe("attentionFor", () => {
   });
 
   it("flags a setup that is not finished and an invite nobody accepted", () => {
-    expect(attentionFor(client({ status: "setting_up" }), NOW)).toEqual([
-      { id: "setup", text: "Setup is not finished." },
-    ]);
     expect(
-      attentionFor(client({ status: "invite_sent" }), NOW).map(i => i.text)
+      attentionFor(client({ status: ClientStatusId.SETTING_UP }), NOW)
+    ).toEqual([{ id: "setup", text: "Setup is not finished." }]);
+    expect(
+      attentionFor(client({ status: ClientStatusId.INVITE_SENT }), NOW).map(
+        i => i.text
+      )
     ).toEqual(["Waiting for admin@acme.test to sign in."]);
   });
 

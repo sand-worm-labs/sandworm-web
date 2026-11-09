@@ -1,0 +1,7 @@
+mutation MarkTerminalBriefingRead($itemIds: [ID!]!) {
+  markTerminalBriefingRead(itemIds: $itemIds)
+}
+
+mutation MarkTerminalBriefingSeen {
+  markTerminalBriefingSeen
+}

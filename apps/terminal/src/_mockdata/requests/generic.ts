@@ -1,47 +1,42 @@
-import type { RequestsData } from "@/types";
+import {
+  RequestStatusId,
+  type TerminalRequests,
+} from "@sandworm/types/terminal";
 
+import { ago } from "../ago";
+
+import { request } from "./builders";
 import { exchangeRequests } from "./exchange";
-import { researchRequest, step } from "./builders";
 
-export function genericRequests(userName: string): RequestsData {
-  return {
-    allowance: exchangeRequests.allowance,
-    research: [
-      researchRequest({
-        title: "Where our most active users go next",
-        by: `${userName} · today`,
-        status: "Scoping",
-        next: "Scope ready for you",
-        steps: [
-          step("Submitted", "done", "Today, 09:15"),
-          step("Scoping", "next", "Scope sent today"),
-          step("In progress", "later"),
-          step("Delivered", "later"),
+export const genericRequests = (userName: string): TerminalRequests => ({
+  allowance: exchangeRequests().allowance,
+  requests: [
+    request({
+      question: "Where our most active users go next",
+      requestedBy: userName,
+      status: RequestStatusId.AWAITING_APPROVAL,
+      submittedAt: ago(0, "09:15"),
+      scopedAt: ago(0, "10:20"),
+      scope: {
+        summary:
+          "It follows your most active users to the products they move to.",
+        questions: [
+          "Which products your most active users move to.",
+          "What made them move.",
         ],
-        note: {
-          when: "Today, 10:20",
-          text: "Here is the scope. I will answer two questions:\n1. Which products your most active users move to.\n2. What made them move.\nAbout 2 weeks from approval.",
-        },
-        scopeApproval: { scopedOn: "Today", due: "Due in about 2 weeks" },
-      }),
-      researchRequest({
-        title: "Who our new users are, by region",
-        by: `${userName} · 14 Oct`,
-        status: "Delivered",
-        next: "Mon 26 Oct",
-        steps: [
-          step("Submitted", "done", "14 Oct"),
-          step("Scoping", "done", "15 Oct"),
-          step("In progress", "done", "16 Oct"),
-          step("Delivered", "done", "Mon 26 Oct"),
-        ],
-        note: {
-          when: "Mon 26 Oct",
-          text: "Delivered. It is in your Analysis.",
-        },
-        reportLabel: "Read the report",
-      }),
-    ],
-    questions: [],
-  };
-}
+        sources: [],
+        dueAt: ago(-14),
+      },
+    }),
+    request({
+      question: "Who our new users are, by region",
+      requestedBy: userName,
+      status: RequestStatusId.DELIVERED,
+      submittedAt: ago(20),
+      scopedAt: ago(19),
+      approvedAt: ago(18),
+      closedAt: ago(8),
+      outcome: "Delivered. It is in your Analysis.",
+    }),
+  ],
+});

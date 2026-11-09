@@ -1,14 +1,15 @@
 import { PiChatCircleText } from "react-icons/pi";
 import { Card } from "@sandworm/ui/kit/card";
+import type { RequestData } from "@sandworm/types/terminal";
 
-import type { QuestionEntry } from "@/types";
+import { questionOf } from "@/lib/requests/status";
 
 import { StatusChip } from "./StatusChip";
 
 export function QuestionsList({
   questions,
 }: {
-  questions: readonly QuestionEntry[];
+  questions: readonly RequestData[];
 }) {
   return (
     <Card aria-labelledby="questions-title" className="px-4 pb-2.5 pt-5">
@@ -17,10 +18,11 @@ export function QuestionsList({
           Questions
         </h2>
       </div>
-      {questions.map((question, index) => {
+      {questions.map((request, index) => {
+        const question = questionOf(request);
         return (
           <div
-            key={question.id}
+            key={request.id}
             className={
               index > 0
                 ? "grid grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-x-3.5 gap-y-1 border-t border-border-secondary px-2 py-3.5 md:grid-cols-[30px_minmax(0,1fr)_90px_130px]"

@@ -1,0 +1,21 @@
+query TerminalAnalysis {
+  terminalAnalysis {
+    subjects {
+      id
+      view
+      slug
+      name
+      kind
+      impact
+      impactSize
+      reports {
+        id
+        title
+        line
+        publishedAt
+        isNew
+        path
+      }
+    }
+  }
+}

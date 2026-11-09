@@ -1,3 +1,4 @@
+import { OrganisationTypeId } from "@sandworm/types/terminal";
 import { describe, expect, it } from "vitest";
 
 import { entityFixtures } from "./entity";
@@ -13,7 +14,7 @@ const linked = (clientKind: keyof typeof analysisMockData) =>
 
 describe("analysis rows link to entity pages", () => {
   it("links a project, a region and a sector for the exchange client", () => {
-    const links = linked("exchange");
+    const links = linked(OrganisationTypeId.EXCHANGE);
 
     expect(links).toContain("project/paycrest");
     expect(links.some(link => link.startsWith("region/"))).toBe(true);
@@ -38,6 +39,6 @@ describe("analysis rows link to entity pages", () => {
   });
 
   it("links nothing for a client with no entity pages", () => {
-    expect(linked("protocol")).toEqual([]);
+    expect(linked(OrganisationTypeId.PROTOCOL)).toEqual([]);
   });
 });

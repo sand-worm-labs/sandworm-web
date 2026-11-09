@@ -7,7 +7,7 @@ import { Card } from "@sandworm/ui/kit/card";
 import { NativeSelect } from "@sandworm/ui/kit/form/native-select";
 import { TextField } from "@sandworm/ui/kit/form/text-field";
 import { TONE_TEXT_CLASSNAME } from "@sandworm/ui/kit/tone";
-import type { KpiDirection, KpiFormatKind } from "@sandworm/types/terminal";
+import { KpiDirection, KpiFormatKind } from "@sandworm/types/terminal";
 
 import { shortDay } from "@/lib/dates";
 import {
@@ -20,16 +20,16 @@ import { parseKpiNumber, slugifyKey } from "@/lib/team/kpi-form";
 import type { TeamKpi } from "@/types";
 
 const FORMAT_OPTIONS: readonly { id: KpiFormatKind; label: string }[] = [
-  { id: "number", label: "Number" },
-  { id: "currency", label: "Dollars" },
-  { id: "percent", label: "Percent" },
-  { id: "text", label: "Words" },
+  { id: KpiFormatKind.NUMBER, label: "Number" },
+  { id: KpiFormatKind.CURRENCY, label: "Dollars" },
+  { id: KpiFormatKind.PERCENT, label: "Percent" },
+  { id: KpiFormatKind.TEXT, label: "Words" },
 ];
 
 const DIRECTION_OPTIONS: readonly { id: KpiDirection; label: string }[] = [
-  { id: "up_good", label: "Up is good" },
-  { id: "down_good", label: "Down is good" },
-  { id: "neutral", label: "Neither" },
+  { id: KpiDirection.UP_GOOD, label: "Up is good" },
+  { id: KpiDirection.DOWN_GOOD, label: "Down is good" },
+  { id: KpiDirection.NEUTRAL, label: "Neither" },
 ];
 
 const headerCellClassName = "px-3 py-2.5 text-xs font-medium text-ink-400";
@@ -170,7 +170,7 @@ type KpiRowProps = {
 function KpiRow({ kpi, isBusy, onRecord, onToggle, onDelete }: KpiRowProps) {
   const [reading, setReading] = useState("");
   const [problem, setProblem] = useState<string | null>(null);
-  const isText = kpi.format.kind === "text";
+  const isText = kpi.format.kind === KpiFormatKind.TEXT;
   const { delta, comparison } = kpi.display;
 
   const record = async () => {
@@ -272,8 +272,10 @@ type AddKpiFormProps = {
 
 function AddKpiForm({ onAdd, isBusy }: AddKpiFormProps) {
   const [label, setLabel] = useState("");
-  const [kind, setKind] = useState<KpiFormatKind>("number");
-  const [direction, setDirection] = useState<KpiDirection>("up_good");
+  const [kind, setKind] = useState<KpiFormatKind>(KpiFormatKind.NUMBER);
+  const [direction, setDirection] = useState<KpiDirection>(
+    KpiDirection.UP_GOOD
+  );
   const key = slugifyKey(label);
 
   return (

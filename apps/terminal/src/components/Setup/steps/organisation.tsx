@@ -1,6 +1,7 @@
 import { OrganisationFields } from "@/components/Setup/OrganisationFields";
 import { useSetup } from "@/providers/SetupProvider";
 import { getOrganisationType } from "@/data/setup/organisation-types";
+import { SetupStepId } from "@/lib/setup/routes";
 
 import type { SetupStepDefinition } from "./types";
 
@@ -19,7 +20,7 @@ function OrganisationStep() {
 }
 
 export const organisationStep: SetupStepDefinition = {
-  id: "organisation",
+  id: SetupStepId.ORGANISATION,
   label: "Your organisation",
   title: ({ client }) => `What kind of organisation is ${client.name}?`,
   description: () =>

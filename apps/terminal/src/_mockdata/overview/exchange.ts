@@ -1,3 +1,5 @@
+import { BriefingKindId, OrganisationTypeId } from "@sandworm/types/terminal";
+
 import type { OverviewData } from "@/types";
 
 import { briefingEntry, gapEntry, kpi, signalEntry } from "./builders";
@@ -5,7 +7,7 @@ import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
 export const exchangeOverview: OverviewData = {
-  clientKind: "exchange",
+  clientKind: OrganisationTypeId.EXCHANGE,
   typeName: "Trading app",
   subtitle: "Acme Wallet and Acme Chain. Data to 2 Nov, 23:59 UTC.",
   loadingNote: "Reading 1.2M transactions from Acme Wallet and Acme Chain.",
@@ -66,7 +68,7 @@ export const exchangeOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Signal",
+        kind: BriefingKindId.SIGNAL,
         title: "Argentina's off-ramps charge 2× Nigeria's fees",
         summary:
           "11,200 of your wallets cash out to pesos. Worth about $43K a month.",
@@ -77,7 +79,7 @@ export const exchangeOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Today",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "Swap volume fell 9% this month",
         summary: "7 of your top 50 wallets traded less.",
         entity: "Acme Wallet",
@@ -87,7 +89,7 @@ export const exchangeOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Analysis",
+        kind: BriefingKindId.ANALYSIS,
         title: "Paycrest: who actually cashes out in Africa",
         summary: "New report. 2,140 of your users sent money through Paycrest.",
         entity: "Paycrest",
@@ -97,7 +99,7 @@ export const exchangeOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Signal",
+        kind: BriefingKindId.SIGNAL,
         title: "Let users send money home with Paycrest",
         summary: "$5.1M a month already leaves your app to do this.",
         entity: "Paycrest",
@@ -107,7 +109,7 @@ export const exchangeOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Last week",
-        kind: "Analysis",
+        kind: BriefingKindId.ANALYSIS,
         title: "Updated: Phantom is gaining your Solana users",
         summary: "Leavers going to Phantom rose from 11% to 17%.",
         entity: "Phantom",
@@ -117,7 +119,7 @@ export const exchangeOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Last week",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "Bridging to Solana tripled this quarter",
         summary: "$96M moved last month.",
         entity: "Solana",

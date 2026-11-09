@@ -1,53 +1,39 @@
-import type { Allowance, ResearchRequest } from "@/types";
+import {
+  RequestStatusId,
+  type RequestData,
+  type TerminalRequests,
+} from "@sandworm/types/terminal";
+import { format } from "date-fns";
 
-export function canApprove(request: ResearchRequest): boolean {
-  return request.status === "Scoping" && request.scopeApproval !== undefined;
+import { canApprove } from "./status";
+
+type Allowance = TerminalRequests["allowance"];
+
+// The screen's own view of an approval, until the API's answer comes back
+export function approveScope(request: RequestData): RequestData {
+  return canApprove(request)
+    ? {
+        ...request,
+        status: RequestStatusId.IN_PROGRESS,
+        approvedAt: new Date().toISOString(),
+      }
+    : request;
 }
 
-export function approveScope(request: ResearchRequest): ResearchRequest {
-  const { scopeApproval } = request;
-  const current = request.steps.findIndex(step => step.state === "next");
-  if (!canApprove(request) || !scopeApproval || current === -1) return request;
-
-  const last = request.steps.length - 1;
-
-  return {
-    ...request,
-    status: "In progress",
-    next: scopeApproval.due,
-    scopeApproval: undefined,
-    steps: request.steps.map((step, index) => {
-      if (index === current) {
-        return { ...step, state: "done", when: scopeApproval.scopedOn };
-      }
-      if (index === current + 1) {
-        return { ...step, state: "next", when: "Just now" };
-      }
-      if (index === last) return { ...step, when: scopeApproval.due };
-      return step;
-    }),
-  };
-}
-
-export function withApprovedResearch(
+export const withApprovedResearch = (
   allowance: Allowance,
   approvedCount: number
-): Allowance {
-  return {
-    ...allowance,
-    research: {
-      ...allowance.research,
-      used: allowance.research.used + approvedCount,
-    },
-  };
-}
+): Allowance => ({ ...allowance, used: allowance.used + approvedCount });
 
-export function isResearchUsedUp(allowance: Allowance): boolean {
-  return allowance.research.used >= allowance.research.total;
-}
+export const isResearchUsedUp = (allowance: Allowance) =>
+  allowance.used >= allowance.total;
 
-export function pickDefaultRequest(
-  requests: readonly ResearchRequest[]
-): ResearchRequest | undefined {
-  return requests.find(canApprove) ?? requests[0];
-}
+export const pickDefaultRequest = (requests: readonly RequestData[]) =>
+  requests.find(canApprove) ?? requests[0];
+
+export const resetsOn = (allowance: Allowance) =>
+  format(new Date(allowance.resetsAt), "d MMM yyyy");
+export const resetsShort = (allowance: Allowance) =>
+  format(new Date(allowance.resetsAt), "d MMM");
+export const resetsMonth = (allowance: Allowance) =>
+  format(new Date(allowance.resetsAt), "MMMM");

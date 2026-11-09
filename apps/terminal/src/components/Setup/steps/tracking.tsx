@@ -2,6 +2,7 @@ import { pluralise } from "@/lib/format";
 import { site } from "@/config/site";
 import { TrackingFields } from "@/components/Setup/TrackingFields";
 import { useSetup } from "@/providers/SetupProvider";
+import { SetupStepId } from "@/lib/setup/routes";
 
 import type { SetupStepDefinition } from "./types";
 
@@ -24,7 +25,7 @@ function TrackingStep() {
 }
 
 export const trackingStep: SetupStepDefinition = {
-  id: "tracking",
+  id: SetupStepId.TRACKING,
   label: "What to track",
   title: () => "What should we track?",
   description: () =>

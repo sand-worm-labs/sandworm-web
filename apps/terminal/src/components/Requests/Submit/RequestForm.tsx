@@ -10,6 +10,7 @@ import { labelClassName } from "@sandworm/ui/kit/form/styles";
 
 import { AppLink } from "@/components/AppLink";
 import { site } from "@/config/site";
+import { resetsShort } from "@/lib/requests/requests-state";
 import type { Allowance, RequestDraft } from "@/types";
 import { canSubmit } from "@/lib/requests/submit/draft";
 import { TIMINGS, USE_CASES } from "@/data/requests/submit-options";
@@ -53,9 +54,9 @@ export function RequestForm({
       </div>
       <div className="mx-6 mt-3">
         <AllowancePips
-          used={allowance.research.used}
-          total={allowance.research.total}
-          note={`Resets ${allowance.resetsShort}. This counts only once you approve the scope.`}
+          used={allowance.used}
+          total={allowance.total}
+          note={`Resets ${resetsShort(allowance)}. This counts only once you approve the scope.`}
         />
       </div>
       <div className="flex flex-col gap-[18px] px-6 py-[18px]">

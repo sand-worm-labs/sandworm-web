@@ -1,3 +1,5 @@
+import { AnalysisViewKind } from "@sandworm/types/terminal";
+
 import type { EntityPage } from "@/types";
 
 import {
@@ -13,7 +15,7 @@ import {
 
 export const cashOutPage: EntityPage = {
   slug: "cash-out-and-off-ramps",
-  kind: "sector",
+  kind: AnalysisViewKind.SECTOR,
   name: "Cash-out and off-ramps",
   tags: ["Sector"],
   summary:

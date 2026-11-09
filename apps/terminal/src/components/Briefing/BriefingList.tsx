@@ -5,17 +5,18 @@ import {
   ROW_HOVER_CLASSNAME,
   ROW_SELECTED_CLASSNAME,
 } from "@sandworm/ui/kit/interactive";
+import type { BriefingItemData } from "@sandworm/types/terminal";
 
+import { feedGroup, listTime } from "@/lib/dates";
 import { groupInOrder } from "@/lib/group-in-order";
 import { isUnread, type BriefingFilter } from "@/lib/briefing/inbox-state";
-import type { BriefingItem } from "@/types";
 
 import { BriefingKindTag } from "./BriefingKindTag";
 
 type FilterOption = { id: BriefingFilter; label: string; count: number };
 
 type BriefingListProps = {
-  items: readonly BriefingItem[];
+  items: readonly BriefingItemData[];
   readIds: readonly string[];
   selectedId: string | undefined;
   onSelect: (id: string) => void;
@@ -52,7 +53,7 @@ export function BriefingList({
         </span>
       </div>
       <div className="flex flex-col">
-        {groupInOrder(items, item => item.group).map(group => (
+        {groupInOrder(items, item => feedGroup(item.publishedAt)).map(group => (
           <div key={group.key} className="flex flex-col">
             <div className="flex items-center gap-1.5 px-3 pb-1 pt-2.5 text-xs font-medium text-ink-400">
               {group.key}
@@ -84,7 +85,7 @@ export function BriefingList({
                     <span className="flex flex-wrap items-center gap-1.5">
                       <BriefingKindTag kind={item.kind} />
                       <span className="text-xs text-ink-400">
-                        {item.entity}
+                        {item.subject}
                       </span>
                     </span>
                     <span
@@ -100,7 +101,7 @@ export function BriefingList({
                     </span>
                   </span>
                   <span className="whitespace-nowrap text-xs text-ink-400">
-                    {item.time}
+                    {listTime(item.publishedAt)}
                     {unread && <span className="sr-only">, unread</span>}
                   </span>
                 </button>

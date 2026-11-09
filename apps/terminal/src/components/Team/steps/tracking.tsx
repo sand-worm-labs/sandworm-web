@@ -9,6 +9,7 @@ import { useTeamClient } from "@/providers/TeamProvider";
 import { describeInvite } from "@/lib/team/draft";
 import { INVITE_TIMINGS } from "@/data/team/invite-timings";
 import { getPlan } from "@/data/team/plans";
+import { TeamStepId } from "@/lib/team/routes";
 
 import type { TeamStepDefinition } from "./types";
 
@@ -121,7 +122,7 @@ function countListedAddresses(addresses: string): number {
 }
 
 export const trackingStep: TeamStepDefinition = {
-  id: "tracking",
+  id: TeamStepId.TRACKING,
   label: "What to track and invite",
   title: "What should we track?",
   description:

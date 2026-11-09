@@ -1,3 +1,5 @@
+import { ClientStatusId } from "@sandworm/types/terminal";
+
 import { shortDay, upcomingWhen } from "@/lib/dates";
 import type { TeamClientDetail, TeamClientSource } from "@/types";
 
@@ -42,17 +44,17 @@ export function attentionFor(
 ): Attention[] {
   const items: Attention[] = [];
 
-  if (client.status === "setting_up") {
+  if (client.status === ClientStatusId.SETTING_UP) {
     items.push({ id: "setup", text: "Setup is not finished." });
   }
-  if (client.status === "invite_sent") {
+  if (client.status === ClientStatusId.INVITE_SENT) {
     items.push({
       id: "invite",
       text: `Waiting for ${client.adminEmail ?? "the admin"} to sign in.`,
     });
   }
 
-  if (client.status === "live" && client.members > 0) {
+  if (client.status === ClientStatusId.LIVE && client.members > 0) {
     if (!client.lastReadAt) {
       items.push({ id: "unread", text: "Nobody has opened the briefing yet." });
     } else if (daysSince(client.lastReadAt, now) >= UNREAD_AFTER_DAYS) {

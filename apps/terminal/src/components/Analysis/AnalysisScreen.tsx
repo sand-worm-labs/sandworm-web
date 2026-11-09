@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PiPlus } from "react-icons/pi";
+import { BarLoader } from "@sandworm/ui/kit/bar-loader";
 import { buttonClassName } from "@sandworm/ui/kit/button";
 import { Card } from "@sandworm/ui/kit/card";
 import { NativeSelect } from "@sandworm/ui/kit/form/native-select";
@@ -10,7 +11,9 @@ import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
 
 import { AppLink } from "@/components/AppLink";
 import { SectionHeader } from "@/components/Sections/SectionHeader";
-import type { AnalysisCatalog, AnalysisSort, SectionCounts } from "@/types";
+import { useAnalysis } from "@/hooks/useAnalysis";
+import type { AnalysisCatalog, SectionCounts } from "@/types";
+import { AnalysisSort } from "@/lib/analysis/sorts";
 import {
   describeCatalog,
   filterRows,
@@ -23,25 +26,42 @@ import { AnalysisTable } from "./AnalysisTable";
 import { HighlightCards } from "./HighlightCards";
 
 const SORT_OPTIONS: readonly { id: AnalysisSort; label: string }[] = [
-  { id: "recent", label: "Most recent" },
-  { id: "relevant", label: "Most relevant to you" },
-  { id: "alphabetical", label: "A to Z" },
+  { id: AnalysisSort.RECENT, label: "Most recent" },
+  { id: AnalysisSort.RELEVANT, label: "Most relevant to you" },
+  { id: AnalysisSort.ALPHABETICAL, label: "A to Z" },
 ];
 
 type AnalysisScreenProps = {
-  catalog: AnalysisCatalog;
   counts: SectionCounts;
   viewer: { clientName: string };
 };
 
-export function AnalysisScreen({
+export function AnalysisScreen(props: AnalysisScreenProps) {
+  const { data: catalog, error } = useAnalysis();
+  if (error) {
+    return (
+      <p className="text-sm text-ink-400">
+        Could not load the analysis. Please try again.
+      </p>
+    );
+  }
+  return catalog ? (
+    <AnalysisCatalogView catalog={catalog} {...props} />
+  ) : (
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <BarLoader />
+    </div>
+  );
+}
+
+function AnalysisCatalogView({
   catalog,
   counts,
   viewer,
-}: AnalysisScreenProps) {
+}: AnalysisScreenProps & { catalog: AnalysisCatalog }) {
   const [viewId, setViewId] = useState(catalog.views[0]?.id ?? "projects");
   const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<AnalysisSort>("recent");
+  const [sort, setSort] = useState<AnalysisSort>(AnalysisSort.RECENT);
 
   const view = resolveView(catalog.views, viewId);
   const isSearching = query.trim() !== "";
@@ -92,6 +112,7 @@ export function AnalysisScreen({
               value={sort}
               options={SORT_OPTIONS}
               onChange={setSort}
+              size="sm"
             />
           </div>
         </div>

@@ -11,12 +11,16 @@
     "prettier": "pnpm exec prettier --write .",
     "lint": "pnpm eslint && pnpm prettier",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
+    "@apollo/client": "^3.14.0",
     "@sandworm/types": "workspace:*",
     "@sandworm/ui": "workspace:*",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "graphql": "^16.11.0",
     "lucide-react": "^0.476.0",
     "next": "catalog:react",
     "next-themes": "catalog:react",
@@ -29,6 +33,10 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^6.1.0",
+    "@graphql-codegen/typescript": "^5.0.5",
+    "@graphql-codegen/typescript-operations": "^5.0.5",
+    "@graphql-codegen/typescript-react-apollo": "^4.3.3",
     "@sandworm/eslint-config": "workspace:^",
     "@sandworm/typescript-config": "workspace:*",
     "@types/node": "^20.19.9",

@@ -1,3 +1,5 @@
+import { BriefingKindId, OrganisationTypeId } from "@sandworm/types/terminal";
+
 import type { OverviewData } from "@/types";
 
 import { briefingEntry, gapEntry, kpi, signalEntry } from "./builders";
@@ -5,7 +7,7 @@ import { buildSetupProgress } from "./setup-progress";
 import { standardLayout } from "./standard-layout";
 
 export const vcOverview: OverviewData = {
-  clientKind: "vc",
+  clientKind: OrganisationTypeId.VC,
   typeName: "Investor",
   subtitle: "28 portfolio projects tracked onchain. Data to 2 Nov, 23:59 UTC.",
   loadingNote:
@@ -65,7 +67,7 @@ export const vcOverview: OverviewData = {
     briefing: [
       briefingEntry({
         group: "Today",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "Orbit Labs team wallet moved $4.2M",
         summary: "Sent to an exchange deposit address at 03:14.",
         entity: "Orbit Labs",
@@ -75,7 +77,7 @@ export const vcOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Today",
-        kind: "Signal",
+        kind: BriefingKindId.SIGNAL,
         title: "Stablecoin payments in Africa tripled",
         summary: "You hold no project in this sector.",
         entity: "Payments",
@@ -85,7 +87,7 @@ export const vcOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Analysis",
+        kind: BriefingKindId.ANALYSIS,
         title: "Lumen DEX: users against rewards",
         summary: "New report. 68% of new users leave when rewards end.",
         entity: "Lumen DEX",
@@ -95,7 +97,7 @@ export const vcOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Yesterday",
-        kind: "Signal",
+        kind: BriefingKindId.SIGNAL,
         title: "Nimbus Pay is growing 40% a week",
         summary: "Not in your portfolio. 12,000 users and no token yet.",
         entity: "Nimbus Pay",
@@ -105,7 +107,7 @@ export const vcOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Last week",
-        kind: "Analysis",
+        kind: BriefingKindId.ANALYSIS,
         title: "Q3 portfolio review",
         summary: "17 projects grew, 11 shrank. Full table inside.",
         entity: "Portfolio",
@@ -115,7 +117,7 @@ export const vcOverview: OverviewData = {
       }),
       briefingEntry({
         group: "Last week",
-        kind: "Metric",
+        kind: BriefingKindId.METRIC,
         title: "Token unlock: Lumen, 8% of supply on 14 Nov",
         summary: "Your position is 2.1% of supply.",
         entity: "Lumen DEX",

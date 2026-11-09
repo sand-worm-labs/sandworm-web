@@ -1,9 +1,11 @@
-import type { OrganisationTypeId } from "@sandworm/types/terminal";
+import type {
+  BriefingKindId,
+  OrganisationTypeId,
+} from "@sandworm/types/terminal";
 
 import type { RouteId } from "@/config/routes";
 import type { OverviewStatus } from "@/lib/overview/status";
 
-import type { BriefingItem } from "./briefing";
 import type { Action } from "./common";
 import type { Kpi } from "./kpi";
 import type { Signal, SignalStatus } from "./signals";
@@ -35,7 +37,15 @@ export type KpisBlock = BlockBase & {
 };
 
 // A briefing item as the overview lists it: no detail, and a plain route.
-export type BriefingEntry = Omit<BriefingItem, "when" | "detail" | "action"> & {
+export type BriefingEntry = {
+  id: string;
+  group: string;
+  kind: BriefingKindId;
+  title: string;
+  summary: string;
+  entity: string;
+  time: string;
+  isUnread: boolean;
   route: RouteId;
 };
 

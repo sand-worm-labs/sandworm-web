@@ -5,6 +5,7 @@ import { OrganisationFields } from "@/components/Setup/OrganisationFields";
 import { useTeamClient } from "@/providers/TeamProvider";
 import { canLeaveDetails } from "@/lib/team/draft";
 import { getPlan, PLANS } from "@/data/team/plans";
+import { TeamStepId } from "@/lib/team/routes";
 
 import type { TeamStepDefinition } from "./types";
 
@@ -69,7 +70,7 @@ function DetailsStep() {
 }
 
 export const detailsStep: TeamStepDefinition = {
-  id: "details",
+  id: TeamStepId.DETAILS,
   label: "Client details",
   title: "New client",
   description:

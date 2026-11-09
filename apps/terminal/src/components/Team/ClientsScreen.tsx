@@ -1,5 +1,6 @@
 "use client";
 
+import { ClientStatusId } from "@sandworm/types/terminal";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PiPlus } from "react-icons/pi";
@@ -95,21 +96,21 @@ export function ClientsScreen({ clients, createdName }: ClientsScreenProps) {
         label="Team numbers"
         kpis={[
           {
-            id: "live",
+            id: ClientStatusId.LIVE,
             label: "Live clients",
-            value: String(countByStatus(clients, "live")),
+            value: String(countByStatus(clients, ClientStatusId.LIVE)),
             comparison: `of ${pluralise(clients.length, "client")}`,
           },
           {
             id: "invited",
             label: "Invite sent",
-            value: String(countByStatus(clients, "invite_sent")),
+            value: String(countByStatus(clients, ClientStatusId.INVITE_SENT)),
             comparison: "waiting for their admin to sign in",
           },
           {
             id: "setting-up",
             label: "Setting up",
-            value: String(countByStatus(clients, "setting_up")),
+            value: String(countByStatus(clients, ClientStatusId.SETTING_UP)),
             comparison: "not invited yet",
           },
         ]}
@@ -198,7 +199,7 @@ export function ClientsScreen({ clients, createdName }: ClientsScreenProps) {
                       {formatShortDate(client.createdAt)}
                     </td>
                     <td className={`${cellClassName} text-right`}>
-                      {client.status === "setting_up" && (
+                      {client.status === ClientStatusId.SETTING_UP && (
                         <Button
                           variant="secondary"
                           size="sm"

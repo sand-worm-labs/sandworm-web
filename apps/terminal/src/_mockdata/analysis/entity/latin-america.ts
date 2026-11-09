@@ -1,3 +1,5 @@
+import { AnalysisViewKind } from "@sandworm/types/terminal";
+
 import type { EntityPage } from "@/types";
 
 import {
@@ -12,7 +14,7 @@ import {
 
 export const latinAmericaPage: EntityPage = {
   slug: "latin-america",
-  kind: "region",
+  kind: AnalysisViewKind.REGION,
   name: "Latin America",
   tags: ["Region"],
   summary: "Argentina, Brazil and Mexico. 7 reports, last updated today.",

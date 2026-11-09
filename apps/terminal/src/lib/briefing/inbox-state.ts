@@ -1,31 +1,34 @@
-import type { BriefingItem, BriefingKind } from "@/types";
+import type {
+  BriefingItemData,
+  BriefingKindId,
+} from "@sandworm/types/terminal";
 
-export type BriefingFilter = "all" | BriefingKind;
+export type BriefingFilter = "all" | BriefingKindId;
 
 export function filterItems(
-  items: readonly BriefingItem[],
+  items: readonly BriefingItemData[],
   filter: BriefingFilter
-): readonly BriefingItem[] {
+): readonly BriefingItemData[] {
   return filter === "all" ? items : items.filter(item => item.kind === filter);
 }
 
 export function isUnread(
-  item: BriefingItem,
+  item: BriefingItemData,
   readIds: readonly string[]
 ): boolean {
-  return item.isUnread && !readIds.includes(item.id);
+  return !item.isRead && !readIds.includes(item.id);
 }
 
 export function countUnread(
-  items: readonly BriefingItem[],
+  items: readonly BriefingItemData[],
   readIds: readonly string[]
 ): number {
   return items.filter(item => isUnread(item, readIds)).length;
 }
 
 export function resolveSelected(
-  visibleItems: readonly BriefingItem[],
+  visibleItems: readonly BriefingItemData[],
   selectedId: string | undefined
-): BriefingItem | undefined {
+): BriefingItemData | undefined {
   return visibleItems.find(item => item.id === selectedId) ?? visibleItems[0];
 }
