@@ -1,4 +1,4 @@
-import { EvidenceId, SignalStatusId } from '@sandworm/types/terminal';
+import { EvidenceId, SignalStatusId, type SignalDetail, type SignalDismissReasonId } from '@sandworm/types/terminal';
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from 'typeorm';
 import { AbstractEntity } from './abstract.entity';
 import { DocumentEntity } from './document.entity';
@@ -25,6 +25,18 @@ export class TerminalSignalEntity extends AbstractEntity {
   @Column({ type: 'varchar', length: 16, default: 'new' })
   // The client's own triage of it: we never call a signal an opportunity for them
   status!: SignalStatusId;
+
+  // The client's open feedback on it: how it applies to them, in their words
+  @Column({ type: 'text', default: '' })
+  feedback!: string;
+
+  // Why the client set it aside, when they did
+  @Column({ name: 'dismiss_reason', type: 'varchar', length: 16, nullable: true })
+  dismissReason!: SignalDismissReasonId | null;
+
+  // The facts, the entities and the next steps behind it
+  @Column({ type: 'jsonb', nullable: true })
+  detail!: SignalDetail | null;
 
   // What was seen, as a fact ("Argentina's off-ramps charge 2× Nigeria's fees")
   @Column({ type: 'varchar', length: 200 })

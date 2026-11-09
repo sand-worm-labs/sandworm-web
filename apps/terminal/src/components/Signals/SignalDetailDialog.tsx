@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import {
+  SignalDismissReasonId,
+  SignalStatusId,
+} from "@sandworm/types/terminal";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -9,19 +13,28 @@ import {
 } from "@sandworm/ui/components/dialog";
 import { Button, buttonClassName } from "@sandworm/ui/kit/button";
 import { TextAreaField } from "@sandworm/ui/kit/form/text-area-field";
+import { ToggleChip } from "@sandworm/ui/kit/form/toggle-chip";
 import { MODAL_CLASSNAME } from "@sandworm/ui/kit/modal";
 
 import { CellOutputs } from "@/components/Briefing/CellOutputs";
 import { ModalClose } from "@/components/ModalClose";
 import { ReportLink } from "@/components/ReportLink";
+import { DISMISS_REASON_LABEL, SIGNAL_STATUS_ID } from "@/lib/signals/statuses";
 import type { Signal, SignalStatus } from "@/types";
 
 import { EvidenceMeter } from "./EvidenceMeter";
+import { SignalAsk } from "./SignalAsk";
+import { SignalEntities } from "./SignalEntities";
+import { SignalSection } from "./SignalSection";
 import { SignalStatusPicker } from "./SignalStatusPicker";
+import { SignalWhy } from "./SignalWhy";
 
 type SignalDetailDialogProps = {
   signal: Signal;
-  onStatusChange: (status: SignalStatus) => void;
+  onStatusChange: (
+    status: SignalStatus,
+    reason?: SignalDismissReasonId
+  ) => void;
   onFeedbackSave: (feedback: string) => void;
   onClose: () => void;
 };
@@ -65,6 +78,12 @@ export function SignalDetailDialog({
           {signal.outputs && signal.outputs.length > 0 && (
             <CellOutputs outputs={signal.outputs} title={signal.title} />
           )}
+          {signal.detail && (
+            <>
+              <SignalWhy {...signal.detail} />
+              <SignalEntities {...signal.detail} />
+            </>
+          )}
           {signal.couldMean && (
             <div className="flex flex-col gap-1 rounded-[14px] bg-inputBg p-4 ring-1 ring-inset ring-border-secondary">
               <span className="text-xs font-medium text-ink-400">
@@ -73,9 +92,40 @@ export function SignalDetailDialog({
               <p className="text-sm leading-[1.55] text-ink-500">
                 {signal.couldMean}
               </p>
+              {signal.detail && signal.detail.nextSteps.length > 0 && (
+                <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 text-sm text-ink-500">
+                  {signal.detail.nextSteps.map(step => (
+                    <li key={step}>{step}</li>
+                  ))}
+                </ul>
+              )}
             </div>
           )}
-          <SignalStatusPicker value={signal.status} onChange={onStatusChange} />
+          <SignalAsk signal={signal} />
+          <SignalStatusPicker
+            value={signal.status}
+            onChange={status => onStatusChange(status)}
+          />
+          {SIGNAL_STATUS_ID[signal.status] === SignalStatusId.DISMISSED && (
+            <SignalSection title="Why is it not for you? (optional)">
+              <div className="flex flex-wrap gap-2">
+                {Object.values(SignalDismissReasonId).map(reason => (
+                  <ToggleChip
+                    key={reason}
+                    pressed={signal.dismissReason === reason}
+                    onToggle={() =>
+                      onStatusChange(
+                        signal.status,
+                        signal.dismissReason === reason ? undefined : reason
+                      )
+                    }
+                  >
+                    {DISMISS_REASON_LABEL[reason]}
+                  </ToggleChip>
+                ))}
+              </div>
+            </SignalSection>
+          )}
           <div className="flex flex-col gap-2">
             <TextAreaField
               id="signal-feedback"

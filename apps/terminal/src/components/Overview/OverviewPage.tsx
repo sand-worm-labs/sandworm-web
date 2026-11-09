@@ -1,5 +1,6 @@
 "use client";
 
+import type { SubjectIcon } from "@sandworm/types/terminal";
 import { BarLoader } from "@sandworm/ui/kit/bar-loader";
 
 import { useOverview } from "@/hooks/useOverview";
@@ -13,7 +14,11 @@ import { OverviewSettingUp } from "./OverviewSettingUp";
 
 type OverviewPageProps = {
   counts: SectionCounts;
-  viewer: { clientName: string; firstName: string };
+  viewer: {
+    clientName: string;
+    clientIcon: SubjectIcon | null;
+    firstName: string;
+  };
   welcome?: WelcomeData;
 };
 

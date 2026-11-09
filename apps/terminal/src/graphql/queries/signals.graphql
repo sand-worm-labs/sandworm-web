@@ -11,6 +11,8 @@ query TerminalSignals {
       sizeLabel
       evidence
       feedback
+      dismissReason
+      detail
       subject
       publishedAt
       reportPath

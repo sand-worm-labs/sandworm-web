@@ -1,5 +1,5 @@
-import { AnalysisViewKind } from '@sandworm/types/terminal';
-import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from 'typeorm';
+import { AnalysisViewKind, type SubjectIcon } from '@sandworm/types/terminal';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from 'typeorm';
 import { AbstractEntity } from './abstract.entity';
 import { DocumentEntity } from './document.entity';
 import { TerminalClientEntity } from './terminal-client.entity';
@@ -7,10 +7,9 @@ import { TerminalClientEntity } from './terminal-client.entity';
 // One row of a client's Analysis catalog: a project, region or sector Sandworm
 // has researched for them. A project points at a parent document; its reports
 // are that document's children (document.parent_id). Regions and sectors have
-// no document: a report of the client's shows under one when its tags hold
-// `region:<slug>` or `sector:<slug>`, so a report is never copied.
+// no document: a report of the client's shows under one when its tags hold the
+// subject's id, so a report is never copied.
 @Entity('terminal_analysis_subject')
-@Index('UQ_terminal_analysis_subject_slug', ['clientId', 'view', 'slug'], { unique: true })
 export class TerminalAnalysisSubjectEntity extends AbstractEntity {
   constructor(data?: Partial<TerminalAnalysisSubjectEntity>) {
     super();
@@ -27,10 +26,11 @@ export class TerminalAnalysisSubjectEntity extends AbstractEntity {
   view!: AnalysisViewKind;
 
   @Column({ type: 'varchar', length: 120 })
-  slug!: string;
-
-  @Column({ type: 'varchar', length: 120 })
   name!: string;
+
+  // A logo, a flag or a symbol; null shows the initial of the name
+  @Column({ type: 'jsonb', nullable: true })
+  icon!: SubjectIcon | null;
 
   // The short line under the name ("Payments · Africa")
   @Column({ type: 'varchar', length: 120, default: '' })

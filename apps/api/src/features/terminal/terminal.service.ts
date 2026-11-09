@@ -50,6 +50,7 @@ export class TerminalService {
             name: member.client.name,
             type: member.client.type as OrganisationTypeId,
             access: member.access as AccessLevelId,
+            icon: member.client.icon,
           }
         : null,
       firstBriefingDays: FIRST_BRIEFING_DAYS,

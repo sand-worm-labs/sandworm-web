@@ -1,12 +1,19 @@
+import type { SubjectIcon } from "@sandworm/types/terminal";
+
 import type { ClientKind, Session } from "@/types";
 
-type ClientSeed = { clientName: string; userName: string };
+type ClientSeed = {
+  clientName: string;
+  userName: string;
+  icon?: SubjectIcon;
+};
 
 function buildSession(seed: ClientSeed): Session {
   return {
     user: { name: seed.userName },
     client: {
       name: seed.clientName,
+      icon: seed.icon ?? null,
       firstBriefingDays: 2,
     },
   };
@@ -25,5 +32,6 @@ export const sessionMockData: Record<ClientKind, Session> = {
   paycrest: buildSession({
     clientName: "Paycrest",
     userName: "Paycrest team",
+    icon: { kind: "logo", slug: "paycrest" },
   }),
 };

@@ -10,6 +10,11 @@
 //
 // Keep this table in step with DARK in sandworm_theme/tokens.py.
 
+import type {
+  PlotlyFigure,
+  PlotlyLayout,
+} from "@sandworm/ui/lib/plotly-figure";
+
 const TILE_SURFACE = "#1a1a1a";
 const LIGHT_INK = "#f3f0f5";
 
@@ -72,15 +77,15 @@ function walk<T>(value: T, path: string[]): T {
 // The theme's tooltip is a dark box with white text. Recoloring both to their
 // dark counterparts would leave white text on a near-white box, so the tooltip
 // is set outright: a light box with dark text, in the figure and its template.
-function withDarkTooltip(layout: any): any {
-  const tooltip = (own: any = {}) => ({
+function withDarkTooltip(layout: PlotlyLayout): PlotlyLayout {
+  const tooltip = (own: PlotlyLayout["hoverlabel"] = {}) => ({
     ...own,
     bgcolor: LIGHT_INK,
     bordercolor: LIGHT_INK,
     font: { ...own.font, color: TILE_SURFACE },
   });
-  const next = { ...layout, hoverlabel: tooltip(layout?.hoverlabel) };
-  if (layout?.template?.layout) {
+  const next = { ...layout, hoverlabel: tooltip(layout.hoverlabel) };
+  if (layout.template?.layout) {
     next.template = {
       ...layout.template,
       layout: {
@@ -92,9 +97,13 @@ function withDarkTooltip(layout: any): any {
   return next;
 }
 
-export function toDarkFigure<T extends { data: any; layout: any }>(
-  figure: T
-): T {
+// The dark counterpart of one color the theme wrote, for a swatch drawn outside
+// the figure (a legend).
+export function darkColor(value: string): string {
+  return mapColor(value, []);
+}
+
+export function toDarkFigure<T extends PlotlyFigure>(figure: T): T {
   return {
     ...figure,
     data: walk(figure.data, []),

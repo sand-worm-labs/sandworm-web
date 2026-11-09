@@ -6,16 +6,26 @@ import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata("Submit a request");
 
-export default async function NewRequestRoute() {
-  const [counts, session] = await Promise.all([
+type NewRequestRouteProps = {
+  searchParams: Promise<{ question?: string; about?: string }>;
+};
+
+export default async function NewRequestRoute({
+  searchParams,
+}: NewRequestRouteProps) {
+  const [counts, session, { question = "", about }] = await Promise.all([
     getSectionCounts(),
     getSession(),
+    searchParams,
   ]);
 
   return (
     <>
       <RequestsScreen counts={counts} />
-      <SubmitRequestDialog clientName={session.client.name} />
+      <SubmitRequestDialog
+        clientName={session.client.name}
+        initial={{ question, about: about ? [about] : [] }}
+      />
     </>
   );
 }

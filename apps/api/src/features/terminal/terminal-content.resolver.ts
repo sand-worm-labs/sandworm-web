@@ -1,6 +1,6 @@
 import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from '@sandworm/graphql';
-import type { SignalStatusId } from '@sandworm/types/terminal';
+import type { SignalDismissReasonId, SignalStatusId } from '@sandworm/types/terminal';
 import {
   TerminalAnalysis,
   TerminalBriefing,
@@ -94,8 +94,9 @@ export class TerminalContentResolver {
     @CurrentUser('id') userId: string,
     @Args('signalId', { type: () => ID }) signalId: string,
     @Args('status') status: string,
+    @Args('reason', { type: () => String, nullable: true }) reason?: string,
   ) {
-    return this.content.setSignalStatus(userId, signalId, status as SignalStatusId);
+    return this.content.setSignalStatus(userId, signalId, status as SignalStatusId, reason as SignalDismissReasonId | undefined);
   }
 
   @Mutation(() => TerminalSignal, { name: 'setTerminalSignalFeedback' })

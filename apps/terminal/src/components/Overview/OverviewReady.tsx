@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { PiSlidersHorizontal } from "react-icons/pi";
+import type { SubjectIcon } from "@sandworm/types/terminal";
 import { Button } from "@sandworm/ui/kit/button";
 
 import { WelcomeDialog } from "@/components/Welcome/WelcomeDialog";
 import { dismissWelcome } from "@/lib/welcome/actions";
 import type { OverviewData, SectionCounts, WelcomeData } from "@/types";
 import { SectionHeader } from "@/components/Sections/SectionHeader";
+import { SubjectAvatar } from "@/components/Subject/SubjectAvatar";
 import { useBlockVisibility } from "@/hooks/useBlockVisibility";
 
 import { OverviewLayout } from "./OverviewLayout";
@@ -17,7 +19,11 @@ type OverviewReadyProps = {
   data: OverviewData;
   counts: SectionCounts;
   welcome?: WelcomeData;
-  viewer: { clientName: string; firstName: string };
+  viewer: {
+    clientName: string;
+    clientIcon: SubjectIcon | null;
+    firstName: string;
+  };
 };
 
 export function OverviewReady({
@@ -40,7 +46,14 @@ export function OverviewReady({
     <div className="flex flex-col gap-6">
       <SectionHeader
         current="overview"
-        title="Overview"
+        title={viewer.clientName}
+        leading={
+          <SubjectAvatar
+            name={viewer.clientName}
+            icon={viewer.clientIcon}
+            size="lg"
+          />
+        }
         subtitle={data.subtitle}
         counts={counts}
         actions={
@@ -55,9 +68,6 @@ export function OverviewReady({
         }
       />
       <OverviewLayout layout={data.layout} blocks={visibleBlocks} />
-      <p className="text-xs text-ink-400">
-        Sandworm analysis of onchain data. Estimates, not financial advice.
-      </p>
       {welcome && (
         <WelcomeDialog
           welcome={welcome}

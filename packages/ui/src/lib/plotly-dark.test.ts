@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { toDarkFigure } from "./plotlyDark";
+import { darkColor, toDarkFigure } from "@sandworm/ui/lib/plotly-dark";
 
-const figure = {
+// Fixtures are partial figures that the checks read by path, so they are untyped.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const figure: any = {
   data: [
     { type: "bar", marker: { color: "#EE149E" }, x: [1, 2], y: [3, 4] },
     { type: "scatter", line: { color: "#84185C" } },
@@ -50,5 +52,12 @@ describe("toDarkFigure", () => {
   it("does not change the stored figure", () => {
     expect(figure.layout.font.color).toBe("#17101C");
     expect(figure.data[1].line.color).toBe("#84185C");
+  });
+});
+
+describe("darkColor", () => {
+  it("swaps a theme color and leaves any other as it is", () => {
+    expect(darkColor("#84185C")).toBe("#c1428a");
+    expect(darkColor("#EE149E")).toBe("#EE149E");
   });
 });

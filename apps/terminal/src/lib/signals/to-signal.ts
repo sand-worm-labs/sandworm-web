@@ -24,6 +24,9 @@ export function toSignal(data: SignalData): Signal {
     sizeLabel: data.sizeLabel,
     evidence: EVIDENCE[data.evidence],
     feedback: data.feedback,
+    subject: data.subject,
+    detail: data.detail ?? undefined,
+    dismissReason: data.dismissReason ?? undefined,
     when: shortDay(data.publishedAt),
     reportUrl: data.reportPath ? webAppUrl(data.reportPath) : undefined,
   };

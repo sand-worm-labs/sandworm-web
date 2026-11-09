@@ -23,6 +23,7 @@ import {
   AnalysisViewKind,
   RequestKindId,
   RequestStatusId,
+  SignalDismissReasonId,
   SignalStatusId,
   documentPath,
   type AnalysisReport,
@@ -300,13 +301,21 @@ export class TerminalContentService {
     return { items: rows.map((row) => toSignal(row, paths)) };
   }
 
-  async setSignalStatus(userId: string, signalId: string, status: SignalStatusId): Promise<SignalData> {
+  // A reason goes with "dismissed" and is cleared when the signal comes back
+  async setSignalStatus(
+    userId: string,
+    signalId: string,
+    status: SignalStatusId,
+    reason?: SignalDismissReasonId,
+  ): Promise<SignalData> {
     if (!Object.values(SignalStatusId).includes(status)) throw new BadRequestException('Unknown status');
     if (status === SignalStatusId.NEW) throw new BadRequestException('A signal starts as new');
+    if (reason && !Object.values(SignalDismissReasonId).includes(reason)) throw new BadRequestException('Unknown reason');
     const member = await this.writerOf(userId);
     const row = await this.signals.findOneBy({ id: signalId, clientId: member.clientId });
     if (!row) throw new NotFoundException('Signal not found');
     row.status = status;
+    row.dismissReason = status === SignalStatusId.DISMISSED ? (reason ?? null) : null;
     await this.signals.save(row);
     return toSignal(row, await this.paths([row.documentId]));
   }
@@ -455,6 +464,8 @@ function toSignal(row: TerminalSignalEntity, paths: Map<string, string>): Signal
     sizeLabel: row.sizeLabel,
     evidence: row.evidence,
     feedback: row.feedback,
+    dismissReason: row.dismissReason,
+    detail: row.detail,
     subject: row.subject,
     publishedAt: (row.publishedAt ?? row.createdAt).toISOString(),
     reportPath: (row.documentId && paths.get(row.documentId)) || null,

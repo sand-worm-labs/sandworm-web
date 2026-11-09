@@ -85,20 +85,21 @@ export type Preview = {
   clientKind: ClientKind;
   status: OverviewStatus;
   briefing: ContentPreviewMode;
+  signals: ContentPreviewMode;
   allowance: AllowancePreviewMode;
 };
 
 export async function getPreview(): Promise<Preview> {
-  const [isForced, clientKind, status, briefing, allowance] = await Promise.all(
-    [
+  const [isForced, clientKind, status, briefing, signals, allowance] =
+    await Promise.all([
       cookies().then(
         store => store.has(PREVIEW_CLIENT_COOKIE) || env.devBypassAuth
       ),
       getPreviewClientKind(),
       getPreviewStatus(),
       getPreviewBriefing(),
+      getPreviewSignals(),
       getPreviewAllowance(),
-    ]
-  );
-  return { isForced, clientKind, status, briefing, allowance };
+    ]);
+  return { isForced, clientKind, status, briefing, signals, allowance };
 }

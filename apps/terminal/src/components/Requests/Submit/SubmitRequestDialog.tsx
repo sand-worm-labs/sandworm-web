@@ -24,16 +24,26 @@ import { RequestForm } from "./RequestForm";
 import { RequestSent } from "./RequestSent";
 import { RequestDialogHeader } from "./RequestDialogHeader";
 
-type SubmitRequestDialogProps = { clientName: string };
+type SubmitRequestDialogProps = {
+  clientName: string;
+  // What the form opens with, e.g. from a signal's "Want to know more?"
+  initial?: Partial<RequestDraft>;
+};
 
 type Phase = { _tag: "editing" } | { _tag: "sent"; submittedAt: string };
 
-export function SubmitRequestDialog({ clientName }: SubmitRequestDialogProps) {
+export function SubmitRequestDialog({
+  clientName,
+  initial,
+}: SubmitRequestDialogProps) {
   const { data } = useRequests();
   const { isForced } = usePreview();
   const [submit] = useSubmitTerminalRequestMutation();
   const router = useRouter();
-  const [draft, setDraft] = useState<RequestDraft>(emptyDraft);
+  const [draft, setDraft] = useState<RequestDraft>(() => ({
+    ...emptyDraft(),
+    ...initial,
+  }));
   const [phase, setPhase] = useState<Phase>({ _tag: "editing" });
   const [isSending, setIsSending] = useState(false);
 

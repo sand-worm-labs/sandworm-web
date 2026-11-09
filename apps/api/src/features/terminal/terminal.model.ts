@@ -10,6 +10,7 @@ import {
   PlanId,
   type ClientStatusId,
   type SetupDraft,
+  type SubjectIcon,
   type TeamClientDetail,
   type TeamClientDraft,
   type TeamClientSource,
@@ -151,6 +152,9 @@ export class TerminalSessionClient {
 
   @Field(() => String)
   access!: AccessLevelId;
+
+  @Field(() => GraphQLJSON, { nullable: true })
+  icon!: SubjectIcon | null;
 }
 
 @ObjectType('TerminalSession')

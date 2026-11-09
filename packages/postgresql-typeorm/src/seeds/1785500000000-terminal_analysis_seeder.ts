@@ -11,8 +11,7 @@ import {
 // The Analysis catalog for the first terminal client (the exchange story the
 // terminal's fixtures tell). Each project becomes a parent document in the
 // owner's workspace and its reports become child documents. Regions and sectors
-// are rows only: reports reach them through `region:<slug>` / `sector:<slug>`
-// tags. Run after the briefing seeder, which makes the client. Skips a client
+// are rows only: reports reach them through tags that hold their ids. Run after the briefing seeder, which makes the client. Skips a client
 // that already has a catalog.
 
 const HOUR = 60 * 60 * 1000;
@@ -122,11 +121,10 @@ const SECTORS: Omit<SubjectSeed, 'view'>[] = [
     { slug: 'bridges', name: 'Bridges', kind: 'Moving between chains', impact: '24,500 wallets', impactSize: 24500 },
 ];
 
-function tagsOf(report: ReportSeed): string[] {
-    return [
-        ...(report.regions ?? []).map(slug => `region:${slug}`),
-        ...(report.sectors ?? []).map(slug => `sector:${slug}`),
-    ];
+// Reports name their regions and sectors by the seed's own `slug` key; the tag
+// that is stored is the subject's id
+function tagsOf(report: ReportSeed, ids: Map<string, string>): string[] {
+    return [...(report.regions ?? []), ...(report.sectors ?? [])].map(slug => ids.get(slug)!);
 }
 
 export class TerminalAnalysisSeeder1785500000000 implements Seeder {
@@ -153,6 +151,12 @@ export class TerminalAnalysisSeeder1785500000000 implements Seeder {
         const doc = (init: Partial<DocumentEntity>) => new DocumentEntity({ workspaceId: workspace.id, authorId: client.ownerId, ...init });
 
         await dataSource.transaction(async manager => {
+            const grouped = await manager.save([
+                ...REGIONS.map(({ slug, ...region }) => new TerminalAnalysisSubjectEntity({ ...region, view: AnalysisViewKind.REGION, clientId: client.id, documentId: null })),
+                ...SECTORS.map(({ slug, ...sector }) => new TerminalAnalysisSubjectEntity({ ...sector, view: AnalysisViewKind.SECTOR, clientId: client.id, documentId: null })),
+            ]);
+            const ids = new Map([...REGIONS, ...SECTORS].map(({ slug }, index) => [slug, grouped[index]!.id]));
+
             const parents = await manager.save(PROJECTS.map((project, index) => doc({
                 title: project.name,
                 description: project.kind,
@@ -165,7 +169,7 @@ export class TerminalAnalysisSeeder1785500000000 implements Seeder {
                 return doc({
                     title: report.title,
                     description: report.line,
-                    tags: tagsOf(report),
+                    tags: tagsOf(report, ids),
                     orderIndex: index,
                     parentId: parents[p]!.id,
                     createdAt,
@@ -174,11 +178,7 @@ export class TerminalAnalysisSeeder1785500000000 implements Seeder {
             }));
             await manager.save(reports);
 
-            await manager.save([
-                ...PROJECTS.map(({ reports: _, ...project }, p) => new TerminalAnalysisSubjectEntity({ ...project, view: AnalysisViewKind.PROJECT, clientId: client.id, documentId: parents[p]!.id })),
-                ...REGIONS.map(region => new TerminalAnalysisSubjectEntity({ ...region, view: AnalysisViewKind.REGION, clientId: client.id, documentId: null })),
-                ...SECTORS.map(sector => new TerminalAnalysisSubjectEntity({ ...sector, view: AnalysisViewKind.SECTOR, clientId: client.id, documentId: null })),
-            ]);
+            await manager.save(PROJECTS.map(({ reports: _, slug, ...project }, p) => new TerminalAnalysisSubjectEntity({ ...project, view: AnalysisViewKind.PROJECT, clientId: client.id, documentId: parents[p]!.id })));
         });
 
         const reportCount = PROJECTS.reduce((sum, project) => sum + project.reports.length, 0);

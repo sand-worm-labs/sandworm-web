@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import type { SignalDismissReasonId } from "@sandworm/types/terminal";
+import { BarLoader } from "@sandworm/ui/kit/bar-loader";
 import { Card } from "@sandworm/ui/kit/card";
 import { SegmentedControl } from "@sandworm/ui/kit/segmented-control";
 
@@ -11,6 +13,7 @@ import {
   useSetTerminalSignalFeedbackMutation,
   useSetTerminalSignalStatusMutation,
 } from "@/generated/graphql";
+import { useSignals } from "@/hooks/useSignals";
 import { SIGNAL_STATUS_ID } from "@/lib/signals/statuses";
 import { usePreview } from "@/providers/PreviewProvider";
 import type { SectionCounts, SignalStatus, SignalsFeed } from "@/types";
@@ -33,12 +36,33 @@ const FILTERS: readonly { id: SignalFilter; label: string }[] = [
 ];
 
 type SignalsScreenProps = {
-  feed: SignalsFeed;
   counts: SectionCounts;
   viewer: { clientName: string };
 };
 
-export function SignalsScreen({ feed, counts, viewer }: SignalsScreenProps) {
+export function SignalsScreen(props: SignalsScreenProps) {
+  const { data: feed, error } = useSignals();
+  if (error) {
+    return (
+      <p className="text-sm text-ink-400">
+        Could not load the signals. Please try again.
+      </p>
+    );
+  }
+  return feed ? (
+    <SignalsList feed={feed} {...props} />
+  ) : (
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <BarLoader />
+    </div>
+  );
+}
+
+function SignalsList({
+  feed,
+  counts,
+  viewer,
+}: SignalsScreenProps & { feed: SignalsFeed }) {
   const [filter, setFilter] = useState<SignalFilter>("open");
   const { isForced } = usePreview();
   const router = useRouter();
@@ -47,24 +71,33 @@ export function SignalsScreen({ feed, counts, viewer }: SignalsScreenProps) {
     onCompleted: () => router.refresh(),
   });
   // The client's own status choices, on top of what the feed says
-  const [chosen, setChosen] = useState<Record<string, SignalStatus>>({});
+  const [chosen, setChosen] = useState<
+    Record<string, { status: SignalStatus; reason?: SignalDismissReasonId }>
+  >({});
   const [setFeedback] = useSetTerminalSignalFeedbackMutation();
   const [written, setWritten] = useState<Record<string, string>>({});
   const [selectedId, setSelectedId] = useState<string>();
 
   const items = feed.items.map(item => ({
     ...item,
-    status: chosen[item.id] ?? item.status,
+    status: chosen[item.id]?.status ?? item.status,
+    dismissReason: chosen[item.id]
+      ? chosen[item.id]?.reason
+      : item.dismissReason,
     feedback: written[item.id] ?? item.feedback,
   }));
   const selected = items.find(item => item.id === selectedId);
 
-  const changeStatus = (id: string, status: SignalStatus) => {
-    setChosen(current => ({ ...current, [id]: status }));
+  const changeStatus = (
+    id: string,
+    status: SignalStatus,
+    reason?: SignalDismissReasonId
+  ) => {
+    setChosen(current => ({ ...current, [id]: { status, reason } }));
     // A preview visitor has no session, so their choice stays in the page only
     if (!isForced) {
       setStatus({
-        variables: { signalId: id, status: SIGNAL_STATUS_ID[status] },
+        variables: { signalId: id, status: SIGNAL_STATUS_ID[status], reason },
         onError: () => setChosen(({ [id]: _unsaved, ...saved }) => saved),
       });
     }
@@ -146,7 +179,9 @@ export function SignalsScreen({ feed, counts, viewer }: SignalsScreenProps) {
       {selected && (
         <SignalDetailDialog
           signal={selected}
-          onStatusChange={status => changeStatus(selected.id, status)}
+          onStatusChange={(status, reason) =>
+            changeStatus(selected.id, status, reason)
+          }
           onFeedbackSave={feedback => saveFeedback(selected.id, feedback)}
           onClose={() => setSelectedId(undefined)}
         />

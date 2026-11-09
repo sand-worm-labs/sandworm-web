@@ -13,6 +13,7 @@ const PreviewContext = createContext<Preview>({
   clientKind: OrganisationTypeId.EXCHANGE,
   status: OverviewStatus.READY,
   briefing: ContentPreviewMode.ITEMS,
+  signals: ContentPreviewMode.ITEMS,
   allowance: AllowancePreviewMode.AVAILABLE,
 });
 

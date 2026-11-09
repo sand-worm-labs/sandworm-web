@@ -8,7 +8,7 @@ import type { Session } from "@/types";
 
 const TERMINAL_SESSION = `
   query TerminalSession {
-    terminalSession { user { name } client { name type access } firstBriefingDays }
+    terminalSession { user { name } client { name type access icon } firstBriefingDays }
   }
 `;
 
@@ -23,6 +23,7 @@ export async function getSession(): Promise<Session> {
         user: live.user,
         client: {
           name: live.client.name,
+          icon: live.client.icon,
           firstBriefingDays: live.firstBriefingDays,
         },
       };

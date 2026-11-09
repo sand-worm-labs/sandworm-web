@@ -18,7 +18,11 @@ export default async function OverviewRoute() {
     <OverviewPage
       counts={counts}
       welcome={welcome}
-      viewer={{ clientName: session.client.name, firstName }}
+      viewer={{
+        clientName: session.client.name,
+        clientIcon: session.client.icon,
+        firstName,
+      }}
     />
   );
 }

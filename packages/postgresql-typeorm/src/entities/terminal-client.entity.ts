@@ -1,3 +1,4 @@
+import type { SubjectIcon } from '@sandworm/types/terminal';
 import { Column, Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn, type Relation } from 'typeorm';
 import { AbstractEntity } from './abstract.entity';
 import { UserEntity } from './user.entity';
@@ -28,6 +29,10 @@ export class TerminalClientEntity extends AbstractEntity {
 
   @Column({ type: 'varchar', length: 255, default: '' })
   website!: string;
+
+  // Its logo, shown beside its name: a company logo by slug in the Showcase's logo store
+  @Column({ type: 'jsonb', nullable: true })
+  icon!: SubjectIcon | null;
 
   // A PlanId (@sandworm/types/terminal)
   @Column({ type: 'varchar', length: 16, default: 'starter' })

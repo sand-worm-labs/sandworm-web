@@ -14,6 +14,8 @@ import {
   type RequestScope,
   type RequestStatusId,
   type SignalData,
+  type SignalDetail,
+  type SignalDismissReasonId,
   type SignalStatusId,
   type SubjectIcon,
   type TerminalAnalysis as TerminalAnalysisShape,
@@ -95,6 +97,8 @@ export class TerminalSignal implements SignalData {
   @Field() sizeLabel!: string;
   @Field(() => String) evidence!: EvidenceId;
   @Field() feedback!: string;
+  @Field(() => String, { nullable: true }) dismissReason!: SignalDismissReasonId | null;
+  @Field(() => GraphQLJSON, { nullable: true }) detail!: SignalDetail | null;
   @Field() subject!: string;
   @Field() publishedAt!: string;
   @Field(() => String, { nullable: true }) reportPath!: string | null;

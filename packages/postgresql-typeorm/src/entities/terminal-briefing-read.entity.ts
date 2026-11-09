@@ -2,7 +2,9 @@ import { BaseEntity, Column, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn
 import { TerminalBriefingItemEntity } from './terminal-briefing-item.entity';
 import { TerminalMemberEntity } from './terminal-member.entity';
 
-// A member has read a briefing item. No row means unread.
+// A member's state for a briefing item. A row means read; archived_at means they
+// put it away. Archiving reads the item too, so an archived item is never unread.
+// No row means unread.
 @Entity('terminal_briefing_read')
 @Index('IDX_terminal_briefing_read_member', ['memberId'])
 export class TerminalBriefingReadEntity extends BaseEntity {
@@ -19,6 +21,9 @@ export class TerminalBriefingReadEntity extends BaseEntity {
 
   @Column({ name: 'read_at', type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   readAt!: Date;
+
+  @Column({ name: 'archived_at', type: 'timestamptz', nullable: true })
+  archivedAt!: Date | null;
 
   @ManyToOne(() => TerminalBriefingItemEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'item_id', referencedColumnName: 'id', foreignKeyConstraintName: 'FK_terminal_briefing_read_item' })

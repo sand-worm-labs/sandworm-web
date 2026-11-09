@@ -1,4 +1,7 @@
-import type { SignalStatusId } from "@sandworm/types/terminal";
+import type {
+  SignalDismissReasonId,
+  SignalStatusId,
+} from "@sandworm/types/terminal";
 
 export const SIGNAL_STATUSES = [
   "New",
@@ -19,3 +22,10 @@ export const SIGNAL_STATUS_LABEL: Record<SignalStatusId, SignalStatus> = {
 export const SIGNAL_STATUS_ID = Object.fromEntries(
   Object.entries(SIGNAL_STATUS_LABEL).map(([id, label]) => [label, id])
 ) as Record<SignalStatus, SignalStatusId>;
+
+export const DISMISS_REASON_LABEL: Record<SignalDismissReasonId, string> = {
+  "not-relevant": "Not relevant to us",
+  "already-known": "We already knew",
+  "looks-wrong": "Looks wrong",
+  "bad-timing": "Bad timing",
+};

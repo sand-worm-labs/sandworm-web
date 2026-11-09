@@ -50,7 +50,7 @@ export const FIRST_BRIEFING_DAYS = 2;
 
 export type TerminalSession = {
   user: { name: string };
-  client: { name: string; type: OrganisationTypeId; access: AccessLevelId } | null;
+  client: { name: string; type: OrganisationTypeId; access: AccessLevelId; icon: SubjectIcon | null } | null;
   // How long after setup the first briefing is expected
   firstBriefingDays: number;
   // True until the member has seen the welcome after their first login
@@ -192,27 +192,40 @@ export type RequestScope = {
 // Analysis: what Sandworm has researched for a client, grouped by what it is
 // about. A project subject is a parent document and its reports are that
 // document's children. Regions and sectors hold no documents of their own: a
-// report shows under one when its tags carry `region:<slug>` or `sector:<slug>`.
+// report shows under one when its tags carry that subject's id. Ids belong to
+// one client, so a tag never means anything for another.
 export enum AnalysisViewKind {
   PROJECT = 'project',
   REGION = 'region',
   SECTOR = 'sector',
 }
 
+// A report is new for this long after it is published: "New for you" on Analysis
+export const NEW_REPORT_DAYS = 7;
+
 export type AnalysisReport = {
   id: string; // the report's document id
   title: string;
   line: string;
   publishedAt: string; // ISO date
-  isNew: boolean; // published since the member last opened the terminal
+  isNew: boolean; // published in the last NEW_REPORT_DAYS days
   path: string; // where the report opens in the web app, from its root
 };
+
+// What stands for a project, region or sector beside its name. A new kind of icon
+// is a new member here, not a migration. A logo is the company's, shared by every
+// client that has it, and is kept as /api/showcase/logos/<slug>; a flag is an ISO
+// country code; a symbol is a key into the terminal's own icons.
+export type SubjectIcon =
+  | { kind: 'logo'; slug: string }
+  | { kind: 'flag'; code: string }
+  | { kind: 'symbol'; key: string };
 
 export type AnalysisSubject = {
   id: string;
   view: AnalysisViewKind;
-  slug: string;
   name: string;
+  icon: SubjectIcon | null; // null: the initial of its name
   kind: string; // the short line under the name, e.g. "Payments · Africa"
   impact: string; // e.g. "2,140 of your users"
   impactSize: number; // what the impact column sorts by
@@ -220,10 +233,6 @@ export type AnalysisSubject = {
 };
 
 export type TerminalAnalysis = { subjects: AnalysisSubject[] };
-
-export function analysisTag(view: Exclude<AnalysisViewKind, 'project'>, slug: string): string {
-  return `${view}:${slug}`;
-}
 
 // The web app address of a document: its public page once it has a slug
 // (published or unlisted), else its page inside the workspace. With a block,
@@ -253,6 +262,7 @@ export type BriefingItemData = {
   detail: Record<string, unknown>;
   publishedAt: string; // ISO date
   isRead: boolean;
+  isArchived: boolean; // put away by this member; an archived item is also read
   sourcePath: string | null; // the cell it came from, in its notebook
 };
 
@@ -279,6 +289,23 @@ export enum EvidenceId {
   EARLY = 'early',
 }
 
+// Why a client set a signal aside, so Sandworm stops surfacing what does not fit
+export enum SignalDismissReasonId {
+  NOT_RELEVANT = 'not-relevant',
+  ALREADY_KNOWN = 'already-known',
+  LOOKS_WRONG = 'looks-wrong',
+  BAD_TIMING = 'bad-timing',
+}
+
+// What stands behind a signal, written when it is published
+export type SignalDetail = {
+  facts: { label: string; value: string; source: string }[];
+  // What would make the evidence stronger
+  gap: string;
+  entities: { name: string; role: string; stat: string; icon: SubjectIcon | null }[];
+  nextSteps: string[];
+};
+
 export type SignalData = {
   id: string;
   status: SignalStatusId;
@@ -289,6 +316,9 @@ export type SignalData = {
   size: string;
   sizeLabel: string;
   evidence: EvidenceId;
+  feedback: string; // the client's own words on how it applies to them
+  dismissReason: SignalDismissReasonId | null;
+  detail: SignalDetail | null;
   subject: string;
   publishedAt: string; // ISO date
   reportPath: string | null;

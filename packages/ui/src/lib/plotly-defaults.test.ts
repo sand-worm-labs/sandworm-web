@@ -1,9 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { tileTopMargin, withSandwormDefaults as apply } from "./plotlyDefaults";
+import type { PlotlyFigure } from "@sandworm/ui/lib/plotly-figure";
+import {
+  tileTopMargin,
+  withSandwormDefaults as apply,
+} from "@sandworm/ui/lib/plotly-defaults";
 
 // Fixtures are partial figures, so the checks read them untyped.
-const withSandwormDefaults = (figure: unknown): any => apply(figure as any);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const withSandwormDefaults = (figure: unknown): any =>
+  apply(figure as PlotlyFigure);
 
 const pxArea = {
   data: [
@@ -41,9 +47,75 @@ describe("withSandwormDefaults", () => {
     expect(layout.legend.y).toBe(1.02);
   });
 
-  it("replaces Plotly Express tooltips with the value and series", () => {
-    const { data } = withSandwormDefaults(pxArea);
-    expect(data[0].hovertemplate).toBe("%{x}<br><b>%{y}</b>  ZC<extra></extra>");
+  it("replaces Plotly Express tooltips with a muted label over a large value", () => {
+    const { data, layout } = withSandwormDefaults(pxArea);
+    expect(data[0].hovertemplate).toContain("%{x} · ZC");
+    expect(data[0].hovertemplate).toContain("%{y}");
+    expect(data[0].hovertemplate).not.toContain("day=");
+    expect(layout.hovermode).toBeUndefined();
+  });
+
+  it("shows one tooltip for the hovered x when there are several series", () => {
+    const fig = {
+      data: [
+        {
+          type: "bar",
+          name: "A",
+          x: [1],
+          y: [2],
+          hovertemplate: "=%{y}<extra></extra>",
+        },
+        {
+          type: "bar",
+          name: "B",
+          x: [1],
+          y: [3],
+          hovertemplate: "=%{y}<extra></extra>",
+        },
+      ],
+      layout: {},
+    };
+    const { data, layout } = withSandwormDefaults(fig);
+    expect(layout.hovermode).toBe("x unified");
+    expect(data[0].hovertemplate).toBe(
+      "<b>%{y}</b><extra>%{fullData.name}</extra>"
+    );
+  });
+
+  it("stacks bars that Plotly Express put in separate offset groups", () => {
+    const bars = (barmode: string) => ({
+      data: ["A", "B"].map(name => ({
+        type: "bar",
+        name,
+        x: [1],
+        y: [2],
+        offsetgroup: name,
+      })),
+      layout: { barmode },
+    });
+    expect(
+      withSandwormDefaults(bars("relative")).data[0].offsetgroup
+    ).toBeUndefined();
+    expect(
+      withSandwormDefaults(bars("stack")).data[1].offsetgroup
+    ).toBeUndefined();
+    expect(withSandwormDefaults(bars("group")).data[0].offsetgroup).toBe("A");
+  });
+
+  it("keeps the hover mode a notebook chose, and horizontal bars as they are", () => {
+    const chosen = {
+      data: [
+        { type: "bar", name: "A", x: [1], y: [2] },
+        { type: "bar", name: "B", x: [1], y: [3] },
+      ],
+      layout: { hovermode: "closest" },
+    };
+    expect(withSandwormDefaults(chosen).layout.hovermode).toBe("closest");
+    const horizontal = {
+      data: chosen.data.map(t => ({ ...t, orientation: "h" })),
+      layout: {},
+    };
+    expect(withSandwormDefaults(horizontal).layout.hovermode).toBeUndefined();
   });
 
   it("keeps a tooltip the notebook wrote itself", () => {
@@ -74,7 +146,9 @@ describe("withSandwormDefaults", () => {
 
   it("does not override what the notebook set, and is idempotent", () => {
     const fig = {
-      data: [{ type: "treemap", tiling: { pad: 3 }, marker: { cornerradius: 2 } }],
+      data: [
+        { type: "treemap", tiling: { pad: 3 }, marker: { cornerradius: 2 } },
+      ],
       layout: { barcornerradius: 0, hoverlabel: { bgcolor: "#123456" } },
     };
     const once = withSandwormDefaults(fig);
@@ -97,7 +171,9 @@ describe("tileTopMargin", () => {
 
   it("leaves room for the legend Plotly draws for two named series", () => {
     const layout = { title: { text: "Biggest counterparty" } };
-    expect(tileTopMargin(layout, bars(["In", "Out"]))).toBeGreaterThanOrEqual(104);
+    expect(tileTopMargin(layout, bars(["In", "Out"]))).toBeGreaterThanOrEqual(
+      104
+    );
     expect(tileTopMargin({}, bars(["In", "Out"]))).toBeGreaterThanOrEqual(56);
   });
 
@@ -109,14 +185,30 @@ describe("tileTopMargin", () => {
 
 describe("heatmap colour scale", () => {
   it("gives a heatmap with no scale of its own the theme's pink-to-plum scale", () => {
-    const { data } = withSandwormDefaults({ data: [{ type: "heatmap", z: [[1, 2]] }], layout: {} });
+    const { data } = withSandwormDefaults({
+      data: [{ type: "heatmap", z: [[1, 2]] }],
+      layout: {},
+    });
     expect(data[0].colorscale[0]).toEqual([0, "#FDE7F4"]);
     expect(data[0].colorscale[2]).toEqual([1, "#4B2E83"]);
   });
 
   it("keeps a scale the notebook chose, and leaves coloraxis figures alone", () => {
-    const own = [[0, "#000000"], [1, "#ffffff"]];
-    expect(withSandwormDefaults({ data: [{ type: "heatmap", colorscale: own }], layout: {} }).data[0].colorscale).toBe(own);
-    expect(withSandwormDefaults({ data: [{ type: "heatmap", coloraxis: "coloraxis" }], layout: {} }).data[0].colorscale).toBeUndefined();
+    const own = [
+      [0, "#000000"],
+      [1, "#ffffff"],
+    ];
+    expect(
+      withSandwormDefaults({
+        data: [{ type: "heatmap", colorscale: own }],
+        layout: {},
+      }).data[0].colorscale
+    ).toBe(own);
+    expect(
+      withSandwormDefaults({
+        data: [{ type: "heatmap", coloraxis: "coloraxis" }],
+        layout: {},
+      }).data[0].colorscale
+    ).toBeUndefined();
   });
 });

@@ -1,4 +1,8 @@
 import type { Output } from "@sandworm/types";
+import type {
+  SignalDetail,
+  SignalDismissReasonId,
+} from "@sandworm/types/terminal";
 
 import type { SignalStatus } from "@/lib/signals/statuses";
 
@@ -28,6 +32,12 @@ export type Signal = {
   when: string;
   // The report it came from, in the web app; fixtures have none
   reportUrl?: string;
+  // What it is about ("Argentina", "Paycrest")
+  subject?: string;
+  // The facts, entities and next steps behind it, when the API sends them
+  detail?: SignalDetail;
+  // Why the client set it aside
+  dismissReason?: SignalDismissReasonId;
   // The client's open feedback: how it applies to them, in their words
   feedback?: string;
   // A snapshot of the source cell's outputs, when the API sends one

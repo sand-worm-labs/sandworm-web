@@ -343,6 +343,8 @@ type TerminalSignal {
   sizeLabel: String!
   evidence: String!
   feedback: String!
+  dismissReason: String
+  detail: JSON
   subject: String!
   publishedAt: String!
   reportPath: String
@@ -433,6 +435,7 @@ type TerminalSessionClient {
   name: String!
   type: String!
   access: String!
+  icon: JSON
 }
 
 type TerminalSession {
@@ -1394,7 +1397,7 @@ type Mutation {
   Records that the user opened Briefing now: the start of their next "since your last visit".
   """
   markTerminalBriefingSeen: Boolean!
-  setTerminalSignalStatus(signalId: ID!, status: String!): TerminalSignal!
+  setTerminalSignalStatus(signalId: ID!, status: String!, reason: String): TerminalSignal!
   setTerminalSignalFeedback(signalId: ID!, feedback: String!): TerminalSignal!
   submitTerminalRequest(input: TerminalRequestInput!): TerminalRequest!
 
