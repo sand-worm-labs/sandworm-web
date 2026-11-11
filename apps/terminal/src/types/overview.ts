@@ -75,7 +75,6 @@ export type CellEntry = {
 
 export type CellsBlock = BlockBase & {
   _tag: "cells";
-  subtitle: string;
   items: readonly CellEntry[];
 };
 

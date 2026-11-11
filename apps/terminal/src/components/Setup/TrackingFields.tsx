@@ -2,6 +2,7 @@ import { CheckboxField } from "@sandworm/ui/kit/form/checkbox-field";
 import { ChipInput } from "@sandworm/ui/kit/form/chip-input";
 import { TextAreaField } from "@sandworm/ui/kit/form/text-area-field";
 
+import { RegionInput } from "@/components/Setup/RegionInput";
 import { site } from "@/config/site";
 import type { SetupTracking } from "@/types";
 
@@ -58,7 +59,7 @@ export function TrackingFields({
         values={tracking.competitors}
         onChange={competitors => onChange({ competitors })}
       />
-      <ChipInput
+      <RegionInput
         label={copy.regions}
         values={tracking.regions}
         onChange={regions => onChange({ regions })}

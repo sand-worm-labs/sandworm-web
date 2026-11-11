@@ -124,6 +124,7 @@ export class TerminalService {
   // Creates the client on the first save, with its owner as an admin member.
   async saveSetup(ownerId: string, setup: SetupDraft): Promise<SetupDraft> {
     await this.dataSource.transaction(async (manager) => {
+      const before = await manager.findOneBy(TerminalClientEntity, { ownerId });
       await manager.upsert(
         TerminalClientEntity,
         {
@@ -135,6 +136,7 @@ export class TerminalService {
           tracking: setup.tracking,
           goals: setup.goals.selected,
           invites: setup.team.invites,
+          ...(before && changesWhatIsTracked(before, setup) && { trackingChangedAt: new Date() }),
         },
         { conflictPaths: ['ownerId'] },
       );
@@ -155,6 +157,15 @@ export class TerminalService {
     });
     return setup;
   }
+}
+
+// Competitors, regions and goals steer the Overview; contracts are the team's to change.
+function changesWhatIsTracked(client: TerminalClientEntity, setup: SetupDraft): boolean {
+  const tracking = client.tracking as Partial<SetupDraft['tracking']>;
+  return (
+    JSON.stringify([tracking.competitors, tracking.regions, client.goals]) !==
+    JSON.stringify([setup.tracking.competitors, setup.tracking.regions, setup.goals.selected])
+  );
 }
 
 function toSetup(client: TerminalClientEntity): SetupDraft {

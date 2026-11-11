@@ -39,8 +39,7 @@ export function withLive(data: OverviewData, live: LiveOverview): OverviewData {
           {
             _tag: "cells",
             id: "cells",
-            title: "Cells you follow",
-            subtitle: "Charts from the notebooks behind your briefing",
+            title: "Charts",
             isOptional: true,
             items: live.cells,
           },

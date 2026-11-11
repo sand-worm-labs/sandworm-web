@@ -377,6 +377,10 @@ export class TerminalOverviewKpis {
   @Field(() => String)
   clientStatus!: ClientStatusId;
 
+  // The client changed what it tracks and its numbers are being recalculated
+  @Field(() => Boolean)
+  isUpdating!: boolean;
+
   @Field(() => [TerminalKpi])
   kpis!: TerminalKpi[];
 }

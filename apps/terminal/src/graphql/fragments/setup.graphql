@@ -1,0 +1,25 @@
+fragment TerminalSetupFields on TerminalSetup {
+  organisation {
+    type
+    name
+    website
+    description
+  }
+  tracking {
+    addresses
+    autoDiscover
+    competitors
+    regions
+    shareInternalData
+  }
+  goals {
+    selected
+  }
+  team {
+    invites {
+      id
+      email
+      access
+    }
+  }
+}

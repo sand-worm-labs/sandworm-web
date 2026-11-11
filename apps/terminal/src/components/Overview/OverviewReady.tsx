@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { PiSlidersHorizontal } from "react-icons/pi";
 import type { SubjectIcon } from "@sandworm/types/terminal";
-import { Button } from "@sandworm/ui/kit/button";
+import { Button, buttonClassName } from "@sandworm/ui/kit/button";
 
+import { ROUTES } from "@/config/routes";
 import { WelcomeDialog } from "@/components/Welcome/WelcomeDialog";
 import { dismissWelcome } from "@/lib/welcome/actions";
 import type { OverviewData, SectionCounts, WelcomeData } from "@/types";
@@ -57,14 +59,22 @@ export function OverviewReady({
         subtitle={data.subtitle}
         counts={counts}
         actions={
-          <Button
-            variant="secondary"
-            className="gap-2"
-            onClick={() => setIsCustomizing(true)}
-          >
-            <PiSlidersHorizontal size={16} className="text-ink-navy" />
-            Customize
-          </Button>
+          <div className="flex gap-2">
+            <Link
+              href={ROUTES.settings.path}
+              className={buttonClassName({ variant: "secondary" })}
+            >
+              What you track
+            </Link>
+            <Button
+              variant="secondary"
+              className="gap-2"
+              onClick={() => setIsCustomizing(true)}
+            >
+              <PiSlidersHorizontal size={16} className="text-ink-navy" />
+              Customize
+            </Button>
+          </div>
         }
       />
       <OverviewLayout layout={data.layout} blocks={visibleBlocks} />

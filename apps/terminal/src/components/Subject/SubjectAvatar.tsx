@@ -26,7 +26,7 @@ const TINT =
   "bg-primary-tint-75 text-primary-700 dark:bg-primary-910 dark:text-primary-200";
 
 // The flag set is one 330 KB module, so it is fetched when a flag is first shown
-const FlagIcon = lazy(() =>
+export const FlagIcon = lazy(() =>
   import("country-flag-icons/react/1x1").then(flags => ({
     default: ({ code }: { code: string }) => {
       const Flag = flags[code as keyof typeof flags];

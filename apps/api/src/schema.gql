@@ -526,6 +526,7 @@ type TerminalKpi {
 type TerminalOverviewKpis {
   clientType: String!
   clientStatus: String!
+  isUpdating: Boolean!
   kpis: [TerminalKpi!]!
 }
 

@@ -66,6 +66,11 @@ export class TerminalClientEntity extends AbstractEntity {
   @Column({ type: 'text', array: true, default: '{}' })
   goals!: string[];
 
+  // When the client last changed what it tracks. Set on that change, and cleared
+  // once the next reading is recorded; while set, its Overview shows as recalculating.
+  @Column({ name: 'tracking_changed_at', type: 'timestamptz', nullable: true })
+  trackingChangedAt!: Date | null;
+
   // TeamInvites, not sent until setup is finished
   @Column({ type: 'jsonb', default: '[]' })
   invites!: Record<string, unknown>[];

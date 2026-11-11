@@ -32,7 +32,7 @@ const DAY = 24 * 60 * 60 * 1000;
 const HISTORY_DAYS = 400;
 const KEY = /^[a-z0-9][a-z0-9-]{0,63}$/;
 
-export type OverviewKpis = { clientType: OrganisationTypeId; clientStatus: ClientStatusId; kpis: KpiDisplay[] };
+export type OverviewKpis = { clientType: OrganisationTypeId; clientStatus: ClientStatusId; isUpdating: boolean; kpis: KpiDisplay[] };
 
 export type KpiDefinitionData = {
   id: string;
@@ -90,6 +90,7 @@ export class TerminalKpiService {
     return {
       clientType: client.type as OrganisationTypeId,
       clientStatus: client.status as ClientStatusId,
+      isUpdating: !!client.trackingChangedAt,
       kpis: definitions.map(definition => this.display(definition, readings.get(definition.id) ?? [])),
     };
   }
@@ -167,6 +168,7 @@ export class TerminalKpiService {
       { kpiId, asOf, value, textValue, previous: input.previous ?? null, meta: {}, recordedBy: staffId },
       ['kpiId', 'asOf'],
     );
+    await this.clients.update({ id: kpi.clientId }, { trackingChangedAt: null });
     return this.toData(kpi, (await this.readingsOf([kpiId])).get(kpiId) ?? []);
   }
 

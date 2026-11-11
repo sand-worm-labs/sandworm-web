@@ -2,6 +2,7 @@ query TerminalOverviewKpis {
   terminalOverviewKpis {
     clientType
     clientStatus
+    isUpdating
     kpis {
       id
       label

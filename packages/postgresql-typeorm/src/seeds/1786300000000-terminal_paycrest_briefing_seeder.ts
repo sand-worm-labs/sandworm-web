@@ -29,6 +29,8 @@ type Seed = {
     notebook: string;
     blockId: string;
     ago: number;
+    // Keeps the cell's chart: the Overview shows one cell per item that has outputs
+    hasChart?: true;
     detail: TerminalBriefingDetail;
 };
 
@@ -44,6 +46,7 @@ const ITEMS: Seed[] = [
         notebook: MAIN,
         blockId: '436f73e3-1bbc-438c-9202-724306f23753',
         ago: 2 * HOUR,
+        hasChart: true,
         detail: {
             headline: { value: '~190', label: 'repeat users a month (3+ orders)', delta: { text: '5,800 users in all', tone: 'neutral' } },
             what: 'Paycrest has about 5,800 distinct users over its lifetime. In a typical month 120 to 200 of them place three or more orders (193 in September). One retail app grew from 43 monthly users in May to 2,009 in June, then fell back to 44 in August, a pattern typical of a time-limited campaign.',
@@ -72,6 +75,7 @@ const ITEMS: Seed[] = [
         notebook: PRICES,
         blockId: 'c74fc9ae-cf0a-44a3-87c2-dff35bc7abca',
         ago: 26 * HOUR,
+        hasChart: true,
         detail: {
             headline: { value: '+2.4%', label: 'more naira per USDC on P2P.me', delta: { text: 'In August: about 1% less', tone: 'negative' } },
             what: 'Over the last 30 days a Nigerian selling USDC on P2P.me got 3.4% more naira than Paycrest paid, and 2.4% more against its live quote. In August P2P.me paid about 1% less.',
@@ -150,14 +154,14 @@ export class TerminalPaycrestBriefingSeeder1786300000000 implements Seeder {
         };
 
         const now = Date.now();
-        await items.save(ITEMS.map(({ notebook, ago, ...seed }) => {
+        await items.save(ITEMS.map(({ notebook, ago, hasChart, ...seed }) => {
             const report = reports.find(doc => doc.title === notebook);
             if (!report) throw new Error(`[terminal-paycrest-briefing] no report titled "${notebook}", run the Paycrest seeder first`);
             return new TerminalBriefingItemEntity({
                 ...seed,
                 clientId: client.id,
                 memberId: null,
-                outputs: outputsOf(report.id, seed.blockId),
+                outputs: hasChart ? outputsOf(report.id, seed.blockId) : [],
                 documentId: report.id,
                 ranAt: new Date(now - ago - 5 * 60 * 1000),
                 publishedAt: new Date(now - ago),

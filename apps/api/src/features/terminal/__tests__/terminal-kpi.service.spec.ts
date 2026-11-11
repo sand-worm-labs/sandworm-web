@@ -52,6 +52,7 @@ function setup({ isStaff = true, member = true } = {}) {
     clients: {
       findOneBy: jest.fn(async () => ({ id: CLIENT, type: 'exchange', status: 'live' })),
       exist: jest.fn(async () => true),
+      update: jest.fn(async () => undefined),
     },
   };
   const staff = {
@@ -87,6 +88,7 @@ describe('TerminalKpiService.overview', () => {
     expect(overview).toEqual({
       clientType: 'exchange',
       clientStatus: 'live',
+      isUpdating: false,
       kpis: [
         {
           id: 'swap-volume',
@@ -97,6 +99,17 @@ describe('TerminalKpiService.overview', () => {
         },
       ],
     });
+  });
+
+  it('is updating from when the client changed what it tracks, until the next reading', async () => {
+    const { service, repos } = setup();
+    repos.clients.findOneBy.mockResolvedValueOnce({ id: CLIENT, type: 'exchange', status: 'live', trackingChangedAt: new Date() } as any);
+
+    expect((await service.overview(USER))?.isUpdating).toBe(true);
+
+    await service.recordValue(STAFF, 'kpi-1', { value: 1 });
+
+    expect(repos.clients.update).toHaveBeenCalledWith({ id: CLIENT }, { trackingChangedAt: null });
   });
 
   it('shows a dash for a key number with no readings yet, and has none for a client with no key numbers', async () => {

@@ -43,4 +43,10 @@ describe("overviewStatusOf", () => {
       OverviewStatus.CALCULATING
     );
   });
+
+  it("is calculating again while a live client's changed settings are applied", () => {
+    expect(overviewStatusOf(ClientStatusId.LIVE, kpis, true)).toBe(
+      OverviewStatus.CALCULATING
+    );
+  });
 });

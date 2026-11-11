@@ -7,12 +7,7 @@ export function TerminalBrand() {
   return (
     <HeaderBrand
       mark={<Image src="/logo.svg" alt="" width={26} height={26} />}
-      badges={
-        <>
-          <HeaderBadge>beta</HeaderBadge>
-          <HeaderBadge>terminal</HeaderBadge>
-        </>
-      }
+      badges={<HeaderBadge>terminal</HeaderBadge>}
     />
   );
 }

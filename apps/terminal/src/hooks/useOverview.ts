@@ -24,6 +24,7 @@ import { usePreviewOr } from "./usePreviewOr";
 type LiveKpis = {
   clientType: OrganisationTypeId;
   clientStatus: ClientStatusId;
+  isUpdating: boolean;
   kpis: readonly Kpi[];
 };
 
@@ -55,6 +56,8 @@ export function useOverview(clientName: string) {
       : kpis &&
         briefing &&
         signals && {
+          // kpis.isUpdating is not passed yet: a change to what the client tracks
+          // keeps showing its numbers until something recalculates them
           status: overviewStatusOf(kpis.clientStatus, kpis.kpis),
           data: withLive(
             overviewMockData[kpis.clientType] ?? overviewMockData.other,

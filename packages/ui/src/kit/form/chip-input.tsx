@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { PiX } from "react-icons/pi";
+import { PiPlus, PiX } from "react-icons/pi";
 
 type ChipInputProps = {
   label: string;
@@ -38,14 +38,14 @@ export function ChipInput({ label, values, onChange, hint }: ChipInputProps) {
         {values.map(value => (
           <span
             key={value}
-            className="inline-flex h-[30px] items-center gap-1 rounded-full border border-hover-border bg-block-surface pl-3 pr-1.5 font-medium text-ink-100"
+            className="inline-flex h-7 items-center gap-1 rounded-lg bg-primary-tint-75 pl-2.5 pr-1 text-[13px] font-medium leading-none text-ink-450"
           >
             {value}
             <button
               type="button"
               aria-label={`Remove ${value}`}
               onClick={() => onChange(values.filter(item => item !== value))}
-              className="flex size-5 items-center justify-center rounded-full text-ink-400 hover:bg-primary-tint-75 dark:hover:bg-primary-910 hover:text-primary-700 dark:hover:text-primary-200"
+              className="flex size-5 items-center justify-center rounded text-ink-300 transition-colors hover:bg-input hover:text-ink-500 dark:hover:bg-base-710"
             >
               <PiX size={12} aria-hidden="true" />
             </button>
@@ -65,15 +65,16 @@ export function ChipInput({ label, values, onChange, hint }: ChipInputProps) {
               }
               if (event.key === "Escape") close();
             }}
-            className="h-[30px] w-40 rounded-full border border-primary bg-block-surface px-3 text-[13px] text-ink-100 outline-none"
+            className="h-7 w-40 rounded-lg border border-primary bg-block-surface px-3 text-[13px] text-ink-100 outline-none"
           />
         ) : (
           <button
             type="button"
+            aria-label={`Add to ${label}`}
             onClick={() => setIsAdding(true)}
-            className="h-[30px] rounded-full border border-dashed border-hover-border px-3 text-[13px] font-medium text-primary-700 dark:text-primary-200 hover:bg-primary-tint-50 dark:hover:bg-dropdown-hover"
+            className="flex size-7 items-center justify-center rounded-full border border-primary-300 bg-primary-tint-75 text-primary-700 transition-colors hover:bg-primary-tint-50 dark:border-primary-700 dark:bg-primary-920 dark:text-primary-300"
           >
-            Add
+            <PiPlus size={13} aria-hidden="true" />
           </button>
         )}
       </div>
