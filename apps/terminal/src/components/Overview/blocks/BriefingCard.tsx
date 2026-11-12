@@ -13,6 +13,7 @@ export function BriefingCard({ block }: { block: BriefingBlock }) {
 
   return (
     <Card
+      bleed
       aria-labelledby={titleId}
       className="flex h-full flex-col gap-3.5 px-3 pb-3 pt-[22px]"
     >

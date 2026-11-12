@@ -429,3 +429,26 @@
   stroke-linejoin: round !important;
   stroke-width: 22px !important;
 }
+
+/* Feels like an app on a phone: no grey tap flash, no pull-to-refresh bounce or double-tap
+   zoom, and inputs at 16px because iOS zooms the page in on anything smaller. */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  overscroll-behavior-y: none;
+}
+
+@media (max-width: 799px) {
+  a,
+  button {
+    touch-action: manipulation;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}

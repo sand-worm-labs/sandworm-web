@@ -16,6 +16,10 @@ async function signOut() {
   } catch (error) {
     console.error("[signout] failed:", error);
   }
+  // The service worker keeps pages for offline: they belong to whoever just left.
+  await caches
+    .keys()
+    .then(keys => Promise.all(keys.map(key => caches.delete(key))));
   window.location.reload();
 }
 

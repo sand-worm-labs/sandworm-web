@@ -29,17 +29,19 @@ export function SignalRow({ item, onSelect }: SignalRowProps) {
           </span>
         )}
       </span>
-      <span className="inline-flex h-[22px] items-center justify-self-start whitespace-nowrap rounded-md bg-hover-bg px-2 text-xs text-ink-400">
-        {item.kind}
-      </span>
-      <span className="flex flex-col md:items-end">
-        <span className="text-[15px] font-medium text-ink-100">
-          {item.size}
+      <span className="flex basis-full flex-wrap items-center gap-x-3 gap-y-1.5 pl-[30px] md:contents">
+        <span className="inline-flex h-[22px] items-center justify-self-start whitespace-nowrap rounded-md bg-hover-bg px-2 text-xs text-ink-400">
+          {item.kind}
         </span>
-        <span className="text-xs text-ink-400">{item.sizeLabel}</span>
+        <span className="flex items-baseline gap-1.5 md:flex-col md:items-end md:gap-0">
+          <span className="text-[15px] font-medium text-ink-100">
+            {item.size}
+          </span>
+          <span className="text-xs text-ink-400">{item.sizeLabel}</span>
+        </span>
+        <EvidenceMeter evidence={item.evidence} />
+        <span className="text-xs text-ink-400 md:text-right">{item.when}</span>
       </span>
-      <EvidenceMeter evidence={item.evidence} />
-      <span className="text-xs text-ink-400 md:text-right">{item.when}</span>
     </button>
   );
 }

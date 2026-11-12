@@ -76,7 +76,10 @@ function TrackingForm({ setup }: { setup: TerminalSetupFieldsFragment }) {
 
   return (
     <div className="flex max-w-[720px] flex-col gap-5">
-      <Card className="flex flex-col gap-[18px] px-6 py-[22px]">
+      <Card
+        bleed
+        className="flex flex-col gap-[18px] px-4 py-5 md:px-6 md:py-[22px]"
+      >
         <ChipInput
           label="Competitors to compare against"
           values={competitors}
@@ -113,7 +116,7 @@ function TrackingForm({ setup }: { setup: TerminalSetupFieldsFragment }) {
             })}
           </div>
         </fieldset>
-        <div className="flex items-center justify-end gap-3">
+        <div className="flex items-center justify-end gap-3 max-sm:flex-col-reverse max-sm:items-stretch">
           {error && (
             <span className="text-xs text-red-700 dark:text-red-400">
               Could not save. Please try again.
@@ -156,7 +159,10 @@ function TrackingForm({ setup }: { setup: TerminalSetupFieldsFragment }) {
         </div>
       </Card>
 
-      <Card className="flex flex-wrap items-center justify-between gap-3 px-6 py-[18px]">
+      <Card
+        bleed
+        className="flex flex-wrap items-center justify-between gap-3 px-4 py-[18px] md:px-6"
+      >
         <div className="flex flex-col gap-0.5">
           <span className="font-medium text-ink-100">
             Contracts and wallets

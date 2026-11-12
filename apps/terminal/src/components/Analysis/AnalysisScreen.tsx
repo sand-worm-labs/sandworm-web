@@ -87,7 +87,7 @@ function AnalysisCatalogView({
       {!isSearching && catalog.highlights.length > 0 && (
         <HighlightCards highlights={catalog.highlights} />
       )}
-      <Card aria-label="All analysis" className="flex flex-col">
+      <Card bleed aria-label="All analysis" className="flex flex-col">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-secondary px-5 py-4">
           {catalog.views.length > 1 ? (
             <SegmentedControl
@@ -99,13 +99,13 @@ function AnalysisCatalogView({
           ) : (
             <span />
           )}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex w-full flex-wrap items-center gap-2 md:w-auto">
             <SearchField
               label="Search analysis"
               placeholder="Search reports, projects or regions"
               value={query}
               onChange={event => setQuery(event.target.value)}
-              className="w-[280px] max-w-full"
+              className="w-full md:w-[280px]"
             />
             <NativeSelect
               label="Sort analysis"

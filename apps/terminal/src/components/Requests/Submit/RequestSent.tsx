@@ -37,14 +37,14 @@ export function RequestSent({ draft, submittedAt }: RequestSentProps) {
           steps={submittedTimeline(submittedAt)}
         />
       </div>
-      <div className="mx-8 mt-1 flex flex-col gap-1 rounded-xl bg-inputBg px-4 py-3.5 ring-1 ring-inset ring-border-secondary">
+      <div className="mx-4 mt-1 md:mx-8 flex flex-col gap-1 rounded-xl bg-inputBg px-4 py-3.5 ring-1 ring-inset ring-border-secondary">
         <span className="text-xs font-medium text-ink-400">Your request</span>
         <span className="whitespace-pre-line break-words text-ink-100">
           {draft.question.trim()}
         </span>
         <span className="text-xs text-ink-400">{describeDraft(draft)}</span>
       </div>
-      <div className="mt-6 flex justify-end gap-2 border-t border-border-secondary px-6 py-3.5">
+      <div className="mt-6 flex justify-end gap-2 border-t border-border-secondary px-4 py-3.5 md:px-6">
         <AppLink
           route="overview"
           className={buttonClassName({ variant: "secondary" })}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import clsx from "clsx";
 import { PiChecks } from "react-icons/pi";
 import type { TerminalBriefing } from "@sandworm/types/terminal";
@@ -55,6 +56,12 @@ function BriefingInbox({
   const inbox = useBriefingInbox(feed, initialItemId);
   const { selected } = inbox;
   const hasItems = feed.items.length > 0;
+
+  // On a phone an item opens at its top, not where the list was scrolled to
+  useEffect(() => {
+    if (inbox.isDetailOpen && !window.matchMedia("(min-width: 1200px)").matches)
+      window.scrollTo(0, 0);
+  }, [inbox.isDetailOpen]);
 
   return (
     <div className="flex flex-col gap-6">

@@ -5,7 +5,7 @@ import type { SectionCounts } from "@/types";
 
 type Section = { route: RouteId; countKey?: keyof SectionCounts };
 
-const SECTIONS: readonly Section[] = [
+export const SECTIONS: readonly Section[] = [
   { route: "overview" },
   { route: "briefing", countKey: "briefing" },
   { route: "analysis", countKey: "analysis" },

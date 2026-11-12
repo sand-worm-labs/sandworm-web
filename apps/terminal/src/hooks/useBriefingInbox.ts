@@ -137,7 +137,7 @@ export function useBriefingInbox(feed: TerminalBriefing, initialId?: string) {
   const openDetail = useCallback(
     (id: string) => {
       const url = `?item=${id}`;
-      const isPhone = !window.matchMedia("(min-width: 1024px)").matches;
+      const isPhone = !window.matchMedia("(min-width: 1200px)").matches;
       if (isPhone && !isDetailOpen) {
         window.history.pushState(null, "", url);
         hasPushedItem.current = true;

@@ -52,10 +52,12 @@ export function BriefingDetailPanel({
 
   return (
     <Card
+      bleed
       aria-labelledby={titleId}
-      className="flex flex-col gap-5 px-5 pb-[22px] pt-3 sm:px-7 lg:pt-7"
+      className="flex flex-col gap-5 px-4 pb-[22px] sm:px-7 lg:pt-7"
     >
-      <div className="-mx-2 flex items-center justify-between gap-2 lg:mx-0 lg:justify-end">
+      {/* Stays under the header while a long item scrolls, so Back is always there */}
+      <div className="sticky top-14 z-20 -mx-4 flex items-center justify-between gap-2 border-b border-border-secondary bg-block-surface px-2 py-1 sm:-mx-7 sm:px-5 lg:static lg:mx-0 lg:justify-end lg:border-0 lg:px-0 lg:py-0">
         <div className="lg:hidden">
           <BriefingActionButton
             label="Briefing"
@@ -116,7 +118,7 @@ export function BriefingDetailPanel({
       <div className="border-t border-border-secondary pt-4">
         <ReportLink
           url={item.sourcePath ? webAppUrl(item.sourcePath) : undefined}
-          className={buttonClassName()}
+          className={`${buttonClassName()} max-lg:w-full`}
         >
           Open the notebook
         </ReportLink>

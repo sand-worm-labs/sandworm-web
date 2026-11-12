@@ -19,12 +19,12 @@ export function HighlightCards({
           {highlights.length} this week
         </span>
       </div>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4">
+      <div className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-[repeat(auto-fit,minmax(260px,1fr))] md:gap-4 md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden">
         {highlights.map(item => (
           <ReportLink
             key={item.id}
             url={item.url}
-            className="flex min-h-[168px] flex-col gap-2.5 rounded-[22px] border border-hover-border bg-block-surface p-5 block-shadow-soft transition-colors hover:bg-hover-bg dark:hover:bg-sidebar-hover"
+            className="flex min-h-[168px] w-[82%] shrink-0 snap-start flex-col md:w-auto gap-2.5 rounded-[22px] border border-hover-border bg-block-surface p-5 block-shadow-soft transition-colors hover:bg-hover-bg dark:hover:bg-sidebar-hover"
           >
             <span className="flex items-center justify-between gap-2">
               <HighlightTag tag={item.tag} />

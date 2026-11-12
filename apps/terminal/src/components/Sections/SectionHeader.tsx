@@ -29,7 +29,7 @@ export function SectionHeader({
         <div className="flex items-center gap-4">
           {leading}
           <div>
-            <h1 className="text-[26px] font-medium leading-tight text-ink-100">
+            <h1 className="text-[22px] font-medium md:text-[26px] leading-tight text-ink-100">
               {title}
             </h1>
             <p className="mt-1.5 text-sm text-ink-400">{subtitle}</p>
@@ -37,7 +37,9 @@ export function SectionHeader({
         </div>
         {actions}
       </div>
-      <SectionTabs current={current} counts={counts} />
+      <div className="hidden md:block">
+        <SectionTabs current={current} counts={counts} />
+      </div>
     </div>
   );
 }

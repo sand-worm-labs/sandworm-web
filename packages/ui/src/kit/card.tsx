@@ -12,12 +12,25 @@ export const cardRowDividerClassName =
 
 type CardProps = ComponentProps<"section"> & {
   tone?: keyof typeof toneClassNames;
+  // Edge to edge on a phone, as a list in an app is: it takes back the page's side padding
+  bleed?: boolean;
 };
 
-export function Card({ tone = "raised", className, ...props }: CardProps) {
+export function Card({
+  tone = "raised",
+  bleed,
+  className,
+  ...props
+}: CardProps) {
   return (
     <section
-      className={clsx("rounded-[22px]", toneClassNames[tone], className)}
+      className={clsx(
+        toneClassNames[tone],
+        bleed
+          ? "-mx-4 rounded-none border-x-0 md:mx-0 md:rounded-[22px] md:border-x"
+          : "rounded-[22px]",
+        className
+      )}
       {...props}
     />
   );

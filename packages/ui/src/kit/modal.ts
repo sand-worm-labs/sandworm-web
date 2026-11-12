@@ -1,2 +1,3 @@
+// A centred dialog; under 500px a sheet that slides up from the bottom, as on a phone.
 export const MODAL_CLASSNAME =
-  "top-14 max-h-[calc(100vh-7rem)] translate-y-0 gap-0 overflow-auto rounded-[22px] border border-hover-border bg-block-surface p-0 font-body text-[13px] leading-[1.45] text-ink-100 outline-none";
+  "max-sm:inset-x-0 max-sm:bottom-0 max-sm:left-0 max-sm:top-auto max-sm:max-h-[90dvh] max-sm:max-w-none max-sm:translate-x-0 max-sm:rounded-b-none max-sm:pb-[env(safe-area-inset-bottom)] max-sm:data-[state=closed]:slide-out-to-bottom max-sm:data-[state=open]:slide-in-from-bottom max-sm:data-[state=closed]:zoom-out-100 max-sm:data-[state=open]:zoom-in-100 top-14 max-h-[calc(100vh-7rem)] translate-y-0 gap-0 overflow-auto rounded-[22px] border border-hover-border bg-block-surface p-0 font-body text-[13px] leading-[1.45] text-ink-100 outline-none";

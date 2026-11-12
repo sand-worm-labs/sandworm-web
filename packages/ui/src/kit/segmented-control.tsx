@@ -23,7 +23,7 @@ export function SegmentedControl<Id extends string>({
     <div
       role="tablist"
       aria-label={label}
-      className="flex flex-wrap gap-0.5 self-start rounded-[10px] bg-hover-bg p-[3px]"
+      className="flex max-w-full gap-0.5 self-start overflow-x-auto rounded-[10px] bg-hover-bg p-[3px] [scrollbar-width:none] md:flex-wrap [&::-webkit-scrollbar]:hidden"
     >
       {options.map(option => {
         const isSelected = option.id === value;
@@ -35,7 +35,7 @@ export function SegmentedControl<Id extends string>({
             aria-selected={isSelected}
             onClick={() => onChange(option.id)}
             className={clsx(
-              "h-7 whitespace-nowrap rounded-lg px-2.5 text-xs font-medium transition-colors",
+              "h-8 shrink-0 whitespace-nowrap rounded-lg px-3 md:h-7 md:px-2.5 text-xs font-medium transition-colors",
               isSelected
                 ? "bg-block-surface text-ink-100 shadow-sm"
                 : "text-ink-400 hover:text-ink-100"

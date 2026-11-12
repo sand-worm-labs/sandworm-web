@@ -22,7 +22,7 @@ export function ResearchList({
   onSelect,
 }: ResearchListProps) {
   return (
-    <Card aria-labelledby="research-title" className="px-2 pb-2.5 pt-5">
+    <Card bleed aria-labelledby="research-title" className="px-2 pb-2.5 pt-5">
       <h2
         id="research-title"
         className="px-3 pb-2 text-base font-medium text-ink-100"

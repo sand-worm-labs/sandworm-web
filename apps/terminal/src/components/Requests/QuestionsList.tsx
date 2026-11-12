@@ -12,7 +12,7 @@ export function QuestionsList({
   questions: readonly RequestData[];
 }) {
   return (
-    <Card aria-labelledby="questions-title" className="px-4 pb-2.5 pt-5">
+    <Card bleed aria-labelledby="questions-title" className="px-4 pb-2.5 pt-5">
       <div className="flex items-baseline justify-between gap-3 px-2 pb-2">
         <h2 id="questions-title" className="text-base font-medium text-ink-100">
           Questions

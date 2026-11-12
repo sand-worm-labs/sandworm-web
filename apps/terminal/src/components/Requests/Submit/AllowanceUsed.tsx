@@ -90,7 +90,7 @@ export function AllowanceUsed({ allowance }: { allowance: Allowance }) {
           </AppLink>
         ))}
       </div>
-      <div className="mt-4 flex justify-end border-t border-border-secondary px-6 py-3.5">
+      <div className="mt-4 flex justify-end border-t border-border-secondary px-4 py-3.5 md:px-6">
         <AppLink
           route="requests"
           className={buttonClassName({ variant: "secondary" })}

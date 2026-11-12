@@ -45,21 +45,21 @@ export function RequestForm({
         if (canSubmit(draft) && !isSending) onSubmit();
       }}
     >
-      <div className="flex flex-col gap-1.5 px-6 pb-1 pt-[18px]">
+      <div className="flex flex-col gap-1.5 px-4 md:px-6 pb-1 pt-[18px]">
         <h2 className="text-xl font-medium text-ink-100">Submit a request</h2>
         <p className="text-sm text-ink-500">
           Tell {site.name} what you want to know. You&apos;ll get a scope to
           approve before work starts.
         </p>
       </div>
-      <div className="mx-6 mt-3">
+      <div className="mx-4 md:mx-6 mt-3">
         <AllowancePips
           used={allowance.used}
           total={allowance.total}
           note={`Resets ${resetsShort(allowance)}. This counts only once you approve the scope.`}
         />
       </div>
-      <div className="flex flex-col gap-[18px] px-6 py-[18px]">
+      <div className="flex flex-col gap-[18px] px-4 md:px-6 py-[18px]">
         <div className="flex flex-col gap-1.5">
           <TextAreaField
             id="request-question"
@@ -117,8 +117,8 @@ export function RequestForm({
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border-secondary px-6 py-3.5">
-        <div className="flex gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border-secondary px-4 md:px-6 py-3.5">
+        <div className="flex gap-2 max-sm:w-full max-sm:[&>*]:flex-1">
           <AppLink
             route="requests"
             className={buttonClassName({ variant: "secondary" })}

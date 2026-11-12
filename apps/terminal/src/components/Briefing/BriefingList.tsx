@@ -77,6 +77,7 @@ export function BriefingList({
 
   return (
     <Card
+      bleed
       aria-label="Briefing items"
       className="flex flex-col lg:max-h-[calc(100vh-3rem)]"
     >

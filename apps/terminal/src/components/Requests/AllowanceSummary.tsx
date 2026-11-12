@@ -30,6 +30,7 @@ function MeterCell({
 export function AllowanceSummary({ allowance }: { allowance: Allowance }) {
   return (
     <Card
+      bleed
       aria-label="This quarter's allowance"
       className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] divide-border-secondary overflow-hidden md:divide-x"
     >

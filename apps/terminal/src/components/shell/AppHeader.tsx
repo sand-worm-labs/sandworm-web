@@ -35,7 +35,9 @@ export function AppHeader({ account }: { account: HeaderAccount }) {
         <div className="hidden md:block">
           <HeaderSearch />
         </div>
-        <HelpMenu docsUrl={DOCS_URL} githubUrl={GITHUB_URL} />
+        <div className="hidden md:block">
+          <HelpMenu docsUrl={DOCS_URL} githubUrl={GITHUB_URL} />
+        </div>
         <ThemeToggle />
         <AccountMenu user={user} workspaceName={workspaceName} />
       </AppHeaderActions>

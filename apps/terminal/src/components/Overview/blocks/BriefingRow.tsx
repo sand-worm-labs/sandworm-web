@@ -12,7 +12,7 @@ export function BriefingRow({ entry }: { entry: BriefingEntry }) {
       query={{ item: entry.id }}
       className={clsx(
         ROW_HOVER_CLASSNAME,
-        "flex flex-col gap-2 px-3 py-3 md:grid md:grid-cols-[8px_104px_minmax(0,1fr)_auto] md:items-start md:gap-x-3"
+        "flex flex-col items-start gap-2 px-3 py-3 md:grid md:grid-cols-[8px_104px_minmax(0,1fr)_auto] md:items-start md:gap-x-3"
       )}
     >
       <span

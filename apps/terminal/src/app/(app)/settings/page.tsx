@@ -10,7 +10,7 @@ export default async function SettingsRoute() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-[26px] font-medium leading-tight text-ink-100">
+        <h1 className="text-[22px] font-medium md:text-[26px] leading-tight text-ink-100">
           What {session.client.name} tracks
         </h1>
         <p className="mt-1.5 text-sm text-ink-400">

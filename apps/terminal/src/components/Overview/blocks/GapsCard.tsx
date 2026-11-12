@@ -10,7 +10,7 @@ export function GapsCard({ block }: { block: GapsBlock }) {
   const titleId = `${block.id}-title`;
 
   return (
-    <Card aria-labelledby={titleId} className="px-3 pb-2.5 pt-[22px]">
+    <Card bleed aria-labelledby={titleId} className="px-3 pb-2.5 pt-[22px]">
       <div className="px-3 pb-2">
         <BlockHeader
           id={titleId}
