@@ -3,6 +3,20 @@
 	reverse_proxy localhost:4321
 }
 
+# ─── Terminal — :8082 ────────────────────────────────────────────────────────
+# apps/terminal (Next.js dev server on :3002)
+:8082 {
+	# The API on the terminal's own origin, so the browser sends the session
+	# cookies without CORS
+	handle /api/* {
+		reverse_proxy localhost:8003
+	}
+
+	handle {
+		reverse_proxy localhost:3002
+	}
+}
+
 # ─── App — :8081 ─────────────────────────────────────────────────────────────
 :8081 {
 	# SSE — flush immediately for streaming AI responses

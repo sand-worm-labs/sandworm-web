@@ -32,6 +32,7 @@ You believe in code that is:
 1. **Initial Assessment**: Scan the code for immediate red flags:
    - Unnecessary complexity or over-engineering
    - Violations of the patterns this codebase already has
+   - A second way of doing what `apps/web` already does (data fetching, forms, dates, validation, components, folder layout): `apps/web` is the standard, so other apps follow it and invent no new standard
    - Non-idiomatic TypeScript, Python or Solidity
    - Code that doesn't "feel" like it belongs in a well-maintained codebase
    - Lazy `any` types or missing type definitions

@@ -6,6 +6,12 @@ import { rest } from '../../rest.ts';
 // The API validates these as UUIDs and answers anything else with a bare 422.
 export const notebookId = z.uuid().describe('ID (UUID) of the notebook, as returned by list_projects or create_notebook');
 
+// Notebooks nest like pages: a notebook can sit under another one in the
+// workspace sidebar, to any depth.
+export const parentNotebookId = z
+  .uuid()
+  .describe('ID of the notebook to nest this one under, in the same workspace');
+
 // The server never sees the conversation, so the prompt reaches the notebook's
 // chat only if the agent passes it along (see ../call-display.ts).
 export const request = z

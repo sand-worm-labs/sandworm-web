@@ -66,6 +66,13 @@ const PYTHON_GUIDANCE = [
   `Data from public APIs: ${OPEN_DATA_USAGE}`,
 ].join(' ');
 
+const hiddenInPublished = z
+  .boolean()
+  .optional()
+  .describe(
+    'true: hide this cell from the published report (the notebook\'s published page), the same as the editor\'s hide button. The cell stays in the notebook, keeps running, and can still be a dashboard tile. false: show it in the report again. Leave out to keep it as it is. Use true for setup and helper cells (API clients, data prep, caches) whose output readers do not need; get_notebook marks hidden cells with "hidden in published report"',
+  );
+
 const cellId = z.uuid().describe('ID (UUID) of the cell, as returned by add_cell, get_notebook or run_notebook');
 
 export function registerCellTools(server: McpServer, ctx: ToolContext): void {
@@ -118,10 +125,11 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
           .optional()
           .describe("power_toolbox cells only: values for the tool's inputs, keyed by input key (see search_tools)"),
         position: z.number().int().min(0).optional().describe('Index to insert at; appends when omitted'),
+        hiddenInPublished,
         request: turnRequest,
       },
     },
-    handle(async ({ notebookId, workspaceId, type, title, content, dataSource, dataframeName, toolId, inputs, position }) => {
+    handle(async ({ notebookId, workspaceId, type, title, content, dataSource, dataframeName, toolId, inputs, position, hiddenInPublished }) => {
       const problem = type === 'python' ? printedTableProblem(content) : undefined;
       if (problem) throw new Error(problem);
       const ws = await resolveWorkspaceId(ctx, workspaceId);
@@ -139,7 +147,7 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
         source = BROWSER_DATA_SOURCE;
       }
       const { blocks } = await rest<{ blocks: Cell[] }>(ctx, 'POST', `${notebookApiPath(ws, notebookId)}/blocks`, {
-        blocks: [{ kind: type, title, source: content, dataSource: source, dataframeName, toolId, inputs }],
+        blocks: [{ kind: type, title, source: content, dataSource: source, dataframeName, toolId, inputs, hiddenInPublished }],
         position,
       });
       return { notebookId, cell: blocks[0], url: notebookUrl(ctx, ws, notebookId) };
@@ -151,6 +159,7 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
     {
       description: [
         'Change a cell in place: it keeps its id and position. Send only what should change; anything omitted stays as it is. `content` replaces the whole text of the cell, so send the complete new text, not a fragment. The type of a cell cannot be changed: delete it and add another.',
+        'To hide a cell from the published report (or show it again) send only `hiddenInPublished`; that works for every cell type and does not make the cell stale. Hiding is separate from the dashboard: a cell can be hidden whether or not it is a dashboard tile.',
         'What each type accepts: sql takes title, content, dataSource, dataframeName (renaming resets its result). python, javascript, markdown and rich_text take title, content. visualization and pivot_table take title, dataframeName. input, dropdown_input and date_input take title (the label) and content (the value; dropdown_input: the full list of options, one per line; date_input: YYYY/MM/DD). power_toolbox takes title and inputs (the full set of inputs, not a partial one).',
         'An edit does not run the cell: call run_notebook afterwards, and until then run results for the cell are marked stale. Fails while the cell is queued or running.',
         PYTHON_GUIDANCE,
@@ -172,10 +181,11 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
         inputs: objectOrJson(z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.array(z.string())])))
           .optional()
           .describe("power_toolbox cells only: values for all of the tool's inputs, keyed by input key (see search_tools)"),
+        hiddenInPublished,
         request: turnRequest,
       },
     },
-    handle(async ({ notebookId, workspaceId, cellId, title, content, dataSource, dataframeName, inputs }) => {
+    handle(async ({ notebookId, workspaceId, cellId, title, content, dataSource, dataframeName, inputs, hiddenInPublished }) => {
       // The cell's type is not known here; only python is likely to match.
       const problem = printedTableProblem(content);
       if (problem) throw new Error(problem);
@@ -189,6 +199,7 @@ export function registerCellTools(server: McpServer, ctx: ToolContext): void {
         dataSource,
         dataframeName,
         inputs,
+        hiddenInPublished,
       });
       return { notebookId, cell: block, url: notebookUrl(ctx, ws, notebookId) };
     }),

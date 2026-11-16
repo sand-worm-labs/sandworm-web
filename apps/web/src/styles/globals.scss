@@ -1793,12 +1793,19 @@ label {
   }
 }
 
-// Rounded Plotly tooltips. Plotly has no setting for this: the box is a path, so
-// a round-joined stroke in its own fill colour rounds the corners. The renderer
-// (python/plotlyDefaults.ts) sets the tooltip border to its fill so this holds.
+// Rounded, roomy Plotly tooltips. Plotly has no setting for this: the box is a path, so
+// a thick round-joined stroke in its own fill colour rounds the corners and adds padding. The
+// renderer (packages/ui/src/lib/plotly-defaults.ts) sets the tooltip border to its fill so this holds. Plotly
+// writes the stroke width inline, so it takes !important to win.
 .hoverlayer .hovertext path {
-  stroke-linejoin: round;
-  stroke-width: 8px;
+  stroke-linejoin: round !important;
+  stroke-width: 22px !important;
+}
+
+// The one tooltip a multi-series chart shows for the hovered x ("x unified") is a rectangle, not a path.
+.hoverlayer .legend .bg {
+  stroke-linejoin: round !important;
+  stroke-width: 22px !important;
 }
 
 /* A skeleton waits a beat before it shows, so a fast load never flashes one. It does that in CSS, not

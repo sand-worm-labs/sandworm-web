@@ -31,7 +31,8 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
-  "frame-ancestors 'self'",
+  // The terminal frames /embed pages (a briefing's cell outputs).
+  `frame-ancestors 'self' ${process.env.NEXT_PUBLIC_TERMINAL_URL ?? "http://localhost:8082"}`,
 ].join("; ");
 
 const securityHeaders = [

@@ -20,7 +20,7 @@ import { NotebookShowcase } from '@sandworm/types';
 import { timingSafeEqual } from 'crypto';
 import { In, IsNull, Not, Repository } from 'typeorm';
 import { z } from 'zod';
-import { WorkspaceMembershipService } from '../workspace/service/workspace-membership.service';
+import { StaffService } from '../staff/staff.service';
 import { cleanLinks, ProtocolLinksInput } from './showcase-links';
 import { ShowcaseLogoService } from './showcase-logo.service';
 
@@ -80,7 +80,7 @@ export class ShowcaseAdminService {
     private readonly chainRepository: Repository<ShowcaseChainEntity>,
     @InjectRepository(ShowcaseProtocolEntity)
     private readonly protocolRepository: Repository<ShowcaseProtocolEntity>,
-    private readonly workspaceMembershipService: WorkspaceMembershipService,
+    private readonly staff: StaffService,
     private readonly logoService: ShowcaseLogoService,
     config: ConfigService,
     private readonly eventEmitter: EventEmitter2,
@@ -96,23 +96,8 @@ export class ShowcaseAdminService {
 
   async assertStaff({ userId, password }: StudioCaller): Promise<void> {
     if (this.passwordMatches(password)) return;
-    if (!userId)
-      throw new ForbiddenException(
-        'The Showcase studio is for the Sandworm team',
-      );
-
-    for (const workspaceId of this.officialWorkspaceIds) {
-      try {
-        await this.workspaceMembershipService.assertCanEdit(
-          workspaceId,
-          userId,
-        );
-        return;
-      } catch {
-        // Not in this one: try the next.
-      }
-    }
-    throw new ForbiddenException(
+    await this.staff.assertStaff(
+      userId,
       'The Showcase studio is for the Sandworm team',
     );
   }

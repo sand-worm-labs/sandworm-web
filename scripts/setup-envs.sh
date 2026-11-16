@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 API_ENV="$ROOT_DIR/apps/api/.env"
 WEB_ENV="$ROOT_DIR/apps/web/.env"
+TERMINAL_ENV="$ROOT_DIR/apps/terminal/.env"
 POSTGRES_ENV="$ROOT_DIR/packages/postgresql-typeorm/.env"
 
 echo "▶ Running env setup..."
@@ -120,6 +121,17 @@ GITHUB_CLIENT_ID=Ov23lisbzsoM7RX7aRDV
 REDIRECT_URI=http://localhost:5000/workspace/
 EOL
   echo "✅ Created $WEB_ENV"
+fi
+
+# === TERMINAL .env ===
+if [ ! -f "$TERMINAL_ENV" ]; then
+  echo "Creating Terminal .env..."
+  cat > "$TERMINAL_ENV" <<EOL
+NODE_ENV=development
+NEXT_PUBLIC_WEB_APP_URL=http://localhost:8081
+NEXT_PUBLIC_TERMINAL_URL=http://localhost:8082
+EOL
+  echo "✅ Created $TERMINAL_ENV"
 fi
 
 # === POSTGRES .env ===

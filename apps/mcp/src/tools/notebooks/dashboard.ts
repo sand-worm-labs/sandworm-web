@@ -24,7 +24,7 @@ const tile = z.object({
   dashboardOnly: z
     .boolean()
     .optional()
-    .describe('true: hide this cell from the published report, so it appears on the dashboard only (it stays in the notebook, where its code lives, and keeps running). false: show it in the report again. Leave out to keep it as it is. Use true for cells made for the dashboard, such as the KPI row and banner'),
+    .describe('true: hide this cell from the published report, so it appears on the dashboard only (it stays in the notebook, where its code lives, and keeps running). false: show it in the report again. Leave out to keep it as it is. To hide a cell that is not on the dashboard, use update_cell with hiddenInPublished. Use true for cells made for the dashboard, such as the KPI row and banner'),
 });
 
 const row = z.object({

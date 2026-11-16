@@ -31,6 +31,8 @@ export default function CookieBanner() {
   const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
+    // A page framed by another app (an embed) asks nothing of its own.
+    if (window.self !== window.top) return undefined;
     if (getStoredConsent() !== null) return undefined;
 
     const t = setTimeout(() => setVisible(true), 600);

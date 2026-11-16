@@ -19,6 +19,11 @@ import debounce from "lodash.debounce";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { PythonBlock } from "@sandworm/editor";
+import { toDarkFigure } from "@sandworm/ui/lib/plotly-dark";
+import {
+  tileTopMargin,
+  withSandwormDefaults,
+} from "@sandworm/ui/lib/plotly-defaults";
 
 import { downloadFile } from "@/utils/file";
 import { LINK_GUARD_SCRIPT } from "@/lib/linkGuardScript";
@@ -36,10 +41,8 @@ import PythonError from "./PythonError";
 import { NotebookContentLabel } from "../../NotebookContentLabel";
 import { useIsForeignNotebook } from "../../../hooks/useEnvironmentStatus";
 
-import { toDarkFigure } from "./plotlyDark";
 import StreamChart from "./StreamChart";
 import { isStreamFigure } from "./streamChart";
-import { tileTopMargin, withSandwormDefaults } from "./plotlyDefaults";
 
 // @ts-expect-error @types/react-plotly.js incompatible with @types/react@19
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
@@ -861,7 +864,7 @@ function PythonPlotOutput(props: {
 }) {
   const settle = React.useContext(OutputSettleContext);
   // The stored figure carries the light theme's colors; swap in the dark ones
-  // when the reader is in dark mode (see plotlyDark.ts).
+  // when the reader is in dark mode (see @sandworm/ui/lib/plotly-dark).
   const output = useMemo(() => {
     // Defaults first (they may add white tile lines), then the dark swap.
     const themed = withSandwormDefaults(props.output);

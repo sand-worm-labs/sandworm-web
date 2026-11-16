@@ -1,0 +1,12 @@
+query TerminalRequests {
+  terminalRequests {
+    allowance {
+      used
+      total
+      resetsAt
+    }
+    requests {
+      ...TerminalRequestFields
+    }
+  }
+}

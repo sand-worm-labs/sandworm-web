@@ -7,6 +7,7 @@ import * as Y from 'yjs';
 import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import {
   ExecutionQueue,
+  docToMarkdown,
   addDashboardItemToYDashboard,
   getBlocks,
   getDashboard,
@@ -21,6 +22,7 @@ import {
   getTabsFromBlockGroup,
   getVisualizationV2Attributes,
   groupBlocks,
+  isBlockHiddenInPublished,
   type YBlock,
 } from '@sandworm/editor';
 import { addBlocks } from '../../collaboration/yjs/shared-doc/ai-blocks';
@@ -213,7 +215,7 @@ describe('NotebookBlocksService.updateBlock', () => {
     const summary = await service.updateBlock(ref, ids[0]!, { source: 'x = 2' });
 
     expect(docs.use).toHaveBeenCalledWith(ref, 'editor', expect.any(Function));
-    expect(summary).toEqual({ id: ids[0], kind: 'python', title: 'Load' });
+    expect(summary).toEqual({ id: ids[0], kind: 'python', title: 'Load', hiddenInPublished: false });
     expect(getPythonAttributes(block(0)).source.toString()).toBe('x = 2');
   });
 
@@ -228,6 +230,54 @@ describe('NotebookBlocksService.updateBlock', () => {
     const { service } = setup([{ kind: 'python' }]);
 
     await expect(service.updateBlock(ref, MISSING, { source: 'x' })).rejects.toThrow(NotFoundException);
+  });
+
+  it('hides a cell from the published report and shows it again, without touching the cell', async () => {
+    const { service, ids, ydoc, block } = setup([{ kind: 'python', title: 'Nansen client', source: 'x = 1' }]);
+
+    expect(await service.updateBlock(ref, ids[0]!, { hiddenInPublished: true })).toMatchObject({ id: ids[0], hiddenInPublished: true });
+    expect(isBlockHiddenInPublished(getLayout(ydoc), ids[0]!)).toBe(true);
+    expect(getPythonAttributes(block(0)).source.toString()).toBe('x = 1');
+
+    expect(await service.updateBlock(ref, ids[0]!, { hiddenInPublished: false })).toMatchObject({ hiddenInPublished: false });
+    expect(isBlockHiddenInPublished(getLayout(ydoc), ids[0]!)).toBe(false);
+  });
+
+  it('hides a cell of any kind, even one the API cannot edit, and while it runs', async () => {
+    const { service, ids, ydoc } = setup([{ kind: 'python', source: 'x = 1' }]);
+    ExecutionQueue.fromYjs(ydoc).enqueueBlocks([ids[0]!], null);
+
+    await service.updateBlock(ref, ids[0]!, { hiddenInPublished: true });
+
+    expect(isBlockHiddenInPublished(getLayout(ydoc), ids[0]!)).toBe(true);
+  });
+
+  it('changes the text and the report flag in one call', async () => {
+    const { service, ids, ydoc, block } = setup([{ kind: 'python', source: 'x = 1' }]);
+
+    await service.updateBlock(ref, ids[0]!, { source: 'x = 2', hiddenInPublished: true });
+
+    expect(getPythonAttributes(block(0)).source.toString()).toBe('x = 2');
+    expect(isBlockHiddenInPublished(getLayout(ydoc), ids[0]!)).toBe(true);
+  });
+
+  it('marks a hidden cell in the notebook markdown get_notebook returns, and only that cell', async () => {
+    const { service, ids, ydoc } = setup([
+      { kind: 'python', title: 'Prepare', source: 'a = 1' },
+      { kind: 'python', title: 'Chart', source: 'b = 2' },
+    ]);
+
+    await service.updateBlock(ref, ids[0]!, { hiddenInPublished: true });
+
+    const lines = docToMarkdown(ydoc).split('\n');
+    expect(lines.find(line => line.includes(ids[0]!))).toContain('hidden in published report');
+    expect(lines.find(line => line.includes(ids[1]!))).not.toContain('hidden in published report');
+  });
+
+  it('answers 404 when hiding a cell that is not in the notebook', async () => {
+    const { service } = setup([{ kind: 'python' }]);
+
+    await expect(service.updateBlock(ref, MISSING, { hiddenInPublished: true })).rejects.toThrow(NotFoundException);
   });
 
   it('refuses to change a cell that is queued or running', async () => {
@@ -252,6 +302,24 @@ describe('NotebookBlocksService.updateBlock', () => {
 
     await service.updateBlock(ref, ids[0]!, { inputs: { chain: 'ethereum' } });
     expect(getPowerToolboxAttributes(block(0)).inputs).toEqual({ chain: 'ethereum' });
+  });
+});
+
+describe('NotebookBlocksService.createBlocks', () => {
+  it('can add a cell already hidden from the published report', async () => {
+    const { service, ydoc } = setup([]);
+
+    const [visible, hidden] = await service.createBlocks(ref, {
+      blocks: [
+        { kind: 'python', source: 'x = 1' },
+        { kind: 'python', source: 'y = 2', hiddenInPublished: true },
+      ],
+    });
+
+    expect(visible).toMatchObject({ hiddenInPublished: false });
+    expect(hidden).toMatchObject({ hiddenInPublished: true });
+    expect(isBlockHiddenInPublished(getLayout(ydoc), hidden!.id)).toBe(true);
+    expect(isBlockHiddenInPublished(getLayout(ydoc), visible!.id)).toBe(false);
   });
 });
 

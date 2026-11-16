@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
-import { PiNotebook, PiSquaresFour } from "react-icons/pi";
+import { PiFilmSlate, PiNotebook, PiSquaresFour } from "react-icons/pi";
 
 import {
   segmentedTabClass,
@@ -14,7 +14,7 @@ import { Tooltip } from "./ToolTips";
 interface Props {
   workspaceId: string;
   documentId: string;
-  current: "notebook" | "dashboard";
+  current: "notebook" | "dashboard" | "motion";
   isEditing: boolean;
   isPublished: boolean;
   userRole: string;
@@ -65,6 +65,32 @@ function DashboardNotebookGroupButton(props: Props) {
         >
           <PiSquaresFour className="w-4 h-4 shrink-0" />
           <span className="whitespace-nowrap shrink-0">Dashboard</span>
+        </button>
+      </Tooltip>
+      <Tooltip
+        title="This page has not been saved"
+        message="Ask an editor to save this page to view the motion page."
+        className="flex"
+        tooltipClassname="w-56"
+        position="bottom"
+        active={isDashboardButtonDisabled}
+      >
+        <button
+          type="button"
+          id="motion-view-button"
+          className={clsx(
+            segmentedTabClass(props.current === "motion"),
+            props.current === "motion" && "-ml-px"
+          )}
+          disabled={isDashboardButtonDisabled}
+          onClick={() => {
+            router.push(
+              `/workspace/${props.workspaceId}/documents/${props.documentId}/motion`
+            );
+          }}
+        >
+          <PiFilmSlate className="w-4 h-4 shrink-0" />
+          <span className="whitespace-nowrap shrink-0">Motion</span>
         </button>
       </Tooltip>
     </div>

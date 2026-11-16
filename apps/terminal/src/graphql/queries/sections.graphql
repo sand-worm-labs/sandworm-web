@@ -1,0 +1,8 @@
+query TerminalCounts {
+  terminalCounts {
+    briefing
+    analysis
+    signals
+    requests
+  }
+}

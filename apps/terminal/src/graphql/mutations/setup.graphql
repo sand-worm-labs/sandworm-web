@@ -1,0 +1,5 @@
+mutation SaveTerminalSetup($input: TerminalSetupInput!) {
+  saveTerminalSetup(input: $input) {
+    ...TerminalSetupFields
+  }
+}

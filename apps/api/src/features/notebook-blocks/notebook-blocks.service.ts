@@ -4,10 +4,12 @@ import {
   getBlocks,
   getLayout,
   getPowerToolboxAttributes,
+  isBlockHiddenInPublished,
   getTabsFromBlockGroup,
   isPowerToolboxBlock,
   removeBlock,
   removeBlockGroup,
+  setBlockHiddenInPublished,
   writeDocTitle,
   type ParamDefinition,
   type YBlock,
@@ -33,12 +35,17 @@ export class NotebookBlocksService {
   async createBlocks(ref: NotebookRef, { blocks: inputs, position }: CreateBlocksDto): Promise<BlockSummary[]> {
     await this.assertToolsExist(inputs);
     if (inputs.some(block => block.kind === 'javascript')) await this.docs.assertRunsInBrowser(ref);
-    const specs = inputs.map(({ kind, ...input }) => getDefinition(kind).toSpec(input));
+    const specs = inputs.map(({ kind, hiddenInPublished: _hidden, ...input }) => getDefinition(kind).toSpec(input));
 
     return this.docs.use(ref, 'editor', ({ ydoc }) => {
       const ids = addBlocks(ydoc, specs, position);
+      ydoc.transact(() => {
+        inputs.forEach(({ hiddenInPublished }, index) => {
+          if (hiddenInPublished !== undefined) setBlockHiddenInPublished(getLayout(ydoc), ids[index]!, hiddenInPublished);
+        });
+      });
       const blocks = getBlocks(ydoc);
-      return ids.map(id => summarizeBlock(blocks.get(id)!, blocks));
+      return ids.map(id => this.summarize(ydoc, blocks.get(id)!));
     });
   }
 
@@ -50,10 +57,13 @@ export class NotebookBlocksService {
   // Changes a block in place. Its kind decides which fields it takes; the
   // block keeps its id, position and any result from an earlier run.
   async updateBlock(ref: NotebookRef, blockId: string, dto: UpdateBlockDto): Promise<BlockSummary> {
-    const { title, source, dataSource, dataframeName, inputs } = dto;
+    const { title, source, dataSource, dataframeName, inputs, hiddenInPublished } = dto;
     const patch: BlockPatch = { title, source, dataSource, dataframeName, inputs };
-    if (Object.values(patch).every(value => value === undefined)) {
-      throw new BadRequestException('Nothing to change: send at least one of title, source, dataSource, dataframeName or inputs');
+    const changesCell = Object.values(patch).some(value => value !== undefined);
+    if (!changesCell && hiddenInPublished === undefined) {
+      throw new BadRequestException(
+        'Nothing to change: send at least one of title, source, dataSource, dataframeName, inputs or hiddenInPublished',
+      );
     }
 
     return this.docs.use(ref, 'editor', async ({ ydoc }) => {
@@ -65,14 +75,23 @@ export class NotebookBlocksService {
       // Looked up again: the catalog lookup above gave others time to act.
       const blocks = getBlocks(ydoc);
       const block = this.find(ydoc, blockId);
+      // Hiding a cell from the report changes the layout, not the cell, so it
+      // works for every kind and while the cell runs.
+      if (!changesCell) {
+        ydoc.transact(() => setBlockHiddenInPublished(getLayout(ydoc), blockId, hiddenInPublished!));
+        return this.summarize(ydoc, block);
+      }
       const definition = getDefinitionFor(block);
       if (!definition) {
         throw new BadRequestException('This kind of cell can only be changed in the editor');
       }
       this.assertNotExecuting(ydoc, blockId);
 
-      ydoc.transact(() => definition.update(block, blocks, patch));
-      return summarizeBlock(block, blocks);
+      ydoc.transact(() => {
+        definition.update(block, blocks, patch);
+        if (hiddenInPublished !== undefined) setBlockHiddenInPublished(getLayout(ydoc), blockId, hiddenInPublished);
+      });
+      return this.summarize(ydoc, block);
     });
   }
 
@@ -100,6 +119,13 @@ export class NotebookBlocksService {
         throw new ConflictException('This cell is shown on the dashboard. Set removeFromDashboard to delete it from there too');
       }
     });
+  }
+
+  private summarize(ydoc: Y.Doc, block: YBlock): BlockSummary {
+    return {
+      ...summarizeBlock(block, getBlocks(ydoc)),
+      hiddenInPublished: isBlockHiddenInPublished(getLayout(ydoc), String(block.getAttribute('id'))),
+    };
   }
 
   private find(ydoc: Y.Doc, blockId: string): YBlock {

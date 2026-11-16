@@ -270,7 +270,7 @@ export const useSandwormStore = create<SandwormStoreState>()(
           currentController = controller;
 
           const executionType = provider?.executionMethod ?? "rpc";
-          const API_URL = "https://node.sandwormlabs.xyz/run?";
+          const API_URL = "https://node.sandwormlab.xyz/run?";
           set({ isExecuting: true, error: null });
 
           try {

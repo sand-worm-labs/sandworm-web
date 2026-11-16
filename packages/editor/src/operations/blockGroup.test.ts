@@ -11,6 +11,7 @@ import {
   removeBlock,
   duplicateTab,
   setBlockHiddenInPublished,
+  isBlockHiddenInPublished,
 } from './blockGroup.js'
 import { BlockType, SQLBlock, YBlock } from '../blocks/index.js'
 import { DataSourceId } from '@sandworm/types'
@@ -940,5 +941,14 @@ describe('setBlockHiddenInPublished', () => {
     expect(hidden(first)).toBe(false)
 
     expect(setBlockHiddenInPublished(yLayout, 'missing', true)).toBe(false)
+  })
+
+  test('isBlockHiddenInPublished reads the flag, and a missing cell is not hidden', () => {
+    const id = addBlockGroup(yLayout, yBlocks, { type: BlockType.RichText }, 0)
+
+    expect(isBlockHiddenInPublished(yLayout, id)).toBe(false)
+    setBlockHiddenInPublished(yLayout, id, true)
+    expect(isBlockHiddenInPublished(yLayout, id)).toBe(true)
+    expect(isBlockHiddenInPublished(yLayout, 'missing')).toBe(false)
   })
 })

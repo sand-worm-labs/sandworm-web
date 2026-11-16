@@ -1,0 +1,22 @@
+mutation SetTerminalSignalStatus(
+  $signalId: ID!
+  $status: String!
+  $reason: String
+) {
+  setTerminalSignalStatus(
+    signalId: $signalId
+    status: $status
+    reason: $reason
+  ) {
+    id
+    status
+    dismissReason
+  }
+}
+
+mutation SetTerminalSignalFeedback($signalId: ID!, $feedback: String!) {
+  setTerminalSignalFeedback(signalId: $signalId, feedback: $feedback) {
+    id
+    feedback
+  }
+}

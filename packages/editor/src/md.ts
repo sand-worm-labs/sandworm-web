@@ -30,6 +30,12 @@ interface BlockMeta {
   type: string
   title: string
   blockGroupId: string
+  hiddenInPublished: boolean
+}
+
+// Marks a cell the published report leaves out (it stays in the notebook).
+function hiddenNote(meta: BlockMeta): string {
+  return meta.hiddenInPublished ? ' · hidden in published report' : ''
 }
 
 interface ResolvedBlock {
@@ -274,7 +280,7 @@ function focusedBlockDetail(
   allBlocks: ReturnType<typeof getBlocks>
 ): string {
   const lines: string[] = [
-    `### [FOCUSED] \`${meta.id}\` ${meta.type}${meta.title ? ` — "${meta.title}"` : ''}`,
+    `### [FOCUSED] \`${meta.id}\` ${meta.type}${meta.title ? ` — "${meta.title}"` : ''}${hiddenNote(meta)}`,
   ]
 
   switchBlockType(block, {
@@ -566,6 +572,7 @@ export function docToMarkdown(
         type: tab.type,
         title: tab.title ?? '',
         blockGroupId: tab.blockGroupId,
+        hiddenInPublished: tab.isHiddenInPublished,
       }
       resolved.push({ meta, block, fingerprint: fingerprintBlock(block, meta, blocks) })
     }
@@ -679,7 +686,7 @@ export function docToMarkdown(
 
     const lastRunLine = lastRun ? `\n*last run: ${lastRun}*` : ''
     const statusLine = statusParts.length > 0 ? `\n${statusParts.join(' · ')}` : ''
-    const header = `### [${i}] \`${meta.id}\` ${meta.type}${meta.title ? ` — "${meta.title}"` : ''}${lastRunLine}${statusLine}`
+    const header = `### [${i}] \`${meta.id}\` ${meta.type}${meta.title ? ` — "${meta.title}"` : ''}${hiddenNote(meta)}${lastRunLine}${statusLine}`
 
     if (isDup) {
       blockMapLines.push(`${header}\n\n*(duplicate of \`${origId}\`)*\n\n---`)

@@ -90,13 +90,13 @@ export const ClaimUsernameStep = ({
               className="text-xl text-[#D0DCE4] green-gradient py-4 px-5 rounded-xl font-semibold box-gradient dark:bg-base-100 max-w-full truncate whitespace-nowrap overflow-hidden"
               title={
                 username
-                  ? `${username}.sandwormlabs.xyz`
-                  : "username.sandwormlabs.xyz"
+                  ? `${username}.sandwormlab.xyz`
+                  : "username.sandwormlab.xyz"
               }
             >
               {username
-                ? `${username}.sandwormlabs.xyz`
-                : "username.sandwormlabs.xyz"}
+                ? `${username}.sandwormlab.xyz`
+                : "username.sandwormlab.xyz"}
             </motion.span>
           </div>
 

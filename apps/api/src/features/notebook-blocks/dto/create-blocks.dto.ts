@@ -4,6 +4,7 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsIn,
   IsInt,
   IsObject,
@@ -62,6 +63,14 @@ export class CreateBlockDto {
   @IsOptional()
   @IsObject()
   inputs?: Record<string, string | number | boolean | string[]>;
+
+  @ApiPropertyOptional({
+    description:
+      'true: hide the cell from the published report (it stays in the notebook and keeps running). false: show it in the report',
+  })
+  @IsOptional()
+  @IsBoolean()
+  hiddenInPublished?: boolean;
 }
 
 export class CreateBlocksDto {

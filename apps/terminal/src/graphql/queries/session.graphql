@@ -1,0 +1,13 @@
+query TerminalSession {
+  terminalSession {
+    user {
+      name
+    }
+    client {
+      name
+      type
+      access
+    }
+    firstBriefingDays
+  }
+}

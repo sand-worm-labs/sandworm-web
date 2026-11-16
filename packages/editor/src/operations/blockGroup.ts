@@ -564,6 +564,23 @@ export const setBlockHiddenInPublished = (
   return false
 }
 
+// Whether a cell is hidden from the published report. A cell with no tab in
+// the layout is not hidden.
+export const isBlockHiddenInPublished = (
+  layout: Y.Array<YBlockGroup>,
+  blockId: string
+): boolean =>
+  layout.toArray().some((group) =>
+    group
+      .getAttribute('tabs')
+      ?.toArray()
+      .some(
+        (tab) =>
+          tab.getAttribute('id') === blockId &&
+          (tab.getAttribute('isHiddenInPublished') ?? false)
+      )
+  )
+
 export const toggleIsBlockHiddenInPublished = (
   blockGroup: YBlockGroup,
   blockId: string

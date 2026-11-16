@@ -1,0 +1,18 @@
+fragment TerminalRequestFields on TerminalRequest {
+  id
+  kind
+  question
+  status
+  useCase
+  about
+  timing
+  requestedBy
+  scope
+  progressNote
+  outcome
+  reportPath
+  submittedAt
+  scopedAt
+  approvedAt
+  closedAt
+}
