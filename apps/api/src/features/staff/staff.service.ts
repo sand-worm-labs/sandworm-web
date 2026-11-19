@@ -4,7 +4,7 @@ import { WorkspaceMembershipService } from '../workspace/service/workspace-membe
 
 // The Sandworm team: people who can edit an official workspace, the same people whose
 // notebooks may appear on the Showcase at all. Shared by the internal tools (the Showcase
-// studio, the terminal's team side) so there is one answer to "is this staff?".
+// studio) so there is one answer to "is this staff?".
 @Injectable()
 export class StaffService {
   private readonly officialWorkspaceIds: string[];

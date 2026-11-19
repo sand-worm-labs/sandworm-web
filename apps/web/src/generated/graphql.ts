@@ -343,12 +343,6 @@ export type Mutation = {
   approveRoleRequest: Scalars['Boolean']['output'];
   /** Approve a claim lead: marks the case study it names as claimed by the protocol's team. Needs the studio password, or a staff account. */
   approveShowcaseClaim: Scalars['Boolean']['output'];
-  /** Approves the scope of a research request: the work starts and it counts toward the allowance. */
-  approveTerminalRequestScope: TerminalRequest;
-  /** Puts briefing items away for this member, or back. Archiving reads them too. */
-  archiveTerminalBriefing: Scalars['Boolean']['output'];
-  /** Start committing a cloud notebook's inputs (its code, data sources, parameters and when it ran) onchain, with a validator re-checking them. Returns at once with pending set: follow it with getNotebookTrust. Run the notebook first. */
-  attestNotebook: NotebookTrust;
   /** Remove multiple users from workspaces */
   batchRemoveUsersFromWorkspace: Scalars['Boolean']['output'];
   /** Create a new chat */
@@ -363,8 +357,6 @@ export type Mutation = {
   createDocument: Document;
   /** Create a new execution schedule for a document */
   createSchedule: Schedule;
-  /** Set a client up: its details, plan, what to track and an invite for its admin. Staff only. */
-  createTerminalClient: TerminalTeamClient;
   /** Register new user */
   createUser: User;
   /** Create a new workspace */
@@ -389,8 +381,6 @@ export type Mutation = {
   deleteShowcaseCategory: Scalars['Boolean']['output'];
   /** Remove an uploaded protocol logo, so the protocol shows DefiLlama's icon again. Needs the studio password, or a staff account. */
   deleteShowcaseLogo: Scalars['Boolean']['output'];
-  /** Remove a key number and its readings. Staff only. */
-  deleteTerminalKpi: Scalars['Boolean']['output'];
   /** Delete a workspace */
   deleteWorkspace: Scalars['Boolean']['output'];
   /** Create a duplicate of a document in the same workspace */
@@ -411,19 +401,10 @@ export type Mutation = {
   inviteUserToWorkspace: Scalars['Boolean']['output'];
   /** Sign in */
   login: AuthPayload;
-  markTerminalBriefingRead: Scalars['Boolean']['output'];
-  /** Records that the user opened Briefing now: the start of their next "since your last visit". */
-  markTerminalBriefingSeen: Scalars['Boolean']['output'];
-  /** Puts briefing items back to unread, and out of the archive. */
-  markTerminalBriefingUnread: Scalars['Boolean']['output'];
-  /** The current member has seen the welcome; it is not shown again. */
-  markTerminalWelcomed: Scalars['Boolean']['output'];
   /** Pin or unpin a chat */
   pinChat: Chat;
   /** Publish a document */
   publishDocument: Document;
-  /** Record a reading by hand; one for the same date is replaced. Staff only. */
-  recordTerminalKpiValue: TerminalKpiDefinition;
   /** Reject a pending role request */
   rejectRoleRequest: Scalars['Boolean']['output'];
   /** Unmark a document as a favorite */
@@ -440,8 +421,6 @@ export type Mutation = {
   restartEnvironment: Environment;
   /** Restore a previously deleted document */
   restoreDocument: Document;
-  /** Run one of a client's notebooks on their behalf, as the staff member (who needs edit access to it). Staff only. */
-  runTerminalSource: TerminalSourceRun;
   /** Create a Showcase category, or change the one with the same slug. Needs the studio password, or a staff account. */
   saveShowcaseCategory: Scalars['Boolean']['output'];
   /** Set a chain's color and its place among the Showcase chain filters. Needs the studio password, or a staff account. */
@@ -452,14 +431,8 @@ export type Mutation = {
   saveShowcaseNotebook: Scalars['Boolean']['output'];
   /** Set a protocol's links (website, twitter, github, discord, telegram), as URLs or handles. Empty ones are removed. Needs the studio password, or a staff account. */
   saveShowcaseProtocolLinks: Scalars['Boolean']['output'];
-  /** Create a key number, or change the one with this key. What is not sent stays. Staff only. */
-  saveTerminalKpi: TerminalKpiDefinition;
-  /** Save the current user's terminal setup, as far as they have filled it in. */
-  saveTerminalSetup: TerminalSetup;
   /** Send a user message */
   sendMessage: Message;
-  /** Mark a client's admin invite as sent (the admin joins by signing in with the invited email). Staff only. */
-  sendTerminalInvite: TerminalTeamClient;
   /** Let any authenticated user with the link view this document read-only, without publishing it to the community */
   setDocumentLinkVisibility: Document;
   /** Set a notebook's Showcase metadata, or pass null to take it off the Showcase. */
@@ -468,8 +441,6 @@ export type Mutation = {
   setDocumentUnlisted: Document;
   /** Add or remove environment variables */
   setEnvironmentVariables: Array<EnvironmentVariable>;
-  setTerminalSignalFeedback: TerminalSignal;
-  setTerminalSignalStatus: TerminalSignal;
   setWorkspaceDefaultAiModel: Scalars['Boolean']['output'];
   /** Dev only: simulate a payment and set the workspace plan */
   simulateWorkspaceUpgrade: Workspace;
@@ -477,7 +448,6 @@ export type Mutation = {
   startWorkspaceTrial: Workspace;
   /** Ask for a protocol to be covered, ask for a report, or claim the case study about your protocol. Saved for the sales team. */
   submitShowcaseLead: Scalars['Boolean']['output'];
-  submitTerminalRequest: TerminalRequest;
   /** Switch to a different workspace */
   switchWorkspace: Scalars['Boolean']['output'];
   /** Unfollow User */
@@ -536,23 +506,6 @@ export type MutationApproveShowcaseClaimArgs = {
 };
 
 
-export type MutationApproveTerminalRequestScopeArgs = {
-  requestId: Scalars['ID']['input'];
-};
-
-
-export type MutationArchiveTerminalBriefingArgs = {
-  isArchived: Scalars['Boolean']['input'];
-  itemIds: Array<Scalars['ID']['input']>;
-};
-
-
-export type MutationAttestNotebookArgs = {
-  documentId: Scalars['String']['input'];
-  workspaceId: Scalars['String']['input'];
-};
-
-
 export type MutationBatchRemoveUsersFromWorkspaceArgs = {
   removals: Array<RemoveUserFromWorkspaceInput>;
 };
@@ -591,11 +544,6 @@ export type MutationCreateDocumentArgs = {
 export type MutationCreateScheduleArgs = {
   input: CreateScheduleInput;
   workspaceId: Scalars['String']['input'];
-};
-
-
-export type MutationCreateTerminalClientArgs = {
-  input: TerminalTeamClientDraftInput;
 };
 
 
@@ -662,11 +610,6 @@ export type MutationDeleteShowcaseCategoryArgs = {
 export type MutationDeleteShowcaseLogoArgs = {
   password?: InputMaybe<Scalars['String']['input']>;
   slug: Scalars['String']['input'];
-};
-
-
-export type MutationDeleteTerminalKpiArgs = {
-  kpiId: Scalars['String']['input'];
 };
 
 
@@ -751,16 +694,6 @@ export type MutationLoginArgs = {
 };
 
 
-export type MutationMarkTerminalBriefingReadArgs = {
-  itemIds: Array<Scalars['ID']['input']>;
-};
-
-
-export type MutationMarkTerminalBriefingUnreadArgs = {
-  itemIds: Array<Scalars['ID']['input']>;
-};
-
-
 export type MutationPinChatArgs = {
   chatId: Scalars['String']['input'];
 };
@@ -770,12 +703,6 @@ export type MutationPublishDocumentArgs = {
   documentId: Scalars['String']['input'];
   meta?: InputMaybe<PublishDocumentMetaInput>;
   workspaceId: Scalars['String']['input'];
-};
-
-
-export type MutationRecordTerminalKpiValueArgs = {
-  input: TerminalKpiValueInput;
-  kpiId: Scalars['String']['input'];
 };
 
 
@@ -822,12 +749,6 @@ export type MutationRestoreDocumentArgs = {
 };
 
 
-export type MutationRunTerminalSourceArgs = {
-  clientId: Scalars['String']['input'];
-  documentId: Scalars['String']['input'];
-};
-
-
 export type MutationSaveShowcaseCategoryArgs = {
   input: Scalars['JSON']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
@@ -861,24 +782,8 @@ export type MutationSaveShowcaseProtocolLinksArgs = {
 };
 
 
-export type MutationSaveTerminalKpiArgs = {
-  clientId: Scalars['String']['input'];
-  input: TerminalKpiInput;
-};
-
-
-export type MutationSaveTerminalSetupArgs = {
-  input: TerminalSetupInput;
-};
-
-
 export type MutationSendMessageArgs = {
   input: SendMessageInput;
-};
-
-
-export type MutationSendTerminalInviteArgs = {
-  clientId: Scalars['String']['input'];
 };
 
 
@@ -909,19 +814,6 @@ export type MutationSetEnvironmentVariablesArgs = {
 };
 
 
-export type MutationSetTerminalSignalFeedbackArgs = {
-  feedback: Scalars['String']['input'];
-  signalId: Scalars['ID']['input'];
-};
-
-
-export type MutationSetTerminalSignalStatusArgs = {
-  reason?: InputMaybe<Scalars['String']['input']>;
-  signalId: Scalars['ID']['input'];
-  status: Scalars['String']['input'];
-};
-
-
 export type MutationSetWorkspaceDefaultAiModelArgs = {
   model: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
@@ -941,11 +833,6 @@ export type MutationStartWorkspaceTrialArgs = {
 
 export type MutationSubmitShowcaseLeadArgs = {
   input: Scalars['JSON']['input'];
-};
-
-
-export type MutationSubmitTerminalRequestArgs = {
-  input: TerminalRequestInput;
 };
 
 
@@ -1028,35 +915,6 @@ export type MutationVoteMessageArgs = {
   input: VoteMessageInput;
 };
 
-export type NotebookAttestation = {
-  __typename?: 'NotebookAttestation';
-  agentId: Scalars['String']['output'];
-  agentUrl: Scalars['String']['output'];
-  codeHash: Scalars['String']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  documentId: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  inputHash: Scalars['String']['output'];
-  ranAt: Scalars['DateTime']['output'];
-  receiptUri: Scalars['String']['output'];
-  receiptUrl?: Maybe<Scalars['String']['output']>;
-  requestHash: Scalars['String']['output'];
-  requestTx: Scalars['String']['output'];
-  requestTxUrl: Scalars['String']['output'];
-  response?: Maybe<Scalars['Int']['output']>;
-  responseTx?: Maybe<Scalars['String']['output']>;
-  responseTxUrl?: Maybe<Scalars['String']['output']>;
-  validator: Scalars['String']['output'];
-};
-
-export type NotebookTrust = {
-  __typename?: 'NotebookTrust';
-  attestation?: Maybe<NotebookAttestation>;
-  pending: Scalars['Boolean']['output'];
-  reason?: Maybe<Scalars['String']['output']>;
-  trusted: Scalars['Boolean']['output'];
-};
-
 export type OpenRouterAccountCredits = {
   __typename?: 'OpenRouterAccountCredits';
   availableCredits: Scalars['Float']['output'];
@@ -1132,10 +990,6 @@ export type Query = {
   getForkedDocuments: Array<Document>;
   /** Get invitation details from hash without accepting it */
   getInvitationInfo: WorkspaceInvitationInfo;
-  /** The latest attestation of a notebook, or null if it has none. */
-  getNotebookAttestation?: Maybe<NotebookAttestation>;
-  /** Whether a notebook is trusted right now (attested, and unchanged since), and if not, why. */
-  getNotebookTrust: NotebookTrust;
   /** Get all pending invites for a workspace */
   getPendingInvites: Array<WorkspaceMember>;
   /** Get pending role requests for a workspace */
@@ -1202,30 +1056,6 @@ export type Query = {
   /** Semantic search over the power tool catalog. Returns the best matches first. */
   searchTools: Array<Tool>;
   tags: Array<Scalars['String']['output']>;
-  /** The Analysis catalog of the user's terminal client: projects, regions and sectors with their reports. */
-  terminalAnalysis: TerminalAnalysis;
-  /** The user's briefing: recent items for their client and for them, with what they have read. */
-  terminalBriefing: TerminalBriefing;
-  /** One client with who reads it, what is open and the notebooks its terminal is built from. Staff only. */
-  terminalClient: TerminalClientDetail;
-  /** Every key number of a client, hidden ones too, with how each reads now. Staff only. */
-  terminalClientKpis: Array<TerminalKpiDefinition>;
-  /** Every terminal client, newest first. Staff only. */
-  terminalClients: Array<TerminalTeamClient>;
-  /** The numbers on the terminal section tabs: unread briefing, reports, open signals and open requests. */
-  terminalCounts: TerminalCounts;
-  /** Whether the current user is on the Sandworm team, for showing the terminal team tools. */
-  terminalIsStaff: Scalars['Boolean']['output'];
-  /** The key numbers on the Overview of the user's client, null before they belong to one. */
-  terminalOverviewKpis?: Maybe<TerminalOverviewKpis>;
-  /** The client's research requests and questions, with this year's research allowance. */
-  terminalRequests: TerminalRequests;
-  /** The signed-in user and the terminal client they belong to (null before their first setup save). */
-  terminalSession: TerminalSession;
-  /** The current user's terminal setup, or null before they first save it. */
-  terminalSetup?: Maybe<TerminalSetup>;
-  /** Patterns Sandworm saw in the client data and what they could mean, with the client triage. */
-  terminalSignals: TerminalSignals;
 };
 
 
@@ -1335,17 +1165,6 @@ export type QueryGetFeaturedDocumentsArgs = {
 
 export type QueryGetInvitationInfoArgs = {
   hash: Scalars['String']['input'];
-};
-
-
-export type QueryGetNotebookAttestationArgs = {
-  documentId: Scalars['String']['input'];
-};
-
-
-export type QueryGetNotebookTrustArgs = {
-  documentId: Scalars['String']['input'];
-  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -1490,16 +1309,6 @@ export type QuerySearchToolsArgs = {
   query: Scalars['String']['input'];
 };
 
-
-export type QueryTerminalClientArgs = {
-  clientId: Scalars['String']['input'];
-};
-
-
-export type QueryTerminalClientKpisArgs = {
-  clientId: Scalars['String']['input'];
-};
-
 export type RemoveUserFromWorkspaceInput = {
   userId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
@@ -1618,378 +1427,6 @@ export type SocialLinksInput = {
   telegram?: InputMaybe<Scalars['String']['input']>;
   twitter?: InputMaybe<Scalars['String']['input']>;
   warpcast?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type TerminalAllowance = {
-  __typename?: 'TerminalAllowance';
-  resetsAt: Scalars['String']['output'];
-  total: Scalars['Int']['output'];
-  used: Scalars['Int']['output'];
-};
-
-export type TerminalAnalysis = {
-  __typename?: 'TerminalAnalysis';
-  subjects: Array<TerminalAnalysisSubject>;
-};
-
-export type TerminalAnalysisReport = {
-  __typename?: 'TerminalAnalysisReport';
-  id: Scalars['String']['output'];
-  isNew: Scalars['Boolean']['output'];
-  line: Scalars['String']['output'];
-  path: Scalars['String']['output'];
-  publishedAt: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-};
-
-export type TerminalAnalysisSubject = {
-  __typename?: 'TerminalAnalysisSubject';
-  icon?: Maybe<Scalars['JSON']['output']>;
-  id: Scalars['String']['output'];
-  impact: Scalars['String']['output'];
-  impactSize: Scalars['Int']['output'];
-  kind: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-  reports: Array<TerminalAnalysisReport>;
-  view: Scalars['String']['output'];
-};
-
-export type TerminalBriefing = {
-  __typename?: 'TerminalBriefing';
-  archivedCount: Scalars['Int']['output'];
-  items: Array<TerminalBriefingItem>;
-  lastSeenAt?: Maybe<Scalars['String']['output']>;
-};
-
-export type TerminalBriefingItem = {
-  __typename?: 'TerminalBriefingItem';
-  detail: Scalars['JSON']['output'];
-  id: Scalars['String']['output'];
-  isArchived: Scalars['Boolean']['output'];
-  isRead: Scalars['Boolean']['output'];
-  kind: Scalars['String']['output'];
-  publishedAt: Scalars['String']['output'];
-  sourcePath?: Maybe<Scalars['String']['output']>;
-  subject: Scalars['String']['output'];
-  summary: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-};
-
-export type TerminalClientDetail = {
-  __typename?: 'TerminalClientDetail';
-  adminEmail?: Maybe<Scalars['String']['output']>;
-  createdAt: Scalars['String']['output'];
-  description: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  lastReadAt?: Maybe<Scalars['String']['output']>;
-  members: Scalars['Int']['output'];
-  name: Scalars['String']['output'];
-  newSignals: Scalars['Int']['output'];
-  openRequests: Scalars['Int']['output'];
-  plan: Scalars['String']['output'];
-  researchAllowance: Scalars['Int']['output'];
-  sources: Array<TerminalClientSource>;
-  status: Scalars['String']['output'];
-  type: Scalars['String']['output'];
-  website: Scalars['String']['output'];
-};
-
-export type TerminalClientSource = {
-  __typename?: 'TerminalClientSource';
-  cells: Scalars['Int']['output'];
-  documentId: Scalars['String']['output'];
-  items: Scalars['Int']['output'];
-  lastRanAt?: Maybe<Scalars['String']['output']>;
-  path: Scalars['String']['output'];
-  schedule?: Maybe<TerminalSourceSchedule>;
-  title: Scalars['String']['output'];
-};
-
-export type TerminalCounts = {
-  __typename?: 'TerminalCounts';
-  analysis: Scalars['Int']['output'];
-  briefing: Scalars['Int']['output'];
-  requests: Scalars['Int']['output'];
-  signals: Scalars['Int']['output'];
-};
-
-export type TerminalGoals = {
-  __typename?: 'TerminalGoals';
-  selected: Array<Scalars['String']['output']>;
-};
-
-export type TerminalGoalsInput = {
-  selected: Array<Scalars['String']['input']>;
-};
-
-export type TerminalInvite = {
-  __typename?: 'TerminalInvite';
-  access: Scalars['String']['output'];
-  email: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-};
-
-export type TerminalInviteInput = {
-  access: Scalars['String']['input'];
-  email: Scalars['String']['input'];
-  id: Scalars['String']['input'];
-};
-
-export type TerminalKpi = {
-  __typename?: 'TerminalKpi';
-  comparison?: Maybe<Scalars['String']['output']>;
-  delta?: Maybe<TerminalKpiDelta>;
-  id: Scalars['String']['output'];
-  label: Scalars['String']['output'];
-  value: Scalars['String']['output'];
-};
-
-export type TerminalKpiDefinition = {
-  __typename?: 'TerminalKpiDefinition';
-  comparison: Scalars['JSON']['output'];
-  description: Scalars['String']['output'];
-  direction: Scalars['String']['output'];
-  display: TerminalKpi;
-  format: Scalars['JSON']['output'];
-  id: Scalars['String']['output'];
-  isVisible: Scalars['Boolean']['output'];
-  key: Scalars['String']['output'];
-  label: Scalars['String']['output'];
-  lastReadingAt?: Maybe<Scalars['String']['output']>;
-  position: Scalars['Int']['output'];
-  settings: Scalars['JSON']['output'];
-  source: Scalars['JSON']['output'];
-  subjectId?: Maybe<Scalars['String']['output']>;
-};
-
-export type TerminalKpiDelta = {
-  __typename?: 'TerminalKpiDelta';
-  text: Scalars['String']['output'];
-  tone: Scalars['String']['output'];
-};
-
-export type TerminalKpiInput = {
-  comparison?: InputMaybe<Scalars['JSON']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  direction?: InputMaybe<Scalars['String']['input']>;
-  format?: InputMaybe<Scalars['JSON']['input']>;
-  isVisible?: InputMaybe<Scalars['Boolean']['input']>;
-  key: Scalars['String']['input'];
-  label?: InputMaybe<Scalars['String']['input']>;
-  position?: InputMaybe<Scalars['Int']['input']>;
-  settings?: InputMaybe<Scalars['JSON']['input']>;
-  source?: InputMaybe<Scalars['JSON']['input']>;
-  subjectId?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type TerminalKpiValueInput = {
-  asOf?: InputMaybe<Scalars['String']['input']>;
-  previous?: InputMaybe<Scalars['Float']['input']>;
-  textValue?: InputMaybe<Scalars['String']['input']>;
-  value?: InputMaybe<Scalars['Float']['input']>;
-};
-
-export type TerminalOrganisation = {
-  __typename?: 'TerminalOrganisation';
-  description: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-  type: Scalars['String']['output'];
-  website: Scalars['String']['output'];
-};
-
-export type TerminalOrganisationInput = {
-  description: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-  type: Scalars['String']['input'];
-  website: Scalars['String']['input'];
-};
-
-export type TerminalOverviewKpis = {
-  __typename?: 'TerminalOverviewKpis';
-  clientStatus: Scalars['String']['output'];
-  clientType: Scalars['String']['output'];
-  isUpdating: Scalars['Boolean']['output'];
-  kpis: Array<TerminalKpi>;
-};
-
-export type TerminalRequest = {
-  __typename?: 'TerminalRequest';
-  about: Array<Scalars['String']['output']>;
-  approvedAt?: Maybe<Scalars['String']['output']>;
-  closedAt?: Maybe<Scalars['String']['output']>;
-  id: Scalars['String']['output'];
-  kind: Scalars['String']['output'];
-  outcome?: Maybe<Scalars['String']['output']>;
-  progressNote?: Maybe<Scalars['String']['output']>;
-  question: Scalars['String']['output'];
-  reportPath?: Maybe<Scalars['String']['output']>;
-  requestedBy?: Maybe<Scalars['String']['output']>;
-  scope?: Maybe<Scalars['JSON']['output']>;
-  scopedAt?: Maybe<Scalars['String']['output']>;
-  status: Scalars['String']['output'];
-  submittedAt: Scalars['String']['output'];
-  timing?: Maybe<Scalars['String']['output']>;
-  useCase?: Maybe<Scalars['String']['output']>;
-};
-
-export type TerminalRequestInput = {
-  about: Array<Scalars['String']['input']>;
-  files: Array<Scalars['String']['input']>;
-  kind: Scalars['String']['input'];
-  question: Scalars['String']['input'];
-  timing?: InputMaybe<Scalars['String']['input']>;
-  useCase?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type TerminalRequests = {
-  __typename?: 'TerminalRequests';
-  allowance: TerminalAllowance;
-  requests: Array<TerminalRequest>;
-};
-
-export type TerminalSession = {
-  __typename?: 'TerminalSession';
-  client?: Maybe<TerminalSessionClient>;
-  firstBriefingDays: Scalars['Int']['output'];
-  needsWelcome: Scalars['Boolean']['output'];
-  user: TerminalSessionUser;
-};
-
-export type TerminalSessionClient = {
-  __typename?: 'TerminalSessionClient';
-  access: Scalars['String']['output'];
-  icon?: Maybe<Scalars['JSON']['output']>;
-  name: Scalars['String']['output'];
-  type: Scalars['String']['output'];
-};
-
-export type TerminalSessionUser = {
-  __typename?: 'TerminalSessionUser';
-  name: Scalars['String']['output'];
-};
-
-export type TerminalSetup = {
-  __typename?: 'TerminalSetup';
-  goals: TerminalGoals;
-  organisation: TerminalOrganisation;
-  team: TerminalTeam;
-  tracking: TerminalTracking;
-};
-
-export type TerminalSetupInput = {
-  goals: TerminalGoalsInput;
-  organisation: TerminalOrganisationInput;
-  team: TerminalTeamInput;
-  tracking: TerminalTrackingInput;
-};
-
-export type TerminalSignal = {
-  __typename?: 'TerminalSignal';
-  couldMean: Scalars['String']['output'];
-  detail?: Maybe<Scalars['JSON']['output']>;
-  dismissReason?: Maybe<Scalars['String']['output']>;
-  evidence: Scalars['String']['output'];
-  feedback: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  kind: Scalars['String']['output'];
-  observed: Scalars['String']['output'];
-  publishedAt: Scalars['String']['output'];
-  reportPath?: Maybe<Scalars['String']['output']>;
-  size: Scalars['String']['output'];
-  sizeLabel: Scalars['String']['output'];
-  status: Scalars['String']['output'];
-  subject: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-};
-
-export type TerminalSignals = {
-  __typename?: 'TerminalSignals';
-  items: Array<TerminalSignal>;
-};
-
-export type TerminalSourceRun = {
-  __typename?: 'TerminalSourceRun';
-  cells: Scalars['Int']['output'];
-  failed: Array<TerminalSourceRunFailure>;
-  status: Scalars['String']['output'];
-};
-
-export type TerminalSourceRunFailure = {
-  __typename?: 'TerminalSourceRunFailure';
-  message: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-};
-
-export type TerminalSourceSchedule = {
-  __typename?: 'TerminalSourceSchedule';
-  isActive: Scalars['Boolean']['output'];
-  lastRunAt?: Maybe<Scalars['String']['output']>;
-  nextRunAt?: Maybe<Scalars['String']['output']>;
-};
-
-export type TerminalTeam = {
-  __typename?: 'TerminalTeam';
-  invites: Array<TerminalInvite>;
-};
-
-export type TerminalTeamClient = {
-  __typename?: 'TerminalTeamClient';
-  adminEmail?: Maybe<Scalars['String']['output']>;
-  createdAt: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-  plan: Scalars['String']['output'];
-  status: Scalars['String']['output'];
-  type: Scalars['String']['output'];
-};
-
-export type TerminalTeamClientDraftInput = {
-  details: TerminalTeamDetailsInput;
-  inviteTiming: Scalars['String']['input'];
-  starterIds: Array<Scalars['String']['input']>;
-  tracking: TerminalTrackingInput;
-};
-
-export type TerminalTeamDetails = {
-  __typename?: 'TerminalTeamDetails';
-  adminEmail: Scalars['String']['output'];
-  adminName: Scalars['String']['output'];
-  description: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-  plan: Scalars['String']['output'];
-  type: Scalars['String']['output'];
-  website: Scalars['String']['output'];
-};
-
-export type TerminalTeamDetailsInput = {
-  adminEmail: Scalars['String']['input'];
-  adminName: Scalars['String']['input'];
-  description: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-  plan: Scalars['String']['input'];
-  type: Scalars['String']['input'];
-  website: Scalars['String']['input'];
-};
-
-export type TerminalTeamInput = {
-  invites: Array<TerminalInviteInput>;
-};
-
-export type TerminalTracking = {
-  __typename?: 'TerminalTracking';
-  addresses: Scalars['String']['output'];
-  autoDiscover: Scalars['Boolean']['output'];
-  competitors: Array<Scalars['String']['output']>;
-  regions: Array<Scalars['String']['output']>;
-  shareInternalData: Scalars['Boolean']['output'];
-};
-
-export type TerminalTrackingInput = {
-  addresses: Scalars['String']['input'];
-  autoDiscover: Scalars['Boolean']['input'];
-  competitors: Array<Scalars['String']['input']>;
-  regions: Array<Scalars['String']['input']>;
-  shareInternalData: Scalars['Boolean']['input'];
 };
 
 export type Tool = {
@@ -2553,14 +1990,6 @@ export type DeleteScheduleMutationVariables = Exact<{
 
 export type DeleteScheduleMutation = { __typename?: 'Mutation', deleteSchedule: boolean };
 
-export type AttestNotebookMutationVariables = Exact<{
-  workspaceId: Scalars['String']['input'];
-  documentId: Scalars['String']['input'];
-}>;
-
-
-export type AttestNotebookMutation = { __typename?: 'Mutation', attestNotebook: { __typename?: 'NotebookTrust', trusted: boolean, pending: boolean, reason?: string | null } };
-
 export type CreateWorkspaceMutationVariables = Exact<{
   name: Scalars['String']['input'];
 }>;
@@ -2919,14 +2348,6 @@ export type RenderToolSourceQueryVariables = Exact<{
 
 
 export type RenderToolSourceQuery = { __typename?: 'Query', renderToolSource: string };
-
-export type GetNotebookTrustQueryVariables = Exact<{
-  workspaceId: Scalars['String']['input'];
-  documentId: Scalars['String']['input'];
-}>;
-
-
-export type GetNotebookTrustQuery = { __typename?: 'Query', getNotebookTrust: { __typename?: 'NotebookTrust', trusted: boolean, pending: boolean, reason?: string | null, attestation?: { __typename?: 'NotebookAttestation', agentId: string, requestHash: string, validator: string, ranAt: any, requestTx: string, responseTx?: string | null, requestTxUrl: string, responseTxUrl?: string | null } | null } };
 
 export type GetUserQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -5008,42 +4429,6 @@ export function useDeleteScheduleMutation(baseOptions?: Apollo.MutationHookOptio
 export type DeleteScheduleMutationHookResult = ReturnType<typeof useDeleteScheduleMutation>;
 export type DeleteScheduleMutationResult = Apollo.MutationResult<DeleteScheduleMutation>;
 export type DeleteScheduleMutationOptions = Apollo.BaseMutationOptions<DeleteScheduleMutation, DeleteScheduleMutationVariables>;
-export const AttestNotebookDocument = gql`
-    mutation AttestNotebook($workspaceId: String!, $documentId: String!) {
-  attestNotebook(workspaceId: $workspaceId, documentId: $documentId) {
-    trusted
-    pending
-    reason
-  }
-}
-    `;
-export type AttestNotebookMutationFn = Apollo.MutationFunction<AttestNotebookMutation, AttestNotebookMutationVariables>;
-
-/**
- * __useAttestNotebookMutation__
- *
- * To run a mutation, you first call `useAttestNotebookMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAttestNotebookMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [attestNotebookMutation, { data, loading, error }] = useAttestNotebookMutation({
- *   variables: {
- *      workspaceId: // value for 'workspaceId'
- *      documentId: // value for 'documentId'
- *   },
- * });
- */
-export function useAttestNotebookMutation(baseOptions?: Apollo.MutationHookOptions<AttestNotebookMutation, AttestNotebookMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<AttestNotebookMutation, AttestNotebookMutationVariables>(AttestNotebookDocument, options);
-      }
-export type AttestNotebookMutationHookResult = ReturnType<typeof useAttestNotebookMutation>;
-export type AttestNotebookMutationResult = Apollo.MutationResult<AttestNotebookMutation>;
-export type AttestNotebookMutationOptions = Apollo.BaseMutationOptions<AttestNotebookMutation, AttestNotebookMutationVariables>;
 export const CreateWorkspaceDocument = gql`
     mutation CreateWorkspace($name: String!) {
   createWorkspace(name: $name) {
@@ -7207,59 +6592,6 @@ export type RenderToolSourceQueryHookResult = ReturnType<typeof useRenderToolSou
 export type RenderToolSourceLazyQueryHookResult = ReturnType<typeof useRenderToolSourceLazyQuery>;
 export type RenderToolSourceSuspenseQueryHookResult = ReturnType<typeof useRenderToolSourceSuspenseQuery>;
 export type RenderToolSourceQueryResult = Apollo.QueryResult<RenderToolSourceQuery, RenderToolSourceQueryVariables>;
-export const GetNotebookTrustDocument = gql`
-    query GetNotebookTrust($workspaceId: String!, $documentId: String!) {
-  getNotebookTrust(workspaceId: $workspaceId, documentId: $documentId) {
-    trusted
-    pending
-    reason
-    attestation {
-      agentId
-      requestHash
-      validator
-      ranAt
-      requestTx
-      responseTx
-      requestTxUrl
-      responseTxUrl
-    }
-  }
-}
-    `;
-
-/**
- * __useGetNotebookTrustQuery__
- *
- * To run a query within a React component, call `useGetNotebookTrustQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetNotebookTrustQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetNotebookTrustQuery({
- *   variables: {
- *      workspaceId: // value for 'workspaceId'
- *      documentId: // value for 'documentId'
- *   },
- * });
- */
-export function useGetNotebookTrustQuery(baseOptions: Apollo.QueryHookOptions<GetNotebookTrustQuery, GetNotebookTrustQueryVariables> & ({ variables: GetNotebookTrustQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetNotebookTrustQuery, GetNotebookTrustQueryVariables>(GetNotebookTrustDocument, options);
-      }
-export function useGetNotebookTrustLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetNotebookTrustQuery, GetNotebookTrustQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetNotebookTrustQuery, GetNotebookTrustQueryVariables>(GetNotebookTrustDocument, options);
-        }
-export function useGetNotebookTrustSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetNotebookTrustQuery, GetNotebookTrustQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetNotebookTrustQuery, GetNotebookTrustQueryVariables>(GetNotebookTrustDocument, options);
-        }
-export type GetNotebookTrustQueryHookResult = ReturnType<typeof useGetNotebookTrustQuery>;
-export type GetNotebookTrustLazyQueryHookResult = ReturnType<typeof useGetNotebookTrustLazyQuery>;
-export type GetNotebookTrustSuspenseQueryHookResult = ReturnType<typeof useGetNotebookTrustSuspenseQuery>;
-export type GetNotebookTrustQueryResult = Apollo.QueryResult<GetNotebookTrustQuery, GetNotebookTrustQueryVariables>;
 export const GetUserDocument = gql`
     query GetUser($userId: String!) {
   getUser(userId: $userId) {

@@ -76,8 +76,6 @@ jobs:
             ${{ env.REGISTRY }}/sandworm-${{ matrix.name }}:${{ env.DEPLOY_ENV }}-${{ github.sha }}
           cache-from: type=gha,scope=${{ matrix.name }}-${{ env.DEPLOY_ENV }}
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}-${{ env.DEPLOY_ENV }}
-          secrets: |
-            github_token=${{ secrets.GITHUB_TOKEN }}
           build-args: |
             APP=${{ matrix.app }}
             APP_DIR=${{ matrix.dir }}
