@@ -1,20 +1,34 @@
-.git/
-.gitignore
-**/.gitkeep
-**/.DS_Store
-.next/
-.dockerignore
-Dockerfile
-docker-compose.yml
-node_modules
-nginx/
-README.md
-data
-node_modules
-.env.*
-.turbo
+# Images are built from the repo root (deployment/coolify/docker/node.Dockerfile),
+# so everything here stays out of the build context, and out of the images.
+
+# Secrets: never in a build context. The apps read them from the environment.
+**/.env
+**/.env.*
+!**/.env.example
+sandworm-*.env
+sandworm-*.env.*
+*.pem
+*.key
+
+# Installed and built output: the image installs and builds its own.
+**/node_modules
+**/.next
+**/dist
+**/.turbo
+**/.astro
+**/coverage
+**/venv
+**/.venv
+**/__pycache__
+
+# Not part of any app
 .git
-dist
-.next
-venv
-*/venv
+**/.DS_Store
+**/.gitkeep
+.claude
+.agent
+.vscode
+.devcontainer
+misc
+mcp-cell-*
+data

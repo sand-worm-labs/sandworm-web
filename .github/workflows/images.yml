@@ -1,0 +1,111 @@
+# Builds every Sandworm image, pushes it to GHCR, then tells Coolify to deploy.
+#
+#   push to `staging`  -> images tagged `staging`    -> staging server
+#   push to `main`     -> images tagged `production` -> production server
+#   Run workflow       -> pick the environment by hand
+#
+# Each GitHub environment (Settings > Environments: `staging`, `production`) holds:
+#   variables: NEXT_PUBLIC_* and PUBLIC_APP_URL (baked into web, terminal, landing)
+#              COOLIFY_URL, COOLIFY_RESOURCE_UUID (the stack's resource in Coolify)
+#   secrets:   COOLIFY_TOKEN (Coolify > Keys & Tokens, with deploy permission)
+# Repository secret SUBMODULES_TOKEN is needed only if apps/ai is private.
+
+name: images
+
+on:
+  push:
+    branches: [main, staging]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Where to deploy
+        type: choice
+        options: [staging, production]
+        default: staging
+
+concurrency:
+  group: images-${{ github.ref }}
+  # Never cut a deploy off halfway: a newer push waits its turn.
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  DEPLOY_ENV: ${{ inputs.environment || (github.ref_name == 'main' && 'production' || 'staging') }}
+  REGISTRY: ghcr.io/${{ github.repository_owner }}
+
+jobs:
+  build:
+    name: build ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || (github.ref_name == 'main' && 'production' || 'staging') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: api, app: "@sandworm/app_api", dir: apps/api, context: ., file: deployment/coolify/docker/node.Dockerfile }
+          - { name: web, app: "@sandworm/web", dir: apps/web, context: ., file: deployment/coolify/docker/node.Dockerfile }
+          - { name: terminal, app: "@sandworm/terminal", dir: apps/terminal, context: ., file: deployment/coolify/docker/node.Dockerfile }
+          - { name: landing, app: "@sandworm/landing-page", dir: apps/landing-page, context: ., file: deployment/coolify/docker/node.Dockerfile }
+          - { name: mcp, app: "@sandworm/mcp", dir: apps/mcp, context: ., file: deployment/coolify/docker/node.Dockerfile }
+          - { name: ai, context: apps/ai, file: deployment/coolify/docker/ai.Dockerfile }
+          - { name: jupyter, context: apps/jupyter, file: apps/jupyter/Dockerfile }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: ${{ matrix.name == 'ai' }}
+          token: ${{ secrets.SUBMODULES_TOKEN || github.token }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/sandworm-${{ matrix.name }}:${{ env.DEPLOY_ENV }}
+            ${{ env.REGISTRY }}/sandworm-${{ matrix.name }}:${{ env.DEPLOY_ENV }}-${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.name }}-${{ env.DEPLOY_ENV }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}-${{ env.DEPLOY_ENV }}
+          build-args: |
+            APP=${{ matrix.app }}
+            APP_DIR=${{ matrix.dir }}
+            NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
+            NEXT_PUBLIC_API_WS_URL=${{ vars.NEXT_PUBLIC_API_WS_URL }}
+            NEXT_PUBLIC_PUBLIC_URL=${{ vars.NEXT_PUBLIC_PUBLIC_URL }}
+            NEXT_PUBLIC_REDIRECT_URI=${{ vars.NEXT_PUBLIC_REDIRECT_URI }}
+            NEXT_PUBLIC_LANDING_URL=${{ vars.NEXT_PUBLIC_LANDING_URL }}
+            NEXT_PUBLIC_YJS_WS_URL=${{ vars.NEXT_PUBLIC_YJS_WS_URL }}
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ vars.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
+            NEXT_PUBLIC_GITHUB_CLIENT_ID=${{ vars.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
+            NEXT_PUBLIC_TERMINAL_URL=${{ vars.NEXT_PUBLIC_TERMINAL_URL }}
+            NEXT_PUBLIC_WEB_APP_URL=${{ vars.NEXT_PUBLIC_WEB_APP_URL }}
+            PUBLIC_APP_URL=${{ vars.PUBLIC_APP_URL }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || (github.ref_name == 'main' && 'production' || 'staging') }}
+    steps:
+      - name: Deploy on Coolify
+        env:
+          COOLIFY_URL: ${{ vars.COOLIFY_URL }}
+          COOLIFY_RESOURCE_UUID: ${{ vars.COOLIFY_RESOURCE_UUID }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+        run: |
+          if [ -z "$COOLIFY_URL" ] || [ -z "$COOLIFY_RESOURCE_UUID" ] || [ -z "$COOLIFY_TOKEN" ]; then
+            echo "Coolify isn't configured for $DEPLOY_ENV yet: images are pushed, deploy skipped."
+            exit 0
+          fi
+          curl -fsS -H "Authorization: Bearer $COOLIFY_TOKEN" \
+            "$COOLIFY_URL/api/v1/deploy?uuid=$COOLIFY_RESOURCE_UUID&force=false"

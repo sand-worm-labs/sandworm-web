@@ -59,8 +59,8 @@ pnpm-debug.log*
 *.pem
 
 logdy
-# Staging config (contains credentials)
-deployment/caddy/Caddyfile.staging
+# Backups of the env files (contain credentials)
+sandworm-*.env.bak*
 
 # Generated fresh from $ROOT_DIR by scripts/start-prod.sh and
 # scripts/rebuild.sh on every run — committing it just bakes in whichever
