@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { PiCheck, PiCopy, PiWarningCircle } from "react-icons/pi";
 
-import { ModalShell } from "@/web3/components/ModalShell";
+import { ModalShell } from "@/components/ModalShell";
 import {
   modalInlinePrimaryButtonClassName,
   modalSecondaryButtonClassName,
-} from "@/web3/components/modalStyles";
+} from "@/components/ModalShell/styles";
 import { LINK_WARNING_TEXT, describeLink } from "@/lib/externalLink";
 
 interface ExternalLinkDialogProps {

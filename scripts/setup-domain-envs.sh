@@ -44,7 +44,6 @@ esac
 API_ENV="$ROOT_DIR/apps/api/.env"
 WEB_ENV="$ROOT_DIR/apps/web/.env"
 LANDING_ENV="$ROOT_DIR/apps/landing-page/.env"
-TERMINAL_ENV="$ROOT_DIR/apps/terminal/.env"
 
 set_env() {
   local file="$1" key="$2" value="$3"
@@ -81,14 +80,6 @@ echo "✅ $WEB_ENV updated"
 echo "▶ Updating Landing env ($ENV)..."
 set_env "$LANDING_ENV" PUBLIC_APP_URL "$APP_DOMAIN"
 echo "✅ $LANDING_ENV updated"
-
-echo "▶ Updating Terminal env ($ENV)..."
-touch "$TERMINAL_ENV"
-set_env "$TERMINAL_ENV" NODE_ENV "$NODE_ENV"
-set_env "$TERMINAL_ENV" NEXT_PUBLIC_WEB_APP_URL "$APP_DOMAIN"
-set_env "$TERMINAL_ENV" NEXT_PUBLIC_TERMINAL_URL "$TERMINAL_DOMAIN"
-set_env "$TERMINAL_ENV" INTERNAL_API_URL "http://localhost:8003"
-echo "✅ $TERMINAL_ENV updated"
 
 # MCP server env, and the API settings that have to match it
 "$ROOT_DIR/scripts/setup-mcp-envs.sh" "$ENV"

@@ -16,7 +16,6 @@ import PublicHeaderLogo from "../Editor/PublicHeader/Logo";
 const TABS = [
   { id: "showcase", label: "Showcase", href: "/showcase" },
   { id: "community", label: "Community", href: "/explore" },
-  { id: "bounties", label: "Bounties", href: "/bounties" },
 ] as const;
 
 // =====================================

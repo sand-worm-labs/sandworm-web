@@ -62,14 +62,6 @@ const SEED: Seed[] = [
     4,
   ],
   ['creator', 'u1', 'Ada Lovelace', '@ada', 'ada', 3],
-  [
-    'bounty',
-    'b1',
-    'Uniswap V3: How Do Liquidity Providers Really Do?',
-    'Uniswap · 5,000 USDC',
-    'bounty bounties dex',
-    3,
-  ],
 ];
 
 run('search against Postgres', () => {
@@ -132,7 +124,6 @@ run('search against Postgres', () => {
     expect(found.protocol?.[0]).toBe('Uniswap');
     expect(found.category).toEqual(['DEXes']);
     expect(found.notebook).toEqual(['Uniswap (sample case study)']);
-    expect(found.bounty?.[0]).toMatch(/^Uniswap V3/);
   });
 
   it('finds it from a nickname, a prefix and a typo', async () => {
@@ -164,11 +155,8 @@ run('search against Postgres', () => {
     expect((await titles('pump.fun')).protocol).toEqual(['pump.fun']);
   });
 
-  it('finds a creator by name or handle, and a bounty by the word "bounty"', async () => {
+  it('finds a creator by name or handle', async () => {
     expect((await titles('ada')).creator).toEqual(['Ada Lovelace']);
-    expect(await titles('bounties')).toEqual({
-      bounty: [expect.stringMatching(/^Uniswap V3/)],
-    });
   });
 
   it('lists a notebook and its dashboard as separate results', async () => {
@@ -206,7 +194,6 @@ run('search against Postgres', () => {
       'notebook',
       'dashboard',
       'creator',
-      'bounty',
     ]);
   });
 

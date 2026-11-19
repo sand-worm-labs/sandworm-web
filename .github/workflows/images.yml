@@ -5,7 +5,7 @@
 #   Run workflow       -> pick the environment by hand
 #
 # Each GitHub environment (Settings > Environments: `staging`, `production`) holds:
-#   variables: NEXT_PUBLIC_* and PUBLIC_APP_URL (baked into web, terminal, landing)
+#   variables: NEXT_PUBLIC_* and PUBLIC_APP_URL (baked into web and landing)
 #              COOLIFY_URL, COOLIFY_RESOURCE_UUID (the stack's resource in Coolify)
 #   secrets:   COOLIFY_TOKEN (Coolify > Keys & Tokens, with deploy permission)
 # Repository secret SUBMODULES_TOKEN is needed only if apps/ai is private.
@@ -47,7 +47,6 @@ jobs:
         include:
           - { name: api, app: "@sandworm/app_api", dir: apps/api, context: ., file: deployment/coolify/docker/node.Dockerfile }
           - { name: web, app: "@sandworm/web", dir: apps/web, context: ., file: deployment/coolify/docker/node.Dockerfile }
-          - { name: terminal, app: "@sandworm/terminal", dir: apps/terminal, context: ., file: deployment/coolify/docker/node.Dockerfile }
           - { name: landing, app: "@sandworm/landing-page", dir: apps/landing-page, context: ., file: deployment/coolify/docker/node.Dockerfile }
           - { name: mcp, app: "@sandworm/mcp", dir: apps/mcp, context: ., file: deployment/coolify/docker/node.Dockerfile }
           - { name: ai, context: apps/ai, file: deployment/coolify/docker/ai.Dockerfile }
@@ -77,6 +76,8 @@ jobs:
             ${{ env.REGISTRY }}/sandworm-${{ matrix.name }}:${{ env.DEPLOY_ENV }}-${{ github.sha }}
           cache-from: type=gha,scope=${{ matrix.name }}-${{ env.DEPLOY_ENV }}
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}-${{ env.DEPLOY_ENV }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           build-args: |
             APP=${{ matrix.app }}
             APP_DIR=${{ matrix.dir }}

@@ -83,7 +83,7 @@ export class NotebookAttestation {
   }
 }
 
-// Whether a notebook can be submitted to a bounty right now, and if not, why.
+// Whether a notebook is trusted right now, and if not, why.
 @ObjectType()
 export class NotebookTrust {
   @BooleanField()

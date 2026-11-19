@@ -17,7 +17,6 @@ import {
   PiTrash,
   PiTrashThin,
   PiToolbox,
-  PiTrophy,
 } from "react-icons/pi";
 
 import { AccountDropdown } from "@/components/AccountDropdown";
@@ -91,11 +90,6 @@ export const WorkspaceSidebar = () => {
       name: "Community",
       href: `/workspace/${workspaceId}/explore`,
       icon: PiBinoculars,
-    },
-    {
-      name: "Bounties",
-      href: `/workspace/${workspaceId}/bounties`,
-      icon: PiTrophy,
     },
   ];
 

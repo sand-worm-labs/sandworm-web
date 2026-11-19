@@ -15,7 +15,6 @@ const ROUTE_TITLES: Record<string, string> = {
   "/workspace": "Home",
   "/showcase": "Showcase",
   "/explore": "Community",
-  "/bounties": "Bounties",
   "/session": "Projects",
   "/favorites": "Favorites",
 };

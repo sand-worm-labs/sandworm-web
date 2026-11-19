@@ -88,5 +88,4 @@ test('the tool description tells an agent what unlisted means before it chooses 
   const { description } = tools.get('publish_notebook')!.config;
   assert.match(description, /without signing in/);
   assert.match(description, /cannot be forked/);
-  assert.match(description, /bounty/);
 });

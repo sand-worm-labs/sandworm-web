@@ -1,0 +1,64 @@
+# Builds and tests @sandworm/types, @sandworm/editor and @sandworm/ui on every push and pull
+# request that touches them, and publishes them from main to GitHub Packages for the repos
+# outside this monorepo (sand-worm-labs/terminal, sand-worm-labs/earn).
+#
+# GitHub only takes packages scoped to the org, so they go out as @sand-worm-labs/*; consumers
+# alias them back: "@sandworm/ui": "npm:@sand-worm-labs/ui@^0.1.0". The version is <major>.<minor>
+# from package.json plus the run number, so every merge is a release and nobody bumps by hand.
+
+name: packages
+
+on:
+  push:
+    branches: [main]
+    paths: [packages/types/**, packages/editor/**, packages/ui/**, .github/workflows/packages.yml]
+  pull_request:
+    paths: [packages/types/**, packages/editor/**, packages/ui/**, .github/workflows/packages.yml]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  packages:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm exec turbo run build --filter=@sandworm/types --filter=@sandworm/editor
+      - run: pnpm --filter @sandworm/editor --filter @sandworm/ui test
+
+      - name: Publish
+        if: github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          versions='{}'
+          for pkg in types editor ui; do
+            manifest="packages/$pkg/package.json"
+            version="$(jq -r '.version | split(".")[0:2] | join(".")' "$manifest").${{ github.run_number }}"
+            versions=$(jq --arg n "$(jq -r .name "$manifest")" --arg v "$version" '.[$n] = $v' <<<"$versions")
+          done
+          # types first: editor depends on it.
+          for pkg in types editor ui; do
+            manifest="packages/$pkg/package.json"
+            jq --arg name "@sand-worm-labs/$pkg" --argjson versions "$versions" '
+              .version = $versions[.name]
+              | .name = $name
+              | del(.private, .devDependencies)
+              | .publishConfig = { registry: "https://npm.pkg.github.com" }
+              | .repository = { type: "git", url: "https://github.com/sand-worm-labs/sandworm-web.git", directory: "packages/\($name | ltrimstr("@sand-worm-labs/"))" }
+              | .dependencies |= with_entries(
+                  if (.key | startswith("@sandworm/"))
+                  then .value = "npm:@sand-worm-labs/\(.key | ltrimstr("@sandworm/"))@^\($versions[.key])"
+                  else . end)
+            ' "$manifest" > "$manifest.tmp" && mv "$manifest.tmp" "$manifest"
+            (cd "packages/$pkg" && pnpm publish --no-git-checks)
+          done

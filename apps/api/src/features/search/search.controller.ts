@@ -8,7 +8,7 @@ import { SearchService } from './search.service';
 import type { SearchResponse } from './search.types';
 
 // Public search over what anyone can open: protocols, chains, Showcase categories,
-// published notebooks and their dashboards, creators with a public page, and bounties.
+// published notebooks and their dashboards, and creators with a public page.
 // Nothing private is indexed, so the answer is the same for everyone and may be cached by
 // a browser or a CDN. Short-lived, so a notebook published a moment ago is not hidden for long.
 //
@@ -23,7 +23,7 @@ export class SearchController {
   @Get()
   @ApiPublic({
     summary:
-      'Search protocols, chains, categories, notebooks, dashboards, creators and bounties',
+      'Search protocols, chains, categories, notebooks, dashboards, and creators',
   })
   async find(
     @Query() query: SearchQueryDto,

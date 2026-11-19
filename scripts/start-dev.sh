@@ -15,21 +15,19 @@ Usage: $0 [target] [--only] [--clean-volumes]
 
 Each target also starts what it depends on:
 
-  --full       everything (default): Docker services, API, web, landing, terminal, ...
+  --full       everything (default): Docker services, API, web, landing, ...
   --web        Postgres, Redis, Caddy, API, web
-  --terminal   --web + terminal      (sign-in goes through the web app)
   --landing    --web + landing       (it links into the web app)
 
 Modifiers:
   --only           skip the dependencies and run just the target app
-                   (terminal: use http://localhost:3002/dev/preview?access=allowed)
   --clean-volumes  (alias --nuke) wipe the Docker volumes first (--full only)
 USAGE
 }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --full|--web|--landing|--terminal) TARGET="${1#--}"; shift ;;
+    --full|--web|--landing) TARGET="${1#--}"; shift ;;
     --only) ONLY=true; shift ;;
     --clean-volumes|--nuke) CLEAN_VOLUMES=true; shift ;;
     -h|--help) usage; exit 0 ;;
@@ -72,10 +70,6 @@ if [ "$TARGET" != "full" ]; then
   case "$TARGET" in
     web) APPS=(@sandworm/web) ;;
     landing) APPS=(@sandworm/landing-page @sandworm/web) ;;
-    terminal)
-      [ -f "$ROOT_DIR/apps/terminal/.env" ] || cp "$ROOT_DIR/apps/terminal/.env.example" "$ROOT_DIR/apps/terminal/.env"
-      APPS=(@sandworm/terminal @sandworm/web)
-      ;;
   esac
 
   if [ "$ONLY" = true ]; then

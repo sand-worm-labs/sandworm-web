@@ -18,8 +18,8 @@ export function trustSigners(): TrustSigners {
   return { agent, validator, agentId: BigInt(TRUST_AGENT_ID) };
 }
 
-// Whose verdicts count. TRUST_VALIDATORS lists extra addresses, so a bounty can accept an
-// outside validator; this server's own validator is always included when it has one.
+// Whose verdicts count. TRUST_VALIDATORS lists extra addresses, so an outside validator can
+// count too; this server's own validator is always included when it has one.
 export function trustedValidators(): Set<string> {
   const listed = (process.env.TRUST_VALIDATORS ?? '')
     .split(',')

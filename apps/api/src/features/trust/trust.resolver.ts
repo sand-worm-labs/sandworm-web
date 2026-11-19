@@ -11,7 +11,7 @@ export class TrustResolver {
   @Mutation(() => NotebookTrust, {
     name: 'attestNotebook',
     description:
-      "Start committing a cloud notebook's inputs (its code, data sources, parameters and when it ran) onchain, with a validator re-checking them. Returns at once with pending set: follow it with getNotebookTrust. Run the notebook first. Bounties accept only attested notebooks.",
+      "Start committing a cloud notebook's inputs (its code, data sources, parameters and when it ran) onchain, with a validator re-checking them. Returns at once with pending set: follow it with getNotebookTrust. Run the notebook first.",
   })
   async attestNotebook(
     @CurrentUser('id') userId: string,

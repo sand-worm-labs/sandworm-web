@@ -34,7 +34,9 @@ FROM base AS install
 COPY --from=prune /repo/out/json/ ./
 COPY --from=prune /repo/out/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=prune /repo/.npmrc ./.npmrc
+# @sand-worm-labs/* (trust) comes from GitHub Packages, which needs a token even to read.
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+    --mount=type=secret,id=github_token,env=GITHUB_TOKEN \
     pnpm install --frozen-lockfile
 
 # 3. Build the app and every workspace package under it.

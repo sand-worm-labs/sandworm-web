@@ -28,8 +28,7 @@ import { keccak256, type Hex } from 'viem';
 import type * as Y from 'yjs';
 import { Repository } from 'typeorm';
 import { DocumentService } from '../document/service/document.service';
-import { NotebookDocService } from '../notebook-blocks/notebook-doc.service';
-import type { NotebookRef } from './trust.gate';
+import { NotebookDocService, type NotebookRef } from '../notebook-blocks/notebook-doc.service';
 import { NotebookRunService } from '../notebook-blocks/notebook-run.service';
 import { trustedValidators, trustSigners } from './trust.config';
 
