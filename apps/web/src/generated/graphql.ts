@@ -55,69 +55,6 @@ export type AuthPayload = {
   user: User;
 };
 
-export type Bounty = {
-  __typename?: 'Bounty';
-  background?: Maybe<Scalars['String']['output']>;
-  chainId?: Maybe<Scalars['Int']['output']>;
-  dataHints: Array<Scalars['String']['output']>;
-  deadline?: Maybe<Scalars['DateTime']['output']>;
-  deliverables: Array<Scalars['String']['output']>;
-  details?: Maybe<Scalars['String']['output']>;
-  featured: Scalars['Boolean']['output'];
-  fundTxHash?: Maybe<Scalars['String']['output']>;
-  isMine: Scalars['Boolean']['output'];
-  judging: Array<Scalars['String']['output']>;
-  onchainId?: Maybe<Scalars['String']['output']>;
-  position: Scalars['Int']['output'];
-  postedOn?: Maybe<Scalars['String']['output']>;
-  prizeTiers: Array<BountyPrizeTier>;
-  prizes: Array<Scalars['String']['output']>;
-  requirements: Array<Scalars['String']['output']>;
-  reward?: Maybe<Scalars['String']['output']>;
-  rewardAmount?: Maybe<Scalars['String']['output']>;
-  rewardToken?: Maybe<Scalars['String']['output']>;
-  sample: Scalars['Boolean']['output'];
-  slug: Scalars['String']['output'];
-  sponsor: Scalars['String']['output'];
-  sponsorAddress?: Maybe<Scalars['String']['output']>;
-  status: Scalars['String']['output'];
-  summary: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-  type: Scalars['String']['output'];
-  winners: Array<BountyWinner>;
-};
-
-export type BountyEntry = {
-  __typename?: 'BountyEntry';
-  attestation?: Maybe<NotebookAttestation>;
-  author: Scalars['String']['output'];
-  bountySlug: Scalars['String']['output'];
-  documentId: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  isMine: Scalars['Boolean']['output'];
-  notebookSlug?: Maybe<Scalars['String']['output']>;
-  notebookTitle: Scalars['String']['output'];
-  submittedAt?: Maybe<Scalars['DateTime']['output']>;
-  trusted: Scalars['Boolean']['output'];
-  wallet?: Maybe<Scalars['String']['output']>;
-};
-
-export type BountyPrizeTier = {
-  __typename?: 'BountyPrizeTier';
-  amount: Scalars['String']['output'];
-  place: Scalars['Int']['output'];
-};
-
-export type BountyWinner = {
-  __typename?: 'BountyWinner';
-  address?: Maybe<Scalars['String']['output']>;
-  amount?: Maybe<Scalars['String']['output']>;
-  author: Scalars['String']['output'];
-  notebookSlug: Scalars['String']['output'];
-  notes?: Maybe<Array<Scalars['String']['output']>>;
-  place: Scalars['String']['output'];
-};
-
 export type Chat = {
   __typename?: 'Chat';
   createdAt: Scalars['DateTime']['output'];
@@ -161,21 +98,6 @@ export type ContractFunction = {
   name: Scalars['String']['output'];
   selector: Scalars['String']['output'];
   signature: Scalars['String']['output'];
-};
-
-export type CreateBountyInput = {
-  background?: InputMaybe<Scalars['String']['input']>;
-  deadline: Scalars['DateTime']['input'];
-  deliverables?: InputMaybe<Array<Scalars['String']['input']>>;
-  details: Scalars['String']['input'];
-  prizes: Array<Scalars['String']['input']>;
-  requirements?: InputMaybe<Array<Scalars['String']['input']>>;
-  rewardToken: Scalars['String']['input'];
-  sponsor: Scalars['String']['input'];
-  summary: Scalars['String']['input'];
-  title: Scalars['String']['input'];
-  type: Scalars['String']['input'];
-  workspaceId: Scalars['String']['input'];
 };
 
 export type CreateChatInput = {
@@ -421,14 +343,14 @@ export type Mutation = {
   approveRoleRequest: Scalars['Boolean']['output'];
   /** Approve a claim lead: marks the case study it names as claimed by the protocol's team. Needs the studio password, or a staff account. */
   approveShowcaseClaim: Scalars['Boolean']['output'];
-  /** Start committing a cloud notebook's inputs (its code, data sources, parameters and when it ran) onchain, with a validator re-checking them. Returns at once with pending set: follow it with getNotebookTrust. Run the notebook first. Bounties accept only attested notebooks. */
+  /** Approves the scope of a research request: the work starts and it counts toward the allowance. */
+  approveTerminalRequestScope: TerminalRequest;
+  /** Puts briefing items away for this member, or back. Archiving reads them too. */
+  archiveTerminalBriefing: Scalars['Boolean']['output'];
+  /** Start committing a cloud notebook's inputs (its code, data sources, parameters and when it ran) onchain, with a validator re-checking them. Returns at once with pending set: follow it with getNotebookTrust. Run the notebook first. */
   attestNotebook: NotebookTrust;
   /** Remove multiple users from workspaces */
   batchRemoveUsersFromWorkspace: Scalars['Boolean']['output'];
-  /** Check a funding transaction onchain and open the bounty. Everything is read from the chain. */
-  confirmBountyFunding: Bounty;
-  /** Create a bounty as a draft. It is listed once its reward is funded in escrow. */
-  createBounty: Bounty;
   /** Create a new chat */
   createChat: Chat;
   /** Create a new comment on a document */
@@ -441,6 +363,8 @@ export type Mutation = {
   createDocument: Document;
   /** Create a new execution schedule for a document */
   createSchedule: Schedule;
+  /** Set a client up: its details, plan, what to track and an invite for its admin. Staff only. */
+  createTerminalClient: TerminalTeamClient;
   /** Register new user */
   createUser: User;
   /** Create a new workspace */
@@ -465,6 +389,8 @@ export type Mutation = {
   deleteShowcaseCategory: Scalars['Boolean']['output'];
   /** Remove an uploaded protocol logo, so the protocol shows DefiLlama's icon again. Needs the studio password, or a staff account. */
   deleteShowcaseLogo: Scalars['Boolean']['output'];
+  /** Remove a key number and its readings. Staff only. */
+  deleteTerminalKpi: Scalars['Boolean']['output'];
   /** Delete a workspace */
   deleteWorkspace: Scalars['Boolean']['output'];
   /** Create a duplicate of a document in the same workspace */
@@ -485,10 +411,19 @@ export type Mutation = {
   inviteUserToWorkspace: Scalars['Boolean']['output'];
   /** Sign in */
   login: AuthPayload;
+  markTerminalBriefingRead: Scalars['Boolean']['output'];
+  /** Records that the user opened Briefing now: the start of their next "since your last visit". */
+  markTerminalBriefingSeen: Scalars['Boolean']['output'];
+  /** Puts briefing items back to unread, and out of the archive. */
+  markTerminalBriefingUnread: Scalars['Boolean']['output'];
+  /** The current member has seen the welcome; it is not shown again. */
+  markTerminalWelcomed: Scalars['Boolean']['output'];
   /** Pin or unpin a chat */
   pinChat: Chat;
   /** Publish a document */
   publishDocument: Document;
+  /** Record a reading by hand; one for the same date is replaced. Staff only. */
+  recordTerminalKpiValue: TerminalKpiDefinition;
   /** Reject a pending role request */
   rejectRoleRequest: Scalars['Boolean']['output'];
   /** Unmark a document as a favorite */
@@ -505,6 +440,8 @@ export type Mutation = {
   restartEnvironment: Environment;
   /** Restore a previously deleted document */
   restoreDocument: Document;
+  /** Run one of a client's notebooks on their behalf, as the staff member (who needs edit access to it). Staff only. */
+  runTerminalSource: TerminalSourceRun;
   /** Create a Showcase category, or change the one with the same slug. Needs the studio password, or a staff account. */
   saveShowcaseCategory: Scalars['Boolean']['output'];
   /** Set a chain's color and its place among the Showcase chain filters. Needs the studio password, or a staff account. */
@@ -515,8 +452,14 @@ export type Mutation = {
   saveShowcaseNotebook: Scalars['Boolean']['output'];
   /** Set a protocol's links (website, twitter, github, discord, telegram), as URLs or handles. Empty ones are removed. Needs the studio password, or a staff account. */
   saveShowcaseProtocolLinks: Scalars['Boolean']['output'];
+  /** Create a key number, or change the one with this key. What is not sent stays. Staff only. */
+  saveTerminalKpi: TerminalKpiDefinition;
+  /** Save the current user's terminal setup, as far as they have filled it in. */
+  saveTerminalSetup: TerminalSetup;
   /** Send a user message */
   sendMessage: Message;
+  /** Mark a client's admin invite as sent (the admin joins by signing in with the invited email). Staff only. */
+  sendTerminalInvite: TerminalTeamClient;
   /** Let any authenticated user with the link view this document read-only, without publishing it to the community */
   setDocumentLinkVisibility: Document;
   /** Set a notebook's Showcase metadata, or pass null to take it off the Showcase. */
@@ -525,21 +468,18 @@ export type Mutation = {
   setDocumentUnlisted: Document;
   /** Add or remove environment variables */
   setEnvironmentVariables: Array<EnvironmentVariable>;
+  setTerminalSignalFeedback: TerminalSignal;
+  setTerminalSignalStatus: TerminalSignal;
   setWorkspaceDefaultAiModel: Scalars['Boolean']['output'];
   /** Dev only: simulate a payment and set the workspace plan */
   simulateWorkspaceUpgrade: Workspace;
-  /** Record the notebook the current user is writing for a bounty. */
-  startBountyEntry: BountyEntry;
   /** Move a free workspace onto the trial plan */
   startWorkspaceTrial: Workspace;
-  /** Submit a published notebook as the current user's entry. A bounty funded in escrow needs the wallet the reward should be paid to. */
-  submitBountyEntry: BountyEntry;
   /** Ask for a protocol to be covered, ask for a report, or claim the case study about your protocol. Saved for the sales team. */
   submitShowcaseLead: Scalars['Boolean']['output'];
+  submitTerminalRequest: TerminalRequest;
   /** Switch to a different workspace */
   switchWorkspace: Scalars['Boolean']['output'];
-  /** Read a funded bounty's escrow and record who was paid and whether it is closed. Everything is read from the chain. */
-  syncBountyEscrow: Bounty;
   /** Unfollow User */
   unfollowUser: Profile;
   /** Unpublish a document */
@@ -596,6 +536,17 @@ export type MutationApproveShowcaseClaimArgs = {
 };
 
 
+export type MutationApproveTerminalRequestScopeArgs = {
+  requestId: Scalars['ID']['input'];
+};
+
+
+export type MutationArchiveTerminalBriefingArgs = {
+  isArchived: Scalars['Boolean']['input'];
+  itemIds: Array<Scalars['ID']['input']>;
+};
+
+
 export type MutationAttestNotebookArgs = {
   documentId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
@@ -604,18 +555,6 @@ export type MutationAttestNotebookArgs = {
 
 export type MutationBatchRemoveUsersFromWorkspaceArgs = {
   removals: Array<RemoveUserFromWorkspaceInput>;
-};
-
-
-export type MutationConfirmBountyFundingArgs = {
-  chainId: Scalars['Int']['input'];
-  slug: Scalars['String']['input'];
-  txHash: Scalars['String']['input'];
-};
-
-
-export type MutationCreateBountyArgs = {
-  input: CreateBountyInput;
 };
 
 
@@ -652,6 +591,11 @@ export type MutationCreateDocumentArgs = {
 export type MutationCreateScheduleArgs = {
   input: CreateScheduleInput;
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationCreateTerminalClientArgs = {
+  input: TerminalTeamClientDraftInput;
 };
 
 
@@ -718,6 +662,11 @@ export type MutationDeleteShowcaseCategoryArgs = {
 export type MutationDeleteShowcaseLogoArgs = {
   password?: InputMaybe<Scalars['String']['input']>;
   slug: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteTerminalKpiArgs = {
+  kpiId: Scalars['String']['input'];
 };
 
 
@@ -802,6 +751,16 @@ export type MutationLoginArgs = {
 };
 
 
+export type MutationMarkTerminalBriefingReadArgs = {
+  itemIds: Array<Scalars['ID']['input']>;
+};
+
+
+export type MutationMarkTerminalBriefingUnreadArgs = {
+  itemIds: Array<Scalars['ID']['input']>;
+};
+
+
 export type MutationPinChatArgs = {
   chatId: Scalars['String']['input'];
 };
@@ -811,6 +770,12 @@ export type MutationPublishDocumentArgs = {
   documentId: Scalars['String']['input'];
   meta?: InputMaybe<PublishDocumentMetaInput>;
   workspaceId: Scalars['String']['input'];
+};
+
+
+export type MutationRecordTerminalKpiValueArgs = {
+  input: TerminalKpiValueInput;
+  kpiId: Scalars['String']['input'];
 };
 
 
@@ -857,6 +822,12 @@ export type MutationRestoreDocumentArgs = {
 };
 
 
+export type MutationRunTerminalSourceArgs = {
+  clientId: Scalars['String']['input'];
+  documentId: Scalars['String']['input'];
+};
+
+
 export type MutationSaveShowcaseCategoryArgs = {
   input: Scalars['JSON']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
@@ -890,8 +861,24 @@ export type MutationSaveShowcaseProtocolLinksArgs = {
 };
 
 
+export type MutationSaveTerminalKpiArgs = {
+  clientId: Scalars['String']['input'];
+  input: TerminalKpiInput;
+};
+
+
+export type MutationSaveTerminalSetupArgs = {
+  input: TerminalSetupInput;
+};
+
+
 export type MutationSendMessageArgs = {
   input: SendMessageInput;
+};
+
+
+export type MutationSendTerminalInviteArgs = {
+  clientId: Scalars['String']['input'];
 };
 
 
@@ -922,6 +909,19 @@ export type MutationSetEnvironmentVariablesArgs = {
 };
 
 
+export type MutationSetTerminalSignalFeedbackArgs = {
+  feedback: Scalars['String']['input'];
+  signalId: Scalars['ID']['input'];
+};
+
+
+export type MutationSetTerminalSignalStatusArgs = {
+  reason?: InputMaybe<Scalars['String']['input']>;
+  signalId: Scalars['ID']['input'];
+  status: Scalars['String']['input'];
+};
+
+
 export type MutationSetWorkspaceDefaultAiModelArgs = {
   model: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
@@ -934,21 +934,8 @@ export type MutationSimulateWorkspaceUpgradeArgs = {
 };
 
 
-export type MutationStartBountyEntryArgs = {
-  documentId: Scalars['String']['input'];
-  slug: Scalars['String']['input'];
-};
-
-
 export type MutationStartWorkspaceTrialArgs = {
   workspaceId: Scalars['String']['input'];
-};
-
-
-export type MutationSubmitBountyEntryArgs = {
-  documentId: Scalars['String']['input'];
-  slug: Scalars['String']['input'];
-  wallet?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -957,13 +944,13 @@ export type MutationSubmitShowcaseLeadArgs = {
 };
 
 
-export type MutationSwitchWorkspaceArgs = {
-  workspaceId: Scalars['String']['input'];
+export type MutationSubmitTerminalRequestArgs = {
+  input: TerminalRequestInput;
 };
 
 
-export type MutationSyncBountyEscrowArgs = {
-  slug: Scalars['String']['input'];
+export type MutationSwitchWorkspaceArgs = {
+  workspaceId: Scalars['String']['input'];
 };
 
 
@@ -1119,7 +1106,7 @@ export type Query = {
   environment: Environment;
   /** Get current environment status */
   environmentStatus: EnvironmentStatus;
-  /** Get all environment variables (values are masked) */
+  /** Get all environment variables. Values are masked for viewers; editors and admins, who can change them, see them in full */
   environmentVariables: Array<EnvironmentVariable>;
   /** Get User favorite public documents */
   favoritePublicDocuments: Array<Document>;
@@ -1127,14 +1114,6 @@ export type Query = {
   fileExists: Scalars['Boolean']['output'];
   /** Get all workspaces the current user is an admin of, with their members */
   getAdminWorkspacesWithMembers: Array<WorkspaceMember>;
-  /** Get the listed bounties, in display order. Pass featured to get only the ones shown on the home page. */
-  getBounties: Array<Bounty>;
-  /** Get one bounty by its slug. A draft is returned only to its creator. */
-  getBounty?: Maybe<Bounty>;
-  /** Get the bounties the current user drafted in a workspace and has not funded yet. */
-  getBountyDrafts: Array<Bounty>;
-  /** Get the entries submitted to a bounty, oldest first. Wallets are returned only to the bounty's creator and to each entry's author. */
-  getBountyEntries: Array<BountyEntry>;
   /** Get a reusable component by ID */
   getComponent: ReusableComponent;
   /** Fetch a verified contract's real function and event signatures from its block explorer ABI, for tool params that let a user pick one instead of guessing (e.g. calldata_decoder). */
@@ -1153,8 +1132,6 @@ export type Query = {
   getForkedDocuments: Array<Document>;
   /** Get invitation details from hash without accepting it */
   getInvitationInfo: WorkspaceInvitationInfo;
-  /** Get the entries the current user has started or submitted, across all bounties. */
-  getMyBountyEntries: Array<BountyEntry>;
   /** The latest attestation of a notebook, or null if it has none. */
   getNotebookAttestation?: Maybe<NotebookAttestation>;
   /** Whether a notebook is trusted right now (attested, and unchanged since), and if not, why. */
@@ -1225,6 +1202,30 @@ export type Query = {
   /** Semantic search over the power tool catalog. Returns the best matches first. */
   searchTools: Array<Tool>;
   tags: Array<Scalars['String']['output']>;
+  /** The Analysis catalog of the user's terminal client: projects, regions and sectors with their reports. */
+  terminalAnalysis: TerminalAnalysis;
+  /** The user's briefing: recent items for their client and for them, with what they have read. */
+  terminalBriefing: TerminalBriefing;
+  /** One client with who reads it, what is open and the notebooks its terminal is built from. Staff only. */
+  terminalClient: TerminalClientDetail;
+  /** Every key number of a client, hidden ones too, with how each reads now. Staff only. */
+  terminalClientKpis: Array<TerminalKpiDefinition>;
+  /** Every terminal client, newest first. Staff only. */
+  terminalClients: Array<TerminalTeamClient>;
+  /** The numbers on the terminal section tabs: unread briefing, reports, open signals and open requests. */
+  terminalCounts: TerminalCounts;
+  /** Whether the current user is on the Sandworm team, for showing the terminal team tools. */
+  terminalIsStaff: Scalars['Boolean']['output'];
+  /** The key numbers on the Overview of the user's client, null before they belong to one. */
+  terminalOverviewKpis?: Maybe<TerminalOverviewKpis>;
+  /** The client's research requests and questions, with this year's research allowance. */
+  terminalRequests: TerminalRequests;
+  /** The signed-in user and the terminal client they belong to (null before their first setup save). */
+  terminalSession: TerminalSession;
+  /** The current user's terminal setup, or null before they first save it. */
+  terminalSetup?: Maybe<TerminalSetup>;
+  /** Patterns Sandworm saw in the client data and what they could mean, with the client triage. */
+  terminalSignals: TerminalSignals;
 };
 
 
@@ -1288,26 +1289,6 @@ export type QueryEnvironmentVariablesArgs = {
 export type QueryFileExistsArgs = {
   fileName: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
-};
-
-
-export type QueryGetBountiesArgs = {
-  featured?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type QueryGetBountyArgs = {
-  slug: Scalars['String']['input'];
-};
-
-
-export type QueryGetBountyDraftsArgs = {
-  workspaceId: Scalars['String']['input'];
-};
-
-
-export type QueryGetBountyEntriesArgs = {
-  slug: Scalars['String']['input'];
 };
 
 
@@ -1509,6 +1490,16 @@ export type QuerySearchToolsArgs = {
   query: Scalars['String']['input'];
 };
 
+
+export type QueryTerminalClientArgs = {
+  clientId: Scalars['String']['input'];
+};
+
+
+export type QueryTerminalClientKpisArgs = {
+  clientId: Scalars['String']['input'];
+};
+
 export type RemoveUserFromWorkspaceInput = {
   userId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
@@ -1627,6 +1618,378 @@ export type SocialLinksInput = {
   telegram?: InputMaybe<Scalars['String']['input']>;
   twitter?: InputMaybe<Scalars['String']['input']>;
   warpcast?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TerminalAllowance = {
+  __typename?: 'TerminalAllowance';
+  resetsAt: Scalars['String']['output'];
+  total: Scalars['Int']['output'];
+  used: Scalars['Int']['output'];
+};
+
+export type TerminalAnalysis = {
+  __typename?: 'TerminalAnalysis';
+  subjects: Array<TerminalAnalysisSubject>;
+};
+
+export type TerminalAnalysisReport = {
+  __typename?: 'TerminalAnalysisReport';
+  id: Scalars['String']['output'];
+  isNew: Scalars['Boolean']['output'];
+  line: Scalars['String']['output'];
+  path: Scalars['String']['output'];
+  publishedAt: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+};
+
+export type TerminalAnalysisSubject = {
+  __typename?: 'TerminalAnalysisSubject';
+  icon?: Maybe<Scalars['JSON']['output']>;
+  id: Scalars['String']['output'];
+  impact: Scalars['String']['output'];
+  impactSize: Scalars['Int']['output'];
+  kind: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  reports: Array<TerminalAnalysisReport>;
+  view: Scalars['String']['output'];
+};
+
+export type TerminalBriefing = {
+  __typename?: 'TerminalBriefing';
+  archivedCount: Scalars['Int']['output'];
+  items: Array<TerminalBriefingItem>;
+  lastSeenAt?: Maybe<Scalars['String']['output']>;
+};
+
+export type TerminalBriefingItem = {
+  __typename?: 'TerminalBriefingItem';
+  detail: Scalars['JSON']['output'];
+  id: Scalars['String']['output'];
+  isArchived: Scalars['Boolean']['output'];
+  isRead: Scalars['Boolean']['output'];
+  kind: Scalars['String']['output'];
+  publishedAt: Scalars['String']['output'];
+  sourcePath?: Maybe<Scalars['String']['output']>;
+  subject: Scalars['String']['output'];
+  summary: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+};
+
+export type TerminalClientDetail = {
+  __typename?: 'TerminalClientDetail';
+  adminEmail?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  lastReadAt?: Maybe<Scalars['String']['output']>;
+  members: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  newSignals: Scalars['Int']['output'];
+  openRequests: Scalars['Int']['output'];
+  plan: Scalars['String']['output'];
+  researchAllowance: Scalars['Int']['output'];
+  sources: Array<TerminalClientSource>;
+  status: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+  website: Scalars['String']['output'];
+};
+
+export type TerminalClientSource = {
+  __typename?: 'TerminalClientSource';
+  cells: Scalars['Int']['output'];
+  documentId: Scalars['String']['output'];
+  items: Scalars['Int']['output'];
+  lastRanAt?: Maybe<Scalars['String']['output']>;
+  path: Scalars['String']['output'];
+  schedule?: Maybe<TerminalSourceSchedule>;
+  title: Scalars['String']['output'];
+};
+
+export type TerminalCounts = {
+  __typename?: 'TerminalCounts';
+  analysis: Scalars['Int']['output'];
+  briefing: Scalars['Int']['output'];
+  requests: Scalars['Int']['output'];
+  signals: Scalars['Int']['output'];
+};
+
+export type TerminalGoals = {
+  __typename?: 'TerminalGoals';
+  selected: Array<Scalars['String']['output']>;
+};
+
+export type TerminalGoalsInput = {
+  selected: Array<Scalars['String']['input']>;
+};
+
+export type TerminalInvite = {
+  __typename?: 'TerminalInvite';
+  access: Scalars['String']['output'];
+  email: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+};
+
+export type TerminalInviteInput = {
+  access: Scalars['String']['input'];
+  email: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+};
+
+export type TerminalKpi = {
+  __typename?: 'TerminalKpi';
+  comparison?: Maybe<Scalars['String']['output']>;
+  delta?: Maybe<TerminalKpiDelta>;
+  id: Scalars['String']['output'];
+  label: Scalars['String']['output'];
+  value: Scalars['String']['output'];
+};
+
+export type TerminalKpiDefinition = {
+  __typename?: 'TerminalKpiDefinition';
+  comparison: Scalars['JSON']['output'];
+  description: Scalars['String']['output'];
+  direction: Scalars['String']['output'];
+  display: TerminalKpi;
+  format: Scalars['JSON']['output'];
+  id: Scalars['String']['output'];
+  isVisible: Scalars['Boolean']['output'];
+  key: Scalars['String']['output'];
+  label: Scalars['String']['output'];
+  lastReadingAt?: Maybe<Scalars['String']['output']>;
+  position: Scalars['Int']['output'];
+  settings: Scalars['JSON']['output'];
+  source: Scalars['JSON']['output'];
+  subjectId?: Maybe<Scalars['String']['output']>;
+};
+
+export type TerminalKpiDelta = {
+  __typename?: 'TerminalKpiDelta';
+  text: Scalars['String']['output'];
+  tone: Scalars['String']['output'];
+};
+
+export type TerminalKpiInput = {
+  comparison?: InputMaybe<Scalars['JSON']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  direction?: InputMaybe<Scalars['String']['input']>;
+  format?: InputMaybe<Scalars['JSON']['input']>;
+  isVisible?: InputMaybe<Scalars['Boolean']['input']>;
+  key: Scalars['String']['input'];
+  label?: InputMaybe<Scalars['String']['input']>;
+  position?: InputMaybe<Scalars['Int']['input']>;
+  settings?: InputMaybe<Scalars['JSON']['input']>;
+  source?: InputMaybe<Scalars['JSON']['input']>;
+  subjectId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TerminalKpiValueInput = {
+  asOf?: InputMaybe<Scalars['String']['input']>;
+  previous?: InputMaybe<Scalars['Float']['input']>;
+  textValue?: InputMaybe<Scalars['String']['input']>;
+  value?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type TerminalOrganisation = {
+  __typename?: 'TerminalOrganisation';
+  description: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+  website: Scalars['String']['output'];
+};
+
+export type TerminalOrganisationInput = {
+  description: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  type: Scalars['String']['input'];
+  website: Scalars['String']['input'];
+};
+
+export type TerminalOverviewKpis = {
+  __typename?: 'TerminalOverviewKpis';
+  clientStatus: Scalars['String']['output'];
+  clientType: Scalars['String']['output'];
+  isUpdating: Scalars['Boolean']['output'];
+  kpis: Array<TerminalKpi>;
+};
+
+export type TerminalRequest = {
+  __typename?: 'TerminalRequest';
+  about: Array<Scalars['String']['output']>;
+  approvedAt?: Maybe<Scalars['String']['output']>;
+  closedAt?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  kind: Scalars['String']['output'];
+  outcome?: Maybe<Scalars['String']['output']>;
+  progressNote?: Maybe<Scalars['String']['output']>;
+  question: Scalars['String']['output'];
+  reportPath?: Maybe<Scalars['String']['output']>;
+  requestedBy?: Maybe<Scalars['String']['output']>;
+  scope?: Maybe<Scalars['JSON']['output']>;
+  scopedAt?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
+  submittedAt: Scalars['String']['output'];
+  timing?: Maybe<Scalars['String']['output']>;
+  useCase?: Maybe<Scalars['String']['output']>;
+};
+
+export type TerminalRequestInput = {
+  about: Array<Scalars['String']['input']>;
+  files: Array<Scalars['String']['input']>;
+  kind: Scalars['String']['input'];
+  question: Scalars['String']['input'];
+  timing?: InputMaybe<Scalars['String']['input']>;
+  useCase?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TerminalRequests = {
+  __typename?: 'TerminalRequests';
+  allowance: TerminalAllowance;
+  requests: Array<TerminalRequest>;
+};
+
+export type TerminalSession = {
+  __typename?: 'TerminalSession';
+  client?: Maybe<TerminalSessionClient>;
+  firstBriefingDays: Scalars['Int']['output'];
+  needsWelcome: Scalars['Boolean']['output'];
+  user: TerminalSessionUser;
+};
+
+export type TerminalSessionClient = {
+  __typename?: 'TerminalSessionClient';
+  access: Scalars['String']['output'];
+  icon?: Maybe<Scalars['JSON']['output']>;
+  name: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+};
+
+export type TerminalSessionUser = {
+  __typename?: 'TerminalSessionUser';
+  name: Scalars['String']['output'];
+};
+
+export type TerminalSetup = {
+  __typename?: 'TerminalSetup';
+  goals: TerminalGoals;
+  organisation: TerminalOrganisation;
+  team: TerminalTeam;
+  tracking: TerminalTracking;
+};
+
+export type TerminalSetupInput = {
+  goals: TerminalGoalsInput;
+  organisation: TerminalOrganisationInput;
+  team: TerminalTeamInput;
+  tracking: TerminalTrackingInput;
+};
+
+export type TerminalSignal = {
+  __typename?: 'TerminalSignal';
+  couldMean: Scalars['String']['output'];
+  detail?: Maybe<Scalars['JSON']['output']>;
+  dismissReason?: Maybe<Scalars['String']['output']>;
+  evidence: Scalars['String']['output'];
+  feedback: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  kind: Scalars['String']['output'];
+  observed: Scalars['String']['output'];
+  publishedAt: Scalars['String']['output'];
+  reportPath?: Maybe<Scalars['String']['output']>;
+  size: Scalars['String']['output'];
+  sizeLabel: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  subject: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+};
+
+export type TerminalSignals = {
+  __typename?: 'TerminalSignals';
+  items: Array<TerminalSignal>;
+};
+
+export type TerminalSourceRun = {
+  __typename?: 'TerminalSourceRun';
+  cells: Scalars['Int']['output'];
+  failed: Array<TerminalSourceRunFailure>;
+  status: Scalars['String']['output'];
+};
+
+export type TerminalSourceRunFailure = {
+  __typename?: 'TerminalSourceRunFailure';
+  message: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+};
+
+export type TerminalSourceSchedule = {
+  __typename?: 'TerminalSourceSchedule';
+  isActive: Scalars['Boolean']['output'];
+  lastRunAt?: Maybe<Scalars['String']['output']>;
+  nextRunAt?: Maybe<Scalars['String']['output']>;
+};
+
+export type TerminalTeam = {
+  __typename?: 'TerminalTeam';
+  invites: Array<TerminalInvite>;
+};
+
+export type TerminalTeamClient = {
+  __typename?: 'TerminalTeamClient';
+  adminEmail?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  plan: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+};
+
+export type TerminalTeamClientDraftInput = {
+  details: TerminalTeamDetailsInput;
+  inviteTiming: Scalars['String']['input'];
+  starterIds: Array<Scalars['String']['input']>;
+  tracking: TerminalTrackingInput;
+};
+
+export type TerminalTeamDetails = {
+  __typename?: 'TerminalTeamDetails';
+  adminEmail: Scalars['String']['output'];
+  adminName: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  plan: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+  website: Scalars['String']['output'];
+};
+
+export type TerminalTeamDetailsInput = {
+  adminEmail: Scalars['String']['input'];
+  adminName: Scalars['String']['input'];
+  description: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  plan: Scalars['String']['input'];
+  type: Scalars['String']['input'];
+  website: Scalars['String']['input'];
+};
+
+export type TerminalTeamInput = {
+  invites: Array<TerminalInviteInput>;
+};
+
+export type TerminalTracking = {
+  __typename?: 'TerminalTracking';
+  addresses: Scalars['String']['output'];
+  autoDiscover: Scalars['Boolean']['output'];
+  competitors: Array<Scalars['String']['output']>;
+  regions: Array<Scalars['String']['output']>;
+  shareInternalData: Scalars['Boolean']['output'];
+};
+
+export type TerminalTrackingInput = {
+  addresses: Scalars['String']['input'];
+  autoDiscover: Scalars['Boolean']['input'];
+  competitors: Array<Scalars['String']['input']>;
+  regions: Array<Scalars['String']['input']>;
+  shareInternalData: Scalars['Boolean']['input'];
 };
 
 export type Tool = {
@@ -1921,46 +2284,6 @@ export type UnfollowUserMutationVariables = Exact<{
 
 
 export type UnfollowUserMutation = { __typename?: 'Mutation', unfollowUser: { __typename?: 'Profile', username: string, bio: string, image: string, following: boolean } };
-
-export type CreateBountyMutationVariables = Exact<{
-  input: CreateBountyInput;
-}>;
-
-
-export type CreateBountyMutation = { __typename?: 'Mutation', createBounty: { __typename?: 'Bounty', slug: string, title: string, status: string } };
-
-export type ConfirmBountyFundingMutationVariables = Exact<{
-  slug: Scalars['String']['input'];
-  chainId: Scalars['Int']['input'];
-  txHash: Scalars['String']['input'];
-}>;
-
-
-export type ConfirmBountyFundingMutation = { __typename?: 'Mutation', confirmBountyFunding: { __typename?: 'Bounty', slug: string, status: string, chainId?: number | null, onchainId?: string | null } };
-
-export type SyncBountyEscrowMutationVariables = Exact<{
-  slug: Scalars['String']['input'];
-}>;
-
-
-export type SyncBountyEscrowMutation = { __typename?: 'Mutation', syncBountyEscrow: { __typename?: 'Bounty', slug: string, status: string, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null, notes?: Array<string> | null }> } };
-
-export type StartBountyEntryMutationVariables = Exact<{
-  slug: Scalars['String']['input'];
-  documentId: Scalars['String']['input'];
-}>;
-
-
-export type StartBountyEntryMutation = { __typename?: 'Mutation', startBountyEntry: { __typename?: 'BountyEntry', id: string, bountySlug: string, documentId: string, submittedAt?: any | null } };
-
-export type SubmitBountyEntryMutationVariables = Exact<{
-  slug: Scalars['String']['input'];
-  documentId: Scalars['String']['input'];
-  wallet?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type SubmitBountyEntryMutation = { __typename?: 'Mutation', submitBountyEntry: { __typename?: 'BountyEntry', id: string, bountySlug: string, documentId: string, wallet?: string | null, submittedAt?: any | null } };
 
 export type CreateChatMutationVariables = Exact<{
   input: CreateChatInput;
@@ -2373,39 +2696,6 @@ export type GetUserFollowingQueryVariables = Exact<{
 
 export type GetUserFollowingQuery = { __typename?: 'Query', getUserFollowing: Array<{ __typename?: 'User', id: string, username?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, avater?: string | null, followersCount: number, followingCount: number }> };
 
-export type BountyWinnerFieldsFragment = { __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null, notes?: Array<string> | null };
-
-export type GetBountiesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetBountiesQuery = { __typename?: 'Query', getBounties: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, sample: boolean, onchainId?: string | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null, notes?: Array<string> | null }> }> };
-
-export type GetBountyQueryVariables = Exact<{
-  slug: Scalars['String']['input'];
-}>;
-
-
-export type GetBountyQuery = { __typename?: 'Query', getBounty?: { __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, background?: string | null, requirements: Array<string>, deliverables: Array<string>, prizes: Array<string>, judging: Array<string>, dataHints: Array<string>, postedOn?: string | null, sample: boolean, details?: string | null, deadline?: any | null, chainId?: number | null, onchainId?: string | null, sponsorAddress?: string | null, fundTxHash?: string | null, rewardToken?: string | null, rewardAmount?: string | null, isMine: boolean, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null, notes?: Array<string> | null }>, prizeTiers: Array<{ __typename?: 'BountyPrizeTier', place: number, amount: string }> } | null };
-
-export type GetBountyDraftsQueryVariables = Exact<{
-  workspaceId: Scalars['String']['input'];
-}>;
-
-
-export type GetBountyDraftsQuery = { __typename?: 'Query', getBountyDrafts: Array<{ __typename?: 'Bounty', slug: string, title: string, sponsor: string, type: string, reward?: string | null, status: string, summary: string, sample: boolean, onchainId?: string | null, rewardToken?: string | null, rewardAmount?: string | null, deadline?: any | null, winners: Array<{ __typename?: 'BountyWinner', place: string, author: string, notebookSlug: string, amount?: string | null, address?: string | null, notes?: Array<string> | null }>, prizeTiers: Array<{ __typename?: 'BountyPrizeTier', place: number, amount: string }> }> };
-
-export type GetBountyEntriesQueryVariables = Exact<{
-  slug: Scalars['String']['input'];
-}>;
-
-
-export type GetBountyEntriesQuery = { __typename?: 'Query', getBountyEntries: Array<{ __typename?: 'BountyEntry', id: string, documentId: string, author: string, notebookTitle: string, notebookSlug?: string | null, wallet?: string | null, submittedAt?: any | null, isMine: boolean, trusted: boolean, attestation?: { __typename?: 'NotebookAttestation', agentId: string, requestHash: string, validator: string, ranAt: any, requestTx: string, responseTx?: string | null, responseTxUrl?: string | null } | null }> };
-
-export type GetMyBountyEntriesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetMyBountyEntriesQuery = { __typename?: 'Query', getMyBountyEntries: Array<{ __typename?: 'BountyEntry', id: string, bountySlug: string, documentId: string, submittedAt?: any | null }> };
-
 export type GetChatsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
   documentId: Scalars['String']['input'];
@@ -2817,16 +3107,6 @@ export const EnvironmentFieldsFragmentDoc = gql`
   status
   resourceVersion
   lastActivityAt
-}
-    `;
-export const BountyWinnerFieldsFragmentDoc = gql`
-    fragment BountyWinnerFields on BountyWinner {
-  place
-  author
-  notebookSlug
-  amount
-  address
-  notes
 }
     `;
 export const EditTitleWithAiDocument = gql`
@@ -3300,192 +3580,6 @@ export function useUnfollowUserMutation(baseOptions?: Apollo.MutationHookOptions
 export type UnfollowUserMutationHookResult = ReturnType<typeof useUnfollowUserMutation>;
 export type UnfollowUserMutationResult = Apollo.MutationResult<UnfollowUserMutation>;
 export type UnfollowUserMutationOptions = Apollo.BaseMutationOptions<UnfollowUserMutation, UnfollowUserMutationVariables>;
-export const CreateBountyDocument = gql`
-    mutation CreateBounty($input: CreateBountyInput!) {
-  createBounty(input: $input) {
-    slug
-    title
-    status
-  }
-}
-    `;
-export type CreateBountyMutationFn = Apollo.MutationFunction<CreateBountyMutation, CreateBountyMutationVariables>;
-
-/**
- * __useCreateBountyMutation__
- *
- * To run a mutation, you first call `useCreateBountyMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateBountyMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createBountyMutation, { data, loading, error }] = useCreateBountyMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useCreateBountyMutation(baseOptions?: Apollo.MutationHookOptions<CreateBountyMutation, CreateBountyMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateBountyMutation, CreateBountyMutationVariables>(CreateBountyDocument, options);
-      }
-export type CreateBountyMutationHookResult = ReturnType<typeof useCreateBountyMutation>;
-export type CreateBountyMutationResult = Apollo.MutationResult<CreateBountyMutation>;
-export type CreateBountyMutationOptions = Apollo.BaseMutationOptions<CreateBountyMutation, CreateBountyMutationVariables>;
-export const ConfirmBountyFundingDocument = gql`
-    mutation ConfirmBountyFunding($slug: String!, $chainId: Int!, $txHash: String!) {
-  confirmBountyFunding(slug: $slug, chainId: $chainId, txHash: $txHash) {
-    slug
-    status
-    chainId
-    onchainId
-  }
-}
-    `;
-export type ConfirmBountyFundingMutationFn = Apollo.MutationFunction<ConfirmBountyFundingMutation, ConfirmBountyFundingMutationVariables>;
-
-/**
- * __useConfirmBountyFundingMutation__
- *
- * To run a mutation, you first call `useConfirmBountyFundingMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useConfirmBountyFundingMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [confirmBountyFundingMutation, { data, loading, error }] = useConfirmBountyFundingMutation({
- *   variables: {
- *      slug: // value for 'slug'
- *      chainId: // value for 'chainId'
- *      txHash: // value for 'txHash'
- *   },
- * });
- */
-export function useConfirmBountyFundingMutation(baseOptions?: Apollo.MutationHookOptions<ConfirmBountyFundingMutation, ConfirmBountyFundingMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<ConfirmBountyFundingMutation, ConfirmBountyFundingMutationVariables>(ConfirmBountyFundingDocument, options);
-      }
-export type ConfirmBountyFundingMutationHookResult = ReturnType<typeof useConfirmBountyFundingMutation>;
-export type ConfirmBountyFundingMutationResult = Apollo.MutationResult<ConfirmBountyFundingMutation>;
-export type ConfirmBountyFundingMutationOptions = Apollo.BaseMutationOptions<ConfirmBountyFundingMutation, ConfirmBountyFundingMutationVariables>;
-export const SyncBountyEscrowDocument = gql`
-    mutation SyncBountyEscrow($slug: String!) {
-  syncBountyEscrow(slug: $slug) {
-    slug
-    status
-    winners {
-      ...BountyWinnerFields
-    }
-  }
-}
-    ${BountyWinnerFieldsFragmentDoc}`;
-export type SyncBountyEscrowMutationFn = Apollo.MutationFunction<SyncBountyEscrowMutation, SyncBountyEscrowMutationVariables>;
-
-/**
- * __useSyncBountyEscrowMutation__
- *
- * To run a mutation, you first call `useSyncBountyEscrowMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSyncBountyEscrowMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [syncBountyEscrowMutation, { data, loading, error }] = useSyncBountyEscrowMutation({
- *   variables: {
- *      slug: // value for 'slug'
- *   },
- * });
- */
-export function useSyncBountyEscrowMutation(baseOptions?: Apollo.MutationHookOptions<SyncBountyEscrowMutation, SyncBountyEscrowMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<SyncBountyEscrowMutation, SyncBountyEscrowMutationVariables>(SyncBountyEscrowDocument, options);
-      }
-export type SyncBountyEscrowMutationHookResult = ReturnType<typeof useSyncBountyEscrowMutation>;
-export type SyncBountyEscrowMutationResult = Apollo.MutationResult<SyncBountyEscrowMutation>;
-export type SyncBountyEscrowMutationOptions = Apollo.BaseMutationOptions<SyncBountyEscrowMutation, SyncBountyEscrowMutationVariables>;
-export const StartBountyEntryDocument = gql`
-    mutation StartBountyEntry($slug: String!, $documentId: String!) {
-  startBountyEntry(slug: $slug, documentId: $documentId) {
-    id
-    bountySlug
-    documentId
-    submittedAt
-  }
-}
-    `;
-export type StartBountyEntryMutationFn = Apollo.MutationFunction<StartBountyEntryMutation, StartBountyEntryMutationVariables>;
-
-/**
- * __useStartBountyEntryMutation__
- *
- * To run a mutation, you first call `useStartBountyEntryMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useStartBountyEntryMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [startBountyEntryMutation, { data, loading, error }] = useStartBountyEntryMutation({
- *   variables: {
- *      slug: // value for 'slug'
- *      documentId: // value for 'documentId'
- *   },
- * });
- */
-export function useStartBountyEntryMutation(baseOptions?: Apollo.MutationHookOptions<StartBountyEntryMutation, StartBountyEntryMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<StartBountyEntryMutation, StartBountyEntryMutationVariables>(StartBountyEntryDocument, options);
-      }
-export type StartBountyEntryMutationHookResult = ReturnType<typeof useStartBountyEntryMutation>;
-export type StartBountyEntryMutationResult = Apollo.MutationResult<StartBountyEntryMutation>;
-export type StartBountyEntryMutationOptions = Apollo.BaseMutationOptions<StartBountyEntryMutation, StartBountyEntryMutationVariables>;
-export const SubmitBountyEntryDocument = gql`
-    mutation SubmitBountyEntry($slug: String!, $documentId: String!, $wallet: String) {
-  submitBountyEntry(slug: $slug, documentId: $documentId, wallet: $wallet) {
-    id
-    bountySlug
-    documentId
-    wallet
-    submittedAt
-  }
-}
-    `;
-export type SubmitBountyEntryMutationFn = Apollo.MutationFunction<SubmitBountyEntryMutation, SubmitBountyEntryMutationVariables>;
-
-/**
- * __useSubmitBountyEntryMutation__
- *
- * To run a mutation, you first call `useSubmitBountyEntryMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSubmitBountyEntryMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [submitBountyEntryMutation, { data, loading, error }] = useSubmitBountyEntryMutation({
- *   variables: {
- *      slug: // value for 'slug'
- *      documentId: // value for 'documentId'
- *      wallet: // value for 'wallet'
- *   },
- * });
- */
-export function useSubmitBountyEntryMutation(baseOptions?: Apollo.MutationHookOptions<SubmitBountyEntryMutation, SubmitBountyEntryMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<SubmitBountyEntryMutation, SubmitBountyEntryMutationVariables>(SubmitBountyEntryDocument, options);
-      }
-export type SubmitBountyEntryMutationHookResult = ReturnType<typeof useSubmitBountyEntryMutation>;
-export type SubmitBountyEntryMutationResult = Apollo.MutationResult<SubmitBountyEntryMutation>;
-export type SubmitBountyEntryMutationOptions = Apollo.BaseMutationOptions<SubmitBountyEntryMutation, SubmitBountyEntryMutationVariables>;
 export const CreateChatDocument = gql`
     mutation CreateChat($input: CreateChatInput!) {
   createChat(input: $input) {
@@ -5626,284 +5720,6 @@ export type GetUserFollowingQueryHookResult = ReturnType<typeof useGetUserFollow
 export type GetUserFollowingLazyQueryHookResult = ReturnType<typeof useGetUserFollowingLazyQuery>;
 export type GetUserFollowingSuspenseQueryHookResult = ReturnType<typeof useGetUserFollowingSuspenseQuery>;
 export type GetUserFollowingQueryResult = Apollo.QueryResult<GetUserFollowingQuery, GetUserFollowingQueryVariables>;
-export const GetBountiesDocument = gql`
-    query GetBounties {
-  getBounties {
-    slug
-    title
-    sponsor
-    type
-    reward
-    status
-    summary
-    winners {
-      ...BountyWinnerFields
-    }
-    sample
-    onchainId
-  }
-}
-    ${BountyWinnerFieldsFragmentDoc}`;
-
-/**
- * __useGetBountiesQuery__
- *
- * To run a query within a React component, call `useGetBountiesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetBountiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetBountiesQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetBountiesQuery(baseOptions?: Apollo.QueryHookOptions<GetBountiesQuery, GetBountiesQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetBountiesQuery, GetBountiesQueryVariables>(GetBountiesDocument, options);
-      }
-export function useGetBountiesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetBountiesQuery, GetBountiesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetBountiesQuery, GetBountiesQueryVariables>(GetBountiesDocument, options);
-        }
-export function useGetBountiesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetBountiesQuery, GetBountiesQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetBountiesQuery, GetBountiesQueryVariables>(GetBountiesDocument, options);
-        }
-export type GetBountiesQueryHookResult = ReturnType<typeof useGetBountiesQuery>;
-export type GetBountiesLazyQueryHookResult = ReturnType<typeof useGetBountiesLazyQuery>;
-export type GetBountiesSuspenseQueryHookResult = ReturnType<typeof useGetBountiesSuspenseQuery>;
-export type GetBountiesQueryResult = Apollo.QueryResult<GetBountiesQuery, GetBountiesQueryVariables>;
-export const GetBountyDocument = gql`
-    query GetBounty($slug: String!) {
-  getBounty(slug: $slug) {
-    slug
-    title
-    sponsor
-    type
-    reward
-    status
-    summary
-    background
-    requirements
-    deliverables
-    prizes
-    judging
-    dataHints
-    winners {
-      ...BountyWinnerFields
-    }
-    postedOn
-    sample
-    details
-    deadline
-    status
-    chainId
-    onchainId
-    sponsorAddress
-    fundTxHash
-    rewardToken
-    rewardAmount
-    prizeTiers {
-      place
-      amount
-    }
-    isMine
-  }
-}
-    ${BountyWinnerFieldsFragmentDoc}`;
-
-/**
- * __useGetBountyQuery__
- *
- * To run a query within a React component, call `useGetBountyQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetBountyQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetBountyQuery({
- *   variables: {
- *      slug: // value for 'slug'
- *   },
- * });
- */
-export function useGetBountyQuery(baseOptions: Apollo.QueryHookOptions<GetBountyQuery, GetBountyQueryVariables> & ({ variables: GetBountyQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetBountyQuery, GetBountyQueryVariables>(GetBountyDocument, options);
-      }
-export function useGetBountyLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetBountyQuery, GetBountyQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetBountyQuery, GetBountyQueryVariables>(GetBountyDocument, options);
-        }
-export function useGetBountySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetBountyQuery, GetBountyQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetBountyQuery, GetBountyQueryVariables>(GetBountyDocument, options);
-        }
-export type GetBountyQueryHookResult = ReturnType<typeof useGetBountyQuery>;
-export type GetBountyLazyQueryHookResult = ReturnType<typeof useGetBountyLazyQuery>;
-export type GetBountySuspenseQueryHookResult = ReturnType<typeof useGetBountySuspenseQuery>;
-export type GetBountyQueryResult = Apollo.QueryResult<GetBountyQuery, GetBountyQueryVariables>;
-export const GetBountyDraftsDocument = gql`
-    query GetBountyDrafts($workspaceId: String!) {
-  getBountyDrafts(workspaceId: $workspaceId) {
-    slug
-    title
-    sponsor
-    type
-    reward
-    status
-    summary
-    winners {
-      ...BountyWinnerFields
-    }
-    sample
-    onchainId
-    rewardToken
-    rewardAmount
-    prizeTiers {
-      place
-      amount
-    }
-    deadline
-  }
-}
-    ${BountyWinnerFieldsFragmentDoc}`;
-
-/**
- * __useGetBountyDraftsQuery__
- *
- * To run a query within a React component, call `useGetBountyDraftsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetBountyDraftsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetBountyDraftsQuery({
- *   variables: {
- *      workspaceId: // value for 'workspaceId'
- *   },
- * });
- */
-export function useGetBountyDraftsQuery(baseOptions: Apollo.QueryHookOptions<GetBountyDraftsQuery, GetBountyDraftsQueryVariables> & ({ variables: GetBountyDraftsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetBountyDraftsQuery, GetBountyDraftsQueryVariables>(GetBountyDraftsDocument, options);
-      }
-export function useGetBountyDraftsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetBountyDraftsQuery, GetBountyDraftsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetBountyDraftsQuery, GetBountyDraftsQueryVariables>(GetBountyDraftsDocument, options);
-        }
-export function useGetBountyDraftsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetBountyDraftsQuery, GetBountyDraftsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetBountyDraftsQuery, GetBountyDraftsQueryVariables>(GetBountyDraftsDocument, options);
-        }
-export type GetBountyDraftsQueryHookResult = ReturnType<typeof useGetBountyDraftsQuery>;
-export type GetBountyDraftsLazyQueryHookResult = ReturnType<typeof useGetBountyDraftsLazyQuery>;
-export type GetBountyDraftsSuspenseQueryHookResult = ReturnType<typeof useGetBountyDraftsSuspenseQuery>;
-export type GetBountyDraftsQueryResult = Apollo.QueryResult<GetBountyDraftsQuery, GetBountyDraftsQueryVariables>;
-export const GetBountyEntriesDocument = gql`
-    query GetBountyEntries($slug: String!) {
-  getBountyEntries(slug: $slug) {
-    id
-    documentId
-    author
-    notebookTitle
-    notebookSlug
-    wallet
-    submittedAt
-    isMine
-    trusted
-    attestation {
-      agentId
-      requestHash
-      validator
-      ranAt
-      requestTx
-      responseTx
-      responseTxUrl
-    }
-  }
-}
-    `;
-
-/**
- * __useGetBountyEntriesQuery__
- *
- * To run a query within a React component, call `useGetBountyEntriesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetBountyEntriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetBountyEntriesQuery({
- *   variables: {
- *      slug: // value for 'slug'
- *   },
- * });
- */
-export function useGetBountyEntriesQuery(baseOptions: Apollo.QueryHookOptions<GetBountyEntriesQuery, GetBountyEntriesQueryVariables> & ({ variables: GetBountyEntriesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetBountyEntriesQuery, GetBountyEntriesQueryVariables>(GetBountyEntriesDocument, options);
-      }
-export function useGetBountyEntriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetBountyEntriesQuery, GetBountyEntriesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetBountyEntriesQuery, GetBountyEntriesQueryVariables>(GetBountyEntriesDocument, options);
-        }
-export function useGetBountyEntriesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetBountyEntriesQuery, GetBountyEntriesQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetBountyEntriesQuery, GetBountyEntriesQueryVariables>(GetBountyEntriesDocument, options);
-        }
-export type GetBountyEntriesQueryHookResult = ReturnType<typeof useGetBountyEntriesQuery>;
-export type GetBountyEntriesLazyQueryHookResult = ReturnType<typeof useGetBountyEntriesLazyQuery>;
-export type GetBountyEntriesSuspenseQueryHookResult = ReturnType<typeof useGetBountyEntriesSuspenseQuery>;
-export type GetBountyEntriesQueryResult = Apollo.QueryResult<GetBountyEntriesQuery, GetBountyEntriesQueryVariables>;
-export const GetMyBountyEntriesDocument = gql`
-    query GetMyBountyEntries {
-  getMyBountyEntries {
-    id
-    bountySlug
-    documentId
-    submittedAt
-  }
-}
-    `;
-
-/**
- * __useGetMyBountyEntriesQuery__
- *
- * To run a query within a React component, call `useGetMyBountyEntriesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetMyBountyEntriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetMyBountyEntriesQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetMyBountyEntriesQuery(baseOptions?: Apollo.QueryHookOptions<GetMyBountyEntriesQuery, GetMyBountyEntriesQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetMyBountyEntriesQuery, GetMyBountyEntriesQueryVariables>(GetMyBountyEntriesDocument, options);
-      }
-export function useGetMyBountyEntriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyBountyEntriesQuery, GetMyBountyEntriesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetMyBountyEntriesQuery, GetMyBountyEntriesQueryVariables>(GetMyBountyEntriesDocument, options);
-        }
-export function useGetMyBountyEntriesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyBountyEntriesQuery, GetMyBountyEntriesQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetMyBountyEntriesQuery, GetMyBountyEntriesQueryVariables>(GetMyBountyEntriesDocument, options);
-        }
-export type GetMyBountyEntriesQueryHookResult = ReturnType<typeof useGetMyBountyEntriesQuery>;
-export type GetMyBountyEntriesLazyQueryHookResult = ReturnType<typeof useGetMyBountyEntriesLazyQuery>;
-export type GetMyBountyEntriesSuspenseQueryHookResult = ReturnType<typeof useGetMyBountyEntriesSuspenseQuery>;
-export type GetMyBountyEntriesQueryResult = Apollo.QueryResult<GetMyBountyEntriesQuery, GetMyBountyEntriesQueryVariables>;
 export const GetChatsDocument = gql`
     query GetChats($workspaceId: String!, $documentId: String!) {
   chats(workspaceId: $workspaceId, documentId: $documentId) {
