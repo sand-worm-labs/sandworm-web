@@ -160,14 +160,22 @@ services:
       retries: 5
 
   ###########################
-  # Caddy Gateway
+  # Proxy: Traefik, as in production (routes in traefik.dev.yml)
   ###########################
-  caddy:
+  proxy:
     container_name: sandworm-proxy
-    image: caddy:alpine
-    volumes:
-      - ../caddy/Caddyfile.dev:/etc/caddy/Caddyfile:ro
+    image: traefik:v3.3
     network_mode: host
+    command:
+      - --providers.file.filename=/etc/traefik/dev.yml
+      - --entrypoints.app.address=:8081
+      - --entrypoints.terminal.address=:8082
+      - --entrypoints.landing.address=:8080
+      # The same timeouts as Coolify's proxy (deployment/coolify/README.md).
+      - --entrypoints.app.transport.respondingTimeouts.readTimeout=0
+      - --entrypoints.terminal.transport.respondingTimeouts.readTimeout=0
+    volumes:
+      - ./traefik.dev.yml:/etc/traefik/dev.yml:ro
 
   ###########################
   # Logdy Log Viewer

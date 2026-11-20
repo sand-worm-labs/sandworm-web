@@ -10,7 +10,7 @@ This page is about running Sandworm locally.
 
 ```bash
 ./scripts/start-dev.sh             # everything
-./scripts/start-dev.sh --web       # Postgres, Redis, Caddy, API, web
+./scripts/start-dev.sh --web       # Postgres, Redis, the proxy, API, web
 ./scripts/start-dev.sh --web --only
 ```
 
@@ -23,8 +23,9 @@ This page is about running Sandworm locally.
 
 ## Proxy
 
-Dev: Caddy with `deployment/caddy/Caddyfile.dev`. Like Traefik in production, it puts the app
-and the API on one origin (`localhost:8081`), so cookies work without CORS.
+Dev: Traefik too, the same proxy as production, with its routes in `deployment/docker/traefik.dev.yml`
+(the production labels, pointed at the dev servers). It puts the app and the API on one origin
+(`localhost:8081`), so cookies work without CORS.
 
 Staging and production: Traefik, run by Coolify. Routes are labels in
 `deployment/coolify/stack/docker-compose.yml`.

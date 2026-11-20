@@ -45,7 +45,7 @@ async function bootstrap() {
     // Fastify's default is 1MB, which the workspace file-upload endpoint
     // (raw octet-stream body) blows past for anything but a tiny file.
     bodyLimit: 20 * 1024 * 1024, // 20MB
-    // Caddy (in Docker) and local services sit in front of the API. Trusting
+    // The dev proxy (Traefik, in Docker) and local services sit in front of the API. Trusting
     // only loopback and private ranges gives the real client IP for rate
     // limits and audit logs, without letting public callers spoof it.
     trustProxy: 'loopback,uniquelocal',

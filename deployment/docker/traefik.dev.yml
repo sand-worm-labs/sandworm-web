@@ -1,0 +1,62 @@
+# Dev routes for Traefik, the proxy production runs (Coolify's). They are the labels in
+# deployment/coolify/stack/docker-compose.yml, pointed at the dev servers on this machine:
+# when a route changes there, change it here too. Ports stand in for hosts:
+# :8081 is app., :8082 is terminal., :8080 is the landing page.
+
+http:
+  routers:
+    api:
+      entryPoints: [app]
+      rule: PathPrefix(`/api`) || PathPrefix(`/socket.io`) || Path(`/.well-known/oauth-authorization-server`)
+      priority: 100
+      service: api
+    # MCP clients that can't read the discovery document fall back to these paths on the issuer.
+    oauth:
+      entryPoints: [app]
+      rule: Path(`/authorize`) || Path(`/token`) || Path(`/register`)
+      priority: 100
+      middlewares: [oauth-path]
+      service: api
+    yjs:
+      entryPoints: [app]
+      rule: PathPrefix(`/yjs`)
+      priority: 100
+      service: yjs
+    web:
+      entryPoints: [app]
+      rule: PathPrefix(`/`)
+      priority: 1
+      service: web
+    # The api on the terminal's own origin, so the browser sends the session cookies without CORS.
+    terminal-api:
+      entryPoints: [terminal]
+      rule: PathPrefix(`/api`)
+      priority: 100
+      service: api
+    terminal:
+      entryPoints: [terminal]
+      rule: PathPrefix(`/`)
+      priority: 1
+      service: terminal
+    landing:
+      entryPoints: [landing]
+      rule: PathPrefix(`/`)
+      service: landing
+
+  middlewares:
+    oauth-path:
+      replacePathRegex:
+        regex: ^/(authorize|token|register)$
+        replacement: /api/oauth/${1}
+
+  services:
+    api:
+      loadBalancer: { servers: [{ url: http://localhost:8003 }] }
+    yjs:
+      loadBalancer: { servers: [{ url: http://localhost:8005 }] }
+    web:
+      loadBalancer: { servers: [{ url: http://localhost:3000 }] }
+    terminal:
+      loadBalancer: { servers: [{ url: http://localhost:3002 }] }
+    landing:
+      loadBalancer: { servers: [{ url: http://localhost:4321 }] }

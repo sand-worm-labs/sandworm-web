@@ -16,7 +16,7 @@ Usage: $0 [target] [--only] [--clean-volumes]
 Each target also starts what it depends on:
 
   --full       everything (default): Docker services, API, web, landing, ...
-  --web        Postgres, Redis, Caddy, API, web
+  --web        Postgres, Redis, the proxy, API, web
   --landing    --web + landing       (it links into the web app)
 
 Modifiers:
@@ -50,9 +50,9 @@ start_services() {
   export JUPYTER_TOKEN
   case "$(uname -m)" in arm64|aarch64) export TARGETARCH=arm64 ;; *) export TARGETARCH=amd64 ;; esac
 
-  echo "▶ Starting Postgres, Redis and Caddy..."
-  docker compose -f "$ROOT_DIR/deployment/docker/docker-compose.dev.yml" up -d db redis caddy
-  # Caddy keeps the Caddyfile it started with, so pick up edits.
+  echo "▶ Starting Postgres, Redis and the proxy..."
+  docker compose -f "$ROOT_DIR/deployment/docker/docker-compose.dev.yml" up -d db redis proxy
+  # A bind-mounted file edited on the host may not reach Traefik's watcher, so pick up edits.
   docker restart sandworm-proxy > /dev/null
   until docker exec sandworm-postgres pg_isready -U postgres > /dev/null 2>&1; do
     echo "Postgres not ready yet..."
