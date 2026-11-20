@@ -181,7 +181,7 @@ export function registerNotebookManageTools(server: McpServer, ctx: ToolContext)
         'visibility "unlisted" shares it by a link alone: anyone who has the link can view it without signing in, nothing lists or searches it, ' +
         'search engines are asked to skip it, and it cannot be forked. The link carries a long random token, so it cannot be guessed; share it only with the people who should see the notebook. ' +
         'Publishing it again as unlisted keeps the same link; set newLink to true to replace it (the old link stops working). ' +
-        'unpublish_notebook turns either kind off. An unlisted notebook cannot be submitted to a bounty, because a bounty page is public. ' +
+        'unpublish_notebook turns either kind off. ' +
         'The description (about 280 characters at most) and tags are saved either way',
       inputSchema: {
         notebookId,

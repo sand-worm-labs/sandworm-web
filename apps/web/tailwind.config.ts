@@ -8,9 +8,8 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/layouts/**/*.{js,ts,jsx,tsx,mdx}",
-    // These hold class names too (the escrow UI, shared button styles). Left out, a class used
-    // only there is never generated and the element is silently unstyled.
-    "./src/web3/**/*.{js,ts,jsx,tsx,mdx}",
+    // Shared button styles hold class names too. Left out, a class used only there is never
+    // generated and the element is silently unstyled.
     "./src/styles/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/lib/**/*.{js,ts,jsx,tsx,mdx}",
     // The header and search shared with the terminal keep their class names in packages/ui.

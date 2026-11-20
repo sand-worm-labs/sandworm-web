@@ -24,7 +24,6 @@ export const TYPE_BOOST: Record<SearchEntryType, number> = {
   chain: 6,
   category: 4,
   creator: 3,
-  bounty: 3,
   dashboard: 2,
   notebook: 1,
 };
@@ -37,7 +36,6 @@ export const TYPE_ORDER: SearchEntryType[] = [
   'notebook',
   'dashboard',
   'creator',
-  'bounty',
 ];
 
 // Other names people search a protocol or chain by. Keyed by the name as the search

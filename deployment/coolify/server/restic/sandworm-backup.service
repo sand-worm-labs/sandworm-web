@@ -1,0 +1,10 @@
+[Unit]
+Description=Sandworm backup (restic)
+Wants=network-online.target
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/sandworm/restic/backup.sh
+Nice=10
+IOSchedulingClass=idle

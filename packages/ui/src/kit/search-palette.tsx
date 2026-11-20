@@ -45,7 +45,6 @@ const CATEGORIES: { id: SearchEntryType; label: string; icon: LucideIcon }[] = [
   { id: "notebook", label: "Notebooks", icon: NotebookText },
   { id: "dashboard", label: "Dashboards", icon: LayoutDashboard },
   { id: "creator", label: "Creators", icon: User2Icon },
-  { id: "bounty", label: "Bounties", icon: Coins },
 ];
 
 const CATEGORY = Object.fromEntries(CATEGORIES.map(c => [c.id, c])) as Record<

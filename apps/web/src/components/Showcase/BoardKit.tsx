@@ -1,7 +1,7 @@
-// The look the public sections share (Showcase, Community, Bounties): a
+// The look the public sections share (Showcase, Community): a
 // mono eyebrow over a large headline, split-flap number tiles, and dense
 // "board" panels with a mono header row. Everything here uses the app's
-// theme colors, so the three sections match each other in light and dark.
+// theme colors, so the sections match each other in light and dark.
 import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";

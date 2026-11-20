@@ -9,8 +9,6 @@ volumes:
   sandworm-qdrant-data:
   sandworm-redis-data:
   sandworm-portainer-data:
-  sandworm-caddy-data:
-  sandworm-caddy-config:
 
 services:
   ###########################
@@ -151,26 +149,6 @@ services:
       interval: 5s
       timeout: 10s
       retries: 5
-
-  ###########################
-  # Caddy Gateway
-  ###########################
-  caddy:
-    container_name: sandworm-proxy
-    image: caddy:alpine
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes:
-      - ../caddy/Caddyfile.prod:/etc/caddy/Caddyfile:ro
-      - sandworm-caddy-data:/data
-      - sandworm-caddy-config:/config
-    networks:
-      - sandworm-net
 
   ###########################
   # Portainer Docker UI
