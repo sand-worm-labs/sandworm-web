@@ -15,7 +15,7 @@
 # Terminal (its own repo now) and ai are not started.
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
 STACK="$ROOT_DIR/deployment/coolify/stack"
 SERVICES=(postgres redis qdrant jupyter migrate api web mcp landing traefik)
 
