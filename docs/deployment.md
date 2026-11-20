@@ -1,125 +1,47 @@
 # Deployment Guide
 
-## Stack
+Staging and production run on Coolify: see [deployment/coolify/README.md](../deployment/coolify/README.md).
+`deployment/coolify/deploy.sh` makes their settings and deploys them, and
+`deployment/coolify/local/test.sh` runs the same stack on your machine first.
 
-- **Apps** — PM2 (api, web, landing, ai)
-- **Infra** — Docker Compose (Postgres, Redis, Qdrant, Caddy, Portainer, Logdy, Jupyter)
-- **Proxy** — Caddy (auto HTTPS via Let's Encrypt)
+This page is about running Sandworm locally.
 
----
-
-## Deploy
-
-### Staging
-```bash
-./scripts/start-prod.sh staging
-```
-
-### Production
-```bash
-./scripts/start-prod.sh prod
-```
-
-### Dev
-```bash
-./scripts/start-dev.sh
-```
-
-The start script handles everything in order: env setup → domain config → Docker services → build → PM2.
-
----
-
-## Stop
+## Dev
 
 ```bash
-./scripts/stop-prod.sh
+./scripts/start-dev.sh             # everything
+./scripts/start-dev.sh --web       # Postgres, Redis, the proxy, API, web
+./scripts/start-dev.sh --web --only
 ```
-
----
-
-## Scripts
 
 | Script | What it does |
 |---|---|
-| `start-prod.sh [staging\|prod]` | Full deploy — envs, Docker, build, PM2 |
-| `start-dev.sh` | Start dev environment |
-| `stop-prod.sh` | Stop all apps and Docker services |
-| `setup-envs.sh` | Create `.env` files from scratch if missing |
-| `setup-domain-envs.sh [dev\|staging\|prod]` | Patch domain-related vars in all `.env` files |
-| `setup-mcp-envs.sh [dev\|staging\|prod]` | Fill `apps/mcp/.env` and the matching MCP vars in `apps/api/.env` (run by `setup-domain-envs.sh`) |
+| `start-dev.sh` | Env setup, Docker services, migrations, then `turbo dev` |
+| `setup-envs.sh` | Create the apps' `.env` files if missing |
+| `setup-domain-envs.sh` | Set the dev URLs in every `.env` (run by `start-dev.sh`) |
+| `setup-mcp-envs.sh` | Fill `apps/mcp/.env` and the matching MCP vars in `apps/api/.env` (run by `setup-domain-envs.sh`) |
 
----
+## Proxy
 
-## Caddy (Proxy)
+Dev: Traefik too, the same proxy as production, with its routes in `deployment/docker/traefik.dev.yml`
+(the production labels, pointed at the dev servers). It puts the app and the API on one origin
+(`localhost:8081`), so cookies work without CORS.
 
-Caddy runs as a Docker container and handles routing and automatic SSL.
+Staging and production: Traefik, run by Coolify. Routes are labels in
+`deployment/coolify/stack/docker-compose.yml`.
 
-| Config | Used for |
-|---|---|
-| `deployment/caddy/Caddyfile.dev` | Local dev — plain HTTP, `localhost` upstreams |
-| `deployment/caddy/Caddyfile.staging` | Staging — HTTPS, basic auth, `host.docker.internal` upstreams |
-| `deployment/caddy/Caddyfile.prod` | Production — HTTPS, `localhost` upstreams |
+## Common issues
 
-SSL certs are stored in the `sandworm-caddy-data` Docker volume and auto-renewed.
-
-### Requirements for HTTPS
-- DNS A records pointing to the server IP
-- Ports 80 and 443 open:
-```bash
-sudo ufw allow 80 && sudo ufw allow 443
-```
-
----
-
-## DNS Records (Production)
-
-```
-sandwormlab.xyz          A  <PROD_SERVER_IP>
-www.sandwormlab.xyz      A  <PROD_SERVER_IP>
-app.sandwormlab.xyz      A  <PROD_SERVER_IP>
-mcp.sandwormlab.xyz      A  <PROD_SERVER_IP>
-```
-
----
-
-## Portainer
-
-Docker management UI. Port is not public — access via SSH tunnel:
-```bash
-ssh -L 9000:localhost:9000 root@<SERVER_IP>
-```
-Then open `http://localhost:9000`.
-
----
-
-## Common Issues
-
-**`wss://null` in browser console**
-`NEXT_PUBLIC_*` vars are baked in at build time. Re-run envs then rebuild:
-```bash
-./scripts/setup-domain-envs.sh staging  # or prod
-pnpm --filter web build
-pm2 restart web
-```
-
-**SSL cert not issuing**
-```bash
-sudo ufw status                          # check ports 80/443 open
-docker logs sandworm-proxy --tail 50    # check Caddy logs
-```
+**`wss://null` in the browser console**
+`NEXT_PUBLIC_*` vars are baked in at build time. In dev, re-run `scripts/setup-domain-envs.sh`
+and restart web. On Coolify they come from the GitHub environment: `deploy.sh envs <env> --apply`,
+then redeploy.
 
 **Cookie / auth not working**
-- Always access via the domain, not the server IP
-- `localhost` and `127.0.0.1` are different origins — always use `localhost`
-- Rebuild web after any domain env change
+- Use `localhost:8081`, not `127.0.0.1` or the dev server's own port
+- Restart web after any domain env change
 
 **Redis not receiving events**
 ```bash
 docker exec -it sandworm-redis redis-cli PSUBSCRIBE 'job:*'
-```
-
-**PM2 app down**
-```bash
-pm2 logs api    # tail API logs
-pm2 restart all
 ```

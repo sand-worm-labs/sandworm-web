@@ -3,31 +3,14 @@
 # two always agree. Safe to re-run: URLs and the port are set every time,
 # secrets are only generated when missing.
 #
-# Usage: scripts/setup-mcp-envs.sh [dev|staging|prod]
+# For dev: staging and production get these from deployment/coolify/deploy.sh.
 set -e
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
-ENV="${1:-}"
+ENV=dev
 MCP_PORT=6789
-
-case "$ENV" in
-  dev)
-    APP_DOMAIN="http://localhost:8081"
-    MCP_DOMAIN="http://localhost:$MCP_PORT"
-    ;;
-  staging)
-    APP_DOMAIN="https://app.preview-c8829726.sandwormlab.xyz"
-    MCP_DOMAIN="https://mcp.preview-c8829726.sandwormlab.xyz"
-    ;;
-  prod)
-    APP_DOMAIN="https://app.sandwormlab.xyz"
-    MCP_DOMAIN="https://mcp.sandwormlab.xyz"
-    ;;
-  *)
-    echo "Usage: $0 [dev|staging|prod]"
-    exit 1
-    ;;
-esac
+APP_DOMAIN="http://localhost:8081"
+MCP_DOMAIN="http://localhost:$MCP_PORT"
 
 API_ENV="$ROOT_DIR/apps/api/.env"
 MCP_ENV="$ROOT_DIR/apps/mcp/.env"

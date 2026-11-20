@@ -1,6 +1,6 @@
 {
   "name": "@sandworm/ui",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "private": true,
   "scripts": {
@@ -67,5 +67,9 @@
     "./kit/form/styles": "./src/kit/form/styles.ts",
     "./kit/lib/*": "./src/kit/lib/*.ts",
     "./kit/*": "./src/kit/*.tsx"
-  }
+  },
+  "files": [
+    "src",
+    "postcss.config.js"
+  ]
 }

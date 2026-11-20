@@ -24,7 +24,7 @@ export async function graphql<T>(
   ctx: ToolContext,
   query: string,
   variables: Record<string, unknown> = {},
-  // For a call that does slow work on purpose, such as attesting a notebook.
+  // For a call that does slow work on purpose, such as running a notebook.
   { timeoutMs = 30_000 }: { timeoutMs?: number } = {},
 ): Promise<T> {
   const res = await callApi({ userId: ctx.auth.userId, token: ctx.auth.token, apiUrl: ctx.apiUrl }, {

@@ -1,7 +1,7 @@
 # Search
 
 One public search across what anyone can open: protocols, chains, Showcase categories,
-published notebooks, notebook dashboards, creators with a public page, and bounties.
+published notebooks, notebook dashboards, and creators with a public page.
 `GET /api/search?q=&type=&limit=&offset=`. Nothing private is indexed, so every answer is
 the same for everyone and can be cached.
 

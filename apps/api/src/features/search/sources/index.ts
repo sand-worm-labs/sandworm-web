@@ -1,4 +1,3 @@
-import { bountiesSource } from './bounties.source';
 import { categoriesSource } from './categories.source';
 import { chainsSource } from './chains.source';
 import { creatorsSource } from './creators.source';
@@ -15,7 +14,6 @@ export const SEARCH_SOURCES: SearchSource[] = [
   notebooksSource,
   dashboardsSource,
   creatorsSource,
-  bountiesSource,
 ];
 
 export type { SearchSource, SourceContext } from './search-source';

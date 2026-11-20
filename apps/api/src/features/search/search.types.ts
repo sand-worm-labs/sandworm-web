@@ -7,7 +7,6 @@ export const SEARCH_ENTRY_TYPES = [
   'notebook',
   'dashboard',
   'creator',
-  'bounty',
 ] as const;
 
 export type SearchEntryType = (typeof SEARCH_ENTRY_TYPES)[number];
