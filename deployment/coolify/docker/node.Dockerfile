@@ -11,7 +11,9 @@
 # directory and start command. NEXT_PUBLIC_* and PUBLIC_* values are baked in
 # at build time, so web, terminal and landing images are built per environment.
 
-ARG NODE_VERSION=22.12.0
+# 22.14 or later: older images ship a corepack whose npm signing keys have been
+# rotated, so it refuses to fetch pnpm ("Cannot find matching keyid").
+ARG NODE_VERSION=22.14.0
 
 FROM node:${NODE_VERSION}-slim AS base
 ENV PNPM_HOME=/pnpm \
