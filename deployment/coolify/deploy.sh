@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Deploys Sandworm to Coolify and makes its env files. Replaces
-# scripts/start-prod.sh and the env scripts it ran.
+# Deploys Sandworm to Coolify and makes its env files.
 #
 #   deploy.sh secrets staging                fresh random secrets → sandworm-staging-secrets.env
 #   deploy.sh envs <env>                     list every setting (names only)
@@ -35,7 +34,7 @@ ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 
 die() { echo "error: $*" >&2; exit 1; }
 log() { printf '\033[1m▶ %s\033[0m\n' "$*"; }
-usage() { sed -n '2,31p' "$0"; exit 2; }
+usage() { sed -n '2,30p' "$0"; exit 2; }
 
 for tool in curl jq gh openssl; do command -v "$tool" >/dev/null || die "needs $tool"; done
 

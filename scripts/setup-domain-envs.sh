@@ -2,41 +2,14 @@
 set -e
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
-ENV="${1:-}"
-
-usage() {
-  echo "Usage: $0 [dev|staging|prod]"
-  exit 1
-}
-
-[ -z "$ENV" ] && usage
-
-case "$ENV" in
-  dev)
-    APP_DOMAIN="http://localhost:8081"
-    LANDING_DOMAIN="http://localhost:8080"
-    COOKIE_DOMAIN=""
-    WS_SCHEME="ws"
-    NODE_ENV="development"
-    ;;
-  staging)
-    APP_DOMAIN="https://app.preview-c8829726.sandwormlab.xyz"
-    LANDING_DOMAIN="https://preview-c8829726.sandwormlab.xyz"
-    COOKIE_DOMAIN=".preview-c8829726.sandwormlab.xyz"
-    WS_SCHEME="wss"
-    NODE_ENV="production"
-    ;;
-  prod)
-    APP_DOMAIN="https://app.sandwormlab.xyz"
-    LANDING_DOMAIN="https://sandwormlab.xyz"
-    COOKIE_DOMAIN=".sandwormlab.xyz"
-    WS_SCHEME="wss"
-    NODE_ENV="production"
-    ;;
-  *)
-    usage
-    ;;
-esac
+# Sets the domain-based settings in the local .env files, for dev. Staging and production
+# get theirs from deployment/coolify/deploy.sh.
+ENV=dev
+APP_DOMAIN="http://localhost:8081"
+LANDING_DOMAIN="http://localhost:8080"
+COOKIE_DOMAIN=""
+WS_SCHEME="ws"
+NODE_ENV="development"
 
 API_ENV="$ROOT_DIR/apps/api/.env"
 WEB_ENV="$ROOT_DIR/apps/web/.env"
@@ -79,7 +52,7 @@ set_env "$LANDING_ENV" PUBLIC_APP_URL "$APP_DOMAIN"
 echo "✅ $LANDING_ENV updated"
 
 # MCP server env, and the API settings that have to match it
-"$ROOT_DIR/scripts/setup-mcp-envs.sh" "$ENV"
+"$ROOT_DIR/scripts/setup-mcp-envs.sh"
 
 echo
 echo "✅ Envs set for $ENV"

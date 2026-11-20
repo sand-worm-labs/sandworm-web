@@ -12,7 +12,8 @@ deployment/coolify/
   docker/ai.Dockerfile       the AI service (apps/ai submodule)
   stack/docker-compose.yml   the product: apps, data, Traefik routing, migrations
   stack/.env.example         every setting the stack reads
-  deploy.sh                  settings → Coolify + GitHub, then build and deploy (replaces start-prod.sh)
+  deploy.sh                  settings → Coolify + GitHub, then build and deploy
+  local/                     the stack on this machine, to test it (test.sh)
   monitoring/                Prometheus, Grafana, exporters, alert rules, Kuma checklist
 .github/workflows/images.yml build → GHCR → deploy on Coolify
 ```
@@ -144,11 +145,10 @@ been restored isn't one yet.
 5. **Rollback**: DNS back to the old server and `pm2 start api mcp`. Writes
    made on the new server after cutover would be lost, so decide within the
    first hour.
-6. After a week with good backups and a test restore: turn off the old server,
-   then remove `ecosystem.config.js`, `push-envs.sh`, `push-prod-envs.sh`,
-   `scripts/start-prod.sh`, `stop-prod.sh`, `rebuild.sh` and `deployment/docker/docker-compose.yml`.
-   (The production Caddyfile is already gone from the repo: don't `git pull` and
-   restart the infra compose on the old server before cutover, or it loses its proxy.)
+6. After a week with good backups and a test restore: turn off the old server.
+   Its PM2 scripts are already gone from the repo: keep the old server's checkout
+   as it is until then, since rollback runs from it: don't `git pull` there
+   before cutover, as its proxy, PM2 scripts and infra compose are no longer in the repo.
 
 ## Check on staging first
 
