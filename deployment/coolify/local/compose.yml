@@ -1,0 +1,30 @@
+# Laid over ../stack/docker-compose.yml by test.sh to run the stack on this machine.
+# Traefik stands in for Coolify's proxy, with the same entrypoint and resolver names the
+# stack's labels use. Let's Encrypt can't issue for *.localhost, so Traefik serves its own
+# self-signed certificate (curl -k, or accept it once in the browser).
+
+services:
+  traefik:
+    image: traefik:v3.3
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.http.address=:80
+      - --entrypoints.https.address=:443
+      # The same timeouts the README sets on Coolify's proxy.
+      - --entrypoints.http.transport.respondingTimeouts.readTimeout=0
+      - --entrypoints.https.transport.respondingTimeouts.readTimeout=0
+      - --certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.letsencrypt.acme.email=local@example.com
+      - --certificatesresolvers.letsencrypt.acme.storage=/tmp/acme.json
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=http
+    ports: ["80:80", "443:443"]
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock:ro"]
+
+  # Built by test.sh, so never pulled.
+  jupyter: { pull_policy: never }
+  migrate: { pull_policy: never }
+  api: { pull_policy: never }
+  web: { pull_policy: never }
+  mcp: { pull_policy: never }
+  landing: { pull_policy: never }

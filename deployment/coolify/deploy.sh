@@ -9,7 +9,8 @@
 #   deploy.sh <env>                          build images in CI, then deploy
 #   deploy.sh <env> --no-build               redeploy the current images
 #
-# <env> is staging or production.
+# <env> is staging or production. `local` (envs --write only) makes the env for
+# deployment/coolify/local/test.sh, which runs the stack on this machine.
 #
 # Where the settings come from, later ones winning:
 #   1. the root env files you already have: sandworm-{api,postgres,mcp,ai,web}.env
@@ -43,6 +44,7 @@ set_domains() {
   case "$1" in
     staging)    BASE=staging.sandwormlab.xyz; WWW=staging.sandwormlab.xyz; BRANCH_DEFAULT="$(git -C "$ROOT_DIR" branch --show-current 2>/dev/null || true)" ;;
     production) BASE=sandwormlab.xyz;         WWW=www.sandwormlab.xyz;     BRANCH_DEFAULT=main ;;
+    local)      BASE=localhost;               WWW=localhost;               BRANCH_DEFAULT="" ;;
     *) usage ;;
   esac
   APP="https://app.$BASE"
@@ -131,6 +133,8 @@ collect_envs() {
     [AUTH_SERVER_URL]="$APP" [WEB_URL]="$APP" [REDIRECT_URI]="$APP/workspace/"
   )
   for k in "${!derived[@]}"; do RUNTIME[$k]="${derived[$k]}"; SOURCE[$k]="domain"; done
+  # Browsers drop a Domain=.localhost cookie, so locally it stays on app.localhost.
+  [ "$env" = local ] && unset 'RUNTIME[AUTH_COOKIE_DOMAIN]'
   declare -A build_derived=(
     [NEXT_PUBLIC_PUBLIC_URL]="$APP" [NEXT_PUBLIC_LANDING_URL]="$LANDING"
     [NEXT_PUBLIC_API_URL]="$APP/api" [NEXT_PUBLIC_API_WS_URL]="$WS" [NEXT_PUBLIC_YJS_WS_URL]="$WS"
@@ -180,6 +184,7 @@ cmd_envs() {
     write_env "$ROOT_DIR/sandworm-stack-$env.env" "Coolify settings for $env" RUNTIME
     write_env "$ROOT_DIR/sandworm-stack-$env.build.env" "GitHub build variables for $env" BUILD
   fi
+  [ "$apply" = true ] && [ "$env" = local ] && die "local has no Coolify: run deployment/coolify/local/test.sh"
   if [ "$apply" != true ]; then
     [ "$write" = true ] || { echo; echo "Nothing changed. --write makes the files, --apply sends them."; }
     return
@@ -218,6 +223,7 @@ wait_for_coolify() {
 cmd_deploy() {
   local env="$1" build=true ref=""
   shift
+  [ "$env" = local ] && die "local has no Coolify: run deployment/coolify/local/test.sh"
   set_domains "$env"
   while [ $# -gt 0 ]; do
     case "$1" in
