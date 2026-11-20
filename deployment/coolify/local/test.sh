@@ -37,7 +37,7 @@ log "Settings"
 "$ROOT_DIR/deployment/coolify/deploy.sh" envs local --write > /dev/null
 # Coolify writes the stack's .env itself; here it is the file deploy.sh made. Git-ignored.
 cp "$ROOT_DIR/sandworm-stack-local.env" "$STACK/.env"
-set -a; . "$STACK/.env"; set +a
+env_value() { sed -n "s/^$1=//p" "$STACK/.env"; }
 
 if [ "$build" = true ]; then
   build_args=()
@@ -64,7 +64,7 @@ if [ -n "$restore" ]; then
   log "Restoring $(basename "$restore")"
   compose up -d --wait postgres
   compose exec -T postgres pg_restore --clean --if-exists --no-owner \
-    -U "$DATABASE_USERNAME" -d "$DATABASE_NAME" < "$restore" \
+    -U "$(env_value DATABASE_USERNAME)" -d "$(env_value DATABASE_NAME)" < "$restore" \
     || echo "pg_restore reported errors (see above); carrying on, as the cutover would"
 fi
 
