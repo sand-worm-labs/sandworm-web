@@ -15,7 +15,6 @@ case "$ENV" in
   dev)
     APP_DOMAIN="http://localhost:8081"
     LANDING_DOMAIN="http://localhost:8080"
-    TERMINAL_DOMAIN="http://localhost:8082"
     COOKIE_DOMAIN=""
     WS_SCHEME="ws"
     NODE_ENV="development"
@@ -23,7 +22,6 @@ case "$ENV" in
   staging)
     APP_DOMAIN="https://app.preview-c8829726.sandwormlab.xyz"
     LANDING_DOMAIN="https://preview-c8829726.sandwormlab.xyz"
-    TERMINAL_DOMAIN="https://terminal.preview-c8829726.sandwormlab.xyz"
     COOKIE_DOMAIN=".preview-c8829726.sandwormlab.xyz"
     WS_SCHEME="wss"
     NODE_ENV="production"
@@ -31,7 +29,6 @@ case "$ENV" in
   prod)
     APP_DOMAIN="https://app.sandwormlab.xyz"
     LANDING_DOMAIN="https://sandwormlab.xyz"
-    TERMINAL_DOMAIN="https://terminal.sandwormlab.xyz"
     COOKIE_DOMAIN=".sandwormlab.xyz"
     WS_SCHEME="wss"
     NODE_ENV="production"
@@ -88,4 +85,3 @@ echo
 echo "✅ Envs set for $ENV"
 echo "   App:     $APP_DOMAIN"
 echo "   Landing: $LANDING_DOMAIN"
-echo "   Terminal: $TERMINAL_DOMAIN"
