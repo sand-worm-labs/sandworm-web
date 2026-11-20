@@ -150,25 +150,7 @@ Access Swagger UI at: `http://localhost:8001/api-docs`
 
 ## Deployment
 
-### With Docker
-
-```bash
-# Build image
-docker build -t realworld-api .
-
-# Run container
-docker run -p 3000:3000 realworld-api
-```
-
-### With PM2
-
-```bash
-# Install PM2
-npm install -g pm2
-
-# Run application
-pm2 start dist/main.js --name realworld-api
-```
+The api runs in the Coolify stack: see `deployment/coolify/README.md`.
 
 ## Development Process
 
