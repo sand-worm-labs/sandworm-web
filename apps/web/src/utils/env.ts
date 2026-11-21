@@ -1,6 +1,5 @@
-function currentUrl() {
-  return `${window.location.protocol}//${window.location.host}`;
-}
+// The page's origin in the browser; "" on the server (prerender), which has none.
+const currentUrl = () => globalThis.location?.origin ?? "";
 
 export const NEXT_PUBLIC_API_URL = () =>
   process.env.NEXT_PUBLIC_API_URL || `${currentUrl()}/api`;
