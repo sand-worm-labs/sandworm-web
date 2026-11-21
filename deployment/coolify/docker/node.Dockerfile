@@ -57,6 +57,8 @@ ARG NEXT_PUBLIC_TERMINAL_URL
 ARG NEXT_PUBLIC_WEB_APP_URL
 ARG PUBLIC_APP_URL
 COPY --from=prune /repo/out/full/ ./
+# Not a workspace package, so prune drops it; web's build copies it into public/.
+COPY --from=prune /repo/apps/jupyter/sandworm_theme/sandworm_theme ./apps/jupyter/sandworm_theme/sandworm_theme
 RUN test -n "${APP_DIR}" || (echo "Set --build-arg APP_DIR=apps/<dir>" && exit 1); \
     env | grep -E '^(NEXT_PUBLIC_|PUBLIC_)[A-Z0-9_]*=.' > "${APP_DIR}/.env.production" || true
 # The web build needs a large heap (scripts/start-prod.sh used the same 6 GB).
