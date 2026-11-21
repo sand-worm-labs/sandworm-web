@@ -14,6 +14,7 @@ deployment/coolify/
   stack/.env.example         every setting the stack reads
   deploy.sh                  settings → Coolify + GitHub, then build and deploy
   local/                     the stack on this machine, to test it (test.sh)
+  down/                      the maintenance page, its own resource: up while the stack is down
   monitoring/                Prometheus, Grafana, exporters, alert rules, Kuma checklist
 .github/workflows/images.yml build → GHCR → deploy on Coolify
 ```
@@ -57,7 +58,12 @@ Settings and secrets live in Coolify and in GitHub environments, never in git.
    `--entrypoints.https.transport.respondingTimeouts.readTimeout=0` (and the same
    for `http`), then restart the proxy. Traefik v3 otherwise cuts uploads that
    take longer than 60s.
-7. **The stack.** New resource > Docker Compose > from this GitHub repo, branch
+7. **The maintenance page**, before the stack (its routers use this one's
+   middleware). New resource > Docker Compose, branch `staging`, compose path
+   `deployment/coolify/down/docker-compose.yml`, one setting:
+   `DOMAIN=staging.sandwormlab.xyz`. Deploy it now: it shows on every host while
+   the stack is down, for any reason.
+   **The stack.** New resource > Docker Compose > from this GitHub repo, branch
    `staging`, compose path `deployment/coolify/stack/docker-compose.yml`. Leave
    every service's domain empty (Traefik labels do the routing). Don't deploy yet.
 8. **Access for deploy.sh.** Create a Coolify API token (Keys & Tokens, write +

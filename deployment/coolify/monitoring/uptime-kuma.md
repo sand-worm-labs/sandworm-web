@@ -6,13 +6,9 @@ died. Its checks are set in its web UI, so this file is the list to enter.
 
 ## Install (on the second box)
 
-```bash
-docker run -d --name uptime-kuma --restart unless-stopped \
-  -p 127.0.0.1:3001:3001 -v uptime-kuma:/app/data louislam/uptime-kuma:1
-```
-
-Put it behind HTTPS (Caddy or Traefik on that box, e.g. `status.sandwormlab.xyz`),
-or reach it over an SSH tunnel. Create the admin account on first visit, then
+A Docker Compose resource in Coolify from `deployment/coolify/status/docker-compose.yml`,
+setting `DOMAIN`: it serves `status.<DOMAIN>` (add its DNS record first). The first
+visitor creates the admin account, so do that straight away. Then
 add a notification (Discord, Slack, Telegram or email) and tick
 "Default enabled" so every monitor uses it.
 

@@ -1,0 +1,40 @@
+<!doctype html>
+<!-- The web app's error page (apps/web/src/app/error.tsx → EmptyState, light theme) as
+     static HTML: shown while the apps are down, so it can't use their build or assets. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="30">
+  <title>Sandworm · Under maintenance</title>
+  <style>
+    @font-face { font-family: "Moderat"; src: url("/_down/fonts/Moderat-Regular.woff2") format("woff2"); font-weight: 400; }
+    @font-face { font-family: "Moderat"; src: url("/_down/fonts/Moderat-Medium.woff2") format("woff2"); font-weight: 500; }
+    @font-face { font-family: "Matrix Sans"; src: url("/_down/fonts/matrix-sans.otf"); font-weight: 700; }
+  </style>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { ink: { 100: "#1a1a1a", 500: "#343a40" }, accent: "#8053FE" },
+      fontFamily: { body: ["Moderat", "sans-serif"], mono: ["Matrix Sans", "sans-serif"] },
+    } } };
+  </script>
+</head>
+<body class="h-screen overflow-hidden bg-white">
+  <main class="relative flex h-full w-full flex-col items-center gap-2 px-4 font-body">
+    <h2 class="mt-[5%] font-mono text-[6rem] font-bold leading-[1.2]">?</h2>
+    <div class="text-center">
+      <h1 class="text-[26px] font-medium text-ink-100">Sandworm is currently under maintenance</h1>
+      <p class="mx-auto mt-2 max-w-[28rem] text-base text-ink-500">
+        We're updating Sandworm and will be back shortly. This page reloads by itself.
+      </p>
+    </div>
+    <div class="mt-6 flex flex-row flex-wrap items-center justify-center gap-5">
+      <a href="" class="cursor-pointer text-sm font-medium text-accent hover:underline">Refresh</a>
+    </div>
+    <div class="absolute bottom-0 flex w-full items-center justify-center">
+      <img src="/_down/server-error.png" alt="" width="1322" height="375" class="h-auto max-w-full">
+    </div>
+  </main>
+</body>
+</html>

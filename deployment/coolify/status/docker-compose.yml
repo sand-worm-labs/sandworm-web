@@ -1,0 +1,25 @@
+# The public status page and uptime checks (Uptime Kuma) at status.<DOMAIN>:
+# a Docker Compose resource of its own. Best on a box other than the one it
+# watches, so it can still say that box is down. Monitors and the status page
+# are set in its UI: ../monitoring/uptime-kuma.md lists them.
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1.23.16
+    restart: unless-stopped
+    volumes:
+      - uptime-kuma-data:/app/data
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.sandworm-status.rule: Host(`status.${DOMAIN:?}`)
+      traefik.http.routers.sandworm-status.entrypoints: https
+      traefik.http.routers.sandworm-status.tls: "true"
+      traefik.http.routers.sandworm-status.tls.certresolver: letsencrypt
+      traefik.http.services.sandworm-status.loadbalancer.server.port: "3001"
+      traefik.http.routers.sandworm-status-http.rule: Host(`status.${DOMAIN:?}`)
+      traefik.http.routers.sandworm-status-http.entrypoints: http
+      traefik.http.routers.sandworm-status-http.middlewares: sandworm-https
+      traefik.http.routers.sandworm-status-http.service: noop@internal
+
+volumes:
+  uptime-kuma-data:

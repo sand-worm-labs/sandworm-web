@@ -1,0 +1,81 @@
+# The maintenance page: a Docker Compose resource of its own in Coolify, next to
+# the stack, so it stays up whatever happens to the stack (failed deploy, crash,
+# stopped). Deploy it before the stack.
+#
+# It answers for our hosts whenever the stack doesn't:
+#   - an app's container is gone or never started: the catch-all router below,
+#     priority 50, under the apps' 60 and over Coolify's own fallback page
+#   - an app answers 502-504: the sandworm-down middleware, used by the stack's
+#     web, terminal and landing routers (not the api or mcp: their clients want JSON)
+# It also holds the http -> https redirect, so that works while the apps are down.
+#
+# Settings: DOMAIN, the stack's base domain (staging.sandwormlab.xyz,
+# sandwormlab.xyz or, locally, localhost), and in production LANDING_WWW_HOST
+# (www.sandwormlab.xyz), as in the stack. A host without DNS fails the certificate.
+
+x-hosts: &hosts >-
+  Host(`app.${DOMAIN:?}`) || Host(`terminal.${DOMAIN:?}`) || Host(`mcp.${DOMAIN:?}`)
+  || Host(`${DOMAIN:?}`) || Host(`${LANDING_WWW_HOST:-${DOMAIN}}`)
+
+services:
+  down:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    configs:
+      - { source: nginx, target: /etc/nginx/conf.d/default.conf }
+      - { source: page, target: /usr/share/nginx/html/down.html }
+      - { source: image, target: /usr/share/nginx/html/_down/server-error.png }
+      - { source: font-regular, target: /usr/share/nginx/html/_down/fonts/Moderat-Regular.woff2 }
+      - { source: font-medium, target: /usr/share/nginx/html/_down/fonts/Moderat-Medium.woff2 }
+      - { source: font-mono, target: /usr/share/nginx/html/_down/fonts/matrix-sans.otf }
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.sandworm-down.rule: *hosts
+      traefik.http.routers.sandworm-down.priority: "50"
+      traefik.http.routers.sandworm-down.entrypoints: https
+      traefik.http.routers.sandworm-down.tls: "true"
+      traefik.http.routers.sandworm-down.tls.certresolver: letsencrypt
+      traefik.http.routers.sandworm-down.service: sandworm-down
+      traefik.http.services.sandworm-down.loadbalancer.server.port: "80"
+      traefik.http.middlewares.sandworm-down.errors.status: "502-504"
+      traefik.http.middlewares.sandworm-down.errors.service: sandworm-down
+      traefik.http.middlewares.sandworm-down.errors.query: /
+
+      # The page's image, from here even while the app behind the host is up.
+      traefik.http.routers.sandworm-down-assets.rule: >-
+        (Host(`app.${DOMAIN:?}`) || Host(`terminal.${DOMAIN:?}`) || Host(`${DOMAIN:?}`)
+        || Host(`${LANDING_WWW_HOST:-${DOMAIN}}`)) && PathPrefix(`/_down/`)
+      traefik.http.routers.sandworm-down-assets.priority: "200"
+      traefik.http.routers.sandworm-down-assets.entrypoints: https
+      traefik.http.routers.sandworm-down-assets.tls: "true"
+      traefik.http.routers.sandworm-down-assets.tls.certresolver: letsencrypt
+      traefik.http.routers.sandworm-down-assets.service: sandworm-down
+
+      traefik.http.routers.sandworm-http.rule: *hosts
+      traefik.http.routers.sandworm-http.entrypoints: http
+      traefik.http.routers.sandworm-http.middlewares: sandworm-https
+      traefik.http.routers.sandworm-http.service: noop@internal
+      traefik.http.middlewares.sandworm-https.redirectscheme.scheme: https
+      traefik.http.middlewares.sandworm-https.redirectscheme.permanent: "true"
+
+configs:
+  nginx:
+    content: |
+      server {
+        listen 80;
+        error_page 503 /down.html;
+        location / { return 503; }
+        location = /down.html { root /usr/share/nginx/html; internal; }
+        location /_down/ { root /usr/share/nginx/html; }
+      }
+  # Coolify deploys from the git checkout, so these paths resolve in it.
+  page:
+    file: ./down.html
+  image:
+    file: ../../../apps/web/public/img/server-error.png
+  font-regular:
+    file: ../../../apps/web/public/fonts/moderat/Moderat-Regular.woff2
+  font-medium:
+    file: ../../../apps/web/public/fonts/moderat/Moderat-Medium.woff2
+  font-mono:
+    file: ../../../apps/web/public/fonts/matrix-sans.otf
