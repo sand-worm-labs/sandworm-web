@@ -19,6 +19,11 @@
     "build": "pnpm run build:esm && pnpm run build:cjs",
     "test": "jest"
   },
+  "jest": {
+    "preset": "ts-jest",
+    "roots": ["<rootDir>/src"],
+    "moduleNameMapper": { "^(\\.{1,2}/.*)\\.js$": "$1" }
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

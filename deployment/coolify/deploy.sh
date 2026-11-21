@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Deploys Sandworm to Coolify and makes its env files.
 #
+#   deploy.sh setup <env> <server-ip>        once, after bootstrap.sh and the admin account:
+#                                            API token, project, stack, GHCR login, secrets, settings
 #   deploy.sh secrets staging                fresh random secrets → sandworm-staging-secrets.env
 #   deploy.sh envs <env>                     list every setting (names only)
 #   deploy.sh envs <env> --write             write the env files (see below) to look at or paste
@@ -24,9 +26,11 @@
 # sandworm-stack-<env>.build.env (GitHub), owner-only, git-ignored.
 #
 # Needs curl, jq and gh (signed in). Coolify access, for --apply and deploys,
-# comes from ~/.config/sandworm/coolify-<env>.env, outside the repo:
-#   COOLIFY_URL=https://coolify.example.com
-#   COOLIFY_TOKEN=...            (Keys & Tokens: write + deploy)
+# comes from ~/.config/sandworm/coolify-<env>.env, outside the repo, which
+# `setup` writes:
+#   COOLIFY_SSH=root@<server>    (the API goes through an SSH tunnel: its port is closed)
+#   COOLIFY_URL=https://...      (instead of COOLIFY_SSH, once Coolify has a domain)
+#   COOLIFY_TOKEN=...
 #   COOLIFY_RESOURCE_UUID=...    (the stack resource)
 set -euo pipefail
 
@@ -34,7 +38,7 @@ ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 
 die() { echo "error: $*" >&2; exit 1; }
 log() { printf '\033[1m▶ %s\033[0m\n' "$*"; }
-usage() { sed -n '2,30p' "$0"; exit 2; }
+usage() { sed -n '2,35p' "$0"; exit 2; }
 
 for tool in curl jq gh openssl; do command -v "$tool" >/dev/null || die "needs $tool"; done
 
@@ -56,8 +60,21 @@ set_domains() {
 load_coolify() {
   local file="${HOME}/.config/sandworm/coolify-$1.env"
   if [ -r "$file" ]; then set -a; . "$file"; set +a; fi
-  : "${COOLIFY_URL:?set in $file}" "${COOLIFY_TOKEN:?set in $file}" "${COOLIFY_RESOURCE_UUID:?set in $file}"
+  : "${COOLIFY_TOKEN:?set in $file}" "${COOLIFY_RESOURCE_UUID:?set in $file}"
+  [ -n "${COOLIFY_SSH:-}" ] && open_tunnel
+  : "${COOLIFY_URL:?set in $file}"
   COOLIFY_URL="${COOLIFY_URL%/}"
+}
+
+# Forwards a free local port to the dashboard on $COOLIFY_SSH, closed on exit.
+open_tunnel() {
+  [ -n "${TUNNEL_SOCKET:-}" ] && return
+  local port
+  port="$(shuf -i 20000-60000 -n 1)"
+  TUNNEL_SOCKET="$(mktemp -u)"
+  ssh -fNM -S "$TUNNEL_SOCKET" -o ExitOnForwardFailure=yes -L "$port:localhost:8000" "$COOLIFY_SSH"
+  trap 'ssh -S "$TUNNEL_SOCKET" -O exit "$COOLIFY_SSH" 2>/dev/null' EXIT
+  COOLIFY_URL="http://localhost:$port"
 }
 
 coolify() {
@@ -82,6 +99,52 @@ cmd_secrets() {
       for k in "${GENERATED[@]}"; do echo "$k=$(openssl rand -hex 32)"; done
     } > "$file" )
   echo "Wrote $(basename "$file") (${#GENERATED[@]} secrets). Next: $0 envs $env --write"
+}
+
+# ── setup ────────────────────────────────────────────────────────────────────
+cmd_setup() {
+  local env="${1:-}" server="${2:-}"
+  [ -n "$server" ] && [ "$env" != local ] || usage
+  set_domains "$env"
+  local file="$HOME/.config/sandworm/coolify-$env.env"
+  [ -e "$file" ] && die "$file exists: $env is already set up"
+  [ -n "${GHCR_TOKEN:-}" ] || gh auth status 2>&1 | grep -q read:packages \
+    || die "the server pulls private images: run gh auth refresh -s read:packages (or set GHCR_TOKEN)"
+  COOLIFY_SSH="root@$server"
+
+  log "API token (Coolify's admin account must exist)"
+  local plain id
+  plain="$(openssl rand -hex 32)"
+  id="$(printf "update instance_settings set is_api_enabled = true;
+insert into personal_access_tokens (tokenable_type, tokenable_id, name, token, team_id, abilities, created_at, updated_at)
+values ('App\\\\Models\\\\User', 0, 'deploy.sh', '%s', '0', '[\"root\"]', now(), now()) returning id;\n" \
+    "$(printf %s "$plain" | sha256sum | cut -d' ' -f1)" \
+    | ssh "$COOLIFY_SSH" docker exec -i coolify-db psql -U coolify -d coolify -Atq)"
+  [[ "$id" =~ ^[0-9]+$ ]] || die "couldn't create the token: $id"
+  COOLIFY_TOKEN="$id|$plain"
+  open_tunnel
+
+  log "Project and stack"
+  local server_uuid project branch=staging
+  [ "$env" = production ] && branch=main
+  server_uuid="$(coolify GET /servers | jq -r '.[] | select(.name == "localhost") | .uuid')"
+  project="$(coolify POST /projects --data "$(jq -n --arg n "sandworm-$env" '{name: $n}')" | jq -r .uuid)"
+  COOLIFY_RESOURCE_UUID="$(coolify POST /applications/public --data "$(jq -n \
+    --arg p "$project" --arg s "$server_uuid" --arg b "$branch" --arg r "$(gh repo view --json url -q .url)" \
+    '{project_uuid: $p, server_uuid: $s, environment_name: "production", git_repository: $r, git_branch: $b,
+      build_pack: "dockercompose", docker_compose_location: "/deployment/coolify/stack/docker-compose.yml",
+      ports_exposes: "80", instant_deploy: false}')" | jq -r .uuid)"
+  ( umask 077; mkdir -p "$(dirname "$file")"
+    printf 'COOLIFY_SSH=%s\nCOOLIFY_TOKEN=%s\nCOOLIFY_RESOURCE_UUID=%s\n' "$COOLIFY_SSH" "$COOLIFY_TOKEN" "$COOLIFY_RESOURCE_UUID" > "$file" )
+  echo "  stack $COOLIFY_RESOURCE_UUID, access saved to $file"
+
+  log "Proxy and GHCR login"
+  coolify POST "/servers/$server_uuid/proxy/restart" >/dev/null
+  printf %s "${GHCR_TOKEN:-$(gh auth token)}" | ssh "$COOLIFY_SSH" docker login ghcr.io -u "$(gh api user -q .login)" --password-stdin
+
+  gh api -X PUT "repos/{owner}/{repo}/environments/$env" >/dev/null
+  [ "$env" = staging ] && [ ! -e "$ROOT_DIR/sandworm-staging-secrets.env" ] && cmd_secrets staging
+  cmd_envs "$env" --apply
 }
 
 # ── envs ─────────────────────────────────────────────────────────────────────
@@ -261,10 +324,13 @@ cmd_deploy() {
   done
   [ "$run" != "$before" ] || die "the workflow run didn't show up; check the Actions tab"
   gh run watch "$run" --exit-status
+  # CI can't reach a Coolify that is only on SSH, so its deploy step skips: deploy from here.
+  grep -qs '^COOLIFY_SSH=' "$HOME/.config/sandworm/coolify-$env.env" && cmd_deploy "$env" --no-build
   echo; echo "✅ $env deployed: $APP"
 }
 
 case "${1:-}" in
+  setup) shift; cmd_setup "$@" ;;
   secrets) shift; cmd_secrets "$@" ;;
   envs) shift; cmd_envs "$@" ;;
   staging|production) cmd_deploy "$@" ;;
