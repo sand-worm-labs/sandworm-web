@@ -1,0 +1,24 @@
+<!doctype html>
+<!-- The web app's error page (apps/web/src/app/error.tsx, EmptyState) as static HTML:
+     shown while the apps are down, so it can't use their build or assets. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="30">
+  <title>Sandworm · Under maintenance</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>tailwind.config = { theme: { extend: { colors: { primary: "#FF887A" } } } };</script>
+</head>
+<body class="h-screen overflow-hidden bg-black text-white">
+  <main class="relative flex h-full flex-col items-center gap-2 px-4 text-center">
+    <h2 class="mt-[5%] font-mono text-[6rem] leading-[1.2]">?</h2>
+    <h1 class="text-[26px] font-medium">Sandworm is currently under maintenance</h1>
+    <p class="mt-2 max-w-[28rem] text-neutral-400">
+      We're updating Sandworm and will be back shortly. This page reloads by itself.
+    </p>
+    <a href="" class="mt-6 text-sm font-medium text-primary hover:underline">Refresh</a>
+    <img src="/_down/server-error.png" alt="" class="absolute bottom-0 w-full max-w-[1322px]">
+  </main>
+</body>
+</html>
