@@ -14,6 +14,10 @@
 # domain field empty on every service.
 #
 # One stack per server: router names are fixed.
+#
+# deployment/coolify/down, a resource of its own, answers for our hosts when
+# this stack can't (priority 50, under the apps' 60): deploy it first, since the
+# sandworm-down middleware below is defined there.
 
 x-pull: &pull
   pull_policy: always
@@ -200,23 +204,13 @@ services:
       <<: *tls
       # Everything on app.<domain> the api routes above don't claim.
       traefik.http.routers.sandworm-web.rule: Host(`${APP_HOST:?}`)
-      traefik.http.routers.sandworm-web.priority: "2"
+      traefik.http.routers.sandworm-web.priority: "60"
       traefik.http.routers.sandworm-web.middlewares: sandworm-down
       traefik.http.routers.sandworm-web.entrypoints: https
       traefik.http.routers.sandworm-web.tls: "true"
       traefik.http.routers.sandworm-web.tls.certresolver: letsencrypt
       traefik.http.routers.sandworm-web.service: sandworm-web
       traefik.http.services.sandworm-web.loadbalancer.server.port: "3000"
-
-      # Plain HTTP on any of our hosts goes to HTTPS.
-      traefik.http.routers.sandworm-http.rule: >-
-        Host(`${APP_HOST:?}`) || Host(`${TERMINAL_HOST:?}`) || Host(`${MCP_HOST:?}`)
-        || Host(`${LANDING_HOST:?}`) || Host(`${LANDING_WWW_HOST:?}`)
-      traefik.http.routers.sandworm-http.entrypoints: http
-      traefik.http.routers.sandworm-http.middlewares: sandworm-https
-      traefik.http.routers.sandworm-http.service: noop@internal
-      traefik.http.middlewares.sandworm-https.redirectscheme.scheme: https
-      traefik.http.middlewares.sandworm-https.redirectscheme.permanent: "true"
 
   terminal:
     <<: *pull
@@ -233,7 +227,7 @@ services:
     labels:
       <<: *tls
       traefik.http.routers.sandworm-terminal.rule: Host(`${TERMINAL_HOST:?}`)
-      traefik.http.routers.sandworm-terminal.priority: "2"
+      traefik.http.routers.sandworm-terminal.priority: "60"
       traefik.http.routers.sandworm-terminal.middlewares: sandworm-down
       traefik.http.routers.sandworm-terminal.entrypoints: https
       traefik.http.routers.sandworm-terminal.tls: "true"
@@ -273,6 +267,7 @@ services:
       # Responses stream: Traefik passes them through unbuffered (no compress
       # middleware on any Sandworm router, so SSE is never held back).
       traefik.http.routers.sandworm-mcp.rule: Host(`${MCP_HOST:?}`)
+      traefik.http.routers.sandworm-mcp.priority: "60"
       traefik.http.routers.sandworm-mcp.entrypoints: https
       traefik.http.routers.sandworm-mcp.tls: "true"
       traefik.http.routers.sandworm-mcp.tls.certresolver: letsencrypt
@@ -293,6 +288,7 @@ services:
     labels:
       <<: *tls
       traefik.http.routers.sandworm-landing.rule: Host(`${LANDING_HOST:?}`) || Host(`${LANDING_WWW_HOST:?}`)
+      traefik.http.routers.sandworm-landing.priority: "60"
       traefik.http.routers.sandworm-landing.entrypoints: https
       traefik.http.routers.sandworm-landing.tls: "true"
       traefik.http.routers.sandworm-landing.tls.certresolver: letsencrypt
@@ -317,41 +313,6 @@ services:
         condition: service_healthy
       qdrant:
         condition: service_started
-
-  # The page shown instead of Traefik's when an app is down: its 502-504s
-  # (the sandworm-down middleware on web, terminal and landing), and any of our
-  # hosts while its container is gone, e.g. mid-deploy (the lowest-priority
-  # router). Not on the api or mcp, whose clients expect JSON.
-  down:
-    image: nginx:1.27-alpine
-    restart: unless-stopped
-    configs:
-      - { source: down-nginx, target: /etc/nginx/conf.d/default.conf }
-      - { source: down-page, target: /usr/share/nginx/html/down.html }
-      - { source: down-image, target: /usr/share/nginx/html/_down/server-error.png }
-    labels:
-      <<: *tls
-      traefik.http.routers.sandworm-down.rule: >-
-        Host(`${APP_HOST:?}`) || Host(`${TERMINAL_HOST:?}`) || Host(`${MCP_HOST:?}`)
-        || Host(`${LANDING_HOST:?}`) || Host(`${LANDING_WWW_HOST:?}`)
-      traefik.http.routers.sandworm-down.priority: "1"
-      traefik.http.routers.sandworm-down.entrypoints: https
-      traefik.http.routers.sandworm-down.tls: "true"
-      traefik.http.routers.sandworm-down.tls.certresolver: letsencrypt
-      traefik.http.routers.sandworm-down.service: sandworm-down
-      traefik.http.services.sandworm-down.loadbalancer.server.port: "80"
-      # The page's image, from here even while the app behind the host is up.
-      traefik.http.routers.sandworm-down-assets.rule: >-
-        (Host(`${APP_HOST:?}`) || Host(`${TERMINAL_HOST:?}`) || Host(`${LANDING_HOST:?}`)
-        || Host(`${LANDING_WWW_HOST:?}`)) && PathPrefix(`/_down/`)
-      traefik.http.routers.sandworm-down-assets.priority: "200"
-      traefik.http.routers.sandworm-down-assets.entrypoints: https
-      traefik.http.routers.sandworm-down-assets.tls: "true"
-      traefik.http.routers.sandworm-down-assets.tls.certresolver: letsencrypt
-      traefik.http.routers.sandworm-down-assets.service: sandworm-down
-      traefik.http.middlewares.sandworm-down.errors.status: "502-504"
-      traefik.http.middlewares.sandworm-down.errors.service: sandworm-down
-      traefik.http.middlewares.sandworm-down.errors.query: /
 
   ###########################################################################
   # Metrics for the monitoring stack (deployment/coolify/monitoring), which
@@ -378,22 +339,6 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-
-configs:
-  down-nginx:
-    content: |
-      server {
-        listen 80;
-        error_page 503 /down.html;
-        location / { return 503; }
-        location = /down.html { root /usr/share/nginx/html; internal; }
-        location /_down/ { root /usr/share/nginx/html; }
-      }
-  # Coolify deploys from the git checkout, so this file is next to the compose file.
-  down-page:
-    file: ./down.html
-  down-image:
-    file: ../../../apps/web/public/img/server-error.png
 
 networks:
   # Created once per server by server/bootstrap.sh.

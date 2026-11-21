@@ -19,7 +19,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
 STACK="$ROOT_DIR/deployment/coolify/stack"
-SERVICES=(postgres redis qdrant jupyter migrate api web mcp landing down traefik)
+SERVICES=(postgres redis qdrant jupyter migrate api web mcp landing traefik)
 
 compose() { docker compose -p sandworm-local -f "$STACK/docker-compose.yml" -f "$ROOT_DIR/deployment/coolify/local/compose.yml" "$@"; }
 log() { printf '\033[1m▶ %s\033[0m\n' "$*"; }
@@ -70,6 +70,10 @@ if [ -n "$restore" ]; then
     -U "$(env_value DATABASE_USERNAME)" -d "$(env_value DATABASE_NAME)" < "$restore" \
     || echo "pg_restore reported errors (see above); carrying on, as the cutover would"
 fi
+
+log "Starting the maintenance page (its own resource on Coolify; first, the stack uses its middleware)"
+DOMAIN="$(env_value LANDING_HOST)" docker compose -p sandworm-local \
+  -f "$ROOT_DIR/deployment/coolify/down/docker-compose.yml" up -d
 
 log "Starting the stack"
 compose up -d "${SERVICES[@]}"
