@@ -19,7 +19,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
 STACK="$ROOT_DIR/deployment/coolify/stack"
-SERVICES=(postgres redis qdrant jupyter migrate api web mcp landing traefik)
+SERVICES=(postgres redis qdrant jupyter migrate api web mcp landing down traefik)
 
 compose() { docker compose -p sandworm-local -f "$STACK/docker-compose.yml" -f "$ROOT_DIR/deployment/coolify/local/compose.yml" "$@"; }
 log() { printf '\033[1m▶ %s\033[0m\n' "$*"; }
