@@ -13,7 +13,6 @@ import { ThemeTogggle } from "@/components/Theme/ThemeToggle";
 const ROUTE_TITLES: Record<string, string> = {
   "/": "Home",
   "/workspace": "Home",
-  "/showcase": "Showcase",
   "/explore": "Community",
   "/session": "Projects",
   "/favorites": "Favorites",
