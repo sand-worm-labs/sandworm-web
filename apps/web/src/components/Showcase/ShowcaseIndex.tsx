@@ -150,13 +150,9 @@ function ChainToggles({
 export function ShowcaseIndex({
   config,
   notebooks,
-  embedded = false,
 }: {
   config: ShowcaseConfig;
   notebooks: ShowcaseNotebook[];
-  // Inside a workspace: the app already has its own header and scrolling, so
-  // the page brings neither.
-  embedded?: boolean;
 }) {
   const { taxonomy } = config;
 
@@ -188,7 +184,6 @@ export function ShowcaseIndex({
   const page = (
     <div className="mx-auto w-full max-w-[1320px] px-4 sm:px-8 pb-24">
       <SectionHero
-        compact={embedded}
         title="Teams that use Sandworm, and teams we care about."
         description="What the chain shows about each of them, with the notebook behind every number."
         aside={isEmpty ? undefined : <Summary cards={cards} />}
@@ -236,17 +231,6 @@ export function ShowcaseIndex({
       onClose={() => setLeadTarget(null)}
     />
   );
-
-  if (embedded) {
-    return (
-      <ChainColors.Provider value={config.chains}>
-        <div className="min-h-[88vh] bg-page-surface font-body">
-          {page}
-          {leadModal}
-        </div>
-      </ChainColors.Provider>
-    );
-  }
 
   return (
     <ChainColors.Provider value={config.chains}>

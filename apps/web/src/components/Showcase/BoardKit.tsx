@@ -150,7 +150,6 @@ export function SectionHero({
   title,
   description,
   aside,
-  compact = false,
 }: {
   // The small mono label above the headline. Left out, the headline leads.
   eyebrow?: string;
@@ -158,25 +157,17 @@ export function SectionHero({
   description: ReactNode;
   // Stats, clocks or actions, shown to the right on wide screens.
   aside?: ReactNode;
-  // A smaller headline, for sections shown inside the app.
-  compact?: boolean;
 }) {
   return (
     <section
-      className={cn(
-        "flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-10",
-        compact ? "pt-6 pb-6" : "pt-10 sm:pt-14 pb-8"
-      )}
+      className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-10 pt-10 sm:pt-14 pb-8"
     >
       <BoardStyles />
       <div className="min-w-0">
         <h1
           className={cn(
             eyebrow && "mt-3",
-            "max-w-3xl font-semibold tracking-[-0.02em] text-ink-100 dark:text-white",
-            compact
-              ? "text-2xl sm:text-3xl leading-tight"
-              : "text-[2rem] sm:text-5xl leading-[1.05]"
+            "max-w-3xl font-semibold tracking-[-0.02em] text-ink-100 dark:text-white text-[2rem] sm:text-5xl leading-[1.05]"
           )}
         >
           {title}
