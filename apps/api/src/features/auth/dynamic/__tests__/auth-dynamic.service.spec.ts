@@ -33,11 +33,11 @@ describe('AuthDynamicService', () => {
   it('reads the account and the EVM wallets from a good token', async () => {
     const token = await sign({
       sub: 'u1',
-      email: 'a@b.co',
+      email: 'typed@b.co',
       verified_credentials: [
         { format: 'blockchain', chain: 'eip155', address: '0xABC' },
         { format: 'blockchain', chain: 'solana', address: 'So1' },
-        { format: 'email' },
+        { format: 'email', email: 'a@b.co' },
       ],
     });
     expect(
@@ -47,6 +47,13 @@ describe('AuthDynamicService', () => {
       email: 'a@b.co',
       wallets: ['0xabc'],
     });
+  });
+
+  it('ignores an email Dynamic did not verify', async () => {
+    const token = await sign({ sub: 'u1', email: 'victim@b.co' });
+    expect(
+      (await service(pem(publicKey)).getProfileByToken(token)).email,
+    ).toBeUndefined();
   });
 
   it.each([
@@ -80,7 +87,9 @@ describe('AuthDynamicService', () => {
   });
 
   it('checks a token with the environment key it names, from the published JWKS', async () => {
-    const jwks = { keys: [{ ...publicKey.export({ format: 'jwk' }), kid: 'k1' }] };
+    const jwks = {
+      keys: [{ ...publicKey.export({ format: 'jwk' }), kid: 'k1' }],
+    };
     const fetchJwks = jest
       .spyOn(global, 'fetch')
       .mockResolvedValue({ json: async () => jwks } as Response);
@@ -93,7 +102,9 @@ describe('AuthDynamicService', () => {
         { privateKey: pem(privateKey), algorithm: 'RS256', keyid: kid },
       );
 
-    expect(await byEnvironment.getProfileByToken(await signWith('k1'))).toMatchObject({ id: 'u1' });
+    expect(
+      await byEnvironment.getProfileByToken(await signWith('k1')),
+    ).toMatchObject({ id: 'u1' });
     expect(fetchJwks).toHaveBeenCalledWith(
       'https://app.dynamic.xyz/api/v0/sdk/env1/.well-known/jwks',
     );

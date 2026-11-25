@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@sandworm/ui/components/input";
 import { Button } from "@sandworm/ui/components/button";
 
 import { useCurrentUser } from "@/components/Editor/hooks/useCurrentUser";
-import { TERMS_URL, PRIVACY_URL } from "@/utils/env";
+import { TERMS_URL, PRIVACY_URL, safeCallback } from "@/utils/env";
 
 import { Username } from "../Assets/Username";
 import { Spinner } from "../Spinner/Spinner";
@@ -147,7 +146,6 @@ export const ClaimUsernameStep = ({
 // CLAIM USERNAME — standalone page wrapper
 // =====================================
 export const ClaimUsername = () => {
-  const router = useRouter();
   const { updateUser } = useCurrentUser();
   const [isClaiming, setIsClaiming] = useState(false);
   const [claimError, setClaimError] = useState<string | null>(null);
@@ -157,7 +155,9 @@ export const ClaimUsername = () => {
     setClaimError(null);
     try {
       await updateUser({ username });
-      router.push("/workspace");
+      window.location.href = safeCallback(
+        new URLSearchParams(window.location.search).get("callback")
+      );
     } catch {
       setClaimError("That username is taken. Try another one.");
     } finally {

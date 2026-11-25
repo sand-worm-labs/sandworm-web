@@ -44,6 +44,8 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@dynamic-labs/ethereum": "5.16.0",
+    "@dynamic-labs/sdk-react-core": "5.16.0",
     "@gsap/react": "^2.1.2",
     "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",

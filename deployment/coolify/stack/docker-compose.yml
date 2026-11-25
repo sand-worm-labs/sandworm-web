@@ -174,14 +174,16 @@ services:
       traefik.http.routers.sandworm-yjs.service: sandworm-yjs
       traefik.http.services.sandworm-yjs.loadbalancer.server.port: "8005"
 
-      # The api on the terminal's own origin, so the browser sends the session
-      # cookies without CORS.
-      traefik.http.routers.sandworm-terminal-api.rule: Host(`${TERMINAL_HOST:?}`) && PathPrefix(`/api`)
-      traefik.http.routers.sandworm-terminal-api.priority: "100"
-      traefik.http.routers.sandworm-terminal-api.entrypoints: https
-      traefik.http.routers.sandworm-terminal-api.tls: "true"
-      traefik.http.routers.sandworm-terminal-api.tls.certresolver: letsencrypt
-      traefik.http.routers.sandworm-terminal-api.service: sandworm-api
+      # The api at /api on every sub-app's own origin (terminal., stock., ...),
+      # so Sandworm sign-in works on all of them: the login cookie is on the
+      # parent domain (AUTH_COOKIE_DOMAIN) and the browser sends it without CORS.
+      # No certresolver: each sub-app's own router gets its host's certificate.
+      traefik.http.routers.sandworm-subapp-api.rule: >-
+        HostRegexp(`^[a-z0-9-]+\.${LANDING_HOST:?}$$`) && !Host(`${MCP_HOST:?}`) && PathPrefix(`/api`)
+      traefik.http.routers.sandworm-subapp-api.priority: "100"
+      traefik.http.routers.sandworm-subapp-api.entrypoints: https
+      traefik.http.routers.sandworm-subapp-api.tls: "true"
+      traefik.http.routers.sandworm-subapp-api.service: sandworm-api
 
   web:
     <<: *pull
