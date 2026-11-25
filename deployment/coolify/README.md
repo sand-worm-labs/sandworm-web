@@ -31,7 +31,13 @@ Settings and secrets live in Coolify and in GitHub environments, never in git.
 - **Traefik routes by labels in that file.** `app.` splits by path: `/api`,
   `/socket.io`, the OAuth discovery document and `/authorize|/token|/register`
   go to the api, `/yjs` to the api's live-editing socket (port 8005), the rest to
-  web. `terminal.` sends `/api` to the api too, so cookies work without CORS.
+  web. Every other subdomain but `mcp.` sends `/api` to the api too.
+- **Sandworm sign-in on any sub-app** (`terminal.`, `stock.`, ...): host it on a
+  subdomain and it shares the login cookie (set on the parent domain). Call your
+  own `/api/graphql` with `credentials: "include"`: `currentUser` says who is
+  signed in. Signed out, send them to
+  `https://app.<domain>/signin?callback=<your page's full URL>`; sign-in returns
+  there (only our own domain and its subdomains are allowed).
 - **Migrations run before the api starts**, as the one-shot `migrate` service.
   A failed migration stops the deploy: the api never runs against an old schema.
 - **mcp runs exactly one replica**: it runs the notebook scheduler.

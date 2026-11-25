@@ -55,6 +55,7 @@ ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
 ARG NEXT_PUBLIC_GITHUB_CLIENT_ID
 ARG NEXT_PUBLIC_TERMINAL_URL
 ARG NEXT_PUBLIC_WEB_APP_URL
+ARG NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID
 ARG PUBLIC_APP_URL
 COPY --from=prune /repo/out/full/ ./
 # Not a workspace package, so prune drops it; web's build copies it into public/.
