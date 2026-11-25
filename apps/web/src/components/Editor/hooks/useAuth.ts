@@ -14,6 +14,12 @@ import {
   safeCallback,
 } from "../../../utils/env";
 
+// An account made by a social or wallet sign-in starts with the placeholder
+// username the backend generates (UserService.generateUsername) until its owner
+// claims a real one on /claim, which every signed-in page sends them to first.
+export const needsUsername = (user?: { username?: string | null } | null) =>
+  !!user && (!user.username || /^user\d{8}$/.test(user.username));
+
 // =====================================
 // ⬢ Types
 // =====================================
@@ -308,13 +314,17 @@ export const useSession = ({
 
   useEffect(() => {
     if (!loading && redirectToLogin) {
+      const back = encodeURIComponent(
+        `${pathname}${searchParams.toString() ? `?${searchParams}` : ""}`
+      );
       if (!data?.currentUser) {
-        const back = `${pathname}${searchParams.toString() ? `?${searchParams}` : ""}`;
         console.warn(
           "[useSession] redirecting to signin — reason:",
           error ? `error: ${error.message}` : "no currentUser returned"
         );
-        router.replace(`/signin?callback=${encodeURIComponent(back)}`);
+        router.replace(`/signin?callback=${back}`);
+      } else if (needsUsername(data.currentUser.user)) {
+        router.replace(`/claim?callback=${back}`);
       }
     }
   }, [loading, data, redirectToLogin, router, pathname, searchParams, error]);

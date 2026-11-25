@@ -16,7 +16,12 @@ type DynamicClaims = {
   email?: string;
   given_name?: string;
   family_name?: string;
-  verified_credentials?: { format: string; chain?: string; address?: string }[];
+  verified_credentials?: {
+    format: string;
+    chain?: string;
+    address?: string;
+    email?: string;
+  }[];
 };
 
 @Injectable()
@@ -36,13 +41,28 @@ export class AuthDynamicService {
       this.configService.get('dynamic', { infer: true }) ?? {};
     if (publicKey || !environmentId) return publicKey;
 
-    const kid: string | undefined = this.jwtService.decode(token, { complete: true })?.header?.kid;
-    if (kid && !this.keys.has(kid) && Date.now() - this.keysFetchedAt > 60_000) {
+    const kid: string | undefined = this.jwtService.decode(token, {
+      complete: true,
+    })?.header?.kid;
+    if (
+      kid &&
+      !this.keys.has(kid) &&
+      Date.now() - this.keysFetchedAt > 60_000
+    ) {
       this.keysFetchedAt = Date.now();
-      const res = await fetch(`https://app.dynamic.xyz/api/v0/sdk/${environmentId}/.well-known/jwks`);
-      const { keys } = (await res.json()) as { keys: (JsonWebKey & { kid: string })[] };
+      const res = await fetch(
+        `https://app.dynamic.xyz/api/v0/sdk/${environmentId}/.well-known/jwks`,
+      );
+      const { keys } = (await res.json()) as {
+        keys: (JsonWebKey & { kid: string })[];
+      };
       for (const key of keys)
-        this.keys.set(key.kid, createPublicKey({ key, format: 'jwk' }).export({ type: 'spki', format: 'pem' }).toString());
+        this.keys.set(
+          key.kid,
+          createPublicKey({ key, format: 'jwk' })
+            .export({ type: 'spki', format: 'pem' })
+            .toString(),
+        );
     }
     return kid ? this.keys.get(kid) : undefined;
   }
@@ -59,7 +79,14 @@ export class AuthDynamicService {
       );
 
     const claims = await this.keyFor(token)
-      .then((key) => key && this.jwtService.verifyAsync<DynamicClaims>(token, { publicKey: key, algorithms: ['RS256'] }))
+      .then(
+        (key) =>
+          key &&
+          this.jwtService.verifyAsync<DynamicClaims>(token, {
+            publicKey: key,
+            algorithms: ['RS256'],
+          }),
+      )
       .catch(() => null);
     if (!claims?.scope?.includes('user:basic'))
       throw new UnprocessableEntityException({
@@ -69,7 +96,9 @@ export class AuthDynamicService {
 
     return {
       id: claims.sub,
-      email: claims.email,
+      // Only an email Dynamic verified: an existing account with that email is signed in, so a typed one can't be trusted
+      email: claims.verified_credentials?.find((c) => c.format === 'email')
+        ?.email,
       firstName: claims.given_name,
       lastName: claims.family_name,
       wallets: (claims.verified_credentials ?? [])

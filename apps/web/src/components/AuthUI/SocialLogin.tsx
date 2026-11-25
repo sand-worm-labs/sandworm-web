@@ -8,36 +8,40 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { toast } from "sonner";
 
 import { getReferralCode } from "@/utils/referral";
+import { needsUsername } from "@/components/Editor/hooks/useAuth";
 import { useSessionStore } from "@/store/session";
 import {
   NEXT_PUBLIC_API_URL,
   GITHUB_CLIENT_ID,
   REDIRECT_URI,
+  safeCallback,
 } from "@/utils/env";
+
+import { DynamicLogin } from "./DynamicLogin";
+
+type Provider = "google" | "github" | "dynamic";
+
+const buttonClass =
+  "flex w-full items-center justify-center space-x-2 rounded-2xl border border-border px-4 py-3 bg-inputBg hover:bg-border-secondary dark:bg-transparent font-medium text-ink-100 mb-2 text-sm font-body disabled:opacity-50 disabled:cursor-not-allowed dark:border-border-tertiary";
 
 type SocialLoginProps = {
   variant?: "signup" | "signin";
 };
 
-// Matches the placeholder username the backend generates for accounts
-// created via social login (UserService.generateUsername) — used to decide
-// whether this user still needs to claim a real handle, independent of
-// which button (signup/signin) they actually clicked.
-const PLACEHOLDER_USERNAME = /^user\d{8}$/;
-
 // =====================================
 // ⬢ Social Login
 // =====================================
 export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
-  const [isLoading, setIsLoading] = useState<"google" | "github" | null>(null);
+  const [isLoading, setIsLoading] = useState<Provider | null>(null);
   const router = useRouter();
   const { setIntent, setSession } = useSessionStore();
 
   // ⬢ handle Backend Login
   // =====================================
+  // Dynamic sends its token; Google and GitHub an OAuth code
   const handleBackendLogin = async (
-    provider: "google" | "github",
-    code: string
+    provider: Provider,
+    credential: { code: string } | { token: string }
   ) => {
     try {
       const res = await fetch(
@@ -47,7 +51,7 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify({
-            code,
+            ...credential,
             intent: variant,
             referralCode: getReferralCode(),
           }),
@@ -65,10 +69,14 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
       const data = await res.json();
       setSession(data);
 
-      const needsUsernameClaim =
-        !data?.user?.username || PLACEHOLDER_USERNAME.test(data.user.username);
-
-      router.push(needsUsernameClaim ? "/claim" : "/workspace");
+      const callback = new URLSearchParams(window.location.search).get(
+        "callback"
+      );
+      if (needsUsername(data?.user))
+        router.push(
+          `/claim${callback ? `?callback=${encodeURIComponent(callback)}` : ""}`
+        );
+      else window.location.href = safeCallback(callback);
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || "Authentication failed");
@@ -82,7 +90,7 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
     onSuccess: async response => {
       if (!response.code) return;
       setIsLoading("google");
-      await handleBackendLogin("google", response.code);
+      await handleBackendLogin("google", { code: response.code });
     },
   });
 
@@ -130,7 +138,7 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
         event.data.provider === "github"
       ) {
         window.removeEventListener("message", handleMessage);
-        await handleBackendLogin("github", event.data.code);
+        await handleBackendLogin("github", { code: event.data.code });
         popup.close();
       }
 
@@ -168,20 +176,21 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
     }
   };
 
-  const getButtonText = (provider: "google" | "github") => {
+  const getButtonText = (provider: Provider) => {
     if (isLoading === provider) return "Connecting...";
-    return variant === "signup"
-      ? `Sign up with ${provider === "google" ? "Google" : "Github"}`
-      : `Sign in with ${provider === "google" ? "Google" : "Github"}`;
+    const name = { google: "Google", github: "Github", dynamic: "a wallet" }[
+      provider
+    ];
+    return `${variant === "signup" ? "Sign up" : "Sign in"} with ${name}`;
   };
 
   return (
-    <div className="w-full lg:mt-4 mt-1.5 ">
+    <div className="w-full lg:mt-4 mt-1.5 mb-2">
       <button
         type="button"
         onClick={() => handleOAuthLogin("google")}
         disabled={isLoading !== null}
-        className="flex w-full items-center justify-center space-x-2 rounded-2xl border border-border px-4 py-3 bg-inputBg hover:bg-border-secondary dark:bg-transparent font-medium text-ink-100 mb-2 text-sm font-body disabled:opacity-50 disabled:cursor-not-allowed dark:border-border-tertiary"
+        className={buttonClass}
       >
         <FcGoogle size={20} />
         <span>{getButtonText("google")}</span>
@@ -191,11 +200,20 @@ export const SocialLogin = ({ variant = "signup" }: SocialLoginProps) => {
         type="button"
         onClick={() => handleOAuthLogin("github")}
         disabled={isLoading !== null}
-        className="flex w-full items-center justify-center space-x-2 rounded-2xl border border-border px-4 py-3 bg-inputBg hover:bg-border-secondary dark:bg-transparent text-ink-100 mb-4 text-sm font-body font-medium disabled:opacity-50 disabled:cursor-not-allowed dark:border-border-tertiary"
+        className={buttonClass}
       >
         <FaGithub size={20} />
         <span>{getButtonText("github")}</span>
       </button>
+
+      <DynamicLogin
+        label={getButtonText("dynamic")}
+        disabled={isLoading !== null}
+        className={buttonClass}
+        onStart={() => setIsLoading("dynamic")}
+        onCancel={() => setIsLoading(null)}
+        onToken={token => handleBackendLogin("dynamic", { token })}
+      />
     </div>
   );
 };
