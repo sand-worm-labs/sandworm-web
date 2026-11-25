@@ -65,4 +65,3 @@ sandworm-*.env.bak*
 # Generated fresh from $ROOT_DIR by scripts/start-prod.sh and
 # scripts/rebuild.sh on every run — committing it just bakes in whichever
 # machine last ran one of those scripts (e.g. a dev's laptop paths).
-ecosystem.config.js
