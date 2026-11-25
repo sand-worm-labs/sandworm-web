@@ -11,6 +11,7 @@ import { useCurrentUserQuery } from "@/generated/graphql";
 import {
   NEXT_PUBLIC_API_URL,
   NEXT_PUBLIC_PUBLIC_URL,
+  safeCallback,
 } from "../../../utils/env";
 
 // =====================================
@@ -217,7 +218,7 @@ export const useLogin = (): UseLogin => {
             const data: LoginResponse = await res.json();
 
             setState({ loading: false, data, error: undefined });
-            window.location.href = callback || "/workspace";
+            window.location.href = safeCallback(callback);
             return;
           }
 
