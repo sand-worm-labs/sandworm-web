@@ -1,5 +1,6 @@
 export enum AuthProvidersEnum {
   email = 'email',
   google = 'google',
-  github = 'github'
+  github = 'github',
+  dynamic = 'dynamic'
 }

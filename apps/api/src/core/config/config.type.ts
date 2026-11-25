@@ -2,6 +2,7 @@ import { AppConfig } from '@sandworm/graphql';
 import { DatabaseConfig } from '@sandworm/postgresql-typeorm';
 import { JupyterConfig } from '@sandworm/jupyter';
 import { AuthConfig } from '@/features/auth/core/config/auth-config.type';
+import { DynamicConfig } from '@/features/auth/dynamic/config/dynamic-config.type';
 import { GoogleConfig } from '@/features/auth/google/config/google-config.type';
 import { MailConfig } from '@/infrastructure/mail/config/mail-config.type';
 import { GithubConfig } from "@/features/auth/github/config/github-config.type";
@@ -21,6 +22,7 @@ export type AllConfigType = {
   jupyter: JupyterConfig;
   redis:RedisConfig;
   google: GoogleConfig;
+  dynamic: DynamicConfig;
   mail: MailConfig;
   github: GithubConfig,
   blockExecutor: BlockExecutorConfig

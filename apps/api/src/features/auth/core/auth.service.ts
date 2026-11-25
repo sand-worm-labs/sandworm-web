@@ -202,7 +202,7 @@ export class AuthService {
       }
       user = userByEmail;
     } else if (socialData.id) {
-      const created = await this.createGated(referralCode, () =>
+      const create = () =>
         this.usersService.create({
           email: socialEmail ?? null,
           firstName: socialData.firstName ?? null,
@@ -210,8 +210,10 @@ export class AuthService {
           avater: socialData.avatar ?? null,
           socialId: socialData.id,
           provider: authProvider,
-        }),
-      );
+        });
+      // Dynamic (a wallet or email) opens an account without an invite; the other ways in stay invite-only
+      const created =
+        authProvider === AuthProvidersEnum.dynamic ? await create() : await this.createGated(referralCode, create);
       user = created;
 
       user = await this.usersService.findById(user.id);

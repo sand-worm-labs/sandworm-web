@@ -214,6 +214,20 @@ describe('AuthService', () => {
       expect(result.user.id).toBe('u3');
     });
 
+    it('creates a Dynamic user without an invite, but still asks for one from the other providers', async () => {
+      const { service, usersService } = makeService();
+      usersService.findByEmail.mockResolvedValue(null);
+      usersService.findBySocialIdAndProvider.mockResolvedValue(null);
+      usersService.create.mockResolvedValue({ id: 'u4' });
+      usersService.findById.mockResolvedValue({ id: 'u4' });
+      usersService.getUserWorkspaceRoles.mockResolvedValue([]);
+
+      await service.validateSocialLogin('dynamic', socialData as any);
+      expect(usersService.create).toHaveBeenCalledWith(expect.objectContaining({ provider: 'dynamic' }));
+
+      await expect(service.validateSocialLogin('google', socialData as any)).rejects.toThrow();
+    });
+
     it('throws when no user could be found or created', async () => {
       const { service, usersService } = makeService();
       usersService.findByEmail.mockResolvedValue(null);

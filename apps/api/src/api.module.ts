@@ -11,6 +11,7 @@ import { CommentModule } from '@/features/collaboration/comment/comment.module';
 import { EnvironmentModule } from '@/features/environment/environment.module';
 import { FileModule } from '@/features/file/file.module';
 import { AuthModule } from '@/features/auth/core/auth.module';
+import { AuthDynamicModule } from '@/features/auth/dynamic/auth-dynamic.module';
 import { AuthGoogleModule } from '@/features/auth/google/auth-google.module';
 import { MailModule } from '@/infrastructure/mail/mail.module';
 import { MailerModule } from '@/infrastructure/mailer/mailer.module';
@@ -42,6 +43,7 @@ import { McpOauthModule } from './features/mcp-oauth/mcp-oauth.module';
         AuthModule,
         AuthGraphqlModule,
         AuthGoogleModule,
+        AuthDynamicModule,
         AuthGithubModule,
         McpOauthModule,
 
