@@ -78,4 +78,28 @@ describe('AuthDynamicService', () => {
       service(pem(publicKey)).getProfileByToken(await make()),
     ).rejects.toBeInstanceOf(UnprocessableEntityException);
   });
+
+  it('checks a token with the environment key it names, from the published JWKS', async () => {
+    const jwks = { keys: [{ ...publicKey.export({ format: 'jwk' }), kid: 'k1' }] };
+    const fetchJwks = jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValue({ json: async () => jwks } as Response);
+    const byEnvironment = new AuthDynamicService(jwt, {
+      get: () => ({ environmentId: 'env1' }),
+    } as unknown as ConfigService<any>);
+    const signWith = (kid: string) =>
+      jwt.signAsync(
+        { sub: 'u1', scope: 'user:basic' },
+        { privateKey: pem(privateKey), algorithm: 'RS256', keyid: kid },
+      );
+
+    expect(await byEnvironment.getProfileByToken(await signWith('k1'))).toMatchObject({ id: 'u1' });
+    expect(fetchJwks).toHaveBeenCalledWith(
+      'https://app.dynamic.xyz/api/v0/sdk/env1/.well-known/jwks',
+    );
+    await expect(
+      byEnvironment.getProfileByToken(await signWith('unknown')),
+    ).rejects.toBeInstanceOf(UnprocessableEntityException);
+    fetchJwks.mockRestore();
+  });
 });
